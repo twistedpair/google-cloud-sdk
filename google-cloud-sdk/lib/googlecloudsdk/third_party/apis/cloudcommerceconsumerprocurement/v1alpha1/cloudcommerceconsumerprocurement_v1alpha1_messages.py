@@ -837,6 +837,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange(_messages.
         initiated and waiting for partner approval.
       CHANGE_STATE_APPROVED: Change is in this state, if the change was
         approved by partner or auto-approved but is pending to be effective.
+        The change can be overwritten or cancelled depending on the new line
+        item info property (pending Private Offer change cannot be cancelled
+        and can only be overwritten by another Private Offer).
       CHANGE_STATE_COMPLETED: Change is in this state, if the change was
         activated and completed successfully.
       CHANGE_STATE_REJECTED: Change is in this state, if the change was
@@ -844,7 +847,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange(_messages.
       CHANGE_STATE_ABANDONED: Change is in this state, if it was abandoned by
         user.
       CHANGE_STATE_ACTIVATING: Change is in this state, if it is going through
-        downstream provision, the change is not cancellable in this state.
+        downstream provision, the change cannot be overwritten or cancelled in
+        this state.
     """
     CHANGE_STATE_UNSPECIFIED = 0
     CHANGE_STATE_PENDING_APPROVAL = 1
@@ -1002,7 +1006,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
         change is initiated and waiting for partner approval.
       LINE_ITEM_CHANGE_STATE_APPROVED: Change is in this state, if the change
         was approved by partner or auto-approved but is pending to be
-        effective.
+        effective. The change can be overwritten or cancelled depending on the
+        new line item info property (pending Private Offer change cannot be
+        cancelled and can only be overwritten by another Private Offer).
       LINE_ITEM_CHANGE_STATE_COMPLETED: Change is in this state, if the change
         was activated and completed successfully.
       LINE_ITEM_CHANGE_STATE_REJECTED: Change is in this state, if the change
@@ -1010,8 +1016,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
       LINE_ITEM_CHANGE_STATE_ABANDONED: Change is in this state, if it was
         abandoned by user.
       LINE_ITEM_CHANGE_STATE_ACTIVATING: Change is in this state, if it is
-        going through downstream provision, the change is not cancellable in
-        this state.
+        going through downstream provision, the change cannot be overwritten
+        or cancelled in this state.
     """
     LINE_ITEM_CHANGE_STATE_UNSPECIFIED = 0
     LINE_ITEM_CHANGE_STATE_PENDING_APPROVAL = 1

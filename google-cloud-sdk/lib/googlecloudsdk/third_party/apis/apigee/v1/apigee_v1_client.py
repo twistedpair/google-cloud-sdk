@@ -4564,7 +4564,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a trace configuration override. The response contains a system-generated UUID, that can be used to view, update, or delete the configuration override. override. Use the List API to view the existing trace configuration overrides. overrides.
+      r"""Creates a trace configuration override. The response contains a system-generated UUID, that can be used to view, update, or delete the configuration override. Use the List API to view the existing trace configuration overrides.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsTraceConfigOverridesCreateRequest) input message
@@ -6693,6 +6693,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsListRequest',
         response_type_name='GoogleCloudApigeeV1ListOrganizationsResponse',
+        supports_download=False,
+    )
+
+    def SetAddons(self, request, global_params=None):
+      r"""Configures the add-ons for the Apigee organization. The existing add-on configuration will be fully replaced.
+
+      Args:
+        request: (ApigeeOrganizationsSetAddonsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('SetAddons')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetAddons.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}:setAddons',
+        http_method='POST',
+        method_id='apigee.organizations.setAddons',
+        ordered_params=['org'],
+        path_params=['org'],
+        query_params=[],
+        relative_path='v1/{+org}:setAddons',
+        request_field='googleCloudApigeeV1SetAddonsRequest',
+        request_type_name='ApigeeOrganizationsSetAddonsRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

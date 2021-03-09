@@ -567,6 +567,27 @@ class PubsubProjectsSchemasDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class PubsubProjectsSchemasGetIamPolicyRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class PubsubProjectsSchemasGetRequest(_messages.Message):
   r"""A PubsubProjectsSchemasGetRequest object.
 
@@ -641,6 +662,36 @@ class PubsubProjectsSchemasListRequest(_messages.Message):
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class PubsubProjectsSchemasSetIamPolicyRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class PubsubProjectsSchemasTestIamPermissionsRequest(_messages.Message):
+  r"""A PubsubProjectsSchemasTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class PubsubProjectsSchemasValidateMessageRequest(_messages.Message):

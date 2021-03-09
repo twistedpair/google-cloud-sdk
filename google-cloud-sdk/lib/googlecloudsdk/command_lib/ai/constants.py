@@ -35,7 +35,7 @@ The {verb} operation [{name}] was submitted successfully.
 
 You may view the status of your operation with the command
 
-  $ gcloud beta ai operations describe {id}\
+  $ gcloud beta ai operations describe {id} {sub_commands}\
 """
 
 CUSTOM_JOB_CREATION_DISPLAY_MESSAGE = """\
@@ -86,3 +86,10 @@ You may view the status of your job with the command
 """
 
 HPTUNING_JOB_COLLECTION = 'aiplatform.projects.locations.hyperparameterTuningJobs'
+
+OP_AUTOSCALING_METRIC_NAME_MAPPER = {
+    'cpu-usage':
+        'aiplatform.googleapis.com/prediction/online/cpu/utilization',
+    'gpu-duty-cycle':
+        'aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle',
+}

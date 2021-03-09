@@ -217,6 +217,15 @@ class EndpointsClient(object):
       if args.max_replica_count is not None:
         dedicated_resources.maxReplicaCount = args.max_replica_count
 
+      if args.IsSpecified('autoscaling_metric_specs'):
+        autoscaling_metric_specs = []
+        for name, target in args.autoscaling_metric_specs.items():
+          autoscaling_metric_specs.append(
+              self.messages.GoogleCloudAiplatformV1beta1AutoscalingMetricSpec(
+                  metricName=constants.OP_AUTOSCALING_METRIC_NAME_MAPPER[name],
+                  target=target))
+        dedicated_resources.autoscalingMetricSpecs = autoscaling_metric_specs
+
       deployed_model =\
           self.messages.GoogleCloudAiplatformV1beta1DeployedModel(
               dedicatedResources=dedicated_resources,

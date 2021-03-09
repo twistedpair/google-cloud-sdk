@@ -628,7 +628,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "(Optional) Cloud Run fully managed: not supported Cloud Run for Anthos: supported If specified, used to specify which protocol to use. Allowed values are \"http1\" and \"h2c\".",
+          "description": "(Optional) If specified, used to specify which protocol to use. Allowed values are \"http1\" and \"h2c\".",
           "type": "string"
         },
         "containerPort": {

@@ -134,7 +134,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
     )
 
     def GetInstallStatus(self, request, global_params=None):
-      r"""Fetches the install status of a developer mode deployment.
+      r"""Gets the install status of a test deployment.
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsGetInstallStatusRequest) input message
@@ -161,7 +161,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
     )
 
     def Install(self, request, global_params=None):
-      r"""Installs a deployment in developer mode. See: https://developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons.
+      r"""Installs a deployment to your account for testing. For more information, see [Test your add-on](https://developers.google.com/workspace/add-ons/guides/alternate-runtimes#test_your_add-on).
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsInstallRequest) input message
@@ -242,7 +242,7 @@ class GsuiteaddonsV1(base_api.BaseApiClient):
     )
 
     def Uninstall(self, request, global_params=None):
-      r"""Uninstalls a developer mode deployment. See: https://developers.google.com/gsuite/add-ons/how-tos/testing-gsuite-addons.
+      r"""Uninstalls a test deployment from the user's account. For more information, see [Test your add-on](https://developers.google.com/workspace/add-ons/guides/alternate-runtimes#test_your_add-on).
 
       Args:
         request: (GsuiteaddonsProjectsDeploymentsUninstallRequest) input message

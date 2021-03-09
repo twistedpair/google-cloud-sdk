@@ -140,7 +140,7 @@ class BootstrapKubeconfig(_messages.Message):
   Fields:
     bootstrapToken: Bearer token for authentication and TLS bootstrapping into
       the Kubernetes cluster.
-    certificateAuthorityData: PEM-encoded certificate authority for the
+    certificateAuthorityData: Base64-encoded PEM certificate authority for the
       cluster.
     server: Address of the kubernetes cluster control plane
       (https://hostname:port).

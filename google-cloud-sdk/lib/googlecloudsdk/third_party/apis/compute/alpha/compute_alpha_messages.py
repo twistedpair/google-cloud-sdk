@@ -2508,6 +2508,8 @@ class AutoscalerStatusDetails(_messages.Message):
       NOT_ENOUGH_QUOTA_AVAILABLE: <no description>
       REGION_RESOURCE_STOCKOUT: <no description>
       SCALING_TARGET_DOES_NOT_EXIST: <no description>
+      SCHEDULED_INSTANCES_GREATER_THAN_AUTOSCALER_MAX: <no description>
+      SCHEDULED_INSTANCES_LESS_THAN_AUTOSCALER_MIN: <no description>
       UNKNOWN: <no description>
       UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION: <no description>
       ZONE_RESOURCE_STOCKOUT: <no description>
@@ -2527,9 +2529,11 @@ class AutoscalerStatusDetails(_messages.Message):
     NOT_ENOUGH_QUOTA_AVAILABLE = 12
     REGION_RESOURCE_STOCKOUT = 13
     SCALING_TARGET_DOES_NOT_EXIST = 14
-    UNKNOWN = 15
-    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 16
-    ZONE_RESOURCE_STOCKOUT = 17
+    SCHEDULED_INSTANCES_GREATER_THAN_AUTOSCALER_MAX = 15
+    SCHEDULED_INSTANCES_LESS_THAN_AUTOSCALER_MIN = 16
+    UNKNOWN = 17
+    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 18
+    ZONE_RESOURCE_STOCKOUT = 19
 
   message = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -41489,6 +41493,9 @@ class NetworkEndpointGroup(_messages.Message):
     networkEndpointType: Type of network endpoints in this network endpoint
       group. Can be one of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
       INTERNET_FQDN_PORT, INTERNET_IP_PORT, or SERVERLESS.
+    pscTargetService: The target service url used to set up private service
+      connection to a Google API. An example value is: "asia-
+      northeast3-cloudkms.googleapis.com"
     region: [Output Only] The URL of the region where the network endpoint
       group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -41519,6 +41526,7 @@ class NetworkEndpointGroup(_messages.Message):
       INTERNET_FQDN_PORT: <no description>
       INTERNET_IP_PORT: <no description>
       NON_GCP_PRIVATE_IP_PORT: <no description>
+      PRIVATE_SERVICE_CONNECT: <no description>
       SERVERLESS: <no description>
     """
     GCE_VM_IP = 0
@@ -41527,7 +41535,8 @@ class NetworkEndpointGroup(_messages.Message):
     INTERNET_FQDN_PORT = 3
     INTERNET_IP_PORT = 4
     NON_GCP_PRIVATE_IP_PORT = 5
-    SERVERLESS = 6
+    PRIVATE_SERVICE_CONNECT = 6
+    SERVERLESS = 7
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Specify the type of this network endpoint group. Only LOAD_BALANCING
@@ -41576,14 +41585,15 @@ class NetworkEndpointGroup(_messages.Message):
   name = _messages.StringField(11)
   network = _messages.StringField(12)
   networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 13)
-  region = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  selfLinkWithId = _messages.StringField(16)
-  serverlessDeployment = _messages.MessageField('NetworkEndpointGroupServerlessDeployment', 17)
-  size = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(19)
-  type = _messages.EnumField('TypeValueValuesEnum', 20)
-  zone = _messages.StringField(21)
+  pscTargetService = _messages.StringField(14)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  serverlessDeployment = _messages.MessageField('NetworkEndpointGroupServerlessDeployment', 18)
+  size = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  zone = _messages.StringField(22)
 
 
 class NetworkEndpointGroupAggregatedList(_messages.Message):
@@ -51961,7 +51971,7 @@ class RouterBgp(_messages.Message):
       successive keepalive messages that BGP receives from a peer. BGP will
       use the smaller of either the local hold time value or the peer's hold
       time value as the hold time for the BGP connection between the two
-      peers. If set, this value must be between 1 and 120. The default is 20.
+      peers. If set, this value must be between 20 and 60. The default is 20.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -52020,12 +52030,11 @@ class RouterBgpPeer(_messages.Message):
     advertisedGroups: User-specified list of prefix groups to advertise in
       custom mode, which can take one of the following options:  -
       ALL_SUBNETS: Advertises all available subnets, including peer VPC
-      subnets.  - ALL_VPC_SUBNETS: Advertises the router's own VPC subnets.  -
-      ALL_PEER_VPC_SUBNETS: Advertises peer subnets of the router's VPC
-      network. Note that this field can only be populated if advertise_mode is
-      CUSTOM and overrides the list defined for the router (in the "bgp"
-      message). These groups are advertised in addition to any specified
-      prefixes. Leave this field blank to advertise no custom groups.
+      subnets.  - ALL_VPC_SUBNETS: Advertises the router's own VPC subnets.
+      Note that this field can only be populated if advertise_mode is CUSTOM
+      and overrides the list defined for the router (in the "bgp" message).
+      These groups are advertised in addition to any specified prefixes. Leave
+      this field blank to advertise no custom groups.
     advertisedIpRanges: User-specified list of individual IP ranges to
       advertise in custom mode. This field can only be populated if
       advertise_mode is CUSTOM and overrides the list defined for the router
@@ -53270,7 +53279,7 @@ class ScalingScheduleStatus(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 17
+  r"""Sets the scheduling options for an Instance. NextID: 20
 
   Enums:
     MaintenanceIntervalValueValuesEnum: Specifies whether this VM may be a
@@ -53797,6 +53806,7 @@ class SecurityPolicyRule(_messages.Message):
       destination in Stackdriver. Logs may be exported to BigQuery or Pub/Sub.
       Note: you cannot enable logging on "goto_next" rules.  This field may
       only be specified when the versioned_expr is set to FIREWALL.
+    headerAction: Optional, additional actions that are performed on headers.
     kind: [Output only] Type of the resource. Always
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
@@ -53839,16 +53849,40 @@ class SecurityPolicyRule(_messages.Message):
   description = _messages.StringField(2)
   direction = _messages.EnumField('DirectionValueValuesEnum', 3)
   enableLogging = _messages.BooleanField(4)
-  kind = _messages.StringField(5, default='compute#securityPolicyRule')
-  match = _messages.MessageField('SecurityPolicyRuleMatcher', 6)
-  preview = _messages.BooleanField(7)
-  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 9)
-  redirectTarget = _messages.StringField(10)
-  ruleNumber = _messages.IntegerField(11)
-  ruleTupleCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  targetResources = _messages.StringField(13, repeated=True)
-  targetServiceAccounts = _messages.StringField(14, repeated=True)
+  headerAction = _messages.MessageField('SecurityPolicyRuleHttpHeaderAction', 5)
+  kind = _messages.StringField(6, default='compute#securityPolicyRule')
+  match = _messages.MessageField('SecurityPolicyRuleMatcher', 7)
+  preview = _messages.BooleanField(8)
+  priority = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  rateLimitOptions = _messages.MessageField('SecurityPolicyRuleRateLimitOptions', 10)
+  redirectTarget = _messages.StringField(11)
+  ruleNumber = _messages.IntegerField(12)
+  ruleTupleCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(14, repeated=True)
+  targetServiceAccounts = _messages.StringField(15, repeated=True)
+
+
+class SecurityPolicyRuleHttpHeaderAction(_messages.Message):
+  r"""A SecurityPolicyRuleHttpHeaderAction object.
+
+  Fields:
+    requestHeadersToAdds: The list of request headers to add or overwrite if
+      they?re already present.
+  """
+
+  requestHeadersToAdds = _messages.MessageField('SecurityPolicyRuleHttpHeaderActionHttpHeaderOption', 1, repeated=True)
+
+
+class SecurityPolicyRuleHttpHeaderActionHttpHeaderOption(_messages.Message):
+  r"""A SecurityPolicyRuleHttpHeaderActionHttpHeaderOption object.
+
+  Fields:
+    headerName: The name of the header to set.
+    headerValue: The value to set the named header to.
+  """
+
+  headerName = _messages.StringField(1)
+  headerValue = _messages.StringField(2)
 
 
 class SecurityPolicyRuleMatcher(_messages.Message):
@@ -54180,7 +54214,7 @@ class ServiceAttachment(_messages.Message):
   represents a service that a producer has exposed. It encapsulates the load
   balancer which fronts the service runs and a list of NAT IP ranges that the
   producers uses to represent the consumers connecting to the service. next
-  tag = 16
+  tag = 17
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service

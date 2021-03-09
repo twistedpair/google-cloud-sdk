@@ -40,9 +40,7 @@ class LuxadminV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_backups = self.ProjectsLocationsBackupsService(self)
-    self.projects_locations_clusters_databases = self.ProjectsLocationsClustersDatabasesService(self)
     self.projects_locations_clusters_instances = self.ProjectsLocationsClustersInstancesService(self)
-    self.projects_locations_clusters_roles = self.ProjectsLocationsClustersRolesService(self)
     self.projects_locations_clusters_users = self.ProjectsLocationsClustersUsersService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -164,151 +162,6 @@ class LuxadminV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='LuxadminProjectsLocationsBackupsListRequest',
         response_type_name='ListBackupsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsClustersDatabasesService(base_api.BaseApiService):
-    """Service class for the projects_locations_clusters_databases resource."""
-
-    _NAME = 'projects_locations_clusters_databases'
-
-    def __init__(self, client):
-      super(LuxadminV1alpha1.ProjectsLocationsClustersDatabasesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new Database in a given cluster in a project location.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersDatabasesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/databases',
-        http_method='POST',
-        method_id='luxadmin.projects.locations.clusters.databases.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['databaseId', 'requestId'],
-        relative_path='v1alpha1/{+parent}/databases',
-        request_field='database',
-        request_type_name='LuxadminProjectsLocationsClustersDatabasesCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single Database.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersDatabasesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/databases/{databasesId}',
-        http_method='DELETE',
-        method_id='luxadmin.projects.locations.clusters.databases.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='LuxadminProjectsLocationsClustersDatabasesDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Database.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersDatabasesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Database) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/databases/{databasesId}',
-        http_method='GET',
-        method_id='luxadmin.projects.locations.clusters.databases.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='LuxadminProjectsLocationsClustersDatabasesGetRequest',
-        response_type_name='Database',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists Databases in a given cluster in a project location.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersDatabasesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListDatabasesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/databases',
-        http_method='GET',
-        method_id='luxadmin.projects.locations.clusters.databases.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/databases',
-        request_field='',
-        request_type_name='LuxadminProjectsLocationsClustersDatabasesListRequest',
-        response_type_name='ListDatabasesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Database.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersDatabasesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/databases/{databasesId}',
-        http_method='PATCH',
-        method_id='luxadmin.projects.locations.clusters.databases.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='database',
-        request_type_name='LuxadminProjectsLocationsClustersDatabasesPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -457,35 +310,8 @@ class LuxadminV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Recreate(self, request, global_params=None):
-      r"""Recreate an Instance in a Lux cluster.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersInstancesRecreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Recreate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Recreate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}:recreate',
-        http_method='POST',
-        method_id='luxadmin.projects.locations.clusters.instances.recreate',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:recreate',
-        request_field='recreateInstanceRequest',
-        request_type_name='LuxadminProjectsLocationsClustersInstancesRecreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Restart(self, request, global_params=None):
-      r"""Restart an Instance in a Lux cluster.
+      r"""Restart an Instance in a cluster.
 
       Args:
         request: (LuxadminProjectsLocationsClustersInstancesRestartRequest) input message
@@ -507,151 +333,6 @@ class LuxadminV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}:restart',
         request_field='restartInstanceRequest',
         request_type_name='LuxadminProjectsLocationsClustersInstancesRestartRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsClustersRolesService(base_api.BaseApiService):
-    """Service class for the projects_locations_clusters_roles resource."""
-
-    _NAME = 'projects_locations_clusters_roles'
-
-    def __init__(self, client):
-      super(LuxadminV1alpha1.ProjectsLocationsClustersRolesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new Role in a given project and location.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersRolesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/roles',
-        http_method='POST',
-        method_id='luxadmin.projects.locations.clusters.roles.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId', 'roleId'],
-        relative_path='v1alpha1/{+parent}/roles',
-        request_field='role',
-        request_type_name='LuxadminProjectsLocationsClustersRolesCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single Role.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersRolesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/roles/{rolesId}',
-        http_method='DELETE',
-        method_id='luxadmin.projects.locations.clusters.roles.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='LuxadminProjectsLocationsClustersRolesDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Role.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersRolesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Role) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/roles/{rolesId}',
-        http_method='GET',
-        method_id='luxadmin.projects.locations.clusters.roles.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='LuxadminProjectsLocationsClustersRolesGetRequest',
-        response_type_name='Role',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists Roles in a given project and location.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersRolesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListRolesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/roles',
-        http_method='GET',
-        method_id='luxadmin.projects.locations.clusters.roles.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/roles',
-        request_field='',
-        request_type_name='LuxadminProjectsLocationsClustersRolesListRequest',
-        response_type_name='ListRolesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Role.
-
-      Args:
-        request: (LuxadminProjectsLocationsClustersRolesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/roles/{rolesId}',
-        http_method='PATCH',
-        method_id='luxadmin.projects.locations.clusters.roles.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='role',
-        request_type_name='LuxadminProjectsLocationsClustersRolesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -866,7 +547,7 @@ class LuxadminV1alpha1(base_api.BaseApiClient):
     )
 
     def Export(self, request, global_params=None):
-      r"""Export data from the Lux cluster to a GCS bucket.
+      r"""Export data from the cluster to a GCS bucket.
 
       Args:
         request: (LuxadminProjectsLocationsClustersExportRequest) input message
@@ -974,7 +655,7 @@ class LuxadminV1alpha1(base_api.BaseApiClient):
     )
 
     def Import(self, request, global_params=None):
-      r"""Import data from GCS into the Lux cluster.
+      r"""Import data from GCS into the cluster.
 
       Args:
         request: (LuxadminProjectsLocationsClustersImportRequest) input message
@@ -1055,7 +736,7 @@ class LuxadminV1alpha1(base_api.BaseApiClient):
     )
 
     def Promote(self, request, global_params=None):
-      r"""Promote Lux replica cluster (of an external master instance), to a standalone cluster. This is the last step in DMS User journey.
+      r"""Promote a replica cluster (of an external master instance), to a standalone cluster. This is the last step in DMS User journey.
 
       Args:
         request: (LuxadminProjectsLocationsClustersPromoteRequest) input message
@@ -1082,7 +763,7 @@ class LuxadminV1alpha1(base_api.BaseApiClient):
     )
 
     def RestoreFromBackup(self, request, global_params=None):
-      r"""Create a new Lux Cluster from a Backup.
+      r"""Create a new Cluster from a Backup.
 
       Args:
         request: (LuxadminProjectsLocationsClustersRestoreFromBackupRequest) input message
@@ -1136,7 +817,7 @@ class LuxadminV1alpha1(base_api.BaseApiClient):
     )
 
     def StartExternalSync(self, request, global_params=None):
-      r"""Start external master migration to Lux cluster. This is part of DMS User journey.
+      r"""Start external master migration to cluster. This is part of DMS User journey.
 
       Args:
         request: (LuxadminProjectsLocationsClustersStartExternalSyncRequest) input message

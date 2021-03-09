@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.assured import client_util
+from googlecloudsdk.api_lib.assured import util
 from googlecloudsdk.core import resources
 
 
@@ -34,8 +34,8 @@ class OperationsClient(object):
   """Client for operations in Assured Workloads API."""
 
   def __init__(self, release_track, no_http=False):
-    self.client = client_util.GetClientInstance(release_track, no_http)
-    self.messages = self.client.MESSAGES_MODULE
+    self.client = util.GetClientInstance(release_track, no_http)
+    self.messages = util.GetMessagesModule(release_track)
     self._service = self.client.organizations_locations_operations
 
   def List(self, parent, limit=None, page_size=100):
@@ -71,7 +71,6 @@ class OperationsClient(object):
     Returns:
       Described Assured Workloads operation resource.
     """
-    # TODO(b/165815454): Update these names when API has been updated
     describe_req = self.messages.AssuredworkloadsOrganizationsLocationsOperationsGetRequest(
         name=name)
     return self.client.organizations_locations_operations.Get(describe_req)

@@ -2238,6 +2238,8 @@ class AutoscalerStatusDetails(_messages.Message):
       NOT_ENOUGH_QUOTA_AVAILABLE: <no description>
       REGION_RESOURCE_STOCKOUT: <no description>
       SCALING_TARGET_DOES_NOT_EXIST: <no description>
+      SCHEDULED_INSTANCES_GREATER_THAN_AUTOSCALER_MAX: <no description>
+      SCHEDULED_INSTANCES_LESS_THAN_AUTOSCALER_MIN: <no description>
       UNKNOWN: <no description>
       UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION: <no description>
       ZONE_RESOURCE_STOCKOUT: <no description>
@@ -2257,9 +2259,11 @@ class AutoscalerStatusDetails(_messages.Message):
     NOT_ENOUGH_QUOTA_AVAILABLE = 12
     REGION_RESOURCE_STOCKOUT = 13
     SCALING_TARGET_DOES_NOT_EXIST = 14
-    UNKNOWN = 15
-    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 16
-    ZONE_RESOURCE_STOCKOUT = 17
+    SCHEDULED_INSTANCES_GREATER_THAN_AUTOSCALER_MAX = 15
+    SCHEDULED_INSTANCES_LESS_THAN_AUTOSCALER_MIN = 16
+    UNKNOWN = 17
+    UNSUPPORTED_MAX_RATE_LOAD_BALANCING_CONFIGURATION = 18
+    ZONE_RESOURCE_STOCKOUT = 19
 
   message = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -3327,6 +3331,13 @@ class BackendService(_messages.Message):
     logConfig: This field denotes the logging options for the load balancer
       traffic served by this backend service. If logging is enabled, logs will
       be exported to Stackdriver.
+    maxStreamDuration: Specifies the default maximum duration (timeout) for
+      streams to this service. Duration is computed from the beginning of the
+      stream until the response has been completely processed, including all
+      retries. A stream that does not complete in this duration is closed. If
+      not specified, there will be no timeout limit, i.e. the maximum duration
+      is infinite. This field is only allowed when the loadBalancingScheme of
+      the backend service is INTERNAL_SELF_MANAGED.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -3540,19 +3551,20 @@ class BackendService(_messages.Message):
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 19)
   localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 20)
   logConfig = _messages.MessageField('BackendServiceLogConfig', 21)
-  name = _messages.StringField(22)
-  network = _messages.StringField(23)
-  outlierDetection = _messages.MessageField('OutlierDetection', 24)
-  port = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(26)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 27)
-  region = _messages.StringField(28)
-  securityPolicy = _messages.StringField(29)
-  securitySettings = _messages.MessageField('SecuritySettings', 30)
-  selfLink = _messages.StringField(31)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 32)
-  subsetting = _messages.MessageField('Subsetting', 33)
-  timeoutSec = _messages.IntegerField(34, variant=_messages.Variant.INT32)
+  maxStreamDuration = _messages.MessageField('Duration', 22)
+  name = _messages.StringField(23)
+  network = _messages.StringField(24)
+  outlierDetection = _messages.MessageField('OutlierDetection', 25)
+  port = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(27)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 28)
+  region = _messages.StringField(29)
+  securityPolicy = _messages.StringField(30)
+  securitySettings = _messages.MessageField('SecuritySettings', 31)
+  selfLink = _messages.StringField(32)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 33)
+  subsetting = _messages.MessageField('Subsetting', 34)
+  timeoutSec = _messages.IntegerField(35, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -29711,6 +29723,16 @@ class HttpRouteAction(_messages.Message):
       be ignored by clients that are configured with a fault_injection_policy.
       Not supported when the URL map is bound to target gRPC proxy that has
       validateForProxyless field set to true.
+    maxStreamDuration: Specifies the maximum duration (timeout) for streams on
+      the selected route. Unlike the timeout field where the timeout duration
+      starts from the time the request has been fully processed (i.e. end-of-
+      stream), the duration in this field is computed from the beginning of
+      the stream until the response has been completely processed, including
+      all retries. A stream that does not complete in this duration is closed.
+      If not specified, will use the largest maxStreamDuration among all
+      backend services associated with the route. This field is only allowed
+      if the Url map is used with backend services with loadBalancingScheme
+      set to INTERNAL_SELF_MANAGED.
     requestMirrorPolicy: Specifies the policy on how requests intended for the
       route's backends are shadowed to a separate mirrored backend service.
       Loadbalancer does not wait for responses from the shadow service. Prior
@@ -29745,11 +29767,12 @@ class HttpRouteAction(_messages.Message):
 
   corsPolicy = _messages.MessageField('CorsPolicy', 1)
   faultInjectionPolicy = _messages.MessageField('HttpFaultInjection', 2)
-  requestMirrorPolicy = _messages.MessageField('RequestMirrorPolicy', 3)
-  retryPolicy = _messages.MessageField('HttpRetryPolicy', 4)
-  timeout = _messages.MessageField('Duration', 5)
-  urlRewrite = _messages.MessageField('UrlRewrite', 6)
-  weightedBackendServices = _messages.MessageField('WeightedBackendService', 7, repeated=True)
+  maxStreamDuration = _messages.MessageField('Duration', 3)
+  requestMirrorPolicy = _messages.MessageField('RequestMirrorPolicy', 4)
+  retryPolicy = _messages.MessageField('HttpRetryPolicy', 5)
+  timeout = _messages.MessageField('Duration', 6)
+  urlRewrite = _messages.MessageField('UrlRewrite', 7)
+  weightedBackendServices = _messages.MessageField('WeightedBackendService', 8, repeated=True)
 
 
 class HttpRouteRule(_messages.Message):
@@ -46702,7 +46725,7 @@ class RouterBgp(_messages.Message):
       successive keepalive messages that BGP receives from a peer. BGP will
       use the smaller of either the local hold time value or the peer's hold
       time value as the hold time for the BGP connection between the two
-      peers. If set, this value must be between 1 and 120. The default is 20.
+      peers. If set, this value must be between 20 and 60. The default is 20.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -46757,12 +46780,11 @@ class RouterBgpPeer(_messages.Message):
     advertisedGroups: User-specified list of prefix groups to advertise in
       custom mode, which can take one of the following options:  -
       ALL_SUBNETS: Advertises all available subnets, including peer VPC
-      subnets.  - ALL_VPC_SUBNETS: Advertises the router's own VPC subnets.  -
-      ALL_PEER_VPC_SUBNETS: Advertises peer subnets of the router's VPC
-      network. Note that this field can only be populated if advertise_mode is
-      CUSTOM and overrides the list defined for the router (in the "bgp"
-      message). These groups are advertised in addition to any specified
-      prefixes. Leave this field blank to advertise no custom groups.
+      subnets.  - ALL_VPC_SUBNETS: Advertises the router's own VPC subnets.
+      Note that this field can only be populated if advertise_mode is CUSTOM
+      and overrides the list defined for the router (in the "bgp" message).
+      These groups are advertised in addition to any specified prefixes. Leave
+      this field blank to advertise no custom groups.
     advertisedIpRanges: User-specified list of individual IP ranges to
       advertise in custom mode. This field can only be populated if
       advertise_mode is CUSTOM and overrides the list defined for the router
@@ -47831,7 +47853,7 @@ class ScalingScheduleStatus(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 17
+  r"""Sets the scheduling options for an Instance. NextID: 20
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -48527,7 +48549,7 @@ class ServiceAttachment(_messages.Message):
   represents a service that a producer has exposed. It encapsulates the load
   balancer which fronts the service runs and a list of NAT IP ranges that the
   producers uses to represent the consumers connecting to the service. next
-  tag = 16
+  tag = 17
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service

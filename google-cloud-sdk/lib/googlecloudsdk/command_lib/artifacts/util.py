@@ -41,6 +41,16 @@ _INVALID_REPO_NAME_ERROR = (
     "Names may only contain lowercase letters, numbers, and hyphens, and must "
     "begin with a letter and end with a letter or number.")
 
+_INVALID_REPO_LOCATION_ERROR = ("GCR repository {} can only be created in the "
+                                "{} multi-region.")
+
+_ALLOWED_GCR_REPO_LOCATION = {
+    "gcr.io": "us",
+    "us.gcr.io": "us",
+    "eu.gcr.io": "europe",
+    "asia.gcr.io": "asia",
+}
+
 _REPO_REGEX = "^[a-z]([a-z0-9-]*[a-z0-9])?$"
 
 _AR_SERVICE_ACCOUNT = "service-{project_num}@gcp-sa-artifactregistry.iam.gserviceaccount.com"
@@ -102,8 +112,15 @@ def GetLocationList(args):
 
 def AppendRepoDataToRequest(repo_ref, repo_args, request):
   """Adds repository data to CreateRepositoryRequest."""
-  if not _IsValidRepoName(repo_ref.repositoriesId):
+  repo_name = repo_ref.repositoriesId
+  if repo_name in _ALLOWED_GCR_REPO_LOCATION:
+    location = _ALLOWED_GCR_REPO_LOCATION.get(repo_name, "")
+    if location != GetLocation(repo_args):
+      raise ar_exceptions.InvalidInputValueError(
+          _INVALID_REPO_LOCATION_ERROR.format(repo_name, location))
+  elif not _IsValidRepoName(repo_ref.repositoriesId):
     raise ar_exceptions.InvalidInputValueError(_INVALID_REPO_NAME_ERROR)
+
   messages = _GetMessagesForResource(repo_ref)
   repo_format = messages.Repository.FormatValueValuesEnum(
       repo_args.repository_format.upper())

@@ -30,11 +30,14 @@ LIST_HELP = ('Instances in all locations will be listed if this argument is '
 
 def GetZoneAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
+      # TODO(b/180447280): Switch to use location as the default argument here.
       'zone',
       'The zone of the {resource}.',
       fallthroughs=[
+          deps.ArgFallthrough('region'),
+          deps.ArgFallthrough('location'),
           deps.PropertyFallthrough(properties.VALUES.filestore.zone),
-          deps.ArgFallthrough('--location'),
+          deps.PropertyFallthrough(properties.VALUES.filestore.region),
           deps.PropertyFallthrough(properties.VALUES.filestore.location),
       ])
 

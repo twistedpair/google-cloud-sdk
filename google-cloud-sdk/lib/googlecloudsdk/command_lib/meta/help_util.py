@@ -31,6 +31,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import parallel
 from googlecloudsdk.core.util import text
 import six
 
@@ -54,6 +55,25 @@ def IsOwnersFile(path):
   return os.path.basename(path) == 'OWNERS'
 
 
+def GetFileContents(file):
+  """Returns the file contents and whether or not the file contains binary data.
+
+  Args:
+    file: A file path.
+
+  Returns:
+    A tuple of the file contents and whether or not the file contains binary
+    contents.
+  """
+  try:
+    contents = file_utils.ReadFileContents(file)
+    is_binary = False
+  except UnicodeError:
+    contents = file_utils.ReadBinaryFileContents(file)
+    is_binary = True
+  return contents, is_binary
+
+
 def GetDirFilesRecursive(directory):
   """Generates the set of all files in directory and its children recursively.
 
@@ -61,12 +81,16 @@ def GetDirFilesRecursive(directory):
     directory: The directory path name.
 
   Returns:
-    A set of all files in directory and its children recursively.
+    A set of all files in directory and its children recursively, relative to
+    the directory.
   """
   dirfiles = set()
   for dirpath, _, files in os.walk(six.text_type(directory)):
     for name in files:
-      dirfiles.add(os.path.normpath(os.path.join(dirpath, name)))
+      file = os.path.join(dirpath, name)
+      relative_file = os.path.relpath(file, directory)
+      dirfiles.add(relative_file)
+
   return dirfiles
 
 
@@ -154,46 +178,46 @@ def DirDiff(old_dir, new_dir, diff):
     The return value of the first diff.AddChange() call that returns non-zero
     or None if all diff.AddChange() calls returned zero.
   """
-
-  def GetFileContents(compared_file):
-    try:
-      contents = file_utils.ReadFileContents(compared_file)
-      is_binary = False
-    except UnicodeError:
-      contents = file_utils.ReadBinaryFileContents(compared_file)
-      is_binary = True
-    return (contents, is_binary)
-
   with TimeIt('GetDirFilesRecursive new files'):
     new_files = GetDirFilesRecursive(new_dir)
   with TimeIt('GetDirFilesRecursive old files'):
     old_files = GetDirFilesRecursive(old_dir)
-  for new_file in new_files:
-    relative_file = os.path.relpath(new_file, new_dir)
-    if diff.Ignore(relative_file):
-      continue
-    new_contents, new_binary = GetFileContents(new_file)
+
+  def _FileDiff(file):
+    """Diffs a file in new_dir and old_dir."""
+    new_contents, new_binary = GetFileContents(os.path.join(new_dir, file))
     if not new_binary:
-      diff.Validate(relative_file, new_contents)
-    old_contents = None
-    old_file = os.path.normpath(os.path.join(old_dir, relative_file))
-    if old_file in old_files:
-      old_contents, old_binary = GetFileContents(old_file)
+      diff.Validate(file, new_contents)
+
+    if file in old_files:
+      old_contents, old_binary = GetFileContents(os.path.join(old_dir, file))
       if old_binary == new_binary and old_contents == new_contents:
-        continue
-      op = 'edit'
+        return
+      return 'edit', file, old_contents, new_contents
     else:
-      op = 'add'
-    prune = diff.AddChange(op, relative_file, old_contents, new_contents)
-    if prune:
-      return prune
-  for old_file in old_files:
-    relative_file = os.path.relpath(old_file, old_dir)
-    if diff.Ignore(relative_file):
+      return 'add', file, None, new_contents
+
+  with parallel.GetPool(16) as pool:
+    results = []
+    for file in new_files:
+      if diff.Ignore(file):
+        continue
+      result = pool.ApplyAsync(_FileDiff, (file,))
+      results.append(result)
+
+    for result_future in results:
+      result = result_future.Get()
+      if result:
+        op, file, old_contents, new_contents = result
+        prune = diff.AddChange(op, file, old_contents, new_contents)
+        if prune:
+          return prune
+
+  for file in old_files:
+    if diff.Ignore(file):
       continue
-    new_file = os.path.normpath(os.path.join(new_dir, relative_file))
-    if new_file not in new_files:
-      prune = diff.AddChange('delete', relative_file)
+    if file not in new_files:
+      prune = diff.AddChange('delete', file)
       if prune:
         return prune
   return None

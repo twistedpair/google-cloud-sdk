@@ -1032,6 +1032,21 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListPeeringsResponse(_messages.Message):
+  r"""ListPeeringsResponse is the response message for ListPeerings method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    peerings: A list of Managed Identities Service Peerings in the project.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  peerings = _messages.MessageField('Peering', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListSqlIntegrationsResponse(_messages.Message):
   r"""ListSqlIntegrationsResponse is the response message for
   ListSqlIntegrations method.
@@ -1252,7 +1267,7 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest(_messages.Mes
       following restrictions: * Must contain only lowercase letters, numbers,
       periods and hyphens. * Must start with a letter. * Must contain between
       2-64 characters. * Must end with a number or a letter. * Must not start
-      with period. * First segement length (mydomain form example above)
+      with period. * First segment length (mydomain form example above)
       shouldn't exceed 15 chars. * The last segment cannot be fully numeric. *
       Must be unique within the customer project.
     parent: Required. The resource project name and location using the form:
@@ -1573,6 +1588,142 @@ class ManagedidentitiesProjectsLocationsGlobalOperationsListRequest(_messages.Me
   pageToken = _messages.StringField(4)
 
 
+class ManagedidentitiesProjectsLocationsGlobalPeeringsCreateRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalPeeringsCreateRequest object.
+
+  Fields:
+    parent: Required. Resource project name and location using the form:
+      `projects/{project_id}/locations/global`
+    peering: A Peering resource to be passed as the request body.
+    peeringId: Required. Peering Id, unique name to identify peering.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  peering = _messages.MessageField('Peering', 2)
+  peeringId = _messages.StringField(3)
+
+
+class ManagedidentitiesProjectsLocationsGlobalPeeringsDeleteRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalPeeringsDeleteRequest object.
+
+  Fields:
+    name: Required. Peering resource name using the form:
+      `projects/{project_id}/locations/global/peerings/{peering_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalPeeringsGetIamPolicyRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalPeeringsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalPeeringsGetRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalPeeringsGetRequest object.
+
+  Fields:
+    name: Required. Peering resource name using the form:
+      `projects/{project_id}/locations/global/domains/{peering_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalPeeringsListRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalPeeringsListRequest object.
+
+  Fields:
+    filter: Optional. Filter specifying constraints of a list operation. For
+      example, `peering.authoized_network ="/projects/myprojectid"`.
+    orderBy: Optional. Specifies the ordering of results following syntax at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 1000 will be used by the service.
+      Regardless of the page_size value, the response may include a partial
+      list and a caller should only rely on response's next_page_token to
+      determine if there are more instances left to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The resource name of the domain location using the form:
+      `projects/{project_id}/locations/global`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalPeeringsPatchRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalPeeringsPatchRequest object.
+
+  Fields:
+    name: Output only. Unique name of the peering in this scope including
+      projects and location using the form:
+      `projects/{project_id}/locations/global/peerings/{peering_id}`.
+    peering: A Peering resource to be passed as the request body.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. The elements of the repeated paths field may
+      only include these fields from Peering: * `labels`
+  """
+
+  name = _messages.StringField(1, required=True)
+  peering = _messages.MessageField('Peering', 2)
+  updateMask = _messages.StringField(3)
+
+
+class ManagedidentitiesProjectsLocationsGlobalPeeringsSetIamPolicyRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalPeeringsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ManagedidentitiesProjectsLocationsGlobalPeeringsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalPeeringsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class ManagedidentitiesProjectsLocationsListRequest(_messages.Message):
   r"""A ManagedidentitiesProjectsLocationsListRequest object.
 
@@ -1722,6 +1873,85 @@ class OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class Peering(_messages.Message):
+  r"""Represents a Managed Microsoft Identities Peering.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of this Peering.
+
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user provided
+      metadata.
+
+  Fields:
+    authorizedNetwork: Required. The full names of the Google Compute Engine
+      [networks](/compute/docs/networks-and-firewalls#networks) to which the
+      instance is connected. Caller needs to make sure that CIDR subnets do
+      not overlap between networks, else peering creation will fail.
+    createTime: Output only. The time the instance was created.
+    domainResource: Required. Full domain resource path for the Managed AD
+      Domain involved in peering. The resource path should be in the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+    labels: Optional. Resource labels to represent user provided metadata.
+    name: Output only. Unique name of the peering in this scope including
+      projects and location using the form:
+      `projects/{project_id}/locations/global/peerings/{peering_id}`.
+    state: Output only. The current state of this Peering.
+    statusMessage: Output only. Additional information about the current
+      status of this peering, if available.
+    updateTime: Output only. Last update time.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of this Peering.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      CREATING: Peering is being created.
+      CONNECTED: Peering is connected.
+      DISCONNECTED: Peering is disconnected.
+      DELETING: Peering is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    CONNECTED = 2
+    DISCONNECTED = 3
+    DELETING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authorizedNetwork = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  domainResource = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  statusMessage = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class Policy(_messages.Message):

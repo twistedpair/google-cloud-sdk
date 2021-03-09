@@ -26,6 +26,9 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 
 SETTINGS_PREFIX = 'settings/'
+ORGANIZATION = 'organization'
+FOLDER = 'folder'
+PROJECT = 'project'
 
 
 def GetMessageFromFile(filepath, message):
@@ -85,6 +88,18 @@ def GetSettingNameFromArgs(args):
   return args.setting_name
 
 
+def GetSettingNameFromString(setting):
+  """Returns the resource id from the setting path.
+
+  A setting path should start with following syntax:
+  [organizations|folders|projects]/{resource_id}/settings/{setting_name}/value
+
+  Args:
+    setting: A String that contains the setting path
+  """
+  return setting.split('/')[3]
+
+
 def GetParentResourceFromArgs(args):
   """Returns the resource from the user-specified arguments.
 
@@ -98,13 +113,63 @@ def GetParentResourceFromArgs(args):
   resource_id = args.organization or args.folder or args.project
 
   if args.organization:
-    resource_type = 'organizations'
+    resource_type = ORGANIZATION
   elif args.folder:
-    resource_type = 'folders'
+    resource_type = FOLDER
   else:
-    resource_type = 'projects'
+    resource_type = PROJECT
+
+  return '{}/{}'.format(resource_type + 's', resource_id)
+
+
+def GetParentResourceFromString(setting):
+  """Returns the resource from the user-specified arguments.
+
+  A setting path should start with following syntax:
+  [organizations|folders|projects]/{resource_id}/settings/{setting_name}/value
+
+  Args:
+    setting: A String that contains the setting path
+  """
+
+  resource_type = setting.split('/')[0]
+  resource_id = setting.split('/')[1]
 
   return '{}/{}'.format(resource_type, resource_id)
+
+
+def GetResourceTypeFromString(setting):
+  """Returns the resource type from the setting path.
+
+  A setting path should start with following syntax:
+  [organizations|folders|projects]/{resource_id}/settings/{setting_name}/value
+
+  Args:
+    setting: A String that contains the setting path
+  """
+
+  if setting.startswith('organizations/'):
+    resource_type = ORGANIZATION
+  elif setting.startswith('folders/'):
+    resource_type = FOLDER
+  elif setting.startswith('projects/'):
+    resource_type = PROJECT
+  else:
+    resource_type = 'invalid'
+
+  return resource_type
+
+
+def GetResourceIdFromString(setting):
+  """Returns the resource id from the setting path.
+
+  A setting path should start with following syntax:
+  [organizations|folders|projects]/{resource_id}/settings/{setting_name}/value
+
+  Args:
+    setting: A String that contains the setting path
+  """
+  return setting.split('/')[1]
 
 
 def GetSettingsPathFromArgs(args):
@@ -121,3 +186,26 @@ def GetSettingsPathFromArgs(args):
   setting_name = GetSettingNameFromArgs(args)
 
   return '{}/settings/{}'.format(resource, setting_name)
+
+
+def ValidateSettingPath(setting):
+  """Returns the resource id from the setting path.
+
+  A setting path should start with following syntax:
+  [organizations|folders|projects]/{resource_id}/settings/{setting_name}/value
+
+  Args:
+    setting: A String that contains the setting path
+  """
+
+  if GetResourceTypeFromString(setting) == 'invalid':
+    return False
+  setting_list = setting.split('/')
+  if len(setting_list) != 5:
+    return False
+  elif setting_list[2] != 'settings':
+    return False
+  elif setting_list[4] != 'value':
+    return False
+
+  return True

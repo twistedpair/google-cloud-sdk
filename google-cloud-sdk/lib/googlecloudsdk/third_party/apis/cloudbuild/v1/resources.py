@@ -66,6 +66,17 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId'],
       True
   )
+  PROJECTS_LOCATIONS_BITBUCKETSERVERCONFIGS = (
+      'projects.locations.bitbucketServerConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'bitbucketServerConfigs/{bitbucketServerConfigsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_BUILDS = (
       'projects.locations.builds',
       '{+name}',

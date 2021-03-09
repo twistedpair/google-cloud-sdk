@@ -18,31 +18,35 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.assured import client_util
-
-BETA = 'BETA'
+from googlecloudsdk.api_lib.assured import util
+from googlecloudsdk.calliope.base import ReleaseTrack
 
 
 def GetMessages(release_track):
-  return client_util.GetClientInstance(release_track).MESSAGES_MODULE
+  return util.GetMessagesModule(release_track)
 
 
-def GetBetaWorkloadMessage():
-  return GetMessages(BETA).GoogleCloudAssuredworkloadsV1beta1Workload
+def GetWorkloadMessage(release_track):
+  return WORKLOAD_MAP.get(release_track)
+
+
+def GetKmsSettings(release_track):
+  return KMS_SETTINGS_MAP.get(release_track)
 
 
 def CreateAssuredParent(organization_id, location):
   return 'organizations/{}/locations/{}'.format(organization_id, location)
 
 
-def CreateBetaAssuredWorkload(display_name=None,
-                              compliance_regime=None,
-                              billing_account=None,
-                              next_rotation_time=None,
-                              rotation_period=None,
-                              labels=None,
-                              etag=None,
-                              provisioned_resources_parent=None):
+def CreateAssuredWorkload(display_name=None,
+                          compliance_regime=None,
+                          billing_account=None,
+                          next_rotation_time=None,
+                          rotation_period=None,
+                          labels=None,
+                          etag=None,
+                          provisioned_resources_parent=None,
+                          release_track=ReleaseTrack.GA):
   """Construct an Assured Workload message for Assured Workloads Beta API requests.
 
   Args:
@@ -59,13 +63,13 @@ def CreateBetaAssuredWorkload(display_name=None,
     etag: str, the etag of the Assured Workloads environment.
     provisioned_resources_parent: str, parent of the provisioned projects,
       for example: folders/{FOLDER_ID}
+    release_track: ReleaseTrack, gcloud release track being used
 
   Returns:
     A populated Assured Workloads message for the Assured Workloads Beta API.
   """
 
-  workloads_messages = GetMessages(BETA)
-  workload_message = GetBetaWorkloadMessage()
+  workload_message = GetWorkloadMessage(release_track)
   workload = workload_message()
   if etag:
     workload.etag = etag
@@ -74,20 +78,19 @@ def CreateBetaAssuredWorkload(display_name=None,
   if display_name:
     workload.displayName = display_name
   if labels:
-    workload.labels = CreateBetaLabels(labels)
+    workload.labels = CreateLabels(labels, workload_message)
   if compliance_regime:
     workload.complianceRegime = workload_message.ComplianceRegimeValueValuesEnum(
         compliance_regime)
   if provisioned_resources_parent:
     workload.provisionedResourcesParent = provisioned_resources_parent
   if next_rotation_time and rotation_period:
-    workload.kmsSettings = workloads_messages.GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings(
+    workload.kmsSettings = GetKmsSettings(release_track)(
         nextRotationTime=next_rotation_time, rotationPeriod=rotation_period)
   return workload
 
 
-def CreateBetaLabels(labels):
-  workload_message = GetBetaWorkloadMessage()
+def CreateLabels(labels, workload_message):
   workload_labels = []
   for key, value in labels.items():
     new_label = workload_message.LabelsValue.AdditionalProperty(
@@ -103,3 +106,93 @@ def CreateUpdateMask(display_name, labels):
   if labels:
     update_mask.append('workload.labels')
   return ','.join(update_mask)
+
+
+def CreateCreateRequest(external_id,
+                        parent,
+                        workload,
+                        release_track=ReleaseTrack.GA):
+  """Construct an Assured Workload Create Request for Assured Workloads API requests.
+
+  Args:
+    external_id: str, the identifier that identifies this Assured Workloads
+      environment externally.
+    parent: str, the parent organization of the Assured Workloads environment
+      to be created, in the form: organizations/{ORG_ID}/locations/{LOCATION}.
+    workload: Workload, new Assured Workloads environment containing the values
+      to be used.
+    release_track: ReleaseTrack, gcloud release track being used
+
+  Returns:
+    A populated Assured Workloads Update Request for the Assured Workloads API.
+  """
+  if release_track == ReleaseTrack.GA:
+    return util.GetMessagesModule(
+        release_track
+    ).AssuredworkloadsOrganizationsLocationsWorkloadsCreateRequest(
+        externalId=external_id,
+        parent=parent,
+        googleCloudAssuredworkloadsV1Workload=workload)
+  else:
+    return util.GetMessagesModule(
+        release_track
+    ).AssuredworkloadsOrganizationsLocationsWorkloadsCreateRequest(
+        externalId=external_id,
+        parent=parent,
+        googleCloudAssuredworkloadsV1beta1Workload=workload)
+
+
+def CreateUpdateRequest(workload,
+                        name,
+                        update_mask,
+                        release_track=ReleaseTrack.GA):
+  """Construct an Assured Workload Update Request for Assured Workloads API requests.
+
+  Args:
+    workload: googleCloudAssuredworkloadsV1beta1Workload, new Assured Workloads
+      environment containing the new configuration values to be used.
+    name: str, the name for the Assured Workloads environment being updated
+      in the form:
+        organizations/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD_ID}.
+    update_mask: str, list of the fields to be updated, for example,
+      workload.display_name,workload.labels
+    release_track: ReleaseTrack, gcloud release track being used
+
+  Returns:
+    A populated Assured Workloads Update Request for the Assured Workloads API.
+  """
+  messages = util.GetMessagesModule(release_track)
+  if release_track == ReleaseTrack.GA:
+    return messages.AssuredworkloadsOrganizationsLocationsWorkloadsPatchRequest(
+        googleCloudAssuredworkloadsV1Workload=workload,
+        name=name,
+        updateMask=update_mask)
+  else:
+    return messages.AssuredworkloadsOrganizationsLocationsWorkloadsPatchRequest(
+        googleCloudAssuredworkloadsV1beta1Workload=workload,
+        name=name,
+        updateMask=update_mask)
+
+
+WORKLOAD_MAP = {
+    ReleaseTrack.ALPHA:
+        GetMessages(ReleaseTrack.ALPHA
+                   ).GoogleCloudAssuredworkloadsV1beta1Workload,
+    ReleaseTrack.BETA:
+        GetMessages(ReleaseTrack.BETA
+                   ).GoogleCloudAssuredworkloadsV1beta1Workload,
+    ReleaseTrack.GA:
+        GetMessages(ReleaseTrack.GA).GoogleCloudAssuredworkloadsV1Workload
+}
+
+KMS_SETTINGS_MAP = {
+    ReleaseTrack.ALPHA:
+        GetMessages(ReleaseTrack.ALPHA
+                   ).GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings,
+    ReleaseTrack.BETA:
+        GetMessages(ReleaseTrack.BETA
+                   ).GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings,
+    ReleaseTrack.GA:
+        GetMessages(ReleaseTrack.GA
+                   ).GoogleCloudAssuredworkloadsV1WorkloadKMSSettings
+}

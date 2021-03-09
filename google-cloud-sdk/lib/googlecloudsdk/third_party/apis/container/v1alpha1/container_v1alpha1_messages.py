@@ -100,6 +100,7 @@ class AuthenticatorGroupsConfig(_messages.Message):
 
 class AutoGKE(_messages.Message):
   r"""AutoGKE is the configuration for AutoGKE settings on the cluster.
+  Replaced by Autopilot.
 
   Fields:
     enabled: Enable AutoGKE
@@ -125,8 +126,7 @@ class AutoUpgradeOptions(_messages.Message):
 
 
 class Autopilot(_messages.Message):
-  r"""Autopilot is the configuration for Autopilot settings on the cluster. It
-  is the official product name of what is previously known as AutoGKE
+  r"""Autopilot is the configuration for Autopilot settings on the cluster.
 
   Fields:
     enabled: Enable Autopilot
@@ -352,8 +352,7 @@ class Cluster(_messages.Message):
       information.
     autogke: AutoGKE configuration for the cluster. It has the same semantics
       as autopilot and is overridden by the autopilot setting.
-    autopilot: Autopilot configuration for the cluster. It has the same
-      semantics as AutoGKE and overrides the setting in autogke.
+    autopilot: Autopilot configuration for the cluster.
     autoscaling: Cluster-level autoscaling configuration.
     binaryAuthorization: Configuration for Binary Authorization.
     clusterIpv4Cidr: The IP address range of the container pods in this
@@ -867,6 +866,8 @@ class ClusterUpdate(_messages.Message):
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
+    desiredServiceExternalIpsConfig: ServiceExternalIPsConfig specifies the
+      config for the use of Services with ExternalIPs field.
     desiredShieldedNodes: Configuration for Shielded Nodes.
     desiredTpuConfig: The desired Cloud TPU configuration.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
@@ -946,13 +947,14 @@ class ClusterUpdate(_messages.Message):
   desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 36)
   desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 37)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 38)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 39)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 40)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 41)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 42)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 43)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 44)
-  securityProfile = _messages.MessageField('SecurityProfile', 45)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 39)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 40)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 41)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 42)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 43)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 44)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 45)
+  securityProfile = _messages.MessageField('SecurityProfile', 46)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2526,6 +2528,8 @@ class NetworkConfig(_messages.Message):
     privateIpv6GoogleAccess: The desired state of IPv6 connectivity to Google
       Services. By default, no private IPv6 access to or from Google Services
       (all access will be via IPv4)
+    serviceExternalIpsConfig: ServiceExternalIPsConfig specifies if services
+      with externalIPs field are blocked or not.
     subnetwork: Output only. The relative name of the Google Compute Engine
       [subnetwork](/compute/docs/vpc) to which the cluster is connected.
       Example: projects/my-project/regions/us-central1/subnetworks/my-subnet
@@ -2576,7 +2580,8 @@ class NetworkConfig(_messages.Message):
   network = _messages.StringField(10)
   nodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 11)
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 12)
-  subnetwork = _messages.StringField(13)
+  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 13)
+  subnetwork = _messages.StringField(14)
 
 
 class NetworkPolicy(_messages.Message):
@@ -3700,6 +3705,16 @@ class ServerConfig(_messages.Message):
   validNodeVersions = _messages.StringField(6, repeated=True)
 
 
+class ServiceExternalIPsConfig(_messages.Message):
+  r"""Config to block services with externalIPs field.
+
+  Fields:
+    enabled: Whether Services with ExternalIPs field are allowed or not.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class SetAddonsConfigRequest(_messages.Message):
   r"""SetAddonsRequest sets the addons associated with the cluster.
 
@@ -4718,24 +4733,30 @@ class WorkloadIdentityConfig(_messages.Message):
   Fields:
     enableAlts: enable_alts controls whether the alts handshaker should be
       enabled or not for direct-path.
+    enableCertificates: enable_certificates controls issuance of workload mTLS
+      certificates. If set, the GKE Workload Identity Certificates controller
+      and node agent will be deployed in the cluster, which can then be
+      configured by creating a WorkloadCertificateConfig Custom Resource.
+      Requires Workload Identity (workload_pool must be non-empty).
     identityNamespace: IAM Identity Namespace to attach all k8s Service
       Accounts to.
     identityProvider: identity provider is the third party identity provider.
-    issuingCertificateAuthority: issuing_certificate_authority controls
-      issuance of workload mTLS certificates. If non-empty, it must be a
-      Private CA resource URL of the form "//privateca.googleapis.com/projects
-      /{project}/locations/{location}/certificateAuthorities/{name}". If non-
-      empty, Workload Identity (standard or Hub) must be active (workload_pool
-      must be non-empty).
+    issuingCertificateAuthority: DEPRECATED: Use enable_certificates instead
+      issuing_certificate_authority controls issuance of workload mTLS
+      certificates. If non-empty, it must be a Private CA resource URL of the
+      form "//privateca.googleapis.com/projects/{project}/locations/{location}
+      /certificateAuthorities/{name}". If non-empty, Workload Identity
+      (standard or Hub) must be active (workload_pool must be non-empty).
     workloadPool: The workload pool to attach all Kubernetes service accounts
       to.
   """
 
   enableAlts = _messages.BooleanField(1)
-  identityNamespace = _messages.StringField(2)
-  identityProvider = _messages.StringField(3)
-  issuingCertificateAuthority = _messages.StringField(4)
-  workloadPool = _messages.StringField(5)
+  enableCertificates = _messages.BooleanField(2)
+  identityNamespace = _messages.StringField(3)
+  identityProvider = _messages.StringField(4)
+  issuingCertificateAuthority = _messages.StringField(5)
+  workloadPool = _messages.StringField(6)
 
 
 class WorkloadMetadataConfig(_messages.Message):

@@ -2442,7 +2442,8 @@ class InstanceGroupConfig(_messages.Message):
       (https://cloud.google.com/dataproc/docs/concepts/compute/dataproc-min-
       cpu).
     numInstances: Optional. The number of VM instances in the instance group.
-      For master instance groups, must be set to 1.
+      For HA cluster master_config groups, must be set to 3. For standard
+      cluster master_config groups, must be set to 1.
     preemptibility: Optional. Specifies the preemptibility of the instance
       group.The default value for master and worker groups is NON_PREEMPTIBLE.
       This default cannot be changed.The default value for secondary instances

@@ -253,7 +253,7 @@ class StaticCredentialProviders(object):
   def RemoveProvider(self, provider):
     self._providers.remove(provider)
 
-  def GetCredentials(self, account, use_google_auth=False):
+  def GetCredentials(self, account, use_google_auth=True):
     for provider in self._providers:
       cred = provider.GetCredentials(account, use_google_auth)
       if cred is not None:
@@ -273,7 +273,7 @@ STATIC_CREDENTIAL_PROVIDERS = StaticCredentialProviders()
 class GceCredentialProvider(object):
   """Provides account, project and credential data for gce vm env."""
 
-  def GetCredentials(self, account, use_google_auth=False):
+  def GetCredentials(self, account, use_google_auth=True):
     if account in c_gce.Metadata().Accounts():
       return AcquireFromGCE(account, use_google_auth)
     return None
@@ -469,7 +469,7 @@ def LoadFreshCredential(account=None,
                         scopes=None,
                         min_expiry_duration='1h',
                         allow_account_impersonation=True,
-                        use_google_auth=False):
+                        use_google_auth=True):
   """Load credentials and force a refresh.
 
     Will always refresh loaded credential if it is expired or would expire
@@ -521,7 +521,7 @@ def LoadFreshCredential(account=None,
   return cred
 
 
-def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=False):
+def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=True):
   """Get the credentials associated with the current account.
 
   If credentials have been disabled via properties, this will return None.
@@ -564,7 +564,7 @@ def Load(account=None,
          scopes=None,
          prevent_refresh=False,
          allow_account_impersonation=True,
-         use_google_auth=False):
+         use_google_auth=True):
   """Get the credentials associated with the provided account.
 
   This loads credentials regardless of whether credentials have been disabled
@@ -707,7 +707,7 @@ def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
   return cred
 
 
-def _Load(account, scopes, prevent_refresh, use_google_auth=False):
+def _Load(account, scopes, prevent_refresh, use_google_auth=True):
   """Helper for Load()."""
   # If a credential file is set, just use that and ignore the active account
   # and whatever is in the credential store.
@@ -1251,7 +1251,7 @@ def RunWebFlow(webflow, launch_browser=True):
 def AcquireFromToken(refresh_token,
                      token_uri=GOOGLE_OAUTH2_PROVIDER_TOKEN_URI,
                      revoke_uri=GOOGLE_OAUTH2_PROVIDER_REVOKE_URI,
-                     use_google_auth=False):
+                     use_google_auth=True):
   """Get credentials from an already-valid refresh token.
 
   Args:
@@ -1301,7 +1301,7 @@ def AcquireFromToken(refresh_token,
   return cred
 
 
-def AcquireFromGCE(account=None, use_google_auth=False):
+def AcquireFromGCE(account=None, use_google_auth=True):
   """Get credentials from a GCE metadata server.
 
   Args:

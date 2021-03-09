@@ -32,7 +32,7 @@ class HashAlgorithms(enum.Enum):
   """Algorithms available for hashing data."""
 
   MD5 = 'md5'
-  # TODO(b/172048376): Add crc32c.
+  # TODO(b/172048376): Add crc32c. (Also make the class title singular.)
 
 
 # pylint:disable=invalid-name
@@ -85,17 +85,23 @@ def get_base64_hash_digest_string(hash_object):
   return base64.b64encode(hash_object.digest()).decode(encoding='utf-8')
 
 
-def get_hash_from_file_stream(file_stream, hash_algorithm):
+def get_hash_from_file_stream(file_stream,
+                              hash_algorithm,
+                              start=None,
+                              stop=None):
   """Reads file and returns its hash object.
 
   core.util.files.Checksum does similar things but is different enough to merit
   this function. The primary differences are that this function:
   -Uses a FIPS-safe MD5 object.
   -Resets stream after consuming.
+  -Supports start and end index to set byte range for hashing.
 
   Args:
     file_stream (stream): File to read.
     hash_algorithm (HashAlgorithm): Algorithm to hash file with.
+    start (int): Byte index to start hashing at.
+    stop (int): Stop hashing at this byte index.
 
   Returns:
     String of base64-encoded hash digest for file.
@@ -106,11 +112,22 @@ def get_hash_from_file_stream(file_stream, hash_algorithm):
     # TODO(b/172048376): Add crc32c.
     return
 
+  if start:
+    file_stream.seek(start)
   while True:
+    if stop and file_stream.tell() >= stop:
+      break
+
     # Avoids holding all of file in memory at once.
-    data = file_stream.read(installers.WRITE_BUFFER_SIZE)
+    if stop is None or file_stream.tell() + installers.WRITE_BUFFER_SIZE < stop:
+      bytes_to_read = installers.WRITE_BUFFER_SIZE
+    else:
+      bytes_to_read = stop - file_stream.tell()
+
+    data = file_stream.read(bytes_to_read)
     if not data:
       break
+
     if isinstance(data, str):
       # read() can return strings or bytes. Hash objects need bytes.
       data = data.encode('utf-8')

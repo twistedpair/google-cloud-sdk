@@ -19,7 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.assured import client_util
+from googlecloudsdk.api_lib.assured import message_util
+from googlecloudsdk.api_lib.assured import util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
 
@@ -38,8 +39,9 @@ class WorkloadsClient(object):
   """Client for Workloads in Assured Workloads API."""
 
   def __init__(self, release_track, no_http=False):
-    self.client = client_util.GetClientInstance(release_track, no_http)
-    self.messages = self.client.MESSAGES_MODULE
+    self.client = util.GetClientInstance(release_track, no_http)
+    self.messages = util.GetMessagesModule(release_track)
+    self._release_track = release_track
     self._service = self.client.organizations_locations_workloads
 
   def List(self, parent, limit=None, page_size=100):
@@ -74,16 +76,14 @@ class WorkloadsClient(object):
         to be created, in the form: organizations/{ORG_ID}/locations/{LOCATION}.
       external_id: str, the identifier that identifies this Assured Workloads
         environment externally.
-      workload: googleCloudAssuredworkloadsV1beta1Workload, the Assured
-        Workloads settings to be created.
+      workload: Workload, new Assured Workloads environment containing the
+        values to be used.
 
     Returns:
       The created Assured Workloads environment resource.
     """
-    create_req = self.messages.AssuredworkloadsOrganizationsLocationsWorkloadsCreateRequest(
-        externalId=external_id,
-        parent=parent,
-        googleCloudAssuredworkloadsV1beta1Workload=workload)
+    create_req = message_util.CreateCreateRequest(external_id, parent, workload,
+                                                  self._release_track)
     op = self.client.organizations_locations_workloads.Create(create_req)
     return self.WaitForOperation(op, WORKLOAD_CREATION_IN_PROGRESS_MESSAGE)
 
@@ -135,10 +135,8 @@ class WorkloadsClient(object):
       Updated Assured Workloads environment resource.
     """
 
-    update_req = self.messages.AssuredworkloadsOrganizationsLocationsWorkloadsPatchRequest(
-        googleCloudAssuredworkloadsV1beta1Workload=workload,
-        name=name,
-        updateMask=update_mask)
+    update_req = message_util.CreateUpdateRequest(workload, name, update_mask,
+                                                  self._release_track)
     return self.client.organizations_locations_workloads.Patch(update_req)
 
   def WaitForOperation(self, operation, progress_message):

@@ -237,25 +237,6 @@ class FilestoreClient(object):
         limit=limit,
         batch_size_attribute='pageSize')
 
-  def _ValidateFileShare(self, instance_tier, capacity_gb):
-    """Validates the value of the file share capacity."""
-    gb_in_one_tb = 1 << 10
-    minimum_values = {
-        self.messages.Instance.TierValueValuesEnum.STANDARD: gb_in_one_tb,
-        self.messages.Instance.TierValueValuesEnum.PREMIUM: 2.5 * gb_in_one_tb
-    }
-    minimum = minimum_values.get(instance_tier, 0)
-    if capacity_gb < minimum:
-      raise InvalidCapacityError(
-          'File share capacity must be greater than or equal to {}TB for a {} '
-          'instance.'.format(minimum / gb_in_one_tb, instance_tier))
-
-  def ValidateFileShares(self, instance):
-    """Validate the file share configs on the instance."""
-    for file_share in self._adapter.FileSharesFromInstance(instance):
-      if file_share.capacityGb:
-        self._ValidateFileShare(instance.tier, file_share.capacityGb)
-
   def ParseFilestoreConfig(self,
                            tier=None,
                            description=None,

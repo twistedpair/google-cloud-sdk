@@ -348,13 +348,13 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsListRequest(_messa
     r"""When specified, only transfer runs with requested states are returned.
 
     Values:
-      TRANSFER_STATE_UNSPECIFIED: State placeholder.
+      TRANSFER_STATE_UNSPECIFIED: State placeholder (0).
       PENDING: Data transfer is scheduled and is waiting to be picked up by
-        data transfer backend.
-      RUNNING: Data transfer is in progress.
-      SUCCEEDED: Data transfer completed successfully.
-      FAILED: Data transfer failed.
-      CANCELLED: Data transfer is cancelled.
+        data transfer backend (2).
+      RUNNING: Data transfer is in progress (3).
+      SUCCEEDED: Data transfer completed successfully (4).
+      FAILED: Data transfer failed (5).
+      CANCELLED: Data transfer is cancelled (6).
     """
     TRANSFER_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -653,13 +653,13 @@ class BigquerydatatransferProjectsTransferConfigsRunsListRequest(_messages.Messa
     r"""When specified, only transfer runs with requested states are returned.
 
     Values:
-      TRANSFER_STATE_UNSPECIFIED: State placeholder.
+      TRANSFER_STATE_UNSPECIFIED: State placeholder (0).
       PENDING: Data transfer is scheduled and is waiting to be picked up by
-        data transfer backend.
-      RUNNING: Data transfer is in progress.
-      SUCCEEDED: Data transfer completed successfully.
-      FAILED: Data transfer failed.
-      CANCELLED: Data transfer is cancelled.
+        data transfer backend (2).
+      RUNNING: Data transfer is in progress (3).
+      SUCCEEDED: Data transfer completed successfully (4).
+      FAILED: Data transfer failed (5).
+      CANCELLED: Data transfer is cancelled (6).
     """
     TRANSFER_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1358,7 +1358,11 @@ class TransferConfig(_messages.Message):
       transfer run.
 
   Messages:
-    ParamsValue: Data transfer specific parameters.
+    ParamsValue: Parameters specific to each data source. For more information
+      see the bq tab in the 'Setting up a data transfer' section for each data
+      source. For example the parameters for Cloud Storage transfers are
+      listed here: https://cloud.google.com/bigquery-transfer/docs/cloud-
+      storage-transfer#bq
 
   Fields:
     dataRefreshWindowDays: The number of days to look back to automatically
@@ -1384,7 +1388,11 @@ class TransferConfig(_messages.Message):
     nextRunTime: Output only. Next time when data transfer will run.
     notificationPubsubTopic: Pub/Sub topic where notifications will be sent
       after transfer runs associated with this transfer config finish.
-    params: Data transfer specific parameters.
+    params: Parameters specific to each data source. For more information see
+      the bq tab in the 'Setting up a data transfer' section for each data
+      source. For example the parameters for Cloud Storage transfers are
+      listed here: https://cloud.google.com/bigquery-transfer/docs/cloud-
+      storage-transfer#bq
     schedule: Data transfer schedule. If the data source does not support a
       custom schedule, this should be empty. If it is empty, the default value
       for the data source will be used. The specified times are in UTC.
@@ -1406,13 +1414,13 @@ class TransferConfig(_messages.Message):
     r"""Output only. State of the most recently updated transfer run.
 
     Values:
-      TRANSFER_STATE_UNSPECIFIED: State placeholder.
+      TRANSFER_STATE_UNSPECIFIED: State placeholder (0).
       PENDING: Data transfer is scheduled and is waiting to be picked up by
-        data transfer backend.
-      RUNNING: Data transfer is in progress.
-      SUCCEEDED: Data transfer completed successfully.
-      FAILED: Data transfer failed.
-      CANCELLED: Data transfer is cancelled.
+        data transfer backend (2).
+      RUNNING: Data transfer is in progress (3).
+      SUCCEEDED: Data transfer completed successfully (4).
+      FAILED: Data transfer failed (5).
+      CANCELLED: Data transfer is cancelled (6).
     """
     TRANSFER_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1423,7 +1431,10 @@ class TransferConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
-    r"""Data transfer specific parameters.
+    r"""Parameters specific to each data source. For more information see the
+    bq tab in the 'Setting up a data transfer' section for each data source.
+    For example the parameters for Cloud Storage transfers are listed here:
+    https://cloud.google.com/bigquery-transfer/docs/cloud-storage-transfer#bq
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.
@@ -1501,7 +1512,11 @@ class TransferRun(_messages.Message):
     StateValueValuesEnum: Data transfer run state. Ignored for input requests.
 
   Messages:
-    ParamsValue: Output only. Data transfer specific parameters.
+    ParamsValue: Output only. Parameters specific to each data source. For
+      more information see the bq tab in the 'Setting up a data transfer'
+      section for each data source. For example the parameters for Cloud
+      Storage transfers are listed here: https://cloud.google.com/bigquery-
+      transfer/docs/cloud-storage-transfer#bq
 
   Fields:
     dataSourceId: Output only. Data source id.
@@ -1517,7 +1532,11 @@ class TransferRun(_messages.Message):
       _id}/runs/{run_id}`. The name is ignored when creating a transfer run.
     notificationPubsubTopic: Output only. Pub/Sub topic where a notification
       will be sent after this transfer run finishes
-    params: Output only. Data transfer specific parameters.
+    params: Output only. Parameters specific to each data source. For more
+      information see the bq tab in the 'Setting up a data transfer' section
+      for each data source. For example the parameters for Cloud Storage
+      transfers are listed here: https://cloud.google.com/bigquery-
+      transfer/docs/cloud-storage-transfer#bq
     runTime: For batch transfer runs, specifies the date and time of the data
       should be ingested.
     schedule: Output only. Describes the schedule of this transfer run if it
@@ -1539,13 +1558,13 @@ class TransferRun(_messages.Message):
     r"""Data transfer run state. Ignored for input requests.
 
     Values:
-      TRANSFER_STATE_UNSPECIFIED: State placeholder.
+      TRANSFER_STATE_UNSPECIFIED: State placeholder (0).
       PENDING: Data transfer is scheduled and is waiting to be picked up by
-        data transfer backend.
-      RUNNING: Data transfer is in progress.
-      SUCCEEDED: Data transfer completed successfully.
-      FAILED: Data transfer failed.
-      CANCELLED: Data transfer is cancelled.
+        data transfer backend (2).
+      RUNNING: Data transfer is in progress (3).
+      SUCCEEDED: Data transfer completed successfully (4).
+      FAILED: Data transfer failed (5).
+      CANCELLED: Data transfer is cancelled (6).
     """
     TRANSFER_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -1556,7 +1575,11 @@ class TransferRun(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
-    r"""Output only. Data transfer specific parameters.
+    r"""Output only. Parameters specific to each data source. For more
+    information see the bq tab in the 'Setting up a data transfer' section for
+    each data source. For example the parameters for Cloud Storage transfers
+    are listed here: https://cloud.google.com/bigquery-transfer/docs/cloud-
+    storage-transfer#bq
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.

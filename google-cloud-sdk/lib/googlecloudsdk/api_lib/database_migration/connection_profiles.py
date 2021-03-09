@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.database_migration import api_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -293,3 +295,48 @@ class ConnectionProfilesClient(object):
     )
 
     return self._service.Patch(update_req)
+
+  def List(self, project_id, args):
+    """Get the list of connection profiles in a project.
+
+    Args:
+      project_id: The project ID to retrieve
+      args: parsed command line arguments
+
+    Returns:
+      An iterator over all the matching connection profiles.
+    """
+    location_ref = self.resource_parser.Create(
+        'datamigration.projects.locations',
+        projectsId=project_id,
+        locationsId=args.region)
+
+    list_req_type = self.messages.DatamigrationProjectsLocationsConnectionProfilesListRequest
+    list_req = list_req_type(
+        parent=location_ref.RelativeName(),
+        filter=args.filter,
+        orderBy=','.join(args.sort_by) if args.sort_by else None)
+
+    return list_pager.YieldFromList(
+        service=self.client.projects_locations_connectionProfiles,
+        request=list_req,
+        limit=args.limit,
+        batch_size=args.page_size,
+        field='connectionProfiles',
+        batch_size_attribute='pageSize')
+
+  def GetUri(self, name):
+    """Get the URL string for a connnection profile.
+
+    Args:
+      name: connection profile's full name.
+
+    Returns:
+      URL of the connection profile resource
+    """
+
+    uri = self.resource_parser.ParseRelativeName(
+        name,
+        collection='datamigration.projects.locations.connectionProfiles')
+    return uri.SelfLink()
+

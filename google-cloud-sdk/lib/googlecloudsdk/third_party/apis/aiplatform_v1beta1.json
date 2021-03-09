@@ -749,9 +749,7 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3."
+            "Nvidia Tesla T4 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -759,9 +757,7 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4",
-            "TPU_V2",
-            "TPU_V3"
+            "NVIDIA_TESLA_T4"
           ]
         },
         "acceleratorCount": {
@@ -1511,7 +1507,8 @@
             "The job failed.",
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
-            "The job has been stopped, and can be resumed."
+            "The job has been stopped, and can be resumed.",
+            "The job has expired."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -1522,7 +1519,8 @@
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
-            "JOB_STATE_PAUSED"
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED"
           ]
         },
         "createTime": {
@@ -1794,7 +1792,8 @@
             "The job failed.",
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
-            "The job has been stopped, and can be resumed."
+            "The job has been stopped, and can be resumed.",
+            "The job has expired."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -1805,7 +1804,8 @@
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
-            "JOB_STATE_PAUSED"
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED"
           ]
         },
         "labelingProgress": {
@@ -2030,7 +2030,8 @@
             "The job failed.",
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
-            "The job has been stopped, and can be resumed."
+            "The job has been stopped, and can be resumed.",
+            "The job has expired."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -2041,7 +2042,8 @@
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
-            "JOB_STATE_PAUSED"
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED"
           ]
         },
         "createTime": {
@@ -2567,7 +2569,8 @@
             "The job failed.",
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
-            "The job has been stopped, and can be resumed."
+            "The job has been stopped, and can be resumed.",
+            "The job has expired."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -2578,7 +2581,8 @@
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
-            "JOB_STATE_PAUSED"
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED"
           ]
         },
         "error": {
@@ -4109,6 +4113,11 @@
           "description": "By default Tensorboard is encrypted with Google provided keys. Users can optionally supply a KMS key to encrypt their data Format: `projects\/{project_id}\/locations\/{location}\/keyRings\/{key_ring_id}\/cryptoKeys\/{key_id}`",
           "type": "string"
         },
+        "blobStoragePathPrefix": {
+          "description": "Output only. Consumer project Cloud Storage path prefix used to store blob data, which can either be a bucket or directory. Does not end with a '\/'.",
+          "readOnly": true,
+          "type": "string"
+        },
         "runCount": {
           "description": "Output only. The number of Runs stored in this Tensorboard.",
           "readOnly": true,
@@ -4922,9 +4931,7 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3."
+            "Nvidia Tesla T4 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -4932,9 +4939,7 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4",
-            "TPU_V2",
-            "TPU_V3"
+            "NVIDIA_TESLA_T4"
           ]
         },
         "acceleratorCount": {
@@ -6645,9 +6650,7 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3."
+            "Nvidia Tesla T4 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -6655,9 +6658,7 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4",
-            "TPU_V2",
-            "TPU_V3"
+            "NVIDIA_TESLA_T4"
           ]
         },
         "acceleratorCount": {
@@ -8664,9 +8665,7 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3."
+            "Nvidia Tesla T4 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -8674,9 +8673,7 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4",
-            "TPU_V2",
-            "TPU_V3"
+            "NVIDIA_TESLA_T4"
           ]
         },
         "acceleratorCount": {
@@ -12911,9 +12908,7 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3."
+            "Nvidia Tesla T4 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -12921,9 +12916,7 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4",
-            "TPU_V2",
-            "TPU_V3"
+            "NVIDIA_TESLA_T4"
           ]
         },
         "acceleratorCount": {

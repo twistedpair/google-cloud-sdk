@@ -31,12 +31,21 @@ SPEECH_API = 'speech'
 SPEECH_API_VERSION = 'v1'
 
 
+OUTPUT_ERROR_MESSAGE = ('[{}] is not a valid format for result output. Must be '
+                        'a Google Cloud Storage URI '
+                        '(format: gs://bucket/file).')
+
+
 class Error(exceptions.Error):
   """Exceptions for this module."""
 
 
 class AudioException(Error):
   """Raised if audio is not found."""
+
+
+class UriFormatError(Error):
+  """Error if the specified URI is invalid."""
 
 
 def GetAudioHook(version=SPEECH_API_VERSION):
@@ -69,3 +78,20 @@ def GetAudioHook(version=SPEECH_API_VERSION):
 
     return audio
   return GetAudioFromPath
+
+
+def ValidateOutputUri(output_uri):
+  """Validates given output URI against validator function.
+
+  Args:
+    output_uri: str, the output URI for the analysis.
+
+  Raises:
+    UriFormatError: if the URI is not valid.
+
+  Returns:
+    str, The same output_uri.
+  """
+  if output_uri and not storage_util.ObjectReference.IsStorageUrl(output_uri):
+    raise UriFormatError(OUTPUT_ERROR_MESSAGE.format(output_uri))
+  return output_uri

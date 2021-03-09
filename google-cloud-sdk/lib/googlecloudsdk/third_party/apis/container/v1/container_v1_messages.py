@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'container'
@@ -100,8 +101,7 @@ class AutoUpgradeOptions(_messages.Message):
 
 
 class Autopilot(_messages.Message):
-  r"""Autopilot is the configuration for Autopilot settings on the cluster. It
-  is the official product name of what is previously known as AutoGKE
+  r"""Autopilot is the configuration for Autopilot settings on the cluster.
 
   Fields:
     enabled: Enable Autopilot
@@ -271,8 +271,7 @@ class Cluster(_messages.Message):
       the cluster.
     authenticatorGroupsConfig: Configuration controlling RBAC group membership
       information.
-    autopilot: Autopilot configuration for the cluster. It has the same
-      semantics as AutoGKE and overrides the setting in autogke.
+    autopilot: Autopilot configuration for the cluster.
     autoscaling: Cluster-level autoscaling configuration.
     binaryAuthorization: Configuration for Binary Authorization.
     clusterIpv4Cidr: The IP address range of the container pods in this
@@ -2411,9 +2410,11 @@ class Operation(_messages.Message):
 
   Fields:
     clusterConditions: Which conditions caused the current cluster state.
+      Deprecated. Use field error instead.
     detail: Detailed operation progress, if available.
     endTime: [Output only] The time the operation completed, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+    error: The error result of the operation in case of failure.
     location: [Output only] The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/regions-zones/regions-
       zones#available) or
@@ -2421,6 +2422,7 @@ class Operation(_messages.Message):
       zones#available) in which the cluster resides.
     name: The server-assigned ID for the operation.
     nodepoolConditions: Which conditions caused the current node pool state.
+      Deprecated. Use field error instead.
     operationType: The operation type.
     progress: Output only. [Output only] Progress information for an
       operation.
@@ -2429,7 +2431,7 @@ class Operation(_messages.Message):
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     status: The current status of the operation.
     statusMessage: Output only. If an error has occurred, a textual
-      description of the error.
+      description of the error. Deprecated. Use the field error instead.
     targetLink: Server-defined URL for the target of the operation.
     zone: The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/zones#available) in which
@@ -2496,17 +2498,18 @@ class Operation(_messages.Message):
   clusterConditions = _messages.MessageField('StatusCondition', 1, repeated=True)
   detail = _messages.StringField(2)
   endTime = _messages.StringField(3)
-  location = _messages.StringField(4)
-  name = _messages.StringField(5)
-  nodepoolConditions = _messages.MessageField('StatusCondition', 6, repeated=True)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 7)
-  progress = _messages.MessageField('OperationProgress', 8)
-  selfLink = _messages.StringField(9)
-  startTime = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  statusMessage = _messages.StringField(12)
-  targetLink = _messages.StringField(13)
-  zone = _messages.StringField(14)
+  error = _messages.MessageField('Status', 4)
+  location = _messages.StringField(5)
+  name = _messages.StringField(6)
+  nodepoolConditions = _messages.MessageField('StatusCondition', 7, repeated=True)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 8)
+  progress = _messages.MessageField('OperationProgress', 9)
+  selfLink = _messages.StringField(10)
+  startTime = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  statusMessage = _messages.StringField(13)
+  targetLink = _messages.StringField(14)
+  zone = _messages.StringField(15)
 
 
 class OperationProgress(_messages.Message):
@@ -3375,20 +3378,182 @@ class StartIPRotationRequest(_messages.Message):
   zone = _messages.StringField(5)
 
 
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class StatusCondition(_messages.Message):
   r"""StatusCondition describes why a cluster or a node pool has a certain
   status (e.g., ERROR or DEGRADED).
 
   Enums:
+    CanonicalCodeValueValuesEnum: Canonical code of the condition.
     CodeValueValuesEnum: Machine-friendly representation of the condition
+      Deprecated. Use canonical_code instead.
 
   Fields:
-    code: Machine-friendly representation of the condition
+    canonicalCode: Canonical code of the condition.
+    code: Machine-friendly representation of the condition Deprecated. Use
+      canonical_code instead.
     message: Human-friendly representation of the condition
   """
 
+  class CanonicalCodeValueValuesEnum(_messages.Enum):
+    r"""Canonical code of the condition.
+
+    Values:
+      OK: Not an error; returned on success HTTP Mapping: 200 OK
+      CANCELLED: The operation was cancelled, typically by the caller. HTTP
+        Mapping: 499 Client Closed Request
+      UNKNOWN: Unknown error. For example, this error may be returned when a
+        `Status` value received from another address space belongs to an error
+        space that is not known in this address space. Also errors raised by
+        APIs that do not return enough error information may be converted to
+        this error. HTTP Mapping: 500 Internal Server Error
+      INVALID_ARGUMENT: The client specified an invalid argument. Note that
+        this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates
+        arguments that are problematic regardless of the state of the system
+        (e.g., a malformed file name). HTTP Mapping: 400 Bad Request
+      DEADLINE_EXCEEDED: The deadline expired before the operation could
+        complete. For operations that change the state of the system, this
+        error may be returned even if the operation has completed
+        successfully. For example, a successful response from a server could
+        have been delayed long enough for the deadline to expire. HTTP
+        Mapping: 504 Gateway Timeout
+      NOT_FOUND: Some requested entity (e.g., file or directory) was not
+        found. Note to server developers: if a request is denied for an entire
+        class of users, such as gradual feature rollout or undocumented
+        allowlist, `NOT_FOUND` may be used. If a request is denied for some
+        users within a class of users, such as user-based access control,
+        `PERMISSION_DENIED` must be used. HTTP Mapping: 404 Not Found
+      ALREADY_EXISTS: The entity that a client attempted to create (e.g., file
+        or directory) already exists. HTTP Mapping: 409 Conflict
+      PERMISSION_DENIED: The caller does not have permission to execute the
+        specified operation. `PERMISSION_DENIED` must not be used for
+        rejections caused by exhausting some resource (use
+        `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED`
+        must not be used if the caller can not be identified (use
+        `UNAUTHENTICATED` instead for those errors). This error code does not
+        imply the request is valid or the requested entity exists or satisfies
+        other pre-conditions. HTTP Mapping: 403 Forbidden
+      UNAUTHENTICATED: The request does not have valid authentication
+        credentials for the operation. HTTP Mapping: 401 Unauthorized
+      RESOURCE_EXHAUSTED: Some resource has been exhausted, perhaps a per-user
+        quota, or perhaps the entire file system is out of space. HTTP
+        Mapping: 429 Too Many Requests
+      FAILED_PRECONDITION: The operation was rejected because the system is
+        not in a state required for the operation's execution. For example,
+        the directory to be deleted is non-empty, an rmdir operation is
+        applied to a non-directory, etc. Service implementors can use the
+        following guidelines to decide between `FAILED_PRECONDITION`,
+        `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
+        retry just the failing call. (b) Use `ABORTED` if the client should
+        retry at a higher level (e.g., when a client-specified test-and-set
+        fails, indicating the client should restart a read-modify-write
+        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. E.g., if an
+        "rmdir" fails because the directory is non-empty,
+        `FAILED_PRECONDITION` should be returned since the client should not
+        retry unless the files are deleted from the directory. HTTP Mapping:
+        400 Bad Request
+      ABORTED: The operation was aborted, typically due to a concurrency issue
+        such as a sequencer check failure or transaction abort. See the
+        guidelines above for deciding between `FAILED_PRECONDITION`,
+        `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 409 Conflict
+      OUT_OF_RANGE: The operation was attempted past the valid range. E.g.,
+        seeking or reading past end-of-file. Unlike `INVALID_ARGUMENT`, this
+        error indicates a problem that may be fixed if the system state
+        changes. For example, a 32-bit file system will generate
+        `INVALID_ARGUMENT` if asked to read at an offset that is not in the
+        range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read
+        from an offset past the current file size. There is a fair bit of
+        overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`. We recommend
+        using `OUT_OF_RANGE` (the more specific error) when it applies so that
+        callers who are iterating through a space can easily look for an
+        `OUT_OF_RANGE` error to detect when they are done. HTTP Mapping: 400
+        Bad Request
+      UNIMPLEMENTED: The operation is not implemented or is not
+        supported/enabled in this service. HTTP Mapping: 501 Not Implemented
+      INTERNAL: Internal errors. This means that some invariants expected by
+        the underlying system have been broken. This error code is reserved
+        for serious errors. HTTP Mapping: 500 Internal Server Error
+      UNAVAILABLE: The service is currently unavailable. This is most likely a
+        transient condition, which can be corrected by retrying with a
+        backoff. Note that it is not always safe to retry non-idempotent
+        operations. See the guidelines above for deciding between
+        `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 503
+        Service Unavailable
+      DATA_LOSS: Unrecoverable data loss or corruption. HTTP Mapping: 500
+        Internal Server Error
+    """
+    OK = 0
+    CANCELLED = 1
+    UNKNOWN = 2
+    INVALID_ARGUMENT = 3
+    DEADLINE_EXCEEDED = 4
+    NOT_FOUND = 5
+    ALREADY_EXISTS = 6
+    PERMISSION_DENIED = 7
+    UNAUTHENTICATED = 8
+    RESOURCE_EXHAUSTED = 9
+    FAILED_PRECONDITION = 10
+    ABORTED = 11
+    OUT_OF_RANGE = 12
+    UNIMPLEMENTED = 13
+    INTERNAL = 14
+    UNAVAILABLE = 15
+    DATA_LOSS = 16
+
   class CodeValueValuesEnum(_messages.Enum):
-    r"""Machine-friendly representation of the condition
+    r"""Machine-friendly representation of the condition Deprecated. Use
+    canonical_code instead.
 
     Values:
       UNKNOWN: UNKNOWN indicates a generic condition.
@@ -3409,8 +3574,9 @@ class StatusCondition(_messages.Message):
     SET_BY_OPERATOR = 4
     CLOUD_KMS_KEY_ERROR = 5
 
-  code = _messages.EnumField('CodeValueValuesEnum', 1)
-  message = _messages.StringField(2)
+  canonicalCode = _messages.EnumField('CanonicalCodeValueValuesEnum', 1)
+  code = _messages.EnumField('CodeValueValuesEnum', 2)
+  message = _messages.StringField(3)
 
 
 class TimeWindow(_messages.Message):

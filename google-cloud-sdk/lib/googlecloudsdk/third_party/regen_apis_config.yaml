@@ -745,6 +745,8 @@ apis:
       discovery_doc: metastore_v1alpha.json
     v1beta:
       discovery_doc: metastore_v1beta.json
+    v1:
+      discovery_doc: metastore_v1.json
       default: true
   ml:
     v1:
@@ -812,11 +814,16 @@ apis:
       discovery_doc: policytroubleshooter_v2alpha1.json
   policysimulator:
     v1beta1:
-      default: true
       resources:
         simulator:
           path: simulator
       discovery_doc: policysimulator_v1beta1.json
+    v1:
+      default: true
+      resources:
+        simulator:
+          path: simulator
+      discovery_doc: policysimulator_v1.json
   privateca:
     v1beta1:
       default: true

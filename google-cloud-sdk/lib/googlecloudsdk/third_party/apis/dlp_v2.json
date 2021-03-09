@@ -2389,7 +2389,7 @@
           "format": "google-datetime"
         },
         "deidentifyConfig": {
-          "description": "\/\/\/\/\/\/\/\/\/\/\/\/\/ \/\/ The core content of the template \/\/ \/\/\/\/\/\/\/\/\/\/\/\/\/\/\/",
+          "description": "The core content of the template.",
           "$ref": "GooglePrivacyDlpV2DeidentifyConfig"
         }
       }

@@ -1399,6 +1399,8 @@ class MigrationJobVerificationError(_messages.Message):
       UNSUPPORTED_GTID_MODE: The gtid_mode is not supported, applicable for
         MySQL.
       UNSUPPORTED_DEFINER: The definer is not supported.
+      CANT_RESTART_RUNNING_MIGRATION: Migration is already running at the time
+        of restart request.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -1408,6 +1410,7 @@ class MigrationJobVerificationError(_messages.Message):
     CONNECTION_PROFILE_TYPES_INCOMPATIBILITY = 5
     UNSUPPORTED_GTID_MODE = 6
     UNSUPPORTED_DEFINER = 7
+    CANT_RESTART_RUNNING_MIGRATION = 8
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)

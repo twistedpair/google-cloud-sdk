@@ -266,8 +266,8 @@ class _Sections(object):
     builds: Section, The section containing builds properties for the Cloud SDK.
     artifacts: Section, The section containing artifacts properties for the
       Cloud SDK.
-    code: Section, The section containing local development properties for
-      Cloud SDK.
+    code: Section, The section containing local development properties for Cloud
+      SDK.
     component_manager: Section, The section containing properties for the
       component_manager.
     composer: Section, The section containing composer properties for the Cloud
@@ -281,6 +281,8 @@ class _Sections(object):
     core: Section, The section containing core properties for the Cloud SDK.
     ssh: Section, The section containing ssh-related properties.
     scc: Section, The section containing scc properties for the Cloud SDK.
+    deploy: Secion, The secion containing cloud deploy related properties for
+      the Cloud SDK.
     dataproc: Section, The section containing dataproc properties for the Cloud
       SDK.
     dataflow: Section, The section containing dataflow properties for the Cloud
@@ -317,6 +319,8 @@ class _Sections(object):
     kuberun: Section, The section containing kuberun properties for the Cloud
       SDK.
     lifesciences: Section, The section containing lifesciencs properties for the
+      Cloud SDK.
+    media_asset: Section, the section containing mediaasset protperties for the
       Cloud SDK.
     memcache: Section, The section containing memcache properties for the Cloud
       SDK.
@@ -378,6 +382,7 @@ class _Sections(object):
     self.core = _SectionCore()
     self.ssh = _SectionSsh()
     self.scc = _SectionScc()
+    self.deploy = _SectionDeploy()
     self.dataproc = _SectionDataproc()
     self.dataflow = _SectionDataflow()
     self.datafusion = _SectionDatafusion()
@@ -396,6 +401,7 @@ class _Sections(object):
     self.interactive = _SectionInteractive()
     self.kuberun = _SectionKubeRun()
     self.lifesciences = _SectionLifeSciences()
+    self.media_asset = _SectionMediaAsset()
     self.memcache = _SectionMemcache()
     self.metastore = _SectionMetastore()
     self.metrics = _SectionMetrics()
@@ -454,6 +460,7 @@ class _Sections(object):
         self.interactive,
         self.kuberun,
         self.lifesciences,
+        self.media_asset,
         self.memcache,
         self.metastore,
         self.metrics,
@@ -1656,12 +1663,17 @@ class _SectionFilestore(_Section):
     super(_SectionFilestore, self).__init__('filestore')
     self.location = self._Add(
         'location',
-        help_text='(DEPRECATED) Please use the `--location` flag or set the '
-        'filestore/zone property.')
+        help_text='Please use the `--location` flag or set the '
+        'filestore/zone or filestore/region property.')
     self.zone = self._Add(
         'zone',
         help_text='Default zone to use when working with Cloud Filestore '
         'zones. When a `--zone` flag is required but not '
+        'provided, the command will fall back to this value, if set.')
+    self.region = self._Add(
+        'region',
+        help_text='Default region to use when working with Cloud Filestore '
+        'regions. When a `--region` flag is required but not '
         'provided, the command will fall back to this value, if set.')
 
 
@@ -1757,6 +1769,23 @@ class _SectionComposer(_Section):
             'location. This parameter corresponds to the '
             '/locations/<location> segment of the Composer resource URIs being '
             'referenced.'))
+
+
+class _SectionDeploy(_Section):
+  """Contains the properties for the 'deploy' section."""
+
+  def __init__(self):
+    super(_SectionDeploy, self).__init__('deploy')
+    self.region = self._Add(
+        'region',
+        help_text=(
+            'Cloud Deploy region to use. Each Cloud Deploy '
+            'region constitutes an independent resource namespace constrained '
+            'to deploying instances into Compute Engine zones inside '
+            'the region.'))
+    self.delivery_pipeline = self._Add(
+        'delivery_pipeline',
+        help_text=('Delivery Pipeline being managed by Cloud Deploy.'))
 
 
 class _SectionDataflow(_Section):
@@ -2001,6 +2030,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudcommerceconsumerprocurement = self._Add(
         'cloudcommerceconsumerprocurement')
     self.clouddebugger = self._Add('clouddebugger')
+    self.clouddeploy = self._Add('clouddeploy')
     self.clouderrorreporting = self._Add('clouderrorreporting')
     self.cloudfunctions = self._Add('cloudfunctions')
     self.cloudidentity = self._Add('cloudidentity')
@@ -2041,8 +2071,10 @@ class _SectionApiEndpointOverrides(_Section):
     self.language = self._Add('language')
     self.lifesciences = self._Add('lifesciences')
     self.logging = self._Add('logging')
+    self.luxadmin = self._Add('luxadmin')
     self.managedidentities = self._Add('managedidentities')
     self.manager = self._Add('manager')
+    self.mediaasset = self._Add('mediaasset')
     self.memcache = self._Add('memcache')
     self.metastore = self._Add('metastore')
     self.ml = self._Add('ml')
@@ -2121,6 +2153,7 @@ class _SectionApiClientOverrides(_Section):
     self.compute_beta = self._Add('compute/beta')
     self.compute_v1 = self._Add('compute/v1')
     self.container = self._Add('container')
+    self.luxadmin = self._Add('luxadmin')
     self.speech = self._Add('speech')
     self.sql = self._Add('sql')
     self.run = self._Add('run')
@@ -2526,20 +2559,31 @@ class _SectionCode(_Section):
         default='90s',
         hidden=True,
         help_text='Terminate the cluster start process if this amount of time '
-        'has passed since the last minikube event.'
-    )
+        'has passed since the last minikube event.')
 
     self.minikube_path_override = self._Add(
         'minikube_paht_override',
         hidden=True,
-        help_text='Location of minikube binary.'
-    )
+        help_text='Location of minikube binary.')
 
     self.skaffold_path_override = self._Add(
         'skaffold_path_override',
         hidden=True,
-        help_text='Location of skaffold binary.'
-    )
+        help_text='Location of skaffold binary.')
+
+
+class _SectionMediaAsset(_Section):
+  """Contains the properties for the 'media_asset' section."""
+
+  def __init__(self):
+    super(_SectionMediaAsset, self).__init__('media_asset')
+    self.location = self._Add(
+        'location',
+        default='us-central1',
+        help_text=(
+            'Default location to use when working with Cloud Media Asset '
+            'resources. When a `--location` flag is required but not provided, '
+            'the command will fall back to this value.'))
 
 
 class _Property(object):
@@ -2562,8 +2606,8 @@ class _Property(object):
       The default value is never shown when listing properties regardless of
       whether the property is hidden or not.
     default_flag: default_flag name to include in RequiredPropertyError if
-      property fails on Get. This can be used for flags that are tightly
-      coupled with a property.
+      property fails on Get. This can be used for flags that are tightly coupled
+      with a property.
     validator: func(str), A function that is called on the value when .Set()'d
       or .Get()'d. For valid values, the function should do nothing. For invalid
       values, it should raise InvalidValueError with an explanation of why it

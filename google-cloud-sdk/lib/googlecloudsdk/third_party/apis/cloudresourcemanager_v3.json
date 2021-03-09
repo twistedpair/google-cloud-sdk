@@ -647,8 +647,8 @@
           "description": "Optional. A pagination token returned from a previous call to `SearchOrganizations` that indicates from where listing should continue.",
           "type": "string"
         },
-        "filter": {
-          "description": "Optional. An optional query string used to filter the Organizations to return in the response. Filter rules are case-insensitive. Organizations may be filtered by `owner.directoryCustomerId` or by `domain`, where the domain is a G Suite domain, for example: * Filter `owner.directorycustomerid:123456789` returns Organization resources with `owner.directory_customer_id` equal to `123456789`. * Filter `domain:google.com` returns Organization resources corresponding to the domain `google.com`.",
+        "query": {
+          "description": "Optional. An optional query string used to filter the Organizations to return in the response. Query rules are case-insensitive. Organizations may be queried by `owner.directoryCustomerId` or by `domain`, where the domain is a G Suite domain, for example: * Query `owner.directorycustomerid:123456789` returns Organization resources with `owner.directory_customer_id` equal to `123456789`. * Query `domain:google.com` returns Organization resources corresponding to the domain `google.com`.",
           "type": "string"
         }
       }
@@ -1641,7 +1641,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Requests deletion of a Folder. The Folder is moved into the DELETE_REQUESTED state immediately, and is deleted approximately 30 days later. This method may only be called on an empty Folder in the ACTIVE state, where a Folder is empty if it doesn't contain any Folders or Projects in the ACTIVE state. The caller must have `resourcemanager.folders.delete` permission on the identified folder."
+          "description": "Requests deletion of a Folder. The Folder is moved into the DELETE_REQUESTED state immediately, and is deleted approximately 30 days later. This method may only be called on an empty Folder, where a Folder is empty if it doesn't contain any Folders or Projects in the ACTIVE state. If called on a folder in DELETE_REQUESTED state the result will be a no-op success. The caller must have `resourcemanager.folders.delete` permission on the identified folder."
         },
         "undelete": {
           "id": "cloudresourcemanager.folders.undelete",
@@ -1669,7 +1669,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Cancels the deletion request for a Folder. This method may only be called on a Folder in the DELETE_REQUESTED state. In order to succeed, the Folder's parent must be in the ACTIVE state. In addition, reintroducing the folder into the tree must not violate folder naming, height and fanout constraints described in the CreateFolder documentation. The caller must have `resourcemanager.folders.undelete` permission on the identified folder."
+          "description": "Cancels the deletion request for a Folder. This method may be called on a Folder in any state. If Folder is in ACTIVE state the result will be a no-op success. In order to succeed, the Folder's parent must be in the ACTIVE state. In addition, reintroducing the folder into the tree must not violate folder naming, height and fanout constraints described in the CreateFolder documentation. The caller must have `resourcemanager.folders.undelete` permission on the identified folder."
         },
         "getIamPolicy": {
           "id": "cloudresourcemanager.folders.getIamPolicy",
@@ -2052,7 +2052,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Updates the attributes of the Project identified by the specified `name` (for example, `projects\/415104041262`). At present this is only useful for updating the display_name and labels. The caller must have modify permissions for this Project."
+          "description": "Updates the attributes of the Project identified by the specified `name` (for example, `projects\/415104041262`). At present this is only useful for updating the display_name and labels. Deleting all labels requires an update mask for labels field. The caller must have modify permissions for this Project."
         },
         "move": {
           "id": "cloudresourcemanager.projects.move",

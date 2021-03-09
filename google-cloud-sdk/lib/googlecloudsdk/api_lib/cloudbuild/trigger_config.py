@@ -114,6 +114,19 @@ def AddRepoEventArgs(flag_config):
   )
 
 
+def AddFilterArg(flag_config):
+  """Adds filter flag arg.
+
+  Args:
+    flag_config: argparse argument group. Filter flag will be added to this
+      config.
+  """
+  flag_config.add_argument(
+      '--filter',
+      help='CEL filter expression for the trigger. See https://cloud.google.com/build/docs/filter-build-events-using-cel for more details.',
+  )
+
+
 def AddSubstitutions(argument_group):
   """Adds a substituion flag to the given argument group.
 
@@ -350,17 +363,18 @@ def ParseGitRepoSource(trigger, args, messages, required=False):
   """
   repo_source = messages.GitRepoSource()
 
-  if required:
-    if not args.repo:
-      raise c_exceptions.RequiredArgumentException(
-          'REPO',
-          '--repo is required when specifying a --dockerfile or --build-config.'
-      )
-    if not args.branch and not args.tag:
-      raise c_exceptions.RequiredArgumentException(
-          'BRANCH or TAG',
-          'Either --branch or --tag is required when specifying a --dockerfile or --build-config.'
-      )
+  # AddGitRepoSource (defined earlier in this file) adds repo and branch/tag
+  # as required fields in the same argument group, so repo is set iff branch
+  # or tag is also set. Therefore, we only need to check for the presence
+  # of args.repo here.
+  if required and not args.repo:
+    raise c_exceptions.RequiredArgumentException(
+        'REPO',
+        '--repo is required when specifying a --dockerfile or --build-config.')
+
+  # Repoless trigger.
+  if not args.repo:
+    return
 
   repo_source.uri = args.repo
   if args.branch:

@@ -64,7 +64,9 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
   flags.add_argument(
       '--peered-network',
       help="""\
-VPC network to which workers are peered.
+Existing network to which workers are peered. The network is specified in
+resource URL format
+projects/{network_project}/global/networks/{network_name}.
 
 If not specified, the workers are not peered to any network.
 """)

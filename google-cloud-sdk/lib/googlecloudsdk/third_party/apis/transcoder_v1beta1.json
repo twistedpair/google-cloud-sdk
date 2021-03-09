@@ -321,6 +321,10 @@
         "crop": {
           "description": "Specify the video cropping configuration.",
           "$ref": "Crop"
+        },
+        "pad": {
+          "description": "Specify the video pad filter configuration.",
+          "$ref": "Pad"
         }
       }
     },
@@ -420,6 +424,33 @@
         },
         "rightPixels": {
           "description": "The number of pixels to crop from the right. The default is 0.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Pad": {
+      "id": "Pad",
+      "description": "Pad filter configuration for the input video. The padded input video is scaled after padding with black to match the output resolution.",
+      "type": "object",
+      "properties": {
+        "topPixels": {
+          "description": "The number of pixels to add to the top. The default is 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bottomPixels": {
+          "description": "The number of pixels to add to the bottom. The default is 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "leftPixels": {
+          "description": "The number of pixels to add to the left. The default is 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "rightPixels": {
+          "description": "The number of pixels to add to the right. The default is 0.",
           "type": "integer",
           "format": "int32"
         }

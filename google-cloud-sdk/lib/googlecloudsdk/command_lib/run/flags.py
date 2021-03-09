@@ -36,7 +36,7 @@ from googlecloudsdk.api_lib.services import exceptions as services_exceptions
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.functions.v1.deploy import env_vars_util
+from googlecloudsdk.command_lib.functions.v2.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import platforms
@@ -79,6 +79,14 @@ _SANDBOX_CHOICES = {
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
 
 _FIFTEEN_MINUTES = 15 * 60
+
+
+def _StripKeys(d):
+  return {k.strip(): v for k, v in d.items()}
+
+
+def _MapLStrip(seq):
+  return [elem.lstrip() for elem in seq]
 
 
 class KubeconfigError(exceptions.Error):
@@ -980,21 +988,11 @@ def _HasTrafficChanges(args):
 
 def _GetEnvChanges(args):
   """Return config_changes.EnvVarLiteralChanges for given args."""
-  kwargs = {}
-
-  update = args.set_env_vars or (args.update_env_vars
-                                 if 'update_env_vars' in args else {})
-  if update:
-    kwargs['env_vars_to_update'] = update
-
-  remove = args.remove_env_vars if 'remove_env_vars' in args else []
-  if remove:
-    kwargs['env_vars_to_remove'] = remove
-
-  if args.set_env_vars or ('clear_env_vars' in args and args.clear_env_vars):
-    kwargs['clear_others'] = True
-
-  return config_changes.EnvVarLiteralChanges(**kwargs)
+  return config_changes.EnvVarLiteralChanges(
+      updates=_StripKeys(
+          getattr(args, 'update_env_vars', None) or args.set_env_vars or {}),
+      removes=_MapLStrip(getattr(args, 'remove_env_vars', None) or []),
+      clear_others=bool(args.set_env_vars or args.clear_env_vars))
 
 
 def _GetScalingChanges(args):
@@ -1033,32 +1031,27 @@ def _GetSecretsChanges(args):
   volume_kwargs = {}
   env_kwargs = {}
 
-  update = args.update_secrets or args.set_secrets
-  if update:
-    volume_update = {k: v for k, v in update.items() if _IsVolumeMountKey(k)}
-    if volume_update:
-      volume_kwargs['mounts_to_update'] = volume_update
-    env_update = {k: v for k, v in update.items() if not _IsVolumeMountKey(k)}
-    if env_update:
-      env_kwargs['env_vars_to_update'] = env_update
+  updates = _StripKeys(
+      getattr(args, 'update_secrets', None) or args.set_secrets or {})
+  volume_kwargs['updates'] = {
+      k: v for k, v in updates.items() if _IsVolumeMountKey(k)
+  }
+  env_kwargs['updates'] = {
+      k: v for k, v in updates.items() if not _IsVolumeMountKey(k)
+  }
 
-  remove = args.remove_secrets
-  if remove:
-    volume_remove = [k for k in remove if _IsVolumeMountKey(k)]
-    if volume_remove:
-      volume_kwargs['mounts_to_remove'] = volume_remove
-    env_remove = [k for k in remove if not _IsVolumeMountKey(k)]
-    if env_remove:
-      env_kwargs['env_vars_to_remove'] = env_remove
+  removes = _MapLStrip(getattr(args, 'remove_secrets', None) or [])
+  volume_kwargs['removes'] = [k for k in removes if _IsVolumeMountKey(k)]
+  env_kwargs['removes'] = [k for k in removes if not _IsVolumeMountKey(k)]
 
-  if args.set_secrets or args.clear_secrets:
-    env_kwargs['clear_others'] = True
-    volume_kwargs['clear_others'] = True
+  clear_others = bool(args.set_secrets or args.clear_secrets)
+  env_kwargs['clear_others'] = clear_others
+  volume_kwargs['clear_others'] = clear_others
 
   secret_changes = []
-  if env_kwargs:
+  if any(env_kwargs.values()):
     secret_changes.append(config_changes.SecretEnvVarChanges(**env_kwargs))
-  if volume_kwargs:
+  if any(volume_kwargs.values()):
     secret_changes.append(config_changes.SecretVolumeChanges(**volume_kwargs))
   return secret_changes
 
@@ -1068,33 +1061,28 @@ def _GetConfigMapsChanges(args):
   volume_kwargs = {}
   env_kwargs = {}
 
-  update = args.update_config_maps or args.set_config_maps
-  if update:
-    volume_update = {k: v for k, v in update.items() if _IsVolumeMountKey(k)}
-    if volume_update:
-      volume_kwargs['mounts_to_update'] = volume_update
-    env_update = {k: v for k, v in update.items() if not _IsVolumeMountKey(k)}
-    if env_update:
-      env_kwargs['env_vars_to_update'] = env_update
+  updates = _StripKeys(
+      getattr(args, 'update_config_maps', None) or args.set_config_maps or {})
+  volume_kwargs['updates'] = {
+      k: v for k, v in updates.items() if _IsVolumeMountKey(k)
+  }
+  env_kwargs['updates'] = {
+      k: v for k, v in updates.items() if not _IsVolumeMountKey(k)
+  }
 
-  remove = args.remove_config_maps
-  if remove:
-    volume_remove = [k for k in remove if _IsVolumeMountKey(k)]
-    if volume_remove:
-      volume_kwargs['mounts_to_remove'] = volume_remove
-    env_remove = [k for k in remove if not _IsVolumeMountKey(k)]
-    if env_remove:
-      env_kwargs['env_vars_to_remove'] = env_remove
+  removes = _MapLStrip(getattr(args, 'remove_config_maps', None) or [])
+  volume_kwargs['removes'] = [k for k in removes if _IsVolumeMountKey(k)]
+  env_kwargs['removes'] = [k for k in removes if not _IsVolumeMountKey(k)]
 
-  if args.set_config_maps or args.clear_config_maps:
-    env_kwargs['clear_others'] = True
-    volume_kwargs['clear_others'] = True
+  clear_others = bool(args.set_config_maps or args.clear_config_maps)
+  env_kwargs['clear_others'] = clear_others
+  volume_kwargs['clear_others'] = clear_others
 
   config_maps_changes = []
-  if env_kwargs:
+  if any(env_kwargs.values()):
     config_maps_changes.append(
         config_changes.ConfigMapEnvVarChanges(**env_kwargs))
-  if volume_kwargs:
+  if any(volume_kwargs.values()):
     config_maps_changes.append(
         config_changes.ConfigMapVolumeChanges(**volume_kwargs))
   return config_maps_changes
@@ -1455,11 +1443,12 @@ def FlagIsExplicitlySet(args, flag):
 def VerifyManagedFlags(args, release_track, product):
   """Raise ConfigurationError if args aren't valid for managed Cloud Run."""
 
-  if product == Product.EVENTS and release_track != base.ReleaseTrack.ALPHA:
+  if product == Product.EVENTS:
     raise serverless_exceptions.ConfigurationError(
-        'The flag --platform={} is only compatible with "gcloud alpha events".'
-        ' Please provide an alternative platform value or use "gcloud alpha '
-        'events".'.format(platforms.PLATFORM_MANAGED))
+        'The flag --platform={0} is not supported. '
+        'Instead of using the flag --platform={0} in "gcloud events", '
+        'run "gcloud eventarc".'
+        .format(platforms.PLATFORM_MANAGED))
 
   error_msg = ('The `{flag}` flag is not supported on the fully managed '
                'version of Cloud Run. Specify `--platform {platform}` or run '
@@ -1552,15 +1541,6 @@ def VerifyManagedFlags(args, release_track, product):
             platform=platforms.PLATFORM_KUBERNETES,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_KUBERNETES]))
-
-  if (FlagIsExplicitlySet(args, 'min_instances') and
-      release_track == base.ReleaseTrack.GA):
-    raise serverless_exceptions.ConfigurationError(
-        'The `--min-instances` flag is not supported in the GA release track '
-        'on the fully managed version of Cloud Run. Use `gcloud beta` to set'
-        ' `--min-instances` on Cloud Run (fully managed). Alternatively, '
-        'specify `--platform kubernetes` or run `gcloud config set run/platform'
-        ' kubernetes` to work with Cloud Run for Anthos deployed on VMware.')
 
   if (FlagIsExplicitlySet(args, 'timeout') and
       release_track == base.ReleaseTrack.GA):

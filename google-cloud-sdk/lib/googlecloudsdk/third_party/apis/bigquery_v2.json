@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210218",
+ "revision": "20210226",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -834,6 +834,10 @@
      "description": "[Optional] The maximum number of bad records that BigQuery can ignore when reading data. If the number of bad records exceeds this value, an invalid error is returned in the job result. This is only valid for CSV, JSON, and Google Sheets. The default value is 0, which requires that all records are valid. This setting is ignored for Google Cloud Bigtable, Google Cloud Datastore backups and Avro formats.",
      "format": "int32"
     },
+    "parquetOptions": {
+     "$ref": "ParquetOptions",
+     "description": "Additional properties to set if sourceFormat is set to Parquet."
+    },
     "schema": {
      "$ref": "TableSchema",
      "description": "[Optional] The schema for the data. Schema is required for CSV and JSON formats. Schema is disallowed for Google Cloud Bigtable, Cloud Datastore backups, and Avro formats."
@@ -1181,6 +1185,10 @@
      "type": "string",
      "description": "[Optional] Specifies a string that represents a null value in a CSV file. For example, if you specify \"\\N\", BigQuery interprets \"\\N\" as a null value when loading a CSV file. The default value is the empty string. If you set this property to a custom value, BigQuery throws an error if an empty string is present for all data types except for STRING and BYTE. For STRING and BYTE columns, BigQuery interprets the empty string as an empty value."
     },
+    "parquetOptions": {
+     "$ref": "ParquetOptions",
+     "description": "[Optional] Options to configure parquet support."
+    },
     "projectionFields": {
      "type": "array",
      "description": "If sourceFormat is set to \"DATASTORE_BACKUP\", indicates which entity properties to load into BigQuery from a Cloud Datastore backup. Property names are case sensitive and must be top-level properties. If no properties are specified, BigQuery loads all properties. If any named property isn't found in the Cloud Datastore backup, an invalid error is returned in the job result.",
@@ -1270,6 +1278,10 @@
     "createDisposition": {
      "type": "string",
      "description": "[Optional] Specifies whether the job is allowed to create new tables. The following values are supported: CREATE_IF_NEEDED: If the table does not exist, BigQuery creates the table. CREATE_NEVER: The table must already exist. If it does not, a 'notFound' error is returned in the job result. The default value is CREATE_IF_NEEDED. Creation, truncation and append actions occur as one atomic update upon job completion."
+    },
+    "createSession": {
+     "type": "boolean",
+     "description": "If true, creates a new session, where session id will be a server generated random id. If false, runs query with an existing session_id passed in ConnectionProperty, otherwise runs query in non-session mode."
     },
     "defaultDataset": {
      "$ref": "DatasetReference",
@@ -1904,6 +1916,20 @@
     }
    }
   },
+  "ParquetOptions": {
+   "id": "ParquetOptions",
+   "type": "object",
+   "properties": {
+    "enableListInference": {
+     "type": "boolean",
+     "description": "[Optional] Indicates whether to use schema inference specifically for Parquet LIST logical type."
+    },
+    "enumAsString": {
+     "type": "boolean",
+     "description": "[Optional] Indicates whether to infer Parquet ENUM logical type as STRING instead of BYTES by default."
+    }
+   }
+  },
   "ProjectList": {
    "id": "ProjectList",
    "type": "object",
@@ -2056,6 +2082,10 @@
      "items": {
       "$ref": "ConnectionProperty"
      }
+    },
+    "createSession": {
+     "type": "boolean",
+     "description": "If true, creates a new session, where session id will be a server generated random id. If false, runs query with an existing session_id passed in ConnectionProperty, otherwise runs query in non-session mode."
     },
     "defaultDataset": {
      "$ref": "DatasetReference",

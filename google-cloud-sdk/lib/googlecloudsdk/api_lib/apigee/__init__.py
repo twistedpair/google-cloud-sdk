@@ -249,6 +249,32 @@ class ArchivesClient(base.BaseClient):
   _entity_path = ["organization", "environment", "archive_deployment"]
 
   @classmethod
+  def Update(cls, identifiers, labels):
+    """Calls the 'update' API for archive deployments.
+
+    Args:
+      identifiers: Dict of identifiers for the request entity path, which must
+        include "organizationsId", "environmentsId" and "archiveDeploymentsId".
+      labels: Dict of the labels proto to update, in the form of:
+        {"labels": {"key1": "value1", "key2": "value2", ... "keyN": "valueN"}}
+
+    Returns:
+      A dict of the updated archive deployment.
+
+    Raises:
+      command_lib.apigee.errors.RequestError if there is an error with the API
+        request.
+    """
+    try:
+      return request.ResponseToApiRequest(
+          identifiers,
+          entity_path=cls._entity_path,
+          method="PATCH",
+          body=json.dumps(labels))
+    except errors.RequestError as error:
+      raise error.RewrittenError("archive deployment", "update")
+
+  @classmethod
   def List(cls, identifiers):
     """Calls the 'list' API for archive deployments.
 
@@ -304,13 +330,14 @@ class ArchivesClient(base.BaseClient):
       raise error.RewrittenError("archive deployment", "get upload url for")
 
   @classmethod
-  def CreateArchiveDeployment(cls, identifiers, gcs_uri):
+  def CreateArchiveDeployment(cls, identifiers, post_data):
     """Apigee API for creating a new archive deployment.
 
     Args:
-      identifiers: Dict of identifiers for the request entity path, which must
+      identifiers: A dict of identifiers for the request entity path, which must
         include "organizationsId" and "environmentsId".
-      gcs_uri: A string of the signed URL used to upload the archive deployment.
+      post_data: A dict of the request body to include in the
+        CreateArchiveDeployment API call.
 
     Returns:
       A dict of the API response. The API call starts a long-running operation,
@@ -320,17 +347,16 @@ class ArchivesClient(base.BaseClient):
       command_lib.apigee.errors.RequestError if there is an error with the API
         request.
     """
-    create_archive_deployment_req = {"gcs_uri": gcs_uri}
     try:
       # The API call doesn't need to specify an archiveDeployment resource name
       # so only the "organizations/environments" entity path is needed.
-      # "archiveDeployment" is provided as the entity_collection argument.
+      # "archive_deployment" is provided as the entity_collection argument.
       return request.ResponseToApiRequest(
           identifiers,
           cls._entity_path[:-1],
           cls._entity_path[-1],
           method="POST",
-          body=json.dumps(create_archive_deployment_req))
+          body=json.dumps(post_data))
     except errors.RequestError as error:
       raise error.RewrittenError("archive deployment", "create")
 

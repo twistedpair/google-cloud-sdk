@@ -47,6 +47,14 @@ class ResourceNotFoundException(client_base.ClientException):
   """General Purpose Exception."""
 
 
+# TODO(b/181223251): Remove this workaround once config-connector is updated.
+def _NormalizeResourceFormat(resource_format):
+  """Translate Resource Format from gcloud values to config-connector values."""
+  if resource_format == 'terraform':
+    return 'hcl'
+  return resource_format
+
+
 def _NormalizeUri(resource_uri):
   if 'www.googleapis.com/' in resource_uri:
     api = resource_uri.split('www.googleapis.com/')[1].split('/')[0]
@@ -209,10 +217,9 @@ class KccClient(client_base.DeclarativeClient):
 
   def _GetToken(self):
     try:
-      cred = store.LoadFreshCredential(
-          self._account,
+      return store.GetFreshAccessToken(
+          account=self._account,
           allow_account_impersonation=self._use_account_impersonation)
-      return cred.access_token
     except Exception as e:  # pylint: disable=broad-except
       raise client_base.ClientException(
           'Error Configuring KCC Client: [{}]'.format(e))
@@ -252,7 +259,8 @@ class KccClient(client_base.DeclarativeClient):
           cmd.extend(['--project', project])
 
     if getattr(args, 'resource_format', None):
-      cmd.extend(['--resource-format', args.resource_format])
+      cmd.extend(['--resource-format',
+                  _NormalizeResourceFormat(args.resource_format)])
 
       # Terraform does not support iam currently.
       if args.resource_format == 'terraform':

@@ -2809,6 +2809,9 @@ class Version(_messages.Message):
     runtimeChannel: The channel of the runtime to use. Only available for some
       runtimes. Defaults to the default channel.
     runtimeMainExecutablePath: The path or name of the app's main executable.
+    serviceAccount: The identity that the deployed version will run as. Admin
+      API will use the App Engine Appspot service account as default if this
+      field is neither provided in app.yaml file nor through CLI flag.
     servingStatus: Current serving status of this version. Only the versions
       with a SERVING status create instances and can be
       billed.SERVING_STATUS_UNSPECIFIED is an invalid value. Defaults to
@@ -2981,12 +2984,13 @@ class Version(_messages.Message):
   runtimeApiVersion = _messages.StringField(30)
   runtimeChannel = _messages.StringField(31)
   runtimeMainExecutablePath = _messages.StringField(32)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 33)
-  threadsafe = _messages.BooleanField(34)
-  versionUrl = _messages.StringField(35)
-  vm = _messages.BooleanField(36)
-  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 37)
-  zones = _messages.StringField(38, repeated=True)
+  serviceAccount = _messages.StringField(33)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 34)
+  threadsafe = _messages.BooleanField(35)
+  versionUrl = _messages.StringField(36)
+  vm = _messages.BooleanField(37)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 38)
+  zones = _messages.StringField(39, repeated=True)
 
 
 class Volume(_messages.Message):

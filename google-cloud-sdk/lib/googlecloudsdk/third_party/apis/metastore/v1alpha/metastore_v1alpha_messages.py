@@ -128,18 +128,37 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class DataCatalogConfig(_messages.Message):
+  r"""Specifies how metastore metadata should be integrated with the Data
+  Catalog service.
+
+  Fields:
+    disabled: This field is replaced by the enabled field.
+    enabled: Defines whether the metastore metadata should be synced to Data
+      Catalog. The default value is to disable syncing metastore metadata to
+      Data Catalog.
+  """
+
+  disabled = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
+
+
 class DatabaseDump(_messages.Message):
   r"""A specification of the location of and metadata about a database dump
   from a relational database management system.
 
   Enums:
     DatabaseTypeValueValuesEnum: The type of the database.
+    TypeValueValuesEnum: Optional. The type of the database dump. If
+      unspecified, defaults to MYSQL.
 
   Fields:
     databaseType: The type of the database.
-    gcsUri: A Cloud Storage object URI that specifies the source from which to
-      import metadata. It must begin with gs://.
+    gcsUri: A Cloud Storage object or folder URI that specifies the source
+      from which to import metadata. It must begin with gs://.
     sourceDatabase: The name of the source database.
+    type: Optional. The type of the database dump. If unspecified, defaults to
+      MYSQL.
   """
 
   class DatabaseTypeValueValuesEnum(_messages.Enum):
@@ -152,9 +171,21 @@ class DatabaseDump(_messages.Message):
     DATABASE_TYPE_UNSPECIFIED = 0
     MYSQL = 1
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the database dump. If unspecified, defaults to
+    MYSQL.
+
+    Values:
+      TYPE_UNSPECIFIED: The type of the database dump is unknown.
+      MYSQL: Database dump is a MySQL dump file.
+    """
+    TYPE_UNSPECIFIED = 0
+    MYSQL = 1
+
   databaseType = _messages.EnumField('DatabaseTypeValueValuesEnum', 1)
   gcsUri = _messages.StringField(2)
   sourceDatabase = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class Empty(_messages.Message):
@@ -170,7 +201,13 @@ class Empty(_messages.Message):
 class ExportMetadataRequest(_messages.Message):
   r"""Request message for DataprocMetastore.ExportMetadata.
 
+  Enums:
+    DatabaseDumpTypeValueValuesEnum: Optional. The type of the database dump.
+      If unspecified, defaults to MYSQL.
+
   Fields:
+    databaseDumpType: Optional. The type of the database dump. If unspecified,
+      defaults to MYSQL.
     destinationGcsFolder: Required. A Cloud Storage URI of a folder that
       metadata are exported to, in the format gs:///. A sub-folder containing
       exported files will be created below it.
@@ -185,8 +222,20 @@ class ExportMetadataRequest(_messages.Message):
       zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
   """
 
-  destinationGcsFolder = _messages.StringField(1)
-  requestId = _messages.StringField(2)
+  class DatabaseDumpTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the database dump. If unspecified, defaults to
+    MYSQL.
+
+    Values:
+      TYPE_UNSPECIFIED: The type of the database dump is unknown.
+      MYSQL: Database dump is a MySQL dump file.
+    """
+    TYPE_UNSPECIFIED = 0
+    MYSQL = 1
+
+  databaseDumpType = _messages.EnumField('DatabaseDumpTypeValueValuesEnum', 1)
+  destinationGcsFolder = _messages.StringField(2)
+  requestId = _messages.StringField(3)
 
 
 class Expr(_messages.Message):
@@ -223,33 +272,6 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
-
-
-class GoogleCloudMetastoreV1alphaOperationMetadata(_messages.Message):
-  r"""Represents the metadata of a long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the caller has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
 
 
 class HiveMetastoreConfig(_messages.Message):
@@ -528,9 +550,12 @@ class MetadataExport(_messages.Message):
   r"""The details of a metadata export operation.
 
   Enums:
+    DatabaseDumpTypeValueValuesEnum: Output only. The type of the database
+      dump.
     StateValueValuesEnum: Output only. The current state of the export.
 
   Fields:
+    databaseDumpType: Output only. The type of the database dump.
     destinationGcsUri: Output only. A Cloud Storage URI of a folder that
       metadata are exported to, in the form of gs:////, where ` is
       automatically generated.
@@ -538,6 +563,16 @@ class MetadataExport(_messages.Message):
     startTime: Output only. The time when the export started.
     state: Output only. The current state of the export.
   """
+
+  class DatabaseDumpTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the database dump.
+
+    Values:
+      TYPE_UNSPECIFIED: The type of the database dump is unknown.
+      MYSQL: Database dump is a MySQL dump file.
+    """
+    TYPE_UNSPECIFIED = 0
+    MYSQL = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the export.
@@ -555,10 +590,11 @@ class MetadataExport(_messages.Message):
     FAILED = 3
     CANCELLED = 4
 
-  destinationGcsUri = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  databaseDumpType = _messages.EnumField('DatabaseDumpTypeValueValuesEnum', 1)
+  destinationGcsUri = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class MetadataImport(_messages.Message):
@@ -609,8 +645,12 @@ class MetadataImport(_messages.Message):
 class MetadataIntegration(_messages.Message):
   r"""Specifies how metastore metadata should be integrated with external
   services.
+
+  Fields:
+    dataCatalogConfig: The integration config for the Data Catalog service.
   """
 
+  dataCatalogConfig = _messages.MessageField('DataCatalogConfig', 1)
 
 
 class MetadataManagementActivity(_messages.Message):
@@ -1167,6 +1207,8 @@ class Restore(_messages.Message):
     backup: Output only. The relative resource name of the metastore service
       backup to restore from, in the following form:projects/{project_id}/loca
       tions/{location_id}/services/{service_id}/backups/{backup_id}
+    details: Output only. The restore details containing the revision of the
+      service to be restored to, in format of JSON.
     endTime: Output only. The time when the restore ended.
     startTime: Output only. The time when the restore started.
     state: Output only. The current state of the restore.
@@ -1202,10 +1244,11 @@ class Restore(_messages.Message):
     METADATA_ONLY = 2
 
   backup = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  details = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class Secret(_messages.Message):

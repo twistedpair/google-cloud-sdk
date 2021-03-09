@@ -548,12 +548,12 @@ class EdgeCacheOrigin(_messages.Message):
       address reachable over the public Internet, or the address of a Google
       Cloud Storage bucket. This address will be used as the origin for cache
       requests - e.g. FQDN: media-backend.example.com IPv4:35.218.1.1
-      IPv6:[2607:f8b0:4012:809::200e] Cloud Storage: gs://bucketname When
-      providing an FQDN (hostname), it must be publicly resolvable (e.g. via
-      Google public DNS) and IP addresses must be publicly routable. If a
-      Cloud Storage bucket is provided, it must be in the canonical
-      "gs://bucketname" format. Other forms, such as "storage.googleapis.com",
-      will be rejected.
+      IPv6:[2607:f8b0:4012:809::200e] Cloud Storage: gs://bucketname or
+      bucketname.storage.googleapis.com When providing an FQDN (hostname), it
+      must be publicly resolvable (e.g. via Google public DNS). It must not
+      contain a protocol (e.g. https://) and it must not contain any slashes.
+      When providing an IP address, it must be publicly routable. IPv6
+      addresses may be optionally enclosed in square brackets.
     port: Optional. The port to connect to the origin on. Defaults to port 443
       for HTTP2 and HTTPS protocols, and port 80 for HTTP.
     protocol: Optional. The protocol to use to connect to the configured
@@ -2945,7 +2945,7 @@ class UrlRewrite(_messages.Message):
     pathPrefixRewrite: Optional. Prior to forwarding the request to the
       selected origin, the matching portion of the request's path is replaced
       by pathPrefixRewrite. The path value must be between 1 and 1024
-      characters.
+      characters, and must start with a '/'.
   """
 
   hostRewrite = _messages.StringField(1)

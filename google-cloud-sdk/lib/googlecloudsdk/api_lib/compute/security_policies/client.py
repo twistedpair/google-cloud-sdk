@@ -51,8 +51,7 @@ class SecurityPolicy(object):
   def _MakeCreateRequestTuple(self, security_policy):
     return (self._client.securityPolicies, 'Insert',
             self._messages.ComputeSecurityPoliciesInsertRequest(
-                project=self.ref.project,
-                securityPolicy=security_policy))
+                project=self.ref.project, securityPolicy=security_policy))
 
   def _MakePatchRequestTuple(self, security_policy):
     return (self._client.securityPolicies, 'Patch',
@@ -117,7 +116,8 @@ class SecurityPolicyRule(object):
         'deny-403': 'deny(403)',
         'deny-404': 'deny(404)',
         'deny-502': 'deny(502)',
-        'redirect-to-recaptcha': 'redirect_to_recaptcha'
+        'redirect-to-recaptcha': 'redirect_to_recaptcha',
+        'rate-based-ban': 'rate_based_ban'
     }.get(action, action)
 
   def _MakeDeleteRequestTuple(self):
@@ -135,7 +135,8 @@ class SecurityPolicyRule(object):
                 securityPolicy=self.ref.securityPolicy))
 
   def _MakeCreateRequestTuple(self, src_ip_ranges, expression, action,
-                              description, preview, redirect_target):
+                              description, preview, redirect_target,
+                              rate_limit_options):
     """Generates a SecurityPolicies AddRule request.
 
     Args:
@@ -146,15 +147,15 @@ class SecurityPolicyRule(object):
       preview: If true, the action will not be enforced.
       redirect_target: The URL to which traffic is routed when the rule action
         is set to "redirect".
-
+      rate_limit_options: The rate limiting behavior for this rule.
 
     Returns:
       A tuple containing the resource collection, verb, and request.
     """
     if src_ip_ranges:
       matcher = self._messages.SecurityPolicyRuleMatcher(
-          versionedExpr=self._messages.SecurityPolicyRuleMatcher.
-          VersionedExprValueValuesEnum('SRC_IPS_V1'),
+          versionedExpr=self._messages.SecurityPolicyRuleMatcher
+          .VersionedExprValueValuesEnum('SRC_IPS_V1'),
           config=self._messages.SecurityPolicyRuleMatcherConfig(
               srcIpRanges=src_ip_ranges))
     elif expression:
@@ -170,6 +171,9 @@ class SecurityPolicyRule(object):
     if redirect_target is not None:
       security_policy_rule.redirectTarget = six.text_type(redirect_target)
 
+    if rate_limit_options is not None:
+      security_policy_rule.rateLimitOptions = rate_limit_options
+
     return (self._client.securityPolicies, 'AddRule',
             self._messages.ComputeSecurityPoliciesAddRuleRequest(
                 project=self.ref.project,
@@ -177,7 +181,8 @@ class SecurityPolicyRule(object):
                 securityPolicy=self.ref.securityPolicy))
 
   def _MakePatchRequestTuple(self, src_ip_ranges, expression, action,
-                             description, preview, redirect_target):
+                             description, preview, redirect_target,
+                             rate_limit_options):
     """Generates a SecurityPolicies PatchRule request.
 
     Args:
@@ -188,7 +193,7 @@ class SecurityPolicyRule(object):
       preview: If true, the action will not be enforced.
       redirect_target: The URL to which traffic is routed when the rule action
         is set to "redirect".
-
+      rate_limit_options: The rate limiting behavior for this rule.
 
     Returns:
       A tuple containing the resource collection, verb, and request.
@@ -196,8 +201,8 @@ class SecurityPolicyRule(object):
     matcher = None
     if src_ip_ranges:
       matcher = self._messages.SecurityPolicyRuleMatcher(
-          versionedExpr=self._messages.SecurityPolicyRuleMatcher.
-          VersionedExprValueValuesEnum('SRC_IPS_V1'),
+          versionedExpr=self._messages.SecurityPolicyRuleMatcher
+          .VersionedExprValueValuesEnum('SRC_IPS_V1'),
           config=self._messages.SecurityPolicyRuleMatcherConfig(
               srcIpRanges=src_ip_ranges))
     elif expression:
@@ -212,6 +217,9 @@ class SecurityPolicyRule(object):
         preview=preview)
     if redirect_target is not None:
       security_policy_rule.redirectTarget = six.text_type(redirect_target)
+
+    if rate_limit_options is not None:
+      security_policy_rule.rateLimitOptions = rate_limit_options
 
     return (self._client.securityPolicies, 'PatchRule',
             self._messages.ComputeSecurityPoliciesPatchRuleRequest(
@@ -239,11 +247,13 @@ class SecurityPolicyRule(object):
              description=None,
              preview=False,
              redirect_target=None,
+             rate_limit_options=None,
              only_generate_request=False):
     """Make and optionally send a request to Create a security policy rule."""
     requests = [
         self._MakeCreateRequestTuple(src_ip_ranges, expression, action,
-                                     description, preview, redirect_target)
+                                     description, preview, redirect_target,
+                                     rate_limit_options)
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
@@ -256,11 +266,13 @@ class SecurityPolicyRule(object):
             description=None,
             preview=None,
             redirect_target=None,
+            rate_limit_options=None,
             only_generate_request=False):
     """Make and optionally send a request to Patch a security policy rule."""
     requests = [
         self._MakePatchRequestTuple(src_ip_ranges, expression, action,
-                                    description, preview, redirect_target)
+                                    description, preview, redirect_target,
+                                    rate_limit_options)
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)

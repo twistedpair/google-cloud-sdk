@@ -1056,7 +1056,10 @@ class GcsDestination(_messages.Message):
     uri: The uri of the Cloud Storage object. It's the same uri that is used
       by gsutil. Example: "gs://bucket_name/object_name". See [Viewing and
       Editing Object Metadata](https://cloud.google.com/storage/docs/viewing-
-      editing-metadata) for more information.
+      editing-metadata) for more information. If the specified Cloud Storage
+      object already exists and there is no
+      [hold](https://cloud.google.com/storage/docs/object-holds), it will be
+      overwritten with the exported result.
     uriPrefix: The uri prefix of all generated Cloud Storage objects. Example:
       "gs://bucket_name/object_name_prefix". Each object uri is in format:
       "gs://bucket_name/object_name_prefix// and only contains assets for that
@@ -1189,9 +1192,13 @@ class GoogleCloudAssetV1GcsDestination(_messages.Message):
 
   Fields:
     uri: Required. The uri of the Cloud Storage object. It's the same uri that
-      is used by gsutil. For example: "gs://bucket_name/object_name". See
-      [Quickstart: Using the gsutil tool]
-      (https://cloud.google.com/storage/docs/quickstart-gsutil) for examples.
+      is used by gsutil. Example: "gs://bucket_name/object_name". See [Viewing
+      and Editing Object
+      Metadata](https://cloud.google.com/storage/docs/viewing-editing-
+      metadata) for more information. If the specified Cloud Storage object
+      already exists and there is no
+      [hold](https://cloud.google.com/storage/docs/object-holds), it will be
+      overwritten with the analysis result.
   """
 
   uri = _messages.StringField(1)
@@ -1244,6 +1251,203 @@ class GoogleCloudAssetV1Resource(_messages.Message):
 
   analysisState = _messages.MessageField('IamPolicyAnalysisState', 1)
   fullResourceName = _messages.StringField(2)
+
+
+class GoogleCloudAssetV1p7beta1Asset(_messages.Message):
+  r"""An asset in Google Cloud. An asset can be any resource in the Google
+  Cloud [resource hierarchy](https://cloud.google.com/resource-
+  manager/docs/cloud-platform-resource-hierarchy), a resource outside the
+  Google Cloud resource hierarchy (such as Google Kubernetes Engine clusters
+  and objects), or a policy (e.g. Cloud IAM policy). See [Supported asset
+  types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+  for more information.
+
+  Fields:
+    accessLevel: Please also refer to the [access level user
+      guide](https://cloud.google.com/access-context-
+      manager/docs/overview#access-levels).
+    accessPolicy: Please also refer to the [access policy user
+      guide](https://cloud.google.com/access-context-
+      manager/docs/overview#access-policies).
+    ancestors: The ancestry path of an asset in Google Cloud [resource
+      hierarchy](https://cloud.google.com/resource-manager/docs/cloud-
+      platform-resource-hierarchy), represented as a list of relative resource
+      names. An ancestry path starts with the closest ancestor in the
+      hierarchy and ends at root. If the asset is a project, folder, or
+      organization, the ancestry path starts from the asset itself. Example:
+      `["projects/123456789", "folders/5432", "organizations/1234"]`
+    assetType: The type of the asset. Example: `compute.googleapis.com/Disk`
+      See [Supported asset types](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types) for more information.
+    iamPolicy: A representation of the Cloud IAM policy set on a Google Cloud
+      resource. There can be a maximum of one Cloud IAM policy set on any
+      given resource. In addition, Cloud IAM policies inherit their granted
+      access scope from any policies set on parent resources in the resource
+      hierarchy. Therefore, the effectively policy is the union of both the
+      policy set on this resource and each policy set on all of the resource's
+      ancestry resource levels in the hierarchy. See [this
+      topic](https://cloud.google.com/iam/docs/policies#inheritance) for more
+      information.
+    name: The full name of the asset. Example: `//compute.googleapis.com/proje
+      cts/my_project_123/zones/zone1/instances/instance1` See [Resource names]
+      (https://cloud.google.com/apis/design/resource_names#full_resource_name)
+      for more information.
+    orgPolicy: A representation of an [organization
+      policy](https://cloud.google.com/resource-manager/docs/organization-
+      policy/overview#organization_policy). There can be more than one
+      organization policy with different constraints set on a given resource.
+    relatedAssets: The related assets of the asset of one relationship type.
+      One asset only represents one type of relationship.
+    resource: A representation of the resource.
+    servicePerimeter: Please also refer to the [service perimeter user
+      guide](https://cloud.google.com/vpc-service-controls/docs/overview).
+    updateTime: The last update timestamp of an asset. update_time is updated
+      when create/update/delete operation is performed.
+  """
+
+  accessLevel = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1AccessLevel', 1)
+  accessPolicy = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1AccessPolicy', 2)
+  ancestors = _messages.StringField(3, repeated=True)
+  assetType = _messages.StringField(4)
+  iamPolicy = _messages.MessageField('Policy', 5)
+  name = _messages.StringField(6)
+  orgPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1Policy', 7, repeated=True)
+  relatedAssets = _messages.MessageField('GoogleCloudAssetV1p7beta1RelatedAssets', 8)
+  resource = _messages.MessageField('GoogleCloudAssetV1p7beta1Resource', 9)
+  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 10)
+  updateTime = _messages.StringField(11)
+
+
+class GoogleCloudAssetV1p7beta1RelatedAsset(_messages.Message):
+  r"""An asset identify in Google Cloud which contains its name, type and
+  ancestors. An asset can be any resource in the Google Cloud [resource
+  hierarchy](https://cloud.google.com/resource-manager/docs/cloud-platform-
+  resource-hierarchy), a resource outside the Google Cloud resource hierarchy
+  (such as Google Kubernetes Engine clusters and objects), or a policy (e.g.
+  Cloud IAM policy). See [Supported asset
+  types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+  for more information.
+
+  Fields:
+    ancestors: The ancestors of an asset in Google Cloud [resource
+      hierarchy](https://cloud.google.com/resource-manager/docs/cloud-
+      platform-resource-hierarchy), represented as a list of relative resource
+      names. An ancestry path starts with the closest ancestor in the
+      hierarchy and ends at root. Example: `["projects/123456789",
+      "folders/5432", "organizations/1234"]`
+    asset: The full name of the asset. Example: `//compute.googleapis.com/proj
+      ects/my_project_123/zones/zone1/instances/instance1` See [Resource names
+      ](https://cloud.google.com/apis/design/resource_names#full_resource_name
+      ) for more information.
+    assetType: The type of the asset. Example: `compute.googleapis.com/Disk`
+      See [Supported asset types](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types) for more information.
+  """
+
+  ancestors = _messages.StringField(1, repeated=True)
+  asset = _messages.StringField(2)
+  assetType = _messages.StringField(3)
+
+
+class GoogleCloudAssetV1p7beta1RelatedAssets(_messages.Message):
+  r"""The detailed related assets with the `relationship_type`.
+
+  Fields:
+    assets: The peer resources of the relationship.
+    relationshipAttributes: The detailed relation attributes.
+  """
+
+  assets = _messages.MessageField('GoogleCloudAssetV1p7beta1RelatedAsset', 1, repeated=True)
+  relationshipAttributes = _messages.MessageField('GoogleCloudAssetV1p7beta1RelationshipAttributes', 2)
+
+
+class GoogleCloudAssetV1p7beta1RelationshipAttributes(_messages.Message):
+  r"""The relationship attributes which include `type`,
+  `source_resource_type`, `target_resource_type` and `action`.
+
+  Fields:
+    action: The detail of the relationship, e.g. `contains`, `attaches`
+    sourceResourceType: The source asset type. Example:
+      `compute.googleapis.com/Instance`
+    targetResourceType: The target asset type. Example:
+      `compute.googleapis.com/Disk`
+    type: The unique identifier of the relationship type. Example:
+      `INSTANCE_TO_INSTANCEGROUP`
+  """
+
+  action = _messages.StringField(1)
+  sourceResourceType = _messages.StringField(2)
+  targetResourceType = _messages.StringField(3)
+  type = _messages.StringField(4)
+
+
+class GoogleCloudAssetV1p7beta1Resource(_messages.Message):
+  r"""A representation of a Google Cloud resource.
+
+  Messages:
+    DataValue: The content of the resource, in which some sensitive fields are
+      removed and may not be present.
+
+  Fields:
+    data: The content of the resource, in which some sensitive fields are
+      removed and may not be present.
+    discoveryDocumentUri: The URL of the discovery document containing the
+      resource's JSON schema. Example:
+      `https://www.googleapis.com/discovery/v1/apis/compute/v1/rest` This
+      value is unspecified for resources that do not have an API based on a
+      discovery document, such as Cloud Bigtable.
+    discoveryName: The JSON schema name listed in the discovery document.
+      Example: `Project` This value is unspecified for resources that do not
+      have an API based on a discovery document, such as Cloud Bigtable.
+    location: The location of the resource in Google Cloud, such as its zone
+      and region. For more information, see
+      https://cloud.google.com/about/locations/.
+    parent: The full name of the immediate parent of this resource. See
+      [Resource Names](https://cloud.google.com/apis/design/resource_names#ful
+      l_resource_name) for more information. For Google Cloud assets, this
+      value is the parent resource defined in the [Cloud IAM policy
+      hierarchy](https://cloud.google.com/iam/docs/overview#policy_hierarchy).
+      Example: `//cloudresourcemanager.googleapis.com/projects/my_project_123`
+      For third-party assets, this field may be set differently.
+    resourceUrl: The REST URL for accessing the resource. An HTTP `GET`
+      request using this URL returns the resource itself. Example:
+      `https://cloudresourcemanager.googleapis.com/v1/projects/my-project-123`
+      This value is unspecified for resources without a REST API.
+    version: The API version. Example: `v1`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""The content of the resource, in which some sensitive fields are
+    removed and may not be present.
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  data = _messages.MessageField('DataValue', 1)
+  discoveryDocumentUri = _messages.StringField(2)
+  discoveryName = _messages.StringField(3)
+  location = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  resourceUrl = _messages.StringField(6)
+  version = _messages.StringField(7)
 
 
 class GoogleCloudOrgpolicyV1BooleanPolicy(_messages.Message):

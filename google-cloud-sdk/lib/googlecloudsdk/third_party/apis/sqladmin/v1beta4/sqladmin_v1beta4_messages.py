@@ -2099,14 +2099,15 @@ class SqlDatabasesUpdateRequest(_messages.Message):
 
 
 class SqlExternalSyncSettingError(_messages.Message):
-  r"""External primary instance migration setting error.
+  r"""External primary instance migration setting error/warning.
 
   Enums:
     TypeValueValuesEnum: Identifies the specific error that occurred.
 
   Fields:
     detail: Additional information about the error encountered.
-    kind: This is always *sql#migrationSettingError*.
+    kind: Can be *sql#externalSyncSettingError* or
+      *sql#externalSyncSettingWarning*.
     type: Identifies the specific error that occurred.
   """
 
@@ -2493,10 +2494,12 @@ class SqlInstancesVerifyExternalSyncSettingsResponse(_messages.Message):
   Fields:
     errors: List of migration violations.
     kind: This is always *sql#migrationSettingErrorList*.
+    warnings: List of migration warnings.
   """
 
   errors = _messages.MessageField('SqlExternalSyncSettingError', 1, repeated=True)
   kind = _messages.StringField(2)
+  warnings = _messages.MessageField('SqlExternalSyncSettingError', 3, repeated=True)
 
 
 class SqlOperationsGetRequest(_messages.Message):

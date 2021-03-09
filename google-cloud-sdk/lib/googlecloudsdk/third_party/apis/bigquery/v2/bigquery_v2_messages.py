@@ -1198,6 +1198,8 @@ class ExternalDataConfiguration(_messages.Message):
       valid for CSV, JSON, and Google Sheets. The default value is 0, which
       requires that all records are valid. This setting is ignored for Google
       Cloud Bigtable, Google Cloud Datastore backups and Avro formats.
+    parquetOptions: Additional properties to set if sourceFormat is set to
+      Parquet.
     schema: [Optional] The schema for the data. Schema is required for CSV and
       JSON formats. Schema is disallowed for Google Cloud Bigtable, Cloud
       Datastore backups, and Avro formats.
@@ -1225,9 +1227,10 @@ class ExternalDataConfiguration(_messages.Message):
   hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 7)
   ignoreUnknownValues = _messages.BooleanField(8)
   maxBadRecords = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  schema = _messages.MessageField('TableSchema', 10)
-  sourceFormat = _messages.StringField(11)
-  sourceUris = _messages.StringField(12, repeated=True)
+  parquetOptions = _messages.MessageField('ParquetOptions', 10)
+  schema = _messages.MessageField('TableSchema', 11)
+  sourceFormat = _messages.StringField(12)
+  sourceUris = _messages.StringField(13, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):
@@ -1592,6 +1595,7 @@ class JobConfigurationLoad(_messages.Message):
       error if an empty string is present for all data types except for STRING
       and BYTE. For STRING and BYTE columns, BigQuery interprets the empty
       string as an empty value.
+    parquetOptions: [Optional] Options to configure parquet support.
     projectionFields: If sourceFormat is set to "DATASTORE_BACKUP", indicates
       which entity properties to load into BigQuery from a Cloud Datastore
       backup. Property names are case sensitive and must be top-level
@@ -1676,19 +1680,20 @@ class JobConfigurationLoad(_messages.Message):
   jsonExtension = _messages.StringField(14)
   maxBadRecords = _messages.IntegerField(15, variant=_messages.Variant.INT32)
   nullMarker = _messages.StringField(16)
-  projectionFields = _messages.StringField(17, repeated=True)
-  quote = _messages.StringField(18, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 19)
-  schema = _messages.MessageField('TableSchema', 20)
-  schemaInline = _messages.StringField(21)
-  schemaInlineFormat = _messages.StringField(22)
-  schemaUpdateOptions = _messages.StringField(23, repeated=True)
-  skipLeadingRows = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(25)
-  sourceUris = _messages.StringField(26, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 27)
-  useAvroLogicalTypes = _messages.BooleanField(28)
-  writeDisposition = _messages.StringField(29)
+  parquetOptions = _messages.MessageField('ParquetOptions', 17)
+  projectionFields = _messages.StringField(18, repeated=True)
+  quote = _messages.StringField(19, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 20)
+  schema = _messages.MessageField('TableSchema', 21)
+  schemaInline = _messages.StringField(22)
+  schemaInlineFormat = _messages.StringField(23)
+  schemaUpdateOptions = _messages.StringField(24, repeated=True)
+  skipLeadingRows = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(26)
+  sourceUris = _messages.StringField(27, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 28)
+  useAvroLogicalTypes = _messages.BooleanField(29)
+  writeDisposition = _messages.StringField(30)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -1718,6 +1723,10 @@ class JobConfigurationQuery(_messages.Message):
       returned in the job result. The default value is CREATE_IF_NEEDED.
       Creation, truncation and append actions occur as one atomic update upon
       job completion.
+    createSession: If true, creates a new session, where session id will be a
+      server generated random id. If false, runs query with an existing
+      session_id passed in ConnectionProperty, otherwise runs query in non-
+      session mode.
     defaultDataset: [Optional] Specifies the default dataset to use for
       unqualified table names in the query. Note that this does not alter
       behavior of unqualified dataset names.
@@ -1825,25 +1834,26 @@ class JobConfigurationQuery(_messages.Message):
   clustering = _messages.MessageField('Clustering', 2)
   connectionProperties = _messages.MessageField('ConnectionProperty', 3, repeated=True)
   createDisposition = _messages.StringField(4)
-  defaultDataset = _messages.MessageField('DatasetReference', 5)
-  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 6)
-  destinationTable = _messages.MessageField('TableReference', 7)
-  flattenResults = _messages.BooleanField(8, default=True)
-  maximumBillingTier = _messages.IntegerField(9, variant=_messages.Variant.INT32, default=1)
-  maximumBytesBilled = _messages.IntegerField(10)
-  parameterMode = _messages.StringField(11)
-  preserveNulls = _messages.BooleanField(12)
-  priority = _messages.StringField(13)
-  query = _messages.StringField(14)
-  queryParameters = _messages.MessageField('QueryParameter', 15, repeated=True)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 16)
-  schemaUpdateOptions = _messages.StringField(17, repeated=True)
-  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 18)
-  timePartitioning = _messages.MessageField('TimePartitioning', 19)
-  useLegacySql = _messages.BooleanField(20, default=True)
-  useQueryCache = _messages.BooleanField(21, default=True)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 22, repeated=True)
-  writeDisposition = _messages.StringField(23)
+  createSession = _messages.BooleanField(5)
+  defaultDataset = _messages.MessageField('DatasetReference', 6)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 7)
+  destinationTable = _messages.MessageField('TableReference', 8)
+  flattenResults = _messages.BooleanField(9, default=True)
+  maximumBillingTier = _messages.IntegerField(10, variant=_messages.Variant.INT32, default=1)
+  maximumBytesBilled = _messages.IntegerField(11)
+  parameterMode = _messages.StringField(12)
+  preserveNulls = _messages.BooleanField(13)
+  priority = _messages.StringField(14)
+  query = _messages.StringField(15)
+  queryParameters = _messages.MessageField('QueryParameter', 16, repeated=True)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 17)
+  schemaUpdateOptions = _messages.StringField(18, repeated=True)
+  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 19)
+  timePartitioning = _messages.MessageField('TimePartitioning', 20)
+  useLegacySql = _messages.BooleanField(21, default=True)
+  useQueryCache = _messages.BooleanField(22, default=True)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 23, repeated=True)
+  writeDisposition = _messages.StringField(24)
 
 
 class JobConfigurationTableCopy(_messages.Message):
@@ -2307,6 +2317,20 @@ class ModelReference(_messages.Message):
   projectId = _messages.StringField(3)
 
 
+class ParquetOptions(_messages.Message):
+  r"""A ParquetOptions object.
+
+  Fields:
+    enableListInference: [Optional] Indicates whether to use schema inference
+      specifically for Parquet LIST logical type.
+    enumAsString: [Optional] Indicates whether to infer Parquet ENUM logical
+      type as STRING instead of BYTES by default.
+  """
+
+  enableListInference = _messages.BooleanField(1)
+  enumAsString = _messages.BooleanField(2)
+
+
 class ProjectList(_messages.Message):
   r"""A ProjectList object.
 
@@ -2461,6 +2485,10 @@ class QueryRequest(_messages.Message):
 
   Fields:
     connectionProperties: Connection properties.
+    createSession: If true, creates a new session, where session id will be a
+      server generated random id. If false, runs query with an existing
+      session_id passed in ConnectionProperty, otherwise runs query in non-
+      session mode.
     defaultDataset: [Optional] Specifies the default datasetId and projectId
       to assume for any unqualified table names in the query. If not set, all
       table names in the query string must be qualified in the format
@@ -2565,21 +2593,22 @@ class QueryRequest(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   connectionProperties = _messages.MessageField('ConnectionProperty', 1, repeated=True)
-  defaultDataset = _messages.MessageField('DatasetReference', 2)
-  dryRun = _messages.BooleanField(3)
-  kind = _messages.StringField(4, default='bigquery#queryRequest')
-  labels = _messages.MessageField('LabelsValue', 5)
-  location = _messages.StringField(6)
-  maxResults = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
-  maximumBytesBilled = _messages.IntegerField(8)
-  parameterMode = _messages.StringField(9)
-  preserveNulls = _messages.BooleanField(10)
-  query = _messages.StringField(11)
-  queryParameters = _messages.MessageField('QueryParameter', 12, repeated=True)
-  requestId = _messages.StringField(13)
-  timeoutMs = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
-  useLegacySql = _messages.BooleanField(15, default=True)
-  useQueryCache = _messages.BooleanField(16, default=True)
+  createSession = _messages.BooleanField(2)
+  defaultDataset = _messages.MessageField('DatasetReference', 3)
+  dryRun = _messages.BooleanField(4)
+  kind = _messages.StringField(5, default='bigquery#queryRequest')
+  labels = _messages.MessageField('LabelsValue', 6)
+  location = _messages.StringField(7)
+  maxResults = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
+  maximumBytesBilled = _messages.IntegerField(9)
+  parameterMode = _messages.StringField(10)
+  preserveNulls = _messages.BooleanField(11)
+  query = _messages.StringField(12)
+  queryParameters = _messages.MessageField('QueryParameter', 13, repeated=True)
+  requestId = _messages.StringField(14)
+  timeoutMs = _messages.IntegerField(15, variant=_messages.Variant.UINT32)
+  useLegacySql = _messages.BooleanField(16, default=True)
+  useQueryCache = _messages.BooleanField(17, default=True)
 
 
 class QueryResponse(_messages.Message):

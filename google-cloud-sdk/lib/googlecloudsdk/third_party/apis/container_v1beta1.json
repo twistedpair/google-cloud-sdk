@@ -429,7 +429,7 @@
           "type": "boolean"
         },
         "autopilot": {
-          "description": "Autopilot configuration for the cluster. It has the same semantics as AutoGKE and overrides the setting in autogke.",
+          "description": "Autopilot configuration for the cluster.",
           "$ref": "Autopilot"
         },
         "id": {
@@ -1749,6 +1749,10 @@
         "nodeNetworkPolicy": {
           "description": "NodeNetworkPolicy specifies the config for the node firewall feature. This feature is only supported with DatapathProvider=ADVANCED_DATAPATH.",
           "$ref": "NodeNetworkPolicy"
+        },
+        "serviceExternalIpsConfig": {
+          "description": "ServiceExternalIPsConfig specifies if services with externalIPs field are blocked or not.",
+          "$ref": "ServiceExternalIPsConfig"
         }
       }
     },
@@ -1809,6 +1813,17 @@
       "properties": {
         "enabled": {
           "description": "Whether node network policy is enabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ServiceExternalIPsConfig": {
+      "id": "ServiceExternalIPsConfig",
+      "description": "Config to block services with externalIPs field.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether Services with ExternalIPs field are allowed or not.",
           "type": "boolean"
         }
       }
@@ -2037,8 +2052,12 @@
           "type": "string"
         },
         "issuingCertificateAuthority": {
-          "description": "issuing_certificate_authority controls issuance of workload mTLS certificates. If non-empty, it must be a Private CA resource URL of the form \"\/\/privateca.googleapis.com\/projects\/{project}\/locations\/{location}\/certificateAuthorities\/{name}\". If non-empty, Workload Identity (standard or Hub) must be active (workload_pool must be non-empty).",
+          "description": "DEPRECATED: Use enable_certificates instead issuing_certificate_authority controls issuance of workload mTLS certificates. If non-empty, it must be a Private CA resource URL of the form \"\/\/privateca.googleapis.com\/projects\/{project}\/locations\/{location}\/certificateAuthorities\/{name}\". If non-empty, Workload Identity (standard or Hub) must be active (workload_pool must be non-empty).",
           "type": "string"
+        },
+        "enableCertificates": {
+          "description": "enable_certificates controls issuance of workload mTLS certificates. If set, the GKE Workload Identity Certificates controller and node agent will be deployed in the cluster, which can then be configured by creating a WorkloadCertificateConfig Custom Resource. Requires Workload Identity (workload_pool must be non-empty).",
+          "type": "boolean"
         },
         "enableAlts": {
           "description": "enable_alts controls whether the alts handshaker should be enabled or not for direct-path.",
@@ -2206,7 +2225,7 @@
     },
     "AutoGKE": {
       "id": "AutoGKE",
-      "description": "AutoGKE is the configuration for AutoGKE settings on the cluster.",
+      "description": "AutoGKE is the configuration for AutoGKE settings on the cluster. Replaced by Autopilot.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -2232,7 +2251,7 @@
     },
     "Autopilot": {
       "id": "Autopilot",
-      "description": "Autopilot is the configuration for Autopilot settings on the cluster. It is the official product name of what is previously known as AutoGKE",
+      "description": "Autopilot is the configuration for Autopilot settings on the cluster.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -2698,6 +2717,10 @@
         "desiredNodeNetworkPolicy": {
           "description": "NodeNetworkPolicy specifies the config for the node firewall feature. This feature is only supported with DatapathProvider=ADVANCED_DATAPATH.",
           "$ref": "NodeNetworkPolicy"
+        },
+        "desiredServiceExternalIpsConfig": {
+          "description": "ServiceExternalIPsConfig specifies the config for the use of Services with ExternalIPs field.",
+          "$ref": "ServiceExternalIPsConfig"
         }
       }
     },

@@ -33,6 +33,11 @@ class UnsupportedOS(core_exceptions.Error):
   """
 
 
+class ExtractionFailedError(core_exceptions.Error):
+  """Raised when extraction fails."""
+  pass
+
+
 def WaitForOperation(operation, version):
   """Silently waits for the given google.longrunning.Operation to complete.
 

@@ -645,9 +645,9 @@
               "parameters": {
                 "name": {
                   "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "filter": {
@@ -687,9 +687,9 @@
               "parameters": {
                 "name": {
                   "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -718,9 +718,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -760,9 +760,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -790,9 +790,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The name of the parent resource whose repositories will be listed.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -827,9 +827,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the repository to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -853,9 +853,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The name of the parent resource where the repository will be created.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "repositoryId": {
@@ -886,9 +886,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the repository, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\".",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
@@ -920,9 +920,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the repository to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -945,9 +945,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -973,9 +973,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -1005,9 +1005,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1039,9 +1039,9 @@
                       "parameters": {
                         "parent": {
                           "description": "The name of the parent resource whose packages will be listed.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
@@ -1076,9 +1076,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the package to retrieve.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1102,9 +1102,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the package to delete.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                           "type": "string"
                         }
                       },
@@ -1132,9 +1132,9 @@
                           "parameters": {
                             "parent": {
                               "description": "The name of the parent resource whose versions will be listed.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                               "type": "string"
                             },
                             "pageSize": {
@@ -1189,9 +1189,9 @@
                           "parameters": {
                             "name": {
                               "description": "The name of the version to retrieve.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/versions\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/versions\/[^\/]+$",
                               "type": "string"
                             },
                             "view": {
@@ -1230,9 +1230,9 @@
                           "parameters": {
                             "name": {
                               "description": "The name of the version to delete.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/versions\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/versions\/[^\/]+$",
                               "type": "string"
                             },
                             "force": {
@@ -1264,9 +1264,9 @@
                           "parameters": {
                             "parent": {
                               "description": "The name of the parent resource whose tags will be listed.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                               "type": "string"
                             },
                             "filter": {
@@ -1306,9 +1306,9 @@
                           "parameters": {
                             "name": {
                               "description": "The name of the tag to retrieve.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/tags\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/tags\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -1332,9 +1332,9 @@
                           "parameters": {
                             "parent": {
                               "description": "The name of the parent resource where the tag will be created.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+$",
                               "type": "string"
                             },
                             "tagId": {
@@ -1365,9 +1365,9 @@
                           "parameters": {
                             "name": {
                               "description": "The name of the tag, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\/packages\/pkg1\/tags\/tag1\".",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/tags\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/tags\/[^\/]+$",
                               "type": "string"
                             },
                             "updateMask": {
@@ -1399,9 +1399,9 @@
                           "parameters": {
                             "name": {
                               "description": "The name of the tag to delete.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/tags\/[^\/]+$",
                               "location": "path",
                               "required": true,
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/packages\/[^\/]+\/tags\/[^\/]+$",
                               "type": "string"
                             }
                           },
@@ -1430,9 +1430,9 @@
                       "parameters": {
                         "parent": {
                           "description": "The name of the parent resource whose files will be listed.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
                           "type": "string"
                         },
                         "filter": {
@@ -1472,9 +1472,9 @@
                       "parameters": {
                         "name": {
                           "description": "The name of the file to retrieve.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/files\/.*$",
                           "location": "path",
                           "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+\/files\/.*$",
                           "type": "string"
                         }
                       },

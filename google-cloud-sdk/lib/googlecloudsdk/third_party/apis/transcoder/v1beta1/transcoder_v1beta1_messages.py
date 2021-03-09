@@ -696,6 +696,23 @@ class Overlay(_messages.Message):
   image = _messages.MessageField('Image', 2)
 
 
+class Pad(_messages.Message):
+  r"""Pad filter configuration for the input video. The padded input video is
+  scaled after padding with black to match the output resolution.
+
+  Fields:
+    bottomPixels: The number of pixels to add to the bottom. The default is 0.
+    leftPixels: The number of pixels to add to the left. The default is 0.
+    rightPixels: The number of pixels to add to the right. The default is 0.
+    topPixels: The number of pixels to add to the top. The default is 0.
+  """
+
+  bottomPixels = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  leftPixels = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  rightPixels = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  topPixels = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class PreprocessingConfig(_messages.Message):
   r"""Preprocessing configurations.
 
@@ -705,6 +722,7 @@ class PreprocessingConfig(_messages.Message):
     crop: Specify the video cropping configuration.
     deblock: Deblock preprocessing configuration.
     denoise: Denoise preprocessing configuration.
+    pad: Specify the video pad filter configuration.
   """
 
   audio = _messages.MessageField('Audio', 1)
@@ -712,6 +730,7 @@ class PreprocessingConfig(_messages.Message):
   crop = _messages.MessageField('Crop', 3)
   deblock = _messages.MessageField('Deblock', 4)
   denoise = _messages.MessageField('Denoise', 5)
+  pad = _messages.MessageField('Pad', 6)
 
 
 class Progress(_messages.Message):

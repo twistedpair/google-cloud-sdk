@@ -110,12 +110,7 @@ class Backup(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the backup.
 
   Fields:
-    encryptionInfo: Output only. The encryption information for the backup. If
-      encryption_type is CUSTOMER_MANAGED_ENCRYPTION, kms_key_version will be
-      filled in with status UNKNOWN. If encryption_type is
-      GOOGLE_DEFAULT_ENCRYPTION, all other fields will have default value.
-      This feature might be changed in backward-incompatible ways and is not
-      currently subject to any SLA or deprecation policy.
+    encryptionInfo: Output only. The encryption information for the backup.
     endTime: Output only. `end_time` is the time that the backup was finished.
       The row data in the backup will be no newer than this timestamp.
     expireTime: Required. The expiration time of the backup, with microseconds
@@ -1002,9 +997,8 @@ class Cluster(_messages.Message):
   Fields:
     defaultStorageType: Immutable. The type of storage used by this cluster to
       serve its parent instance's tables, unless explicitly overridden.
-    encryptionConfig: Immutable. KMS setting that is only filled in for CMEK-
-      protected clusters, whether this field is used for configuration on
-      input or presented as output.
+    encryptionConfig: Immutable. The encryption configuration for CMEK-
+      protected clusters.
     location: Immutable. The location where this cluster's nodes and storage
       reside. For best performance, clients should be located as close as
       possible to this cluster. Currently only zones are supported, so values
@@ -1071,10 +1065,9 @@ class ClusterState(_messages.Message):
   Fields:
     encryptionInfo: Output only. The encryption information for the table in
       this cluster. If the encryption key protecting this resource is customer
-      managed, then its version can be rotated in KMS. Versions and their
-      corresponding status will enter this list when the system picks up a
-      rotation and will exit this list when a deep rotation of the underlying
-      data has completed.
+      managed, then its version can be rotated in Cloud Key Management Service
+      (Cloud KMS). The primary version of the key and its status will be
+      reflected here when changes propagate from Cloud KMS.
     replicationState: Output only. The state of replication for the table in
       this cluster.
   """
@@ -1347,20 +1340,19 @@ class Empty(_messages.Message):
 
 
 class EncryptionConfig(_messages.Message):
-  r"""Google Cloud Key Management Service (KMS) settings for a CMEK-protected
-  Bigtable cluster. CMEK is not currently available to end users. This feature
-  might be changed in backward-incompatible ways and is not currently subject
-  to any SLA or deprecation policy.
+  r"""Cloud Key Management Service (Cloud KMS) settings for a CMEK-protected
+  cluster.
 
   Fields:
-    kmsKeyName: Describes the KMS encryption key that will be used to protect
-      the destination Bigtable cluster. The requirements for this key are: 1)
-      The Cloud Bigtable service account associated with the project that
-      contains this cluster will need to be granted an enc/dec role on the
-      encryption key. 2) The regionality of the key must match the location of
-      the cluster. 3) All clusters within an instance must use the same KMS
-      key. The key cannot be changed after cluster creation, but it may be
-      rotated.
+    kmsKeyName: Describes the Cloud KMS encryption key that will be used to
+      protect the destination Bigtable cluster. The requirements for this key
+      are: 1) The Cloud Bigtable service account associated with the project
+      that contains this cluster must be granted the
+      `cloudkms.cryptoKeyEncrypterDecrypter` role on the CMEK key. 2) Only
+      regional keys can be used and the region of the CMEK key must match the
+      region of the cluster. 3) All clusters within an instance must use the
+      same CMEK key. Values are of the form `projects/{project}/locations/{loc
+      ation}/keyRings/{keyring}/cryptoKeys/{key}`
   """
 
   kmsKeyName = _messages.StringField(1)
@@ -1368,10 +1360,8 @@ class EncryptionConfig(_messages.Message):
 
 class EncryptionInfo(_messages.Message):
   r"""Encryption information for a given resource. If this resource is
-  protected with customer managed encryption, the in-use Google Cloud Key
-  Management Service (KMS) key versions will be specified along with their
-  status. This feature might be changed in backward-incompatible ways and is
-  not currently subject to any SLA or deprecation policy.
+  protected with customer managed encryption, the in-use Cloud Key Management
+  Service (Cloud KMS) key version is specified along with its status.
 
   Enums:
     EncryptionTypeValueValuesEnum: Output only. The type of encryption used to
@@ -1383,8 +1373,8 @@ class EncryptionInfo(_messages.Message):
       data is always encrypted at rest.
     encryptionType: Output only. The type of encryption used to protect this
       resource.
-    kmsKeyVersion: Output only. The version of the KMS key specified in the
-      parent cluster that is in-use for the data underlying this table.
+    kmsKeyVersion: Output only. The version of the Cloud KMS key specified in
+      the parent cluster that is in use for the data underlying this table.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -1397,8 +1387,11 @@ class EncryptionInfo(_messages.Message):
         at rest with a key that is fully managed by Google. No key version or
         status will be populated. This is the default state.
       CUSTOMER_MANAGED_ENCRYPTION: The data backing this resource is encrypted
-        at rest with a key that is managed by the customer. The active version
-        of the key and its latest status have been populated.
+        at rest with a key that is managed by the customer. The in-use version
+        of the key and its status are populated for CMEK-protected tables.
+        CMEK-protected backups are pinned to the key version that was in use
+        at the time the backup was taken. This key version is populated but
+        its status is not tracked and is reported as `UNKNOWN`.
     """
     ENCRYPTION_TYPE_UNSPECIFIED = 0
     GOOGLE_DEFAULT_ENCRYPTION = 1
@@ -2365,7 +2358,8 @@ class Table(_messages.Message):
       state. If it could not be determined whether or not the table has data
       in a particular cluster (for example, if its zone is unavailable), then
       there will be an entry for the cluster with UNKNOWN
-      `replication_status`. Views: `REPLICATION_VIEW`, `FULL`
+      `replication_status`. Views: `REPLICATION_VIEW`, `ENCRYPTION_VIEW`,
+      `FULL`
     ColumnFamiliesValue: The column families configured for this table, mapped
       by column family ID. Views: `SCHEMA_VIEW`, `FULL`
 
@@ -2374,7 +2368,8 @@ class Table(_messages.Message):
       state. If it could not be determined whether or not the table has data
       in a particular cluster (for example, if its zone is unavailable), then
       there will be an entry for the cluster with UNKNOWN
-      `replication_status`. Views: `REPLICATION_VIEW`, `FULL`
+      `replication_status`. Views: `REPLICATION_VIEW`, `ENCRYPTION_VIEW`,
+      `FULL`
     columnFamilies: The column families configured for this table, mapped by
       column family ID. Views: `SCHEMA_VIEW`, `FULL`
     granularity: Immutable. The granularity (i.e. `MILLIS`) at which
@@ -2410,7 +2405,7 @@ class Table(_messages.Message):
     could not be determined whether or not the table has data in a particular
     cluster (for example, if its zone is unavailable), then there will be an
     entry for the cluster with UNKNOWN `replication_status`. Views:
-    `REPLICATION_VIEW`, `FULL`
+    `REPLICATION_VIEW`, `ENCRYPTION_VIEW`, `FULL`
 
     Messages:
       AdditionalProperty: An additional property for a ClusterStatesValue

@@ -246,9 +246,10 @@ class HttpRequestError(RequestError):
   API.
   """
 
-  def __init__(self, status_code, reason, url, method):
-    err_tmpl = "HTTP status: {} for request: {} {}\nReason: {}"
-    self.message = err_tmpl.format(status_code, method, url, reason)
+  def __init__(self, status_code, reason, content):
+    err_tmpl = ("- HTTP status: {}\n- Reason: {}\n- Message: {}\n"
+                "Use the --log-http flag to see more information.")
+    self.message = err_tmpl.format(status_code, reason, content)
     super(HttpRequestError, self).__init__(message=self.message)
 
 

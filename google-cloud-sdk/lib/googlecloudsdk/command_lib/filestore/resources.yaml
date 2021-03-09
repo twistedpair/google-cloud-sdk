@@ -29,6 +29,19 @@ region:
     attribute_name: region
     help: |
       The region of the Filestore {resource}.
+    property: filestore/region
+  disable_auto_completers: false
+
+location:
+  name: location
+  collection: file.projects.locations
+  attributes:
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      The location of the Filestore {resource}.
+    property: filestore/location
   disable_auto_completers: false
 
 instance:

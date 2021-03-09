@@ -426,6 +426,23 @@
           "description": "Inference Mode: Model name for tensorflow serving to serve to incoming requests. If none is provided, \"serving_default\" will be used.",
           "type": "string"
         },
+        "apiVersion": {
+          "description": "Output only. The API version that created this Node.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "API version is unknown.",
+            "TPU API V1Alpha1 version.",
+            "TPU API V1 version.",
+            "TPU API V2Alpha1 version."
+          ],
+          "enum": [
+            "API_VERSION_UNSPECIFIED",
+            "V1_ALPHA1",
+            "V1",
+            "V2_ALPHA1"
+          ]
+        },
         "symptoms": {
           "description": "Output only. The Symptoms that have occurred to the TPU Node.",
           "readOnly": true,

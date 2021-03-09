@@ -538,3 +538,41 @@ def GitHubEnterpriseConfigFromArgs(args, update=False):
     secret_location.oauthClientIdName = args.oauth_client_id_name
     ghe.secrets = secret_location
   return ghe
+
+
+def BitbucketServerConfigFromArgs(args, update=False):
+  """Construct the BitbucketServer resource from the command line args.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+    update: bool, if the args are for an update.
+
+  Returns:
+    A populated BitbucketServerConfig message.
+  """
+  messages = GetMessagesModule()
+
+  bbs = messages.BitbucketServerConfig()
+  bbs.hostUri = args.host_uri
+  bbs.username = args.user_name
+  bbs.apiKey = args.api_key
+  secret_location = messages.BitbucketServerSecrets()
+  secret_location.adminAccessTokenVersionName = args.admin_access_token_name
+  secret_location.readAccessTokenVersionName = args.read_access_token_name
+  secret_location.webhookSecretVersionName = args.webhook_secret_name
+  if update or secret_location is not None:
+    bbs.secrets = secret_location
+  if args.webhook_key is not None:
+    bbs.webhookKey = args.webhook_key
+  if not update and args.peered_network is not None:
+    bbs.peeredNetwork = args.peered_network
+  if args.connected_repositories is not None:
+    bbs.connectedRepositories = []
+    for repo in args.connected_repositories:
+      parts = repo.split('/')
+      r = messages.BitbucketServerRepositoryId()
+      r.projectKey = parts[0]
+      r.repoSlug = parts[1]
+      bbs.connectedRepositories.append(r)
+  return bbs

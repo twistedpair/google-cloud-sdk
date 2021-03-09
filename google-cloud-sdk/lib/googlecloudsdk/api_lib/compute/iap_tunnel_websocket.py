@@ -331,6 +331,10 @@ class IapTunnelWebSocket(object):
       # may often indicate missing permissions.
       if self._websocket_helper.ErrorMsg().startswith('Handshake status 40'):
         extra_msg = ' (May be due to missing permissions)'
+      # Error messages starting with '4003' indicate that either nothing is
+      # listening on the port, or there is an issue with the firewall.
+      elif self._websocket_helper.ErrorMsg().startswith('4003'):
+        extra_msg = ' (Failed to connect to port %d)' % self._tunnel_target.port
       error_msg = ('Error while connecting [%s].%s' %
                    (self._websocket_helper.ErrorMsg(), extra_msg))
       raise ConnectionCreationError(error_msg)

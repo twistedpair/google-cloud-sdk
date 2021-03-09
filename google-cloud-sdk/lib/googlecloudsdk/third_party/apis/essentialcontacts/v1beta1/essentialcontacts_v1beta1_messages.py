@@ -58,6 +58,8 @@ class EssentialcontactsFoldersContactsComputeRequest(_messages.Message):
         compliance, or government notices.
       PRODUCT_UPDATES: Notifications related to new versions, product terms
         updates, or deprecations.
+      TECHNICAL_INCIDENTS: Child category of TECHNICAL. If assigned, technical
+        incident notifications will go to these contacts instead of TECHNICAL.
     """
     NOTIFICATION_CATEGORY_UNSPECIFIED = 0
     ALL = 1
@@ -67,6 +69,7 @@ class EssentialcontactsFoldersContactsComputeRequest(_messages.Message):
     BILLING = 5
     LEGAL = 6
     PRODUCT_UPDATES = 7
+    TECHNICAL_INCIDENTS = 8
 
   notificationCategories = _messages.EnumField('NotificationCategoriesValueValuesEnum', 1, repeated=True)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -203,6 +206,8 @@ class EssentialcontactsOrganizationsContactsComputeRequest(_messages.Message):
         compliance, or government notices.
       PRODUCT_UPDATES: Notifications related to new versions, product terms
         updates, or deprecations.
+      TECHNICAL_INCIDENTS: Child category of TECHNICAL. If assigned, technical
+        incident notifications will go to these contacts instead of TECHNICAL.
     """
     NOTIFICATION_CATEGORY_UNSPECIFIED = 0
     ALL = 1
@@ -212,6 +217,7 @@ class EssentialcontactsOrganizationsContactsComputeRequest(_messages.Message):
     BILLING = 5
     LEGAL = 6
     PRODUCT_UPDATES = 7
+    TECHNICAL_INCIDENTS = 8
 
   notificationCategories = _messages.EnumField('NotificationCategoriesValueValuesEnum', 1, repeated=True)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -348,6 +354,8 @@ class EssentialcontactsProjectsContactsComputeRequest(_messages.Message):
         compliance, or government notices.
       PRODUCT_UPDATES: Notifications related to new versions, product terms
         updates, or deprecations.
+      TECHNICAL_INCIDENTS: Child category of TECHNICAL. If assigned, technical
+        incident notifications will go to these contacts instead of TECHNICAL.
     """
     NOTIFICATION_CATEGORY_UNSPECIFIED = 0
     ALL = 1
@@ -357,6 +365,7 @@ class EssentialcontactsProjectsContactsComputeRequest(_messages.Message):
     BILLING = 5
     LEGAL = 6
     PRODUCT_UPDATES = 7
+    TECHNICAL_INCIDENTS = 8
 
   notificationCategories = _messages.EnumField('NotificationCategoriesValueValuesEnum', 1, repeated=True)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -504,6 +513,8 @@ class GoogleCloudEssentialcontactsV1beta1Contact(_messages.Message):
         compliance, or government notices.
       PRODUCT_UPDATES: Notifications related to new versions, product terms
         updates, or deprecations.
+      TECHNICAL_INCIDENTS: Child category of TECHNICAL. If assigned, technical
+        incident notifications will go to these contacts instead of TECHNICAL.
     """
     NOTIFICATION_CATEGORY_UNSPECIFIED = 0
     ALL = 1
@@ -513,6 +524,7 @@ class GoogleCloudEssentialcontactsV1beta1Contact(_messages.Message):
     BILLING = 5
     LEGAL = 6
     PRODUCT_UPDATES = 7
+    TECHNICAL_INCIDENTS = 8
 
   email = _messages.StringField(1)
   languageTag = _messages.StringField(2)

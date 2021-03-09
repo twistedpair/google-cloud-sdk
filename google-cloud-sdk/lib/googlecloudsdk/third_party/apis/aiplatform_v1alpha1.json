@@ -747,9 +747,7 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3."
+            "Nvidia Tesla T4 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -757,9 +755,7 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4",
-            "TPU_V2",
-            "TPU_V3"
+            "NVIDIA_TESLA_T4"
           ]
         },
         "acceleratorCount": {
@@ -869,7 +865,7 @@
       "type": "object",
       "properties": {
         "indexDisplayNameMapping": {
-          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
           "type": "any"
         },
         "displayNameMappingKey": {
@@ -1204,7 +1200,8 @@
             "The job failed.",
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
-            "The job has been stopped, and can be resumed."
+            "The job has been stopped, and can be resumed.",
+            "The job has expired."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -1215,7 +1212,8 @@
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
-            "JOB_STATE_PAUSED"
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED"
           ]
         },
         "createTime": {
@@ -1459,7 +1457,8 @@
             "The job failed.",
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
-            "The job has been stopped, and can be resumed."
+            "The job has been stopped, and can be resumed.",
+            "The job has expired."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -1470,7 +1469,8 @@
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
-            "JOB_STATE_PAUSED"
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED"
           ]
         },
         "labelingProgress": {
@@ -1695,7 +1695,8 @@
             "The job failed.",
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
-            "The job has been stopped, and can be resumed."
+            "The job has been stopped, and can be resumed.",
+            "The job has expired."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -1706,7 +1707,8 @@
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
-            "JOB_STATE_PAUSED"
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED"
           ]
         },
         "createTime": {
@@ -2135,7 +2137,8 @@
             "The job failed.",
             "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
             "The job has been cancelled.",
-            "The job has been stopped, and can be resumed."
+            "The job has been stopped, and can be resumed.",
+            "The job has expired."
           ],
           "enum": [
             "JOB_STATE_UNSPECIFIED",
@@ -2146,7 +2149,8 @@
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLING",
             "JOB_STATE_CANCELLED",
-            "JOB_STATE_PAUSED"
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED"
           ]
         },
         "error": {
@@ -3607,6 +3611,11 @@
           "description": "By default Tensorboard is encrypted with Google provided keys. Users can optionally supply a KMS key to encrypt their data Format: `projects\/{project_id}\/locations\/{location}\/keyRings\/{key_ring_id}\/cryptoKeys\/{key_id}`",
           "type": "string"
         },
+        "blobStoragePathPrefix": {
+          "description": "Output only. Consumer project Cloud Storage path prefix used to store blob data, which can either be a bucket or directory. Does not end with a '\/'.",
+          "readOnly": true,
+          "type": "string"
+        },
         "runCount": {
           "description": "Output only. The number of Runs stored in this Tensorboard.",
           "readOnly": true,
@@ -4392,6 +4401,13 @@
           "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed. Note: if machine_spec.accelerator_count is above 0, currently the model will be always deployed precisely on min_replica_count.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoscalingMetricSpecs": {
+          "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformInternalAutoscalingMetricSpec"
+          }
         }
       }
     },
@@ -4413,9 +4429,7 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3."
+            "Nvidia Tesla T4 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -4423,13 +4437,27 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4",
-            "TPU_V2",
-            "TPU_V3"
+            "NVIDIA_TESLA_T4"
           ]
         },
         "acceleratorCount": {
           "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalAutoscalingMetricSpec": {
+      "id": "GoogleCloudAiplatformInternalAutoscalingMetricSpec",
+      "description": "The metric specification that defines the target resource utilization (CPU utilization, accelerator's duty cycle, and so on) for calculating the desired replica count.",
+      "type": "object",
+      "properties": {
+        "metricName": {
+          "description": "Required. The resource metric name. Supported metrics: * For Online Prediction: * `aiplatform.googleapis.com\/prediction\/online\/accelerator\/duty_cycle` * `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization`",
+          "type": "string"
+        },
+        "target": {
+          "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
           "type": "integer",
           "format": "int32"
         }
@@ -4820,7 +4848,7 @@
       "type": "object",
       "properties": {
         "indexDisplayNameMapping": {
-          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
           "type": "any"
         },
         "displayNameMappingKey": {
@@ -6092,6 +6120,13 @@
           "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoscalingMetricSpecs": {
+          "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiAutoscalingMetricSpec"
+          }
         }
       }
     },
@@ -6113,9 +6148,7 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3."
+            "Nvidia Tesla T4 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -6123,13 +6156,27 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4",
-            "TPU_V2",
-            "TPU_V3"
+            "NVIDIA_TESLA_T4"
           ]
         },
         "acceleratorCount": {
           "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiAutoscalingMetricSpec": {
+      "id": "GoogleCloudAiplatformUiAutoscalingMetricSpec",
+      "description": "The metric specification that defines the target resource utilization (CPU utilization, accelerator's duty cycle, and so on) for calculating the desired replica count.",
+      "type": "object",
+      "properties": {
+        "metricName": {
+          "description": "Required. The resource metric name. Supported metrics: * For Online Prediction: * `aiplatform.googleapis.com\/prediction\/online\/accelerator\/duty_cycle` * `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization`",
+          "type": "string"
+        },
+        "target": {
+          "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
           "type": "integer",
           "format": "int32"
         }
@@ -6520,7 +6567,7 @@
       "type": "object",
       "properties": {
         "indexDisplayNameMapping": {
-          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
           "type": "any"
         },
         "displayNameMappingKey": {
@@ -9206,6 +9253,13 @@
           "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoscalingMetricSpecs": {
+          "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1AutoscalingMetricSpec"
+          }
         }
       }
     },
@@ -9227,9 +9281,7 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3."
+            "Nvidia Tesla T4 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -9237,13 +9289,27 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4",
-            "TPU_V2",
-            "TPU_V3"
+            "NVIDIA_TESLA_T4"
           ]
         },
         "acceleratorCount": {
           "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1AutoscalingMetricSpec": {
+      "id": "GoogleCloudAiplatformV1beta1AutoscalingMetricSpec",
+      "description": "The metric specification that defines the target resource utilization (CPU utilization, accelerator's duty cycle, and so on) for calculating the desired replica count.",
+      "type": "object",
+      "properties": {
+        "metricName": {
+          "description": "Required. The resource metric name. Supported metrics: * For Online Prediction: * `aiplatform.googleapis.com\/prediction\/online\/accelerator\/duty_cycle` * `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization`",
+          "type": "string"
+        },
+        "target": {
+          "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
           "type": "integer",
           "format": "int32"
         }
@@ -9634,7 +9700,7 @@
       "type": "object",
       "properties": {
         "indexDisplayNameMapping": {
-          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimentions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
           "type": "any"
         },
         "displayNameMappingKey": {
@@ -13064,6 +13130,13 @@
           "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoscalingMetricSpecs": {
+          "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1AutoscalingMetricSpec"
+          }
         }
       }
     },
@@ -13085,9 +13158,7 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3."
+            "Nvidia Tesla T4 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -13095,13 +13166,27 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4",
-            "TPU_V2",
-            "TPU_V3"
+            "NVIDIA_TESLA_T4"
           ]
         },
         "acceleratorCount": {
           "description": "The number of accelerators to attach to the machine.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1AutoscalingMetricSpec": {
+      "id": "GoogleCloudAiplatformV1AutoscalingMetricSpec",
+      "description": "The metric specification that defines the target resource utilization (CPU utilization, accelerator's duty cycle, and so on) for calculating the desired replica count.",
+      "type": "object",
+      "properties": {
+        "metricName": {
+          "description": "Required. The resource metric name. Supported metrics: * For Online Prediction: * `aiplatform.googleapis.com\/prediction\/online\/accelerator\/duty_cycle` * `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization`",
+          "type": "string"
+        },
+        "target": {
+          "description": "The target resource utilization in percentage (1% - 100%) for the given metric; once the real usage deviates from the target by a certain percentage, the machine replicas change. The default value is 60 (representing 60%) if not provided.",
           "type": "integer",
           "format": "int32"
         }

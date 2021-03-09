@@ -3490,8 +3490,7 @@ class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
 
   Fields:
     createTime: Output only. The creation timestamp of an inspectTemplate.
-    deidentifyConfig: ///////////// // The core content of the template //
-      ///////////////
+    deidentifyConfig: The core content of the template.
     description: Short description (max 256 chars).
     displayName: Display name (max 256 chars).
     name: Output only. The template name. The template will have one of the

@@ -101,6 +101,24 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
       security_policy_rule.redirectTarget = rule['redirectTarget']
     if 'ruleNumber' in rule:
       security_policy_rule.ruleNumber = int(rule['ruleNumber'])
+    if 'rateLimitOptions' in rule:
+      rate_limit_options = rule['rateLimitOptions']
+      security_policy_rule.rateLimitOptions = (
+          messages.SecurityPolicyRuleRateLimitOptions(
+              rateLimitThreshold=messages
+              .SecurityPolicyRuleRateLimitOptionsThreshold(
+                  count=rate_limit_options['rateLimitThreshold']['count'],
+                  intervalSec=rate_limit_options['rateLimitThreshold']
+                  ['intervalSec']),
+              conformAction=rate_limit_options['conformAction'],
+              exceedAction=rate_limit_options['exceedAction'],
+              enforceOnKey=messages.SecurityPolicyRuleRateLimitOptions
+              .EnforceOnKeyValueValuesEnum(rate_limit_options['enforceOnKey']),
+              banThreshold=messages.SecurityPolicyRuleRateLimitOptionsThreshold(
+                  count=rate_limit_options['banThreshold']['count'],
+                  intervalSec=rate_limit_options['banThreshold']
+                  ['intervalSec']),
+              banDurationSec=rate_limit_options['banDurationSec']))
 
   security_policy.rules = rules
 
@@ -172,3 +190,68 @@ def CreateAdaptiveProtectionConfig(client, args,
         layer7_ddos_defense_config)
 
   return adaptive_protection_config
+
+
+def CreateRateLimitOptions(client, args):
+  """Returns a SecurityPolicyRuleRateLimitOptions message."""
+
+  messages = client.messages
+  rate_limit_options = messages.SecurityPolicyRuleRateLimitOptions()
+  is_updated = False
+
+  if (args.IsSpecified('rate_limit_threshold_count') or
+      args.IsSpecified('rate_limit_threshold_interval_sec')):
+    rate_limit_threshold = (
+        messages.SecurityPolicyRuleRateLimitOptionsThreshold())
+    if args.IsSpecified('rate_limit_threshold_count'):
+      rate_limit_threshold.count = args.rate_limit_threshold_count
+    if args.IsSpecified('rate_limit_threshold_interval_sec'):
+      rate_limit_threshold.intervalSec = args.rate_limit_threshold_interval_sec
+    rate_limit_options.rateLimitThreshold = rate_limit_threshold
+    is_updated = True
+
+  if args.IsSpecified('conform_action'):
+    rate_limit_options.conformAction = _ConvertConformAction(
+        args.conform_action)
+    is_updated = True
+  if args.IsSpecified('exceed_action'):
+    rate_limit_options.exceedAction = _ConvertExceedAction(args.exceed_action)
+    is_updated = True
+  if args.IsSpecified('enforce_on_key'):
+    rate_limit_options.enforceOnKey = (
+        messages.SecurityPolicyRuleRateLimitOptions.EnforceOnKeyValueValuesEnum(
+            _ConvertEnforceOnKey(args.enforce_on_key)))
+    is_updated = True
+
+  if (args.IsSpecified('ban_threshold_count') or
+      args.IsSpecified('ban_threshold_interval_sec')):
+    ban_threshold = messages.SecurityPolicyRuleRateLimitOptionsThreshold()
+    if args.IsSpecified('ban_threshold_count'):
+      ban_threshold.count = args.ban_threshold_count
+    if args.IsSpecified('ban_threshold_interval_sec'):
+      ban_threshold.intervalSec = args.ban_threshold_interval_sec
+    rate_limit_options.banThreshold = ban_threshold
+    is_updated = True
+
+  if args.IsSpecified('ban_duration_sec'):
+    rate_limit_options.banDurationSec = args.ban_duration_sec
+    is_updated = True
+
+  return rate_limit_options if is_updated else None
+
+
+def _ConvertConformAction(action):
+  return {'drop-overload': 'drop_overload'}.get(action, action)
+
+
+def _ConvertExceedAction(action):
+  return {
+      'deny-403': 'deny(403)',
+      'deny-404': 'deny(404)',
+      'deny-429': 'deny(429)',
+      'deny-502': 'deny(502)'
+  }.get(action, action)
+
+
+def _ConvertEnforceOnKey(enforce_on_key):
+  return {'ip': 'IP', 'all-ips': 'ALL_IPS'}.get(enforce_on_key, enforce_on_key)

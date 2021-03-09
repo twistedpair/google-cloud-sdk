@@ -178,33 +178,80 @@ class CancelOperationRequest(_messages.Message):
 class Cluster(_messages.Message):
   r"""A Cluster object.
 
+  Enums:
+    DatabaseVersionValueValuesEnum: The database engine major version.
+      Specified by customer at creation time. This field cannot be changed
+      after cluster creation.
+    StateValueValuesEnum: The current serving state of the cluster.
+
   Messages:
     LabelsValue: The resource labels to use to annotate any related underlying
-      resources such as Compute Engine VMs. Not currently used. An object
-      containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
-      "mass": "1.3kg", "count": "3" }`.
+      cluster resources. An object containing a list of "key": "value" pairs.
+      Example: `{ "name": "wrench", "mass": "1.3kg", "count": "3" }`.
 
   Fields:
     createTime: The timestamp when the resource was created. A timestamp in
       RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example:
       "2014-10-02T15:01:23.045123456Z".
+    databaseVersion: The database engine major version. Specified by customer
+      at creation time. This field cannot be changed after cluster creation.
     labels: The resource labels to use to annotate any related underlying
-      resources such as Compute Engine VMs. Not currently used. An object
-      containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
-      "mass": "1.3kg", "count": "3" }`.
+      cluster resources. An object containing a list of "key": "value" pairs.
+      Example: `{ "name": "wrench", "mass": "1.3kg", "count": "3" }`.
     name: The name of this cluster, in the form of
       projects/{project}/locations/{location}/clusters/{cluster_id}
+    network: The resource link for the VPC network in which cluster resources
+      are created and from which they are accessible via Private IP. The
+      network must belong to the same project as the cluster. It is specified
+      in the form: "projects/{project_number}/global/networks/{network_id}".
+      This is required to create a cluster. It can be updated, but it cannot
+      be removed.
+    state: The current serving state of the cluster.
     updateTime: The timestamp when the resource was last updated. A timestamp
       in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example:
       "2014-10-02T15:01:23.045123456Z".
   """
 
+  class DatabaseVersionValueValuesEnum(_messages.Enum):
+    r"""The database engine major version. Specified by customer at creation
+    time. This field cannot be changed after cluster creation.
+
+    Values:
+      DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      POSTGRES_12: The database version is Postgres 12.
+    """
+    DATABASE_VERSION_UNSPECIFIED = 0
+    POSTGRES_12 = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current serving state of the cluster.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the cluster is unknown.
+      ACTIVE: The cluster is active and running.
+      STOPPED: The cluster is stopped. All instances in the cluster are
+        stopped. Customers can start a stopped cluster at any point and all
+        their instances will come back to life with same names and IP
+        resources. In this state, customer pays for storage.
+      EMPTY: The cluster is empty and has no associated resources. All
+        instances, associated storage and backups have been deleted.
+      CREATING: The cluster is being created.
+      DELETING: The cluster is being deleted.
+      FAILED: The creation of the cluster failed.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    STOPPED = 2
+    EMPTY = 3
+    CREATING = 4
+    DELETING = 5
+    FAILED = 6
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The resource labels to use to annotate any related underlying
-    resources such as Compute Engine VMs. Not currently used. An object
-    containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
-    "mass": "1.3kg", "count": "3" }`.
+    r"""The resource labels to use to annotate any related underlying cluster
+    resources. An object containing a list of "key": "value" pairs. Example:
+    `{ "name": "wrench", "mass": "1.3kg", "count": "3" }`.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -227,52 +274,12 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
-
-
-class Database(_messages.Message):
-  r"""A Database object.
-
-  Messages:
-    LabelsValue: A LabelsValue object.
-
-  Fields:
-    createTime: A string attribute.
-    labels: A LabelsValue attribute.
-    name: A string attribute.
-    updateTime: A string attribute.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""A LabelsValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class Empty(_messages.Message):
@@ -385,18 +392,70 @@ class Instance(_messages.Message):
   r"""A Instance object.
 
   Enums:
+    AvailabilityTypeValueValuesEnum: Availability type of an Instance.
+      Defaults to REGIONAL for both primary and read instances. Note that
+      primary and read instances can have different availability types.
     InstanceTypeValueValuesEnum:
+    StateValueValuesEnum: The current serving state of the instance.
 
   Messages:
-    LabelsValue: A LabelsValue object.
+    DatabaseFlagsValue: Database flags. Set at instance level. * They are
+      copied from primary instance on read instance creation. * Read instances
+      can set new or override existing flags that are relevant for reads, e.g.
+      for enabling columnar cache on a read instance. Flags set on read
+      instance may or may not be present on primary.
+    LabelsValue: User-provided resource labels, represented as a dictionary
+      where each label is a single key value pair. An object containing a list
+      of "key": "value" pairs.
 
   Fields:
-    createTime: A string attribute.
+    availabilityType: Availability type of an Instance. Defaults to REGIONAL
+      for both primary and read instances. Note that primary and read
+      instances can have different availability types.
+    createTime: The timestamp when the resource was created. A timestamp in
+      RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example:
+      "2014-10-02T15:01:23.045123456Z".
+    databaseFlags: Database flags. Set at instance level. * They are copied
+      from primary instance on read instance creation. * Read instances can
+      set new or override existing flags that are relevant for reads, e.g. for
+      enabling columnar cache on a read instance. Flags set on read instance
+      may or may not be present on primary.
+    gceZone: The GCE zone that the instance should serve from. Optional. This
+      can ONLY be specified for ZONAL instances. If present for a REGIONAL
+      instance, an error will be thrown. If this is absent for a ZONAL
+      instance, instance is created in a random zone with available capacity.
     instanceType: A InstanceTypeValueValuesEnum attribute.
-    labels: A LabelsValue attribute.
-    name: A string attribute.
-    updateTime: A string attribute.
+    labels: User-provided resource labels, represented as a dictionary where
+      each label is a single key value pair. An object containing a list of
+      "key": "value" pairs.
+    name: The name of this instance, in the form of projects/{project}/locatio
+      ns/{location}/clusters/{cluster_id}/instances/{instance_id} Note that
+      location is a GCP region.
+    networkConfiguration: The settings for Network / IP Management. This
+      allows to enable/disable public IP, enable/disable SSL and manage which
+      external networks can connect to the instance.
+    state: The current serving state of the instance.
+    tier: The tier (or machine type) for this instance, for example *db-
+      custom-1-3840* (PostgreSQL instances). Required for new instances and
+      can be updated.
+    updateTime: The timestamp when the resource was last updated. A timestamp
+      in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example:
+      "2014-10-02T15:01:23.045123456Z".
   """
+
+  class AvailabilityTypeValueValuesEnum(_messages.Enum):
+    r"""Availability type of an Instance. Defaults to REGIONAL for both
+    primary and read instances. Note that primary and read instances can have
+    different availability types.
+
+    Values:
+      AVAILABILITY_TYPE_UNSPECIFIED: This is an unknown Availability type.
+      ZONAL: Zonal available instance.
+      REGIONAL: Regional (or Highly) available instance.
+    """
+    AVAILABILITY_TYPE_UNSPECIFIED = 0
+    ZONAL = 1
+    REGIONAL = 2
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""InstanceTypeValueValuesEnum enum type.
@@ -404,15 +463,74 @@ class Instance(_messages.Message):
     Values:
       INSTANCE_TYPE_UNSPECIFIED: <no description>
       PRIMARY: PRIMARY instances support read and write operations.
-      READ: READ instances support read operations only.
+      READ: READ instances support read operations only. Each read instance
+        consists of one or more homogeneous read replicas. * READ instance of
+        size 1 can only have zonal availability. * READ instances with replica
+        count of 2 or more can have regional availability (replicas are
+        present in 2 or more zones in a region).
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
     PRIMARY = 1
     READ = 2
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current serving state of the instance.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the instance is unknown.
+      ACTIVE: The instance is active and running.
+      STOPPED: The instance is stopped. Instance name and IP resources are
+        preserved.
+      CREATING: The instance is being created.
+      DELETING: The instance is being deleted.
+      MAINTENANCE: The instance is down for maintenance.
+      FAILED: The creation of the instance failed or a fatal error occurred
+        during an operation on the instance. Note: Instances in this state
+        would tried to be auto-repaired. And Customers should be able to
+        restart, update or delete these instances.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    STOPPED = 2
+    CREATING = 3
+    DELETING = 4
+    MAINTENANCE = 5
+    FAILED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DatabaseFlagsValue(_messages.Message):
+    r"""Database flags. Set at instance level. * They are copied from primary
+    instance on read instance creation. * Read instances can set new or
+    override existing flags that are relevant for reads, e.g. for enabling
+    columnar cache on a read instance. Flags set on read instance may or may
+    not be present on primary.
+
+    Messages:
+      AdditionalProperty: An additional property for a DatabaseFlagsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DatabaseFlagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DatabaseFlagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""A LabelsValue object.
+    r"""User-provided resource labels, represented as a dictionary where each
+    label is a single key value pair. An object containing a list of "key":
+    "value" pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -434,11 +552,17 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  databaseFlags = _messages.MessageField('DatabaseFlagsValue', 3)
+  gceZone = _messages.StringField(4)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  networkConfiguration = _messages.MessageField('NetworkConfiguration', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  tier = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -466,20 +590,6 @@ class ListClustersResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   resources = _messages.MessageField('Cluster', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListDatabasesResponse(_messages.Message):
-  r"""A ListDatabasesResponse object.
-
-  Fields:
-    nextPageToken: A string attribute.
-    resources: A Database attribute.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  resources = _messages.MessageField('Database', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -521,20 +631,6 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
-
-
-class ListRolesResponse(_messages.Message):
-  r"""A ListRolesResponse object.
-
-  Fields:
-    nextPageToken: A string attribute.
-    resources: A Role attribute.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  resources = _messages.MessageField('Role', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListUsersResponse(_messages.Message):
@@ -733,112 +829,6 @@ class LuxadminProjectsLocationsClustersCreateRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
-class LuxadminProjectsLocationsClustersDatabasesCreateRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersDatabasesCreateRequest object.
-
-  Fields:
-    database: A Database resource to be passed as the request body.
-    databaseId: A string attribute.
-    parent: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  database = _messages.MessageField('Database', 1)
-  databaseId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class LuxadminProjectsLocationsClustersDatabasesDeleteRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersDatabasesDeleteRequest object.
-
-  Fields:
-    name: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class LuxadminProjectsLocationsClustersDatabasesGetRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersDatabasesGetRequest object.
-
-  Fields:
-    name: A string attribute.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class LuxadminProjectsLocationsClustersDatabasesListRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersDatabasesListRequest object.
-
-  Fields:
-    filter: A string attribute.
-    orderBy: A string attribute.
-    pageSize: A integer attribute.
-    pageToken: A string attribute.
-    parent: A string attribute.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class LuxadminProjectsLocationsClustersDatabasesPatchRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersDatabasesPatchRequest object.
-
-  Fields:
-    database: A Database resource to be passed as the request body.
-    name: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the Database resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      will be overwritten if it is in the mask. If the user does not provide a
-      mask then all fields will be overwritten.
-  """
-
-  database = _messages.MessageField('Database', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
 class LuxadminProjectsLocationsClustersDeleteRequest(_messages.Message):
   r"""A LuxadminProjectsLocationsClustersDeleteRequest object.
 
@@ -1012,7 +1002,9 @@ class LuxadminProjectsLocationsClustersInstancesPatchRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    name: A string attribute.
+    name: The name of this instance, in the form of projects/{project}/locatio
+      ns/{location}/clusters/{cluster_id}/instances/{instance_id} Note that
+      location is a GCP region.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1035,19 +1027,6 @@ class LuxadminProjectsLocationsClustersInstancesPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
-
-
-class LuxadminProjectsLocationsClustersInstancesRecreateRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersInstancesRecreateRequest object.
-
-  Fields:
-    name: A string attribute.
-    recreateInstanceRequest: A RecreateInstanceRequest resource to be passed
-      as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  recreateInstanceRequest = _messages.MessageField('RecreateInstanceRequest', 2)
 
 
 class LuxadminProjectsLocationsClustersInstancesRestartRequest(_messages.Message):
@@ -1136,112 +1115,6 @@ class LuxadminProjectsLocationsClustersRestoreFromBackupRequest(_messages.Messag
 
   parent = _messages.StringField(1, required=True)
   restoreClusterFromBackupRequest = _messages.MessageField('RestoreClusterFromBackupRequest', 2)
-
-
-class LuxadminProjectsLocationsClustersRolesCreateRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersRolesCreateRequest object.
-
-  Fields:
-    parent: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    role: A Role resource to be passed as the request body.
-    roleId: A string attribute.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  role = _messages.MessageField('Role', 3)
-  roleId = _messages.StringField(4)
-
-
-class LuxadminProjectsLocationsClustersRolesDeleteRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersRolesDeleteRequest object.
-
-  Fields:
-    name: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class LuxadminProjectsLocationsClustersRolesGetRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersRolesGetRequest object.
-
-  Fields:
-    name: A string attribute.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class LuxadminProjectsLocationsClustersRolesListRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersRolesListRequest object.
-
-  Fields:
-    filter: A string attribute.
-    orderBy: A string attribute.
-    pageSize: A integer attribute.
-    pageToken: A string attribute.
-    parent: A string attribute.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class LuxadminProjectsLocationsClustersRolesPatchRequest(_messages.Message):
-  r"""A LuxadminProjectsLocationsClustersRolesPatchRequest object.
-
-  Fields:
-    name: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    role: A Role resource to be passed as the request body.
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the Role resource by the update. The fields specified in the update_mask
-      are relative to the resource, not the full request. A field will be
-      overwritten if it is in the mask. If the user does not provide a mask
-      then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  role = _messages.MessageField('Role', 3)
-  updateMask = _messages.StringField(4)
 
 
 class LuxadminProjectsLocationsClustersSetIamPolicyRequest(_messages.Message):
@@ -1482,6 +1355,19 @@ class LuxadminProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class NetworkConfiguration(_messages.Message):
+  r"""Netwoek Management configuration.
+
+  Fields:
+    publicIpEnabled: Whether the instance is assigned a public IP address or
+      not.
+    sslRequired: Whether SSL connections over IP are enforced or not.
+  """
+
+  publicIpEnabled = _messages.BooleanField(1)
+  sslRequired = _messages.BooleanField(2)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1709,26 +1595,6 @@ class PromoteClusterRequest(_messages.Message):
   requestId = _messages.StringField(1)
 
 
-class RecreateInstanceRequest(_messages.Message):
-  r"""A RecreateInstanceRequest object.
-
-  Fields:
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  requestId = _messages.StringField(1)
-
-
 class RestartInstanceRequest(_messages.Message):
   r"""A RestartInstanceRequest object.
 
@@ -1773,49 +1639,6 @@ class RestoreClusterFromBackupRequest(_messages.Message):
   clusterId = _messages.StringField(2)
   requestId = _messages.StringField(3)
   resource = _messages.MessageField('Cluster', 4)
-
-
-class Role(_messages.Message):
-  r"""A Role object.
-
-  Messages:
-    LabelsValue: A LabelsValue object.
-
-  Fields:
-    createTime: A string attribute.
-    labels: A LabelsValue attribute.
-    name: A string attribute.
-    updateTime: A string attribute.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""A LabelsValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):

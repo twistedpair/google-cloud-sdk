@@ -83,22 +83,25 @@ def SecurityMarksHook(parsed_dict):
 
 def GetParent(args):
   """Converts user input to one of: organization, project, or folder."""
-  organization_resource_pattern = re.compile("organizations/[0-9]+$")
   id_pattern = re.compile("[0-9]+")
-  if not args.parent:
-    parent = properties.VALUES.scc.parent.Get()
-  else:
-    parent = args.parent
+  parent = None
+  if hasattr(args, "parent"):
+    if not args.parent:
+      parent = properties.VALUES.scc.parent.Get()
+    else:
+      parent = args.parent
   if parent is None:
     # Use organization property as backup for legacy behavior.
     parent = properties.VALUES.scc.organization.Get()
+    if parent is None:
+      parent = args.organization
   if parent is None:
     raise InvalidSCCInputError("Could not find Parent argument. Please "
                                "provide the parent argument.")
   if id_pattern.match(parent):
     # Prepend organizations/ if only number value is provided.
     parent = "organizations/" + parent
-  if not (organization_resource_pattern.match(parent) or
+  if not (parent.startswith("organizations/") or
           parent.startswith("projects/") or parent.startswith("folders/")):
     error_message = ("Parent must match either [0-9]+, organizations/[0-9]+, "
                      "projects/.* "
@@ -171,6 +174,16 @@ def GetOrganizationFromResourceName(resource_name):
   return list_organization_components[0] + "/" + list_organization_components[1]
 
 
+def GetParentFromResourceName(resource_name):
+  resource_pattern = re.compile("(organizations|projects|folders)/.*")
+  if not resource_pattern.match(resource_name):
+    raise InvalidSCCInputError(
+        "When providing a full resource path, it must also include the pattern "
+        "the organization, project, or folder prefix.")
+  list_organization_components = resource_name.split("/")
+  return list_organization_components[0] + "/" + list_organization_components[1]
+
+
 def GetSourceFromResourceName(resource_name):
   # TODO(b/129564913) Cleanup regex's into single variable.
   resource_pattern = re.compile("organizations/[0-9]+/sources/[0-9]+")
@@ -179,4 +192,16 @@ def GetSourceFromResourceName(resource_name):
       "organizations/[0-9]+/sources/[0-9]+.")
   list_source_components = resource_name.split("/")
   return (GetOrganizationFromResourceName(resource_name) + "/" +
+          list_source_components[2] + "/" + list_source_components[3])
+
+
+def GetSourceParentFromResourceName(resource_name):
+  resource_pattern = re.compile(
+      "(organizations|projects|folders)/.*/sources/[0-9]+")
+  if not resource_pattern.match(resource_name):
+    raise InvalidSCCInputError(
+        "When providing a full resource path, it must also include "
+        "the organization, project, or folder prefix.")
+  list_source_components = resource_name.split("/")
+  return (GetParentFromResourceName(resource_name) + "/" +
           list_source_components[2] + "/" + list_source_components[3])

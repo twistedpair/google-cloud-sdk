@@ -360,7 +360,7 @@
       "type": "object",
       "properties": {
         "certificateAuthorityData": {
-          "description": "PEM-encoded certificate authority for the cluster.",
+          "description": "Base64-encoded PEM certificate authority for the cluster.",
           "type": "string"
         },
         "server": {

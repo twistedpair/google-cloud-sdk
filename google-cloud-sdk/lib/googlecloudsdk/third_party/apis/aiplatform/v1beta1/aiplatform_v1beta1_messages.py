@@ -4718,8 +4718,6 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -4727,8 +4725,6 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -6100,8 +6096,6 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -6109,8 +6103,6 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -7583,8 +7575,6 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -7592,8 +7582,6 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -11279,8 +11267,6 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -11288,8 +11274,6 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -12664,6 +12648,7 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -12674,6 +12659,7 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -13031,6 +13017,7 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -13041,6 +13028,7 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -13294,6 +13282,7 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -13304,6 +13293,7 @@ class GoogleCloudAiplatformV1beta1DataLabelingJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationLabelsValue(_messages.Message):
@@ -14865,6 +14855,7 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -14875,6 +14866,7 @@ class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -15586,8 +15578,6 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -15595,8 +15585,6 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -19506,6 +19494,9 @@ class GoogleCloudAiplatformV1beta1Tensorboard(_messages.Message):
       prefixed with "aiplatform.googleapis.com/" and are immutable.
 
   Fields:
+    blobStoragePathPrefix: Output only. Consumer project Cloud Storage path
+      prefix used to store blob data, which can either be a bucket or
+      directory. Does not end with a '/'.
     createTime: Output only. Timestamp when this Tensorboard was created.
     description: Description of this Tensorboard.
     displayName: Required. User provided name of this Tensorboard.
@@ -19560,15 +19551,16 @@ class GoogleCloudAiplatformV1beta1Tensorboard(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  kmsKeyName = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  runCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(9)
+  blobStoragePathPrefix = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  kmsKeyName = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  runCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1beta1TensorboardBlob(_messages.Message):

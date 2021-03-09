@@ -533,12 +533,14 @@
           "description": "If true, then the `Action`'s result cannot be cached, and in-flight requests for the same `Action` may not be merged.",
           "type": "boolean"
         },
-        "outputNodeProperties": {
-          "description": "List of required supported NodeProperty keys. In order to ensure that equivalent `Action`s always hash to the same value, the supported node properties MUST be lexicographically sorted by name. Sorting of strings is done by code point, equivalently, by the UTF-8 bytes. The interpretation of these properties is server-dependent. If a property is not recognized by the server, the server will return an `INVALID_ARGUMENT` error.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "salt": {
+          "description": "An optional additional salt value used to place this `Action` into a separate cache namespace from other instances having the same field contents. This salt typically comes from operational configuration specific to sources such as repo and service configuration, and allows disowning an entire set of ActionResults that might have been poisoned by buggy software or tool failures.",
+          "type": "string",
+          "format": "byte"
+        },
+        "platform": {
+          "description": "The optional platform requirements for the execution environment. The server MAY choose to execute the action on any worker satisfying the requirements, so the client SHOULD ensure that running the action on any such worker will have the same result. A detailed lexicon for this can be found in the accompanying platform.md. New in version 2.2: clients SHOULD set these platform properties as well as those in the Command. Servers SHOULD prefer those set here.",
+          "$ref": "BuildBazelRemoteExecutionV2Platform"
         }
       }
     },
@@ -555,6 +557,35 @@
           "description": "The size of the blob, in bytes.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "BuildBazelRemoteExecutionV2Platform": {
+      "id": "BuildBazelRemoteExecutionV2Platform",
+      "description": "A `Platform` is a set of requirements, such as hardware, operating system, or compiler toolchain, for an Action's execution environment. A `Platform` is represented as a series of key-value pairs representing the properties that are required of the platform.",
+      "type": "object",
+      "properties": {
+        "properties": {
+          "description": "The properties that make up this platform. In order to ensure that equivalent `Platform`s always hash to the same value, the properties MUST be lexicographically sorted by name, and then by value. Sorting of strings is done by code point, equivalently, by the UTF-8 bytes.",
+          "type": "array",
+          "items": {
+            "$ref": "BuildBazelRemoteExecutionV2PlatformProperty"
+          }
+        }
+      }
+    },
+    "BuildBazelRemoteExecutionV2PlatformProperty": {
+      "id": "BuildBazelRemoteExecutionV2PlatformProperty",
+      "description": "A single property for the environment. The server is responsible for specifying the property `name`s that it accepts. If an unknown `name` is provided in the requirements for an Action, the server SHOULD reject the execution request. If permitted by the server, the same `name` may occur multiple times. The server is also responsible for specifying the interpretation of property `value`s. For instance, a property describing how much RAM must be available may be interpreted as allowing a worker with 16GB to fulfill a request for 8GB, while a property describing the OS environment on which the action must be performed may require an exact match with the worker's OS. The server MAY use the `value` of one or more properties to determine how it sets up the execution environment, such as by making specific system files available to the worker. Both names and values are typically case-sensitive. Note that the platform is implicitly part of the action digest, so even tiny changes in the names or values (like changing case) may result in different action cache entries.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The property name.",
+          "type": "string"
+        },
+        "value": {
+          "description": "The property value.",
+          "type": "string"
         }
       }
     },
@@ -599,12 +630,19 @@
           }
         },
         "platform": {
-          "description": "The platform requirements for the execution environment. The server MAY choose to execute the action on any worker satisfying the requirements, so the client SHOULD ensure that running the action on any such worker will have the same result. A detailed lexicon for this can be found in the accompanying platform.md.",
+          "description": "The platform requirements for the execution environment. The server MAY choose to execute the action on any worker satisfying the requirements, so the client SHOULD ensure that running the action on any such worker will have the same result. A detailed lexicon for this can be found in the accompanying platform.md. DEPRECATED as of v2.2: platform properties are now specified directly in the action. See documentation note in the Action for migration.",
           "$ref": "BuildBazelRemoteExecutionV2Platform"
         },
         "workingDirectory": {
           "description": "The working directory, relative to the input root, for the command to run in. It must be a directory which exists in the input tree. If it is left empty, then the action is run in the input root.",
           "type": "string"
+        },
+        "outputNodeProperties": {
+          "description": "A list of keys for node properties the client expects to retrieve for output files and directories. Keys are either names of string-based NodeProperty or names of fields in NodeProperties. In order to ensure that equivalent `Action`s always hash to the same value, the node properties MUST be lexicographically sorted by name. Sorting of strings is done by code point, equivalently, by the UTF-8 bytes. The interpretation of string-based properties is server-dependent. If a property is not recognized by the server, the server will return an `INVALID_ARGUMENT`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -619,35 +657,6 @@
         },
         "value": {
           "description": "The variable value.",
-          "type": "string"
-        }
-      }
-    },
-    "BuildBazelRemoteExecutionV2Platform": {
-      "id": "BuildBazelRemoteExecutionV2Platform",
-      "description": "A `Platform` is a set of requirements, such as hardware, operating system, or compiler toolchain, for an Action's execution environment. A `Platform` is represented as a series of key-value pairs representing the properties that are required of the platform.",
-      "type": "object",
-      "properties": {
-        "properties": {
-          "description": "The properties that make up this platform. In order to ensure that equivalent `Platform`s always hash to the same value, the properties MUST be lexicographically sorted by name, and then by value. Sorting of strings is done by code point, equivalently, by the UTF-8 bytes.",
-          "type": "array",
-          "items": {
-            "$ref": "BuildBazelRemoteExecutionV2PlatformProperty"
-          }
-        }
-      }
-    },
-    "BuildBazelRemoteExecutionV2PlatformProperty": {
-      "id": "BuildBazelRemoteExecutionV2PlatformProperty",
-      "description": "A single property for the environment. The server is responsible for specifying the property `name`s that it accepts. If an unknown `name` is provided in the requirements for an Action, the server SHOULD reject the execution request. If permitted by the server, the same `name` may occur multiple times. The server is also responsible for specifying the interpretation of property `value`s. For instance, a property describing how much RAM must be available may be interpreted as allowing a worker with 16GB to fulfill a request for 8GB, while a property describing the OS environment on which the action must be performed may require an exact match with the worker's OS. The server MAY use the `value` of one or more properties to determine how it sets up the execution environment, such as by making specific system files available to the worker.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The property name.",
-          "type": "string"
-        },
-        "value": {
-          "description": "The property value.",
           "type": "string"
         }
       }
@@ -684,7 +693,7 @@
     },
     "BuildBazelRemoteExecutionV2ActionResult": {
       "id": "BuildBazelRemoteExecutionV2ActionResult",
-      "description": "An ActionResult represents the result of an Action being run.",
+      "description": "An ActionResult represents the result of an Action being run. It is advised that at least one field (for example `ActionResult.execution_metadata.Worker`) have a non-default value, to ensure that the serialized value is non-empty, which can then be used as a basic data sanity check.",
       "type": "object",
       "properties": {
         "outputFiles": {
@@ -774,11 +783,31 @@
           "format": "byte"
         },
         "nodeProperties": {
-          "description": "The supported node properties of the OutputFile, if requested by the Action.",
+          "$ref": "BuildBazelRemoteExecutionV2NodeProperties"
+        }
+      }
+    },
+    "BuildBazelRemoteExecutionV2NodeProperties": {
+      "id": "BuildBazelRemoteExecutionV2NodeProperties",
+      "description": "Node properties for FileNodes, DirectoryNodes, and SymlinkNodes. The server is responsible for specifying the properties that it accepts.",
+      "type": "object",
+      "properties": {
+        "properties": {
+          "description": "A list of string-based NodeProperties.",
           "type": "array",
           "items": {
             "$ref": "BuildBazelRemoteExecutionV2NodeProperty"
           }
+        },
+        "mtime": {
+          "description": "The file's last modification timestamp.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "unixMode": {
+          "description": "The UNIX file mode, e.g., 0755.",
+          "type": "integer",
+          "format": "uint32"
         }
       }
     },
@@ -807,15 +836,11 @@
           "type": "string"
         },
         "target": {
-          "description": "The target path of the symlink. The path separator is a forward slash `\/`. The target path can be relative to the parent directory of the symlink or it can be an absolute path starting with `\/`. Support for absolute paths can be checked using the Capabilities API. The canonical form forbids the substrings `\/.\/` and `\/\/` in the target path. `..` components are allowed anywhere in the target path.",
+          "description": "The target path of the symlink. The path separator is a forward slash `\/`. The target path can be relative to the parent directory of the symlink or it can be an absolute path starting with `\/`. Support for absolute paths can be checked using the Capabilities API. `..` components are allowed anywhere in the target path.",
           "type": "string"
         },
         "nodeProperties": {
-          "description": "The supported node properties of the OutputSymlink, if requested by the Action.",
-          "type": "array",
-          "items": {
-            "$ref": "BuildBazelRemoteExecutionV2NodeProperty"
-          }
+          "$ref": "BuildBazelRemoteExecutionV2NodeProperties"
         }
       }
     },
@@ -887,6 +912,17 @@
           "description": "When the worker finished uploading action outputs.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "auxiliaryMetadata": {
+          "description": "Details that are specific to the kind of worker used. For example, on POSIX-like systems this could contain a message with getrusage(2) statistics.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
         }
       }
     },
@@ -933,11 +969,11 @@
           "$ref": "BuildBazelRemoteExecutionV2Digest"
         },
         "stdoutStreamName": {
-          "description": "If set, the client can use this name with ByteStream.Read to stream the standard output.",
+          "description": "If set, the client can use this resource name with ByteStream.Read to stream the standard output from the endpoint hosting streamed responses.",
           "type": "string"
         },
         "stderrStreamName": {
-          "description": "If set, the client can use this name with ByteStream.Read to stream the standard error.",
+          "description": "If set, the client can use this resource name with ByteStream.Read to stream the standard error from the endpoint hosting streamed responses.",
           "type": "string"
         }
       }
@@ -1025,11 +1061,7 @@
           }
         },
         "nodeProperties": {
-          "description": "The node properties of the Directory.",
-          "type": "array",
-          "items": {
-            "$ref": "BuildBazelRemoteExecutionV2NodeProperty"
-          }
+          "$ref": "BuildBazelRemoteExecutionV2NodeProperties"
         }
       }
     },
@@ -1051,11 +1083,7 @@
           "type": "boolean"
         },
         "nodeProperties": {
-          "description": "The node properties of the FileNode.",
-          "type": "array",
-          "items": {
-            "$ref": "BuildBazelRemoteExecutionV2NodeProperty"
-          }
+          "$ref": "BuildBazelRemoteExecutionV2NodeProperties"
         }
       }
     },
@@ -1084,15 +1112,11 @@
           "type": "string"
         },
         "target": {
-          "description": "The target path of the symlink. The path separator is a forward slash `\/`. The target path can be relative to the parent directory of the symlink or it can be an absolute path starting with `\/`. Support for absolute paths can be checked using the Capabilities API. The canonical form forbids the substrings `\/.\/` and `\/\/` in the target path. `..` components are allowed anywhere in the target path.",
+          "description": "The target path of the symlink. The path separator is a forward slash `\/`. The target path can be relative to the parent directory of the symlink or it can be an absolute path starting with `\/`. Support for absolute paths can be checked using the Capabilities API. `..` components are allowed anywhere in the target path as logical canonicalization may lead to different behavior in the presence of directory symlinks (e.g. `foo\/..\/bar` may not be the same as `bar`). To reduce potential cache misses, canonicalization is still recommended where this is possible without impacting correctness.",
           "type": "string"
         },
         "nodeProperties": {
-          "description": "The node properties of the SymlinkNode.",
-          "type": "array",
-          "items": {
-            "$ref": "BuildBazelRemoteExecutionV2NodeProperty"
-          }
+          "$ref": "BuildBazelRemoteExecutionV2NodeProperties"
         }
       }
     },
@@ -1160,6 +1184,11 @@
           "description": "The time spent waiting for Container Manager to assign an asynchronous container for execution.",
           "type": "string",
           "format": "google-duration"
+        },
+        "casRelease": {
+          "description": "The time spent to release the CAS blobs used by the task.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -1204,7 +1233,7 @@
             "Container Manager is enabled, but there was no matching container available for execution."
           ],
           "enum": [
-            "NONE",
+            "CONFIG_NONE",
             "CONFIG_MATCH",
             "CONFIG_MISMATCH"
           ]

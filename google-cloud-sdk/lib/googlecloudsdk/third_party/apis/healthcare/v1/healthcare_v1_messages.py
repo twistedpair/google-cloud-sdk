@@ -14,6 +14,106 @@ from apitools.base.py import extra_types
 package = 'healthcare'
 
 
+class ActivateConsentRequest(_messages.Message):
+  r"""Activates the latest revision of the specified Consent by committing a
+  new revision with `state` updated to `ACTIVE`. If the latest revision of the
+  given Consent is in the `ACTIVE` state, no new revision is committed. A
+  FAILED_PRECONDITION error occurs if the latest revision of the given consent
+  is in the `REJECTED` or `REVOKED` state.
+
+  Fields:
+    consentArtifact: Required. The resource name of the Consent artifact that
+      contains documentation of the user's consent, of the form `projects/{pro
+      ject_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{co
+      nsent_store_id}/consentArtifacts/{consent_artifact_id}`. If the draft
+      Consent had a Consent artifact, this Consent artifact overwrites it.
+    expireTime: Timestamp in UTC of when this Consent is considered expired.
+    ttl: The time to live for this Consent from when it is marked as active.
+  """
+
+  consentArtifact = _messages.StringField(1)
+  expireTime = _messages.StringField(2)
+  ttl = _messages.StringField(3)
+
+
+class ArchiveUserDataMappingRequest(_messages.Message):
+  r"""Archives the specified User data mapping."""
+
+
+class ArchiveUserDataMappingResponse(_messages.Message):
+  r"""Archives the specified User data mapping."""
+
+
+class Attribute(_messages.Message):
+  r"""An attribute value for a Consent or User data mapping. Each Attribute
+  must have a corresponding AttributeDefinition in the consent store that
+  defines the default and allowed values.
+
+  Fields:
+    attributeDefinitionId: Indicates the name of an attribute defined in the
+      consent store.
+    values: Required. The value of the attribute. Must be an acceptable value
+      as defined in the consent store. For example, if the consent store
+      defines "data type" with acceptable values "questionnaire" and "step-
+      count", when the attribute name is data type, this field must contain
+      one of those values.
+  """
+
+  attributeDefinitionId = _messages.StringField(1)
+  values = _messages.StringField(2, repeated=True)
+
+
+class AttributeDefinition(_messages.Message):
+  r"""A client-defined consent attribute.
+
+  Enums:
+    CategoryValueValuesEnum: Required. The category of the attribute. The
+      value of this field cannot be changed after creation.
+
+  Fields:
+    allowedValues: Required. Possible values for the attribute. The number of
+      allowed values must not exceed 100. An empty list is invalid. The list
+      can only be expanded after creation.
+    category: Required. The category of the attribute. The value of this field
+      cannot be changed after creation.
+    consentDefaultValues: Optional. Default values of the attribute in
+      Consents. If no default values are specified, it defaults to an empty
+      value.
+    dataMappingDefaultValue: Optional. Default value of the attribute in User
+      data mappings. If no default value is specified, it defaults to an empty
+      value. This field is only applicable to attributes of the category
+      `RESOURCE`.
+    description: Optional. A description of the attribute.
+    name: Resource name of the Attribute definition, of the form `projects/{pr
+      oject_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{c
+      onsent_store_id}/attributeDefinitions/{attribute_definition_id}`. Cannot
+      be changed after creation.
+  """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""Required. The category of the attribute. The value of this field
+    cannot be changed after creation.
+
+    Values:
+      CATEGORY_UNSPECIFIED: No category specified. This option is invalid.
+      RESOURCE: Specify this category when this attribute describes the
+        properties of resources. For example, data anonymity or data type.
+      REQUEST: Specify this category when this attribute describes the
+        properties of requests. For example, requester's role or requester's
+        organization.
+    """
+    CATEGORY_UNSPECIFIED = 0
+    RESOURCE = 1
+    REQUEST = 2
+
+  allowedValues = _messages.StringField(1, repeated=True)
+  category = _messages.EnumField('CategoryValueValuesEnum', 2)
+  consentDefaultValues = _messages.StringField(3, repeated=True)
+  dataMappingDefaultValue = _messages.StringField(4)
+  description = _messages.StringField(5)
+  name = _messages.StringField(6)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -142,6 +242,430 @@ class CharacterMaskConfig(_messages.Message):
   """
 
   maskingCharacter = _messages.StringField(1)
+
+
+class CheckDataAccessRequest(_messages.Message):
+  r"""Checks if a particular data_id of a User data mapping in the given
+  consent store is consented for a given use.
+
+  Enums:
+    ResponseViewValueValuesEnum: Optional. The view for
+      CheckDataAccessResponse. If unspecified, defaults to `BASIC` and returns
+      `consented` as `TRUE` or `FALSE`.
+
+  Messages:
+    RequestAttributesValue: The values of request attributes associated with
+      this access request.
+
+  Fields:
+    consentList: Optional. Specific Consents to evaluate the access request
+      against. These Consents must have the same `user_id` as the evaluated
+      User data mapping, must exist in the current `consent_store`, and have a
+      `state` of either `ACTIVE` or `DRAFT`. A maximum of 100 Consents can be
+      provided here. If no selection is specified, the access request is
+      evaluated against all `ACTIVE` unexpired Consents with the same
+      `user_id` as the evaluated User data mapping.
+    dataId: Required. The unique identifier of the resource to check access
+      for. This identifier must correspond to a User data mapping in the given
+      consent store.
+    requestAttributes: The values of request attributes associated with this
+      access request.
+    responseView: Optional. The view for CheckDataAccessResponse. If
+      unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or
+      `FALSE`.
+  """
+
+  class ResponseViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The view for CheckDataAccessResponse. If unspecified,
+    defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.
+
+    Values:
+      RESPONSE_VIEW_UNSPECIFIED: No response view specified. The API will
+        default to the BASIC view.
+      BASIC: Only the `consented` field is populated in
+        CheckDataAccessResponse.
+      FULL: All fields within CheckDataAccessResponse are populated. When set
+        to `FULL`, all `ACTIVE` Consents are evaluated even if a matching
+        policy is found during evaluation.
+    """
+    RESPONSE_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestAttributesValue(_messages.Message):
+    r"""The values of request attributes associated with this access request.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        RequestAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consentList = _messages.MessageField('ConsentList', 1)
+  dataId = _messages.StringField(2)
+  requestAttributes = _messages.MessageField('RequestAttributesValue', 3)
+  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 4)
+
+
+class CheckDataAccessResponse(_messages.Message):
+  r"""Checks if a particular data_id of a User data mapping in the given
+  consent store is consented for a given use.
+
+  Messages:
+    ConsentDetailsValue: The resource names of all evaluated Consents mapped
+      to their evaluation.
+
+  Fields:
+    consentDetails: The resource names of all evaluated Consents mapped to
+      their evaluation.
+    consented: Whether the requested resource is consented for the given use.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConsentDetailsValue(_messages.Message):
+    r"""The resource names of all evaluated Consents mapped to their
+    evaluation.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConsentDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConsentDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConsentDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ConsentEvaluation attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ConsentEvaluation', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consentDetails = _messages.MessageField('ConsentDetailsValue', 1)
+  consented = _messages.BooleanField(2)
+
+
+class Consent(_messages.Message):
+  r"""Represents a user's consent.
+
+  Enums:
+    StateValueValuesEnum: Required. Indicates the current state of this
+      Consent.
+
+  Messages:
+    MetadataValue: Optional. User-supplied key-value pairs used to organize
+      Consent resources. Metadata keys must: - be between 1 and 63 characters
+      long - have a UTF-8 encoding of maximum 128 bytes - begin with a letter
+      - consist of up to 63 characters including lowercase letters, numeric
+      characters, underscores, and dashes Metadata values must be: - be
+      between 1 and 63 characters long - have a UTF-8 encoding of maximum 128
+      bytes - consist of up to 63 characters including lowercase letters,
+      numeric characters, underscores, and dashes No more than 64 metadata
+      entries can be associated with a given consent.
+
+  Fields:
+    consentArtifact: Required. The resource name of the Consent artifact that
+      contains proof of the end user's consent, of the form `projects/{project
+      _id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consen
+      t_store_id}/consentArtifacts/{consent_artifact_id}`.
+    expireTime: Timestamp in UTC of when this Consent is considered expired.
+    metadata: Optional. User-supplied key-value pairs used to organize Consent
+      resources. Metadata keys must: - be between 1 and 63 characters long -
+      have a UTF-8 encoding of maximum 128 bytes - begin with a letter -
+      consist of up to 63 characters including lowercase letters, numeric
+      characters, underscores, and dashes Metadata values must be: - be
+      between 1 and 63 characters long - have a UTF-8 encoding of maximum 128
+      bytes - consist of up to 63 characters including lowercase letters,
+      numeric characters, underscores, and dashes No more than 64 metadata
+      entries can be associated with a given consent.
+    name: Resource name of the Consent, of the form `projects/{project_id}/loc
+      ations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_
+      id}/consents/{consent_id}`. Cannot be changed after creation.
+    policies: Optional. Represents a user's consent in terms of the resources
+      that can be accessed and under what conditions.
+    revisionCreateTime: Output only. The timestamp that the revision was
+      created.
+    revisionId: Output only. The revision ID of the Consent. The format is an
+      8-character hexadecimal string. Refer to a specific revision of a
+      Consent by appending `@{revision_id}` to the Consent's resource name.
+    state: Required. Indicates the current state of this Consent.
+    ttl: Input only. The time to live for this Consent from when it is
+      created.
+    userId: Required. User's UUID provided by the client.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. Indicates the current state of this Consent.
+
+    Values:
+      STATE_UNSPECIFIED: No state specified.
+      ACTIVE: The Consent is active and is considered when evaluating a user's
+        consent on resources.
+      ARCHIVED: When a Consent is updated, the current version is archived and
+        a new one is created with its state set to the updated Consent's
+        previous state.
+      REVOKED: A revoked Consent is not considered when evaluating a user's
+        consent on resources.
+      DRAFT: A draft Consent is not considered when evaluating a user's
+        consent on resources unless explicitly specified.
+      REJECTED: When a draft Consent is rejected by a user, it is set to a
+        rejected state. A rejected Consent is not considered when evaluating a
+        user's consent on resources.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    ARCHIVED = 2
+    REVOKED = 3
+    DRAFT = 4
+    REJECTED = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. User-supplied key-value pairs used to organize Consent
+    resources. Metadata keys must: - be between 1 and 63 characters long -
+    have a UTF-8 encoding of maximum 128 bytes - begin with a letter - consist
+    of up to 63 characters including lowercase letters, numeric characters,
+    underscores, and dashes Metadata values must be: - be between 1 and 63
+    characters long - have a UTF-8 encoding of maximum 128 bytes - consist of
+    up to 63 characters including lowercase letters, numeric characters,
+    underscores, and dashes No more than 64 metadata entries can be associated
+    with a given consent.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consentArtifact = _messages.StringField(1)
+  expireTime = _messages.StringField(2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  policies = _messages.MessageField('GoogleCloudHealthcareV1ConsentPolicy', 5, repeated=True)
+  revisionCreateTime = _messages.StringField(6)
+  revisionId = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  ttl = _messages.StringField(9)
+  userId = _messages.StringField(10)
+
+
+class ConsentArtifact(_messages.Message):
+  r"""Documentation of a user's consent.
+
+  Messages:
+    MetadataValue: Optional. Metadata associated with the Consent artifact.
+      For example, the consent locale or user agent version.
+
+  Fields:
+    consentContentScreenshots: Optional. Screenshots, PDFs, or other binary
+      information documenting the user's consent.
+    consentContentVersion: Optional. An string indicating the version of the
+      consent information shown to the user.
+    guardianSignature: Optional. A signature from a guardian.
+    metadata: Optional. Metadata associated with the Consent artifact. For
+      example, the consent locale or user agent version.
+    name: Resource name of the Consent artifact, of the form `projects/{projec
+      t_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{conse
+      nt_store_id}/consentArtifacts/{consent_artifact_id}`. Cannot be changed
+      after creation.
+    userId: Required. User's UUID provided by the client.
+    userSignature: Optional. User's signature.
+    witnessSignature: Optional. A signature from a witness.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. Metadata associated with the Consent artifact. For example,
+    the consent locale or user agent version.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consentContentScreenshots = _messages.MessageField('Image', 1, repeated=True)
+  consentContentVersion = _messages.StringField(2)
+  guardianSignature = _messages.MessageField('Signature', 3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
+  userId = _messages.StringField(6)
+  userSignature = _messages.MessageField('Signature', 7)
+  witnessSignature = _messages.MessageField('Signature', 8)
+
+
+class ConsentEvaluation(_messages.Message):
+  r"""The detailed evaluation of a particular Consent.
+
+  Enums:
+    EvaluationResultValueValuesEnum: The evaluation result.
+
+  Fields:
+    evaluationResult: The evaluation result.
+  """
+
+  class EvaluationResultValueValuesEnum(_messages.Enum):
+    r"""The evaluation result.
+
+    Values:
+      EVALUATION_RESULT_UNSPECIFIED: No evaluation result specified. This
+        option is invalid.
+      NOT_APPLICABLE: The Consent is not applicable to the requested access
+        determination. For example, the Consent does not apply to the user for
+        which the access determination is requested, or it has a `state` of
+        `REVOKED`.
+      NO_MATCHING_POLICY: The Consent does not have a policy that matches the
+        `resource_attributes` of the evaluated resource.
+      NO_SATISFIED_POLICY: The Consent has at least one policy that matches
+        the `resource_attributes` of the evaluated resource, but no
+        `authorization_rule` was satisfied.
+      HAS_SATISFIED_POLICY: The Consent has at least one policy that matches
+        the `resource_attributes` of the evaluated resource, and at least one
+        `authorization_rule` was satisfied.
+    """
+    EVALUATION_RESULT_UNSPECIFIED = 0
+    NOT_APPLICABLE = 1
+    NO_MATCHING_POLICY = 2
+    NO_SATISFIED_POLICY = 3
+    HAS_SATISFIED_POLICY = 4
+
+  evaluationResult = _messages.EnumField('EvaluationResultValueValuesEnum', 1)
+
+
+class ConsentList(_messages.Message):
+  r"""List of resource names of Consent resources.
+
+  Fields:
+    consents: The resource names of the Consents to evaluate against, of the
+      form `projects/{project_id}/locations/{location_id}/datasets/{dataset_id
+      }/consentStores/{consent_store_id}/consents/{consent_id}`.
+  """
+
+  consents = _messages.StringField(1, repeated=True)
+
+
+class ConsentStore(_messages.Message):
+  r"""Represents a consent store.
+
+  Messages:
+    LabelsValue: Optional. User-supplied key-value pairs used to organize
+      consent stores. Label keys must be between 1 and 63 characters long,
+      have a UTF-8 encoding of maximum 128 bytes, and must conform to the
+      following PCRE regular expression: \p{Ll}\p{Lo}{0,62}. Label values must
+      be between 1 and 63 characters long, have a UTF-8 encoding of maximum
+      128 bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}. No more than 64 labels can be associated
+      with a given store. For more information:
+      https://cloud.google.com/healthcare/docs/how-tos/labeling-resources
+
+  Fields:
+    defaultConsentTtl: Optional. Default time to live for Consents created in
+      this store. Must be at least 24 hours. Updating this field will not
+      affect the expiration time of existing consents.
+    enableConsentCreateOnUpdate: Optional. If `true`, UpdateConsent creates
+      the Consent if it does not already exist. If unspecified, defaults to
+      `false`.
+    labels: Optional. User-supplied key-value pairs used to organize consent
+      stores. Label keys must be between 1 and 63 characters long, have a
+      UTF-8 encoding of maximum 128 bytes, and must conform to the following
+      PCRE regular expression: \p{Ll}\p{Lo}{0,62}. Label values must be
+      between 1 and 63 characters long, have a UTF-8 encoding of maximum 128
+      bytes, and must conform to the following PCRE regular expression:
+      [\p{Ll}\p{Lo}\p{N}_-]{0,63}. No more than 64 labels can be associated
+      with a given store. For more information:
+      https://cloud.google.com/healthcare/docs/how-tos/labeling-resources
+    name: Resource name of the consent store, of the form `projects/{project_i
+      d}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_
+      store_id}`. Cannot be changed after creation.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-supplied key-value pairs used to organize consent
+    stores. Label keys must be between 1 and 63 characters long, have a UTF-8
+    encoding of maximum 128 bytes, and must conform to the following PCRE
+    regular expression: \p{Ll}\p{Lo}{0,62}. Label values must be between 1 and
+    63 characters long, have a UTF-8 encoding of maximum 128 bytes, and must
+    conform to the following PCRE regular expression:
+    [\p{Ll}\p{Lo}\p{N}_-]{0,63}. No more than 64 labels can be associated with
+    a given store. For more information:
+    https://cloud.google.com/healthcare/docs/how-tos/labeling-resources
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  defaultConsentTtl = _messages.StringField(1)
+  enableConsentCreateOnUpdate = _messages.BooleanField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
 
 
 class CreateMessageRequest(_messages.Message):
@@ -430,6 +954,142 @@ class Empty(_messages.Message):
 
 
 
+class EvaluateUserConsentsRequest(_messages.Message):
+  r"""Evaluate a user's Consents for all matching User data mappings. Note:
+  User data mappings are indexed asynchronously, causing slight delays between
+  the time mappings are created or updated and when they are included in
+  EvaluateUserConsents results.
+
+  Enums:
+    ResponseViewValueValuesEnum: Optional. The view for
+      EvaluateUserConsentsResponse. If unspecified, defaults to `BASIC` and
+      returns `consented` as `TRUE` or `FALSE`.
+
+  Messages:
+    RequestAttributesValue: Required. The values of request attributes
+      associated with this access request.
+    ResourceAttributesValue: Optional. The values of resource attributes
+      associated with the resources being requested. If no values are
+      specified, then all resources are queried.
+
+  Fields:
+    consentList: Optional. Specific Consents to evaluate the access request
+      against. These Consents must have the same `user_id` as the User data
+      mappings being evalauted, must exist in the current `consent_store`, and
+      must have a `state` of either `ACTIVE` or `DRAFT`. A maximum of 100
+      Consents can be provided here. If unspecified, all `ACTIVE` unexpired
+      Consents in the current `consent_store` will be evaluated.
+    pageSize: Optional. Limit on the number of User data mappings to return in
+      a single response. If not specified, 100 is used. May not be larger than
+      1000.
+    pageToken: Optional. Token to retrieve the next page of results, or empty
+      to get the first page.
+    requestAttributes: Required. The values of request attributes associated
+      with this access request.
+    resourceAttributes: Optional. The values of resource attributes associated
+      with the resources being requested. If no values are specified, then all
+      resources are queried.
+    responseView: Optional. The view for EvaluateUserConsentsResponse. If
+      unspecified, defaults to `BASIC` and returns `consented` as `TRUE` or
+      `FALSE`.
+    userId: Required. User ID to evaluate consents for.
+  """
+
+  class ResponseViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The view for EvaluateUserConsentsResponse. If unspecified,
+    defaults to `BASIC` and returns `consented` as `TRUE` or `FALSE`.
+
+    Values:
+      RESPONSE_VIEW_UNSPECIFIED: No response view specified. The API will
+        default to the BASIC view.
+      BASIC: Only the `data_id` and `consented` fields are populated in the
+        response.
+      FULL: All fields within the response are populated. When set to `FULL`,
+        all `ACTIVE` Consents are evaluated even if a matching policy is found
+        during evaluation.
+    """
+    RESPONSE_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestAttributesValue(_messages.Message):
+    r"""Required. The values of request attributes associated with this access
+    request.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        RequestAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceAttributesValue(_messages.Message):
+    r"""Optional. The values of resource attributes associated with the
+    resources being requested. If no values are specified, then all resources
+    are queried.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consentList = _messages.MessageField('ConsentList', 1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  requestAttributes = _messages.MessageField('RequestAttributesValue', 4)
+  resourceAttributes = _messages.MessageField('ResourceAttributesValue', 5)
+  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 6)
+  userId = _messages.StringField(7)
+
+
+class EvaluateUserConsentsResponse(_messages.Message):
+  r"""A EvaluateUserConsentsResponse object.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list. This token is valid for 72 hours
+      after it is created.
+    results: The consent evaluation result for each `data_id`.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  results = _messages.MessageField('Result', 2, repeated=True)
+
+
 class ExportDicomDataRequest(_messages.Message):
   r"""Exports data from the specified DICOM store. If a given resource, such
   as a DICOM object with the same SOPInstance UID, already exists in the
@@ -688,6 +1348,28 @@ class FhirStore(_messages.Message):
   version = _messages.EnumField('VersionValueValuesEnum', 8)
 
 
+class Field(_messages.Message):
+  r"""A (sub) field of a type.
+
+  Fields:
+    maxOccurs: The maximum number of times this field can be repeated. 0 or -1
+      means unbounded.
+    minOccurs: The minimum number of times this field must be
+      present/repeated.
+    name: The name of the field. For example, "PID-1" or just "1".
+    table: The HL7v2 table this field refers to. For example, PID-15
+      (Patient's Primary Language) usually refers to table "0296".
+    type: The type of this field. A Type with this name must be defined in an
+      Hl7TypesConfig.
+  """
+
+  maxOccurs = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minOccurs = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  name = _messages.StringField(3)
+  table = _messages.StringField(4)
+  type = _messages.StringField(5)
+
+
 class FieldMetadata(_messages.Message):
   r"""Specifies FHIR paths to match, and how to handle de-identification of
   matching fields.
@@ -724,6 +1406,39 @@ class FieldMetadata(_messages.Message):
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   paths = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudHealthcareV1ConsentGcsDestination(_messages.Message):
+  r"""The Cloud Storage location for export.
+
+  Fields:
+    uriPrefix: URI for a Cloud Storage directory where the server writes
+      result files, in the format `gs://{bucket-
+      id}/{path/to/destination/dir}`. If there is no trailing slash, the
+      service appends one when composing the object path. The user is
+      responsible for creating the Cloud Storage bucket and directory
+      referenced in `uri_prefix`.
+  """
+
+  uriPrefix = _messages.StringField(1)
+
+
+class GoogleCloudHealthcareV1ConsentPolicy(_messages.Message):
+  r"""Represents a user's consent in terms of the resources that can be
+  accessed and under what conditions.
+
+  Fields:
+    authorizationRule: Required. The request conditions to meet to grant
+      access. In addition to any supported comparison operators, authorization
+      rules may have `IN` operator as well as at most 10 logical operators
+      that are limited to `AND` (`&&`), `OR` (`||`).
+    resourceAttributes: The resources that this policy applies to. A resource
+      is a match if it matches all the attributes listed here. If empty, this
+      policy applies to all User data mappings for the given user.
+  """
+
+  authorizationRule = _messages.MessageField('Expr', 1)
+  resourceAttributes = _messages.MessageField('Attribute', 2, repeated=True)
 
 
 class GoogleCloudHealthcareV1DeidentifyDeidentifyDicomStoreSummary(_messages.Message):
@@ -893,6 +1608,478 @@ class GoogleCloudHealthcareV1FhirGcsSource(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class GroupOrSegment(_messages.Message):
+  r"""Construct representing a logical group or a segment.
+
+  Fields:
+    group: A SchemaGroup attribute.
+    segment: A SchemaSegment attribute.
+  """
+
+  group = _messages.MessageField('SchemaGroup', 1)
+  segment = _messages.MessageField('SchemaSegment', 2)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsCreateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsCr
+  eateRequest object.
+
+  Fields:
+    attributeDefinition: A AttributeDefinition resource to be passed as the
+      request body.
+    attributeDefinitionId: Required. The ID of the Attribute definition to
+      create. The string must match the following regex: `_a-zA-Z{0,255}` and
+      must not be a reserved keyword within the Common Expression Language as
+      listed on https://github.com/google/cel-spec/blob/master/doc/langdef.md.
+    parent: Required. The name of the consent store that this Attribute
+      definition belongs to.
+  """
+
+  attributeDefinition = _messages.MessageField('AttributeDefinition', 1)
+  attributeDefinitionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsDeleteRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsDe
+  leteRequest object.
+
+  Fields:
+    name: Required. The resource name of the Attribute definition to delete.
+      To preserve referential integrity, Attribute definitions referenced by a
+      User data mapping or the latest revision of a Consent cannot be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsGetRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsGe
+  tRequest object.
+
+  Fields:
+    name: Required. The resource name of the Attribute definition to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsListRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsLi
+  stRequest object.
+
+  Fields:
+    filter: Optional. Restricts the attributes returned to those matching a
+      filter. The only field available for filtering is `category`. For
+      example, `filter=category=\"REQUEST\"`.
+    pageSize: Optional. Limit on the number of Attribute definitions to return
+      in a single response. If not specified, 100 is used. May not be larger
+      than 1000.
+    pageToken: Optional. Token to retrieve the next page of results or empty
+      to get the first page.
+    parent: Required. Name of the consent store to retrieve Attribute
+      definitions from.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsPatchRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsPa
+  tchRequest object.
+
+  Fields:
+    attributeDefinition: A AttributeDefinition resource to be passed as the
+      request body.
+    name: Resource name of the Attribute definition, of the form `projects/{pr
+      oject_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{c
+      onsent_store_id}/attributeDefinitions/{attribute_definition_id}`. Cannot
+      be changed after creation.
+    updateMask: Required. The update mask that applies to the resource. For
+      the `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask. Only the
+      `description`, `allowed_values`, `consent_default_values` and
+      `data_mapping_default_value` fields can be updated. The updated
+      `allowed_values` must contain all values from the previous
+      `allowed_values`.
+  """
+
+  attributeDefinition = _messages.MessageField('AttributeDefinition', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresCheckDataAccessRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresCheckDataAccessRequest
+  object.
+
+  Fields:
+    checkDataAccessRequest: A CheckDataAccessRequest resource to be passed as
+      the request body.
+    consentStore: Required. Name of the consent store where the requested
+      data_id is stored, of the form `projects/{project_id}/locations/{locatio
+      n_id}/datasets/{dataset_id}/consentStores/{consent_store_id}`.
+  """
+
+  checkDataAccessRequest = _messages.MessageField('CheckDataAccessRequest', 1)
+  consentStore = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsCreateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsCreate
+  Request object.
+
+  Fields:
+    consentArtifact: A ConsentArtifact resource to be passed as the request
+      body.
+    parent: Required. The name of the consent store this Consent artifact
+      belongs to.
+  """
+
+  consentArtifact = _messages.MessageField('ConsentArtifact', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsDeleteRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsDelete
+  Request object.
+
+  Fields:
+    name: Required. The resource name of the Consent artifact to delete. To
+      preserve referential integrity, Consent artifacts referenced by the
+      latest revision of a Consent cannot be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsGetRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Consent artifact to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Restricts the artifacts returned to those matching a
+      filter. The following syntax is available: * A string field value can be
+      written as text inside quotation marks, for example `"query text"`. The
+      only valid relational operation for text fields is equality (`=`), where
+      text is searched within the field, rather than having the field be equal
+      to the text. For example, `"Comment = great"` returns messages with
+      `great` in the comment field. * A number field value can be written as
+      an integer, a decimal, or an exponential. The valid relational operators
+      for number fields are the equality operator (`=`), along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * A date field value must be written in `yyyy-
+      mm-dd` form. Fields with date and time use the RFC3339 time format.
+      Leading zeros are required for one-digit months and days. The valid
+      relational operators for date fields are the equality operator (`=`) ,
+      along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
+      Note that there is no inequality (`!=`) operator. You can prepend the
+      `NOT` operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, it's just another part of
+      the character string to be matched. You can prepend the `NOT` operator
+      to an expression to negate it. The fields available for filtering are: -
+      user_id. For example, `filter=user_id=\"user123\"`. -
+      consent_content_version - metadata. For example,
+      `filter=Metadata(\"testkey\")=\"value\"` or
+      `filter=HasMetadata(\"testkey\")`.
+    pageSize: Optional. Limit on the number of consent artifacts to return in
+      a single response. If not specified, 100 is used. May not be larger than
+      1000.
+    pageToken: Optional. The next_page_token value returned from the previous
+      List request, if any.
+    parent: Required. Name of the consent store to retrieve consent artifacts
+      from.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentsActivateRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresConsentsActivateRequest
+  object.
+
+  Fields:
+    activateConsentRequest: A ActivateConsentRequest resource to be passed as
+      the request body.
+    name: Required. The resource name of the Consent to activate, of the form
+      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/con
+      sentStores/{consent_store_id}/consents/{consent_id}`. An
+      INVALID_ARGUMENT error occurs if `revision_id` is specified in the name.
+  """
+
+  activateConsentRequest = _messages.MessageField('ActivateConsentRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentsCreateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentsCreateRequest
+  object.
+
+  Fields:
+    consent: A Consent resource to be passed as the request body.
+    parent: Required. Name of the consent store.
+  """
+
+  consent = _messages.MessageField('Consent', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Consent to delete, of the form `p
+      rojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/conse
+      ntStores/{consent_store_id}/consents/{consent_id}`. An INVALID_ARGUMENT
+      error occurs if `revision_id` is specified in the name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRevisionRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRevision
+  Request object.
+
+  Fields:
+    name: Required. The resource name of the Consent revision to delete, of
+      the form `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/consentStores/{consent_store_id}/consents/{consent_id}@{revision_i
+      d}`. An INVALID_ARGUMENT error occurs if `revision_id` is not specified
+      in the name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentsGetRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Consent to retrieve, of the form
+      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/con
+      sentStores/{consent_store_id}/consents/{consent_id}`. In order to
+      retrieve a previous revision of the Consent, also provide the revision
+      ID: `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}
+      /consentStores/{consent_store_id}/consents/{consent_id}@{revision_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Restricts the Consents returned to those matching a
+      filter. The following syntax is available: * A string field value can be
+      written as text inside quotation marks, for example `"query text"`. The
+      only valid relational operation for text fields is equality (`=`), where
+      text is searched within the field, rather than having the field be equal
+      to the text. For example, `"Comment = great"` returns messages with
+      `great` in the comment field. * A number field value can be written as
+      an integer, a decimal, or an exponential. The valid relational operators
+      for number fields are the equality operator (`=`), along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * A date field value must be written in `yyyy-
+      mm-dd` form. Fields with date and time use the RFC3339 time format.
+      Leading zeros are required for one-digit months and days. The valid
+      relational operators for date fields are the equality operator (`=`) ,
+      along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
+      Note that there is no inequality (`!=`) operator. You can prepend the
+      `NOT` operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, it's just another part of
+      the character string to be matched. You can prepend the `NOT` operator
+      to an expression to negate it. The fields available for filtering are: -
+      user_id. For example, `filter='user_id="user123"'`. - consent_artifact -
+      state - revision_create_time - metadata. For example,
+      `filter=Metadata(\"testkey\")=\"value\"` or
+      `filter=HasMetadata(\"testkey\")`.
+    pageSize: Optional. Limit on the number of Consents to return in a single
+      response. If not specified, 100 is used. May not be larger than 1000.
+    pageToken: Optional. The next_page_token value returned from the previous
+      List request, if any.
+    parent: Required. Name of the consent store to retrieve Consents from.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRevisionsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRevisionsRequest
+  object.
+
+  Fields:
+    filter: Optional. Restricts the revisions returned to those matching a
+      filter. The following syntax is available: * A string field value can be
+      written as text inside quotation marks, for example `"query text"`. The
+      only valid relational operation for text fields is equality (`=`), where
+      text is searched within the field, rather than having the field be equal
+      to the text. For example, `"Comment = great"` returns messages with
+      `great` in the comment field. * A number field value can be written as
+      an integer, a decimal, or an exponential. The valid relational operators
+      for number fields are the equality operator (`=`), along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * A date field value must be written in `yyyy-
+      mm-dd` form. Fields with date and time use the RFC3339 time format.
+      Leading zeros are required for one-digit months and days. The valid
+      relational operators for date fields are the equality operator (`=`) ,
+      along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
+      Note that there is no inequality (`!=`) operator. You can prepend the
+      `NOT` operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, it's just another part of
+      the character string to be matched. You can prepend the `NOT` operator
+      to an expression to negate it. Fields available for filtering are: -
+      user_id. For example, `filter='user_id="user123"'`. - consent_artifact -
+      state - revision_create_time - metadata. For example,
+      `filter=Metadata(\"testkey\")=\"value\"` or
+      `filter=HasMetadata(\"testkey\")`.
+    name: Required. The resource name of the Consent to retrieve revisions
+      for.
+    pageSize: Optional. Limit on the number of revisions to return in a single
+      response. If not specified, 100 is used. May not be larger than 1000.
+    pageToken: Optional. Token to retrieve the next page of results or empty
+      if there are no more results in the list.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentsPatchRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentsPatchRequest
+  object.
+
+  Fields:
+    consent: A Consent resource to be passed as the request body.
+    name: Resource name of the Consent, of the form `projects/{project_id}/loc
+      ations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_
+      id}/consents/{consent_id}`. Cannot be changed after creation.
+    updateMask: Required. The update mask to apply to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask. Only the `user_id`,
+      `policies`, `consent_artifact`, and `metadata` fields can be updated.
+  """
+
+  consent = _messages.MessageField('Consent', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentsRejectRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentsRejectRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Consent to reject, of the form `p
+      rojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/conse
+      ntStores/{consent_store_id}/consents/{consent_id}`. An INVALID_ARGUMENT
+      error occurs if `revision_id` is specified in the name.
+    rejectConsentRequest: A RejectConsentRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rejectConsentRequest = _messages.MessageField('RejectConsentRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresConsentsRevokeRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentsRevokeRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Consent to revoke, of the form `p
+      rojects/{project_id}/locations/{location_id}/datasets/{dataset_id}/conse
+      ntStores/{consent_store_id}/consents/{consent_id}`. An INVALID_ARGUMENT
+      error occurs if `revision_id` is specified in the name.
+    revokeConsentRequest: A RevokeConsentRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  revokeConsentRequest = _messages.MessageField('RevokeConsentRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresCreateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresCreateRequest object.
+
+  Fields:
+    consentStore: A ConsentStore resource to be passed as the request body.
+    consentStoreId: Required. The ID of the consent store to create. The
+      string must match the following regex: `[\p{L}\p{N}_\-\.]{1,256}`.
+      Cannot be changed after creation.
+    parent: Required. The name of the dataset this consent store belongs to.
+  """
+
+  consentStore = _messages.MessageField('ConsentStore', 1)
+  consentStoreId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresDeleteRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the consent store to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresEvaluateUserConsentsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresEvaluateUserConsentsRequest
+  object.
+
+  Fields:
+    consentStore: Required. Name of the consent store to retrieve User data
+      mappings from.
+    evaluateUserConsentsRequest: A EvaluateUserConsentsRequest resource to be
+      passed as the request body.
+  """
+
+  consentStore = _messages.StringField(1, required=True)
+  evaluateUserConsentsRequest = _messages.MessageField('EvaluateUserConsentsRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest
   object.
@@ -913,6 +2100,73 @@ class HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest(_messa
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresGetRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the consent store to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresListRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresListRequest object.
+
+  Fields:
+    filter: Optional. Restricts the stores returned to those matching a
+      filter. Only filtering on labels is supported. For example,
+      `filter=labels.key=value`.
+    pageSize: Optional. Limit on the number of consent stores to return in a
+      single response. If not specified, 100 is used. May not be larger than
+      1000.
+    pageToken: Optional. Token to retrieve the next page of results, or empty
+      to get the first page.
+    parent: Required. Name of the dataset.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresPatchRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresPatchRequest object.
+
+  Fields:
+    consentStore: A ConsentStore resource to be passed as the request body.
+    name: Resource name of the consent store, of the form `projects/{project_i
+      d}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_
+      store_id}`. Cannot be changed after creation.
+    updateMask: Required. The update mask that applies to the resource. For
+      the `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask. Only the `labels`,
+      `default_consent_ttl`, and `enable_consent_create_on_update` fields are
+      allowed to be updated.
+  """
+
+  consentStore = _messages.MessageField('ConsentStore', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresQueryAccessibleDataRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresQueryAccessibleDataRequest
+  object.
+
+  Fields:
+    consentStore: Required. Name of the consent store to retrieve User data
+      mappings from.
+    queryAccessibleDataRequest: A QueryAccessibleDataRequest resource to be
+      passed as the request body.
+  """
+
+  consentStore = _messages.StringField(1, required=True)
+  queryAccessibleDataRequest = _messages.MessageField('QueryAccessibleDataRequest', 2)
 
 
 class HealthcareProjectsLocationsDatasetsConsentStoresSetIamPolicyRequest(_messages.Message):
@@ -946,6 +2200,125 @@ class HealthcareProjectsLocationsDatasetsConsentStoresTestIamPermissionsRequest(
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsArchiveRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsArchiv
+  eRequest object.
+
+  Fields:
+    archiveUserDataMappingRequest: A ArchiveUserDataMappingRequest resource to
+      be passed as the request body.
+    name: Required. The resource name of the User data mapping to archive.
+  """
+
+  archiveUserDataMappingRequest = _messages.MessageField('ArchiveUserDataMappingRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsCreateRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsCreate
+  Request object.
+
+  Fields:
+    parent: Required. Name of the consent store.
+    userDataMapping: A UserDataMapping resource to be passed as the request
+      body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  userDataMapping = _messages.MessageField('UserDataMapping', 2)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsDeleteRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsDelete
+  Request object.
+
+  Fields:
+    name: Required. The resource name of the User data mapping to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsGetRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the User data mapping to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Restricts the User data mappings returned to those
+      matching a filter. The following syntax is available: * A string field
+      value can be written as text inside quotation marks, for example `"query
+      text"`. The only valid relational operation for text fields is equality
+      (`=`), where text is searched within the field, rather than having the
+      field be equal to the text. For example, `"Comment = great"` returns
+      messages with `great` in the comment field. * A number field value can
+      be written as an integer, a decimal, or an exponential. The valid
+      relational operators for number fields are the equality operator (`=`),
+      along with the less than/greater than operators (`<`, `<=`, `>`, `>=`).
+      Note that there is no inequality (`!=`) operator. You can prepend the
+      `NOT` operator to an expression to negate it. * A date field value must
+      be written in `yyyy-mm-dd` form. Fields with date and time use the
+      RFC3339 time format. Leading zeros are required for one-digit months and
+      days. The valid relational operators for date fields are the equality
+      operator (`=`) , along with the less than/greater than operators (`<`,
+      `<=`, `>`, `>=`). Note that there is no inequality (`!=`) operator. You
+      can prepend the `NOT` operator to an expression to negate it. * Multiple
+      field query expressions can be combined in one query by adding `AND` or
+      `OR` operators between the expressions. If a boolean operator appears
+      within a quoted string, it is not treated as special, it's just another
+      part of the character string to be matched. You can prepend the `NOT`
+      operator to an expression to negate it. The fields available for
+      filtering are: - data_id - user_id. For example,
+      `filter=user_id=\"user123\"`. - archived - archive_time
+    pageSize: Optional. Limit on the number of User data mappings to return in
+      a single response. If not specified, 100 is used. May not be larger than
+      1000.
+    pageToken: Optional. Token to retrieve the next page of results, or empty
+      to get the first page.
+    parent: Required. Name of the consent store to retrieve User data mappings
+      from.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsPatchRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsPatchRequest
+  object.
+
+  Fields:
+    name: Resource name of the User data mapping, of the form `projects/{proje
+      ct_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{cons
+      ent_store_id}/userDataMappings/{user_data_mapping_id}`.
+    updateMask: Required. The update mask that applies to the resource. For
+      the `FieldMask` definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask. Only the `data_id`,
+      `user_id` and `resource_attributes` fields can be updated.
+    userDataMapping: A UserDataMapping resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  userDataMapping = _messages.MessageField('UserDataMapping', 3)
 
 
 class HealthcareProjectsLocationsDatasetsCreateRequest(_messages.Message):
@@ -2170,15 +3543,17 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
       `send_date < "2017-01-02"`. * `send_time`, the timestamp when the
       message was sent, using the RFC3339 time format for comparisons, from
       the MSH-7 segment. For example, `send_time <
-      "2017-01-02T00:00:00-05:00"`. * `send_facility`, the care center that
-      the message came from, from the MSH-4 segment. For example,
-      `send_facility = "ABC"`. * `PatientId(value, type)`, which matches if
-      the message lists a patient having an ID of the given value and type in
-      the PID-2, PID-3, or PID-4 segments. For example, `PatientId("123456",
-      "MRN")`. * `labels.x`, a string value of the label with key `x` as set
-      using the Message.labels map. For example, `labels."priority"="high"`.
-      The operator `:*` can be used to assert the existence of a label. For
-      example, `labels."priority":*`.
+      "2017-01-02T00:00:00-05:00"`. * `create_time`, the timestamp when the
+      message was created in the HL7v2 store. Use the RFC3339 time format for
+      comparisons. For example, `create_time < "2017-01-02T00:00:00-05:00"`. *
+      `send_facility`, the care center that the message came from, from the
+      MSH-4 segment. For example, `send_facility = "ABC"`. * `PatientId(value,
+      type)`, which matches if the message lists a patient having an ID of the
+      given value and type in the PID-2, PID-3, or PID-4 segments. For
+      example, `PatientId("123456", "MRN")`. * `labels.x`, a string value of
+      the label with key `x` as set using the Message.labels map. For example,
+      `labels."priority"="high"`. The operator `:*` can be used to assert the
+      existence of a label. For example, `labels."priority":*`.
     orderBy: Orders messages returned by the specified order_by clause.
       Syntax:
       https://cloud.google.com/apis/design/design_patterns#sorting_order
@@ -2421,6 +3796,66 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class Hl7SchemaConfig(_messages.Message):
+  r"""Root config message for HL7v2 schema. This contains a schema structure
+  of groups and segments, and filters that determine which messages to apply
+  the schema structure to.
+
+  Messages:
+    MessageSchemaConfigsValue: Map from each HL7v2 message type and trigger
+      event pair, such as ADT_A04, to its schema configuration root group.
+
+  Fields:
+    messageSchemaConfigs: Map from each HL7v2 message type and trigger event
+      pair, such as ADT_A04, to its schema configuration root group.
+    version: Each VersionSource is tested and only if they all match is the
+      schema used for the message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MessageSchemaConfigsValue(_messages.Message):
+    r"""Map from each HL7v2 message type and trigger event pair, such as
+    ADT_A04, to its schema configuration root group.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        MessageSchemaConfigsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MessageSchemaConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MessageSchemaConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A SchemaGroup attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SchemaGroup', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  messageSchemaConfigs = _messages.MessageField('MessageSchemaConfigsValue', 1)
+  version = _messages.MessageField('VersionSource', 2, repeated=True)
+
+
+class Hl7TypesConfig(_messages.Message):
+  r"""Root config for HL7v2 datatype definitions for a specific HL7v2 version.
+
+  Fields:
+    type: The HL7v2 type definitions.
+    version: The version selectors that this config applies to. A message must
+      match ALL version sources to apply.
+  """
+
+  type = _messages.MessageField('Type', 1, repeated=True)
+  version = _messages.MessageField('VersionSource', 2, repeated=True)
+
+
 class Hl7V2NotificationConfig(_messages.Message):
   r"""Specifies where and whether to send notifications upon changes to a data
   store.
@@ -2456,15 +3891,17 @@ class Hl7V2NotificationConfig(_messages.Message):
       For example, `send_date < "2017-01-02"`. * `send_time`, the timestamp
       when the message was sent, using the RFC3339 time format for
       comparisons, from the MSH-7 segment. For example, `send_time <
-      "2017-01-02T00:00:00-05:00"`. * `send_facility`, the care center that
-      the message came from, from the MSH-4 segment. For example,
-      `send_facility = "ABC"`. * `PatientId(value, type)`, which matches if
-      the message lists a patient having an ID of the given value and type in
-      the PID-2, PID-3, or PID-4 segments. For example, `PatientId("123456",
-      "MRN")`. * `labels.x`, a string value of the label with key `x` as set
-      using the Message.labels map. For example, `labels."priority"="high"`.
-      The operator `:*` can be used to assert the existence of a label. For
-      example, `labels."priority":*`.
+      "2017-01-02T00:00:00-05:00"`. * `create_time`, the timestamp when the
+      message was created in the HL7v2 store. Use the RFC3339 time format for
+      comparisons. For example, `create_time < "2017-01-02T00:00:00-05:00"`. *
+      `send_facility`, the care center that the message came from, from the
+      MSH-4 segment. For example, `send_facility = "ABC"`. * `PatientId(value,
+      type)`, which matches if the message lists a patient having an ID of the
+      given value and type in the PID-2, PID-3, or PID-4 segments. For
+      example, `PatientId("123456", "MRN")`. * `labels.x`, a string value of
+      the label with key `x` as set using the Message.labels map. For example,
+      `labels."priority"="high"`. The operator `:*` can be used to assert the
+      existence of a label. For example, `labels."priority":*`.
     pubsubTopic: The [Cloud Pub/Sub](https://cloud.google.com/pubsub/docs/)
       topic that notifications of changes are published on. Supplied by the
       client. The notification is a `PubsubMessage` with the following fields:
@@ -2627,6 +4064,26 @@ class HttpBody(_messages.Message):
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
+class Image(_messages.Message):
+  r"""Raw bytes representing consent artifact content.
+
+  Fields:
+    gcsUri: Input only. Points to a Cloud Storage URI containing the consent
+      artifact content. The URI must be in the following format:
+      `gs://{bucket_id}/{object_id}`. The Cloud Healthcare API service account
+      must have the `roles/storage.objectViewer` Cloud IAM role for this Cloud
+      Storage location. The consent artifact content at this URI is copied to
+      a Cloud Storage location managed by the Cloud Healthcare API. Responses
+      to fetching requests return the consent artifact content in raw_bytes.
+    rawBytes: Consent artifact content represented as a stream of bytes. This
+      field is populated when returned in GetConsentArtifact response, but not
+      included in CreateConsentArtifact and ListConsentArtifact response.
+  """
+
+  gcsUri = _messages.StringField(1)
+  rawBytes = _messages.BytesField(2)
+
+
 class ImageConfig(_messages.Message):
   r"""Specifies how to handle de-identification of image pixels.
 
@@ -2776,6 +4233,80 @@ class IngestMessageResponse(_messages.Message):
   message = _messages.MessageField('Message', 2)
 
 
+class ListAttributeDefinitionsResponse(_messages.Message):
+  r"""A ListAttributeDefinitionsResponse object.
+
+  Fields:
+    attributeDefinitions: The returned Attribute definitions. The maximum
+      number of attributes returned is determined by the value of page_size in
+      the ListAttributeDefinitionsRequest.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  attributeDefinitions = _messages.MessageField('AttributeDefinition', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListConsentArtifactsResponse(_messages.Message):
+  r"""A ListConsentArtifactsResponse object.
+
+  Fields:
+    consentArtifacts: The returned Consent artifacts. The maximum number of
+      artifacts returned is determined by the value of page_size in the
+      ListConsentArtifactsRequest.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  consentArtifacts = _messages.MessageField('ConsentArtifact', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListConsentRevisionsResponse(_messages.Message):
+  r"""A ListConsentRevisionsResponse object.
+
+  Fields:
+    consents: The returned Consent revisions. The maximum number of revisions
+      returned is determined by the value of `page_size` in the
+      ListConsentRevisionsRequest.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  consents = _messages.MessageField('Consent', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListConsentStoresResponse(_messages.Message):
+  r"""A ListConsentStoresResponse object.
+
+  Fields:
+    consentStores: The returned consent stores. The maximum number of stores
+      returned is determined by the value of page_size in the
+      ListConsentStoresRequest.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  consentStores = _messages.MessageField('ConsentStore', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListConsentsResponse(_messages.Message):
+  r"""A ListConsentsResponse object.
+
+  Fields:
+    consents: The returned Consents. The maximum number of Consents returned
+      is determined by the value of page_size in the ListConsentsRequest.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  consents = _messages.MessageField('Consent', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListDatasetsResponse(_messages.Message):
   r"""Lists the available datasets.
 
@@ -2869,6 +4400,21 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListUserDataMappingsResponse(_messages.Message):
+  r"""A ListUserDataMappingsResponse object.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    userDataMappings: The returned User data mappings. The maximum number of
+      User data mappings returned is determined by the value of page_size in
+      the ListUserDataMappingsRequest.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  userDataMappings = _messages.MessageField('UserDataMapping', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -2985,6 +4531,8 @@ class Message(_messages.Message):
     parsedData: Output only. The parsed version of the raw message data.
     patientIds: All patient IDs listed in the PID-2, PID-3, and PID-4 segments
       of this message.
+    schematizedData: The parsed version of the raw message data schematized
+      according to this store's schemas and type definitions.
     sendFacility: The hospital that this message came from. MSH-4.
     sendTime: The datetime the sending application sent this message. MSH-7.
   """
@@ -3027,8 +4575,9 @@ class Message(_messages.Message):
   name = _messages.StringField(5)
   parsedData = _messages.MessageField('ParsedData', 6)
   patientIds = _messages.MessageField('PatientId', 7, repeated=True)
-  sendFacility = _messages.StringField(8)
-  sendTime = _messages.StringField(9)
+  schematizedData = _messages.MessageField('SchematizedData', 8)
+  sendFacility = _messages.StringField(9)
+  sendTime = _messages.StringField(10)
 
 
 class NotificationConfig(_messages.Message):
@@ -3205,13 +4754,16 @@ class ParserConfig(_messages.Message):
 
   Fields:
     allowNullHeader: Determines whether messages with no header are allowed.
+    schema: Schemas used to parse messages in this store, if schematized
+      parsing is desired.
     segmentTerminator: Byte(s) to use as the segment terminator. If this is
       unset, '\r' is used as segment terminator, matching the HL7 version 2
       specification.
   """
 
   allowNullHeader = _messages.BooleanField(1)
-  segmentTerminator = _messages.BytesField(2)
+  schema = _messages.MessageField('SchemaPackage', 2)
+  segmentTerminator = _messages.BytesField(3)
 
 
 class PatientId(_messages.Message):
@@ -3312,11 +4864,113 @@ class ProgressCounter(_messages.Message):
   success = _messages.IntegerField(3)
 
 
+class QueryAccessibleDataRequest(_messages.Message):
+  r"""Queries all data_ids that are consented for a given use in the given
+  consent store and writes them to a specified destination. The returned
+  Operation includes a progress counter for the number of User data mappings
+  processed. Errors are logged to Cloud Logging (see [Viewing logs]
+  (/healthcare/docs/how-tos/logging) and [QueryAccessibleData] for a sample
+  log entry).
+
+  Messages:
+    RequestAttributesValue: The values of request attributes associated with
+      this access request.
+    ResourceAttributesValue: Optional. The values of resource attributes
+      associated with the type of resources being requested. If no values are
+      specified, then all resource types are included in the output.
+
+  Fields:
+    gcsDestination: The Cloud Storage destination. The Cloud Healthcare API
+      service account must have the `roles/storage.objectAdmin` Cloud IAM role
+      for this Cloud Storage location.
+    requestAttributes: The values of request attributes associated with this
+      access request.
+    resourceAttributes: Optional. The values of resource attributes associated
+      with the type of resources being requested. If no values are specified,
+      then all resource types are included in the output.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestAttributesValue(_messages.Message):
+    r"""The values of request attributes associated with this access request.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        RequestAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceAttributesValue(_messages.Message):
+    r"""Optional. The values of resource attributes associated with the type
+    of resources being requested. If no values are specified, then all
+    resource types are included in the output.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1ConsentGcsDestination', 1)
+  requestAttributes = _messages.MessageField('RequestAttributesValue', 2)
+  resourceAttributes = _messages.MessageField('ResourceAttributesValue', 3)
+
+
 class RedactConfig(_messages.Message):
   r"""Define how to redact sensitive values. Default behaviour is erase. For
   example, "My name is Jane." becomes "My name is ."
   """
 
+
+
+class RejectConsentRequest(_messages.Message):
+  r"""Rejects the latest revision of the specified Consent by committing a new
+  revision with `state` updated to `REJECTED`. If the latest revision of the
+  given Consent is in the `REJECTED` state, no new revision is committed.
+
+  Fields:
+    consentArtifact: Optional. The resource name of the Consent artifact that
+      contains documentation of the user's rejection of the draft Consent, of
+      the form `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/consentStores/{consent_store_id}/consentArtifacts/{consent_artifac
+      t_id}`. If the draft Consent had a Consent artifact, this Consent
+      artifact overwrites it.
+  """
+
+  consentArtifact = _messages.StringField(1)
 
 
 class ReplaceWithInfoTypeConfig(_messages.Message):
@@ -3335,6 +4989,66 @@ class Resources(_messages.Message):
   """
 
   resources = _messages.StringField(1, repeated=True)
+
+
+class Result(_messages.Message):
+  r"""The consent evaluation result for a single `data_id`.
+
+  Messages:
+    ConsentDetailsValue: The resource names of all evaluated Consents mapped
+      to their evaluation.
+
+  Fields:
+    consentDetails: The resource names of all evaluated Consents mapped to
+      their evaluation.
+    consented: Whether the resource is consented for the given use.
+    dataId: The unique identifier of the evaluated resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConsentDetailsValue(_messages.Message):
+    r"""The resource names of all evaluated Consents mapped to their
+    evaluation.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConsentDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConsentDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConsentDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ConsentEvaluation attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ConsentEvaluation', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consentDetails = _messages.MessageField('ConsentDetailsValue', 1)
+  consented = _messages.BooleanField(2)
+  dataId = _messages.StringField(3)
+
+
+class RevokeConsentRequest(_messages.Message):
+  r"""Revokes the latest revision of the specified Consent by committing a new
+  revision with `state` updated to `REVOKED`. If the latest revision of the
+  given Consent is in the `REVOKED` state, no new revision is committed.
+
+  Fields:
+    consentArtifact: Optional. The resource name of the Consent artifact that
+      contains proof of the user's revocation of the Consent, of the form `pro
+      jects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consent
+      Stores/{consent_store_id}/consentArtifacts/{consent_artifact_id}`.
+  """
+
+  consentArtifact = _messages.StringField(1)
 
 
 class SchemaConfig(_messages.Message):
@@ -3374,6 +5088,100 @@ class SchemaConfig(_messages.Message):
 
   recursiveStructureDepth = _messages.IntegerField(1)
   schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 2)
+
+
+class SchemaGroup(_messages.Message):
+  r"""An HL7v2 logical group construct.
+
+  Fields:
+    choice: True indicates that this is a choice group, meaning that only one
+      of its segments can exist in a given message.
+    maxOccurs: The maximum number of times this group can be repeated. 0 or -1
+      means unbounded.
+    members: Nested groups and/or segments.
+    minOccurs: The minimum number of times this group must be
+      present/repeated.
+    name: The name of this group. For example, "ORDER_DETAIL".
+  """
+
+  choice = _messages.BooleanField(1)
+  maxOccurs = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  members = _messages.MessageField('GroupOrSegment', 3, repeated=True)
+  minOccurs = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  name = _messages.StringField(5)
+
+
+class SchemaPackage(_messages.Message):
+  r"""A schema package contains a set of schemas and type definitions.
+
+  Enums:
+    SchematizedParsingTypeValueValuesEnum: Determines how messages that fail
+      to parse are handled.
+
+  Fields:
+    ignoreMinOccurs: Flag to ignore all min_occurs restrictions in the schema.
+      This means that incoming messages can omit any group, segment, field,
+      component, or subcomponent.
+    schemas: Schema configs that are layered based on their VersionSources
+      that match the incoming message. Schema configs present in higher
+      indices override those in lower indices with the same message type and
+      trigger event if their VersionSources all match an incoming message.
+    schematizedParsingType: Determines how messages that fail to parse are
+      handled.
+    types: Schema type definitions that are layered based on their
+      VersionSources that match the incoming message. Type definitions present
+      in higher indices override those in lower indices with the same type
+      name if their VersionSources all match an incoming message.
+  """
+
+  class SchematizedParsingTypeValueValuesEnum(_messages.Enum):
+    r"""Determines how messages that fail to parse are handled.
+
+    Values:
+      SCHEMATIZED_PARSING_TYPE_UNSPECIFIED: Unspecified schematized parsing
+        type, equivalent to `SOFT_FAIL`.
+      SOFT_FAIL: Messages that fail to parse are still stored and ACKed but a
+        parser error is stored in place of the schematized data.
+      HARD_FAIL: Messages that fail to parse are rejected from
+        ingestion/insertion and return an error code.
+    """
+    SCHEMATIZED_PARSING_TYPE_UNSPECIFIED = 0
+    SOFT_FAIL = 1
+    HARD_FAIL = 2
+
+  ignoreMinOccurs = _messages.BooleanField(1)
+  schemas = _messages.MessageField('Hl7SchemaConfig', 2, repeated=True)
+  schematizedParsingType = _messages.EnumField('SchematizedParsingTypeValueValuesEnum', 3)
+  types = _messages.MessageField('Hl7TypesConfig', 4, repeated=True)
+
+
+class SchemaSegment(_messages.Message):
+  r"""An HL7v2 Segment.
+
+  Fields:
+    maxOccurs: The maximum number of times this segment can be present in this
+      group. 0 or -1 means unbounded.
+    minOccurs: The minimum number of times this segment can be present in this
+      group.
+    type: The Segment type. For example, "PID".
+  """
+
+  maxOccurs = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minOccurs = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  type = _messages.StringField(3)
+
+
+class SchematizedData(_messages.Message):
+  r"""The content of an HL7v2 message in a structured format as specified by a
+  schema.
+
+  Fields:
+    data: JSON output of the parser.
+    error: The error output of the parser.
+  """
+
+  data = _messages.StringField(1)
+  error = _messages.StringField(2)
 
 
 class SearchResourcesRequest(_messages.Message):
@@ -3475,6 +5283,52 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class Signature(_messages.Message):
+  r"""User signature.
+
+  Messages:
+    MetadataValue: Optional. Metadata associated with the user's signature.
+      For example, the user's name or the user's title.
+
+  Fields:
+    image: Optional. An image of the user's signature.
+    metadata: Optional. Metadata associated with the user's signature. For
+      example, the user's name or the user's title.
+    signatureTime: Optional. Timestamp of the signature.
+    userId: Required. User's UUID provided by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. Metadata associated with the user's signature. For example,
+    the user's name or the user's title.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  image = _messages.MessageField('Image', 1)
+  metadata = _messages.MessageField('MetadataValue', 2)
+  signatureTime = _messages.StringField(3)
+  userId = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3682,6 +5536,85 @@ class TextConfig(_messages.Message):
   """
 
   transformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
+
+
+class Type(_messages.Message):
+  r"""A type definition for some HL7v2 type (incl. Segments and Datatypes).
+
+  Enums:
+    PrimitiveValueValuesEnum: If this is a primitive type then this field is
+      the type of the primitive For example, STRING. Leave unspecified for
+      composite types.
+
+  Fields:
+    fields: The (sub) fields this type has (if not primitive).
+    name: The name of this type. This would be the segment or datatype name.
+      For example, "PID" or "XPN".
+    primitive: If this is a primitive type then this field is the type of the
+      primitive For example, STRING. Leave unspecified for composite types.
+  """
+
+  class PrimitiveValueValuesEnum(_messages.Enum):
+    r"""If this is a primitive type then this field is the type of the
+    primitive For example, STRING. Leave unspecified for composite types.
+
+    Values:
+      PRIMITIVE_UNSPECIFIED: Not a primitive.
+      STRING: String primitive.
+      VARIES: Element that can have unschematized children.
+      UNESCAPED_STRING: Like STRING, but all delimiters below this element are
+        ignored.
+    """
+    PRIMITIVE_UNSPECIFIED = 0
+    STRING = 1
+    VARIES = 2
+    UNESCAPED_STRING = 3
+
+  fields = _messages.MessageField('Field', 1, repeated=True)
+  name = _messages.StringField(2)
+  primitive = _messages.EnumField('PrimitiveValueValuesEnum', 3)
+
+
+class UserDataMapping(_messages.Message):
+  r"""Maps a resource to the associated user and Attributes.
+
+  Fields:
+    archiveTime: Output only. Indicates the time when this mapping was
+      archived.
+    archived: Output only. Indicates whether this mapping is archived.
+    dataId: Required. A unique identifier for the mapped resource.
+    name: Resource name of the User data mapping, of the form `projects/{proje
+      ct_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{cons
+      ent_store_id}/userDataMappings/{user_data_mapping_id}`.
+    resourceAttributes: Attributes of the resource. Only explicitly set
+      attributes are displayed here. Attribute definitions with defaults set
+      implicitly apply to these User data mappings. Attributes listed here
+      must be single valued, that is, exactly one value is specified for the
+      field "values" in each Attribute.
+    userId: Required. User's UUID provided by the client.
+  """
+
+  archiveTime = _messages.StringField(1)
+  archived = _messages.BooleanField(2)
+  dataId = _messages.StringField(3)
+  name = _messages.StringField(4)
+  resourceAttributes = _messages.MessageField('Attribute', 5, repeated=True)
+  userId = _messages.StringField(6)
+
+
+class VersionSource(_messages.Message):
+  r"""Describes a selector for extracting and matching an MSH field to a
+  value.
+
+  Fields:
+    mshField: The field to extract from the MSH segment. For example, "3.1" or
+      "18[1].1".
+    value: The value to match with the field. For example, "My Application
+      Name" or "2.3".
+  """
+
+  mshField = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

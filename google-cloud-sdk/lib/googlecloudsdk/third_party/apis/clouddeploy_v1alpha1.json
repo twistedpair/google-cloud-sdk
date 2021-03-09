@@ -6,7 +6,7 @@
   "canonicalName": "clouddeploy",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "clouddeploy API (prod))",
+  "title": "clouddeploy API (prod)",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -205,15 +205,18 @@
     },
     "ListDeliveryPipelinesResponse": {
       "id": "ListDeliveryPipelinesResponse",
+      "description": "The response object from `ListDeliveryPipelines`.",
       "type": "object",
       "properties": {
-        "resources": {
+        "deliveryPipelines": {
+          "description": "The `DeliveryPipeline` objects.",
           "type": "array",
           "items": {
             "$ref": "DeliveryPipeline"
           }
         },
         "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
@@ -227,19 +230,20 @@
     },
     "DeliveryPipeline": {
       "id": "DeliveryPipeline",
+      "description": "A `DeliveryPipeline` resource in the Cloud Deploy API. A `DeliveryPipeline` defines a pipeline through which a Skaffold configuration can progress.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the DeliveryPipeline. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/a-z{0,62}.",
+          "description": "Required. Name of the `DeliveryPipeline`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/a-z{0,62}.",
           "type": "string"
         },
         "uid": {
-          "description": "Output only. Unique identifier of the DeliveryPipeline.",
+          "description": "Output only. Unique identifier of the `DeliveryPipeline`.",
           "readOnly": true,
           "type": "string"
         },
         "description": {
-          "description": "Description of the DeliveryPipeline. Max length is 255 characters.",
+          "description": "Description of the `DeliveryPipeline`. Max length is 255 characters.",
           "type": "string"
         },
         "annotations": {
@@ -257,11 +261,13 @@
           }
         },
         "createTime": {
+          "description": "Output only. Time at which the pipeline was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "description": "Output only. Most recent time at which the pipeline was updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -270,8 +276,12 @@
           "$ref": "SerialPipeline"
         },
         "renderServiceAccount": {
-          "description": "Service account used to render a Release. If unset, the compute service account will be used.",
+          "description": "Service account used to render a `Release`. If unset, the compute service account will be used.",
           "type": "string"
+        },
+        "condition": {
+          "description": "Information around the state of the Delivery Pipeline.",
+          "$ref": "PipelineCondition"
         },
         "etag": {
           "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
@@ -281,10 +291,11 @@
     },
     "SerialPipeline": {
       "id": "SerialPipeline",
+      "description": "SerialPipeline defines a sequential set of stages for a `DeliveryPipeline`.",
       "type": "object",
       "properties": {
         "stages": {
-          "description": "Each stage specifies configuration for a target. The ordering of this list defines the promotion flow.",
+          "description": "Each stage specifies configuration for a `Target`. The ordering of this list defines the promotion flow.",
           "type": "array",
           "items": {
             "$ref": "Stage"
@@ -294,14 +305,15 @@
     },
     "Stage": {
       "id": "Stage",
+      "description": "Stage specifies a location to which to deploy.",
       "type": "object",
       "properties": {
         "targetId": {
-          "description": "The target_id to which this stage points. Format is \"targetName\". The parent of the target is the delivery pipeline in which this stage lives.",
+          "description": "The target_id to which this stage points. Format is \"targetName\". The parent of the `Target` is the `DeliveryPipeline` in which this stage lives.",
           "type": "string"
         },
         "profiles": {
-          "description": "Profiles to use when rendering the manifest for this stage's Target.",
+          "description": "Profiles to use when rendering the manifest for this stage's `Target`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -309,17 +321,74 @@
         }
       }
     },
-    "ListTargetsResponse": {
-      "id": "ListTargetsResponse",
+    "PipelineCondition": {
+      "id": "PipelineCondition",
+      "description": "PipelineCondition contains all conditions relevant to a Delivery Pipeline.",
       "type": "object",
       "properties": {
-        "resources": {
+        "pipelineReadyCondition": {
+          "description": "Details around the Pipeline's overall status.",
+          "$ref": "PipelineReadyCondition"
+        },
+        "missingTargetsCondition": {
+          "description": "Details around missing targets.",
+          "$ref": "MissingTargetsCondition"
+        }
+      }
+    },
+    "PipelineReadyCondition": {
+      "id": "PipelineReadyCondition",
+      "description": "PipelineReadyCondition contains information around the status of the Pipeline.",
+      "type": "object",
+      "properties": {
+        "ready": {
+          "description": "True if the Pipeline is in a valid state.",
+          "type": "boolean"
+        },
+        "changeTime": {
+          "description": "Last time the condition was updated.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "MissingTargetsCondition": {
+      "id": "MissingTargetsCondition",
+      "description": "MissingTargetCondition contains information on any Targets defined in the Delivery Pipeline that do not actually exist.",
+      "type": "object",
+      "properties": {
+        "ready": {
+          "description": "True if there aren't any missing Targets.",
+          "type": "boolean"
+        },
+        "missingTargets": {
+          "description": "The list of Target names that are missing. For example, projects\/{projectName}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/targets\/{targetName}.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "changeTime": {
+          "description": "Last time the condition was updated.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListTargetsResponse": {
+      "id": "ListTargetsResponse",
+      "description": "The response object from `ListTargets`.",
+      "type": "object",
+      "properties": {
+        "targets": {
+          "description": "The `Target` objects.",
           "type": "array",
           "items": {
             "$ref": "Target"
           }
         },
         "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
@@ -333,24 +402,25 @@
     },
     "Target": {
       "id": "Target",
+      "description": "A `Target` resource in the Cloud Deploy API. A `Target` defines a location to which a Skaffold configuration can be deployed.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the Target. Format is projects\/{project}\/locations\/{location}\/ deliveryPipelines\/{deliveryPipeline}\/targets\/a-z{0,62}.",
+          "description": "Required. Name of the `Target`. Format is projects\/{project}\/locations\/{location}\/ deliveryPipelines\/{deliveryPipeline}\/targets\/a-z{0,62}.",
           "type": "string"
         },
         "targetId": {
-          "description": "Output only. Resource id of the Target.",
+          "description": "Output only. Resource id of the `Target`.",
           "readOnly": true,
           "type": "string"
         },
         "uid": {
-          "description": "Output only. Unique identifier of the Target.",
+          "description": "Output only. Unique identifier of the `Target`.",
           "readOnly": true,
           "type": "string"
         },
         "description": {
-          "description": "Description of the Target. Max length is 255 characters.",
+          "description": "Description of the `Target`. Max length is 255 characters.",
           "type": "string"
         },
         "annotations": {
@@ -368,19 +438,23 @@
           }
         },
         "approvalRequired": {
-          "description": "Whether or not the target requires approval.",
+          "description": "Whether or not the `Target` requires approval.",
           "type": "boolean"
         },
         "createTime": {
+          "description": "Output only. Time at which the `Target` was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "description": "Output only. Most recent time at which the `Target` was updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deployServiceAccount": {
-          "description": "Service account used to deploy a Rollout. If unset, the compute service account will be used.",
+          "description": "Service account used to deploy a `Rollout`. If unset, the compute service account will be used.",
           "type": "string"
         },
         "gkeCluster": {
@@ -394,30 +468,37 @@
     },
     "GKECluster": {
       "id": "GKECluster",
+      "description": "Information specifying a GKE Cluster.",
       "type": "object",
       "properties": {
         "project": {
+          "description": "Project in which the cluster is located.",
           "type": "string"
         },
         "cluster": {
+          "description": "Name of the cluster.",
           "type": "string"
         },
         "location": {
+          "description": "Location of the cluster.",
           "type": "string"
         }
       }
     },
     "ListReleasesResponse": {
       "id": "ListReleasesResponse",
+      "description": "The response object from `ListReleases`.",
       "type": "object",
       "properties": {
-        "resources": {
+        "releases": {
+          "description": "The `Release` objects.",
           "type": "array",
           "items": {
             "$ref": "Release"
           }
         },
         "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
@@ -431,19 +512,20 @@
     },
     "Release": {
       "id": "Release",
+      "description": "A `Release` resource in the Cloud Deploy API. A `Release` defines a specific Skaffold configuration instance that can be deployed.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the Release. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/a-z{0,62}.",
+          "description": "Required. Name of the `Release`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/a-z{0,62}.",
           "type": "string"
         },
         "uid": {
-          "description": "Output only. Unique identifier of the Release.",
+          "description": "Output only. Unique identifier of the `Release`.",
           "readOnly": true,
           "type": "string"
         },
         "description": {
-          "description": "Description of the Release. Max length is 255 characters.",
+          "description": "Description of the `Release`. Max length is 255 characters.",
           "type": "string"
         },
         "annotations": {
@@ -461,6 +543,8 @@
           }
         },
         "createTime": {
+          "description": "Output only. Time at which the `Release` was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -498,12 +582,13 @@
           }
         },
         "renderState": {
+          "description": "Current state of the render operation.",
           "type": "string",
           "enumDescriptions": [
             "",
-            "",
-            "",
-            ""
+            "The render operation has completed successfully.",
+            "The render operation has failed.",
+            "The render operation is in progress."
           ],
           "enum": [
             "RENDER_STATE_UNSPECIFIED",
@@ -517,67 +602,79 @@
           "type": "string"
         },
         "renderBuild": {
-          "description": "Output only. The resource name of the Cloud Build that is used to render the manifests. Format is `projects\/{project}\/builds\/{build}` or `projects\/{project}\/locations\/{location}\/builds\/{build}`",
+          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to render the manifests. Format is `projects\/{project}\/builds\/{build}` or `projects\/{project}\/locations\/{location}\/builds\/{build}`",
           "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
         }
       }
     },
     "BuildArtifact": {
       "id": "BuildArtifact",
+      "description": "An artifact created from a render operation.",
       "type": "object",
       "properties": {
         "imageName": {
+          "description": "Name of an image. Format is {hostname}\/{projectID}\/{imageName}",
           "type": "string"
         },
         "tag": {
+          "description": "Tag of the image.",
           "type": "string"
         }
       }
     },
     "PromoteReleaseResponse": {
       "id": "PromoteReleaseResponse",
+      "description": "The response object from `PromoteRelease`.",
       "type": "object",
       "properties": {
         "release": {
-          "description": "The Release being deployed.",
+          "description": "The `Release` being deployed.",
           "type": "string"
         },
         "rollout": {
-          "description": "Rollout that was created from this promotion.",
+          "description": "`Rollout` that was created from this promotion.",
           "$ref": "Promotion"
         }
       }
     },
     "Promotion": {
       "id": "Promotion",
+      "description": "Details around a `Release` promotion.",
       "type": "object",
       "properties": {
         "target": {
-          "description": "The name of the Target to which is being deployed.",
+          "description": "The name of the `Target` to which is being deployed.",
           "type": "string"
         },
         "rollout": {
-          "description": "The name of the Rollout that is being deployed.",
+          "description": "The name of the `Rollout` that is being deployed.",
           "type": "string"
         },
         "operation": {
-          "description": "The name of the operation that is tracking the Rollout creation.",
+          "description": "The name of the operation that is tracking the `Rollout` creation.",
           "type": "string"
         }
       }
     },
     "ListRolloutsResponse": {
       "id": "ListRolloutsResponse",
+      "description": "ListRolloutsResponse is the response object reutrned by `ListRollouts`.",
       "type": "object",
       "properties": {
-        "resources": {
+        "rollouts": {
+          "description": "The `Rollout` objects.",
           "type": "array",
           "items": {
             "$ref": "Rollout"
           }
         },
         "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
@@ -591,19 +688,20 @@
     },
     "Rollout": {
       "id": "Rollout",
+      "description": "A `Rollout` resource in the Cloud Deploy API. A `Rollout` contains information around a specific deployment to a `Target`.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the Rollout. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/a-z{0,62}.",
+          "description": "Required. Name of the `Rollout`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/a-z{0,62}.",
           "type": "string"
         },
         "uid": {
-          "description": "Output only. Unique identifier of the Rollout.",
+          "description": "Output only. Unique identifier of the `Rollout`.",
           "readOnly": true,
           "type": "string"
         },
         "description": {
-          "description": "Description of the rollout for user purposes. Max length is 255 characters.",
+          "description": "Description of the `Rollout` for user purposes. Max length is 255 characters.",
           "type": "string"
         },
         "annotations": {
@@ -621,47 +719,48 @@
           }
         },
         "createTime": {
+          "description": "Output only. Time at which the `Rollout` was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "approveTime": {
-          "description": "Output only. Time at which the rollout was approved.",
+          "description": "Output only. Time at which the `Rollout` was approved.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "enqueueTime": {
-          "description": "Output only. Time at which the rollout was enqueued.",
+          "description": "Output only. Time at which the `Rollout` was enqueued.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deployStartTime": {
-          "description": "Output only. Time at which the rollout started deploying.",
+          "description": "Output only. Time at which the `Rollout` started deploying.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deployEndTime": {
-          "description": "Output only. Time at which the rollout finished deploying.",
+          "description": "Output only. Time at which the `Rollout` finished deploying.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
-          "description": "The Target to which this Rollout is deploying.",
+          "description": "The Target to which this `Rollout` is deploying.",
           "type": "string"
         },
         "approvalState": {
-          "description": "Approval state of the Rollout.",
+          "description": "Approval state of the `Rollout`.",
           "type": "string",
           "enumDescriptions": [
             "",
-            "",
-            "",
-            "",
-            ""
+            "The `Rollout` requires approval.",
+            "The `Rollout` does not require approval.",
+            "The `Rollout` has been approved.",
+            "The `Rollout` has been rejected."
           ],
           "enum": [
             "APPROVAL_STATE_UNSPECIFIED",
@@ -672,18 +771,18 @@
           ]
         },
         "state": {
-          "description": "Output only. Current state of the Rollout.",
+          "description": "Output only. Current state of the `Rollout`.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "",
-            "The Rollout has completed successfully.",
-            "The Rollout has failed.",
-            "The Rollout is being deployed.",
-            "The Rollout needs approval.",
-            "An approver rejected the Rollout.",
-            "The Rollout is waiting for an earlier Rollout(s) to",
-            "complete on this Target. The Rollout is waiting for the Release to be fully rendered."
+            "The `Rollout` has completed successfully.",
+            "The `Rollout` has failed.",
+            "The `Rollout` is being deployed.",
+            "The `Rollout` needs approval.",
+            "An approver rejected the `Rollout`.",
+            "The `Rollout` is waiting for an earlier Rollout(s) to complete on this `Target`.",
+            "The `Rollout` is waiting for the `Release` to be fully rendered."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -697,13 +796,17 @@
           ]
         },
         "failureReason": {
-          "description": "Output only. Reason why the build failed. Empty if the build succeeded.",
+          "description": "Output only. Reason the build failed. Empty if the build succeeded.",
           "readOnly": true,
           "type": "string"
         },
         "deployBuild": {
-          "description": "Output only. The resource name of the Cloud Build that is used to deploy the Rollout. Format is `projects\/{project}\/builds\/{build}` or `projects\/{project}\/locations\/{location}\/builds\/{build}`",
+          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to deploy the Rollout. Format is `projects\/{project}\/builds\/{build}` or `projects\/{project}\/locations\/{location}\/builds\/{build}`",
           "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
         }
       }
@@ -982,25 +1085,30 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
+                          "description": "Required. The parent, which owns this collection of pipelines. Format must be projects\/{projectID}\/locations\/{locationName}.",
                           "pattern": "^projects\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "pageSize": {
+                          "description": "The maximum number of pipelines to return. The service may return fewer than this value. If unspecified, at most 50 pipelines will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
+                          "description": "A page token, received from a previous `ListDeliveryPipelines` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
                           "location": "query",
                           "type": "string"
                         },
                         "filter": {
+                          "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
+                          "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1023,6 +1131,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
+                          "description": "Required. Name of the `DeliveryPipeline`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}.",
                           "pattern": "^projects\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1051,25 +1160,30 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
+                          "description": "Required. The `DeliveryPipeline` which owns this collection of `Target` objects.",
                           "pattern": "^projects\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "pageSize": {
+                          "description": "The maximum number of `Target` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Target` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
+                          "description": "A page token, received from a previous `ListTargets` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
                           "location": "query",
                           "type": "string"
                         },
                         "filter": {
+                          "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
+                          "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1092,6 +1206,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
+                          "description": "Required. Name of the `Target`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/targets\/{targetName}.",
                           "pattern": "^projects\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/targets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1318,25 +1433,30 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
+                      "description": "Required. The parent, which owns this collection of pipelines. Format must be projects\/{projectID}\/locations\/{locationName}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
+                      "description": "The maximum number of pipelines to return. The service may return fewer than this value. If unspecified, at most 50 pipelines will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
+                      "description": "A page token, received from a previous `ListDeliveryPipelines` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
+                      "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
                       "location": "query",
                       "type": "string"
                     },
                     "orderBy": {
+                      "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1359,6 +1479,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
+                      "description": "Required. Name of the `DeliveryPipeline`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1383,12 +1504,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
+                      "description": "Required. The parent collection in which the `DeliveryPipeline` should be created. Format should be projects\/{projectID}\/locations\/{locationName}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "deliveryPipelineId": {
+                      "description": "ID of the `DeliveryPipeline`.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1424,14 +1547,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the DeliveryPipeline. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/a-z{0,62}.",
+                      "description": "Required. Name of the `DeliveryPipeline`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/a-z{0,62}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Field mask is used to specify the fields to be overwritten in the DeliveryPipeline resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "description": "Field mask is used to specify the fields to be overwritten in the `DeliveryPipeline` resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1442,7 +1565,7 @@
                       "type": "string"
                     },
                     "allowMissing": {
-                      "description": "If set to true, updating a DeliveryPipeline that does not exist will result in the creation of a new DeliveryPipeline.",
+                      "description": "If set to true, updating a `DeliveryPipeline` that does not exist will result in the creation of a new `DeliveryPipeline`.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -1450,6 +1573,11 @@
                       "description": "If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                       "location": "query",
                       "type": "boolean"
+                    },
+                    "etag": {
+                      "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1473,6 +1601,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
+                      "description": "Required. The name of the `DeliveryPipeline` to delete. Format should be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1484,7 +1613,7 @@
                       "type": "string"
                     },
                     "allowMissing": {
-                      "description": "If set to true, then deleting an already deleted or non-existing DeliveryPipeline will succeed.",
+                      "description": "If set to true, then deleting an already deleted or non-existing `DeliveryPipeline` will succeed.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -1492,6 +1621,11 @@
                       "description": "If set, validate the request and preview the review, but do not actually post it.",
                       "location": "query",
                       "type": "boolean"
+                    },
+                    "etag": {
+                      "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1604,25 +1738,30 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
+                          "description": "Required. The `DeliveryPipeline` which owns this collection of `Target` objects.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "pageSize": {
+                          "description": "The maximum number of `Target` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Target` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
+                          "description": "A page token, received from a previous `ListTargets` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
                           "location": "query",
                           "type": "string"
                         },
                         "filter": {
+                          "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
+                          "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1645,6 +1784,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
+                          "description": "Required. Name of the `Target`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/targets\/{targetName}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1669,12 +1809,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
+                          "description": "Required. The parent collection in which the `Target` should be created. Format should be projects\/{projectID}\/locations\/{locationName}\/deliverPiplines\/{pipelineName}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "targetId": {
+                          "description": "ID of the `Target`.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1710,7 +1852,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. Name of the Target. Format is projects\/{project}\/locations\/{location}\/ deliveryPipelines\/{deliveryPipeline}\/targets\/a-z{0,62}.",
+                          "description": "Required. Name of the `Target`. Format is projects\/{project}\/locations\/{location}\/ deliveryPipelines\/{deliveryPipeline}\/targets\/a-z{0,62}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1728,7 +1870,7 @@
                           "type": "string"
                         },
                         "allowMissing": {
-                          "description": "If set to true, updating a DeliveryPipeline that does not exist will result in the creation of a new DeliveryPipeline.",
+                          "description": "If set to true, updating a `Target` that does not exist will result in the creation of a new `Target`.",
                           "location": "query",
                           "type": "boolean"
                         },
@@ -1759,6 +1901,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
+                          "description": "Required. The name of the `Target` to delete. Format should be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/targets\/{targetName}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1778,6 +1921,11 @@
                           "description": "If set, validate the request and preview the review, but do not actually post it.",
                           "location": "query",
                           "type": "boolean"
+                        },
+                        "etag": {
+                          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -1889,25 +2037,30 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
+                          "description": "Required. The `DeliveryPipeline` which owns this collection of `Release` objects.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "pageSize": {
+                          "description": "The maximum number of `Release` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Release` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
+                          "description": "A page token, received from a previous `ListReleases` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
                           "location": "query",
                           "type": "string"
                         },
                         "filter": {
+                          "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
+                          "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1930,6 +2083,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
+                          "description": "Required. Name of the `Release`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/releases\/{releaseName}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1954,12 +2108,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
+                          "description": "Required. The parent collection in which the `Release` should be created. Format should be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
-                        "releaseCandidateId": {
+                        "releaseId": {
+                          "description": "ID of the `Release`.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1995,6 +2151,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
+                          "description": "Required. The name of the `Release` to delete. Format is projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/release\/{releaseName}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2006,7 +2163,7 @@
                           "type": "string"
                         },
                         "allowMissing": {
-                          "description": "If set to true, then deleting an already deleted or non-existing DeliveryPipeline will succeed.",
+                          "description": "If set to true, then deleting an already deleted or non-existing `DeliveryPipeline` will succeed.",
                           "location": "query",
                           "type": "boolean"
                         },
@@ -2034,14 +2191,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required. The Release being promoted.",
+                          "description": "Required. The `Release` being promoted. Format is projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/release\/{releaseName}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "toTarget": {
-                          "description": "[Optional] The Target to which we are promoting the Release.",
+                          "description": "[Optional] The name of the `Target` to which we are promoting the Release.",
                           "location": "query",
                           "type": "string"
                         }
@@ -2156,25 +2313,30 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
+                              "description": "Required. The `Release` which owns this collection of `Rollout` objects.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                               "location": "path",
                               "required": true,
                               "type": "string"
                             },
                             "pageSize": {
+                              "description": "The maximum number of `Rollout` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Rollout` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
                             },
                             "pageToken": {
+                              "description": "A page token, received from a previous `ListRollouts` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
                               "location": "query",
                               "type": "string"
                             },
                             "filter": {
+                              "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
                               "location": "query",
                               "type": "string"
                             },
                             "orderBy": {
+                              "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
                               "location": "query",
                               "type": "string"
                             }
@@ -2197,6 +2359,7 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "name": {
+                              "description": "Required. Name of the `Rollout`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/releases\/{releaseName}\/rollouts\/{rolloutName}.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -2221,12 +2384,14 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "parent": {
+                              "description": "Required. The parent collection in which the `Rollout` should be created. Format should be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/releases\/{releaseName}.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                               "location": "path",
                               "required": true,
                               "type": "string"
                             },
                             "rolloutId": {
+                              "description": "ID of the `Rollout`.",
                               "location": "query",
                               "type": "string"
                             },

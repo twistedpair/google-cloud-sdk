@@ -73,6 +73,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_PEERINGS = (
+      'projects.locations.global.peerings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/peerings/{peeringsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

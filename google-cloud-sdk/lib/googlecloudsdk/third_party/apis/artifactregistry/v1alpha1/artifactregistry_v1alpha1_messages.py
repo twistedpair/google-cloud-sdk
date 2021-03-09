@@ -71,9 +71,9 @@ class DockerImage(_messages.Message):
       "application/vnd.docker.distribution.manifest.v2+json".
     name: Required. registry_location, project_id, repository_name and image
       id forms a unique image
-      name:`projects//locations//repository//dockerimages/`. For example,
+      name:`projects//locations//repository//dockerImages/`. For example,
       "projects/test-project/locations/us-west4/repositories/test-
-      repo/dockerimages/ nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4
+      repo/dockerImages/ nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4
       bf072163515467d6a823c7cf", where "us-west4" is the registry_location,
       "test-project" is the project_id, "test-repo" is the repository_name and
       "nginx@sha256:e9954c1fc875017be1c3e36eca16be2d9e9bccc4bf072163515467d6a8
@@ -289,6 +289,172 @@ class GoogleDevtoolsArtifactregistryV1alpha1Package(_messages.Message):
   displayName = _messages.StringField(2)
   name = _messages.StringField(3)
   updateTime = _messages.StringField(4)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
+  r"""A Repository for storing artifacts with a specific format.
+
+  Enums:
+    FormatValueValuesEnum: The format of packages that are stored in the
+      repository.
+    ModeValueValuesEnum: The mode of the repository.
+
+  Messages:
+    LabelsValue: Labels with user-defined metadata. This field may contain up
+      to 64 entries. Label keys and values may be no longer than 63
+      characters. Label keys must begin with a lowercase letter and may only
+      contain lowercase letters, numeric characters, underscores, and dashes.
+    UpstreamPoliciesValue: Policies that configure the upstream artifacts
+      distributed by the Virtual Repository. Upstream policies cannot be set
+      on a standard repository.
+
+  Fields:
+    createTime: The time when the repository was created.
+    description: The user-provided description of the repository.
+    format: The format of packages that are stored in the repository.
+    kmsKeyName: The Cloud KMS resource name of the customer managed encryption
+      key that's used to encrypt the contents of the Repository. Has the form:
+      `projects/my-project/locations/my-region/keyRings/my-kr/cryptoKeys/my-
+      key`. This value may not be changed after the Repository has been
+      created.
+    labels: Labels with user-defined metadata. This field may contain up to 64
+      entries. Label keys and values may be no longer than 63 characters.
+      Label keys must begin with a lowercase letter and may only contain
+      lowercase letters, numeric characters, underscores, and dashes.
+    mode: The mode of the repository.
+    name: The name of the repository, for example: "projects/p1/locations/us-
+      central1/repositories/repo1".
+    updateTime: The time when the repository was last updated.
+    upstreamPolicies: Policies that configure the upstream artifacts
+      distributed by the Virtual Repository. Upstream policies cannot be set
+      on a standard repository.
+  """
+
+  class FormatValueValuesEnum(_messages.Enum):
+    r"""The format of packages that are stored in the repository.
+
+    Values:
+      FORMAT_UNSPECIFIED: Unspecified package format.
+      DOCKER: Docker package format.
+    """
+    FORMAT_UNSPECIFIED = 0
+    DOCKER = 1
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The mode of the repository.
+
+    Values:
+      MODE_UNSPECIFIED: Unspecified mode.
+      STANDARD_REPOSITORY: A standard repository storing artifacts.
+      VIRTUAL_REPOSITORY: A virtual repository to serve artifacts from one or
+        more sources.
+    """
+    MODE_UNSPECIFIED = 0
+    STANDARD_REPOSITORY = 1
+    VIRTUAL_REPOSITORY = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels with user-defined metadata. This field may contain up to 64
+    entries. Label keys and values may be no longer than 63 characters. Label
+    keys must begin with a lowercase letter and may only contain lowercase
+    letters, numeric characters, underscores, and dashes.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UpstreamPoliciesValue(_messages.Message):
+    r"""Policies that configure the upstream artifacts distributed by the
+    Virtual Repository. Upstream policies cannot be set on a standard
+    repository.
+
+    Messages:
+      AdditionalProperty: An additional property for a UpstreamPoliciesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        UpstreamPoliciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UpstreamPoliciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  format = _messages.EnumField('FormatValueValuesEnum', 3)
+  kmsKeyName = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  mode = _messages.EnumField('ModeValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  upstreamPolicies = _messages.MessageField('UpstreamPoliciesValue', 9)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMediaResponse(_messages.Message):
+  r"""The response to upload an artifact.
+
+  Fields:
+    operation: Operation to be returned to the user.
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactResponse(_messages.Message):
+  r"""The response of the completed artifact upload operation. This response
+  is contained in the Operation and available to users.
+
+  Fields:
+    aptArtifacts: The Apt artifacts updated.
+  """
+
+  aptArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1AptArtifact', 1, repeated=True)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy(_messages.Message):
+  r"""Artifact policy configuration for the repository contents.
+
+  Fields:
+    id: The user-provided ID of the upstream policy.
+    priority: Entries with a greater priority value take precedence in the
+      pull order.
+    repository: A reference to the repository resource, for example:
+      "projects/p1/locations/us-central1/repository/repo1".
+  """
+
+  id = _messages.StringField(1)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  repository = _messages.StringField(3)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1YumArtifact(_messages.Message):

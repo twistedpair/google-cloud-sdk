@@ -40,13 +40,19 @@ class BuildBazelRemoteExecutionV2Action(_messages.Message):
       build machine before the command is executed. The root directory, as
       well as every subdirectory and content blob referred to, MUST be in the
       ContentAddressableStorage.
-    outputNodeProperties: List of required supported NodeProperty keys. In
-      order to ensure that equivalent `Action`s always hash to the same value,
-      the supported node properties MUST be lexicographically sorted by name.
-      Sorting of strings is done by code point, equivalently, by the UTF-8
-      bytes. The interpretation of these properties is server-dependent. If a
-      property is not recognized by the server, the server will return an
-      `INVALID_ARGUMENT` error.
+    platform: The optional platform requirements for the execution
+      environment. The server MAY choose to execute the action on any worker
+      satisfying the requirements, so the client SHOULD ensure that running
+      the action on any such worker will have the same result. A detailed
+      lexicon for this can be found in the accompanying platform.md. New in
+      version 2.2: clients SHOULD set these platform properties as well as
+      those in the Command. Servers SHOULD prefer those set here.
+    salt: An optional additional salt value used to place this `Action` into a
+      separate cache namespace from other instances having the same field
+      contents. This salt typically comes from operational configuration
+      specific to sources such as repo and service configuration, and allows
+      disowning an entire set of ActionResults that might have been poisoned
+      by buggy software or tool failures.
     timeout: A timeout after which the execution should be killed. If the
       timeout is absent, then the client is specifying that the execution
       should continue as long as the server will let it. The server SHOULD
@@ -66,12 +72,17 @@ class BuildBazelRemoteExecutionV2Action(_messages.Message):
   commandDigest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 1)
   doNotCache = _messages.BooleanField(2)
   inputRootDigest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 3)
-  outputNodeProperties = _messages.StringField(4, repeated=True)
-  timeout = _messages.StringField(5)
+  platform = _messages.MessageField('BuildBazelRemoteExecutionV2Platform', 4)
+  salt = _messages.BytesField(5)
+  timeout = _messages.StringField(6)
 
 
 class BuildBazelRemoteExecutionV2ActionResult(_messages.Message):
-  r"""An ActionResult represents the result of an Action being run.
+  r"""An ActionResult represents the result of an Action being run. It is
+  advised that at least one field (for example
+  `ActionResult.execution_metadata.Worker`) have a non-default value, to
+  ensure that the serialized value is non-empty, which can then be used as a
+  basic data sanity check.
 
   Fields:
     executionMetadata: The details of the execution that originally produced
@@ -237,6 +248,15 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
       leading up to the output files are created by the worker prior to
       execution, even if they are not explicitly part of the input root.
       DEPRECATED since v2.1: Use `output_paths` instead.
+    outputNodeProperties: A list of keys for node properties the client
+      expects to retrieve for output files and directories. Keys are either
+      names of string-based NodeProperty or names of fields in NodeProperties.
+      In order to ensure that equivalent `Action`s always hash to the same
+      value, the node properties MUST be lexicographically sorted by name.
+      Sorting of strings is done by code point, equivalently, by the UTF-8
+      bytes. The interpretation of string-based properties is server-
+      dependent. If a property is not recognized by the server, the server
+      will return an `INVALID_ARGUMENT`.
     outputPaths: A list of the output paths that the client expects to
       retrieve from the action. Only the listed paths will be returned to the
       client as output. The type of the output (file or directory) is not
@@ -261,7 +281,9 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
       server MAY choose to execute the action on any worker satisfying the
       requirements, so the client SHOULD ensure that running the action on any
       such worker will have the same result. A detailed lexicon for this can
-      be found in the accompanying platform.md.
+      be found in the accompanying platform.md. DEPRECATED as of v2.2:
+      platform properties are now specified directly in the action. See
+      documentation note in the Action for migration.
     workingDirectory: The working directory, relative to the input root, for
       the command to run in. It must be a directory which exists in the input
       tree. If it is left empty, then the action is run in the input root.
@@ -271,9 +293,10 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
   environmentVariables = _messages.MessageField('BuildBazelRemoteExecutionV2CommandEnvironmentVariable', 2, repeated=True)
   outputDirectories = _messages.StringField(3, repeated=True)
   outputFiles = _messages.StringField(4, repeated=True)
-  outputPaths = _messages.StringField(5, repeated=True)
-  platform = _messages.MessageField('BuildBazelRemoteExecutionV2Platform', 6)
-  workingDirectory = _messages.StringField(7)
+  outputNodeProperties = _messages.StringField(5, repeated=True)
+  outputPaths = _messages.StringField(6, repeated=True)
+  platform = _messages.MessageField('BuildBazelRemoteExecutionV2Platform', 7)
+  workingDirectory = _messages.StringField(8)
 
 
 class BuildBazelRemoteExecutionV2CommandEnvironmentVariable(_messages.Message):
@@ -357,13 +380,13 @@ class BuildBazelRemoteExecutionV2Directory(_messages.Message):
   Fields:
     directories: The subdirectories in the directory.
     files: The files in the directory.
-    nodeProperties: The node properties of the Directory.
+    nodeProperties: A BuildBazelRemoteExecutionV2NodeProperties attribute.
     symlinks: The symlinks in the directory.
   """
 
   directories = _messages.MessageField('BuildBazelRemoteExecutionV2DirectoryNode', 1, repeated=True)
   files = _messages.MessageField('BuildBazelRemoteExecutionV2FileNode', 2, repeated=True)
-  nodeProperties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperty', 3, repeated=True)
+  nodeProperties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperties', 3)
   symlinks = _messages.MessageField('BuildBazelRemoteExecutionV2SymlinkNode', 4, repeated=True)
 
 
@@ -391,10 +414,12 @@ class BuildBazelRemoteExecutionV2ExecuteOperationMetadata(_messages.Message):
   Fields:
     actionDigest: The digest of the Action being executed.
     stage: The current stage of execution.
-    stderrStreamName: If set, the client can use this name with
-      ByteStream.Read to stream the standard error.
-    stdoutStreamName: If set, the client can use this name with
-      ByteStream.Read to stream the standard output.
+    stderrStreamName: If set, the client can use this resource name with
+      ByteStream.Read to stream the standard error from the endpoint hosting
+      streamed responses.
+    stdoutStreamName: If set, the client can use this resource name with
+      ByteStream.Read to stream the standard output from the endpoint hosting
+      streamed responses.
   """
 
   class StageValueValuesEnum(_messages.Enum):
@@ -497,7 +522,13 @@ class BuildBazelRemoteExecutionV2ExecuteResponse(_messages.Message):
 class BuildBazelRemoteExecutionV2ExecutedActionMetadata(_messages.Message):
   r"""ExecutedActionMetadata contains details about a completed execution.
 
+  Messages:
+    AuxiliaryMetadataValueListEntry: A AuxiliaryMetadataValueListEntry object.
+
   Fields:
+    auxiliaryMetadata: Details that are specific to the kind of worker used.
+      For example, on POSIX-like systems this could contain a message with
+      getrusage(2) statistics.
     executionCompletedTimestamp: When the worker completed executing the
       action command.
     executionStartTimestamp: When the worker started executing the action
@@ -516,16 +547,43 @@ class BuildBazelRemoteExecutionV2ExecutedActionMetadata(_messages.Message):
     workerStartTimestamp: When the worker received the action.
   """
 
-  executionCompletedTimestamp = _messages.StringField(1)
-  executionStartTimestamp = _messages.StringField(2)
-  inputFetchCompletedTimestamp = _messages.StringField(3)
-  inputFetchStartTimestamp = _messages.StringField(4)
-  outputUploadCompletedTimestamp = _messages.StringField(5)
-  outputUploadStartTimestamp = _messages.StringField(6)
-  queuedTimestamp = _messages.StringField(7)
-  worker = _messages.StringField(8)
-  workerCompletedTimestamp = _messages.StringField(9)
-  workerStartTimestamp = _messages.StringField(10)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AuxiliaryMetadataValueListEntry(_messages.Message):
+    r"""A AuxiliaryMetadataValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AuxiliaryMetadataValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AuxiliaryMetadataValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  auxiliaryMetadata = _messages.MessageField('AuxiliaryMetadataValueListEntry', 1, repeated=True)
+  executionCompletedTimestamp = _messages.StringField(2)
+  executionStartTimestamp = _messages.StringField(3)
+  inputFetchCompletedTimestamp = _messages.StringField(4)
+  inputFetchStartTimestamp = _messages.StringField(5)
+  outputUploadCompletedTimestamp = _messages.StringField(6)
+  outputUploadStartTimestamp = _messages.StringField(7)
+  queuedTimestamp = _messages.StringField(8)
+  worker = _messages.StringField(9)
+  workerCompletedTimestamp = _messages.StringField(10)
+  workerStartTimestamp = _messages.StringField(11)
 
 
 class BuildBazelRemoteExecutionV2FileNode(_messages.Message):
@@ -535,13 +593,13 @@ class BuildBazelRemoteExecutionV2FileNode(_messages.Message):
     digest: The digest of the file's content.
     isExecutable: True if file is executable, false otherwise.
     name: The name of the file.
-    nodeProperties: The node properties of the FileNode.
+    nodeProperties: A BuildBazelRemoteExecutionV2NodeProperties attribute.
   """
 
   digest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 1)
   isExecutable = _messages.BooleanField(2)
   name = _messages.StringField(3)
-  nodeProperties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperty', 4, repeated=True)
+  nodeProperties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperties', 4)
 
 
 class BuildBazelRemoteExecutionV2LogFile(_messages.Message):
@@ -558,6 +616,21 @@ class BuildBazelRemoteExecutionV2LogFile(_messages.Message):
 
   digest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 1)
   humanReadable = _messages.BooleanField(2)
+
+
+class BuildBazelRemoteExecutionV2NodeProperties(_messages.Message):
+  r"""Node properties for FileNodes, DirectoryNodes, and SymlinkNodes. The
+  server is responsible for specifying the properties that it accepts.
+
+  Fields:
+    mtime: The file's last modification timestamp.
+    properties: A list of string-based NodeProperties.
+    unixMode: The UNIX file mode, e.g., 0755.
+  """
+
+  mtime = _messages.StringField(1)
+  properties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperty', 2, repeated=True)
+  unixMode = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
 
 
 class BuildBazelRemoteExecutionV2NodeProperty(_messages.Message):
@@ -603,8 +676,7 @@ class BuildBazelRemoteExecutionV2OutputFile(_messages.Message):
       message size limits.
     digest: The digest of the file's content.
     isExecutable: True if file is executable, false otherwise.
-    nodeProperties: The supported node properties of the OutputFile, if
-      requested by the Action.
+    nodeProperties: A BuildBazelRemoteExecutionV2NodeProperties attribute.
     path: The full path of the file relative to the working directory,
       including the filename. The path separator is a forward slash `/`. Since
       this is a relative path, it MUST NOT begin with a leading forward slash.
@@ -613,7 +685,7 @@ class BuildBazelRemoteExecutionV2OutputFile(_messages.Message):
   contents = _messages.BytesField(1)
   digest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 2)
   isExecutable = _messages.BooleanField(3)
-  nodeProperties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperty', 4, repeated=True)
+  nodeProperties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperties', 4)
   path = _messages.StringField(5)
 
 
@@ -623,20 +695,18 @@ class BuildBazelRemoteExecutionV2OutputSymlink(_messages.Message):
   `SymlinkNode`.
 
   Fields:
-    nodeProperties: The supported node properties of the OutputSymlink, if
-      requested by the Action.
+    nodeProperties: A BuildBazelRemoteExecutionV2NodeProperties attribute.
     path: The full path of the symlink relative to the working directory,
       including the filename. The path separator is a forward slash `/`. Since
       this is a relative path, it MUST NOT begin with a leading forward slash.
     target: The target path of the symlink. The path separator is a forward
       slash `/`. The target path can be relative to the parent directory of
       the symlink or it can be an absolute path starting with `/`. Support for
-      absolute paths can be checked using the Capabilities API. The canonical
-      form forbids the substrings `/./` and `//` in the target path. `..`
+      absolute paths can be checked using the Capabilities API. `..`
       components are allowed anywhere in the target path.
   """
 
-  nodeProperties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperty', 1, repeated=True)
+  nodeProperties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperties', 1)
   path = _messages.StringField(2)
   target = _messages.StringField(3)
 
@@ -670,7 +740,10 @@ class BuildBazelRemoteExecutionV2PlatformProperty(_messages.Message):
   on which the action must be performed may require an exact match with the
   worker's OS. The server MAY use the `value` of one or more properties to
   determine how it sets up the execution environment, such as by making
-  specific system files available to the worker.
+  specific system files available to the worker. Both names and values are
+  typically case-sensitive. Note that the platform is implicitly part of the
+  action digest, so even tiny changes in the names or values (like changing
+  case) may result in different action cache entries.
 
   Fields:
     name: The property name.
@@ -718,17 +791,20 @@ class BuildBazelRemoteExecutionV2SymlinkNode(_messages.Message):
 
   Fields:
     name: The name of the symlink.
-    nodeProperties: The node properties of the SymlinkNode.
+    nodeProperties: A BuildBazelRemoteExecutionV2NodeProperties attribute.
     target: The target path of the symlink. The path separator is a forward
       slash `/`. The target path can be relative to the parent directory of
       the symlink or it can be an absolute path starting with `/`. Support for
-      absolute paths can be checked using the Capabilities API. The canonical
-      form forbids the substrings `/./` and `//` in the target path. `..`
-      components are allowed anywhere in the target path.
+      absolute paths can be checked using the Capabilities API. `..`
+      components are allowed anywhere in the target path as logical
+      canonicalization may lead to different behavior in the presence of
+      directory symlinks (e.g. `foo/../bar` may not be the same as `bar`). To
+      reduce potential cache misses, canonicalization is still recommended
+      where this is possible without impacting correctness.
   """
 
   name = _messages.StringField(1)
-  nodeProperties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperty', 2, repeated=True)
+  nodeProperties = _messages.MessageField('BuildBazelRemoteExecutionV2NodeProperties', 2)
   target = _messages.StringField(3)
 
 
@@ -765,6 +841,7 @@ class GoogleDevtoolsRemotebuildbotCommandDurations(_messages.Message):
   performs a command.
 
   Fields:
+    casRelease: The time spent to release the CAS blobs used by the task.
     cmWaitForAssignment: The time spent waiting for Container Manager to
       assign an asynchronous container for execution.
     dockerPrep: The time spent preparing the command to be run in a Docker
@@ -783,18 +860,19 @@ class GoogleDevtoolsRemotebuildbotCommandDurations(_messages.Message):
     uploadStartTime: The timestamp when uploading the output files begins.
   """
 
-  cmWaitForAssignment = _messages.StringField(1)
-  dockerPrep = _messages.StringField(2)
-  dockerPrepStartTime = _messages.StringField(3)
-  download = _messages.StringField(4)
-  downloadStartTime = _messages.StringField(5)
-  execStartTime = _messages.StringField(6)
-  execution = _messages.StringField(7)
-  isoPrepDone = _messages.StringField(8)
-  overall = _messages.StringField(9)
-  stdout = _messages.StringField(10)
-  upload = _messages.StringField(11)
-  uploadStartTime = _messages.StringField(12)
+  casRelease = _messages.StringField(1)
+  cmWaitForAssignment = _messages.StringField(2)
+  dockerPrep = _messages.StringField(3)
+  dockerPrepStartTime = _messages.StringField(4)
+  download = _messages.StringField(5)
+  downloadStartTime = _messages.StringField(6)
+  execStartTime = _messages.StringField(7)
+  execution = _messages.StringField(8)
+  isoPrepDone = _messages.StringField(9)
+  overall = _messages.StringField(10)
+  stdout = _messages.StringField(11)
+  upload = _messages.StringField(12)
+  uploadStartTime = _messages.StringField(13)
 
 
 class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
@@ -823,13 +901,14 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
     execution.
 
     Values:
-      NONE: Container Manager is disabled or not running for this execution.
+      CONFIG_NONE: Container Manager is disabled or not running for this
+        execution.
       CONFIG_MATCH: Container Manager is enabled and there was a matching
         container available for use during execution.
       CONFIG_MISMATCH: Container Manager is enabled, but there was no matching
         container available for execution.
     """
-    NONE = 0
+    CONFIG_NONE = 0
     CONFIG_MATCH = 1
     CONFIG_MISMATCH = 2
 

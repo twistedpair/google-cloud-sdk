@@ -26,8 +26,7 @@ class SecurityPolicyRulesCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(SecurityPolicyRulesCompleter, self).__init__(
-        collection='compute.securityPolicyRules',
-        **kwargs)
+        collection='compute.securityPolicyRules', **kwargs)
 
 
 def AddPriority(parser, operation, is_plural=False):
@@ -45,9 +44,8 @@ def AddPriority(parser, operation, is_plural=False):
 
 def AddMatcher(parser, required=True):
   """Adds the matcher arguments to the argparse."""
-  matcher = parser.add_group(mutex=True,
-                             required=required,
-                             help='Security policy rule matcher.')
+  matcher = parser.add_group(
+      mutex=True, required=required, help='Security policy rule matcher.')
   matcher.add_argument(
       '--src-ip-ranges',
       type=arg_parsers.ArgList(),
@@ -59,13 +57,18 @@ def AddMatcher(parser, required=True):
       help='The Cloud Armor rules language expression to match for this rule.')
 
 
-def AddAction(parser, required=True, support_redirect=False):
+def AddAction(parser,
+              required=True,
+              support_redirect=False,
+              support_rate_limit=False):
   """Adds the action argument to the argparse."""
   actions = [
       'allow', 'deny-403', 'deny-404', 'deny-502', 'redirect-to-recaptcha'
   ]
   if support_redirect:
     actions.append('redirect')
+  if support_rate_limit:
+    actions.extend(['rate-based-ban', 'throttle'])
   parser.add_argument(
       '--action',
       choices=actions,
@@ -77,8 +80,7 @@ def AddAction(parser, required=True, support_redirect=False):
 def AddDescription(parser):
   """Adds the preview argument to the argparse."""
   parser.add_argument(
-      '--description',
-      help='An optional, textual description for the rule.')
+      '--description', help='An optional, textual description for the rule.')
 
 
 def AddPreview(parser, default):
@@ -94,5 +96,75 @@ def AddRedirectTarget(parser):
   """Adds redirect-target argument to the argparse."""
   parser.add_argument(
       '--redirect-target',
-      help='The URL to which traffic is routed when the rule action is set to "redirect".'
-  )
+      help=('The URL to which traffic is routed when the rule action is set to'
+            ' "redirect".'))
+
+
+def AddRateLimitOptions(parser):
+  """Adds rate limiting related arguments to the argparse."""
+  parser.add_argument(
+      '--rate-limit-threshold-count',
+      type=int,
+      help=('Number of HTTP(S) requests for calculating the threshold for rate '
+            'limiting requests.'))
+
+  parser.add_argument(
+      '--rate-limit-threshold-interval-sec',
+      type=int,
+      help=('Interval over which the threshold for rate limiting requests is '
+            'computed.'))
+
+  conform_actions = ['allow']
+  parser.add_argument(
+      '--conform-action',
+      choices=conform_actions,
+      type=lambda x: x.lower(),
+      help=('Action to take when requests are under the given threshold. When '
+            'requests are throttled, this is also the action for all requests '
+            'which are not dropped.'))
+
+  exceed_actions = ['deny-403', 'deny-404', 'deny-429', 'deny-502']
+  parser.add_argument(
+      '--exceed-action',
+      choices=exceed_actions,
+      type=lambda x: x.lower(),
+      help=('When a request is denied, returns the HTTP response code '
+            'specified.'))
+
+  enforce_on_key = ['ip', 'all-ips']
+  parser.add_argument(
+      '--enforce-on-key',
+      choices=enforce_on_key,
+      type=lambda x: x.lower(),
+      help=('Determines the key to enforce the threshold_rps limit on. If key '
+            'is ``ip", each IP has this limit enforced separately, whereas '
+            '``all-ips" means a single limit is applied to all requests '
+            'matching this rule.'))
+
+  parser.add_argument(
+      '--ban-threshold-count',
+      type=int,
+      help=('Number of HTTP(S) requests for calculating the threshold for '
+            'banning requests. Can only be specified if the action for the '
+            'rule is ``rate_based_ban". If specified, the key will be banned '
+            'for the configured ``banDurationSec" when the number of requests '
+            'that exceed the ``rateLimitThreshold" also exceed this '
+            '``banThreshold".'))
+
+  parser.add_argument(
+      '--ban-threshold-interval-sec',
+      type=int,
+      help=('Interval over which the threshold for banning requests is '
+            'computed. Can only be specified if the action for the rule is '
+            '``rate_based_ban". If specified, the key will be banned for the '
+            'configured ``banDurationSec" when the number of requests that '
+            'exceed the ``rateLimitThreshold" also exceed this '
+            '``banThreshold".'))
+
+  parser.add_argument(
+      '--ban-duration-sec',
+      type=int,
+      help=('Can only be specified if the action for the rule is '
+            '``rate_based_ban". If specified, determines the time (in seconds) '
+            'the traffic will continue to be banned by the rate limit after '
+            'the rate falls below the threshold.'))

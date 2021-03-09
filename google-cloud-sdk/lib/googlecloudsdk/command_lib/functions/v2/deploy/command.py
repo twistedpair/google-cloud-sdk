@@ -23,13 +23,21 @@ import re
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
+from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import properties
 
 SOURCE_REGEX = re.compile('gs://([^/]+)/(.*)')
 SOURCE_ERROR_MESSAGE = """
-    For now, Cloud Functions v2 only supports deploying from a Cloud
+    For now, Cloud Functions V2 only supports deploying from a Cloud
     Storage bucket. You must provide a `--source` that begins with
     `gs://`."""
+
+LEGACY_V1_FLAGS = [
+    ('security_level', '--security-level'),
+    ('trigger_event', '--trigger-event'),
+    ('trigger_resource', '--trigger-resource'),
+]
+LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
 
 
 def _GetProject():
@@ -51,17 +59,20 @@ def _GetSource(source_arg):
 
 def _GetServiceConfig(args, messages):
   """Construct a ServiceConfig message from the command-line arguments."""
-  service_config = messages.ServiceConfig()
-  if args.memory:
-    service_config.availableMemoryMb = utils.BytesToMb(args.memory)
-  if args.IsSpecified('max_instances') or args.IsSpecified(
-      'clear_max_instances'):
-    max_instances = 0 if args.clear_max_instances else args.max_instances
-    service_config.maxInstanceCount = max_instances
-  service_config.serviceAccountEmail = args.run_service_account
-  if args.timeout:
-    service_config.timeoutSeconds = args.timeout
-  return service_config
+  env_var_flags = map_util.GetMapFlagsFromArgs('env-vars', args)
+  env_vars = map_util.ApplyMapFlags({}, **env_var_flags)
+
+  return messages.ServiceConfig(
+      availableMemoryMb=utils.BytesToMb(args.memory) if args.memory else None,
+      maxInstanceCount=args.max_instances,
+      serviceAccountEmail=args.run_service_account or args.service_account,
+      timeoutSeconds=args.timeout,
+      environmentVariables=messages.ServiceConfig.EnvironmentVariablesValue(
+          additionalProperties=[
+              messages.ServiceConfig.EnvironmentVariablesValue
+              .AdditionalProperty(key=key, value=value)
+              for key, value in sorted(env_vars.items())
+          ]))
 
 
 def _GetEventTrigger(args, messages):
@@ -70,7 +81,8 @@ def _GetEventTrigger(args, messages):
 
   if args.trigger_event_filters:
     event_trigger = messages.EventTrigger(
-        serviceAccountEmail=args.trigger_service_account,
+        serviceAccountEmail=args.trigger_service_account or
+        args.service_account,
         triggerRegion=args.trigger_location,
         pubsubTopic=args.trigger_topic)
 
@@ -85,13 +97,32 @@ def _GetEventTrigger(args, messages):
   return event_trigger
 
 
-def _GetWorkerPool(args):
-  """Return the appropriate worker pool, if any."""
-  worker_pool = None
-  if args.build_worker_pool or args.clear_build_worker_pool:
-    worker_pool = (''
-                   if args.clear_build_worker_pool else args.build_worker_pool)
-  return worker_pool
+def _GetBuildConfig(args, messages):
+  """Construct a BuildConfig message from the command-line arguments."""
+  source_bucket, source_object = _GetSource(args.source)
+
+  build_env_var_flags = map_util.GetMapFlagsFromArgs('build-env-vars', args)
+  build_env_vars = map_util.ApplyMapFlags({}, **build_env_var_flags)
+
+  return messages.BuildConfig(
+      entryPoint=args.entry_point,
+      runtime=args.runtime,
+      source=messages.Source(
+          storageSource=messages.StorageSource(
+              bucket=source_bucket, object=source_object)),
+      workerPool=args.build_worker_pool,
+      environmentVariables=messages.BuildConfig.EnvironmentVariablesValue(
+          additionalProperties=[
+              messages.BuildConfig.EnvironmentVariablesValue.AdditionalProperty(
+                  key=key, value=value)
+              for key, value in sorted(build_env_vars.items())
+          ]))
+
+
+def _ValidateLegacyV1Flags(args):
+  for flag_variable, flag_name in LEGACY_V1_FLAGS:
+    if args.IsSpecified(flag_variable):
+      raise exceptions.FunctionsError(LEGACY_V1_FLAG_ERROR % flag_name)
 
 
 def Run(args, release_track):
@@ -101,17 +132,11 @@ def Run(args, release_track):
 
   function_ref = args.CONCEPTS.name.Parse()
 
-  source_bucket, source_object = _GetSource(args.source)
+  _ValidateLegacyV1Flags(args)
 
   function = messages.Function(
       name=function_ref.RelativeName(),
-      buildConfig=messages.BuildConfig(
-          entryPoint=args.entry_point,
-          runtime=args.runtime,
-          source=messages.Source(
-              storageSource=messages.StorageSource(
-                  bucket=source_bucket, object=source_object)),
-          workerPool=_GetWorkerPool(args)),
+      buildConfig=_GetBuildConfig(args, messages),
       eventTrigger=_GetEventTrigger(args, messages),
       serviceConfig=_GetServiceConfig(args, messages))
 

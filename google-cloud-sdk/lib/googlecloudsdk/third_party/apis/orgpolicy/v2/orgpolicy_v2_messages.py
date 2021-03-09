@@ -14,20 +14,6 @@ from apitools.base.py import encoding
 package = 'orgpolicy'
 
 
-class GoogleCloudOrgpolicyV2AlternatePolicySpec(_messages.Message):
-  r"""Similar to PolicySpec but with an extra 'launch' field for launch
-  reference. The PolicySpec here is specific for dry-run/darklaunch.
-
-  Fields:
-    launch: Reference to the launch that will be used while audit logging and
-      to control the launch. Should be set only in the alternate policy.
-    spec: Specify `Constraint` for configurations of Cloud Platform resources.
-  """
-
-  launch = _messages.StringField(1)
-  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 2)
-
-
 class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
   r"""A `constraint` describes a way to restrict resource's configuration. For
   example, you could enforce a constraint that controls which cloud services
@@ -146,10 +132,6 @@ class GoogleCloudOrgpolicyV2Policy(_messages.Message):
   `Constraints` for configurations of Cloud Platform resources.
 
   Fields:
-    alternate: An alternate policy configuration that will be used instead of
-      the baseline policy configurations as determined by the launch.
-      Currently the only way the launch can trigger the alternate
-      configuration is via dry-run/darklaunch.
     name: Immutable. The resource name of the Policy. Must be one of the
       following forms, where constraint_name is the name of the constraint
       which this Policy configures: *
@@ -163,9 +145,8 @@ class GoogleCloudOrgpolicyV2Policy(_messages.Message):
     spec: Basic information about the Organization Policy.
   """
 
-  alternate = _messages.MessageField('GoogleCloudOrgpolicyV2AlternatePolicySpec', 1)
-  name = _messages.StringField(2)
-  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 3)
+  name = _messages.StringField(1)
+  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 2)
 
 
 class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):

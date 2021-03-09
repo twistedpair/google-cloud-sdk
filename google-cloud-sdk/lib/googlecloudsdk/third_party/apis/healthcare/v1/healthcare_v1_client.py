@@ -39,6 +39,10 @@ class HealthcareV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_datasets_consentStores_attributeDefinitions = self.ProjectsLocationsDatasetsConsentStoresAttributeDefinitionsService(self)
+    self.projects_locations_datasets_consentStores_consentArtifacts = self.ProjectsLocationsDatasetsConsentStoresConsentArtifactsService(self)
+    self.projects_locations_datasets_consentStores_consents = self.ProjectsLocationsDatasetsConsentStoresConsentsService(self)
+    self.projects_locations_datasets_consentStores_userDataMappings = self.ProjectsLocationsDatasetsConsentStoresUserDataMappingsService(self)
     self.projects_locations_datasets_consentStores = self.ProjectsLocationsDatasetsConsentStoresService(self)
     self.projects_locations_datasets_dicomStores_studies_series_instances_frames = self.ProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesFramesService(self)
     self.projects_locations_datasets_dicomStores_studies_series_instances = self.ProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesService(self)
@@ -54,6 +58,721 @@ class HealthcareV1(base_api.BaseApiClient):
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
+  class ProjectsLocationsDatasetsConsentStoresAttributeDefinitionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_consentStores_attributeDefinitions resource."""
+
+    _NAME = 'projects_locations_datasets_consentStores_attributeDefinitions'
+
+    def __init__(self, client):
+      super(HealthcareV1.ProjectsLocationsDatasetsConsentStoresAttributeDefinitionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Attribute definition in the parent consent store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AttributeDefinition) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.attributeDefinitions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['attributeDefinitionId'],
+        relative_path='v1/{+parent}/attributeDefinitions',
+        request_field='attributeDefinition',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsCreateRequest',
+        response_type_name='AttributeDefinition',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified Attribute definition. Fails if the Attribute definition is referenced by any User data mapping, or the latest revision of any Consent.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.attributeDefinitions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified Attribute definition.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AttributeDefinition) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.attributeDefinitions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsGetRequest',
+        response_type_name='AttributeDefinition',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the Attribute definitions in the specified consent store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAttributeDefinitionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.attributeDefinitions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/attributeDefinitions',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsListRequest',
+        response_type_name='ListAttributeDefinitionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified Attribute definition.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AttributeDefinition) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/attributeDefinitions/{attributeDefinitionsId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.consentStores.attributeDefinitions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='attributeDefinition',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsPatchRequest',
+        response_type_name='AttributeDefinition',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatasetsConsentStoresConsentArtifactsService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_consentStores_consentArtifacts resource."""
+
+    _NAME = 'projects_locations_datasets_consentStores_consentArtifacts'
+
+    def __init__(self, client):
+      super(HealthcareV1.ProjectsLocationsDatasetsConsentStoresConsentArtifactsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Consent artifact in the parent consent store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConsentArtifact) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.consentArtifacts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/consentArtifacts',
+        request_field='consentArtifact',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsCreateRequest',
+        response_type_name='ConsentArtifact',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified Consent artifact. Fails if the artifact is referenced by the latest revision of any Consent.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts/{consentArtifactsId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.consentArtifacts.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified Consent artifact.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConsentArtifact) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts/{consentArtifactsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.consentArtifacts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsGetRequest',
+        response_type_name='ConsentArtifact',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the Consent artifacts in the specified consent store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConsentArtifactsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consentArtifacts',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.consentArtifacts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/consentArtifacts',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListRequest',
+        response_type_name='ListConsentArtifactsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatasetsConsentStoresConsentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_consentStores_consents resource."""
+
+    _NAME = 'projects_locations_datasets_consentStores_consents'
+
+    def __init__(self, client):
+      super(HealthcareV1.ProjectsLocationsDatasetsConsentStoresConsentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Activate(self, request, global_params=None):
+      r"""Activates the latest revision of the specified Consent by committing a new revision with `state` updated to `ACTIVE`. If the latest revision of the specified Consent is in the `ACTIVE` state, no new revision is committed. A FAILED_PRECONDITION error occurs if the latest revision of the specified Consent is in the `REJECTED` or `REVOKED` state.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsActivateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Consent) The response message.
+      """
+      config = self.GetMethodConfig('Activate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Activate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}:activate',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.activate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:activate',
+        request_field='activateConsentRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsActivateRequest',
+        response_type_name='Consent',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Consent in the parent consent store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Consent) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/consents',
+        request_field='consent',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsCreateRequest',
+        response_type_name='Consent',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the Consent and its revisions. To keep a record of the Consent but mark it inactive, see [RevokeConsent]. To delete a revision of a Consent, see [DeleteConsentRevision]. This operation does not delete the related Consent artifact.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def DeleteRevision(self, request, global_params=None):
+      r"""Deletes the specified revision of a Consent. An INVALID_ARGUMENT error occurs if the specified revision is the latest revision.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRevisionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('DeleteRevision')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteRevision.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}:deleteRevision',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.deleteRevision',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:deleteRevision',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsDeleteRevisionRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified revision of a Consent, or the latest revision if `revision_id` is not specified in the resource name.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Consent) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsGetRequest',
+        response_type_name='Consent',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the Consent in the given consent store, returning each Consent's latest revision.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConsentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/consents',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest',
+        response_type_name='ListConsentsResponse',
+        supports_download=False,
+    )
+
+    def ListRevisions(self, request, global_params=None):
+      r"""Lists the revisions of the specified Consent in reverse chronological order.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRevisionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConsentRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListRevisions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRevisions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}:listRevisions',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.listRevisions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}:listRevisions',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRevisionsRequest',
+        response_type_name='ListConsentRevisionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the latest revision of the specified Consent by committing a new revision with the changes. A FAILED_PRECONDITION error occurs if the latest revision of the specified Consent is in the `REJECTED` or `REVOKED` state.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Consent) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='consent',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsPatchRequest',
+        response_type_name='Consent',
+        supports_download=False,
+    )
+
+    def Reject(self, request, global_params=None):
+      r"""Rejects the latest revision of the specified Consent by committing a new revision with `state` updated to `REJECTED`. If the latest revision of the specified Consent is in the `REJECTED` state, no new revision is committed. A FAILED_PRECONDITION error occurs if the latest revision of the specified Consent is in the `ACTIVE` or `REVOKED` state.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsRejectRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Consent) The response message.
+      """
+      config = self.GetMethodConfig('Reject')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reject.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}:reject',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.reject',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:reject',
+        request_field='rejectConsentRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsRejectRequest',
+        response_type_name='Consent',
+        supports_download=False,
+    )
+
+    def Revoke(self, request, global_params=None):
+      r"""Revokes the latest revision of the specified Consent by committing a new revision with `state` updated to `REVOKED`. If the latest revision of the specified Consent is in the `REVOKED` state, no new revision is committed. A FAILED_PRECONDITION error occurs if the latest revision of the given consent is in `DRAFT` or `REJECTED` state.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsRevokeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Consent) The response message.
+      """
+      config = self.GetMethodConfig('Revoke')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Revoke.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}:revoke',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.consents.revoke',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:revoke',
+        request_field='revokeConsentRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsRevokeRequest',
+        response_type_name='Consent',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatasetsConsentStoresUserDataMappingsService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_consentStores_userDataMappings resource."""
+
+    _NAME = 'projects_locations_datasets_consentStores_userDataMappings'
+
+    def __init__(self, client):
+      super(HealthcareV1.ProjectsLocationsDatasetsConsentStoresUserDataMappingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Archive(self, request, global_params=None):
+      r"""Archives the specified User data mapping.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsArchiveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ArchiveUserDataMappingResponse) The response message.
+      """
+      config = self.GetMethodConfig('Archive')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Archive.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}:archive',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.archive',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:archive',
+        request_field='archiveUserDataMappingRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsArchiveRequest',
+        response_type_name='ArchiveUserDataMappingResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new User data mapping in the parent consent store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UserDataMapping) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/userDataMappings',
+        request_field='userDataMapping',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsCreateRequest',
+        response_type_name='UserDataMapping',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified User data mapping.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified User data mapping.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UserDataMapping) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsGetRequest',
+        response_type_name='UserDataMapping',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the User data mappings in the specified consent store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListUserDataMappingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/userDataMappings',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsListRequest',
+        response_type_name='ListUserDataMappingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified User data mapping.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UserDataMapping) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/userDataMappings/{userDataMappingsId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.consentStores.userDataMappings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='userDataMapping',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsPatchRequest',
+        response_type_name='UserDataMapping',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDatasetsConsentStoresService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_consentStores resource."""
 
@@ -63,6 +782,141 @@ class HealthcareV1(base_api.BaseApiClient):
       super(HealthcareV1.ProjectsLocationsDatasetsConsentStoresService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def CheckDataAccess(self, request, global_params=None):
+      r"""Checks if a particular data_id of a User data mapping in the specified consent store is consented for the specified use.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresCheckDataAccessRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckDataAccessResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckDataAccess')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckDataAccess.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:checkDataAccess',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.checkDataAccess',
+        ordered_params=['consentStore'],
+        path_params=['consentStore'],
+        query_params=[],
+        relative_path='v1/{+consentStore}:checkDataAccess',
+        request_field='checkDataAccessRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresCheckDataAccessRequest',
+        response_type_name='CheckDataAccessResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new consent store in the parent dataset. Attempting to create a consent store with the same ID as an existing store fails with an ALREADY_EXISTS error.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConsentStore) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['consentStoreId'],
+        relative_path='v1/{+parent}/consentStores',
+        request_field='consentStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresCreateRequest',
+        response_type_name='ConsentStore',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified consent store and removes all the consent store's data.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}',
+        http_method='DELETE',
+        method_id='healthcare.projects.locations.datasets.consentStores.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def EvaluateUserConsents(self, request, global_params=None):
+      r"""Evaluates the user's Consents for all matching User data mappings. Note: User data mappings are indexed asynchronously, which can cause a slight delay between the time mappings are created or updated and when they are included in EvaluateUserConsents results.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresEvaluateUserConsentsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (EvaluateUserConsentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('EvaluateUserConsents')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EvaluateUserConsents.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:evaluateUserConsents',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.evaluateUserConsents',
+        ordered_params=['consentStore'],
+        path_params=['consentStore'],
+        query_params=[],
+        relative_path='v1/{+consentStore}:evaluateUserConsents',
+        request_field='evaluateUserConsentsRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresEvaluateUserConsentsRequest',
+        response_type_name='EvaluateUserConsentsResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified consent store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConsentStore) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresGetRequest',
+        response_type_name='ConsentStore',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
@@ -88,6 +942,87 @@ class HealthcareV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the consent stores in the specified dataset.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConsentStoresResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.consentStores.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/consentStores',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresListRequest',
+        response_type_name='ListConsentStoresResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified consent store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConsentStore) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}',
+        http_method='PATCH',
+        method_id='healthcare.projects.locations.datasets.consentStores.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='consentStore',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresPatchRequest',
+        response_type_name='ConsentStore',
+        supports_download=False,
+    )
+
+    def QueryAccessibleData(self, request, global_params=None):
+      r"""Queries all data_ids that are consented for a specified use in the given consent store and writes them to a specified destination. The returned Operation includes a progress counter for the number of User data mappings processed. Errors are logged to Cloud Logging (see [Viewing logs] (cloud.google.com/healthcare/docs/how-tos/logging)). For example, the following sample log entry shows a `failed to evaluate consent policy` error that occurred during a QueryAccessibleData call to consent store `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_id}`. ```json jsonPayload: { @type: "type.googleapis.com/google.cloud.healthcare.logging.QueryAccessibleDataLogEntry" error: { code: 9 message: "failed to evaluate consent policy" } resourceName: "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_id}/consents/{consent_id}" } logName: "projects/{project_id}/logs/healthcare.googleapis.com%2Fquery_accessible_data" operation: { id: "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/operations/{operation_id}" producer: "healthcare.googleapis.com/QueryAccessibleData" } receiveTimestamp: "TIMESTAMP" resource: { labels: { consent_store_id: "{consent_store_id}" dataset_id: "{dataset_id}" location: "{location_id}" project_id: "{project_id}" } type: "healthcare_consent_store" } severity: "ERROR" timestamp: "TIMESTAMP" ```.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsConsentStoresQueryAccessibleDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('QueryAccessibleData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryAccessibleData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:queryAccessibleData',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.consentStores.queryAccessibleData',
+        ordered_params=['consentStore'],
+        path_params=['consentStore'],
+        query_params=[],
+        relative_path='v1/{+consentStore}:queryAccessibleData',
+        request_field='queryAccessibleDataRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresQueryAccessibleDataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

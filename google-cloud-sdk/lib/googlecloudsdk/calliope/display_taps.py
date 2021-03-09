@@ -78,7 +78,8 @@ class Filterer(peek_iterable.Tap):
     """
     self._missing_keys -= set(
         key for key in self._missing_keys
-        if resource_property.ResourceContainsKey(resource, key))
+        if resource_property.ResourceContainsKey(
+            resource_projector.MakeSerializable(resource), key))
     if resource_printer_base.IsResourceMarker(resource):
       return True
     return self._compiled_expression.Evaluate(

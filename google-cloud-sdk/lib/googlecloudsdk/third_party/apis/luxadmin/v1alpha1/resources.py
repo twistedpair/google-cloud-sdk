@@ -63,17 +63,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_CLUSTERS_DATABASES = (
-      'projects.locations.clusters.databases',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/clusters/'
-              '{clustersId}/databases/{databasesId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_CLUSTERS_INSTANCES = (
       'projects.locations.clusters.instances',
       '{+name}',
@@ -81,17 +70,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/clusters/'
               '{clustersId}/instances/{instancesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CLUSTERS_ROLES = (
-      'projects.locations.clusters.roles',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/clusters/'
-              '{clustersId}/roles/{rolesId}',
       },
       ['name'],
       True

@@ -200,6 +200,8 @@ class Node(_messages.Message):
   r"""A TPU instance.
 
   Enums:
+    ApiVersionValueValuesEnum: Output only. The API version that created this
+      Node.
     HealthValueValuesEnum: The health status of the TPU node.
     StateValueValuesEnum: Output only. The current state for the TPU Node.
 
@@ -209,6 +211,7 @@ class Node(_messages.Message):
   Fields:
     acceleratorType: Required. The type of hardware accelerators associated
       with this node.
+    apiVersion: Output only. The API version that created this Node.
     cidrBlock: The CIDR block that the TPU node will use when selecting an IP
       address. This CIDR block must be a /29 block; the Compute Engine
       networks API forbids a smaller block, and using a larger block would be
@@ -265,6 +268,20 @@ class Node(_messages.Message):
       Shared VPC networks, the node must be created with this this field
       enabled.
   """
+
+  class ApiVersionValueValuesEnum(_messages.Enum):
+    r"""Output only. The API version that created this Node.
+
+    Values:
+      API_VERSION_UNSPECIFIED: API version is unknown.
+      V1_ALPHA1: TPU API V1Alpha1 version.
+      V1: TPU API V1 version.
+      V2_ALPHA1: TPU API V2Alpha1 version.
+    """
+    API_VERSION_UNSPECIFIED = 0
+    V1_ALPHA1 = 1
+    V1 = 2
+    V2_ALPHA1 = 3
 
   class HealthValueValuesEnum(_messages.Enum):
     r"""The health status of the TPU node.
@@ -350,27 +367,28 @@ class Node(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   acceleratorType = _messages.StringField(1)
-  cidrBlock = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  health = _messages.EnumField('HealthValueValuesEnum', 5)
-  healthDescription = _messages.StringField(6)
-  ipAddress = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  modelBasePath = _messages.StringField(9)
-  modelConfigFile = _messages.StringField(10)
-  modelName = _messages.StringField(11)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 14, repeated=True)
-  platformConfigFile = _messages.StringField(15)
-  port = _messages.StringField(16)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 17)
-  serviceAccount = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  symptoms = _messages.MessageField('Symptom', 20, repeated=True)
-  tensorflowVersion = _messages.StringField(21)
-  useServiceNetworking = _messages.BooleanField(22)
+  apiVersion = _messages.EnumField('ApiVersionValueValuesEnum', 2)
+  cidrBlock = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  health = _messages.EnumField('HealthValueValuesEnum', 6)
+  healthDescription = _messages.StringField(7)
+  ipAddress = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  modelBasePath = _messages.StringField(10)
+  modelConfigFile = _messages.StringField(11)
+  modelName = _messages.StringField(12)
+  name = _messages.StringField(13)
+  network = _messages.StringField(14)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 15, repeated=True)
+  platformConfigFile = _messages.StringField(16)
+  port = _messages.StringField(17)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 18)
+  serviceAccount = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  symptoms = _messages.MessageField('Symptom', 21, repeated=True)
+  tensorflowVersion = _messages.StringField(22)
+  useServiceNetworking = _messages.BooleanField(23)
 
 
 class Operation(_messages.Message):

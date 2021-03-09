@@ -221,10 +221,6 @@
         "spec": {
           "description": "Basic information about the Organization Policy.",
           "$ref": "GoogleCloudOrgpolicyV2PolicySpec"
-        },
-        "alternate": {
-          "description": "An alternate policy configuration that will be used instead of the baseline policy configurations as determined by the launch. Currently the only way the launch can trigger the alternate configuration is via dry-run\/darklaunch.",
-          "$ref": "GoogleCloudOrgpolicyV2AlternatePolicySpec"
         }
       }
     },
@@ -328,21 +324,6 @@
         "location": {
           "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudOrgpolicyV2AlternatePolicySpec": {
-      "id": "GoogleCloudOrgpolicyV2AlternatePolicySpec",
-      "description": "Similar to PolicySpec but with an extra 'launch' field for launch reference. The PolicySpec here is specific for dry-run\/darklaunch.",
-      "type": "object",
-      "properties": {
-        "launch": {
-          "description": "Reference to the launch that will be used while audit logging and to control the launch. Should be set only in the alternate policy.",
-          "type": "string"
-        },
-        "spec": {
-          "description": "Specify `Constraint` for configurations of Cloud Platform resources.",
-          "$ref": "GoogleCloudOrgpolicyV2PolicySpec"
         }
       }
     },

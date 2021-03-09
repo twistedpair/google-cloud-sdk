@@ -460,10 +460,10 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
       ["x@example.com", "y@example.com"] } When both path_filters and
       path_value_matchers are set, an implicit AND must be performed.
     PathValueMatchersValue: Similar to path_filters, this contains set of
-      filters to apply if `path` field referes to array elements. This is
-      meant to support value matching beyond exact match. To perform exact
-      match, use path_filters. When both path_filters and path_value_matchers
-      are set, an implicit AND must be performed.
+      filters to apply if `path` field refers to array elements. This is meant
+      to support value matching beyond exact match. To perform exact match,
+      use path_filters. When both path_filters and path_value_matchers are
+      set, an implicit AND must be performed.
 
   Fields:
     action: Type of this operation. Contains one of 'and', 'remove',
@@ -483,7 +483,7 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
       ["x@example.com", "y@example.com"] } When both path_filters and
       path_value_matchers are set, an implicit AND must be performed.
     pathValueMatchers: Similar to path_filters, this contains set of filters
-      to apply if `path` field referes to array elements. This is meant to
+      to apply if `path` field refers to array elements. This is meant to
       support value matching beyond exact match. To perform exact match, use
       path_filters. When both path_filters and path_value_matchers are set, an
       implicit AND must be performed.
@@ -546,7 +546,7 @@ class GoogleCloudRecommenderV1beta1Operation(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PathValueMatchersValue(_messages.Message):
     r"""Similar to path_filters, this contains set of filters to apply if
-    `path` field referes to array elements. This is meant to support value
+    `path` field refers to array elements. This is meant to support value
     matching beyond exact match. To perform exact match, use path_filters.
     When both path_filters and path_value_matchers are set, an implicit AND
     must be performed.

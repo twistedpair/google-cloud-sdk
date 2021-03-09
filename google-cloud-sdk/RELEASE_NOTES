@@ -5,6 +5,106 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 331.0.0 (2021-03-09)
+
+### AI
+
+* Added `--autoscaling-metric-specs` flag to `gcloud beta ai endpoints deploy-model`.
+
+### App Engine
+
+* Updated `gcloud app instances list` and `gcloud app instances describe`
+  to return the auto healer health check (i.e. liveness) for the flexible
+  environment.
+
+### Assured Workloads
+
+*   Promoted `gcloud assured` command group to GA. Commands in this group
+    provide the ability to read and modify Assured data controls.
+*   Promoted `gcloud assured workloads` command group to GA. Commands in this
+    group provide the ability to manage Assured Workloads environment resources.
+*   Promoted `gcloud assured operations` command group to GA. Commands in this
+    group provide the ability to view Assured Workloads operation resources.
+
+### Cloud Build
+
+*   Fixed issue where `gcloud beta builds worker-pools` commands fail to wait
+    for long-running operations to finish.
+
+### Cloud Dataproc
+
+* Added a confirmation prompt to `gcloud datapoc clusters enable-personal-auth-session`
+and `gcloud beta datapoc clusters enable-personal-auth-session`.
+
+### Cloud Healthcare
+
+* Promoted `gcloud healthcare consent-stores` to GA.
+
+### Cloud On Demand Scanning
+
+*   Updated the `local-extract` component to version 0.1.5, to improve error
+    handling in certain cases.
+
+### Cloud Resource Manager
+
+* Updated `gcloud resource-manager org-policies describe` to throw an error for unsupported policy versions.
+
+### Cloud Run
+
+* Promoted `--min-instances` flag of `gcloud run deploy` and
+  `gcloud run services update` to GA for `--platform=managed`.
+
+### Cloud Services
+
+* Support service usage check on `gcloud services disable` command.
+
+### Compute Engine
+
+* Promoted `--provisioned-iops` flag of `gcloud compute disks create` to GA.
+* Promoted `gcloud compute public-delegated-prefixes` to beta.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.41.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Identity and Access Management
+
+*   Added `gcloud iam workload-identity-pools` which enables granting
+    on-premises or multi-cloud workloads access to Google Cloud resources,
+    without using a service account key.
+
+### Kubernetes Engine
+
+* Added `gcloud container clusters create-auto` for creating Autopilot clusters
+  to the beta and GA tracks.
+
+### Network Management
+
+* Added IPv6 support for Network Load balancers to `gcloud compute forwarding-rules` command group.
+
+### Secret Manager
+
+* Promoted `gcloud secrets replication` command group to GA.
+* Added `--replication-policy-file` flag to `gcloud secrets create` command to
+  specify replication policy using a JSON or YAML file.
+* Added `--kms-key-name` flag to `gcloud secrets create` command to specify a
+  KMS key when creating an automatic secret.
+
+### VPC Access
+
+* Promoted VPC connector `--subnet` flag from beta to GA.
+* Modified `gcloud compute networks vpc-access connectors create` to accept an optional `--subnet` flag to specify a subnet to house the connector rather than requiring `--network` and `--range` flags.
+    * If the provided subnet is a shared subnet, use the flag `--subnet-project` to specify the VPC host project ID.
+
+### Workspace Add Ons
+
+* Promoted `gcloud workspace-add-ons` commands to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 330.0.0 (2021-03-02)
 
 ### Breaking Changes

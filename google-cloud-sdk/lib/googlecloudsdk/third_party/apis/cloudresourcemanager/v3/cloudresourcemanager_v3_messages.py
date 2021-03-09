@@ -1796,24 +1796,23 @@ class SearchOrganizationsRequest(_messages.Message):
   r"""The request sent to the `SearchOrganizations` method.
 
   Fields:
-    filter: Optional. An optional query string used to filter the
-      Organizations to return in the response. Filter rules are case-
-      insensitive. Organizations may be filtered by
-      `owner.directoryCustomerId` or by `domain`, where the domain is a G
-      Suite domain, for example: * Filter
-      `owner.directorycustomerid:123456789` returns Organization resources
-      with `owner.directory_customer_id` equal to `123456789`. * Filter
-      `domain:google.com` returns Organization resources corresponding to the
-      domain `google.com`.
     pageSize: Optional. The maximum number of Organizations to return in the
       response. If unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `SearchOrganizations` that indicates from where listing should continue.
+    query: Optional. An optional query string used to filter the Organizations
+      to return in the response. Query rules are case-insensitive.
+      Organizations may be queried by `owner.directoryCustomerId` or by
+      `domain`, where the domain is a G Suite domain, for example: * Query
+      `owner.directorycustomerid:123456789` returns Organization resources
+      with `owner.directory_customer_id` equal to `123456789`. * Query
+      `domain:google.com` returns Organization resources corresponding to the
+      domain `google.com`.
   """
 
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  query = _messages.StringField(3)
 
 
 class SearchOrganizationsResponse(_messages.Message):

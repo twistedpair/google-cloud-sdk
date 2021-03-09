@@ -20,13 +20,34 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.resourcesettings import service as settings_service
 
+ORGANIZATION = 'organization'
+FOLDER = 'folder'
+PROJECT = 'project'
 
-def GetCreateRequestFromArgs(args, parent_resource, setting_id, setting_value):
-  """Returns the get_request from the user-specified arguments.
+
+def ComputeResourceType(args):
+  """Returns the resource type from the user-specified arguments.
 
   Args:
     args: argparse.Namespace, An object that contains the values for the
       arguments specified in the Args method.
+  """
+  if args.organization:
+    resource_type = ORGANIZATION
+  elif args.folder:
+    resource_type = FOLDER
+  else:
+    resource_type = PROJECT
+
+  return resource_type
+
+
+def GetCreateRequestFromResourceType(resource_type, parent_resource, setting_id,
+                                     setting_value):
+  """Returns the get_request from the user-specified arguments.
+
+  Args:
+    resource_type: string value object contains resource type
     parent_resource: resource location such as `organizations/123`
     setting_id: setting id such as `iam-projectCreatorRoles`
     setting_value: setting value object contains name, value and (optional) etag
@@ -34,9 +55,9 @@ def GetCreateRequestFromArgs(args, parent_resource, setting_id, setting_value):
 
   messages = settings_service.ResourceSettingsMessages()
 
-  if args.organization:
+  if resource_type == ORGANIZATION:
     message_type = messages.ResourcesettingsOrganizationsSettingsValueCreateRequest
-  elif args.folder:
+  elif resource_type == FOLDER:
     message_type = messages.ResourcesettingsFoldersSettingsValueCreateRequest
   else:
     message_type = messages.ResourcesettingsProjectsSettingsValueCreateRequest
@@ -82,12 +103,25 @@ def GetGetValueRequestFromArgs(args, setting_name):
     setting_name: setting name such as `settings/iam-projectCreatorRoles`
   """
 
+  resource_type = ComputeResourceType(args)
+
+  return GetGetValueRequestFromResourceType(resource_type, setting_name)
+
+
+def GetGetValueRequestFromResourceType(resource_type, setting_name):
+  """Returns the get_request from the user-specified arguments.
+
+  Args:
+    resource_type: A String object that contains the resource type
+    setting_name: setting name such as `settings/iam-projectCreatorRoles`
+  """
+
   messages = settings_service.ResourceSettingsMessages()
 
-  if args.organization:
+  if resource_type == ORGANIZATION:
     get_request = messages.ResourcesettingsOrganizationsSettingsGetValueRequest(
         name=setting_name)
-  elif args.folder:
+  elif resource_type == FOLDER:
     get_request = messages.ResourcesettingsFoldersSettingsGetValueRequest(
         name=setting_name)
   else:
@@ -177,9 +211,21 @@ def GetServiceFromArgs(args):
       arguments specified in the Args method.
   """
 
-  if args.organization:
+  resource_type = ComputeResourceType(args)
+
+  return GetServiceFromResourceType(resource_type)
+
+
+def GetServiceFromResourceType(resource_type):
+  """Returns the service from the resource type input.
+
+  Args:
+    resource_type: A String object that contains the resource type
+  """
+
+  if resource_type == ORGANIZATION:
     service = settings_service.OrganizationsSettingsService()
-  elif args.folder:
+  elif resource_type == FOLDER:
     service = settings_service.FoldersSettingsService()
   else:
     service = settings_service.ProjectsSettingsService()
@@ -187,20 +233,19 @@ def GetServiceFromArgs(args):
   return service
 
 
-def GetUpdateValueRequestFromArgs(args, setting_value):
+def GetUpdateValueRequestFromResourceType(resource_type, setting_value):
   """Returns the get_request from the user-specified arguments.
 
   Args:
-    args: argparse.Namespace, An object that contains the values for the
-      arguments specified in the Args method.
+    resource_type: A String object that contains the resource type
     setting_value: setting value object contains name, value
   """
 
   messages = settings_service.ResourceSettingsMessages()
 
-  if args.organization:
+  if resource_type == ORGANIZATION:
     message_type = messages.ResourcesettingsOrganizationsSettingsUpdateValueRequest
-  elif args.folder:
+  elif resource_type == FOLDER:
     message_type = messages.ResourcesettingsFoldersSettingsUpdateValueRequest
   else:
     message_type = messages.ResourcesettingsProjectsSettingsUpdateValueRequest
@@ -220,9 +265,21 @@ def GetValueServiceFromArgs(args):
       arguments specified in the Args method.
   """
 
-  if args.organization:
+  resource_type = ComputeResourceType(args)
+
+  return GetValueServiceFromResourceType(resource_type)
+
+
+def GetValueServiceFromResourceType(resource_type):
+  """Returns the value-service from the resource type input.
+
+  Args:
+    resource_type: A String object that contains the resource type
+  """
+
+  if resource_type == ORGANIZATION:
     value_service = settings_service.OrganizationsSettingsValueService()
-  elif args.folder:
+  elif resource_type == FOLDER:
     value_service = settings_service.FoldersSettingsValueService()
   else:
     value_service = settings_service.ProjectsSettingsValueService()

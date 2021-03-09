@@ -30,41 +30,40 @@ from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import file_part
 from googlecloudsdk.command_lib.storage import progress_callbacks
-from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
 from googlecloudsdk.core.util import files
 
 
-class FilePartUploadTask(task.Task):
-  """Uploads a range of bytes from a file."""
+class FilePartUploadTask(file_part_task.FilePartTask):
+  """Uploads a range of bytes from a file.
 
-  def __init__(self, source_resource, destination_resource, offset, length):
-    """Initializes task.
+  Normally, don't docstring private attributes, but initialization parameters
+  need to be more specific than parent class's.
 
-    Args:
-      source_resource (resource_reference.FileObjectResource): Must contain
-          local filesystem path to upload object. Does not need to contain
-          metadata.
-      destination_resource (resource_reference.ObjectResource|UnknownResource):
-          Must contain the full object path. Directories will not be accepted.
-          Existing objects at the this location will be overwritten.
-      offset (int): The index of the first byte in the upload range.
-      length (int): The number of bytes in the upload range.
-    """
-    super().__init__()
-    self._source_resource = source_resource
-    self._destination_resource = destination_resource
-    self._offset = offset
-    self._length = length
-    self.parallel_processing_key = (
-        self._destination_resource.storage_url.url_string)
+  Attributes:
+    _source_resource (resource_reference.FileObjectResource): Must contain local
+      filesystem path to upload object. Does not need to contain metadata.
+    _destination_resource (resource_reference.ObjectResource|UnknownResource):
+      Must contain the full object path. Directories will not be accepted.
+      Existing objects at the this location will be overwritten.
+    _offset (int): The index of the first byte in the upload range.
+    _length (int): The number of bytes in the upload range.
+    _component_number (int?): If a multipart operation, indicates the
+      component number.
+    _total_components (int?): If a multipart operation, indicates the total
+      number of components.
+  """
 
   def execute(self, task_status_queue=None):
+    """Performs upload."""
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
         size=self._length,
         source_url=self._source_resource.storage_url,
         destination_url=self._destination_resource.storage_url,
+        component_number=self._component_number,
+        total_components=self._total_components,
         operation_name=task_status.OperationName.UPLOADING,
         process_id=os.getpid(),
         thread_id=threading.get_ident(),
@@ -82,10 +81,3 @@ class FilePartUploadTask(task.Task):
           request_config=cloud_api.RequestConfig(
               md5_hash=self._source_resource.md5_hash, size=self._length),
           progress_callback=progress_callback)
-
-  def __eq__(self, other):
-    if not isinstance(other, FilePartUploadTask):
-      return NotImplemented
-    return (self._destination_resource == other._destination_resource and
-            self._source_resource == other._source_resource and
-            self._offset == other._offset and self._length == other._length)

@@ -251,9 +251,8 @@ def GetDeployedModelId(required=True):
       required=required)
 
 
-def GetIndexIdArg(required=True):
-  return base.Argument(
-      '--index', help='The ID of the index.', required=required)
+def GetIndexIdArg(required=True, helper_text='ID of the index.'):
+  return base.Argument('--index', help=helper_text, required=required)
 
 
 def GetDeployedIndexId(required=True):
@@ -347,8 +346,27 @@ value is 1.
       help=('Maximum number of machine replicas the deployed model will be '
             'always deployed on.')).AddToParser(parser)
 
-  # TODO(b/168930155): add the link for available machine types after the docs
-  #   are out.
+  base.Argument(
+      '--autoscaling-metric-specs',
+      metavar='METRIC-NAME=TARGET',
+      type=arg_parsers.ArgDict(key_type=str, value_type=int),
+      action=arg_parsers.UpdateAction,
+      help="""\
+Metric specifications that overrides a resource utilization metric's target
+value. At most one entry is allowed per metric.
+
+*METRIC-NAME*::: Resource metric name. Choices are {}.
+
+*TARGET*::: Target resource utilization in percentage (1% - 100%) for the
+given metric. If the value is set to 60, the target resource utilization is 60%.
+
+For example:
+`--autoscaling-metric-specs=cpu-usage=70`
+""".format(', '.join([
+    "'{}'".format(c)
+    for c in sorted(constants.OP_AUTOSCALING_METRIC_NAME_MAPPER.keys())]
+                     ))).AddToParser(parser)
+
   base.Argument(
       '--machine-type',
       help="""\
@@ -878,68 +896,101 @@ def AddLocalRunCustomJobFlags(parser):
   application_group.add_argument(
       '--python-module',
       metavar='PYTHON_MODULE',
-      help="""
-      Name of the python module to execute, in 'trainer.train' or 'train' format.
-      """)
+      help=textwrap.dedent("""
+      Name of the python module to execute, in 'trainer.train' or 'train'
+      format. Its path should be relative to the `work_dir`.
+      """))
   application_group.add_argument(
       '--script',
       metavar='SCRIPT',
-      help="""
-      The relative path of the file to execute. Accepets a Python file, IPYNB file, or arbitrary bash script. The specified path should be relative to the `work_dir`.
-      """)
+      help=textwrap.dedent("""
+      The relative path of the file to execute. Accepets a Python file,
+      IPYNB file, or arbitrary bash script. This path should be relative to the
+      `work_dir`.
+      """))
 
-  # Flags for working directory
+  # Flags for working directory.
   parser.add_argument(
       '--work-dir',
       metavar='WORK_DIR',
-      help="""
+      help=textwrap.dedent("""
       Path of the working directory where the python-module or script exists.
       If not specified, it use the directory where you run the this command.
 
-      All the the contents of this directory will be copied into the built container image.
-      """)
+      Only the contents of this directory will be accessible to the built
+      container image.
+      """))
 
   # Flags for extra directory
   parser.add_argument(
-      '--extra-dir',
+      '--extra-dirs',
       metavar='EXTRA_DIR',
       type=arg_parsers.ArgList(),
-      help="""
-      Extra directories other than the working directory to include.
-      Don't include the directories inside the working directory, as they will always be copied by default.
-      All directories must exist relative to the working directory.
-      """)
+      help=textwrap.dedent("""
+      Extra directories under the working directory to include, besides the one
+      that contains the main executable.
+
+      By default, only the parent directory of the main script or python module
+      is copied to the container.
+      For example, if the module is "training.task" or the script is
+      "training/task.py", the whole "training" directory, including its
+      sub-directories, will always be copied to the container. You may specify
+      this flag to also copy other directories if necessary.
+
+      Note: if no parent is specified in 'python_module' or 'scirpt', the whole
+      working directory is copied, then you don't need to specify this flag.
+      """))
 
   # Flags for base container image
   parser.add_argument(
       '--base-image',
       metavar='BASE_IMAGE',
       required=True,
-      help="""
-      URI or ID of the container image in either the Container Registry or local that will run the application.
-      See https://cloud.google.com/ai-platform-unified/docs/training/pre-built-containers for available pre-built container images provided by AI Platform for training.
-      """)
+      help=textwrap.dedent("""
+      URI or ID of the container image in either the Container Registry or local
+      that will run the application.
+      See https://cloud.google.com/ai-platform-unified/docs/training/pre-built-containers
+      for available pre-built container images provided by AI Platform for training.
+      """))
 
-  # Flags for extra directory
+  # Flags for extra requirements.
   parser.add_argument(
       '--requirements',
       metavar='REQUIREMENTS',
       type=arg_parsers.ArgList(),
-      help="""
-      Python dependencies to be used when running the application.
-      If this is not specified, and there is no "setup.py" or "requirements.txt" in the working directory, your application will only have access to what exists in the base image with on other dependencies.
+      help=textwrap.dedent("""
+      Python dependencies from PyPI to be used when running the application.
+      If this is not specified, and there is no "setup.py" or "requirements.txt"
+      in the working directory, your application will only have access to what
+      exists in the base image with on other dependencies.
 
       Example:
       'tensorflow-cpu, pandas==1.2.0, matplotlib>=3.0.2'
-      """)
+      """))
+
+  # Flags for extra dependency .
+  parser.add_argument(
+      '--extra-packages',
+      metavar='PACKAGE',
+      type=arg_parsers.ArgList(),
+      help=textwrap.dedent("""
+      Local paths to Python archives used as training dependencies in the image
+      container.
+      These can be absolute or relative paths. However, they have to be under
+      the work_dir; Otherwise, this tool will not be able to acces it.
+
+      Example:
+      'dep1.tar.gz, ./downloads/dep2.whl'
+      """))
 
   # Flags for the output image
   parser.add_argument(
       '--output-image-uri',
       metavar='OUTPUT_IMAGE',
-      help="""
-      Uri of the custom container image to be built with the your application packed in.
-      """)
+      help=textwrap.dedent("""
+      Uri of the custom container image to be built with the your application
+      packed in.
+      """))
 
   # Flaga for GPU support
   parser.add_argument(
@@ -950,12 +1001,13 @@ def AddLocalRunCustomJobFlags(parser):
       '--docker-run-options',
       metavar='DOCKER_RUN_OPTIONS',
       type=arg_parsers.ArgList(),
-      help="""
+      help=textwrap.dedent("""
       Custom Docker run options to pass to image during execution.
       For example, '--no-healthcheck, -a stdin'.
 
-      See https://docs.docker.com/engine/reference/commandline/run/#options for more details.
-      """)
+      See https://docs.docker.com/engine/reference/commandline/run/#options for
+      more details.
+      """))
 
   # User custom flags.
   parser.add_argument(
@@ -963,6 +1015,5 @@ def AddLocalRunCustomJobFlags(parser):
       nargs=argparse.REMAINDER,
       default=[],
       help="""Additional user arguments to be forwarded to your application.""",
-      example="""\
-        $ {command} --script=my_run.sh --base-image=gcr.io/my/image -- --my-arg bar --enable_foo
-      """)
+      example=('$ {command} --script=my_run.sh --base-image=gcr.io/my/image '
+               '-- --my-arg bar --enable_foo'))

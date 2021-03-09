@@ -128,10 +128,15 @@ def DisableApiCall(project, service, force=False):
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
 
+  check = messages.DisableServiceRequest.CheckIfServiceHasUsageValueValuesEnum.CHECK
+  if force:
+    check = messages.DisableServiceRequest.CheckIfServiceHasUsageValueValuesEnum.SKIP
   request = messages.ServiceusageServicesDisableRequest(
       name=_PROJECT_SERVICE_RESOURCE % (project, service),
       disableServiceRequest=messages.DisableServiceRequest(
-          disableDependentServices=force,),
+          disableDependentServices=force,
+          checkIfServiceHasUsage=check,
+      ),
   )
   try:
     return client.services.Disable(request)
@@ -140,8 +145,8 @@ def DisableApiCall(project, service, force=False):
     exceptions.ReraiseError(e,
                             exceptions.EnableServicePermissionDeniedException)
   except apitools_exceptions.HttpBadRequestError as e:
-    log.status.Print('Provide the --force flag if you wish to disable '
-                     'dependent services.')
+    log.status.Print('Provide the --force flag if you wish to force disable '
+                     'services.')
     exceptions.ReraiseError(e, exceptions.Error)
 
 

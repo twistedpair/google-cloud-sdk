@@ -655,9 +655,20 @@ class ComponentSnapshotDiff(object):
       native_invalid_ids = set(component_ids) - self.__native_all_components
       arm_x86_ids = native_invalid_ids & self.__darwin_x86_64_components
       if arm_x86_ids:
-        log.warning('The ARM versions of the following components are not '
-                    'available yet, using x86 versions instead. [{}]'
-                    .format(', '.join(arm_x86_ids)))
+        rosetta2_installed = os.path.isfile(
+            '/Library/Apple/System/Library/LaunchDaemons/com.apple.oahd.plist')
+        if rosetta2_installed:
+          log.warning('The ARM versions of the following components are not '
+                      'available yet, using x86_64 versions instead: [{}].'
+                      .format(', '.join(arm_x86_ids)))
+        else:
+          log.warning('The ARM versions of the components [{}] are not '
+                      'available yet. To download and execute the x86_64 '
+                      'version of the components, please install Rosetta 2 '
+                      'first by running the command: '
+                      'softwareupdate --install-rosetta.'
+                      .format(', '.join(arm_x86_ids)))
+          return (set(component_ids) - self.__all_components) | arm_x86_ids
     return set(component_ids) - self.__all_components
 
   def AllDiffs(self):

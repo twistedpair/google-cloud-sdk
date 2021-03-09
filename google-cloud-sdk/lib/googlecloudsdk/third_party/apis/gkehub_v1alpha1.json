@@ -610,6 +610,10 @@
         "enablePodTreeLabels": {
           "description": "Whether pod tree labels are enabled in this cluster.",
           "type": "boolean"
+        },
+        "enableHierarchicalResourceQuota": {
+          "description": "Whether hierarchical resource quota is enabled in this cluster.",
+          "type": "boolean"
         }
       }
     },
@@ -1147,6 +1151,14 @@
         "monitor": {
           "description": "Version of the deployed monitor pod",
           "type": "string"
+        },
+        "reconcilerManager": {
+          "description": "Version of the deployed reconciler-manager pod",
+          "type": "string"
+        },
+        "rootReconciler": {
+          "description": "Version of the deployed reconciler container in root-reconciler pod",
+          "type": "string"
         }
       }
     },
@@ -1205,6 +1217,38 @@
         },
         "monitor": {
           "description": "Deployment state of the monitor pod",
+          "type": "string",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "reconcilerManager": {
+          "description": "Deployment state of reconciler-manager pod",
+          "type": "string",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "rootReconciler": {
+          "description": "Deployment state of root-reconciler",
           "type": "string",
           "enumDescriptions": [
             "Deployment's state cannot be determined",

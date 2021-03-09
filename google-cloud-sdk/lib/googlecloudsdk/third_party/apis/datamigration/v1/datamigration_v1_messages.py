@@ -1436,6 +1436,8 @@ class MigrationJobVerificationError(_messages.Message):
       UNSUPPORTED_TABLE_DEFINITION: The table definition is not support due to
         missing primary key or replica identity.
       UNSUPPORTED_DEFINER: The definer is not supported.
+      CANT_RESTART_RUNNING_MIGRATION: Migration is already running at the time
+        of restart request.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -1456,6 +1458,7 @@ class MigrationJobVerificationError(_messages.Message):
     UNSUPPORTED_GTID_MODE = 16
     UNSUPPORTED_TABLE_DEFINITION = 17
     UNSUPPORTED_DEFINER = 18
+    CANT_RESTART_RUNNING_MIGRATION = 19
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)

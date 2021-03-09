@@ -2245,6 +2245,10 @@
             "PAYG"
           ]
         },
+        "addonsConfig": {
+          "description": "Addon configurations of the Apigee organization.",
+          "$ref": "GoogleCloudApigeeV1AddonsConfig"
+        },
         "caCertificate": {
           "description": "Output only. Base64-encoded public certificate for the root CA of the Apigee organization. Valid only when [RuntimeType](#RuntimeType) is `CLOUD`.",
           "readOnly": true,
@@ -2278,6 +2282,55 @@
         }
       }
     },
+    "GoogleCloudApigeeV1AddonsConfig": {
+      "id": "GoogleCloudApigeeV1AddonsConfig",
+      "description": "Add-on configurations for the Apigee organization.",
+      "type": "object",
+      "properties": {
+        "advancedApiOpsConfig": {
+          "description": "Configuration for the Advanced API Ops add-on.",
+          "$ref": "GoogleCloudApigeeV1AdvancedApiOpsConfig"
+        },
+        "integrationConfig": {
+          "description": "Configuration for the Integration add-on.",
+          "$ref": "GoogleCloudApigeeV1IntegrationConfig"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1AdvancedApiOpsConfig": {
+      "id": "GoogleCloudApigeeV1AdvancedApiOpsConfig",
+      "description": "Configuration for the Advanced API Ops add-on.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Flag that specifies whether the Advanced API Ops add-on is enabled.",
+          "type": "boolean"
+        },
+        "expiresAt": {
+          "description": "Output only. Time at which the Advanced API Ops add-on expires in in milliseconds since epoch. If unspecified, the add-on will never expire.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1IntegrationConfig": {
+      "id": "GoogleCloudApigeeV1IntegrationConfig",
+      "description": "Configuration for the Integration add-on.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Flag that specifies whether the Integration add-on is enabled.",
+          "type": "boolean"
+        },
+        "expiresAt": {
+          "description": "Output only. Time at which the Integration add-on expires in in milliseconds since epoch. If unspecified, the add-on will never expire.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "GoogleCloudApigeeV1GetSyncAuthorizationRequest": {
       "id": "GoogleCloudApigeeV1GetSyncAuthorizationRequest",
       "description": "Request for GetSyncAuthorization.",
@@ -2300,6 +2353,17 @@
           "description": "Entity tag (ETag) used for optimistic concurrency control as a way to help prevent simultaneous updates from overwriting each other. For example, when you call [getSyncAuthorization](organizations\/getSyncAuthorization) an ETag is returned in the response. Pass that ETag when calling the [setSyncAuthorization](organizations\/setSyncAuthorization) to ensure that you are updating the correct version. If you don't pass the ETag in the call to `setSyncAuthorization`, then the existing authorization is overwritten indiscriminately. **Note**: We strongly recommend that you use the ETag in the read-modify-write cycle to avoid race conditions.",
           "type": "string",
           "format": "byte"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1SetAddonsRequest": {
+      "id": "GoogleCloudApigeeV1SetAddonsRequest",
+      "description": "Request for SetAddons.",
+      "type": "object",
+      "properties": {
+        "addonsConfig": {
+          "description": "Required. Add-on configurations.",
+          "$ref": "GoogleCloudApigeeV1AddonsConfig"
         }
       }
     },
@@ -5049,6 +5113,10 @@
             "SLASH_23"
           ]
         },
+        "nodeConfig": {
+          "description": "Optional. NodeConfig of the instance.",
+          "$ref": "GoogleCloudApigeeV1NodeConfig"
+        },
         "host": {
           "description": "Output only. Internal hostname or IP address of the Apigee endpoint used by clients to connect to the service.",
           "readOnly": true,
@@ -5108,6 +5176,23 @@
             "ACTIVE",
             "DELETING"
           ]
+        }
+      }
+    },
+    "GoogleCloudApigeeV1NodeConfig": {
+      "id": "GoogleCloudApigeeV1NodeConfig",
+      "description": "NodeConfig for the instance.",
+      "type": "object",
+      "properties": {
+        "minNodeCount": {
+          "description": "Optional. The minimum size of the nodepool that will be reserved by the instance. If not specified, default is determined by the size of the CIDR block range.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxNodeCount": {
+          "description": "Optional. The maximum size of the nodepool that will be reserved by the instance. If not specified, default is determined by the size of the CIDR block range.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -5570,6 +5655,34 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Sets the permissions required to allow the Synchronizer to download environment data from the control plane. You must call this API to enable proper functioning of hybrid. Pass the ETag when calling `setSyncAuthorization` to ensure that you are updating the correct version. To get an ETag, call [getSyncAuthorization](getSyncAuthorization). If you don't pass the ETag in the call to `setSyncAuthorization`, then the existing authorization is overwritten indiscriminately. For more information, see [Configure the Synchronizer](https:\/\/cloud.google.com\/apigee\/docs\/hybrid\/latest\/synchronizer-access). **Note**: Available to Apigee hybrid only."
+        },
+        "setAddons": {
+          "id": "apigee.organizations.setAddons",
+          "path": "v1/{+org}:setAddons",
+          "flatPath": "v1/organizations/{organizationsId}:setAddons",
+          "httpMethod": "POST",
+          "parameters": {
+            "org": {
+              "description": "Required. Name of the organization. Use the following structure in your request: `organizations\/{org}`",
+              "pattern": "^organizations\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "org"
+          ],
+          "request": {
+            "$ref": "GoogleCloudApigeeV1SetAddonsRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Configures the add-ons for the Apigee organization. The existing add-on configuration will be fully replaced."
         },
         "getDeployedIngressConfig": {
           "id": "apigee.organizations.getDeployedIngressConfig",
@@ -8173,7 +8286,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a trace configuration override. The response contains a system-generated UUID, that can be used to view, update, or delete the configuration override. override. Use the List API to view the existing trace configuration overrides. overrides."
+                      "description": "Creates a trace configuration override. The response contains a system-generated UUID, that can be used to view, update, or delete the configuration override. Use the List API to view the existing trace configuration overrides."
                     },
                     "list": {
                       "id": "apigee.organizations.environments.traceConfig.overrides.list",

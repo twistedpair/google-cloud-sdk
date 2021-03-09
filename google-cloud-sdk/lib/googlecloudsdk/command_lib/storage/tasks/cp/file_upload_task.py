@@ -111,8 +111,12 @@ class FileUploadTask(task.Task):
         offset = component_index * component_size
         length = min(component_size, size - offset)
         upload_task = file_part_upload_task.FilePartUploadTask(
-            self._source_resource, temporary_component_resource, offset,
-            length)
+            self._source_resource,
+            temporary_component_resource,
+            offset,
+            length,
+            component_number=component_index,
+            total_components=component_count)
 
         file_part_upload_tasks.append(upload_task)
 

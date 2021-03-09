@@ -840,9 +840,9 @@
               "parameters": {
                 "parent": {
                   "description": "The [project ID](https:\/\/support.google.com\/cloud\/answer\/6158840?hl=en&ref_topic=6158848) for this request, in the format `projects\/[PROJECT_ID]`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
@@ -877,9 +877,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the RuntimeConfig resource to retrieve, in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -903,9 +903,9 @@
               "parameters": {
                 "parent": {
                   "description": "The [project ID](https:\/\/support.google.com\/cloud\/answer\/6158840?hl=en&ref_topic=6158848) for this request, in the format `projects\/[PROJECT_ID]`.",
+                  "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "requestId": {
@@ -937,9 +937,9 @@
               "parameters": {
                 "name": {
                   "description": "The name of the RuntimeConfig resource to update, in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -966,9 +966,9 @@
               "parameters": {
                 "name": {
                   "description": "The RuntimeConfig resource to delete, in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -992,9 +992,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1021,9 +1021,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 },
                 "options.requestedPolicyVersion": {
@@ -1053,9 +1053,9 @@
               "parameters": {
                 "resource": {
                   "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                   "type": "string"
                 }
               },
@@ -1087,9 +1087,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/operations\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/operations\/.*$",
                       "type": "string"
                     }
                   },
@@ -1113,9 +1113,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/operations\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/operations\/.*$",
                       "type": "string"
                     }
                   },
@@ -1146,9 +1146,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The path to the RuntimeConfig resource for which you want to list variables. The configuration must exist beforehand; the path must be in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "type": "string"
                     },
                     "filter": {
@@ -1193,9 +1193,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the variable to return, in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIBLE_NAME]`",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.*$",
                       "type": "string"
                     }
                   },
@@ -1219,9 +1219,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the variable to watch, in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.*$",
                       "type": "string"
                     }
                   },
@@ -1248,9 +1248,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The path to the RutimeConfig resource that this variable should belong to. The configuration must exist beforehand; the path must be in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -1282,9 +1282,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the variable to update, in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIABLE_NAME]`",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.*$",
                       "type": "string"
                     }
                   },
@@ -1311,9 +1311,9 @@
                   "parameters": {
                     "name": {
                       "description": "The name of the variable to delete, in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/variables\/[VARIABLE_NAME]`",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.*$",
                       "type": "string"
                     },
                     "recursive": {
@@ -1342,9 +1342,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.*$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/variables\/.*$",
                       "type": "string"
                     }
                   },
@@ -1375,9 +1375,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The path to the configuration for which you want to get a list of waiters. The configuration must exist beforehand; the path must be in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "type": "string"
                     },
                     "pageSize": {
@@ -1412,9 +1412,9 @@
                   "parameters": {
                     "name": {
                       "description": "The fully-qualified name of the Waiter resource object to retrieve, in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/waiters\/[WAITER_NAME]`",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/waiters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/waiters\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1438,9 +1438,9 @@
                   "parameters": {
                     "parent": {
                       "description": "The path to the configuration that will own the waiter. The configuration must exist beforehand; the path must be in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]`.",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+$",
                       "type": "string"
                     },
                     "requestId": {
@@ -1472,9 +1472,9 @@
                   "parameters": {
                     "name": {
                       "description": "The Waiter resource to delete, in the format: `projects\/[PROJECT_ID]\/configs\/[CONFIG_NAME]\/waiters\/[WAITER_NAME]`",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/waiters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/waiters\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -1498,9 +1498,9 @@
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/waiters\/[^\/]+$",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/configs\/[^\/]+\/waiters\/[^\/]+$",
                       "type": "string"
                     }
                   },

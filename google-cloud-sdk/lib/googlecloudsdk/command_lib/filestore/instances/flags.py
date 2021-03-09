@@ -39,6 +39,18 @@ INSTANCES_LIST_FORMAT = """\
       createTime.date()
     )"""
 
+INSTANCES_LIST_FORMAT_ALPHA = """\
+    table(
+      name.basename():label=INSTANCE_NAME:sort=1,
+      name.segment(3):label=LOCATION,
+      tier,
+      fileShares[0].capacityGb:label=CAPACITY_GB,
+      fileShares[0].name:label=FILE_SHARE_NAME,
+      networks[0].ipAddresses[0]:label=IP_ADDRESS,
+      state,
+      createTime.date()
+    )"""
+
 
 NETWORK_ARG_SPEC = {
     'name': str,
@@ -64,6 +76,7 @@ FILE_TIER_TO_TYPE = {
     'PREMIUM': 'BASIC',
     'BASIC_HDD': 'BASIC',
     'BASIC_SSD': 'BASIC',
+    'ENTERPRISE': 'ENTERPRISE',
     'HIGH_SCALE_SSD': 'HIGH SCALE'
 }
 
@@ -84,7 +97,16 @@ def GetTierType(instance_tier):
 
 def AddLocationArg(parser):
   parser.add_argument(
-      '--location', help='Location of the Cloud Filestore instance/operation.')
+      '--location',
+      required=False,
+      help='Location of the Cloud Filestore instance/operation.')
+
+
+def AddRegionArg(parser):
+  parser.add_argument(
+      '--region',
+      required=False,
+      help='Region of the Cloud Filestore instance.')
 
 
 def AddDescriptionArg(parser):
@@ -101,8 +123,36 @@ def GetTierArg(messages, api_version):
   Returns:
     the choice arg.
   """
-  if ((api_version == filestore_client.ALPHA_API_VERSION) or
-      (api_version == filestore_client.BETA_API_VERSION)):
+  if api_version == filestore_client.ALPHA_API_VERSION:
+    tier_arg = (
+        arg_utils.ChoiceEnumMapper(
+            '--tier',
+            messages.Instance.TierValueValuesEnum,
+            help_str="""The service tier for the Cloud Filestore instance.
+         For more details, see:
+         https://cloud.google.com/filestore/docs/instance-tiers """,
+            custom_mappings={
+                'STANDARD':
+                    ('standard',
+                     """Standard Filestore instance, An alias for BASIC_HDD.
+                     Use BASIC_HDD instead whenever possible."""),
+                'PREMIUM': ('premium',
+                            """Premium Filestore instance, An alias for BASIC_SSD.
+                            Use BASIC_SSD instead whenever possible."""),
+                'BASIC_HDD':
+                    ('basic-hdd', 'Performant NFS storage system using HDD.'),
+                'BASIC_SSD':
+                    ('basic-ssd', 'Performant NFS storage system using SSD.'),
+                'ENTERPRISE':
+                    ('enterprise', """ENTERPRISE instances offer the features\
+                    and availability needed for mission-critical workloads."""),
+                'HIGH_SCALE_SSD': (
+                    'high-scale-ssd',
+                    """NFS storage system with expanded capacity and performance\
+                    scaling capabilities.""")
+            },
+            default='BASIC_HDD'))
+  elif api_version == filestore_client.BETA_API_VERSION:
     tier_arg = (
         arg_utils.ChoiceEnumMapper(
             '--tier',
@@ -206,7 +256,7 @@ is required.
 *capacity*::: The desired capacity of the volume. The capacity must be a whole
 number followed by a capacity unit such as ``TB'' for terabyte. If no capacity
 unit is specified, GB is assumed. The minimum capacity for a standard instance
-is 1TB. The minimum capacity for a premium instance is 2.5TB.
+is 0.5TB. The minimum capacity for a premium instance is 0.5TB.
 
 *name*::: The desired logical name of the volume.
 
@@ -292,8 +342,8 @@ is required.
 
 *capacity*::: The desired capacity of the volume in GB or TB units. If no capacity
 unit is specified, GB is assumed. Acceptable instance capacities for each tier are as follows:
-* BASIC_HDD: 1TB-63.9TB in 1GB increments or its multiples.
-* BASIC_SSD: 2.5TB-63.9TB in 1GB increments or its multiples.
+* BASIC_HDD: 0.5TB-63.9TB in 1GB increments or its multiples.
+* BASIC_SSD: 0.5TB-63.9TB in 1GB increments or its multiples.
 * HIGH_SCALE_SSD: 60TB-320TB in 10TB increments or its multiples.
 
 *name*::: The desired logical name of the volume.
@@ -370,6 +420,8 @@ def AddInstanceCreateArgs(parser, api_version):
   ]).AddToParser(parser)
   AddDescriptionArg(parser)
   AddLocationArg(parser)
+  if api_version == filestore_client.ALPHA_API_VERSION:
+    AddRegionArg(parser)
   AddAsyncFlag(parser)
   labels_util.AddCreateLabelsFlags(parser)
   AddNetworkArg(parser, api_version)
@@ -391,6 +443,8 @@ def AddInstanceUpdateArgs(parser, api_version):
   ]).AddToParser(parser)
   AddDescriptionArg(parser)
   AddLocationArg(parser)
+  if api_version == filestore_client.ALPHA_API_VERSION:
+    AddRegionArg(parser)
   AddAsyncFlag(parser)
   labels_util.AddUpdateLabelsFlags(parser)
   AddFileShareArg(

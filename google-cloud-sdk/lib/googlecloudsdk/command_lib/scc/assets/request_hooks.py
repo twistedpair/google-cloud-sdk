@@ -23,8 +23,9 @@ import re
 
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
 from googlecloudsdk.command_lib.scc.hooks import GetOrganization
-from googlecloudsdk.command_lib.scc.hooks import GetOrganizationFromResourceName
 from googlecloudsdk.command_lib.scc.hooks import GetParent
+from googlecloudsdk.command_lib.scc.hooks import GetParentFromResourceName
+from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
 
 
 def ListAssetsReqHook(ref, args, req):
@@ -41,8 +42,8 @@ def ListAssetsReqHook(ref, args, req):
 def DescribeAssetReqHook(ref, args, req):
   """Generate organization name from organization id."""
   del ref
-  req.parent = GetOrganization(args)
-  req.filter = _GetNameOrResourceFilter(args)
+  req.parent = GetParent(args)
+  req.filter = _GetNameOrResourceFilterForParent(args)
   return req
 
 
@@ -65,6 +66,7 @@ def GetProjectAssetReqHook(ref, args, req):
 def GroupAssetsReqHook(ref, args, req):
   """Hook up filter such that the CSCC filter is used rather than gcloud."""
   del ref
+  req.parent = GetParent(args)
   req.groupAssetsRequest.filter = args.filter
   args.filter = ""
   return req
@@ -74,8 +76,8 @@ def ListAssetSecurityMarksReqHook(ref, args, req):
   """Retrieves records for a specific asset."""
   del ref
   _ValidateMutexOnAssetAndOrganization(args)
-  asset_name = _GetAssetName(args)
-  req.parent = GetOrganizationFromResourceName(asset_name)
+  asset_name = _GetAssetNameForParent(args)
+  req.parent = GetParentFromResourceName(asset_name)
   req.filter = "name=\"" + asset_name + "\""
   return req
 
@@ -102,11 +104,37 @@ def _GetAssetName(args):
   return GetOrganization(args) + "/assets/" + args.asset
 
 
+def _GetAssetNameForParent(args):
+  """Prepares asset relative path using organization and asset."""
+  resource_pattern = re.compile(
+      "^(organizations|projects|folders)/.*/assets/[0-9]+$")
+  id_pattern = re.compile("^[0-9]+$")
+  if (not resource_pattern.match(args.asset) and
+      not id_pattern.match(args.asset)):
+    raise InvalidSCCInputError(
+        "Asset argument must match either be the full resource name of "
+        "the asset or only the number asset id.")
+  if resource_pattern.match(args.asset):
+    # Handle asset id as full resource name
+    return args.asset
+  return GetParent(args) + "/assets/" + args.asset
+
+
 def _GetNameOrResourceFilter(args):
   """Returns a filter with either name or resourceName as filter."""
   request_filter = ""
   if args.asset is not None:
     request_filter = "name=\"" + _GetAssetName(args) + "\""
+  else:
+    request_filter = "securityCenterProperties.resourceName=\"" + args.resource_name + "\""
+  return request_filter
+
+
+def _GetNameOrResourceFilterForParent(args):
+  """Returns a filter with either name or resourceName as filter."""
+  request_filter = ""
+  if args.asset is not None:
+    request_filter = "name=\"" + _GetAssetNameForParent(args) + "\""
   else:
     request_filter = "securityCenterProperties.resourceName=\"" + args.resource_name + "\""
   return request_filter

@@ -375,12 +375,17 @@ class ConfigSyncDeploymentState(_messages.Message):
     GitSyncValueValuesEnum: Deployment state of the git-sync pod
     ImporterValueValuesEnum: Deployment state of the importer pod
     MonitorValueValuesEnum: Deployment state of the monitor pod
+    ReconcilerManagerValueValuesEnum: Deployment state of reconciler-manager
+      pod
+    RootReconcilerValueValuesEnum: Deployment state of root-reconciler
     SyncerValueValuesEnum: Deployment state of the syncer pod
 
   Fields:
     gitSync: Deployment state of the git-sync pod
     importer: Deployment state of the importer pod
     monitor: Deployment state of the monitor pod
+    reconcilerManager: Deployment state of reconciler-manager pod
+    rootReconciler: Deployment state of root-reconciler
     syncer: Deployment state of the syncer pod
   """
 
@@ -426,6 +431,34 @@ class ConfigSyncDeploymentState(_messages.Message):
     INSTALLED = 2
     ERROR = 3
 
+  class ReconcilerManagerValueValuesEnum(_messages.Enum):
+    r"""Deployment state of reconciler-manager pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class RootReconcilerValueValuesEnum(_messages.Enum):
+    r"""Deployment state of root-reconciler
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
   class SyncerValueValuesEnum(_messages.Enum):
     r"""Deployment state of the syncer pod
 
@@ -443,7 +476,9 @@ class ConfigSyncDeploymentState(_messages.Message):
   gitSync = _messages.EnumField('GitSyncValueValuesEnum', 1)
   importer = _messages.EnumField('ImporterValueValuesEnum', 2)
   monitor = _messages.EnumField('MonitorValueValuesEnum', 3)
-  syncer = _messages.EnumField('SyncerValueValuesEnum', 4)
+  reconcilerManager = _messages.EnumField('ReconcilerManagerValueValuesEnum', 4)
+  rootReconciler = _messages.EnumField('RootReconcilerValueValuesEnum', 5)
+  syncer = _messages.EnumField('SyncerValueValuesEnum', 6)
 
 
 class ConfigSyncState(_messages.Message):
@@ -468,13 +503,18 @@ class ConfigSyncVersion(_messages.Message):
     gitSync: Version of the deployed git-sync pod
     importer: Version of the deployed importer pod
     monitor: Version of the deployed monitor pod
+    reconcilerManager: Version of the deployed reconciler-manager pod
+    rootReconciler: Version of the deployed reconciler container in root-
+      reconciler pod
     syncer: Version of the deployed syncer pod
   """
 
   gitSync = _messages.StringField(1)
   importer = _messages.StringField(2)
   monitor = _messages.StringField(3)
-  syncer = _messages.StringField(4)
+  reconcilerManager = _messages.StringField(4)
+  rootReconciler = _messages.StringField(5)
+  syncer = _messages.StringField(6)
 
 
 class Empty(_messages.Message):
@@ -1240,12 +1280,15 @@ class HierarchyControllerConfig(_messages.Message):
   r"""Configuration for Hierarchy Controller
 
   Fields:
+    enableHierarchicalResourceQuota: Whether hierarchical resource quota is
+      enabled in this cluster.
     enablePodTreeLabels: Whether pod tree labels are enabled in this cluster.
     enabled: Whether Hierarchy Controller is enabled in this cluster.
   """
 
-  enablePodTreeLabels = _messages.BooleanField(1)
-  enabled = _messages.BooleanField(2)
+  enableHierarchicalResourceQuota = _messages.BooleanField(1)
+  enablePodTreeLabels = _messages.BooleanField(2)
+  enabled = _messages.BooleanField(3)
 
 
 class HierarchyControllerDeploymentState(_messages.Message):

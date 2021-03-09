@@ -19,13 +19,16 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
+
 
 def ExtractSecurityMarksFromResponse(response, args):
   """Returns security marks from finding response."""
   del args
   list_finding_response = list(response)
-  assert len(list_finding_response) == 1, (
-      "ListFindingResponse must only return one finding since it is "
-      "filtered by Finding Name.")
+  if len(list_finding_response) > 1:
+    raise InvalidSCCInputError(
+        "ListFindingResponse must only return one finding since it is "
+        "filtered by Finding Name.")
   for finding_result in list_finding_response:
     return finding_result.finding.securityMarks

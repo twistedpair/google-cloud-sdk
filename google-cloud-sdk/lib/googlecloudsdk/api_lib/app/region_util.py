@@ -23,29 +23,33 @@ from __future__ import unicode_literals
 class Region(object):
   """Value class representing a region resource."""
 
-  def __init__(self, region, standard, flexible):
+  def __init__(self, region, standard, flexible, search_api):
     self.region = region
     self.standard = standard
     self.flexible = flexible
+    self.search_api = search_api
 
   @classmethod
   def FromRegionResource(cls, region):
     """Create region from a google.cloud.location.Location message."""
     flex = False
     standard = False
+    search_api = False
     region_id = region.labels.additionalProperties[0].value
     for p in region.metadata.additionalProperties:
       if p.key == 'flexibleEnvironmentAvailable' and p.value.boolean_value:
         flex = True
       elif p.key == 'standardEnvironmentAvailable' and p.value.boolean_value:
         standard = True
+      elif p.key == 'searchApiAvailable' and p.value.boolean_value:
+        search_api = True
 
-    return cls(region_id, standard, flex)
+    return cls(region_id, standard, flex, search_api)
 
   def __str__(self):
-    envs = (x[1] for x in
-            [(self.standard, 'standard'), (self.flexible, 'flexible')] if x[0])
+    envs = (
+        x[1] for x in [(self.standard, 'standard'),
+                       (self.flexible, 'flexible'),
+                       (self.search_api, 'search_api')] if x[0])
     out = '{region: <13}'.format(region=self.region)
-    if self.standard and self.flexible:
-      return out
     return out + ' (supports {envs})'.format(envs=' and '.join(envs))

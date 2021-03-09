@@ -600,6 +600,10 @@
           "description": "The path or name of the app's main executable.",
           "type": "string"
         },
+        "serviceAccount": {
+          "description": "The identity that the deployed version will run as. Admin API will use the App Engine Appspot service account as default if this field is neither provided in app.yaml file nor through CLI flag.",
+          "type": "string"
+        },
         "handlers": {
           "description": "An ordered list of URL-matching patterns that should be applied to incoming requests. The first matching URL handles the request and other request handlers are not attempted.Only returned in GET requests if view=FULL is set.",
           "type": "array",

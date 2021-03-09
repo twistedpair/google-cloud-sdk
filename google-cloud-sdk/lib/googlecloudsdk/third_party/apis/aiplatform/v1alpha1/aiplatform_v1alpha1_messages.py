@@ -3511,6 +3511,26 @@ class GoogleCloudAiplatformInternalAutomaticResources(_messages.Message):
   minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformInternalAutoscalingMetricSpec(_messages.Message):
+  r"""The metric specification that defines the target resource utilization
+  (CPU utilization, accelerator's duty cycle, and so on) for calculating the
+  desired replica count.
+
+  Fields:
+    metricName: Required. The resource metric name. Supported metrics: * For
+      Online Prediction: *
+      `aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle` *
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization`
+    target: The target resource utilization in percentage (1% - 100%) for the
+      given metric; once the real usage deviates from the target by a certain
+      percentage, the machine replicas change. The default value is 60
+      (representing 60%) if not provided.
+  """
+
+  metricName = _messages.StringField(1)
+  target = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformInternalBatchConfig(_messages.Message):
   r"""Configurations describing how to construct labeling tasks from collected
   prediction results.
@@ -3641,6 +3661,21 @@ class GoogleCloudAiplatformInternalDedicatedResources(_messages.Message):
   that need a higher degree of manual configuration.
 
   Fields:
+    autoscalingMetricSpecs: Immutable. The metric specifications that
+      overrides a resource utilization metric (CPU utilization, accelerator's
+      duty cycle, and so on) target value (default to 60 if not set). At most
+      one entry is allowed per metric. If machine_spec.accelerator_count is
+      above 0, the autoscaling will be based on both CPU utilization and
+      accelerator's duty cycle metrics and scale up when either metrics
+      exceeds its target value while scale down if both metrics are under
+      their target value. The default target value is 60 for both metrics. If
+      machine_spec.accelerator_count is 0, the autoscaling will be based on
+      CPU utilization metric only with default target value 60 if not
+      explicitly set. For example, in the case of Online Prediction, if you
+      want to override target CPU utilization to 80, you should set
+      autoscaling_metric_specs.metric_name to
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization` and
+      autoscaling_metric_specs.target to `80`.
     machineSpec: Required. Immutable. The specification of a single machine
       used by the prediction.
     minReplicaCount: Required. Immutable. The minimum number of machine
@@ -3651,8 +3686,9 @@ class GoogleCloudAiplatformInternalDedicatedResources(_messages.Message):
       will be always deployed precisely on min_replica_count.
   """
 
-  machineSpec = _messages.MessageField('GoogleCloudAiplatformInternalMachineSpec', 1)
-  minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformInternalAutoscalingMetricSpec', 1, repeated=True)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformInternalMachineSpec', 2)
+  minReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformInternalDeleteOperationMetadata(_messages.Message):
@@ -4216,7 +4252,7 @@ class GoogleCloudAiplatformInternalExplanationMetadataOutputMetadata(_messages.M
       multi-classification Model. It's not feasible if the outputs are non-
       deterministic, e.g. the Model produces top-k classes or sort the outputs
       by their values. The shape of the value must be an n-dimensional array
-      of strings. The number of dimentions must match that of the outputs to
+      of strings. The number of dimensions must match that of the outputs to
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
     outputTensorName: Name of the output tensor. Required and is only
@@ -4675,8 +4711,6 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -4684,8 +4718,6 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -4987,6 +5019,26 @@ class GoogleCloudAiplatformUiAutomaticResources(_messages.Message):
   minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformUiAutoscalingMetricSpec(_messages.Message):
+  r"""The metric specification that defines the target resource utilization
+  (CPU utilization, accelerator's duty cycle, and so on) for calculating the
+  desired replica count.
+
+  Fields:
+    metricName: Required. The resource metric name. Supported metrics: * For
+      Online Prediction: *
+      `aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle` *
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization`
+    target: The target resource utilization in percentage (1% - 100%) for the
+      given metric; once the real usage deviates from the target by a certain
+      percentage, the machine replicas change. The default value is 60
+      (representing 60%) if not provided.
+  """
+
+  metricName = _messages.StringField(1)
+  target = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformUiBatchMigrateResourcesOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   MigrationService.BatchMigrateResources.
@@ -5163,6 +5215,21 @@ class GoogleCloudAiplatformUiDedicatedResources(_messages.Message):
   that need a higher degree of manual configuration.
 
   Fields:
+    autoscalingMetricSpecs: Immutable. The metric specifications that
+      overrides a resource utilization metric (CPU utilization, accelerator's
+      duty cycle, and so on) target value (default to 60 if not set). At most
+      one entry is allowed per metric. If machine_spec.accelerator_count is
+      above 0, the autoscaling will be based on both CPU utilization and
+      accelerator's duty cycle metrics and scale up when either metrics
+      exceeds its target value while scale down if both metrics are under
+      their target value. The default target value is 60 for both metrics. If
+      machine_spec.accelerator_count is 0, the autoscaling will be based on
+      CPU utilization metric only with default target value 60 if not
+      explicitly set. For example, in the case of Online Prediction, if you
+      want to override target CPU utilization to 80, you should set
+      autoscaling_metric_specs.metric_name to
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization` and
+      autoscaling_metric_specs.target to `80`.
     machineSpec: Required. Immutable. The specification of a single machine
       used by the prediction.
     maxReplicaCount: Immutable. The maximum number of replicas this
@@ -5181,9 +5248,10 @@ class GoogleCloudAiplatformUiDedicatedResources(_messages.Message):
       will be always deployed precisely on min_replica_count.
   """
 
-  machineSpec = _messages.MessageField('GoogleCloudAiplatformUiMachineSpec', 1)
-  maxReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformUiAutoscalingMetricSpec', 1, repeated=True)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformUiMachineSpec', 2)
+  maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformUiDeleteOperationMetadata(_messages.Message):
@@ -5703,7 +5771,7 @@ class GoogleCloudAiplatformUiExplanationMetadataOutputMetadata(_messages.Message
       multi-classification Model. It's not feasible if the outputs are non-
       deterministic, e.g. the Model produces top-k classes or sort the outputs
       by their values. The shape of the value must be an n-dimensional array
-      of strings. The number of dimentions must match that of the outputs to
+      of strings. The number of dimensions must match that of the outputs to
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
     outputTensorName: Name of the output tensor. Required and is only
@@ -6021,8 +6089,6 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -6030,8 +6096,6 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -7064,6 +7128,26 @@ class GoogleCloudAiplatformV1AutomaticResources(_messages.Message):
   minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1AutoscalingMetricSpec(_messages.Message):
+  r"""The metric specification that defines the target resource utilization
+  (CPU utilization, accelerator's duty cycle, and so on) for calculating the
+  desired replica count.
+
+  Fields:
+    metricName: Required. The resource metric name. Supported metrics: * For
+      Online Prediction: *
+      `aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle` *
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization`
+    target: The target resource utilization in percentage (1% - 100%) for the
+      given metric; once the real usage deviates from the target by a certain
+      percentage, the machine replicas change. The default value is 60
+      (representing 60%) if not provided.
+  """
+
+  metricName = _messages.StringField(1)
+  target = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   MigrationService.BatchMigrateResources.
@@ -7201,6 +7285,21 @@ class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
   that need a higher degree of manual configuration.
 
   Fields:
+    autoscalingMetricSpecs: Immutable. The metric specifications that
+      overrides a resource utilization metric (CPU utilization, accelerator's
+      duty cycle, and so on) target value (default to 60 if not set). At most
+      one entry is allowed per metric. If machine_spec.accelerator_count is
+      above 0, the autoscaling will be based on both CPU utilization and
+      accelerator's duty cycle metrics and scale up when either metrics
+      exceeds its target value while scale down if both metrics are under
+      their target value. The default target value is 60 for both metrics. If
+      machine_spec.accelerator_count is 0, the autoscaling will be based on
+      CPU utilization metric only with default target value 60 if not
+      explicitly set. For example, in the case of Online Prediction, if you
+      want to override target CPU utilization to 80, you should set
+      autoscaling_metric_specs.metric_name to
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization` and
+      autoscaling_metric_specs.target to `80`.
     machineSpec: Required. Immutable. The specification of a single machine
       used by the prediction.
     maxReplicaCount: Immutable. The maximum number of replicas this
@@ -7219,9 +7318,10 @@ class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
       will be always deployed precisely on min_replica_count.
   """
 
-  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1MachineSpec', 1)
-  maxReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformV1AutoscalingMetricSpec', 1, repeated=True)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1MachineSpec', 2)
+  maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1DeleteOperationMetadata(_messages.Message):
@@ -7468,8 +7568,6 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -7477,8 +7575,6 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -10938,6 +11034,7 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -10948,6 +11045,7 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -11289,6 +11387,7 @@ class GoogleCloudAiplatformV1alpha1CustomJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -11299,6 +11398,7 @@ class GoogleCloudAiplatformV1alpha1CustomJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -11530,6 +11630,7 @@ class GoogleCloudAiplatformV1alpha1DataLabelingJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -11540,6 +11641,7 @@ class GoogleCloudAiplatformV1alpha1DataLabelingJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationLabelsValue(_messages.Message):
@@ -12324,7 +12426,7 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadataOutputMetadata(_messages.M
       multi-classification Model. It's not feasible if the outputs are non-
       deterministic, e.g. the Model produces top-k classes or sort the outputs
       by their values. The shape of the value must be an n-dimensional array
-      of strings. The number of dimentions must match that of the outputs to
+      of strings. The number of dimensions must match that of the outputs to
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
   """
@@ -12708,6 +12810,7 @@ class GoogleCloudAiplatformV1alpha1HyperparameterTuningJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -12718,6 +12821,7 @@ class GoogleCloudAiplatformV1alpha1HyperparameterTuningJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -13368,8 +13472,6 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -13377,8 +13479,6 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -15175,6 +15275,9 @@ class GoogleCloudAiplatformV1alpha1Tensorboard(_messages.Message):
       prefixed with "aiplatform.googleapis.com/" and are immutable.
 
   Fields:
+    blobStoragePathPrefix: Output only. Consumer project Cloud Storage path
+      prefix used to store blob data, which can either be a bucket or
+      directory. Does not end with a '/'.
     createTime: Output only. Timestamp when this Tensorboard was created.
     description: Description of this Tensorboard.
     displayName: Required. User provided name of this Tensorboard.
@@ -15229,15 +15332,16 @@ class GoogleCloudAiplatformV1alpha1Tensorboard(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  kmsKeyName = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  runCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(9)
+  blobStoragePathPrefix = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  kmsKeyName = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  runCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1alpha1TensorboardBlob(_messages.Message):
@@ -16055,6 +16159,26 @@ class GoogleCloudAiplatformV1beta1AutomaticResources(_messages.Message):
   minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1beta1AutoscalingMetricSpec(_messages.Message):
+  r"""The metric specification that defines the target resource utilization
+  (CPU utilization, accelerator's duty cycle, and so on) for calculating the
+  desired replica count.
+
+  Fields:
+    metricName: Required. The resource metric name. Supported metrics: * For
+      Online Prediction: *
+      `aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle` *
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization`
+    target: The target resource utilization in percentage (1% - 100%) for the
+      given metric; once the real usage deviates from the target by a certain
+      percentage, the machine replicas change. The default value is 60
+      (representing 60%) if not provided.
+  """
+
+  metricName = _messages.StringField(1)
+  target = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   MigrationService.BatchMigrateResources.
@@ -16224,6 +16348,21 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
   that need a higher degree of manual configuration.
 
   Fields:
+    autoscalingMetricSpecs: Immutable. The metric specifications that
+      overrides a resource utilization metric (CPU utilization, accelerator's
+      duty cycle, and so on) target value (default to 60 if not set). At most
+      one entry is allowed per metric. If machine_spec.accelerator_count is
+      above 0, the autoscaling will be based on both CPU utilization and
+      accelerator's duty cycle metrics and scale up when either metrics
+      exceeds its target value while scale down if both metrics are under
+      their target value. The default target value is 60 for both metrics. If
+      machine_spec.accelerator_count is 0, the autoscaling will be based on
+      CPU utilization metric only with default target value 60 if not
+      explicitly set. For example, in the case of Online Prediction, if you
+      want to override target CPU utilization to 80, you should set
+      autoscaling_metric_specs.metric_name to
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization` and
+      autoscaling_metric_specs.target to `80`.
     machineSpec: Required. Immutable. The specification of a single machine
       used by the prediction.
     maxReplicaCount: Immutable. The maximum number of replicas this
@@ -16242,9 +16381,10 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
       will be always deployed precisely on min_replica_count.
   """
 
-  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 1)
-  maxReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1AutoscalingMetricSpec', 1, repeated=True)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 2)
+  maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1DeleteOperationMetadata(_messages.Message):
@@ -16803,7 +16943,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataOutputMetadata(_messages.Me
       multi-classification Model. It's not feasible if the outputs are non-
       deterministic, e.g. the Model produces top-k classes or sort the outputs
       by their values. The shape of the value must be an n-dimensional array
-      of strings. The number of dimentions must match that of the outputs to
+      of strings. The number of dimensions must match that of the outputs to
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
     outputTensorName: Name of the output tensor. Required and is only
@@ -17066,8 +17206,6 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -17075,8 +17213,6 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)

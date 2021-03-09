@@ -36,16 +36,6 @@ def AddDataFile(parser, positional=False, **kwargs):
       **kwargs)
 
 
-def AddPolicy(parser, positional=False, **kwargs):
-  parser.add_argument(
-      _ArgOrFlag('replication-policy', positional),
-      metavar='POLICY',
-      help=('The type of replication policy to apply to this secret. Allowed '
-            'values are "automatic" and "user-managed". If user-managed then '
-            '--locations must also be provided.'),
-      **kwargs)
-
-
 def AddProject(parser, positional=False, **kwargs):
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('project', positional),
@@ -60,17 +50,6 @@ def AddLocation(parser, purpose, positional=False, **kwargs):
       resource_spec=GetLocationResourceSpec(),
       group_help='The location {}.'.format(purpose),
       **kwargs).AddToParser(parser)
-
-
-def AddLocations(parser, resource, positional=False, **kwargs):
-  parser.add_argument(
-      _ArgOrFlag('locations', positional),
-      action=arg_parsers.UpdateAction,
-      metavar='LOCATION',
-      type=arg_parsers.ArgList(),
-      help=('Comma-separated list of locations in which the {resource} should '
-            'be replicated.').format(resource=resource),
-      **kwargs)
 
 
 def AddReplicationPolicyFile(parser, positional=False, **kwargs):
@@ -132,6 +111,14 @@ def AddSecret(parser, purpose, positional=False, **kwargs):
 
 
 def AddVersion(parser, purpose, positional=False, **kwargs):
+  concept_parsers.ConceptParser.ForResource(
+      name=_ArgOrFlag('version', positional),
+      resource_spec=GetVersionResourceSpec(),
+      group_help=('Numeric secret version {}.').format(purpose),
+      **kwargs).AddToParser(parser)
+
+
+def AddVersionOrLatest(parser, purpose, positional=False, **kwargs):
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('version', positional),
       resource_spec=GetVersionResourceSpec(),

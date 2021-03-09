@@ -312,26 +312,30 @@ class ImageChange(ConfigChanger):
     return resource
 
 
+def _PruneMapping(mapping, keys_to_remove, clear_others):
+  if clear_others:
+    mapping.clear()
+  else:
+    for var_or_path in keys_to_remove:
+      if var_or_path in mapping:
+        del mapping[var_or_path]
+
+
 class EnvVarLiteralChanges(ConfigChanger):
   """Represents the user intent to modify environment variables string literals."""
 
-  def __init__(self, env_vars_to_update=None,
-               env_vars_to_remove=None, clear_others=False):
+  def __init__(self, updates, removes, clear_others):
     """Initialize a new EnvVarLiteralChanges object.
 
     Args:
-      env_vars_to_update: {str, str}, Update env var names and values.
-      env_vars_to_remove: [str], List of env vars to remove.
+      updates: {str, str}, Update env var names and values.
+      removes: [str], List of env vars to remove.
       clear_others: bool, If true, clear all non-updated env vars.
     """
     super(EnvVarLiteralChanges, self).__init__()
-    self._to_update = None
-    self._to_remove = None
+    self._updates = updates
+    self._removes = removes
     self._clear_others = clear_others
-    if env_vars_to_update:
-      self._to_update = {k.strip(): v for k, v in env_vars_to_update.items()}
-    if env_vars_to_remove:
-      self._to_remove = [k.lstrip() for k in env_vars_to_remove]
 
   def Adjust(self, resource):
     """Mutates the given config's env vars to match the desired changes.
@@ -348,55 +352,44 @@ class EnvVarLiteralChanges(ConfigChanger):
         (e.g. env var's secret source can't be replaced with a config map
         source).
     """
-    if self._clear_others:
-      resource.template.env_vars.literals.clear()
-    elif self._to_remove:
-      for env_var in self._to_remove:
-        if env_var in resource.template.env_vars.literals:
-          del resource.template.env_vars.literals[env_var]
+    _PruneMapping(resource.template.env_vars.literals, self._removes,
+                  self._clear_others)
 
-    if self._to_update:
-      try:
-        resource.template.env_vars.literals.update(self._to_update)
-      except KeyError as e:
-        raise exceptions.ConfigurationError(
-            'Cannot update environment variable [{}] to string literal '
-            'because it has already been set with a different type.'.format(
-                e.args[0]))
+    try:
+      resource.template.env_vars.literals.update(self._updates)
+    except KeyError as e:
+      raise exceptions.ConfigurationError(
+          'Cannot update environment variable [{}] to string literal '
+          'because it has already been set with a different type.'.format(
+              e.args[0]))
     return resource
 
 
-class EnvVarSourceChanges(ConfigChanger):
-  """Represents the user intent to modify environment variables sources."""
+class SecretEnvVarChanges(ConfigChanger):
+  """Represents the user intent to modify environment variable secrets."""
 
-  def __init__(self, env_vars_to_update=None,
-               env_vars_to_remove=None, clear_others=False):
-    """Initialize a new EnvVarSourceChanges object.
+  def __init__(self, updates, removes, clear_others):
+    """Initialize a new SecretEnvVarChanges object.
 
     Args:
-      env_vars_to_update: {str, str}, Update env var names and values.
-      env_vars_to_remove: [str], List of env vars to remove.
+      updates: {str, str}, Update env var names and values.
+      removes: [str], List of env vars to remove.
       clear_others: bool, If true, clear all non-updated env vars.
 
     Raises:
       ConfigurationError if a key hasn't been provided for a source.
     """
-    super(EnvVarSourceChanges, self).__init__()
-    self._to_update = None
-    self._to_remove = None
+    super(SecretEnvVarChanges, self).__init__()
+    self._updates = {}
+    for name, v in updates.items():
+      # Split the given values into 2 parts:
+      #    [env var source name, source data item key]
+      value = v.split(':', 1)
+      if len(value) < 2:
+        value.append(self._OmittedSecretKeyDefault(name))
+      self._updates[name] = value
+    self._removes = removes
     self._clear_others = clear_others
-    if env_vars_to_update:
-      self._to_update = {}
-      for k, v in env_vars_to_update.items():
-        name = k.strip()
-        # Split the given values into 2 parts:
-        #    [env var source name, source data item key]
-        value = v.split(':', 1)
-        if len(value) < 2:
-          value.append(self._OmittedSecretKeyDefault(name))
-        self._to_update[name] = value
-    if env_vars_to_remove:
-      self._to_remove = [k.lstrip() for k in env_vars_to_remove]
 
   def _OmittedSecretKeyDefault(self, name):
     if platforms.GetPlatform() == platforms.PLATFORM_MANAGED:
@@ -404,13 +397,72 @@ class EnvVarSourceChanges(ConfigChanger):
     raise exceptions.ConfigurationError(
         'Missing required item key for environment variable [{}].'.format(name))
 
-  @abc.abstractmethod
-  def _MakeEnvVarSource(self, messages, name, key):
-    """Returns an instance of an EnvVarSource."""
+  def Adjust(self, resource):
+    """Mutates the given config's env vars to match the desired changes.
 
-  @abc.abstractmethod
-  def _GetEnvVars(self, resource):
-    """Returns a k8s_object.ListAsDictionaryWrapper to manage env vars with a source."""
+    Args:
+      resource: k8s_object to adjust
+
+    Returns:
+      The adjusted resource
+
+    Raises:
+      ConfigurationError if there's an attempt to replace the source of an
+        existing environment variable whose source is of a different type
+        (e.g. env var's secret source can't be replaced with a config map
+        source).
+    """
+    env_vars = resource.template.env_vars.secrets
+    _PruneMapping(env_vars, self._removes, self._clear_others)
+
+    for name, (source_name, source_key) in self._updates.items():
+      try:
+        env_vars[name] = self._MakeEnvVarSource(resource.MessagesModule(),
+                                                source_name, source_key)
+      except KeyError:
+        raise exceptions.ConfigurationError(
+            'Cannot update environment variable [{}] to the given type '
+            'because it has already been set with a different type.'.format(
+                name))
+    return resource
+
+  def _MakeEnvVarSource(self, messages, name, key):
+    _AssertValidSecretKey(key, platforms.GetPlatform())
+    return messages.EnvVarSource(
+        secretKeyRef=messages.SecretKeySelector(name=name, key=key))
+
+
+class ConfigMapEnvVarChanges(ConfigChanger):
+  """Represents the user intent to modify environment variable config maps."""
+
+  def __init__(self, updates, removes, clear_others):
+    """Initialize a new ConfigMapEnvVarChanges object.
+
+    Args:
+      updates: {str, str}, Update env var names and values.
+      removes: [str], List of env vars to remove.
+      clear_others: bool, If true, clear all non-updated env vars.
+
+    Raises:
+      ConfigurationError if a key hasn't been provided for a source.
+    """
+    super(ConfigMapEnvVarChanges, self).__init__()
+    self._updates = {}
+    for name, v in updates.items():
+      # Split the given values into 2 parts:
+      #    [env var source name, source data item key]
+      value = v.split(':', 1)
+      if len(value) < 2:
+        value.append(self._OmittedSecretKeyDefault(name))
+      self._updates[name] = value
+    self._removes = removes
+    self._clear_others = clear_others
+
+  def _OmittedSecretKeyDefault(self, name):
+    if platforms.GetPlatform() == platforms.PLATFORM_MANAGED:
+      return 'latest'
+    raise exceptions.ConfigurationError(
+        'Missing required item key for environment variable [{}].'.format(name))
 
   def Adjust(self, resource):
     """Mutates the given config's env vars to match the desired changes.
@@ -427,53 +479,25 @@ class EnvVarSourceChanges(ConfigChanger):
         (e.g. env var's secret source can't be replaced with a config map
         source).
     """
-    env_vars = self._GetEnvVars(resource)
+    env_vars = resource.template.env_vars.config_maps
+    _PruneMapping(env_vars, self._removes, self._clear_others)
 
-    if self._clear_others:
-      env_vars.clear()
-    elif self._to_remove:
-      for env_var in self._to_remove:
-        if env_var in env_vars:
-          del env_vars[env_var]
-
-    if self._to_update:
-      for name, (source_name, source_key) in self._to_update.items():
-        try:
-          env_vars[name] = self._MakeEnvVarSource(
-              resource.MessagesModule(), source_name, source_key)
-        except KeyError:
-          raise exceptions.ConfigurationError(
-              'Cannot update environment variable [{}] to the given type '
-              'because it has already been set with a different type.'.format(
-                  name))
+    for name, (source_name, source_key) in self._updates.items():
+      try:
+        env_vars[name] = self._MakeEnvVarSource(resource.MessagesModule(),
+                                                source_name, source_key)
+      except KeyError:
+        raise exceptions.ConfigurationError(
+            'Cannot update environment variable [{}] to the given type '
+            'because it has already been set with a different type.'.format(
+                name))
     return resource
-
-
-class SecretEnvVarChanges(EnvVarSourceChanges):
-  """Represents the user intent to modify environment variable secrets."""
-
-  def _MakeEnvVarSource(self, messages, name, key):
-    _AssertValidSecretKey(key, platforms.GetPlatform())
-    return messages.EnvVarSource(
-        secretKeyRef=messages.SecretKeySelector(
-            name=name,
-            key=key))
-
-  def _GetEnvVars(self, resource):
-    return resource.template.env_vars.secrets
-
-
-class ConfigMapEnvVarChanges(EnvVarSourceChanges):
-  """Represents the user intent to modify environment variable config maps."""
 
   def _MakeEnvVarSource(self, messages, name, key):
     return messages.EnvVarSource(
         configMapKeyRef=messages.ConfigMapKeySelector(
             name=name,
             key=key))
-
-  def _GetEnvVars(self, resource):
-    return resource.template.env_vars.config_maps
 
 
 class ResourceChanges(ConfigChanger):
@@ -633,49 +657,61 @@ def _GenerateVolumeName(prefix):
   return name_generator.GenerateName(sections=3, separator='-', prefix=prefix)
 
 
-class _VolumeChanges(ConfigChanger):
-  """Represents the user intent to modify volumes and mounts."""
+def _UniqueVolumeName(source_name, existing_volumes):
+  """Generate unique volume name.
 
-  def __init__(self,
-               mounts_to_update=None,
-               mounts_to_remove=None,
-               clear_others=False):
-    """Initialize a new _VolumeChanges object.
+  The names that connect volumes and mounts must be unique even if their
+  source volume names match.
+
+  Args:
+    source_name: (Potentially clashing) name.
+    existing_volumes: Names in use.
+
+  Returns:
+    Unique name.
+  """
+  volume_name = None
+  while volume_name is None or volume_name in existing_volumes:
+    volume_name = _GenerateVolumeName(source_name)
+  return volume_name
+
+
+def _PruneVolumes(volume_mounts, volumes):
+  """Delete all volumes no longer being mounted.
+
+  Args:
+    volume_mounts: resource.template.volume_mounts
+    volumes: resource.template.volumes
+  """
+  for volume in list(volumes):
+    if volume not in volume_mounts.values():
+      del volumes[volume]
+
+
+class SecretVolumeChanges(ConfigChanger):
+  """Represents the user intent to change volumes with secret source types."""
+
+  def __init__(self, updates, removes, clear_others):
+    """Initialize a new SecretVolumeChanges object.
 
     Args:
-      mounts_to_update: {str, str}, Update mount path and volume fields.
-      mounts_to_remove: [str], List of mount paths to remove.
+      updates: {str, str}, Update mount path and volume fields.
+      removes: [str], List of mount paths to remove.
       clear_others: bool, If true, clear all non-updated volumes and mounts of
         the given [volume_type].
     """
-    super(_VolumeChanges, self).__init__()
-    self._to_update = None  # type: Dict[str, List[str, str]]
-    self._to_remove = None  # type: List[str]
+    super(SecretVolumeChanges, self).__init__()
+    self._updates = {}
+    for k, v in updates.items():
+      # Split the given values into 2 parts:
+      #    [volume source name, data item key]
+      update_value = v.split(':', 1)
+      # Pad with None if no data item key specified
+      if len(update_value) < 2:
+        update_value.append(None)
+      self._updates[k] = update_value
+    self._removes = removes
     self._clear_others = clear_others
-    if mounts_to_update:
-      self._to_update = {}
-      for k, v in mounts_to_update.items():
-        # Split the given values into 2 parts:
-        #    [volume source name, data item key]
-        update_value = v.split(':', 1)
-        # Pad with None if no data item key specified
-        if len(update_value) < 2:
-          update_value.append(None)
-        self._to_update[k.strip()] = update_value
-    if mounts_to_remove:
-      self._to_remove = [k.lstrip() for k in mounts_to_remove]
-
-  @abc.abstractmethod
-  def _MakeVolumeSource(self, messages, name, key=None):
-    """Returns an instance of a volume source."""
-
-  @abc.abstractmethod
-  def _GetVolumes(self, resource):
-    """Returns a k8s_object.ListAsDictionaryWrapper to manage volumes."""
-
-  @abc.abstractmethod
-  def _GetVolumeMounts(self, resource):
-    """Returns a k8s_object.ListAsDictionaryWrapper to manage volume mounts."""
 
   def Adjust(self, resource):
     """Mutates the given config's volumes to match the desired changes.
@@ -692,60 +728,27 @@ class _VolumeChanges(ConfigChanger):
         the new volume (e.g. mount that points to a volume with a secret source
         can't be replaced with a volume that has a config map source).
     """
-    volume_mounts = self._GetVolumeMounts(resource)
-    volumes = self._GetVolumes(resource)
+    volume_mounts = resource.template.volume_mounts.secrets
+    volumes = resource.template.volumes.secrets
 
-    if self._clear_others:
-      volume_mounts.clear()
-    elif self._to_remove:
-      for path in self._to_remove:
-        if path in volume_mounts:
-          del volume_mounts[path]
+    _PruneMapping(volume_mounts, self._removes, self._clear_others)
 
-    if self._to_update:
-      for path, (source_name, source_key) in self._to_update.items():
-        volume_name = self._LocalVolumeName(source_name,
-                                            resource.template.volumes)
+    for file_path, (source_name, source_key) in self._updates.items():
+      volume_name = _UniqueVolumeName(source_name, resource.template.volumes)
 
-        # volume_mounts is a special mapping that filters for the current kind
-        # of mount and KeyErrors on existing keys with other types.
-        try:
-          volume_mounts[path] = volume_name
-        except KeyError:
-          raise exceptions.ConfigurationError(
-              'Cannot update mount [{}] because its mounted volume '
-              'is of a different source type.'.format(path))
-        volumes[volume_name] = self._MakeVolumeSource(
-            resource.MessagesModule(), source_name, source_key)
+      # volume_mounts is a special mapping that filters for the current kind
+      # of mount and KeyErrors on existing keys with other types.
+      try:
+        volume_mounts[file_path] = volume_name
+      except KeyError:
+        raise exceptions.ConfigurationError(
+            'Cannot update mount [{}] because its mounted volume '
+            'is of a different source type.'.format(file_path))
+      volumes[volume_name] = self._MakeVolumeSource(resource.MessagesModule(),
+                                                    source_name, source_key)
 
-    # Delete all volumes no longer being mounted
-    for volume in list(volumes):
-      if volume not in volume_mounts.values():
-        del volumes[volume]
-
+    _PruneVolumes(volume_mounts, volumes)
     return resource
-
-  def _LocalVolumeName(self, source_name, existing_volumes):
-    """Generate unique volume name.
-
-    The names that connect volumes and mounts must be unique even if their
-    source volume names match.
-
-    Args:
-      source_name: (Potentially clashing) name.
-      existing_volumes: Names in use.
-
-    Returns:
-      Unique name.
-    """
-    volume_name = None
-    while volume_name is None or volume_name in existing_volumes:
-      volume_name = _GenerateVolumeName(source_name)
-    return volume_name
-
-
-class SecretVolumeChanges(_VolumeChanges):
-  """Represents the user intent to change volumes with secret source types."""
 
   def _MakeVolumeSource(self, messages, name, key=None):
     source = messages.SecretVolumeSource(secretName=name)
@@ -754,27 +757,75 @@ class SecretVolumeChanges(_VolumeChanges):
       source.items.append(messages.KeyToPath(key=key, path=key))
     return source
 
-  def _GetVolumes(self, resource):
-    return resource.template.volumes.secrets
 
-  def _GetVolumeMounts(self, resource):
-    return resource.template.volume_mounts.secrets
-
-
-class ConfigMapVolumeChanges(_VolumeChanges):
+class ConfigMapVolumeChanges(ConfigChanger):
   """Represents the user intent to change volumes with config map source types."""
+
+  def __init__(self, updates, removes, clear_others):
+    """Initialize a new ConfigMapVolumeChanges object.
+
+    Args:
+      updates: {str, [str, str]}, Update mount path and volume fields.
+      removes: [str], List of mount paths to remove.
+      clear_others: bool, If true, clear all non-updated volumes and mounts of
+        the given [volume_type].
+    """
+    super(ConfigMapVolumeChanges, self).__init__()
+    self._updates = {}
+    for k, v in updates.items():
+      # Split the given values into 2 parts:
+      #    [volume source name, data item key]
+      update_value = v.split(':', 1)
+      # Pad with None if no data item key specified
+      if len(update_value) < 2:
+        update_value.append(None)
+      self._updates[k] = update_value
+    self._removes = removes
+    self._clear_others = clear_others
+
+  def Adjust(self, resource):
+    """Mutates the given config's volumes to match the desired changes.
+
+    Args:
+      resource: k8s_object to adjust
+
+    Returns:
+      The adjusted resource
+
+    Raises:
+      ConfigurationError if there's an attempt to replace the volume a mount
+        points to whose existing volume has a source of a different type than
+        the new volume (e.g. mount that points to a volume with a secret source
+        can't be replaced with a volume that has a config map source).
+    """
+    volume_mounts = resource.template.volume_mounts.config_maps
+    volumes = resource.template.volumes.config_maps
+
+    _PruneMapping(volume_mounts, self._removes, self._clear_others)
+
+    for path, (source_name, source_key) in self._updates.items():
+      volume_name = _UniqueVolumeName(source_name, resource.template.volumes)
+
+      # volume_mounts is a special mapping that filters for the current kind
+      # of mount and KeyErrors on existing keys with other types.
+      try:
+        volume_mounts[path] = volume_name
+      except KeyError:
+        raise exceptions.ConfigurationError(
+            'Cannot update mount [{}] because its mounted volume '
+            'is of a different source type.'.format(path))
+      volumes[volume_name] = self._MakeVolumeSource(resource.MessagesModule(),
+                                                    source_name, source_key)
+
+    _PruneVolumes(volume_mounts, volumes)
+
+    return resource
 
   def _MakeVolumeSource(self, messages, name, key=None):
     source = messages.ConfigMapVolumeSource(name=name)
     if key is not None:
       source.items.append(messages.KeyToPath(key=key, path=key))
     return source
-
-  def _GetVolumes(self, resource):
-    return resource.template.volumes.config_maps
-
-  def _GetVolumeMounts(self, resource):
-    return resource.template.volume_mounts.config_maps
 
 
 class NoTrafficChange(ConfigChanger):

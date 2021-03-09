@@ -85,7 +85,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Requests deletion of a Folder. The Folder is moved into the DELETE_REQUESTED state immediately, and is deleted approximately 30 days later. This method may only be called on an empty Folder in the ACTIVE state, where a Folder is empty if it doesn't contain any Folders or Projects in the ACTIVE state. The caller must have `resourcemanager.folders.delete` permission on the identified folder.
+      r"""Requests deletion of a Folder. The Folder is moved into the DELETE_REQUESTED state immediately, and is deleted approximately 30 days later. This method may only be called on an empty Folder, where a Folder is empty if it doesn't contain any Folders or Projects in the ACTIVE state. If called on a folder in DELETE_REQUESTED state the result will be a no-op success. The caller must have `resourcemanager.folders.delete` permission on the identified folder.
 
       Args:
         request: (CloudresourcemanagerFoldersDeleteRequest) input message
@@ -326,7 +326,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Cancels the deletion request for a Folder. This method may only be called on a Folder in the DELETE_REQUESTED state. In order to succeed, the Folder's parent must be in the ACTIVE state. In addition, reintroducing the folder into the tree must not violate folder naming, height and fanout constraints described in the CreateFolder documentation. The caller must have `resourcemanager.folders.undelete` permission on the identified folder.
+      r"""Cancels the deletion request for a Folder. This method may be called on a Folder in any state. If Folder is in ACTIVE state the result will be a no-op success. In order to succeed, the Folder's parent must be in the ACTIVE state. In addition, reintroducing the folder into the tree must not violate folder naming, height and fanout constraints described in the CreateFolder documentation. The caller must have `resourcemanager.folders.undelete` permission on the identified folder.
 
       Args:
         request: (CloudresourcemanagerFoldersUndeleteRequest) input message
@@ -820,7 +820,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the attributes of the Project identified by the specified `name` (for example, `projects/415104041262`). At present this is only useful for updating the display_name and labels. The caller must have modify permissions for this Project.
+      r"""Updates the attributes of the Project identified by the specified `name` (for example, `projects/415104041262`). At present this is only useful for updating the display_name and labels. Deleting all labels requires an update mask for labels field. The caller must have modify permissions for this Project.
 
       Args:
         request: (CloudresourcemanagerProjectsPatchRequest) input message

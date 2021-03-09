@@ -574,7 +574,7 @@
       "type": "object",
       "properties": {
         "numInstances": {
-          "description": "Optional. The number of VM instances in the instance group. For master instance groups, must be set to 1.",
+          "description": "Optional. The number of VM instances in the instance group. For HA cluster master_config groups, must be set to 3. For standard cluster master_config groups, must be set to 1.",
           "type": "integer",
           "format": "int32"
         },

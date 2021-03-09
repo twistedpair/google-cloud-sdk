@@ -223,7 +223,7 @@ class SqliteCredentialStore(CredentialStore):
           'SELECT account_id FROM "{}" ORDER BY rowid'
           .format(_CREDENTIAL_TABLE_NAME)))
 
-  def Load(self, account_id, use_google_auth=False):
+  def Load(self, account_id, use_google_auth=True):
     with self._cursor as cur:
       item = cur.Execute(
           'SELECT value FROM "{}" WHERE account_id = ?'
@@ -548,7 +548,7 @@ class CredentialStoreWithCache(CredentialStore):
     """Returns all the accounts stored in the cache."""
     return self._credential_store.GetAccounts()
 
-  def Load(self, account_id, use_google_auth=False):
+  def Load(self, account_id, use_google_auth=True):
     """Loads the credentials of account_id from the cache.
 
     Args:

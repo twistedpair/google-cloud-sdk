@@ -593,6 +593,10 @@
             "VM_BASED",
             "SERVICE_BASED"
           ]
+        },
+        "debugOptions": {
+          "description": "Any debugging options to be supplied to the job.",
+          "$ref": "DebugOptions"
         }
       }
     },
@@ -938,6 +942,17 @@
         "environmentId": {
           "description": "Environment ID for the Beam runner API proto Environment that corresponds to the current SDK Harness.",
           "type": "string"
+        }
+      }
+    },
+    "DebugOptions": {
+      "id": "DebugOptions",
+      "description": "Describes any options that have an effect on the debugging of pipelines.",
+      "type": "object",
+      "properties": {
+        "enableHotKeyLogging": {
+          "description": "When true, enables the logging of the literal hot key to the user's Cloud Logging.",
+          "type": "boolean"
         }
       }
     },

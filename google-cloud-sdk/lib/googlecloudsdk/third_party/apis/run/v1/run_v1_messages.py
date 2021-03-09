@@ -408,8 +408,7 @@ class ContainerPort(_messages.Message):
   Fields:
     containerPort: (Optional) Port number the container listens on. This must
       be a valid port number, 0 < x < 65536.
-    name: (Optional) Cloud Run fully managed: not supported Cloud Run for
-      Anthos: supported If specified, used to specify which protocol to use.
+    name: (Optional) If specified, used to specify which protocol to use.
       Allowed values are "http1" and "h2c".
     protocol: (Optional) Cloud Run fully managed: not supported Cloud Run for
       Anthos: supported Protocol for port. Must be "TCP". Defaults to "TCP".

@@ -46,6 +46,15 @@ def RegionAttributeConfig():
       help_text='The Cloud region for the {resource}.')
 
 
+def GetRegionResourceSpec(resource_name='region'):
+  return concepts.ResourceSpec(
+      'datamigration.projects.locations',
+      resource_name=resource_name,
+      locationsId=RegionAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
 def GetConnectionProfileResourceSpec(resource_name='connection_profile'):
   return concepts.ResourceSpec(
       'datamigration.projects.locations.connectionProfiles',

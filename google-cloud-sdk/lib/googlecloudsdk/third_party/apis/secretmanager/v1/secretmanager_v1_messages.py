@@ -1030,8 +1030,8 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class Topic(_messages.Message):
-  r"""A Pub/Sub topic which SM will publish to when control plane events occur
-  on this secret.
+  r"""A Pub/Sub topic which Secret Manager will publish to when control plane
+  events occur on this secret.
 
   Fields:
     name: Required. The resource name of the Pub/Sub topic that will be

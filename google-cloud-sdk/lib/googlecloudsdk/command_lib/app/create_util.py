@@ -130,4 +130,3 @@ def CreateAppInteractively(api_client, project, regions=None, extra_warning=''):
       cancel_option=True)
   region = regions[idx]
   CreateApp(api_client, project, region.region, suppress_warning=True)
-

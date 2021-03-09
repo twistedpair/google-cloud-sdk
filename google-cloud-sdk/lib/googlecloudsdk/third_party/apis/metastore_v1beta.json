@@ -446,6 +446,25 @@
       "description": "Specifies how metastore metadata should be integrated with external services.",
       "type": "object",
       "properties": {
+        "dataCatalogConfig": {
+          "description": "The integration config for the Data Catalog service.",
+          "$ref": "DataCatalogConfig"
+        }
+      }
+    },
+    "DataCatalogConfig": {
+      "id": "DataCatalogConfig",
+      "description": "Specifies how metastore metadata should be integrated with the Data Catalog service.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "This field is replaced by the enabled field.",
+          "type": "boolean"
+        },
+        "enabled": {
+          "description": "Defines whether the metastore metadata should be synced to Data Catalog. The default value is to disable syncing metastore metadata to Data Catalog.",
+          "type": "boolean"
+        }
       }
     },
     "MaintenanceWindow": {
@@ -547,6 +566,19 @@
             "FAILED",
             "CANCELLED"
           ]
+        },
+        "databaseDumpType": {
+          "description": "Output only. The type of the database dump.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The type of the database dump is unknown.",
+            "Database dump is a MySQL dump file."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "MYSQL"
+          ]
         }
       }
     },
@@ -605,6 +637,11 @@
             "FULL",
             "METADATA_ONLY"
           ]
+        },
+        "details": {
+          "description": "Output only. The restore details containing the revision of the service to be restored to, in format of JSON.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -701,12 +738,24 @@
           ]
         },
         "gcsUri": {
-          "description": "A Cloud Storage object URI that specifies the source from which to import metadata. It must begin with gs:\/\/.",
+          "description": "A Cloud Storage object or folder URI that specifies the source from which to import metadata. It must begin with gs:\/\/.",
           "type": "string"
         },
         "sourceDatabase": {
           "description": "The name of the source database.",
           "type": "string"
+        },
+        "type": {
+          "description": "Optional. The type of the database dump. If unspecified, defaults to MYSQL.",
+          "type": "string",
+          "enumDescriptions": [
+            "The type of the database dump is unknown.",
+            "Database dump is a MySQL dump file."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "MYSQL"
+          ]
         }
       }
     },
@@ -722,6 +771,18 @@
         "requestId": {
           "description": "Optional. A request ID. Specify a unique request ID to allow the server to ignore the request if it has completed. The server will ignore subsequent requests that provide a duplicate request ID for at least 60 minutes after the first request.For example, if an initial request times out, followed by another request with the same request ID, the server ignores the second request to prevent the creation of duplicate commitments.The request ID must be a valid UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier#Format). A zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
           "type": "string"
+        },
+        "databaseDumpType": {
+          "description": "Optional. The type of the database dump. If unspecified, defaults to MYSQL.",
+          "type": "string",
+          "enumDescriptions": [
+            "The type of the database dump is unknown.",
+            "Database dump is a MySQL dump file."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "MYSQL"
+          ]
         }
       }
     },

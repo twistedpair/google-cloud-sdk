@@ -3089,6 +3089,20 @@ class ApigeeOrganizationsReportsListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsSetAddonsRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSetAddonsRequest object.
+
+  Fields:
+    googleCloudApigeeV1SetAddonsRequest: A GoogleCloudApigeeV1SetAddonsRequest
+      resource to be passed as the request body.
+    org: Required. Name of the organization. Use the following structure in
+      your request: `organizations/{org}`
+  """
+
+  googleCloudApigeeV1SetAddonsRequest = _messages.MessageField('GoogleCloudApigeeV1SetAddonsRequest', 1)
+  org = _messages.StringField(2, required=True)
+
+
 class ApigeeOrganizationsSetSyncAuthorizationRequest(_messages.Message):
   r"""A ApigeeOrganizationsSetSyncAuthorizationRequest object.
 
@@ -3415,6 +3429,33 @@ class GoogleCloudApigeeV1ActivateNatAddressRequest(_messages.Message):
   r"""Request for ActivateNatAddressRequest. Activate the nat address request.
   """
 
+
+
+class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
+  r"""Add-on configurations for the Apigee organization.
+
+  Fields:
+    advancedApiOpsConfig: Configuration for the Advanced API Ops add-on.
+    integrationConfig: Configuration for the Integration add-on.
+  """
+
+  advancedApiOpsConfig = _messages.MessageField('GoogleCloudApigeeV1AdvancedApiOpsConfig', 1)
+  integrationConfig = _messages.MessageField('GoogleCloudApigeeV1IntegrationConfig', 2)
+
+
+class GoogleCloudApigeeV1AdvancedApiOpsConfig(_messages.Message):
+  r"""Configuration for the Advanced API Ops add-on.
+
+  Fields:
+    enabled: Flag that specifies whether the Advanced API Ops add-on is
+      enabled.
+    expiresAt: Output only. Time at which the Advanced API Ops add-on expires
+      in in milliseconds since epoch. If unspecified, the add-on will never
+      expire.
+  """
+
+  enabled = _messages.BooleanField(1)
+  expiresAt = _messages.IntegerField(2)
 
 
 class GoogleCloudApigeeV1Alias(_messages.Message):
@@ -5298,6 +5339,7 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     location: Required. Compute Engine location where the instance resides.
     name: Required. Resource ID of the instance. Values must match the regular
       expression `^a-z{0,30}[a-z\d]$`.
+    nodeConfig: Optional. NodeConfig of the instance.
     peeringCidrRange: Optional. Size of the CIDR block range that will be
       reserved by the instance. PAID organizations support `SLASH_16` to
       `SLASH_20` and defaults to `SLASH_16`. Evaluation organizations support
@@ -5354,9 +5396,10 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
   lastModifiedAt = _messages.IntegerField(8)
   location = _messages.StringField(9)
   name = _messages.StringField(10)
-  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 11)
-  port = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
+  nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 11)
+  peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 12)
+  port = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
 class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
@@ -5439,6 +5482,19 @@ class GoogleCloudApigeeV1InstanceDeploymentStatusDeployedRoute(_messages.Message
   envgroup = _messages.StringField(2)
   environment = _messages.StringField(3)
   percentage = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudApigeeV1IntegrationConfig(_messages.Message):
+  r"""Configuration for the Integration add-on.
+
+  Fields:
+    enabled: Flag that specifies whether the Integration add-on is enabled.
+    expiresAt: Output only. Time at which the Integration add-on expires in in
+      milliseconds since epoch. If unspecified, the add-on will never expire.
+  """
+
+  enabled = _messages.BooleanField(1)
+  expiresAt = _messages.IntegerField(2)
 
 
 class GoogleCloudApigeeV1KeyAliasReference(_messages.Message):
@@ -5870,6 +5926,22 @@ class GoogleCloudApigeeV1NatAddress(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
+class GoogleCloudApigeeV1NodeConfig(_messages.Message):
+  r"""NodeConfig for the instance.
+
+  Fields:
+    maxNodeCount: Optional. The maximum size of the nodepool that will be
+      reserved by the instance. If not specified, default is determined by the
+      size of the CIDR block range.
+    minNodeCount: Optional. The minimum size of the nodepool that will be
+      reserved by the instance. If not specified, default is determined by the
+      size of the CIDR block range.
+  """
+
+  maxNodeCount = _messages.IntegerField(1)
+  minNodeCount = _messages.IntegerField(2)
+
+
 class GoogleCloudApigeeV1Operation(_messages.Message):
   r"""Operation represents the pairing of REST resource path and the actions
   (verbs) allowed on the resource path.
@@ -6113,6 +6185,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     TypeValueValuesEnum: Not used by Apigee.
 
   Fields:
+    addonsConfig: Addon configurations of the Apigee organization.
     analyticsRegion: Required. Primary GCP region for analytics data storage.
       For valid values, see [Create an Apigee
       organization](https://cloud.google.com/apigee/docs/api-platform/get-
@@ -6246,26 +6319,27 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     TYPE_PAID = 2
     TYPE_INTERNAL = 3
 
-  analyticsRegion = _messages.StringField(1)
-  attributes = _messages.StringField(2, repeated=True)
-  authorizedNetwork = _messages.StringField(3)
-  billingType = _messages.EnumField('BillingTypeValueValuesEnum', 4)
-  caCertificate = _messages.BytesField(5)
-  createdAt = _messages.IntegerField(6)
-  customerName = _messages.StringField(7)
-  description = _messages.StringField(8)
-  displayName = _messages.StringField(9)
-  environments = _messages.StringField(10, repeated=True)
-  expiresAt = _messages.IntegerField(11)
-  lastModifiedAt = _messages.IntegerField(12)
-  name = _messages.StringField(13)
-  projectId = _messages.StringField(14)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 15)
-  runtimeDatabaseEncryptionKeyName = _messages.StringField(16)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 19)
-  type = _messages.EnumField('TypeValueValuesEnum', 20)
+  addonsConfig = _messages.MessageField('GoogleCloudApigeeV1AddonsConfig', 1)
+  analyticsRegion = _messages.StringField(2)
+  attributes = _messages.StringField(3, repeated=True)
+  authorizedNetwork = _messages.StringField(4)
+  billingType = _messages.EnumField('BillingTypeValueValuesEnum', 5)
+  caCertificate = _messages.BytesField(6)
+  createdAt = _messages.IntegerField(7)
+  customerName = _messages.StringField(8)
+  description = _messages.StringField(9)
+  displayName = _messages.StringField(10)
+  environments = _messages.StringField(11, repeated=True)
+  expiresAt = _messages.IntegerField(12)
+  lastModifiedAt = _messages.IntegerField(13)
+  name = _messages.StringField(14)
+  projectId = _messages.StringField(15)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 16)
+  runtimeDatabaseEncryptionKeyName = _messages.StringField(17)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
@@ -7138,6 +7212,16 @@ class GoogleCloudApigeeV1Session(_messages.Message):
 
   id = _messages.StringField(1)
   timestampMs = _messages.IntegerField(2)
+
+
+class GoogleCloudApigeeV1SetAddonsRequest(_messages.Message):
+  r"""Request for SetAddons.
+
+  Fields:
+    addonsConfig: Required. Add-on configurations.
+  """
+
+  addonsConfig = _messages.MessageField('GoogleCloudApigeeV1AddonsConfig', 1)
 
 
 class GoogleCloudApigeeV1SharedFlow(_messages.Message):

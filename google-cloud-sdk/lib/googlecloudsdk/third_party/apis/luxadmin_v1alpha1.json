@@ -464,11 +464,49 @@
           "format": "google-datetime"
         },
         "labels": {
-          "description": "The resource labels to use to annotate any related underlying resources such as Compute Engine VMs. Not currently used. An object containing a list of \"key\": \"value\" pairs. Example: `{ \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }`.",
+          "description": "The resource labels to use to annotate any related underlying cluster resources. An object containing a list of \"key\": \"value\" pairs. Example: `{ \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }`.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "state": {
+          "description": "The current serving state of the cluster.",
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the cluster is unknown.",
+            "The cluster is active and running.",
+            "The cluster is stopped. All instances in the cluster are stopped. Customers can start a stopped cluster at any point and all their instances will come back to life with same names and IP resources. In this state, customer pays for storage.",
+            "The cluster is empty and has no associated resources. All instances, associated storage and backups have been deleted.",
+            "The cluster is being created.",
+            "The cluster is being deleted.",
+            "The creation of the cluster failed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "STOPPED",
+            "EMPTY",
+            "CREATING",
+            "DELETING",
+            "FAILED"
+          ]
+        },
+        "databaseVersion": {
+          "description": "The database engine major version. Specified by customer at creation time. This field cannot be changed after cluster creation.",
+          "type": "string",
+          "enumDescriptions": [
+            "This is an unknown database version.",
+            "The database version is Postgres 12."
+          ],
+          "enum": [
+            "DATABASE_VERSION_UNSPECIFIED",
+            "POSTGRES_12"
+          ]
+        },
+        "network": {
+          "description": "The resource link for the VPC network in which cluster resources are created and from which they are accessible via Private IP. The network must belong to the same project as the cluster. It is specified in the form: \"projects\/{project_number}\/global\/networks\/{network_id}\". This is required to create a cluster. It can be updated, but it cannot be removed.",
+          "type": "string"
         }
       }
     },
@@ -579,34 +617,108 @@
       "type": "object",
       "properties": {
         "name": {
+          "description": "The name of this instance, in the form of projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}\/instances\/{instance_id} Note that location is a GCP region.",
           "type": "string"
         },
         "createTime": {
+          "description": "The timestamp when the resource was created. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example: \"2014-10-02T15:01:23.045123456Z\".",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "description": "The timestamp when the resource was last updated. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example: \"2014-10-02T15:01:23.045123456Z\".",
           "type": "string",
           "format": "google-datetime"
         },
         "labels": {
+          "description": "User-provided resource labels, represented as a dictionary where each label is a single key value pair. An object containing a list of \"key\": \"value\" pairs.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "state": {
+          "description": "The current serving state of the instance.",
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the instance is unknown.",
+            "The instance is active and running.",
+            "The instance is stopped. Instance name and IP resources are preserved.",
+            "The instance is being created.",
+            "The instance is being deleted.",
+            "The instance is down for maintenance.",
+            "The creation of the instance failed or a fatal error occurred during an operation on the instance. Note: Instances in this state would tried to be auto-repaired. And Customers should be able to restart, update or delete these instances."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "STOPPED",
+            "CREATING",
+            "DELETING",
+            "MAINTENANCE",
+            "FAILED"
+          ]
         },
         "instanceType": {
           "type": "string",
           "enumDescriptions": [
             "",
             "PRIMARY instances support read and write operations.",
-            "READ instances support read operations only."
+            "READ instances support read operations only. Each read instance consists of one or more homogeneous read replicas. * READ instance of size 1 can only have zonal availability. * READ instances with replica count of 2 or more can have regional availability (replicas are present in 2 or more zones in a region)."
           ],
           "enum": [
             "INSTANCE_TYPE_UNSPECIFIED",
             "PRIMARY",
             "READ"
           ]
+        },
+        "tier": {
+          "description": "The tier (or machine type) for this instance, for example *db-custom-1-3840* (PostgreSQL instances). Required for new instances and can be updated.",
+          "type": "string"
+        },
+        "availabilityType": {
+          "description": "Availability type of an Instance. Defaults to REGIONAL for both primary and read instances. Note that primary and read instances can have different availability types.",
+          "type": "string",
+          "enumDescriptions": [
+            "This is an unknown Availability type.",
+            "Zonal available instance.",
+            "Regional (or Highly) available instance."
+          ],
+          "enum": [
+            "AVAILABILITY_TYPE_UNSPECIFIED",
+            "ZONAL",
+            "REGIONAL"
+          ]
+        },
+        "gceZone": {
+          "description": "The GCE zone that the instance should serve from. Optional. This can ONLY be specified for ZONAL instances. If present for a REGIONAL instance, an error will be thrown. If this is absent for a ZONAL instance, instance is created in a random zone with available capacity.",
+          "type": "string"
+        },
+        "networkConfiguration": {
+          "description": "The settings for Network \/ IP Management. This allows to enable\/disable public IP, enable\/disable SSL and manage which external networks can connect to the instance.",
+          "$ref": "NetworkConfiguration"
+        },
+        "databaseFlags": {
+          "description": "Database flags. Set at instance level. * They are copied from primary instance on read instance creation. * Read instances can set new or override existing flags that are relevant for reads, e.g. for enabling columnar cache on a read instance. Flags set on read instance may or may not be present on primary. ",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "NetworkConfiguration": {
+      "id": "NetworkConfiguration",
+      "description": "Netwoek Management configuration.",
+      "type": "object",
+      "properties": {
+        "publicIpEnabled": {
+          "description": "Whether the instance is assigned a public IP address or not.",
+          "type": "boolean"
+        },
+        "sslRequired": {
+          "description": "Whether SSL connections over IP are enforced or not.",
+          "type": "boolean"
         }
       }
     },
@@ -617,61 +729,6 @@
         "requestId": {
           "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
           "type": "string"
-        }
-      }
-    },
-    "RecreateInstanceRequest": {
-      "id": "RecreateInstanceRequest",
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-          "type": "string"
-        }
-      }
-    },
-    "ListDatabasesResponse": {
-      "id": "ListDatabasesResponse",
-      "type": "object",
-      "properties": {
-        "resources": {
-          "type": "array",
-          "items": {
-            "$ref": "Database"
-          }
-        },
-        "nextPageToken": {
-          "type": "string"
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Database": {
-      "id": "Database",
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "createTime": {
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
         }
       }
     },
@@ -744,51 +801,6 @@
     },
     "Backup": {
       "id": "Backup",
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "createTime": {
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "ListRolesResponse": {
-      "id": "ListRolesResponse",
-      "type": "object",
-      "properties": {
-        "resources": {
-          "type": "array",
-          "items": {
-            "$ref": "Role"
-          }
-        },
-        "nextPageToken": {
-          "type": "string"
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Role": {
-      "id": "Role",
       "type": "object",
       "properties": {
         "name": {
@@ -1232,7 +1244,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Promote Lux replica cluster (of an external master instance), to a standalone cluster. This is the last step in DMS User journey."
+                  "description": "Promote a replica cluster (of an external master instance), to a standalone cluster. This is the last step in DMS User journey."
                 },
                 "startExternalSync": {
                   "id": "luxadmin.projects.locations.clusters.startExternalSync",
@@ -1259,7 +1271,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Start external master migration to Lux cluster. This is part of DMS User journey."
+                  "description": "Start external master migration to cluster. This is part of DMS User journey."
                 },
                 "verifyExternalSyncSettings": {
                   "id": "luxadmin.projects.locations.clusters.verifyExternalSyncSettings",
@@ -1313,7 +1325,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Import data from GCS into the Lux cluster."
+                  "description": "Import data from GCS into the cluster."
                 },
                 "export": {
                   "id": "luxadmin.projects.locations.clusters.export",
@@ -1340,7 +1352,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Export data from the Lux cluster to a GCS bucket."
+                  "description": "Export data from the cluster to a GCS bucket."
                 },
                 "restoreFromBackup": {
                   "id": "luxadmin.projects.locations.clusters.restoreFromBackup",
@@ -1367,7 +1379,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Create a new Lux Cluster from a Backup."
+                  "description": "Create a new Cluster from a Backup."
                 }
               }
               ,
@@ -1482,6 +1494,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
+                          "description": "The name of this instance, in the form of projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}\/instances\/{instance_id} Note that location is a GCP region.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1567,206 +1580,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Restart an Instance in a Lux cluster."
-                    },
-                    "recreate": {
-                      "id": "luxadmin.projects.locations.clusters.instances.recreate",
-                      "path": "v1alpha1/{+name}:recreate",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}:recreate",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "RecreateInstanceRequest"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Recreate an Instance in a Lux cluster."
-                    }
-                  }
-                },
-                "databases": {
-                  "methods": {
-                    "list": {
-                      "id": "luxadmin.projects.locations.clusters.databases.list",
-                      "path": "v1alpha1/{+parent}/databases",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/databases",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListDatabasesResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists Databases in a given cluster in a project location."
-                    },
-                    "get": {
-                      "id": "luxadmin.projects.locations.clusters.databases.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/databases/{databasesId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/databases\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Database"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets details of a single Database."
-                    },
-                    "create": {
-                      "id": "luxadmin.projects.locations.clusters.databases.create",
-                      "path": "v1alpha1/{+parent}/databases",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/databases",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "databaseId": {
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "Database"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a new Database in a given cluster in a project location."
-                    },
-                    "patch": {
-                      "id": "luxadmin.projects.locations.clusters.databases.patch",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/databases/{databasesId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/databases\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "Field mask is used to specify the fields to be overwritten in the Database resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
-                        "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "Database"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates the parameters of a single Database."
-                    },
-                    "delete": {
-                      "id": "luxadmin.projects.locations.clusters.databases.delete",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/databases/{databasesId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/databases\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a single Database."
+                      "description": "Restart an Instance in a cluster."
                     }
                   }
                 },
@@ -1939,178 +1753,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a single User."
-                    }
-                  }
-                },
-                "roles": {
-                  "methods": {
-                    "list": {
-                      "id": "luxadmin.projects.locations.clusters.roles.list",
-                      "path": "v1alpha1/{+parent}/roles",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/roles",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListRolesResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists Roles in a given project and location."
-                    },
-                    "get": {
-                      "id": "luxadmin.projects.locations.clusters.roles.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/roles/{rolesId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/roles\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Role"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets details of a single Role."
-                    },
-                    "create": {
-                      "id": "luxadmin.projects.locations.clusters.roles.create",
-                      "path": "v1alpha1/{+parent}/roles",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/roles",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "roleId": {
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "Role"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a new Role in a given project and location."
-                    },
-                    "patch": {
-                      "id": "luxadmin.projects.locations.clusters.roles.patch",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/roles/{rolesId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/roles\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "Field mask is used to specify the fields to be overwritten in the Role resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
-                        "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "Role"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates the parameters of a single Role."
-                    },
-                    "delete": {
-                      "id": "luxadmin.projects.locations.clusters.roles.delete",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/roles/{rolesId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/roles\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a single Role."
                     }
                   }
                 }

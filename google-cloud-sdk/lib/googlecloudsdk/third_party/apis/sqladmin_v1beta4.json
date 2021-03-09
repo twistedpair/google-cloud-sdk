@@ -2155,16 +2155,23 @@
           "items": {
             "$ref": "SqlExternalSyncSettingError"
           }
+        },
+        "warnings": {
+          "description": "List of migration warnings.",
+          "type": "array",
+          "items": {
+            "$ref": "SqlExternalSyncSettingError"
+          }
         }
       }
     },
     "SqlExternalSyncSettingError": {
       "id": "SqlExternalSyncSettingError",
-      "description": "External primary instance migration setting error.",
+      "description": "External primary instance migration setting error\/warning.",
       "type": "object",
       "properties": {
         "kind": {
-          "description": "This is always *sql#migrationSettingError*.",
+          "description": "Can be *sql#externalSyncSettingError* or *sql#externalSyncSettingWarning*.",
           "type": "string"
         },
         "type": {

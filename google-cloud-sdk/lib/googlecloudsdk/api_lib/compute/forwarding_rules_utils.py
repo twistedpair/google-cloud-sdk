@@ -124,12 +124,20 @@ def _ValidateRegionalArgs(args):
           'please use [--ports] flag instead.')
 
   schemes_allowing_network_fields = ['INTERNAL', 'INTERNAL_MANAGED']
-
-  if (getattr(args, 'subnet', None) or
-      getattr(args, 'network', None)) and not getattr(
-          args, 'target_service_attachment', None) and getattr(
-              args, 'load_balancing_scheme',
-              None) not in schemes_allowing_network_fields:
+  ip_version = getattr(args, 'ip_version', None)
+  if ip_version == 'IPV6' and (
+      getattr(args, 'load_balancing_scheme', None) != 'EXTERNAL' or
+      not getattr(args, 'backend_service', None) or
+      not getattr(args, 'subnet', None) or getattr(args, 'network', None)):
+    raise calliope_exceptions.ToolException(
+        'IPv6 forwarding rules are only supported for EXTERNAL '
+        '[--load-balancing-scheme] with Backend Service and must '
+        'be assigned a subnetwork only.')
+  elif (ip_version != 'IPV6' and getattr(args, 'subnet', None) or
+        getattr(args, 'network', None)) and not getattr(
+            args, 'target_service_attachment', None) and getattr(
+                args, 'load_balancing_scheme',
+                None) not in schemes_allowing_network_fields:
     raise calliope_exceptions.ToolException(
         'You cannot specify [--subnet] or [--network] for non-internal '
         '[--load-balancing-scheme] non-PSC forwarding rule.')
