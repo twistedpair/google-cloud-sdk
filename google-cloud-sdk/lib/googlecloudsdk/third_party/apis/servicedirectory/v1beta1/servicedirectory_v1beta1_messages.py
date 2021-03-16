@@ -945,8 +945,8 @@ class Service(_messages.Message):
   Messages:
     MetadataValue: Optional. Metadata for the service. This data can be
       consumed by service clients. Restrictions: * The entire metadata
-      dictionary may contain up to 512 characters, spread accoss all key-value
-      pairs. Metadata that goes beyond this limit are rejected * Valid
+      dictionary may contain up to 2000 characters, spread accoss all key-
+      value pairs. Metadata that goes beyond this limit are rejected * Valid
       metadata keys have two segments: an optional prefix and name, separated
       by a slash (/). The name segment is required and must be 63 characters
       or less, beginning and ending with an alphanumeric character
@@ -974,7 +974,7 @@ class Service(_messages.Message):
       characters per https://www.ietf.org/rfc/rfc1035.txt
     metadata: Optional. Metadata for the service. This data can be consumed by
       service clients. Restrictions: * The entire metadata dictionary may
-      contain up to 512 characters, spread accoss all key-value pairs.
+      contain up to 2000 characters, spread accoss all key-value pairs.
       Metadata that goes beyond this limit are rejected * Valid metadata keys
       have two segments: an optional prefix and name, separated by a slash
       (/). The name segment is required and must be 63 characters or less,
@@ -1002,7 +1002,7 @@ class Service(_messages.Message):
   class MetadataValue(_messages.Message):
     r"""Optional. Metadata for the service. This data can be consumed by
     service clients. Restrictions: * The entire metadata dictionary may
-    contain up to 512 characters, spread accoss all key-value pairs. Metadata
+    contain up to 2000 characters, spread accoss all key-value pairs. Metadata
     that goes beyond this limit are rejected * Valid metadata keys have two
     segments: an optional prefix and name, separated by a slash (/). The name
     segment is required and must be 63 characters or less, beginning and

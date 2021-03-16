@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import os
 
+from googlecloudsdk.command_lib.apigee import errors
 from googlecloudsdk.core import log
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.util import archive
@@ -33,15 +34,55 @@ class LocalDirectoryArchive(object):
 
   # The archive file name to save to.
   _ARCHIVE_FILE_NAME = 'apigee_archive_deployment.zip'
+  _APIGEE_ARCHIVE_FILE_EXTENSIONS = [
+      '.jar',
+      '.java',
+      '.js',
+      '.jsc',
+      '.json',
+      '.properties',
+      '.py',
+      '.wsdl',
+      '.xml',
+      '.xsd',
+  ]
 
   def __init__(self, src_dir):
+    # Check if the directory exists.
+    if src_dir and not os.path.exists(src_dir):
+      raise files.MissingFileError(
+          'Archive directory does not exist: {}'.format(src_dir))
+    # Check if the path resolves to a directory.
+    if src_dir and not os.path.isdir(src_dir):
+      raise errors.SourcePathIsNotDirectoryError(src_dir)
     self._src_dir = src_dir if src_dir is not None else files.GetCWD()
     self._tmp_dir = files.TemporaryDirectory()
+
+  def _ZipFileFilter(self, file_name):
+    """Filter all files in the archive directory to only allow Apigee files."""
+    _, ext = os.path.splitext(file_name)
+    full_path = os.path.join(self._src_dir, file_name)
+    # Skip hidden unix directories. Assume hidden directories and the files
+    # within them are not intended to be included. This check needs to happen
+    # first so MakeZipFromDir does not continue to process the files within the
+    # hidden directory which can contain the same file types that Apigee
+    # supports.
+    if os.path.basename(full_path).startswith('.'):
+      return False
+    # MakeZipFromDir will only process files in a directory if the containing
+    # directory first evaluates to True, so all directories are approved here.
+    if os.path.isdir(full_path):
+      return True
+    # Only include Apigee supported file extensions.
+    if (os.path.isfile(full_path) and
+        ext.lower() in self._APIGEE_ARCHIVE_FILE_EXTENSIONS):
+      return True
+    return False
 
   def Zip(self):
     """Creates a zip archive of the specified directory."""
     dst_file = os.path.join(self._tmp_dir.path, self._ARCHIVE_FILE_NAME)
-    archive.MakeZipFromDir(dst_file, self._src_dir)
+    archive.MakeZipFromDir(dst_file, self._src_dir, self._ZipFileFilter)
     return dst_file
 
   def Close(self):

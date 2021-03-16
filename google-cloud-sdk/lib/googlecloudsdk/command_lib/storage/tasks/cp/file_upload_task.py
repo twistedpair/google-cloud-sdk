@@ -26,11 +26,12 @@ from __future__ import unicode_literals
 import math
 import os
 
-from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import gcs_api
 from googlecloudsdk.command_lib.storage import temporary_components
 from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
 from googlecloudsdk.command_lib.storage.tasks import delete_object_task
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_upload_task
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
@@ -88,35 +89,28 @@ class FileUploadTask(task.Task):
           offset=0,
           length=size).execute(task_status_queue)
     else:
-      destination_url = self._destination_resource.storage_url
-      provider = destination_url.scheme
-      api_instance = api_factory.get_api(provider)
-
-      component_count = _get_component_count(
-          size, api_instance.MAX_OBJECTS_PER_COMPOSE_CALL)
-      component_size = math.ceil(size / component_count)
+      component_offsets_and_lengths = copy_component_util.get_component_offsets_and_lengths(
+          size,
+          properties.VALUES.storage.parallel_composite_upload_component_size
+          .Get(), gcs_api.MAX_OBJECTS_PER_COMPOSE_CALL)
 
       file_part_upload_tasks = []
       compose_objects_sources = []
       delete_object_tasks = []
-      for component_index in range(component_count):
+      for i, (offset, length) in enumerate(component_offsets_and_lengths):
 
         temporary_component_resource = temporary_components.get_resource(
-            self._source_resource,
-            self._destination_resource,
-            component_index)
+            self._source_resource, self._destination_resource, i)
 
         compose_objects_sources.append(temporary_component_resource)
 
-        offset = component_index * component_size
-        length = min(component_size, size - offset)
         upload_task = file_part_upload_task.FilePartUploadTask(
             self._source_resource,
             temporary_component_resource,
             offset,
             length,
-            component_number=component_index,
-            total_components=component_count)
+            component_number=i,
+            total_components=len(component_offsets_and_lengths))
 
         file_part_upload_tasks.append(upload_task)
 

@@ -2443,6 +2443,13 @@
           }
         }
       }
+    },
+    "AnalyzeIamPolicyLongrunningResponse": {
+      "id": "AnalyzeIamPolicyLongrunningResponse",
+      "description": "A response message for AssetService.AnalyzeIamPolicyLongrunning.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {

@@ -368,8 +368,8 @@ class Image(_messages.Message):
       Valid values: `0.0`\u2013`1.0`. To respect the original image aspect
       ratio, set either `x` or `y` to `0.0`. To use the original image
       resolution, set both `x` and `y` to `0.0`.
-    uri: Required. URI of the image in Cloud Storage. For example,
-      `gs://bucket/inputs/image.jpeg`.
+    uri: Required. URI of the JPEG image in Cloud Storage. For example,
+      `gs://bucket/inputs/image.jpeg`. JPEG is the only supported image type.
   """
 
   alpha = _messages.FloatField(1)
@@ -811,9 +811,15 @@ class SpriteSheet(_messages.Message):
       sheet is full, a new sprite sheet is created. The default is 0, which
       indicates no maximum limit.
     spriteHeightPixels: Required. The height of sprite in pixels. Must be an
-      even integer.
+      even integer. To preserve the source aspect ratio, set the
+      SpriteSheet.sprite_height_pixels field or the
+      SpriteSheet.sprite_width_pixels field, but not both (the API will
+      automatically calculate the missing field).
     spriteWidthPixels: Required. The width of sprite in pixels. Must be an
-      even integer.
+      even integer. To preserve the source aspect ratio, set the
+      SpriteSheet.sprite_width_pixels field or the
+      SpriteSheet.sprite_height_pixels field, but not both (the API will
+      automatically calculate the missing field).
     startTimeOffset: Start time in seconds, relative to the output file
       timeline. Determines the first sprite to pick. The default is `0s`.
     totalCount: Total number of sprites. Create the specified number of

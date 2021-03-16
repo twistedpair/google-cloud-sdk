@@ -368,11 +368,10 @@ class DatabaseInstance(_messages.Message):
       This can be one of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The
       state of the instance is unknown. *RUNNABLE*: The instance is running,
       or has been stopped by owner. *SUSPENDED*: The instance is not
-      available, for example due to problems with billing. for example due to
-      problems with billing. *PENDING_DELETE*: The instance is being deleted.
-      *PENDING_CREATE*: The instance is being created. *MAINTENANCE*: The
-      instance is down for maintenance. *FAILED*: The instance creation
-      failed.
+      available, for example due to problems with billing. *PENDING_DELETE*:
+      The instance is being deleted. *PENDING_CREATE*: The instance is being
+      created. *MAINTENANCE*: The instance is down for maintenance. *FAILED*:
+      The instance creation failed.
     SuspensionReasonValueListEntryValuesEnum:
 
   Messages:
@@ -454,11 +453,10 @@ class DatabaseInstance(_messages.Message):
       one of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The state of the
       instance is unknown. *RUNNABLE*: The instance is running, or has been
       stopped by owner. *SUSPENDED*: The instance is not available, for
-      example due to problems with billing. for example due to problems with
-      billing. *PENDING_DELETE*: The instance is being deleted.
-      *PENDING_CREATE*: The instance is being created. *MAINTENANCE*: The
-      instance is down for maintenance. *FAILED*: The instance creation
-      failed.
+      example due to problems with billing. *PENDING_DELETE*: The instance is
+      being deleted. *PENDING_CREATE*: The instance is being created.
+      *MAINTENANCE*: The instance is down for maintenance. *FAILED*: The
+      instance creation failed.
     suspensionReason: If the instance state is SUSPENDED, the reason for the
       suspension.
   """
@@ -549,10 +547,10 @@ class DatabaseInstance(_messages.Message):
     of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The state of the
     instance is unknown. *RUNNABLE*: The instance is running, or has been
     stopped by owner. *SUSPENDED*: The instance is not available, for example
-    due to problems with billing. for example due to problems with billing.
-    *PENDING_DELETE*: The instance is being deleted. *PENDING_CREATE*: The
-    instance is being created. *MAINTENANCE*: The instance is down for
-    maintenance. *FAILED*: The instance creation failed.
+    due to problems with billing. *PENDING_DELETE*: The instance is being
+    deleted. *PENDING_CREATE*: The instance is being created. *MAINTENANCE*:
+    The instance is down for maintenance. *FAILED*: The instance creation
+    failed.
 
     Values:
       SQL_INSTANCE_STATE_UNSPECIFIED: The state of the instance is unknown.

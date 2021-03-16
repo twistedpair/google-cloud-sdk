@@ -71,7 +71,7 @@ def ConvertRate(value):
     A float value representing the rate on a per second basis
   """
   float_value, unit = float(value[:-2]), value[-1]
-  return float_value / constants.TIME_IN_SECONDS[unit]
+  return round(float_value / constants.TIME_IN_SECONDS[unit], 9)
 
 
 def CheckAndConvertStringToFloatIfApplicable(string):

@@ -83,6 +83,10 @@ def _GenerateUpdateMask(args):
           'maintenance_window',
       '--maintenance-window-hour':
           'maintenance_window',
+      '--data-catalog-sync':
+          'metadataIntegration.dataCatalogConfig.enabled',
+      '--no-data-catalog-sync':
+          'metadataIntegration.dataCatalogConfig.enabled',
   }
 
   update_mask = set()

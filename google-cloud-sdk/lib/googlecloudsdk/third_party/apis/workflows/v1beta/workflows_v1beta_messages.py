@@ -427,7 +427,7 @@ class Workflow(_messages.Message):
       account. If not provided, workflow will use the project's default
       service account. Modifying this field for an existing workflow results
       in a new workflow revision.
-    sourceContents: Workflow code to be executed. The size limit is 32KB.
+    sourceContents: Workflow code to be executed. The size limit is 128KB.
     state: Output only. State of the workflow deployment.
     updateTime: Output only. The last update timestamp of the workflow.
   """

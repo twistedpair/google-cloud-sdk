@@ -27,10 +27,20 @@ from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import properties
 
 SOURCE_REGEX = re.compile('gs://([^/]+)/(.*)')
-SOURCE_ERROR_MESSAGE = """
-    For now, Cloud Functions V2 only supports deploying from a Cloud
-    Storage bucket. You must provide a `--source` that begins with
-    `gs://`."""
+SOURCE_ERROR_MESSAGE = (
+    'For now, Cloud Functions v2 only supports deploying from a Cloud '
+    'Storage bucket. You must provide a `--source` that begins with '
+    '`gs://`.')
+
+INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
+    'When `--trigger_http` is provided, `--signature-type` must be omitted '
+    'or set to `http`.')
+INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
+    'When an event trigger is provided, `--signature-type` cannot be set to '
+    '`http`.')
+SIGNATURE_TYPE_ENV_VAR_COLLISION_ERROR_MESSAGE = (
+    '`GOOGLE_FUNCTION_SIGNATURE_TYPE` is a reserved build environment variable.'
+)
 
 LEGACY_V1_FLAGS = [
     ('security_level', '--security-level'),
@@ -97,12 +107,34 @@ def _GetEventTrigger(args, messages):
   return event_trigger
 
 
-def _GetBuildConfig(args, messages):
+def _GetSignatureType(args, event_trigger):
+  """Determine the function signature type from the command-line arguments."""
+  if args.IsSpecified('trigger_http') or not event_trigger:
+    if args.IsSpecified('signature_type') and args.signature_type != 'http':
+      raise exceptions.FunctionsError(
+          INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
+    return 'http'
+  elif args.IsSpecified('signature_type'):
+    if args.signature_type == 'http':
+      raise exceptions.FunctionsError(INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
+    return args.signature_type
+  else:
+    return 'cloudevent'
+
+
+def _GetBuildConfig(args, messages, event_trigger):
   """Construct a BuildConfig message from the command-line arguments."""
   source_bucket, source_object = _GetSource(args.source)
 
   build_env_var_flags = map_util.GetMapFlagsFromArgs('build-env-vars', args)
   build_env_vars = map_util.ApplyMapFlags({}, **build_env_var_flags)
+
+  if 'GOOGLE_FUNCTION_SIGNATURE_TYPE' in build_env_vars:
+    raise exceptions.FunctionsError(
+        SIGNATURE_TYPE_ENV_VAR_COLLISION_ERROR_MESSAGE)
+  else:
+    build_env_vars['GOOGLE_FUNCTION_SIGNATURE_TYPE'] = _GetSignatureType(
+        args, event_trigger)
 
   return messages.BuildConfig(
       entryPoint=args.entry_point,
@@ -125,6 +157,14 @@ def _ValidateLegacyV1Flags(args):
       raise exceptions.FunctionsError(LEGACY_V1_FLAG_ERROR % flag_name)
 
 
+def _GetLabels(args, messages):
+  labels_to_update = args.update_labels or {}
+  return messages.Function.LabelsValue(additionalProperties=[
+      messages.Function.LabelsValue.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(labels_to_update.items())
+  ])
+
+
 def Run(args, release_track):
   """Run a function deployment with the given args."""
   client = api_util.GetClientInstance(release_track=release_track)
@@ -134,11 +174,14 @@ def Run(args, release_track):
 
   _ValidateLegacyV1Flags(args)
 
+  event_trigger = _GetEventTrigger(args, messages)
+
   function = messages.Function(
       name=function_ref.RelativeName(),
-      buildConfig=_GetBuildConfig(args, messages),
-      eventTrigger=_GetEventTrigger(args, messages),
-      serviceConfig=_GetServiceConfig(args, messages))
+      buildConfig=_GetBuildConfig(args, messages, event_trigger),
+      eventTrigger=event_trigger,
+      serviceConfig=_GetServiceConfig(args, messages),
+      labels=_GetLabels(args, messages))
 
   create_request = messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
       parent='projects/%s/locations/%s' % (_GetProject(), args.region),

@@ -506,6 +506,10 @@
         "shieldedInstanceConfig": {
           "description": "Optional. Shielded Instance Config for clusters using Compute Engine Shielded VMs (https:\/\/cloud.google.com\/security\/shielded-cloud\/shielded-vm).",
           "$ref": "ShieldedInstanceConfig"
+        },
+        "confidentialInstanceConfig": {
+          "description": "Optional. Confidential Instance Config for clusters using Confidential VMs (https:\/\/cloud.google.com\/compute\/confidential-vm\/docs)",
+          "$ref": "ConfidentialInstanceConfig"
         }
       }
     },
@@ -569,6 +573,17 @@
         },
         "enableIntegrityMonitoring": {
           "description": "Optional. Defines whether instances have integrity monitoring enabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ConfidentialInstanceConfig": {
+      "id": "ConfidentialInstanceConfig",
+      "description": "Confidential Instance Config for clusters using Confidential VMs (https:\/\/cloud.google.com\/compute\/confidential-vm\/docs)",
+      "type": "object",
+      "properties": {
+        "enableConfidentialCompute": {
+          "description": "Optional. Defines whether the instance should have confidential compute enabled.",
           "type": "boolean"
         }
       }

@@ -843,9 +843,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
   user, indicating published upcoming future maintenance schedule
 
   Fields:
-    canReschedule: Can this scheduled update be rescheduled? By default, it's
-      true and API needs to do explicitly check whether it's set, if it's set
-      as false explicitly, it's false
+    canReschedule: This field will be deprecated, and will be always set to
+      true since reschedule can happen multiple times now.
     endTime: The scheduled end time for the maintenance.
     rolloutManagementPolicy: The rollout management policy this maintenance
       schedule is associated with. When doing reschedule update request, the

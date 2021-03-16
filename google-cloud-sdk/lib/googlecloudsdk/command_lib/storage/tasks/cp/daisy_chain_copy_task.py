@@ -370,7 +370,8 @@ class DaisyChainCopyTask(task.Task):
     request_config = cloud_api.RequestConfig(size=self._source_resource.size)
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
-        size=self._source_resource.size,
+        offset=0,
+        length=self._source_resource.size,
         source_url=self._source_resource.storage_url,
         destination_url=self._destination_resource.storage_url,
         operation_name=task_status.OperationName.DAISY_CHAIN_COPYING,

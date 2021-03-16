@@ -456,7 +456,8 @@ def AddAutoprovisioningFlags(parser, hidden=False, for_create=False):
   """Adds node autoprovisioning related flags to parser.
 
   Autoprovisioning related flags are: --enable-autoprovisioning
-  --min-cpu --max-cpu --min-memory --max-memory flags.
+  --min-cpu --max-cpu --min-memory --max-memory --autoprovisioning-image-type
+  flags.
 
   Args:
     parser: A given parser.
@@ -486,7 +487,7 @@ and memory limits to be specified.""",
 Path of the JSON/YAML file which contains information about the
 cluster's node autoprovisioning configuration. Currently it contains
 a list of resource limits, identity defaults for autoprovisioning, node upgrade
-settings, node management settings, minimum cpu platform, node locations for
+settings, node management settings, minimum cpu platform, image type, node locations for
 autoprovisioning, disk type and size configuration, Shielded instance settings,
 and customer-managed encryption keys settings.
 
@@ -525,6 +526,9 @@ autorepair is enabled for autoprovisioned node pools.
 minCpuPlatform: If specified, new autoprovisioned nodes will be
 scheduled on host with specified CPU architecture or a newer one.
 Note: Min CPU platform can only be specified in Beta and Alpha.
+
+Autoprovisioned node image is specified under the 'imageType' field. If not specified
+the default value will be applied.
 
 Autoprovisioning locations is a set of zones where new node pools
 can be created by Autoprovisioning. Autoprovisioning locations are
@@ -582,6 +586,11 @@ Minimum memory in the cluster.
 Minimum number of gigabytes of memory to which the cluster can scale.""",
       hidden=hidden,
       type=int)
+  from_flags_group.add_argument(
+      '--autoprovisioning-image-type',
+      help='Node Autoprovisioning will create new nodes with the specified image type',
+      hidden=True,
+      type=str)
   accelerator_group = from_flags_group.add_argument_group(
       'Arguments to set limits on accelerators:')
   accelerator_group.add_argument(
@@ -957,32 +966,32 @@ def AddNodeLabelsFlag(parser,
   if for_node_pool:
     if for_update:
       help_text = """\
-Replaces all the user specified kubernetes labels on all nodes in an existing
+Replaces all the user specified Kubernetes labels on all nodes in an existing
 node pool with the given labels. Example:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-labels=label1=value1,label2=value2
 """
     else:
       help_text = """\
-Applies the given kubernetes labels on all nodes in the new node pool. Example:
+Applies the given Kubernetes labels on all nodes in the new node pool. Example:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-labels=label1=value1,label2=value2
 """
   else:
     help_text = """\
-Applies the given kubernetes labels on all nodes in the new node pool. Example:
+Applies the given Kubernetes labels on all nodes in the new node pool. Example:
 
   $ {command} example-cluster --node-labels=label-a=value1,label-2=value2
 """
   help_text += """
 New nodes, including ones created by resize or recreate, will have these labels
-on the kubernetes API node object and can be used in nodeSelectors.
+on the Kubernetes API node object and can be used in nodeSelectors.
 See [](http://kubernetes.io/docs/user-guide/node-selection/) for examples.
 
-Note that kubernetes labels, intended to associate cluster components
+Note that Kubernetes labels, intended to associate cluster components
 and resources with one another and manage resource lifecycles, are different
-from Kubernetes Engine labels that are used for the purpose of tracking billing
-and usage information."""
+from Google Kubernetes Engine labels that are used for the purpose of tracking
+billing and usage information."""
 
   parser.add_argument(
       '--node-labels',
@@ -1086,7 +1095,7 @@ def AddNodeTaintsFlag(parser,
   if for_node_pool:
     if for_update:
       help_text = """\
-Replaces all the user specified kubernetes taints on all nodes in an existing node pool, which can be used with tolerations for pod scheduling. Example:
+Replaces all the user specified Kubernetes taints on all nodes in an existing node pool, which can be used with tolerations for pod scheduling. Example:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
@@ -1103,8 +1112,6 @@ Applies the given kubernetes taints on all nodes in default node pool(s) in new 
   $ {command} example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
   help_text += """
-Note, this feature uses `gcloud beta` commands. To use gcloud beta commands,
-you must configure `gcloud` to use the v1beta1 API as described here: https://cloud.google.com/kubernetes-engine/docs/reference/api-organization#beta.
 To read more about node-taints, see https://cloud.google.com/kubernetes-engine/docs/node-taints.
 """
 
@@ -1251,7 +1258,7 @@ def AddTagsNodePoolUpdate(parser, hidden=False):
   """Adds a --tags flag to the given parser."""
   help_text = """\
 Replaces all the user specified Compute Engine tags on all nodes in an existing
-node pool with the given tags (comma separated). Example
+node pool with the given tags (comma separated). Example:
 
   $ {command} node-pool-1 --cluster=example-cluster --tags=tag1,tag2
 
@@ -1332,7 +1339,7 @@ def AddNetworkPolicyFlags(parser, hidden=False):
       '--update-addons=NetworkPolicy=ENABLED flag.')
 
 
-def AddILBSubsettingFlags(parser, hidden=True):
+def AddILBSubsettingFlags(parser, hidden=False):
   """Adds --enable-l4-ilb-subsetting flags to parser."""
   parser.add_argument(
       '--enable-l4-ilb-subsetting',

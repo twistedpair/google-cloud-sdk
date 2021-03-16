@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20210226",
+ "revision": "20210305",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -1746,6 +1746,138 @@
   },
   "resourceRecordSets": {
    "methods": {
+    "create": {
+     "id": "dns.resourceRecordSets.create",
+     "path": "{project}/managedZones/{managedZone}/rrsets",
+     "httpMethod": "POST",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone"
+     ],
+     "request": {
+      "$ref": "ResourceRecordSet"
+     },
+     "response": {
+      "$ref": "ResourceRecordSet"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "delete": {
+     "id": "dns.resourceRecordSets.delete",
+     "path": "{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+     "httpMethod": "DELETE",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "name": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "nameAndType": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "type": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone",
+      "name",
+      "type"
+     ],
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "get": {
+     "id": "dns.resourceRecordSets.get",
+     "path": "{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+     "httpMethod": "GET",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "name": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "nameAndType": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "type": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone",
+      "name",
+      "type"
+     ],
+     "response": {
+      "$ref": "ResourceRecordSet"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/cloud-platform.read-only",
+      "https://www.googleapis.com/auth/ndev.clouddns.readonly"
+     ]
+    },
     "list": {
      "id": "dns.resourceRecordSets.list",
      "path": "{project}/managedZones/{managedZone}/rrsets",
@@ -1791,6 +1923,58 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only",
       "https://www.googleapis.com/auth/ndev.clouddns.readonly",
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
+     ]
+    },
+    "patch": {
+     "id": "dns.resourceRecordSets.patch",
+     "path": "{project}/managedZones/{managedZone}/rrsets/{name}/{type}",
+     "httpMethod": "PATCH",
+     "description": "",
+     "parameters": {
+      "clientOperationId": {
+       "type": "string",
+       "location": "query"
+      },
+      "managedZone": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "name": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "nameAndType": {
+       "type": "string",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      },
+      "type": {
+       "type": "string",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "managedZone",
+      "name",
+      "type"
+     ],
+     "request": {
+      "$ref": "ResourceRecordSet"
+     },
+     "response": {
+      "$ref": "ResourceRecordSet"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
      ]
     }

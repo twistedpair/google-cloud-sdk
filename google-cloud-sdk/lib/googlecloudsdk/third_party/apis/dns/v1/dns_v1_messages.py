@@ -562,6 +562,67 @@ class DnsProjectsGetRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class DnsResourceRecordSetsCreateRequest(_messages.Message):
+  r"""A DnsResourceRecordSetsCreateRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    managedZone: A string attribute.
+    project: A string attribute.
+    resourceRecordSet: A ResourceRecordSet resource to be passed as the
+      request body.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  managedZone = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  resourceRecordSet = _messages.MessageField('ResourceRecordSet', 4)
+
+
+class DnsResourceRecordSetsDeleteRequest(_messages.Message):
+  r"""A DnsResourceRecordSetsDeleteRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    managedZone: A string attribute.
+    name: A string attribute.
+    nameAndType: A string attribute.
+    project: A string attribute.
+    type: A string attribute.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  managedZone = _messages.StringField(2, required=True)
+  name = _messages.StringField(3, required=True)
+  nameAndType = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  type = _messages.StringField(6, required=True)
+
+
+class DnsResourceRecordSetsDeleteResponse(_messages.Message):
+  r"""An empty DnsResourceRecordSetsDelete response."""
+
+
+class DnsResourceRecordSetsGetRequest(_messages.Message):
+  r"""A DnsResourceRecordSetsGetRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    managedZone: A string attribute.
+    name: A string attribute.
+    nameAndType: A string attribute.
+    project: A string attribute.
+    type: A string attribute.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  managedZone = _messages.StringField(2, required=True)
+  name = _messages.StringField(3, required=True)
+  nameAndType = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  type = _messages.StringField(6, required=True)
+
+
 class DnsResourceRecordSetsListRequest(_messages.Message):
   r"""A DnsResourceRecordSetsListRequest object.
 
@@ -580,6 +641,29 @@ class DnsResourceRecordSetsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   type = _messages.StringField(6)
+
+
+class DnsResourceRecordSetsPatchRequest(_messages.Message):
+  r"""A DnsResourceRecordSetsPatchRequest object.
+
+  Fields:
+    clientOperationId: A string attribute.
+    managedZone: A string attribute.
+    name: A string attribute.
+    nameAndType: A string attribute.
+    project: A string attribute.
+    resourceRecordSet: A ResourceRecordSet resource to be passed as the
+      request body.
+    type: A string attribute.
+  """
+
+  clientOperationId = _messages.StringField(1)
+  managedZone = _messages.StringField(2, required=True)
+  name = _messages.StringField(3, required=True)
+  nameAndType = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  resourceRecordSet = _messages.MessageField('ResourceRecordSet', 6)
+  type = _messages.StringField(7, required=True)
 
 
 class ManagedZone(_messages.Message):

@@ -727,6 +727,12 @@ version [{1}].  To clear your fixed version setting, run:
     install_state = self._GetInstallState()
     to_print = install_state.Snapshot().CreateComponentInfos(
         platform_filter=self.__platform_filter)
+    if self.__enable_fallback:
+      native_ids = set(c.id for c in to_print)
+      darwin_x86_64_all = install_state.Snapshot().CreateComponentInfos(
+          platform_filter=self.DARWIN_X86_64)
+      to_print_x86_64 = (c for c in darwin_x86_64_all if c.id not in native_ids)
+      to_print.extend(to_print_x86_64)
     current_version = config.INSTALLATION_CONFIG.version
     self.__Write(log.status,
                  '\nYour current Cloud SDK version is: ' + current_version)

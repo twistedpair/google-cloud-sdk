@@ -25,6 +25,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 METASTORE_API_NAME = 'metastore'
 METASTORE_ALPHA_API_VERSION = 'v1alpha'
 METASTORE_BETA_API_VERSION = 'v1beta'
+METASTORE_GA_API_VERSION = 'v1'
 
 
 class Error(core_exceptions.Error):
@@ -43,18 +44,20 @@ class ServiceDeleteError(Error):
   """Class for errors raised when deleting a service."""
 
 
-def GetApiVersion(release_track=base.ReleaseTrack.ALPHA):
-  if release_track == base.ReleaseTrack.BETA:
+def GetApiVersion(release_track=base.ReleaseTrack.GA):
+  if release_track == base.ReleaseTrack.ALPHA:
+    return METASTORE_ALPHA_API_VERSION
+  elif release_track == base.ReleaseTrack.BETA:
     return METASTORE_BETA_API_VERSION
   else:
-    return METASTORE_ALPHA_API_VERSION
+    return METASTORE_GA_API_VERSION
 
 
-def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
   return apis.GetMessagesModule(METASTORE_API_NAME,
                                 GetApiVersion(release_track=release_track))
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
+def GetClientInstance(release_track=base.ReleaseTrack.GA):
   return apis.GetClientInstance(METASTORE_API_NAME,
                                 GetApiVersion(release_track=release_track))

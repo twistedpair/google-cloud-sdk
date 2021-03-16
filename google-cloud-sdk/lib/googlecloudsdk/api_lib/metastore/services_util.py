@@ -22,12 +22,12 @@ from googlecloudsdk.api_lib.metastore import util as api_util
 from googlecloudsdk.calliope import base
 
 
-def GetService(release_track=base.ReleaseTrack.ALPHA):
+def GetService(release_track=base.ReleaseTrack.GA):
   return api_util.GetClientInstance(
       release_track=release_track).projects_locations_services
 
 
-def Delete(relative_resource_name, release_track=base.ReleaseTrack.ALPHA):
+def Delete(relative_resource_name, release_track=base.ReleaseTrack.GA):
   """Calls the Metastore Services.Delete method.
 
   Args:

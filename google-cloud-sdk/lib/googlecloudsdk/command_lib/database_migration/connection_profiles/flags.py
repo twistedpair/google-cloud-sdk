@@ -60,7 +60,7 @@ def AddPasswordFlagGroup(parser, required=False):
 def AddHostFlag(parser, required=False):
   """Adds --host flag to the given parser."""
   help_text = """\
-    IP or hostname of the source MySQL database.
+    IP or hostname of the source database.
   """
   parser.add_argument('--host', help=help_text, required=required)
 
@@ -68,7 +68,7 @@ def AddHostFlag(parser, required=False):
 def AddPortFlag(parser, required=False):
   """Adds --port flag to the given parser."""
   help_text = """\
-    Network port of the source MySQL database.
+    Network port of the source database.
   """
   parser.add_argument('--port', help=help_text, required=required, type=int)
 
@@ -147,4 +147,3 @@ def AddProviderFlag(parser):
   """
   choices = ['RDS', 'CLOUDSQL']
   parser.add_argument('--provider', help=help_text, choices=choices)
-

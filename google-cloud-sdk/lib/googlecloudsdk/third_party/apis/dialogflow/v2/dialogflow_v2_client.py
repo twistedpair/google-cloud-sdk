@@ -52,6 +52,24 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_agent_sessions_entityTypes = self.ProjectsAgentSessionsEntityTypesService(self)
     self.projects_agent_sessions = self.ProjectsAgentSessionsService(self)
     self.projects_agent = self.ProjectsAgentService(self)
+    self.projects_answerRecords = self.ProjectsAnswerRecordsService(self)
+    self.projects_conversationProfiles = self.ProjectsConversationProfilesService(self)
+    self.projects_conversations_callMatchers = self.ProjectsConversationsCallMatchersService(self)
+    self.projects_conversations_messages = self.ProjectsConversationsMessagesService(self)
+    self.projects_conversations_participants_suggestions = self.ProjectsConversationsParticipantsSuggestionsService(self)
+    self.projects_conversations_participants = self.ProjectsConversationsParticipantsService(self)
+    self.projects_conversations = self.ProjectsConversationsService(self)
+    self.projects_knowledgeBases_documents = self.ProjectsKnowledgeBasesDocumentsService(self)
+    self.projects_knowledgeBases = self.ProjectsKnowledgeBasesService(self)
+    self.projects_locations_answerRecords = self.ProjectsLocationsAnswerRecordsService(self)
+    self.projects_locations_conversationProfiles = self.ProjectsLocationsConversationProfilesService(self)
+    self.projects_locations_conversations_callMatchers = self.ProjectsLocationsConversationsCallMatchersService(self)
+    self.projects_locations_conversations_messages = self.ProjectsLocationsConversationsMessagesService(self)
+    self.projects_locations_conversations_participants_suggestions = self.ProjectsLocationsConversationsParticipantsSuggestionsService(self)
+    self.projects_locations_conversations_participants = self.ProjectsLocationsConversationsParticipantsService(self)
+    self.projects_locations_conversations = self.ProjectsLocationsConversationsService(self)
+    self.projects_locations_knowledgeBases_documents = self.ProjectsLocationsKnowledgeBasesDocumentsService(self)
+    self.projects_locations_knowledgeBases = self.ProjectsLocationsKnowledgeBasesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
@@ -1561,6 +1579,1968 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='googleCloudDialogflowV2Fulfillment',
         request_type_name='DialogflowProjectsAgentUpdateFulfillmentRequest',
         response_type_name='GoogleCloudDialogflowV2Fulfillment',
+        supports_download=False,
+    )
+
+  class ProjectsAnswerRecordsService(base_api.BaseApiService):
+    """Service class for the projects_answerRecords resource."""
+
+    _NAME = 'projects_answerRecords'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsAnswerRecordsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all answer records in the specified project in reverse chronological order.
+
+      Args:
+        request: (DialogflowProjectsAnswerRecordsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListAnswerRecordsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/answerRecords',
+        http_method='GET',
+        method_id='dialogflow.projects.answerRecords.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/answerRecords',
+        request_field='',
+        request_type_name='DialogflowProjectsAnswerRecordsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListAnswerRecordsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified answer record.
+
+      Args:
+        request: (DialogflowProjectsAnswerRecordsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2AnswerRecord) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/answerRecords/{answerRecordsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.answerRecords.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2AnswerRecord',
+        request_type_name='DialogflowProjectsAnswerRecordsPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2AnswerRecord',
+        supports_download=False,
+    )
+
+  class ProjectsConversationProfilesService(base_api.BaseApiService):
+    """Service class for the projects_conversationProfiles resource."""
+
+    _NAME = 'projects_conversationProfiles'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsConversationProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a conversation profile in the specified project. ConversationProfile.CreateTime and ConversationProfile.UpdateTime aren't populated in the response. You can retrieve them via GetConversationProfile API.
+
+      Args:
+        request: (DialogflowProjectsConversationProfilesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationProfile) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationProfiles',
+        http_method='POST',
+        method_id='dialogflow.projects.conversationProfiles.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/conversationProfiles',
+        request_field='googleCloudDialogflowV2ConversationProfile',
+        request_type_name='DialogflowProjectsConversationProfilesCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationProfile',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified conversation profile.
+
+      Args:
+        request: (DialogflowProjectsConversationProfilesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationProfiles/{conversationProfilesId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.conversationProfiles.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationProfilesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified conversation profile.
+
+      Args:
+        request: (DialogflowProjectsConversationProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationProfiles/{conversationProfilesId}',
+        http_method='GET',
+        method_id='dialogflow.projects.conversationProfiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationProfilesGetRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all conversation profiles in the specified project.
+
+      Args:
+        request: (DialogflowProjectsConversationProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListConversationProfilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationProfiles',
+        http_method='GET',
+        method_id='dialogflow.projects.conversationProfiles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/conversationProfiles',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationProfilesListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListConversationProfilesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified conversation profile. ConversationProfile.CreateTime and ConversationProfile.UpdateTime aren't populated in the response. You can retrieve them via GetConversationProfile API.
+
+      Args:
+        request: (DialogflowProjectsConversationProfilesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationProfile) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversationProfiles/{conversationProfilesId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.conversationProfiles.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2ConversationProfile',
+        request_type_name='DialogflowProjectsConversationProfilesPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationProfile',
+        supports_download=False,
+    )
+
+  class ProjectsConversationsCallMatchersService(base_api.BaseApiService):
+    """Service class for the projects_conversations_callMatchers resource."""
+
+    _NAME = 'projects_conversations_callMatchers'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsConversationsCallMatchersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a call matcher that links incoming SIP calls to the specified conversation if they fulfill specified criteria.
+
+      Args:
+        request: (DialogflowProjectsConversationsCallMatchersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2CallMatcher) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/callMatchers',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.callMatchers.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/callMatchers',
+        request_field='googleCloudDialogflowV2CallMatcher',
+        request_type_name='DialogflowProjectsConversationsCallMatchersCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2CallMatcher',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Requests deletion of a call matcher.
+
+      Args:
+        request: (DialogflowProjectsConversationsCallMatchersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/callMatchers/{callMatchersId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.conversations.callMatchers.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationsCallMatchersDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all call matchers in the specified conversation.
+
+      Args:
+        request: (DialogflowProjectsConversationsCallMatchersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListCallMatchersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/callMatchers',
+        http_method='GET',
+        method_id='dialogflow.projects.conversations.callMatchers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/callMatchers',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationsCallMatchersListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListCallMatchersResponse',
+        supports_download=False,
+    )
+
+  class ProjectsConversationsMessagesService(base_api.BaseApiService):
+    """Service class for the projects_conversations_messages resource."""
+
+    _NAME = 'projects_conversations_messages'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsConversationsMessagesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists messages that belong to a given conversation. `messages` are ordered by `create_time` in descending order. To fetch updates without duplication, send request with filter `create_time_epoch_microseconds > [first item's create_time of previous request]` and empty page_token.
+
+      Args:
+        request: (DialogflowProjectsConversationsMessagesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListMessagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/messages',
+        http_method='GET',
+        method_id='dialogflow.projects.conversations.messages.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/messages',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationsMessagesListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListMessagesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsConversationsParticipantsSuggestionsService(base_api.BaseApiService):
+    """Service class for the projects_conversations_participants_suggestions resource."""
+
+    _NAME = 'projects_conversations_participants_suggestions'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsConversationsParticipantsSuggestionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def SuggestArticles(self, request, global_params=None):
+      r"""Gets suggested articles for a participant based on specific historical messages.
+
+      Args:
+        request: (DialogflowProjectsConversationsParticipantsSuggestionsSuggestArticlesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SuggestArticlesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SuggestArticles')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuggestArticles.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/participants/{participantsId}/suggestions:suggestArticles',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.participants.suggestions.suggestArticles',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:suggestArticles',
+        request_field='googleCloudDialogflowV2SuggestArticlesRequest',
+        request_type_name='DialogflowProjectsConversationsParticipantsSuggestionsSuggestArticlesRequest',
+        response_type_name='GoogleCloudDialogflowV2SuggestArticlesResponse',
+        supports_download=False,
+    )
+
+    def SuggestFaqAnswers(self, request, global_params=None):
+      r"""Gets suggested faq answers for a participant based on specific historical messages.
+
+      Args:
+        request: (DialogflowProjectsConversationsParticipantsSuggestionsSuggestFaqAnswersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SuggestFaqAnswersResponse) The response message.
+      """
+      config = self.GetMethodConfig('SuggestFaqAnswers')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuggestFaqAnswers.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/participants/{participantsId}/suggestions:suggestFaqAnswers',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.participants.suggestions.suggestFaqAnswers',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:suggestFaqAnswers',
+        request_field='googleCloudDialogflowV2SuggestFaqAnswersRequest',
+        request_type_name='DialogflowProjectsConversationsParticipantsSuggestionsSuggestFaqAnswersRequest',
+        response_type_name='GoogleCloudDialogflowV2SuggestFaqAnswersResponse',
+        supports_download=False,
+    )
+
+  class ProjectsConversationsParticipantsService(base_api.BaseApiService):
+    """Service class for the projects_conversations_participants resource."""
+
+    _NAME = 'projects_conversations_participants'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsConversationsParticipantsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AnalyzeContent(self, request, global_params=None):
+      r"""Adds a text (chat, for example), or audio (phone recording, for example) message from a participant into the conversation. Note: Always use agent versions for production traffic sent to virtual agents. See [Versions and environments(https://cloud.google.com/dialogflow/es/docs/agents-versions).
+
+      Args:
+        request: (DialogflowProjectsConversationsParticipantsAnalyzeContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2AnalyzeContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzeContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzeContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/participants/{participantsId}:analyzeContent',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.participants.analyzeContent',
+        ordered_params=['participant'],
+        path_params=['participant'],
+        query_params=[],
+        relative_path='v2/{+participant}:analyzeContent',
+        request_field='googleCloudDialogflowV2AnalyzeContentRequest',
+        request_type_name='DialogflowProjectsConversationsParticipantsAnalyzeContentRequest',
+        response_type_name='GoogleCloudDialogflowV2AnalyzeContentResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new participant in a conversation.
+
+      Args:
+        request: (DialogflowProjectsConversationsParticipantsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Participant) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/participants',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.participants.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/participants',
+        request_field='googleCloudDialogflowV2Participant',
+        request_type_name='DialogflowProjectsConversationsParticipantsCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2Participant',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a conversation participant.
+
+      Args:
+        request: (DialogflowProjectsConversationsParticipantsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Participant) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/participants/{participantsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.conversations.participants.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationsParticipantsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Participant',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all participants in the specified conversation.
+
+      Args:
+        request: (DialogflowProjectsConversationsParticipantsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListParticipantsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/participants',
+        http_method='GET',
+        method_id='dialogflow.projects.conversations.participants.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/participants',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationsParticipantsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListParticipantsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified participant.
+
+      Args:
+        request: (DialogflowProjectsConversationsParticipantsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Participant) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/participants/{participantsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.conversations.participants.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Participant',
+        request_type_name='DialogflowProjectsConversationsParticipantsPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2Participant',
+        supports_download=False,
+    )
+
+  class ProjectsConversationsService(base_api.BaseApiService):
+    """Service class for the projects_conversations resource."""
+
+    _NAME = 'projects_conversations'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsConversationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Complete(self, request, global_params=None):
+      r"""Completes the specified conversation. Finished conversations are purged from the database after 30 days.
+
+      Args:
+        request: (DialogflowProjectsConversationsCompleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Conversation) The response message.
+      """
+      config = self.GetMethodConfig('Complete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Complete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}:complete',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.complete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:complete',
+        request_field='googleCloudDialogflowV2CompleteConversationRequest',
+        request_type_name='DialogflowProjectsConversationsCompleteRequest',
+        response_type_name='GoogleCloudDialogflowV2Conversation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new conversation. Conversations are auto-completed after 24 hours. Conversation Lifecycle: There are two stages during a conversation: Automated Agent Stage and Assist Stage. For Automated Agent Stage, there will be a dialogflow agent responding to user queries. For Assist Stage, there's no dialogflow agent responding to user queries. But we will provide suggestions which are generated from conversation. If Conversation.conversation_profile is configured for a dialogflow agent, conversation will start from `Automated Agent Stage`, otherwise, it will start from `Assist Stage`. And during `Automated Agent Stage`, once an Intent with Intent.live_agent_handoff is triggered, conversation will transfer to Assist Stage.
+
+      Args:
+        request: (DialogflowProjectsConversationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Conversation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['conversationId'],
+        relative_path='v2/{+parent}/conversations',
+        request_field='googleCloudDialogflowV2Conversation',
+        request_type_name='DialogflowProjectsConversationsCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2Conversation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specific conversation.
+
+      Args:
+        request: (DialogflowProjectsConversationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Conversation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.conversations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Conversation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all conversations in the specified project.
+
+      Args:
+        request: (DialogflowProjectsConversationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListConversationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations',
+        http_method='GET',
+        method_id='dialogflow.projects.conversations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/conversations',
+        request_field='',
+        request_type_name='DialogflowProjectsConversationsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListConversationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsKnowledgeBasesDocumentsService(base_api.BaseApiService):
+    """Service class for the projects_knowledgeBases_documents resource."""
+
+    _NAME = 'projects_knowledgeBases_documents'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsKnowledgeBasesDocumentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new document. Operation .
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesDocumentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}/documents',
+        http_method='POST',
+        method_id='dialogflow.projects.knowledgeBases.documents.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/documents',
+        request_field='googleCloudDialogflowV2Document',
+        request_type_name='DialogflowProjectsKnowledgeBasesDocumentsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified document. Operation .
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesDocumentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.knowledgeBases.documents.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsKnowledgeBasesDocumentsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified document.
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesDocumentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Document) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.knowledgeBases.documents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsKnowledgeBasesDocumentsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Document',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all documents of the knowledge base.
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesDocumentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListDocumentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}/documents',
+        http_method='GET',
+        method_id='dialogflow.projects.knowledgeBases.documents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/documents',
+        request_field='',
+        request_type_name='DialogflowProjectsKnowledgeBasesDocumentsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListDocumentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified document. Operation .
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesDocumentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.knowledgeBases.documents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Document',
+        request_type_name='DialogflowProjectsKnowledgeBasesDocumentsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Reload(self, request, global_params=None):
+      r"""Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`. Operation .
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesDocumentsReloadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Reload')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reload.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}:reload',
+        http_method='POST',
+        method_id='dialogflow.projects.knowledgeBases.documents.reload',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:reload',
+        request_field='googleCloudDialogflowV2ReloadDocumentRequest',
+        request_type_name='DialogflowProjectsKnowledgeBasesDocumentsReloadRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsKnowledgeBasesService(base_api.BaseApiService):
+    """Service class for the projects_knowledgeBases resource."""
+
+    _NAME = 'projects_knowledgeBases'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsKnowledgeBasesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a knowledge base.
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2KnowledgeBase) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases',
+        http_method='POST',
+        method_id='dialogflow.projects.knowledgeBases.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/knowledgeBases',
+        request_field='googleCloudDialogflowV2KnowledgeBase',
+        request_type_name='DialogflowProjectsKnowledgeBasesCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2KnowledgeBase',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified knowledge base.
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.knowledgeBases.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsKnowledgeBasesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified knowledge base.
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2KnowledgeBase) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}',
+        http_method='GET',
+        method_id='dialogflow.projects.knowledgeBases.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsKnowledgeBasesGetRequest',
+        response_type_name='GoogleCloudDialogflowV2KnowledgeBase',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all knowledge bases of the specified agent.
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListKnowledgeBasesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases',
+        http_method='GET',
+        method_id='dialogflow.projects.knowledgeBases.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/knowledgeBases',
+        request_field='',
+        request_type_name='DialogflowProjectsKnowledgeBasesListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListKnowledgeBasesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified knowledge base.
+
+      Args:
+        request: (DialogflowProjectsKnowledgeBasesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2KnowledgeBase) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/knowledgeBases/{knowledgeBasesId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.knowledgeBases.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2KnowledgeBase',
+        request_type_name='DialogflowProjectsKnowledgeBasesPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2KnowledgeBase',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAnswerRecordsService(base_api.BaseApiService):
+    """Service class for the projects_locations_answerRecords resource."""
+
+    _NAME = 'projects_locations_answerRecords'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAnswerRecordsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all answer records in the specified project in reverse chronological order.
+
+      Args:
+        request: (DialogflowProjectsLocationsAnswerRecordsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListAnswerRecordsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/answerRecords',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.answerRecords.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/answerRecords',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAnswerRecordsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListAnswerRecordsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified answer record.
+
+      Args:
+        request: (DialogflowProjectsLocationsAnswerRecordsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2AnswerRecord) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/answerRecords/{answerRecordsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.answerRecords.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2AnswerRecord',
+        request_type_name='DialogflowProjectsLocationsAnswerRecordsPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2AnswerRecord',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversationProfilesService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversationProfiles resource."""
+
+    _NAME = 'projects_locations_conversationProfiles'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsConversationProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a conversation profile in the specified project. ConversationProfile.CreateTime and ConversationProfile.UpdateTime aren't populated in the response. You can retrieve them via GetConversationProfile API.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationProfilesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationProfile) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationProfiles',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversationProfiles.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/conversationProfiles',
+        request_field='googleCloudDialogflowV2ConversationProfile',
+        request_type_name='DialogflowProjectsLocationsConversationProfilesCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationProfile',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified conversation profile.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationProfilesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationProfiles/{conversationProfilesId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.conversationProfiles.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationProfilesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified conversation profile.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationProfiles/{conversationProfilesId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversationProfiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationProfilesGetRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all conversation profiles in the specified project.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListConversationProfilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationProfiles',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversationProfiles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/conversationProfiles',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationProfilesListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListConversationProfilesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified conversation profile. ConversationProfile.CreateTime and ConversationProfile.UpdateTime aren't populated in the response. You can retrieve them via GetConversationProfile API.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationProfilesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ConversationProfile) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversationProfiles/{conversationProfilesId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.conversationProfiles.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2ConversationProfile',
+        request_type_name='DialogflowProjectsLocationsConversationProfilesPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2ConversationProfile',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversationsCallMatchersService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversations_callMatchers resource."""
+
+    _NAME = 'projects_locations_conversations_callMatchers'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsConversationsCallMatchersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a call matcher that links incoming SIP calls to the specified conversation if they fulfill specified criteria.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsCallMatchersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2CallMatcher) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/callMatchers',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.callMatchers.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/callMatchers',
+        request_field='googleCloudDialogflowV2CreateCallMatcherRequest',
+        request_type_name='DialogflowProjectsLocationsConversationsCallMatchersCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2CallMatcher',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Requests deletion of a call matcher.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsCallMatchersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/callMatchers/{callMatchersId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.conversations.callMatchers.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationsCallMatchersDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all call matchers in the specified conversation.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsCallMatchersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListCallMatchersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/callMatchers',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversations.callMatchers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/callMatchers',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationsCallMatchersListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListCallMatchersResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversationsMessagesService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversations_messages resource."""
+
+    _NAME = 'projects_locations_conversations_messages'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsConversationsMessagesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists messages that belong to a given conversation. `messages` are ordered by `create_time` in descending order. To fetch updates without duplication, send request with filter `create_time_epoch_microseconds > [first item's create_time of previous request]` and empty page_token.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsMessagesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListMessagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/messages',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversations.messages.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/messages',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationsMessagesListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListMessagesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversationsParticipantsSuggestionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversations_participants_suggestions resource."""
+
+    _NAME = 'projects_locations_conversations_participants_suggestions'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsConversationsParticipantsSuggestionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def SuggestArticles(self, request, global_params=None):
+      r"""Gets suggested articles for a participant based on specific historical messages.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestArticlesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SuggestArticlesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SuggestArticles')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuggestArticles.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/participants/{participantsId}/suggestions:suggestArticles',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.participants.suggestions.suggestArticles',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:suggestArticles',
+        request_field='googleCloudDialogflowV2SuggestArticlesRequest',
+        request_type_name='DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestArticlesRequest',
+        response_type_name='GoogleCloudDialogflowV2SuggestArticlesResponse',
+        supports_download=False,
+    )
+
+    def SuggestFaqAnswers(self, request, global_params=None):
+      r"""Gets suggested faq answers for a participant based on specific historical messages.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestFaqAnswersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SuggestFaqAnswersResponse) The response message.
+      """
+      config = self.GetMethodConfig('SuggestFaqAnswers')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuggestFaqAnswers.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/participants/{participantsId}/suggestions:suggestFaqAnswers',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.participants.suggestions.suggestFaqAnswers',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:suggestFaqAnswers',
+        request_field='googleCloudDialogflowV2SuggestFaqAnswersRequest',
+        request_type_name='DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestFaqAnswersRequest',
+        response_type_name='GoogleCloudDialogflowV2SuggestFaqAnswersResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversationsParticipantsService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversations_participants resource."""
+
+    _NAME = 'projects_locations_conversations_participants'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsConversationsParticipantsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AnalyzeContent(self, request, global_params=None):
+      r"""Adds a text (chat, for example), or audio (phone recording, for example) message from a participant into the conversation. Note: Always use agent versions for production traffic sent to virtual agents. See [Versions and environments(https://cloud.google.com/dialogflow/es/docs/agents-versions).
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsParticipantsAnalyzeContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2AnalyzeContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzeContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzeContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/participants/{participantsId}:analyzeContent',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.participants.analyzeContent',
+        ordered_params=['participant'],
+        path_params=['participant'],
+        query_params=[],
+        relative_path='v2/{+participant}:analyzeContent',
+        request_field='googleCloudDialogflowV2AnalyzeContentRequest',
+        request_type_name='DialogflowProjectsLocationsConversationsParticipantsAnalyzeContentRequest',
+        response_type_name='GoogleCloudDialogflowV2AnalyzeContentResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new participant in a conversation.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsParticipantsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Participant) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/participants',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.participants.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/participants',
+        request_field='googleCloudDialogflowV2Participant',
+        request_type_name='DialogflowProjectsLocationsConversationsParticipantsCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2Participant',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a conversation participant.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsParticipantsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Participant) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/participants/{participantsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversations.participants.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationsParticipantsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Participant',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all participants in the specified conversation.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsParticipantsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListParticipantsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/participants',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversations.participants.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/participants',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationsParticipantsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListParticipantsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified participant.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsParticipantsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Participant) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/participants/{participantsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.conversations.participants.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Participant',
+        request_type_name='DialogflowProjectsLocationsConversationsParticipantsPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2Participant',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsConversationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_conversations resource."""
+
+    _NAME = 'projects_locations_conversations'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsConversationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Complete(self, request, global_params=None):
+      r"""Completes the specified conversation. Finished conversations are purged from the database after 30 days.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsCompleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Conversation) The response message.
+      """
+      config = self.GetMethodConfig('Complete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Complete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}:complete',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.complete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:complete',
+        request_field='googleCloudDialogflowV2CompleteConversationRequest',
+        request_type_name='DialogflowProjectsLocationsConversationsCompleteRequest',
+        response_type_name='GoogleCloudDialogflowV2Conversation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new conversation. Conversations are auto-completed after 24 hours. Conversation Lifecycle: There are two stages during a conversation: Automated Agent Stage and Assist Stage. For Automated Agent Stage, there will be a dialogflow agent responding to user queries. For Assist Stage, there's no dialogflow agent responding to user queries. But we will provide suggestions which are generated from conversation. If Conversation.conversation_profile is configured for a dialogflow agent, conversation will start from `Automated Agent Stage`, otherwise, it will start from `Assist Stage`. And during `Automated Agent Stage`, once an Intent with Intent.live_agent_handoff is triggered, conversation will transfer to Assist Stage.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Conversation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['conversationId'],
+        relative_path='v2/{+parent}/conversations',
+        request_field='googleCloudDialogflowV2Conversation',
+        request_type_name='DialogflowProjectsLocationsConversationsCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2Conversation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specific conversation.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Conversation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Conversation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all conversations in the specified project.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListConversationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.conversations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/conversations',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsConversationsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListConversationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsKnowledgeBasesDocumentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_knowledgeBases_documents resource."""
+
+    _NAME = 'projects_locations_knowledgeBases_documents'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsKnowledgeBasesDocumentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new document. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}/documents',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.knowledgeBases.documents.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/documents',
+        request_field='googleCloudDialogflowV2Document',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesDocumentsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified document. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.knowledgeBases.documents.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesDocumentsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified document.
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Document) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.knowledgeBases.documents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesDocumentsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Document',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all documents of the knowledge base.
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListDocumentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}/documents',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.knowledgeBases.documents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/documents',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesDocumentsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListDocumentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified document. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.knowledgeBases.documents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Document',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesDocumentsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Reload(self, request, global_params=None):
+      r"""Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsReloadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Reload')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reload.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}:reload',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.knowledgeBases.documents.reload',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:reload',
+        request_field='googleCloudDialogflowV2ReloadDocumentRequest',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesDocumentsReloadRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsKnowledgeBasesService(base_api.BaseApiService):
+    """Service class for the projects_locations_knowledgeBases resource."""
+
+    _NAME = 'projects_locations_knowledgeBases'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsKnowledgeBasesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a knowledge base.
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2KnowledgeBase) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.knowledgeBases.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/knowledgeBases',
+        request_field='googleCloudDialogflowV2KnowledgeBase',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2KnowledgeBase',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified knowledge base.
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.knowledgeBases.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified knowledge base.
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2KnowledgeBase) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.knowledgeBases.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesGetRequest',
+        response_type_name='GoogleCloudDialogflowV2KnowledgeBase',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all knowledge bases of the specified agent.
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListKnowledgeBasesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.knowledgeBases.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/knowledgeBases',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListKnowledgeBasesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified knowledge base.
+
+      Args:
+        request: (DialogflowProjectsLocationsKnowledgeBasesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2KnowledgeBase) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/knowledgeBases/{knowledgeBasesId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.knowledgeBases.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2KnowledgeBase',
+        request_type_name='DialogflowProjectsLocationsKnowledgeBasesPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2KnowledgeBase',
         supports_download=False,
     )
 

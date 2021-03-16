@@ -881,6 +881,10 @@
         "upgradeInfo": {
           "description": "Additional information about upgrade.",
           "type": "string"
+        },
+        "upgradeImage": {
+          "description": "The new image self link this instance will be upgraded to if calling the upgrade endpoint. This field will only be populated if field upgradeable is true.",
+          "type": "string"
         }
       }
     },

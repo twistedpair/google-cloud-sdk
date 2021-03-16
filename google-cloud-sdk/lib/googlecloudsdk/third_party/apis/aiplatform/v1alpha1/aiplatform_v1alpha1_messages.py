@@ -2979,6 +2979,24 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesDeleteRequ
   name = _messages.StringField(1, required=True)
 
 
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesExportTensorboardTimeSeriesRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesExport
+  TensorboardTimeSeriesRequest object.
+
+  Fields:
+    googleCloudAiplatformV1alpha1ExportTensorboardTimeSeriesDataRequest: A
+      GoogleCloudAiplatformV1alpha1ExportTensorboardTimeSeriesDataRequest
+      resource to be passed as the request body.
+    tensorboardTimeSeries: Required. The resource name of the
+      TensorboardTimeSeries to export data from. Format: `projects/{project}/l
+      ocations/{location}/tensorboards/{tensorboard}/experiments/{experiment}/
+      runs/{run}/timeSeries/{time_series}`
+  """
+
+  googleCloudAiplatformV1alpha1ExportTensorboardTimeSeriesDataRequest = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExportTensorboardTimeSeriesDataRequest', 1)
+  tensorboardTimeSeries = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesGetRequest(_messages.Message):
   r"""A
   AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesGetRequest
@@ -3113,6 +3131,22 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesPatchReque
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadBlobDataRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadBl
+  obDataRequest object.
+
+  Fields:
+    blobIds: IDs of the blobs to read.
+    timeSeries: Required. The resource name of the TensorboardTimeSeries to
+      list Blobs. Format: 'projects/{project}/locations/{location}/tensorboard
+      s/{tensorboard}/experiments/{experiment}/runs/{run}/timeSeries/{time_ser
+      ies}'
+  """
+
+  blobIds = _messages.StringField(1, repeated=True)
+  timeSeries = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest(_messages.Message):
   r"""A
   AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest
@@ -3133,22 +3167,6 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadReques
   filter = _messages.StringField(1)
   maxDataPoints = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   tensorboardTimeSeries = _messages.StringField(3, required=True)
-
-
-class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeseriesReadBlobDataRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeseriesReadBl
-  obDataRequest object.
-
-  Fields:
-    blobIds: IDs of the blobs to read.
-    timeSeries: Required. The resource name of the TensorboardTimeSeries to
-      list Blobs. Format: 'projects/{project}/locations/{location}/tensorboard
-      s/{tensorboard}/experiments/{experiment}/runs/{run}/timeseries/{time_ser
-      ies}'
-  """
-
-  blobIds = _messages.StringField(1, repeated=True)
-  timeSeries = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest(_messages.Message):
@@ -12642,6 +12660,44 @@ class GoogleCloudAiplatformV1alpha1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
 
 
+class GoogleCloudAiplatformV1alpha1ExportTensorboardTimeSeriesDataRequest(_messages.Message):
+  r"""Request message for TensorboardService.ExportTensorboardTimeSeriesData.
+
+  Fields:
+    filter: Exports the TensorboardTimeSeries' data that match the filter
+      expression.
+    orderBy: Field to use to sort the TensorboardTimeSeries' data. By default,
+      TensorboardTimeSeries' data will be returned in a pseudo random order.
+    pageSize: The maximum number of data points to return per page. The
+      default page_size will be 1000. Values must be between 1 and 10000.
+      Values above 10000 will be coerced to 10000.
+    pageToken: A page token, received from a previous
+      TensorboardService.ExportTensorboardTimeSeries call. Provide this to
+      retrieve the subsequent page. When paginating, all other parameters
+      provided to TensorboardService.ExportTensorboardTimeSeries must match
+      the call that provided the page token.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1alpha1ExportTensorboardTimeSeriesDataResponse(_messages.Message):
+  r"""Response message for TensorboardService.ExportTensorboardTimeSeriesData.
+
+  Fields:
+    nextPageToken: A token, which can be sent as
+      ExportTensorboardTimeSeriesRequest.page_token to retrieve the next page.
+      If this field is omitted, there are no subsequent pages.
+    timeSeriesDataPoints: The returned time series data points.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  timeSeriesDataPoints = _messages.MessageField('GoogleCloudAiplatformV1alpha1TimeSeriesDataPoint', 2, repeated=True)
+
+
 class GoogleCloudAiplatformV1alpha1FilterSplit(_messages.Message):
   r"""Assigns input data to training, validation, and test sets based on the
   given filters, data pieces not matched by any filter are ignored. Currently
@@ -15588,14 +15644,18 @@ class GoogleCloudAiplatformV1alpha1TensorboardTimeSeriesMetadata(_messages.Messa
   r"""Describes metadata for a TensorboardTimeSeries.
 
   Fields:
+    maxBlobSequenceLength: Output only. The largest blob sequence length
+      (number of blobs) of all data points in this time series, if its
+      ValueType is BLOB_SEQUENCE.
     maxStep: Output only. Max step index of all data points within a
       TensorboardTimeSeries.
     maxWallTime: Output only. Max wall clock timestamp of all data points
       within a TensorboardTimeSeries.
   """
 
-  maxStep = _messages.IntegerField(1)
-  maxWallTime = _messages.StringField(2)
+  maxBlobSequenceLength = _messages.IntegerField(1)
+  maxStep = _messages.IntegerField(2)
+  maxWallTime = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1alpha1TimeSeriesData(_messages.Message):

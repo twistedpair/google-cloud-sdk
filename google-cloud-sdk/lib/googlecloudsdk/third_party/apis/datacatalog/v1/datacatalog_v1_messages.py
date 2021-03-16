@@ -70,6 +70,14 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
   r"""A DatacatalogEntriesLookupRequest object.
 
   Fields:
+    fullyQualifiedName: Fully Qualified Name of the resource. There are two
+      main forms of FQNs: {system}:{project}.{dot-separated path to resource}
+      for non-regionalized resources {system}:{project}.{location id}.{dot-
+      separated path to resource} for regionalized resources Examples: *
+      `bigquery:dataset.project_id.dataset_id` *
+      `bigquery:table.project_id.dataset_id.table_id` *
+      `pubsub:project_id.topic_id` *
+      `dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId`
     linkedResource: The full name of the Google Cloud Platform resource the
       Data Catalog entry represents. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name.
@@ -86,8 +94,9 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
       https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical.
   """
 
-  linkedResource = _messages.StringField(1)
-  sqlResource = _messages.StringField(2)
+  fullyQualifiedName = _messages.StringField(1)
+  linkedResource = _messages.StringField(2)
+  sqlResource = _messages.StringField(3)
 
 
 class DatacatalogProjectsLocationsEntryGroupsCreateRequest(_messages.Message):
@@ -1154,6 +1163,35 @@ class GoogleCloudDatacatalogV1CrossRegionalSource(_messages.Message):
   taxonomy = _messages.StringField(1)
 
 
+class GoogleCloudDatacatalogV1DataSource(_messages.Message):
+  r"""Describes the physical location of an entry.
+
+  Enums:
+    ServiceValueValuesEnum: Service in which the data is physically stored.
+
+  Fields:
+    resource: Full name of the resource as defined by the service, e.g. //bigq
+      uery.googleapis.com/projects/{project_id}/locations/{location}/datasets/
+      {dataset_id}/tables/{table_id}
+    service: Service in which the data is physically stored.
+  """
+
+  class ServiceValueValuesEnum(_messages.Enum):
+    r"""Service in which the data is physically stored.
+
+    Values:
+      SERVICE_UNSPECIFIED: Default unknown service.
+      CLOUD_STORAGE: Google Cloud Storage service.
+      BIGQUERY: BigQuery service.
+    """
+    SERVICE_UNSPECIFIED = 0
+    CLOUD_STORAGE = 1
+    BIGQUERY = 2
+
+  resource = _messages.StringField(1)
+  service = _messages.EnumField('ServiceValueValuesEnum', 2)
+
+
 class GoogleCloudDatacatalogV1DataStreamSpec(_messages.Message):
   r"""Additional specification of a data stream.
 
@@ -1163,6 +1201,32 @@ class GoogleCloudDatacatalogV1DataStreamSpec(_messages.Message):
   """
 
   kafkaTopic = _messages.MessageField('GoogleCloudDatacatalogV1KafkaTopicSpec', 1)
+
+
+class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
+  r"""Specification that applies to a table resource. This is only valid on
+  entries of type `TABLE`.
+
+  Enums:
+    TypeValueValuesEnum: Type of this table.
+
+  Fields:
+    type: Type of this table.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this table.
+
+    Values:
+      TABLE_TYPE_UNSPECIFIED: Default unknown table type.
+      NATIVE: Native table.
+      EXTERNAL: External table.
+    """
+    TABLE_TYPE_UNSPECIFIED = 0
+    NATIVE = 1
+    EXTERNAL = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class GoogleCloudDatacatalogV1Entry(_messages.Message):
@@ -1190,14 +1254,25 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       only valid on entries of type `TABLE`.
     clusterSpec: Additional specification of a cluster. Present on entries
       representing clusters.
+    dataSource: Output only. Physical location of the entry.
     dataStreamSpec: Additional specification of a data stream. Present on
       entries representing non-pubsub data streams.
+    databaseTableSpec: Specification that applies to a table resource. This is
+      only valid on entries of type `TABLE`.
     description: Entry description, which can consist of several sentences or
       paragraphs that describe entry contents. Default value is an empty
       string.
     displayName: Display information such as title and description. A short
       name to identify the entry, for example, "Analytics Data - Jan 2011".
       Default value is an empty string.
+    fullyQualifiedName: Fully Qualified Name of the resource. Set
+      automatically for entries representing resources from synced systems.
+      Settable only during creation and read-only afterwards. Can be used for
+      search and lookup of the entries. There are two main forms of FQNs:
+      {system}:{project}.{dot-separated path to resource} for non-regionalized
+      resources {system}:{project}.{location id}.{dot-separated path to
+      resource} for regionalized resources Example for DPMS table:
+      dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId
     gcsFilesetSpec: Specification that applies to a Cloud Storage fileset.
       This is only valid on entries of type FILESET.
     integratedSystem: Output only. This field indicates the entry's source
@@ -1246,10 +1321,12 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
+      DATAPROC_METASTORE: Dataproc Metastore - Managed Hive Metastore.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
+    DATAPROC_METASTORE = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the entry. Only used for Entries with types in the
@@ -1266,6 +1343,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       FILESET: An entry type which is a set of files or objects. Example:
         Cloud Storage fileset.
       CLUSTER: A group of servers that work together. Example: Kafka cluster.
+      DATABASE: A database.
+      SERVICE: A service (for example Dataproc Metastore service).
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1
@@ -1273,22 +1352,27 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     DATA_STREAM = 3
     FILESET = 4
     CLUSTER = 5
+    DATABASE = 6
+    SERVICE = 7
 
   bigqueryDateShardedSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryDateShardedSpec', 1)
   bigqueryTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryTableSpec', 2)
   clusterSpec = _messages.MessageField('GoogleCloudDatacatalogV1ClusterSpec', 3)
-  dataStreamSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataStreamSpec', 4)
-  description = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 7)
-  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 8)
-  linkedResource = _messages.StringField(9)
-  name = _messages.StringField(10)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 11)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
-  userSpecifiedSystem = _messages.StringField(14)
-  userSpecifiedType = _messages.StringField(15)
+  dataSource = _messages.MessageField('GoogleCloudDatacatalogV1DataSource', 4)
+  dataStreamSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataStreamSpec', 5)
+  databaseTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpec', 6)
+  description = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  fullyQualifiedName = _messages.StringField(9)
+  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 10)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 11)
+  linkedResource = _messages.StringField(12)
+  name = _messages.StringField(13)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 14)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  userSpecifiedSystem = _messages.StringField(17)
+  userSpecifiedType = _messages.StringField(18)
 
 
 class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
@@ -1570,6 +1654,7 @@ class GoogleCloudDatacatalogV1PhysicalSchema(_messages.Message):
 
   Fields:
     avro: Schema in Avro JSON format.
+    csv: Marks a CSV-encoded data source.
     orc: Marks an ORC-encoded data source.
     parquet: Marks a Parquet-encoded data source.
     protobuf: Schema in Protobuf format.
@@ -1577,10 +1662,11 @@ class GoogleCloudDatacatalogV1PhysicalSchema(_messages.Message):
   """
 
   avro = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema', 1)
-  orc = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema', 2)
-  parquet = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema', 3)
-  protobuf = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema', 4)
-  thrift = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema', 5)
+  csv = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema', 2)
+  orc = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema', 3)
+  parquet = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema', 4)
+  protobuf = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema', 5)
+  thrift = _messages.MessageField('GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema', 6)
 
 
 class GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema(_messages.Message):
@@ -1591,6 +1677,10 @@ class GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema(_messages.Message):
   """
 
   text = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema(_messages.Message):
+  r"""Marks a CSV-encoded data source."""
 
 
 class GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema(_messages.Message):
@@ -1824,10 +1914,12 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
+      DATAPROC_METASTORE: Dataproc Metastore - Managed Hive Metastore.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
     CLOUD_PUBSUB = 2
+    DATAPROC_METASTORE = 3
 
   class SearchResultTypeValueValuesEnum(_messages.Enum):
     r"""Type of the search result. This field can be used to determine which

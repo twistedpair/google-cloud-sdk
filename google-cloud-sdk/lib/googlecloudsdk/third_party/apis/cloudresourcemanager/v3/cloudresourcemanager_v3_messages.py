@@ -241,6 +241,40 @@ class CloudresourcemanagerFoldersPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(4)
 
 
+class CloudresourcemanagerFoldersSearchRequest(_messages.Message):
+  r"""A CloudresourcemanagerFoldersSearchRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of folders to return in the
+      response. If unspecified, server picks an appropriate default.
+    pageToken: Optional. A pagination token returned from a previous call to
+      `SearchFolders` that indicates from where search should continue.
+    query: Optional. Search criteria used to select the Folders to return. If
+      no search criteria is specified then all accessible folders will be
+      returned. Query expressions can be used to restrict results based upon
+      displayName, state and parent, where the operators `=` (`:`) `NOT`,
+      `AND` and `OR` can be used along with the suffix wildcard symbol `*`.
+      The displayName field in a query expression should use escaped quotes
+      for values that include whitespace to prevent unexpected behavior. |
+      Field | Description |
+      |-------------------------|----------------------------------------| |
+      displayName | Filters by displayName. | | parent | Filters by parent
+      (e.g. folders/123). | | state, lifecycleState | Filters by state. | Some
+      example queries are: * Query `displayName=Test*` returns Folder
+      resources whose display name starts with "Test". * Query `state=ACTIVE`
+      returns Folder resources with `state` set to `ACTIVE`. * Query
+      `parent=folders/123` returns Folder resources that have `folders/123` as
+      a parent resource. * Query `parent=folders/123 AND state=ACTIVE` returns
+      active Folder resources that have `folders/123` as a parent resource. *
+      Query `displayName=\\"Test String\\"` returns Folder resources with
+      display names that include both "Test" and "String".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  query = _messages.StringField(3)
+
+
 class CloudresourcemanagerFoldersSetIamPolicyRequest(_messages.Message):
   r"""A CloudresourcemanagerFoldersSetIamPolicyRequest object.
 
@@ -428,6 +462,32 @@ class CloudresourcemanagerOrganizationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class CloudresourcemanagerOrganizationsSearchRequest(_messages.Message):
+  r"""A CloudresourcemanagerOrganizationsSearchRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of Organizations to return in the
+      response. If unspecified, server picks an appropriate default.
+    pageToken: Optional. A pagination token returned from a previous call to
+      `SearchOrganizations` that indicates from where listing should continue.
+    query: Optional. An optional query string used to filter the Organizations
+      to return in the response. Query rules are case-insensitive. | Field |
+      Description |
+      |------------------|--------------------------------------------| |
+      directoryCustomerId, owner.directoryCustomerId | Filters by directory
+      customer id. | | domain | Filters by domain. | Organizations may be
+      queried by `directoryCustomerId` or by `domain`, where the domain is a G
+      Suite domain, for example: * Query `directorycustomerid:123456789`
+      returns Organization resources with `owner.directory_customer_id` equal
+      to `123456789`. * Query `domain:google.com` returns Organization
+      resources corresponding to the domain `google.com`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  query = _messages.StringField(3)
+
+
 class CloudresourcemanagerOrganizationsSetIamPolicyRequest(_messages.Message):
   r"""A CloudresourcemanagerOrganizationsSetIamPolicyRequest object.
 
@@ -566,17 +626,26 @@ class CloudresourcemanagerProjectsSearchRequest(_messages.Message):
     pageToken: Optional. A pagination token returned from a previous call to
       ListProjects that indicates from where listing should continue.
     query: Optional. A query string for searching for projects that the caller
-      has `resourcemanager.projects.get` permission to. Search expressions are
-      case insensitive. Some examples queries: | Query | Description | |------
-      ------------|-----------------------------------------------------| |
-      name:how* | The project's name starts with "how". | | name:Howl | The
-      project's name is `Howl` or `howl`. | | name:HOWL | Equivalent to above.
-      | | NAME:howl | Equivalent to above. | | labels.color:* | The project
-      has the label `color`. | | labels.color:red | The project's label
-      `color` has the value `red`. | | labels.color:red labels.size:big |The
-      project's label `color` has the value `red` and its label `size` has the
-      value `big`. | If no query is specified, the call will return projects
-      for which the user has the `resourcemanager.projects.get` permission.
+      has `resourcemanager.projects.get` permission to. If multiple fields are
+      included in the query, the it will return results that match any of the
+      fields. Some eligible fields are: | Field | Description | |-------------
+      ------------|----------------------------------------------| |
+      displayName, name | Filters by displayName. | | parent.type | Parent's
+      type: `folder` or `organization`. | | parent.id | Parent's id number
+      (e.g. 123) | | id, projectId | Filters by projectId. | | state,
+      lifecycleState | Filters by state. | | labels | Filters by label name or
+      value. | | labels. (where *key* is the name of a label) | Filters by
+      label name. | Search expressions are case insensitive. Some examples
+      queries: | Query | Description | |------------------|-------------------
+      ----------------------------------| | name:how* | The project's name
+      starts with "how". | | name:Howl | The project's name is `Howl` or
+      `howl`. | | name:HOWL | Equivalent to above. | | NAME:howl | Equivalent
+      to above. | | labels.color:* | The project has the label `color`. | |
+      labels.color:red | The project's label `color` has the value `red`. | |
+      labels.color:red labels.size:big | The project's label `color` has the
+      value `red` and its label `size` has the value `big`. | If no query is
+      specified, the call will return projects for which the user has the
+      `resourcemanager.projects.get` permission.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1748,36 +1817,6 @@ class ProjectCreationStatus(_messages.Message):
   ready = _messages.BooleanField(3)
 
 
-class SearchFoldersRequest(_messages.Message):
-  r"""The request message for searching folders.
-
-  Fields:
-    pageSize: Optional. The maximum number of folders to return in the
-      response. If unspecified, server picks an appropriate default.
-    pageToken: Optional. A pagination token returned from a previous call to
-      `SearchFolders` that indicates from where search should continue.
-    query: Optional. Search criteria used to select the Folders to return. If
-      no search criteria is specified then all accessible folders will be
-      returned. Query expressions can be used to restrict results based upon
-      displayName, state and parent, where the operators `=`, `NOT`, `AND` and
-      `OR` can be used along with the suffix wildcard symbol `*`. The
-      displayName field in a query expression should use escaped quotes for
-      values that include whitespace to prevent unexpected behavior. Some
-      example queries are: * Query `displayName=Test*` returns Folder
-      resources whose display name starts with "Test". * Query `state=ACTIVE`
-      returns Folder resources with `state` set to `ACTIVE`. * Query
-      `parent=folders/123` returns Folder resources that have `folders/123` as
-      a parent resource. * Query `parent=folders/123 AND state=ACTIVE` returns
-      active Folder resources that have `folders/123` as a parent resource. *
-      Query `displayName=\\"Test String\\"` returns Folder resources with
-      display names that include both "Test" and "String".
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  query = _messages.StringField(3)
-
-
 class SearchFoldersResponse(_messages.Message):
   r"""The response message for searching folders.
 
@@ -1790,29 +1829,6 @@ class SearchFoldersResponse(_messages.Message):
 
   folders = _messages.MessageField('Folder', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class SearchOrganizationsRequest(_messages.Message):
-  r"""The request sent to the `SearchOrganizations` method.
-
-  Fields:
-    pageSize: Optional. The maximum number of Organizations to return in the
-      response. If unspecified, server picks an appropriate default.
-    pageToken: Optional. A pagination token returned from a previous call to
-      `SearchOrganizations` that indicates from where listing should continue.
-    query: Optional. An optional query string used to filter the Organizations
-      to return in the response. Query rules are case-insensitive.
-      Organizations may be queried by `owner.directoryCustomerId` or by
-      `domain`, where the domain is a G Suite domain, for example: * Query
-      `owner.directorycustomerid:123456789` returns Organization resources
-      with `owner.directory_customer_id` equal to `123456789`. * Query
-      `domain:google.com` returns Organization resources corresponding to the
-      domain `google.com`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  query = _messages.StringField(3)
 
 
 class SearchOrganizationsResponse(_messages.Message):

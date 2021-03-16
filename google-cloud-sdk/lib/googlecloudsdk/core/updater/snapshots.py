@@ -570,6 +570,29 @@ class ComponentSnapshot(object):
         path, json.dumps(sdk_def_dict, indent=2, sort_keys=True,
                          separators=(',', ': ')))
 
+  def CheckMissingPlatformExecutable(self, component_ids, platform_filter=None):
+    """Gets all the components that miss required platform-specific executables.
+
+    Args:
+      component_ids: list of str, The ids of the components to check for.
+      platform_filter: platforms.Platform, A platform that components must
+        match to be pulled into the dependency closure.
+
+    Returns:
+      set of str, All component ids that miss required platform-specific
+        executables.
+    """
+
+    invalid_seeds = set()
+    for c_id in component_ids:
+      if c_id in self.components and self.components[c_id].platform_required:
+        deps = self.DependencyClosureForComponents(
+            [c_id], platform_filter=platform_filter)
+        qualified = [d for d in deps if str(d).startswith('{}-'.format(c_id))]
+        if not qualified:
+          invalid_seeds.add(c_id)
+    return invalid_seeds
+
 
 class ComponentSnapshotDiff(object):
   """Provides the ability to compare two ComponentSnapshots.
@@ -651,7 +674,17 @@ class ComponentSnapshotDiff(object):
     Returns:
       set of str, The component ids that do not exist anywhere.
     """
+    invalid_seeds = set(component_ids) - self.__all_components
+    missing_platform = self.current.CheckMissingPlatformExecutable(
+        component_ids, self.__platform_filter)
+    missing_platform |= self.latest.CheckMissingPlatformExecutable(
+        component_ids, self.__platform_filter)
     if self.__enable_fallback:
+      missing_platform_x86_64 = self.current.CheckMissingPlatformExecutable(
+          component_ids, self.DARWIN_X86_64)
+      missing_platform_x86_64 |= self.latest.CheckMissingPlatformExecutable(
+          component_ids, self.DARWIN_X86_64)
+      missing_platform &= missing_platform_x86_64
       native_invalid_ids = set(component_ids) - self.__native_all_components
       arm_x86_ids = native_invalid_ids & self.__darwin_x86_64_components
       if arm_x86_ids:
@@ -668,8 +701,8 @@ class ComponentSnapshotDiff(object):
                       'first by running the command: '
                       'softwareupdate --install-rosetta.'
                       .format(', '.join(arm_x86_ids)))
-          return (set(component_ids) - self.__all_components) | arm_x86_ids
-    return set(component_ids) - self.__all_components
+          return invalid_seeds | arm_x86_ids | missing_platform
+    return invalid_seeds | missing_platform
 
   def AllDiffs(self):
     """Gets all ComponentDiffs for this snapshot comparison.
@@ -855,6 +888,7 @@ class ComponentInfo(object):
 
   Attributes:
     id: str, The component id.
+    platform: str, The operating system and architecture of the platform.
     name: str, The display name of the component.
     current_version_string: str, The version of the component.
     is_hidden: bool, If the component is hidden.
@@ -879,6 +913,10 @@ class ComponentInfo(object):
   @property
   def id(self):
     return self._id
+
+  @property
+  def platform(self):
+    return str(self._platform_filter)
 
   @property
   def current_version_string(self):

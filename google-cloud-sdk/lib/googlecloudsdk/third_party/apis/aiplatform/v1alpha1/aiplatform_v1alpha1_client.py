@@ -89,7 +89,6 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     self.projects_locations_tensorboards_experiments_runs_operations = self.ProjectsLocationsTensorboardsExperimentsRunsOperationsService(self)
     self.projects_locations_tensorboards_experiments_runs_timeSeries_operations = self.ProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperationsService(self)
     self.projects_locations_tensorboards_experiments_runs_timeSeries = self.ProjectsLocationsTensorboardsExperimentsRunsTimeSeriesService(self)
-    self.projects_locations_tensorboards_experiments_runs_timeseries = self.ProjectsLocationsTensorboardsExperimentsRunsTimeseriesService(self)
     self.projects_locations_tensorboards_experiments_runs = self.ProjectsLocationsTensorboardsExperimentsRunsService(self)
     self.projects_locations_tensorboards_experiments = self.ProjectsLocationsTensorboardsExperimentsService(self)
     self.projects_locations_tensorboards_operations = self.ProjectsLocationsTensorboardsOperationsService(self)
@@ -5864,6 +5863,33 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportTensorboardTimeSeries(self, request, global_params=None):
+      r"""Exports a TensorboardTimeSeries' data. Data is returned in paginated responses.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesExportTensorboardTimeSeriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ExportTensorboardTimeSeriesDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExportTensorboardTimeSeries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportTensorboardTimeSeries.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:exportTensorboardTimeSeries',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.exportTensorboardTimeSeries',
+        ordered_params=['tensorboardTimeSeries'],
+        path_params=['tensorboardTimeSeries'],
+        query_params=[],
+        relative_path='v1alpha1/{+tensorboardTimeSeries}:exportTensorboardTimeSeries',
+        request_field='googleCloudAiplatformV1alpha1ExportTensorboardTimeSeriesDataRequest',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesExportTensorboardTimeSeriesRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ExportTensorboardTimeSeriesDataResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a TensorboardTimeSeries.
 
@@ -5972,21 +5998,11 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsTensorboardsExperimentsRunsTimeseriesService(base_api.BaseApiService):
-    """Service class for the projects_locations_tensorboards_experiments_runs_timeseries resource."""
-
-    _NAME = 'projects_locations_tensorboards_experiments_runs_timeseries'
-
-    def __init__(self, client):
-      super(AiplatformV1alpha1.ProjectsLocationsTensorboardsExperimentsRunsTimeseriesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
     def ReadBlobData(self, request, global_params=None):
       r"""Gets bytes of TensorboardBlobs. This is to allow reading blob data stored in consumer project's Cloud Storage bucket without users having to obtain Cloud Storage access permission.
 
       Args:
-        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeseriesReadBlobDataRequest) input message
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadBlobDataRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudAiplatformV1alpha1ReadTensorboardBlobDataResponse) The response message.
@@ -5996,15 +6012,15 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     ReadBlobData.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeseries/{timeseriesId}:readBlobData',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:readBlobData',
         http_method='GET',
-        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeseries.readBlobData',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.readBlobData',
         ordered_params=['timeSeries'],
         path_params=['timeSeries'],
         query_params=['blobIds'],
         relative_path='v1alpha1/{+timeSeries}:readBlobData',
         request_field='',
-        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeseriesReadBlobDataRequest',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadBlobDataRequest',
         response_type_name='GoogleCloudAiplatformV1alpha1ReadTensorboardBlobDataResponse',
         supports_download=False,
     )

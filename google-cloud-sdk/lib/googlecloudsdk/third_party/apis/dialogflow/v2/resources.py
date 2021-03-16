@@ -133,11 +133,119 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_CONVERSATIONPROFILES = (
+      'projects.conversationProfiles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/conversationProfiles/'
+              '{conversationProfilesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_CONVERSATIONS = (
+      'projects.conversations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/conversations/{conversationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_CONVERSATIONS_PARTICIPANTS = (
+      'projects.conversations.participants',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/conversations/{conversationsId}/'
+              'participants/{participantsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_KNOWLEDGEBASES = (
+      'projects.knowledgeBases',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/knowledgeBases/{knowledgeBasesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_KNOWLEDGEBASES_DOCUMENTS = (
+      'projects.knowledgeBases.documents',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/knowledgeBases/{knowledgeBasesId}/'
+              'documents/{documentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
       ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_CONVERSATIONPROFILES = (
+      'projects.locations.conversationProfiles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'conversationProfiles/{conversationProfilesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CONVERSATIONS = (
+      'projects.locations.conversations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/conversations/'
+              '{conversationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CONVERSATIONS_PARTICIPANTS = (
+      'projects.locations.conversations.participants',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/conversations/'
+              '{conversationsId}/participants/{participantsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_KNOWLEDGEBASES = (
+      'projects.locations.knowledgeBases',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/knowledgeBases/'
+              '{knowledgeBasesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_KNOWLEDGEBASES_DOCUMENTS = (
+      'projects.locations.knowledgeBases.documents',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/knowledgeBases/'
+              '{knowledgeBasesId}/documents/{documentsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (

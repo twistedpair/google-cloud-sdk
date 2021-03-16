@@ -10,6 +10,7 @@ rem  CLOUDSDK_PYTHON              (u)  python interpreter path
 rem  CLOUDSDK_GSUTIL_PYTHON       (u)  python interpreter path for gsutil
 rem  CLOUDSDK_PYTHON_ARGS         (u)  python interpreter arguments
 rem  CLOUDSDK_PYTHON_SITEPACKAGES (u)  use python site packages
+rem  CLOUDSDK_ENCODING            (u)  python io encoding for gcloud
 rem
 rem (a) always defined by the preamble
 rem (u) user definition overrides preamble
@@ -133,6 +134,10 @@ rem is not set, we'll try finding (and prefer using) Python 3 before falling
 rem back to the default Cloud SDK Python.
 IF "%CLOUDSDK_GSUTIL_PYTHON%" == "" (
   SET CLOUDSDK_GSUTIL_PYTHON=!CLOUDSDK_PYTHON!
+)
+
+IF NOT "%CLOUDSDK_ENCODING%" == "" (
+  SET PYTHONIOENCODING=!CLOUDSDK_ENCODING!
 )
 
 rem Gsutil prefers Python 3 if it is available, which may likely differ from the

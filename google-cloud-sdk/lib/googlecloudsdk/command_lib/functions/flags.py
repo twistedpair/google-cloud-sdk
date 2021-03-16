@@ -579,3 +579,16 @@ def AddIgnoreFileFlag(parser):
       '--ignore-file',
       help='Override the .gcloudignore file and use the specified file instead.'
   )
+
+
+def AddSignatureTypeFlag(parser):
+  base.ChoiceArgument(
+      '--signature-type',
+      choices=SIGNATURE_TYPES,
+      help_str=('The type of event signature for the function. `http` '
+                'indicates that the function is triggered by HTTP requests. '
+                '`event` indicates that the function consumes legacy events. '
+                '`cloudevent` indicates that the function consumes events in '
+                'the new CloudEvent format. This is only relevant when `--v2` '
+                'is provided.'),
+  ).AddToParser(parser)

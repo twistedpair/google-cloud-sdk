@@ -5,6 +5,94 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 332.0.0 (2021-03-16)
+
+### Breaking Changes
+
+*   **(App Engine)** Updated backend when using `gcloud app deploy <queue|cron>.yaml`. The only
+  noticeable change is that when removing queues from the queues YAML file,
+  previously the queues were marked as "DISABLED" but now they are marked
+  "PAUSED". In terms of functionality, there is no difference between the two.
+
+
+### Cloud SDK
+
+* Added support for environment variable `CLOUDSDK_ENCODING` to set the IO
+  encoding for `gcloud`. `UTF-8` will be the default IO encoding on Unix.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.87.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Artifact Registry
+
+* Promoted PyPI repo creation with `gcloud artifacts repositories create` to beta and GA.
+* Promoted `gcloud artifacts print-settings pypi` to beta and GA.
+
+### Cloud Dataflow
+
+* Added default runtime environment parameters support in `gcloud dataflow flex-template build`.
+
+### Cloud Functions
+
+* Promoted `--security-level` flag of `gcloud functions deploy` to GA.
+* Modified `--limit` of `gcloud functions logs read` such that the most recent entries in the given time range up to the limit are returned rather than the earliest.
+
+### Cloud Org Policy
+
+*   Promoted `gcloud org-policies` command group to GA.
+
+### Cloud Run
+
+* Promoted `--tag` flag of `gcloud run deploy` to GA.
+* Promoted `--tag` flag of `gcloud run services update` to GA.
+* Promoted `--to-tags`, `--set-tags`, `--update-tags`, `--remove-tags`, and
+  `--clear-tags` flags of `gcloud run services update-traffic` to GA.
+
+### Cloud Spanner
+
+*   Promoted CMEK flags to beta and GA in `gcloud spanner` commands.
+
+### Compute Engine
+
+* Added `--byol` flag for:
+  * `gcloud compute images import` in beta
+  * `gcloud compute instances import` in beta
+  * `gcloud compute machine-images import` in beta
+* Promoted `gcloud compute instances remove-resource-policies` command to GA.
+* Added `--boot-disk-provisioned-iops` to `gcloud compute instances create` and `gcloud compute instance-templates create` to allow specifying provisioned IOPS for attached disks.
+* Promoted `gcloud compute instances create --network-performance-configs` flag to beta.
+* Promoted `gcloud compute instances bulk create` to beta and GA.
+
+### Dataproc Metastore
+
+*   Added `--database-dump-type` flag to `gcloud beta metastore services imports
+    create` to set the database dump type.
+*   Deprecated `--database-type` flag `gcloud beta metastore services imports
+    create`. Use `--database-dump-type` flag to specify the database dump type.
+*   Added `gcloud beta metastore services imports update` which updates a
+    metadata import.
+*   Added `--data-catalog-sync` flag for `gcloud metastore services` in beta.
+
+### Identity Groups
+
+* Added `--group-type` flag to `gcloud identity groups create` to automatically
+  set group labels based on the type of group being created.
+
+### Kubernetes Engine
+
+*   Promoted `--enable-l4-ilb-subsetting` of `gcloud container clusters create`
+and `gcloud container clusters update` to beta.
+* Added `--node-labels`, `--node-taints`, and `--tags` flags to
+  `gcloud beta container node-pools update` to update the node labels,
+  node taints and network tags on an existing node pool.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 331.0.0 (2021-03-09)
 
 ### AI

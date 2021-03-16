@@ -249,7 +249,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
       r"""Search for folders that match specific filter criteria. Search provides an eventually consistent view of the folders a user has access to which meet the specified filter criteria. This will only return folders on which the caller has the permission `resourcemanager.folders.get`.
 
       Args:
-        request: (SearchFoldersRequest) input message
+        request: (CloudresourcemanagerFoldersSearchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SearchFoldersResponse) The response message.
@@ -259,14 +259,14 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
+        http_method='GET',
         method_id='cloudresourcemanager.folders.search',
         ordered_params=[],
         path_params=[],
-        query_params=[],
+        query_params=['pageSize', 'pageToken', 'query'],
         relative_path='v3/folders:search',
-        request_field='<request>',
-        request_type_name='SearchFoldersRequest',
+        request_field='',
+        request_type_name='CloudresourcemanagerFoldersSearchRequest',
         response_type_name='SearchFoldersResponse',
         supports_download=False,
     )
@@ -573,7 +573,7 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
       r"""Searches Organization resources that are visible to the user and satisfy the specified filter. This method returns Organizations in an unspecified order. New Organizations do not necessarily appear at the end of the results, and may take a small amount of time to appear. Search will only return organizations on which the user has the permission `resourcemanager.organizations.get`.
 
       Args:
-        request: (SearchOrganizationsRequest) input message
+        request: (CloudresourcemanagerOrganizationsSearchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SearchOrganizationsResponse) The response message.
@@ -583,14 +583,14 @@ class CloudresourcemanagerV3(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
+        http_method='GET',
         method_id='cloudresourcemanager.organizations.search',
         ordered_params=[],
         path_params=[],
-        query_params=[],
+        query_params=['pageSize', 'pageToken', 'query'],
         relative_path='v3/organizations:search',
-        request_field='<request>',
-        request_type_name='SearchOrganizationsRequest',
+        request_field='',
+        request_type_name='CloudresourcemanagerOrganizationsSearchRequest',
         response_type_name='SearchOrganizationsResponse',
         supports_download=False,
     )

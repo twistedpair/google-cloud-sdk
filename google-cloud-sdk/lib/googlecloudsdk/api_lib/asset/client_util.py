@@ -33,7 +33,6 @@ from googlecloudsdk.core.util import times
 API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
 V1P1BETA1_API_VERSION = 'v1p1beta1'
-V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
 V1P4BETA1_API_VERSION = 'v1p4beta1'
 V1P5BETA1_API_VERSION = 'v1p5beta1'
 V1P7BETA1_API_VERSION = 'v1p7beta1'
@@ -45,12 +44,6 @@ _HTTP_ERROR_FORMAT = ('HTTP request failed with status code {}. '
                       'Response content: {}')
 # A dictionary that captures version differences for IAM Policy Analyzer.
 _IAM_POLICY_ANALYZER_VERSION_DICT_JSON = {
-    V1P4ALPHA1_API_VERSION: {
-        'resource_selector': 'resourceSelector',
-        'identity_selector': 'identitySelector',
-        'access_selector': 'accessSelector',
-        'options': 'options',
-    },
     V1P4BETA1_API_VERSION: {
         'resource_selector': 'analysisQuery_resourceSelector',
         'identity_selector': 'analysisQuery_identitySelector',
@@ -228,17 +221,11 @@ def _RenderResponseforAnalyzeIamPolicy(response,
 def MakeAnalyzeIamPolicyHttpRequests(args,
                                      service,
                                      messages,
-                                     api_version=V1P4ALPHA1_API_VERSION):
+                                     api_version=DEFAULT_API_VERSION):
   """Manually make the analyze IAM policy request."""
-  if api_version == V1P4ALPHA1_API_VERSION:
-    folder = None
-    project = None
-  else:
-    folder = args.folder
-    project = args.project
-
   parent = asset_utils.GetParentNameForAnalyzeIamPolicy(args.organization,
-                                                        project, folder)
+                                                        args.project,
+                                                        args.folder)
 
   full_resource_name = args.full_resource_name if args.IsSpecified(
       'full_resource_name') else None
@@ -255,10 +242,11 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
 
   expand_roles = args.expand_roles if args.expand_roles else None
 
+  analyze_service_account_impersonation = args.analyze_service_account_impersonation if args.analyze_service_account_impersonation else None
+
   output_resource_edges = None
   if args.output_resource_edges:
-    if (api_version == V1P4BETA1_API_VERSION or
-        api_version == DEFAULT_API_VERSION) and (not args.show_response):
+    if not args.show_response:
       raise gcloud_exceptions.InvalidArgumentException(
           '--output-resource-edges',
           'Must be set together with --show-response to take effect.')
@@ -266,43 +254,17 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
 
   output_group_edges = None
   if args.output_group_edges:
-    if (api_version == V1P4BETA1_API_VERSION or
-        api_version == DEFAULT_API_VERSION) and (not args.show_response):
+    if not args.show_response:
       raise gcloud_exceptions.InvalidArgumentException(
           '--output-group-edges',
           'Must be set together with --show-response to take effect.')
     output_group_edges = args.output_group_edges
 
-  output_partial_result_before_timeout = None
-  if api_version == V1P4ALPHA1_API_VERSION and args.IsSpecified(
-      'output_partial_result_before_timeout'):
-    output_partial_result_before_timeout = args.output_partial_result_before_timeout
-
   execution_timeout = None
-  if (api_version == V1P4BETA1_API_VERSION or api_version == DEFAULT_API_VERSION
-     ) and args.IsSpecified('execution_timeout'):
+  if args.IsSpecified('execution_timeout'):
     execution_timeout = str(args.execution_timeout) + 's'
 
-  analyze_service_account_impersonation = None
-  if api_version == V1P4BETA1_API_VERSION or api_version == DEFAULT_API_VERSION:
-    analyze_service_account_impersonation = args.analyze_service_account_impersonation
-
-  if api_version == V1P4ALPHA1_API_VERSION:
-    return service.AnalyzeIamPolicy(
-        messages.CloudassetAnalyzeIamPolicyRequest(
-            accessSelector_permissions=permissions,
-            accessSelector_roles=roles,
-            identitySelector_identity=identity,
-            options_expandGroups=expand_groups,
-            options_expandResources=expand_resources,
-            options_expandRoles=expand_roles,
-            options_outputGroupEdges=output_group_edges,
-            options_outputPartialResultBeforeTimeout=output_partial_result_before_timeout,
-            options_outputResourceEdges=output_resource_edges,
-            parent=parent,
-            resourceSelector_fullResourceName=full_resource_name,
-        ))
-  elif api_version == V1P4BETA1_API_VERSION:
+  if api_version == V1P4BETA1_API_VERSION:
     response = service.AnalyzeIamPolicy(
         messages.CloudassetAnalyzeIamPolicyRequest(
             analysisQuery_accessSelector_permissions=permissions,
@@ -343,16 +305,14 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
 class AnalyzeIamPolicyClient(object):
   """Client for IAM policy analysis."""
 
-  def __init__(self, api_version=V1P4ALPHA1_API_VERSION):
+  def __init__(self, api_version=DEFAULT_API_VERSION):
     self.api_version = api_version
     self.client = GetClient(api_version)
 
-    if api_version == DEFAULT_API_VERSION:
-      self.service = self.client.v1
-    elif api_version == V1P4BETA1_API_VERSION:
+    if api_version == V1P4BETA1_API_VERSION:
       self.service = self.client.v1p4beta1
     else:
-      self.service = self.client.v1p4alpha1
+      self.service = self.client.v1
 
   def Analyze(self, args):
     """Calls MakeAnalyzeIamPolicy method."""
@@ -382,18 +342,11 @@ class AnalyzeIamPolicyClient(object):
     AddCustomJsonFieldMapping('options', '_expandRoles')
     AddCustomJsonFieldMapping('options', '_outputResourceEdges')
     AddCustomJsonFieldMapping('options', '_outputGroupEdges')
-
-    if self.api_version == V1P4ALPHA1_API_VERSION and args.IsSpecified(
-        'output_partial_result_before_timeout'):
-      AddCustomJsonFieldMapping('options', '_outputPartialResultBeforeTimeout')
+    AddCustomJsonFieldMapping('options', '_analyzeServiceAccountImpersonation')
 
     if self.api_version == V1P4BETA1_API_VERSION and args.IsSpecified(
         'execution_timeout'):
       AddCustomJsonFieldMapping('options', '_executionTimeout')
-
-    if self.api_version == V1P4BETA1_API_VERSION or self.api_version == DEFAULT_API_VERSION:
-      AddCustomJsonFieldMapping('options',
-                                '_analyzeServiceAccountImpersonation')
 
     return messages
 

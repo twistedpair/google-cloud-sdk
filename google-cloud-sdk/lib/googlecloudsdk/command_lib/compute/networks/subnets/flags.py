@@ -342,8 +342,7 @@ def GetLoggingMetadataArg(messages):
       help_str="""\
         Can only be specified if VPC Flow Logs for this subnetwork is
         enabled. Configures whether metadata fields should be added to the
-        reported logs. Default is to include all metadata. Note that
-        "include-all" does not include GKE annotations.
+        reported logs. Default is to exclude all metadata.
         """)
 
 
@@ -362,8 +361,7 @@ def GetLoggingMetadataArgDeprecated(messages):
       help_str="""\
         Can only be specified if VPC Flow Logs for this subnetwork is
         enabled. Configures whether metadata fields should be added to the
-        reported logs. Default is to include all metadata. Note that
-        "include-all" does not include GKE annotations.
+        reported logs. Default is to exclude all metadata.
         """)
 
 

@@ -37,18 +37,16 @@ _CREATE_BACKUP_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
     .EncryptionConfigEncryptionTypeValueValuesEnum,
     help_str='The encryption type of the backup.',
     required=False,
-    hidden=True,
     custom_mappings={
         'USE_DATABASE_ENCRYPTION':
             ('use-database-encryption',
              'Use the same encryption configuration as the database.'),
         'GOOGLE_DEFAULT_ENCRYPTION':
-            ('google-default-encryption', 'Use default Google encryption.'),
-        'CUSTOMER_MANAGED_ENCRYPTION': (
-            'customer-managed-encryption',
-            'Use the provided Cloud KMS Key for encryption. If this option is '
-            'selected, kms-key must be set.'
-        )
+            ('google-default-encryption', 'Use Google default encryption.'),
+        'CUSTOMER_MANAGED_ENCRYPTION':
+            ('customer-managed-encryption',
+             'Use the provided Cloud KMS key for encryption. If this option is '
+             'selected, kms-key must be set.')
     })
 
 _RESTORE_DB_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
@@ -58,19 +56,17 @@ _RESTORE_DB_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
         'v1').RestoreDatabaseEncryptionConfig.EncryptionTypeValueValuesEnum,
     help_str='The encryption type of the restored database.',
     required=False,
-    hidden=True,
     custom_mappings={
         'USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION':
             ('use-config-default-or-backup-encryption',
              'Use the default encryption configuration if one exists, '
              'otherwise use the same encryption configuration as the backup.'),
         'GOOGLE_DEFAULT_ENCRYPTION':
-            ('google-default-encryption', 'Use default Google encryption.'),
-        'CUSTOMER_MANAGED_ENCRYPTION': (
-            'customer-managed-encryption',
-            'Use the provided Cloud KMS Key for encryption. If this option is '
-            'selected, kms-key must be set.'
-        )
+            ('google-default-encryption', 'Use Google default encryption.'),
+        'CUSTOMER_MANAGED_ENCRYPTION':
+            ('customer-managed-encryption',
+             'Use the provided Cloud KMS key for encryption. If this option is '
+             'selected, kms-key must be set.')
     })
 
 
@@ -109,17 +105,17 @@ def KmsKeyAttributeConfig():
 
 def KmsKeyringAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-keyring', help_text='KMS Keyring id of the {resource}.')
+      name='kms-keyring', help_text='KMS keyring id of the {resource}.')
 
 
 def KmsLocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-location', help_text='Cloud Location for the {resource}.')
+      name='kms-location', help_text='Cloud location for the {resource}.')
 
 
 def KmsProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-project', help_text='Cloud Project id for the {resource}.')
+      name='kms-project', help_text='Cloud project id for the {resource}.')
 
 
 def GetInstanceResourceSpec():
@@ -215,17 +211,12 @@ def AddKmsKeyResourceArg(parser, verb, positional=False):
     positional: bool, optional. True if the resource arg is postional rather
       than a flag.
   """
-  # TODO(b/154755597): Adding this resource arg to its own group is currently
-  # the only way to hide a resource arg. When ready to publish this arg to
-  # public, remove this group and add this resource arg directly (and generate
-  # the help text).
-  group_parser = parser.add_argument_group(hidden=True)
   name = 'kms-key' if positional else '--kms-key'
   concept_parsers.ConceptParser.ForResource(
       name,
       GetKmsKeyResourceSpec(),
-      'Cloud KMS Key to be used {}.'.format(verb),
-      required=False).AddToParser(group_parser)
+      'Cloud KMS key to be used {}.'.format(verb),
+      required=False).AddToParser(parser)
 
 
 def AddSessionResourceArg(parser, verb, positional=True):
@@ -268,9 +259,7 @@ def AddBackupResourceArg(parser, verb, positional=True):
 
 
 def AddCreateBackupEncryptionTypeArg(parser):
-  group_parser = parser.add_argument_group(hidden=True)
-  return _CREATE_BACKUP_ENCRYPTION_TYPE_MAPPER.choice_arg.AddToParser(
-      group_parser)
+  return _CREATE_BACKUP_ENCRYPTION_TYPE_MAPPER.choice_arg.AddToParser(parser)
 
 
 def GetCreateBackupEncryptionType(args):
@@ -305,8 +294,7 @@ def AddRestoreResourceArgs(parser):
 
 
 def AddRestoreDbEncryptionTypeArg(parser):
-  group_parser = parser.add_argument_group(hidden=True)
-  return _RESTORE_DB_ENCRYPTION_TYPE_MAPPER.choice_arg.AddToParser(group_parser)
+  return _RESTORE_DB_ENCRYPTION_TYPE_MAPPER.choice_arg.AddToParser(parser)
 
 
 def GetRestoreDbEncryptionType(args):

@@ -565,8 +565,8 @@
         }
       }
     },
-    "GoogleCloudMemcacheV1beta2LocationMetadata": {
-      "id": "GoogleCloudMemcacheV1beta2LocationMetadata",
+    "LocationMetadata": {
+      "id": "LocationMetadata",
       "description": "Metadata for the given google.cloud.location.Location.",
       "type": "object",
       "properties": {
@@ -582,6 +582,27 @@
     },
     "ZoneMetadata": {
       "id": "ZoneMetadata",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudMemcacheV1beta2LocationMetadata": {
+      "id": "GoogleCloudMemcacheV1beta2LocationMetadata",
+      "description": "Metadata for the given google.cloud.location.Location.",
+      "type": "object",
+      "properties": {
+        "availableZones": {
+          "description": "Output only. The set of available zones in the location. The map is keyed by the lowercase ID of each zone, as defined by GCE. These keys can be specified in the `zones` field when creating a Memcached instance.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudMemcacheV1beta2ZoneMetadata"
+          }
+        }
+      }
+    },
+    "GoogleCloudMemcacheV1beta2ZoneMetadata": {
+      "id": "GoogleCloudMemcacheV1beta2ZoneMetadata",
       "type": "object",
       "properties": {
       }
@@ -925,7 +946,7 @@
           "format": "google-datetime"
         },
         "canReschedule": {
-          "description": "Can this scheduled update be rescheduled? By default, it's true and API needs to do explicitly check whether it's set, if it's set as false explicitly, it's false",
+          "description": "This field will be deprecated, and will be always set to true since reschedule can happen multiple times now.",
           "type": "boolean"
         },
         "rolloutManagementPolicy": {

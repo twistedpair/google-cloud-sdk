@@ -389,7 +389,7 @@ class ImportIntoClusterRequest(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""A Instance object.
+  r"""NEXT ID: 13
 
   Enums:
     AvailabilityTypeValueValuesEnum: Availability type of an Instance.
@@ -434,6 +434,7 @@ class Instance(_messages.Message):
     networkConfiguration: The settings for Network / IP Management. This
       allows to enable/disable public IP, enable/disable SSL and manage which
       external networks can connect to the instance.
+    readPoolConfiguration: Read pool specific config.
     state: The current serving state of the instance.
     tier: The tier (or machine type) for this instance, for example *db-
       custom-1-3840* (PostgreSQL instances). Required for new instances and
@@ -560,9 +561,10 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   networkConfiguration = _messages.MessageField('NetworkConfiguration', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  tier = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  readPoolConfiguration = _messages.MessageField('ReadPoolConfiguration', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  tier = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -1356,7 +1358,7 @@ class LuxadminProjectsLocationsOperationsListRequest(_messages.Message):
 
 
 class NetworkConfiguration(_messages.Message):
-  r"""Netwoek Management configuration.
+  r"""Network Management configuration.
 
   Fields:
     publicIpEnabled: Whether the instance is assigned a public IP address or
@@ -1593,6 +1595,16 @@ class PromoteClusterRequest(_messages.Message):
   """
 
   requestId = _messages.StringField(1)
+
+
+class ReadPoolConfiguration(_messages.Message):
+  r"""Read pool configuration for an instance.
+
+  Fields:
+    readPoolSize: Read pool size.
+  """
+
+  readPoolSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class RestartInstanceRequest(_messages.Message):

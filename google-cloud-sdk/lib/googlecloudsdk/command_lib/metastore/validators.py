@@ -22,6 +22,8 @@ import re
 
 from googlecloudsdk.calliope import exceptions
 
+STRING_MAX_LENGTH = 1000
+
 
 def ValidatePort(port):
   """Python hook to validate that the port is between 1024 and 65535, inclusive."""
@@ -60,3 +62,16 @@ def ValidateHourOfDay(hour):
         '--maintenance-window-hour-of-day',
         'Hour of day ({0}) is not in [0, 23].'.format(hour))
   return hour
+
+
+def ValidateStringField(arg_name):
+  """Validates that the string field is not longer than STRING_MAX_LENGTH, to avoid abuse issues."""
+
+  def Process(string):
+    if len(string) > STRING_MAX_LENGTH:
+      raise exceptions.BadArgumentException(
+          arg_name,
+          'The string field can not be longer than {0} characters.'.format(
+              STRING_MAX_LENGTH))
+
+  return Process

@@ -224,9 +224,9 @@ class ApigeeOrganizationsApiproductsRateplansCreateRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1RatePlan: A GoogleCloudApigeeV1RatePlan resource to be
       passed as the request body.
-    parent: Required. Name of the API product which is associated with the
-      rate plan. Use the following structure in your request:
-      `organizations/{org}/apiproducts/{api_product_id}`
+    parent: Required. Name of the API product that is associated with the rate
+      plan. Use the following structure in your request:
+      `organizations/{org}/apiproducts/{apiproduct}`
   """
 
   googleCloudApigeeV1RatePlan = _messages.MessageField('GoogleCloudApigeeV1RatePlan', 1)
@@ -238,8 +238,8 @@ class ApigeeOrganizationsApiproductsRateplansDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. ID of the rate plan. Use the following structure in your
-      request: `organizations/{org}/apiproducts/{api_product_id}/rateplans/{ra
-      te_plan_id}`
+      request:
+      `organizations/{org}/apiproducts/{apiproduct}/rateplans/{rateplan}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -250,8 +250,8 @@ class ApigeeOrganizationsApiproductsRateplansGetRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the rate plan. Use the following structure in your
-      request: `organizations/{org}/apiproducts/{api_product_id}/rateplans/{ra
-      te_plan_id}`
+      request:
+      `organizations/{org}/apiproducts/{apiproduct}/rateplans/{rateplan}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -261,39 +261,41 @@ class ApigeeOrganizationsApiproductsRateplansListRequest(_messages.Message):
   r"""A ApigeeOrganizationsApiproductsRateplansListRequest object.
 
   Enums:
-    StateValueValuesEnum: `state` will specify the kind of rate plans returned
+    StateValueValuesEnum: State of the rate plans (`DRAFT`, `PUBLISHED`) that
+      you want to display.
 
   Fields:
-    count: The number of rate plans you want to retrieve from the API The
-      maximum limit is 1000
+    count: Number of rate plans to return in the API call. Use with the
+      `startKey` parameter to provide more targeted filtering. The maximum
+      limit is 1000. Defaults to 100.
     expand: Flag that specifies whether to expand the results. Set to `true`
-      to get expanded details about each API. Default value is false.
-    orderBy: The name of the attribute which is to be used for filtering. The
-      attribute which is to be used for sorting. You can sort by the following
-      attributes: - name -> The name of the rate plan - state -> state of the
-      rate plan (DRAFT, PUBLISHED) - startTime -> The time when the rate plan
-      becomes active. - endTime -> The time when the rate plan expires.
-    parent: Required. Name of the parent resource. Use the following structure
-      in your request: `organizations/{org}/apiproducts/{api_product_id}` If
-      you use `organizations/{org}/apiproducts/-` as the parameter value, it
-      will return all the rateplans within the organization (and not just for
-      a single API product)
-    startKey: Used for pagination. `start_key` specifies the first rate plan
-      which will be included in the returned list of rate plans. For example,
-      to view the 100 rate plans from from 51-150, you will set the value of
-      `start_key` to the `rate_plan_id` of the 51st rate plan and set the
-      value of `count` to 100
-    state: `state` will specify the kind of rate plans returned
+      to get expanded details about each API. Defaults to `false`.
+    orderBy: Name of the attribute used for sorting. Valid values include: *
+      `name`: Name of the rate plan. * `state`: State of the rate plan
+      (`DRAFT`, `PUBLISHED`). * `startTime`: Time when the rate plan becomes
+      active. * `endTime`: Time when the rate plan expires. **Note**: Not
+      supported by Apigee at this time.
+    parent: Required. Name of the API product. Use the following structure in
+      your request: `organizations/{org}/apiproducts/{apiproduct}` Use
+      `organizations/{org}/apiproducts/-` to return rate plans for all API
+      products within the organization.
+    startKey: Name of the rate plan from which to start displaying the list of
+      rate plans. If omitted, list starts from the first item. For example, to
+      view the rate plans from 51-150, set the value of `start_key` to the
+      name of the 51st rate plan and set the value of `count` to 100.
+    state: State of the rate plans (`DRAFT`, `PUBLISHED`) that you want to
+      display.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""`state` will specify the kind of rate plans returned
+    r"""State of the rate plans (`DRAFT`, `PUBLISHED`) that you want to
+    display.
 
     Values:
-      STATE_UNSPECIFIED: The default/unset value
-      DRAFT: The rate plan is only visible to the API Providers.
-      PUBLISHED: The rate plan will become visible on `startTime` and be
-        hidden after `endTime`.
+      STATE_UNSPECIFIED: State of the rate plan is not specified.
+      DRAFT: Rate plan is in draft mode and only visible to API providers.
+      PUBLISHED: Rate plan is published and will become visible to developers
+        for the configured duration (between `startTime` and `endTime`).
     """
     STATE_UNSPECIFIED = 0
     DRAFT = 1
@@ -5828,7 +5830,7 @@ class GoogleCloudApigeeV1ListRatePlansResponse(_messages.Message):
   r"""Response for ListRatePlans.
 
   Fields:
-    ratePlans: List of rate plans which belong to the organization
+    ratePlans: List of rate plans in an organization.
   """
 
   ratePlans = _messages.MessageField('GoogleCloudApigeeV1RatePlan', 1, repeated=True)
@@ -6195,10 +6197,11 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       be peered with Apigee runtime instances. See [Getting started with the
       Service Networking API](https://cloud.google.com/service-
       infrastructure/docs/service-networking/getting-started). Valid only when
-      [RuntimeType](#RuntimeType) is set to `CLOUD`. The value can be updated
-      only when there are no runtime instances. For example: `default`. Apigee
-      also supports shared VPC (that is, the host network project is not the
-      same as the one that is peering with Apigee). See [Shared VPC
+      [RuntimeType](#RuntimeType) is set to `CLOUD`. The value must be set
+      before the creation of a runtime instance and can be updated only when
+      there are no runtime instances. For example: `default`. Apigee also
+      supports shared VPC (that is, the host network project is not the same
+      as the one that is peering with Apigee). See [Shared VPC
       overview](https://cloud.google.com/vpc/docs/shared-vpc). To use a shared
       VPC network, use the following format: `projects/{host-project-
       id}/{region}/networks/{network-name}`. For example: `projects/my-
@@ -6221,13 +6224,15 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     lastModifiedAt: Output only. Time that the Apigee organization was last
       modified in milliseconds since epoch.
     name: Output only. Name of the Apigee organization.
-    projectId: Project ID associated with the Apigee organization.
+    projectId: Output only. Project ID associated with the Apigee
+      organization.
     properties: Properties defined in the Apigee organization profile.
     runtimeDatabaseEncryptionKeyName: Cloud KMS key name used for encrypting
       the data that is stored and replicated across runtime instances. Update
-      is not allowed after the organization is created. If not specified, a
-      Google-Managed encryption key will be used. Valid only when
-      [RuntimeType](#RuntimeType) is `CLOUD`. For example:
+      is not allowed after the organization is created. Required when
+      [RuntimeType](#RuntimeType) is `CLOUD`. If not specified when
+      [RuntimeType](#RuntimeType) is `TRIAL`, a Google-Managed encryption key
+      will be used. For example:
       "projects/foo/locations/us/keyRings/bar/cryptoKeys/baz". **Note:** Not
       supported for Apigee hybrid.
     runtimeType: Required. Runtime type of the Apigee organization based on
@@ -6571,109 +6576,97 @@ class GoogleCloudApigeeV1Quota(_messages.Message):
 
 
 class GoogleCloudApigeeV1RatePlan(_messages.Message):
-  r"""Structure of a Rate Plan
+  r"""Rate plan details.
 
   Enums:
-    BillingPeriodValueValuesEnum: The frequency at which the customer will be
-      billed
-    ConsumptionPricingTypeValueValuesEnum: Consumption based fee is one whose
-      value depends on the consumption of the APIs. `consumption_pricing_type`
-      specifies the pricing model to be used for the consumption based fee
-    PaymentFundingModelValueValuesEnum: Specifies whether the amount will be
-      paid in a pre-paid or post-paid manner.
-    RevenueShareTypeValueValuesEnum: Revenue share allow the creators of the
-      APIs to share some revenue with the developers who are using their APIs.
-      `revenue_share_type` defines the way in which the revenue to be shared
-      with the developers is calculated
-    StateValueValuesEnum: The current state of the rate plan
+    BillingPeriodValueValuesEnum: Frequency at which the customer will be
+      billed.
+    ConsumptionPricingTypeValueValuesEnum: Pricing model used for consumption-
+      based charges.
+    PaymentFundingModelValueValuesEnum: Flag that specifies the billing
+      account type, prepaid or postpaid.
+    RevenueShareTypeValueValuesEnum: Method used to calculate the revenue that
+      is shared with developers.
+    StateValueValuesEnum: Current state of the rate plan (draft or published).
 
   Fields:
-    apiproduct: The name of the API Product which the rate plan is associated
-      with.
-    billingPeriod: The frequency at which the customer will be billed
-    consumptionPricingRates: `consumption_rate_plan_rate` is used to specify a
-      range of the number of API calls and the fee which is associated with
-      that range. The way in which the final fee is calculated depends on the
-      `consumption_pricing_type`. For example, if you used a Stair Step type,
-      and consumption_rate_plan_rate = { { "start": 1, "end": 100, "fee": 75
-      }, { "start": 101, "end": 200, "fee": 100 }, } then the relation between
-      the number of API calls and fee charged will be: - for 1 API call -> $75
-      (assuming the currency selected was dollars) - for 50 API calls -> $75
-      (assuming the currency selected was dollars) - for 150 API calls -> $100
-      (assuming the currency selected was dollars) - for 201 API calls -> no
-      calls will be allowed above 200
-    consumptionPricingType: Consumption based fee is one whose value depends
-      on the consumption of the APIs. `consumption_pricing_type` specifies the
-      pricing model to be used for the consumption based fee
-    createdAt: Output only. Response only. Creation time of the rate plan in
+    apiproduct: Name of the API product that the rate plan is associated with.
+    billingPeriod: Frequency at which the customer will be billed.
+    consumptionPricingRates: API call volume ranges and the fees charged when
+      the total number of API calls is within a given range. The method used
+      to calculate the final fee depends on the selected pricing model. For
+      example, if the pricing model is `STAIRSTEP` and the ranges are defined
+      as follows: ``` { "start": 1, "end": 100, "fee": 75 }, { "start": 101,
+      "end": 200, "fee": 100 }, } ``` Then the following fees would be charged
+      based on the total number of API calls (assuming the currency selected
+      is `USD`): * 1 call costs $75 * 50 calls cost $75 * 150 calls cost $100
+      The number of API calls cannot exceed 200.
+    consumptionPricingType: Pricing model used for consumption-based charges.
+    createdAt: Output only. Time that the rate plan was created in
       milliseconds since epoch.
-    currencyCode: The currency which is to be used for billing. It will be a
-      three letter code as per the ISO 4217 standard
-    description: Description of the rate plan
-    displayName: The display name of the rate plan
-    endTime: The time when the rate plan will expire. Value is specified as
+    currencyCode: Currency to be used for billing. Consists of a three-letter
+      code as defined by the [ISO
+      4217](https://en.wikipedia.org/wiki/ISO_4217) standard.
+    description: Description of the rate plan.
+    displayName: Display name of the rate plan.
+    endTime: Time when the rate plan will expire in milliseconds since epoch.
+      Set to 0 or `null` to indicate that the rate plan should never expire.
+    fixedFeeFrequency: Frequency at which the fixed fee is charged.
+    fixedRecurringFee: Fixed amount that is charged at a defined interval and
+      billed in advance of use of the API product. The fee will be prorated
+      for the first billing period.
+    lastModifiedAt: Output only. Time the rate plan was last modified in
       milliseconds since epoch.
-    fixedFeeFrequency: The frequency at which the fixed fee is to be paid
-    fixedRecurringFee: A fixed amount which is charged at a defined interval
-      and billed in advance of use. The fee will be prorated for the first
-      billing period.
-    lastModifiedAt: Output only. Response only. Modified time of the rate plan
-      in milliseconds since epoch.
-    name: `rate_plan_id` is used to uniquely identify a particular Rate Plan
-      within an organization.
-    paymentFundingModel: Specifies whether the amount will be paid in a pre-
-      paid or post-paid manner.
-    revenueShareRates: The details of the revenue sharing model selected in
-      `revenue_share_type`
-    revenueShareType: Revenue share allow the creators of the APIs to share
-      some revenue with the developers who are using their APIs.
-      `revenue_share_type` defines the way in which the revenue to be shared
-      with the developers is calculated
-    setupFee: The initial fee which is to be paid when buying this rate plan.
-      This is a one time fee which only needs to be paid once when the rate
-      plan is purchased
-    startTime: The time when the rate plan will become active. Value is
-      specified as milliseconds since epoch.
-    state: The current state of the rate plan
+    name: Output only. Name of the rate plan.
+    paymentFundingModel: Flag that specifies the billing account type, prepaid
+      or postpaid.
+    revenueShareRates: Details of the revenue sharing model.
+    revenueShareType: Method used to calculate the revenue that is shared with
+      developers.
+    setupFee: Initial, one-time fee paid when purchasing the API product.
+    startTime: Time when the rate plan becomes active in milliseconds since
+      epoch.
+    state: Current state of the rate plan (draft or published).
   """
 
   class BillingPeriodValueValuesEnum(_messages.Enum):
-    r"""The frequency at which the customer will be billed
+    r"""Frequency at which the customer will be billed.
 
     Values:
-      BILLING_PERIOD_UNSPECIFIED: The default/unset value
-      WEEKLY: For weekly billings
-      MONTHLY: For monthly billings
+      BILLING_PERIOD_UNSPECIFIED: Billing period not specified.
+      WEEKLY: Weekly billing period. **Note**: Not supported by Apigee at this
+        time.
+      MONTHLY: Monthly billing period.
     """
     BILLING_PERIOD_UNSPECIFIED = 0
     WEEKLY = 1
     MONTHLY = 2
 
   class ConsumptionPricingTypeValueValuesEnum(_messages.Enum):
-    r"""Consumption based fee is one whose value depends on the consumption of
-    the APIs. `consumption_pricing_type` specifies the pricing model to be
-    used for the consumption based fee
+    r"""Pricing model used for consumption-based charges.
 
     Values:
-      CONSUMPTION_PRICING_TYPE_UNSPECIFIED: The default/unset value.
-      FIXED_PER_UNIT: In this case, a fixed amount of fee will be charged for
-        each API call.
-      BANDED: In this case, the fee which is charged for each API call depends
-        on the range within which the TOTAL number of API calls lies in
-        Example: Units 1 - 100 -> $2 Units 101 - 200 -> $1.50 Units 201 - 300
-        -> $1 Total price for 50 -> 50 x $2 -> $100 Total price for 150 -> 150
-        x $1.5 -> $225 Total price for 250 -> 250 x $1 -> $250.
-      TIERED: In this case, the fee charged for each API call depends on the
-        range within which that particular API call lies. Example: Units 1 -
-        100 -> $2 Units 101 - 200 -> $1.50 Units 201 - 300 -> $1 Total price
-        for 50 -> 50 x $2 -> $100 Total price for 150 -> 100 x $2 + 50 x $1.5
-        -> $275 Total price for 250 -> 100 x $2 + 100 x $1.5 + 50 x $1 ->
-        $400.
-      STAIRSTEP: When a user selects the "Stair Step" model, a flat fee is
-        defined against each tier instead of per unit. Example: Units 1 - 100
-        -> $75 Units 101 - 200 -> $100 Units 201 - 300 -> $150 Total price for
-        1 -> $75 Total price for 50 -> $75 Total price for 150 -> $100 Total
-        price for 250 -> $150.
+      CONSUMPTION_PRICING_TYPE_UNSPECIFIED: Pricing model not specified. This
+        is the default.
+      FIXED_PER_UNIT: Fixed rate charged for each API call.
+      BANDED: Variable rate charged based on the total volume of API calls.
+        Example: * 1-100 calls cost $2 per call * 101-200 calls cost $1.50 per
+        call * 201-300 calls cost $1 per call * Total price for 50 calls: 50 x
+        $2 = $100 * Total price for 150 calls: 150 x $1.5 = $225 * Total price
+        for 250 calls: 250 x $1 = $250. **Note**: Not supported by Apigee at
+        this time.
+      TIERED: Variable rate charged for each API call based on price tiers.
+        Example: * 1-100 calls cost $2 per call * 101-200 calls cost $1.50 per
+        call * 201-300 calls cost $1 per call * Total price for 50 calls: 50 x
+        $2 = $100 * Total price for 150 calls: 100 x $2 + 50 x $1.5 = $275 *
+        Total price for 250 calls: 100 x $2 + 100 x $1.5 + 50 x $1 = $400.
+        **Note**: Not supported by Apigee at this time.
+      STAIRSTEP: Flat rate charged for a bundle of API calls whether or not
+        the entire bundle is used. Example: * 1-100 calls cost $75 flat fee *
+        101-200 calls cost $100 flat free * 201-300 calls cost $150 flat fee *
+        Total price for 1 call: $75 * Total price for 50 calls: $75 * Total
+        price for 150 calls: $100 * Total price for 250 calls: $150. **Note**:
+        Not supported by Apigee at this time.
     """
     CONSUMPTION_PRICING_TYPE_UNSPECIFIED = 0
     FIXED_PER_UNIT = 1
@@ -6682,48 +6675,44 @@ class GoogleCloudApigeeV1RatePlan(_messages.Message):
     STAIRSTEP = 4
 
   class PaymentFundingModelValueValuesEnum(_messages.Enum):
-    r"""Specifies whether the amount will be paid in a pre-paid or post-paid
-    manner.
+    r"""Flag that specifies the billing account type, prepaid or postpaid.
 
     Values:
-      PAYMENT_FUNDING_MODEL_UNSPECIFIED: The default/unset value
-      PREPAID: The payment will be done before usage. In this case, the users
-        load their accounts with some balance and the fee will be deducted
-        from that balance
-      POSTPAID: The payment will be done after the usage
+      PAYMENT_FUNDING_MODEL_UNSPECIFIED: Billing account type not specified.
+      PREPAID: Prepaid billing account type. Developer pays in advance for the
+        use of your API products. Funds are deducted from their prepaid
+        account balance. **Note**: Not supported by Apigee at this time.
+      POSTPAID: Postpaid billing account type. Developer is billed through an
+        invoice after using your API products.
     """
     PAYMENT_FUNDING_MODEL_UNSPECIFIED = 0
     PREPAID = 1
     POSTPAID = 2
 
   class RevenueShareTypeValueValuesEnum(_messages.Enum):
-    r"""Revenue share allow the creators of the APIs to share some revenue
-    with the developers who are using their APIs. `revenue_share_type` defines
-    the way in which the revenue to be shared with the developers is
-    calculated
+    r"""Method used to calculate the revenue that is shared with developers.
 
     Values:
-      REVENUE_SHARE_TYPE_UNSPECIFIED: The default/unset value
-      FIXED: In this case, a fixed percentage of the total revenue will be
-        shared. The percentage to be shared can be specified by the user in
-        `revenue_share_rate_plan_rate`
-      VOLUME_BANDED: Revenue shared will depend on the number of API calls.
-        The various volumes (range of API calls) and the revenue share
-        percentage for each volume can be specified using
-        `revenue_share_rate_plan_rate`
+      REVENUE_SHARE_TYPE_UNSPECIFIED: Revenue share type is not specified.
+      FIXED: Fixed percentage of the total revenue will be shared. The
+        percentage to be shared can be configured by the API provider.
+      VOLUME_BANDED: Amount of revenue shared depends on the number of API
+        calls. The API call volume ranges and the revenue share percentage for
+        each volume can be configured by the API provider. **Note**: Not
+        supported by Apigee at this time.
     """
     REVENUE_SHARE_TYPE_UNSPECIFIED = 0
     FIXED = 1
     VOLUME_BANDED = 2
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The current state of the rate plan
+    r"""Current state of the rate plan (draft or published).
 
     Values:
-      STATE_UNSPECIFIED: The default/unset value
-      DRAFT: The rate plan is only visible to the API Providers.
-      PUBLISHED: The rate plan will become visible on `startTime` and be
-        hidden after `endTime`.
+      STATE_UNSPECIFIED: State of the rate plan is not specified.
+      DRAFT: Rate plan is in draft mode and only visible to API providers.
+      PUBLISHED: Rate plan is published and will become visible to developers
+        for the configured duration (between `startTime` and `endTime`).
     """
     STATE_UNSPECIFIED = 0
     DRAFT = 1
@@ -6751,13 +6740,15 @@ class GoogleCloudApigeeV1RatePlan(_messages.Message):
 
 
 class GoogleCloudApigeeV1RateRange(_messages.Message):
-  r"""RateRange is used to specify a range for the number of API calls and the
-  fee that will be associated with that range.
+  r"""API call volume range and the fees charged when the total number of API
+  calls is within the range.
 
   Fields:
-    end: The ending value of the range
-    fee: The fee to be charged within this range
-    start: The starting value of the range
+    end: Ending value of the range. Set to 0 or `null` for the last range of
+      values.
+    fee: Fee to charge when total number of API calls falls within this range.
+    start: Starting value of the range. Set to 0 or `null` for the initial
+      range of values.
   """
 
   end = _messages.IntegerField(1)
@@ -6965,17 +6956,18 @@ class GoogleCloudApigeeV1Result(_messages.Message):
 
 
 class GoogleCloudApigeeV1RevenueShareRange(_messages.Message):
-  r"""RateRange is used to specify a range for the number of API calls and the
-  fee percentage that will be associated with that range.
+  r"""API call volume range and the percentage of revenue to share with the
+  developer when the total number of API calls is within the range.
 
   Fields:
-    end: The ending value of the range
-    sharePercentage: The percentage of the revenue to be shared with the user.
-      For example, if you would like to share 21 percent of the total revenue
-      with the customer, you would set the value of share_percentage = 21
-      `share_percentage` will only support a precision of two places after the
-      decimal point.
-    start: The starting value of the range
+    end: Ending value of the range. Set to 0 or `null` for the last range of
+      values.
+    sharePercentage: Percentage of the revenue to be shared with the
+      developer. For example, to share 21 percent of the total revenue with
+      the developer, set this value to 21. Specify a decimal number with a
+      maximum of two digits following the decimal point.
+    start: Starting value of the range. Set to 0 or `null` for the initial
+      range of values.
   """
 
   end = _messages.IntegerField(1)

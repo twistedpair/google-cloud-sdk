@@ -13,6 +13,20 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
+class AnthosObservabilityFeatureSpec(_messages.Message):
+  r"""Spec for Anthos Observability. This is required since Feature proto
+  requires a spec.
+  """
+
+
+
+class AnthosObservabilityFeatureState(_messages.Message):
+  r"""An empty state for Anthos Observability. This is required since
+  FeatureStateDetails requires a state.
+  """
+
+
+
 class ApigeeFeatureSpec(_messages.Message):
   r"""Feature spec for Apigee
 
@@ -586,6 +600,8 @@ class Feature(_messages.Message):
     LabelsValue: GCP labels for this feature.
 
   Fields:
+    anthosobservabilityFeatureSpec: The specification for Anthos
+      Observability.
     apigeeFeatureSpec: The specification for Apigee.
     appdevexperienceFeatureSpec: The specification for App Dev Experience.
     authorizerFeatureSpec: The specification for the Authorizer Feature.
@@ -636,25 +652,26 @@ class Feature(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  apigeeFeatureSpec = _messages.MessageField('ApigeeFeatureSpec', 1)
-  appdevexperienceFeatureSpec = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
-  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 3)
-  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 4)
-  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 5)
-  createTime = _messages.StringField(6)
-  deleteTime = _messages.StringField(7)
-  description = _messages.StringField(8)
-  featureState = _messages.MessageField('FeatureState', 9)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 10)
-  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 13)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 14)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 15)
-  name = _messages.StringField(16)
-  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 17)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 18)
-  updateTime = _messages.StringField(19)
+  anthosobservabilityFeatureSpec = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
+  apigeeFeatureSpec = _messages.MessageField('ApigeeFeatureSpec', 2)
+  appdevexperienceFeatureSpec = _messages.MessageField('AppDevExperienceFeatureSpec', 3)
+  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 4)
+  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 5)
+  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 6)
+  createTime = _messages.StringField(7)
+  deleteTime = _messages.StringField(8)
+  description = _messages.StringField(9)
+  featureState = _messages.MessageField('FeatureState', 10)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 11)
+  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 14)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 15)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 16)
+  name = _messages.StringField(17)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 18)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 19)
+  updateTime = _messages.StringField(20)
 
 
 class FeatureState(_messages.Message):
@@ -741,6 +758,8 @@ class FeatureStateDetails(_messages.Message):
       return the Feature to `OK`.
 
   Fields:
+    anthosobservabilityFeatureState: State for the Anthos Observability
+      Feature
     apigeeFeatureState: State for the Apigee Feature.
     appdevexperienceFeatureState: A AppDevExperienceFeatureState attribute.
     authorizerFeatureState: State for the Authorizer Feature.
@@ -784,21 +803,22 @@ class FeatureStateDetails(_messages.Message):
     FAILED = 2
     WARNING = 3
 
-  apigeeFeatureState = _messages.MessageField('ApigeeFeatureState', 1)
-  appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 2)
-  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 3)
-  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 4)
-  code = _messages.EnumField('CodeValueValuesEnum', 5)
-  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 6)
-  description = _messages.StringField(7)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 8)
-  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 9)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 10)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 11)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 12)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 13)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 14)
-  updateTime = _messages.StringField(15)
+  anthosobservabilityFeatureState = _messages.MessageField('AnthosObservabilityFeatureState', 1)
+  apigeeFeatureState = _messages.MessageField('ApigeeFeatureState', 2)
+  appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 3)
+  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 4)
+  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 5)
+  code = _messages.EnumField('CodeValueValuesEnum', 6)
+  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 7)
+  description = _messages.StringField(8)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 9)
+  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 10)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 11)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 12)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 13)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 14)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 15)
+  updateTime = _messages.StringField(16)
 
 
 class FeatureTest(_messages.Message):

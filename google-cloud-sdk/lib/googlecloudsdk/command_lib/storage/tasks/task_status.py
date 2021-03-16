@@ -71,17 +71,18 @@ class _StatusTracker:
     component_tracker = self._tracked_file_progress[file_url_string]
     component_number = status_message.component_number
 
-    # status_message.processed_bytes includes bytes from past messages.
+    processed_bytes = status_message.current_byte - status_message.offset
+    # status_message.current_byte includes bytes from past messages.
     self._processed_bytes += (
-        status_message.processed_bytes -
-        component_tracker.get(component_number, 0))
-    if status_message.finished:
+        processed_bytes - component_tracker.get(component_number, 0))
+    if processed_bytes == status_message.length:
+      # Operation complete.
       component_tracker.pop(component_number, None)
       if not component_tracker:
         self._tracked_file_progress[file_url_string] = -1
         self._completed_files += 1
     else:
-      component_tracker[component_number] = status_message.processed_bytes
+      component_tracker[component_number] = processed_bytes
 
   def _add_file_progress(self, status_message):
     """Track progress of a file operation."""
@@ -89,16 +90,17 @@ class _StatusTracker:
     if file_url_string not in self._tracked_file_progress:
       self._tracked_file_progress[file_url_string] = 0
 
+    processed_bytes = status_message.current_byte - status_message.offset
     known_progress = self._tracked_file_progress[file_url_string]
-    # status_message.processed_bytes includes bytes from past messages.
-    self._processed_bytes += status_message.processed_bytes - known_progress
+    # status_message.current_byte includes bytes from past messages.
+    self._processed_bytes += processed_bytes - known_progress
 
-    if status_message.finished:
+    if processed_bytes == status_message.length:
+      # Operation complete.
       self._tracked_file_progress[file_url_string] = -1
       self._completed_files += 1
     else:
-      self._tracked_file_progress[file_url_string] = (
-          status_message.processed_bytes)
+      self._tracked_file_progress[file_url_string] = processed_bytes
 
   def add_message(self, status_message):
     """Processes task status message for printing and aggregation.

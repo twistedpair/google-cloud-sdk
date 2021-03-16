@@ -77,8 +77,6 @@ If not specified, the workers are not peered to any network.
       help="""\
 Compute Engine machine type for a worker pool.
 
-For information on supported machine types, see https://cloud.google.com/cloud-build/docs/custom-workers/worker-pool-config-file.
-
 If unspecified, Cloud Build uses a standard machine type.
 """)
   worker_flags.add_argument(

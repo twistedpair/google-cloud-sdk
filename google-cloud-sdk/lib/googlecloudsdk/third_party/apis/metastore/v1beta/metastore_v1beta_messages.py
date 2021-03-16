@@ -133,14 +133,12 @@ class DataCatalogConfig(_messages.Message):
   Catalog service.
 
   Fields:
-    disabled: This field is replaced by the enabled field.
     enabled: Defines whether the metastore metadata should be synced to Data
       Catalog. The default value is to disable syncing metastore metadata to
       Data Catalog.
   """
 
-  disabled = _messages.BooleanField(1)
-  enabled = _messages.BooleanField(2)
+  enabled = _messages.BooleanField(1)
 
 
 class DatabaseDump(_messages.Message):
@@ -178,9 +176,11 @@ class DatabaseDump(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: The type of the database dump is unknown.
       MYSQL: Database dump is a MySQL dump file.
+      AVRO: Database dump contains Avro files.
     """
     TYPE_UNSPECIFIED = 0
     MYSQL = 1
+    AVRO = 2
 
   databaseType = _messages.EnumField('DatabaseTypeValueValuesEnum', 1)
   gcsUri = _messages.StringField(2)
@@ -229,9 +229,11 @@ class ExportMetadataRequest(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: The type of the database dump is unknown.
       MYSQL: Database dump is a MySQL dump file.
+      AVRO: Database dump contains Avro files.
     """
     TYPE_UNSPECIFIED = 0
     MYSQL = 1
+    AVRO = 2
 
   databaseDumpType = _messages.EnumField('DatabaseDumpTypeValueValuesEnum', 1)
   destinationGcsFolder = _messages.StringField(2)
@@ -570,9 +572,11 @@ class MetadataExport(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: The type of the database dump is unknown.
       MYSQL: Database dump is a MySQL dump file.
+      AVRO: Database dump contains Avro files.
     """
     TYPE_UNSPECIFIED = 0
     MYSQL = 1
+    AVRO = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the export.

@@ -20,6 +20,164 @@ from apitools.base.py import extra_types
 package = 'policysimulator'
 
 
+class GoogleCloudPolicysimulatorV1Replay(_messages.Message):
+  r"""A resource describing a `Replay`, or simulation.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the `Replay`.
+
+  Fields:
+    config: Required. The configuration used for the `Replay`.
+    name: Output only. The resource name of the `Replay`, which has the
+      following format: `{projects|folders|organizations}/{resource-
+      id}/locations/global/replays/{replay-id}`, where `{resource-id}` is the
+      ID of the project, folder, or organization that owns the Replay.
+      Example: `projects/my-example-
+      project/locations/global/replays/506a5f7f-38ce-4d7d-8e03-479ce1833c36`
+    resultsSummary: Output only. Summary statistics about the replayed log
+      entries.
+    state: Output only. The current state of the `Replay`.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the `Replay`.
+
+    Values:
+      STATE_UNSPECIFIED: The state is unspecified.
+      PENDING: The `Replay` has not started yet.
+      RUNNING: The `Replay` is currently running.
+      SUCCEEDED: The `Replay` has successfully completed.
+      FAILED: The `Replay` has finished with an error.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    FAILED = 4
+
+  config = _messages.MessageField('GoogleCloudPolicysimulatorV1ReplayConfig', 1)
+  name = _messages.StringField(2)
+  resultsSummary = _messages.MessageField('GoogleCloudPolicysimulatorV1ReplayResultsSummary', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class GoogleCloudPolicysimulatorV1ReplayConfig(_messages.Message):
+  r"""The configuration used for a Replay.
+
+  Enums:
+    LogSourceValueValuesEnum: The logs to use as input for the Replay.
+
+  Messages:
+    PolicyOverlayValue: A mapping of the resources that you want to simulate
+      policies for and the policies that you want to simulate. Keys are the
+      full resource names for the resources. For example,
+      `//cloudresourcemanager.googleapis.com/projects/my-project`. For
+      examples of full resource names for Google Cloud services, see
+      https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
+      Values are Policy objects representing the policies that you want to
+      simulate. Replays automatically take into account any IAM policies
+      inherited through the resource hierarchy, and any policies set on
+      descendant resources. You do not need to include these policies in the
+      policy overlay.
+
+  Fields:
+    logSource: The logs to use as input for the Replay.
+    policyOverlay: A mapping of the resources that you want to simulate
+      policies for and the policies that you want to simulate. Keys are the
+      full resource names for the resources. For example,
+      `//cloudresourcemanager.googleapis.com/projects/my-project`. For
+      examples of full resource names for Google Cloud services, see
+      https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
+      Values are Policy objects representing the policies that you want to
+      simulate. Replays automatically take into account any IAM policies
+      inherited through the resource hierarchy, and any policies set on
+      descendant resources. You do not need to include these policies in the
+      policy overlay.
+  """
+
+  class LogSourceValueValuesEnum(_messages.Enum):
+    r"""The logs to use as input for the Replay.
+
+    Values:
+      LOG_SOURCE_UNSPECIFIED: An unspecified log source. If the log source is
+        unspecified, the Replay defaults to using `RECENT_ACCESSES`.
+      RECENT_ACCESSES: All access logs from the last 90 days. These logs may
+        not include logs from the most recent 7 days.
+    """
+    LOG_SOURCE_UNSPECIFIED = 0
+    RECENT_ACCESSES = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PolicyOverlayValue(_messages.Message):
+    r"""A mapping of the resources that you want to simulate policies for and
+    the policies that you want to simulate. Keys are the full resource names
+    for the resources. For example,
+    `//cloudresourcemanager.googleapis.com/projects/my-project`. For examples
+    of full resource names for Google Cloud services, see
+    https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
+    Values are Policy objects representing the policies that you want to
+    simulate. Replays automatically take into account any IAM policies
+    inherited through the resource hierarchy, and any policies set on
+    descendant resources. You do not need to include these policies in the
+    policy overlay.
+
+    Messages:
+      AdditionalProperty: An additional property for a PolicyOverlayValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type PolicyOverlayValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PolicyOverlayValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleIamV1Policy attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleIamV1Policy', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  logSource = _messages.EnumField('LogSourceValueValuesEnum', 1)
+  policyOverlay = _messages.MessageField('PolicyOverlayValue', 2)
+
+
+class GoogleCloudPolicysimulatorV1ReplayOperationMetadata(_messages.Message):
+  r"""Metadata about a Replay operation.
+
+  Fields:
+    startTime: Time when the request was received.
+  """
+
+  startTime = _messages.StringField(1)
+
+
+class GoogleCloudPolicysimulatorV1ReplayResultsSummary(_messages.Message):
+  r"""Summary statistics about the replayed log entries.
+
+  Fields:
+    differenceCount: The number of replayed log entries with a difference
+      between baseline and simulated policies.
+    errorCount: The number of log entries that could not be replayed.
+    logCount: The total number of log entries replayed.
+    newestDate: The date of the newest log entry replayed.
+    oldestDate: The date of the oldest log entry replayed.
+    unchangedCount: The number of replayed log entries with no difference
+      between baseline and simulated policies.
+  """
+
+  differenceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  errorCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  logCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  newestDate = _messages.MessageField('GoogleTypeDate', 4)
+  oldestDate = _messages.MessageField('GoogleTypeDate', 5)
+  unchangedCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudPolicysimulatorV1beta1AccessStateDiff(_messages.Message):
   r"""A summary and comparison of the member's access under the current
   (baseline) policies and the proposed (simulated) policies for a single

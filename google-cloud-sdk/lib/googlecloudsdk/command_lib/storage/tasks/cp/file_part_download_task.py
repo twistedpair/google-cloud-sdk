@@ -36,13 +36,15 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 
-def _get_valid_downloaded_byte_count(destination_url, resource):
-  """Checks to see how many bytes of file have been downloaded.
+def _get_first_null_byte_index(destination_url, resource, offset, length):
+  """Checks to see how many bytes in range have already been downloaded.
 
   Args:
     destination_url (storage_url.FileUrl): Has path of file being downloaded.
     resource (resource_reference.ObjectResource): Has metadata of path being
       downloaded.
+    offset (int): For components, index to start reading bytes at.
+    length (int): For components, where to stop reading bytes.
 
   Returns:
     Int byte count of size of partially-downloaded file. Returns 0 if file is
@@ -50,8 +52,20 @@ def _get_valid_downloaded_byte_count(destination_url, resource):
   """
   if not destination_url.exists():
     return 0
-  existing_file_size = os.path.getsize(destination_url.object_name)
-  return existing_file_size if existing_file_size < resource.size else 0
+  if offset == 0 and length == resource.size:
+    return os.path.getsize(destination_url.object_name)
+
+  # Component is slice of larger file. Find how much of slice is downloaded.
+  first_null_byte = offset
+  end_of_range = offset + length
+  with files.BinaryFileReader(destination_url.object_name) as file_reader:
+    file_reader.seek(offset)
+    while first_null_byte < end_of_range:
+      data = file_reader.read(1)
+      if not data or data == b'\x00':
+        break
+      first_null_byte += 1
+  return first_null_byte
 
 
 class FilePartDownloadTask(file_part_task.FilePartTask):
@@ -67,23 +81,20 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
     _destination_resource (resource_reference.FileObjectResource): Must contain
       local filesystem path to upload object. Does not need to contain metadata.
     _offset (int): The index of the first byte in the upload range.
-    _length (int?): The number of bytes in the upload range.
-    _component_number (int?): If a multipart operation, indicates the
+    _length (int): The number of bytes in the upload range.
+    _component_number (int|None): If a multipart operation, indicates the
       component number.
-    _total_components (int?): If a multipart operation, indicates the total
+    _total_components (int|None): If a multipart operation, indicates the total
       number of components.
   """
 
   def _perform_download(self, digesters, progress_callback, download_strategy,
-                        start_byte, end_byte):
+                        start_byte, end_byte, write_mode):
     """Prepares file stream, calls API, and validates hash."""
-    mode = (
-        files.BinaryFileWriterMode.MODIFY
-        if start_byte else files.BinaryFileWriterMode.TRUNCATE)
     with files.BinaryFileWriter(
         self._destination_resource.storage_url.object_name,
         create_path=True,
-        mode=mode) as download_stream:
+        mode=write_mode) as download_stream:
       download_stream.seek(start_byte)
       provider = self._source_resource.storage_url.scheme
       # TODO(b/162264437): Support all of download_object's parameters.
@@ -106,43 +117,76 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
   def _perform_one_shot_download(self, digesters, progress_callback):
     """Sets up a basic download based on task attributes."""
+    start_byte = self._offset
     end_byte = self._offset + self._length
-    self._perform_download(
-        digesters,
-        progress_callback,
-        cloud_api.DownloadStrategy.ONE_SHOT,
-        start_byte=self._offset,
-        end_byte=end_byte)
+    self._perform_download(digesters, progress_callback,
+                           cloud_api.DownloadStrategy.ONE_SHOT, start_byte,
+                           end_byte, files.BinaryFileWriterMode.TRUNCATE)
 
   def _perform_resumable_download(self, digesters, progress_callback):
     """Resume or start download that can be resumabled."""
     destination_url = self._destination_resource.storage_url
-    existing_file_size = _get_valid_downloaded_byte_count(
-        destination_url, self._source_resource)
-    if existing_file_size:
-      with files.BinaryFileReader(destination_url.object_name) as file_reader:
-        # Get hash of partially-downloaded file as start for validation.
-        for hash_algorithm in digesters:
-          digesters[hash_algorithm] = util.get_hash_from_file_stream(
-              file_reader, hash_algorithm)
+    first_null_byte = _get_first_null_byte_index(destination_url,
+                                                 self._source_resource,
+                                                 self._offset, self._length)
+    if first_null_byte >= self._source_resource.size:
+      # Existing file at location needs to be re-downloaded.
+      first_null_byte = 0
+      with files.BinaryFileWriter(
+          destination_url.object_name,
+          mode=files.BinaryFileWriterMode.TRUNCATE):
+        # Wipe file.
+        pass
 
     tracker_file_path, start_byte = (
         tracker_file_util.read_or_create_download_tracker_file(
             self._source_resource,
             destination_url,
-            existing_file_size=existing_file_size))
+            first_null_byte=first_null_byte))
     end_byte = self._source_resource.size
+
+    if start_byte:
+      write_mode = files.BinaryFileWriterMode.MODIFY
+      with files.BinaryFileReader(destination_url.object_name) as file_reader:
+        # Get hash of partially-downloaded file as start for validation.
+        for hash_algorithm in digesters:
+          digesters[hash_algorithm] = util.get_hash_from_file_stream(
+              file_reader, hash_algorithm, start=0, stop=start_byte)
+    else:
+      # TRUNCATE can create new file unlike MODIFY.
+      write_mode = files.BinaryFileWriterMode.TRUNCATE
 
     self._perform_download(digesters, progress_callback,
                            cloud_api.DownloadStrategy.RESUMABLE, start_byte,
-                           end_byte)
+                           end_byte, write_mode)
 
     tracker_file_util.delete_tracker_file(tracker_file_path)
 
-  def _perform_component_download(self):
+  def _perform_component_download(self, digesters, progress_callback):
     """Component download does not validate hash or delete tracker."""
-    # TODO(b/181339817): Implement sliced downloads.
-    raise NotImplementedError
+    destination_url = self._destination_resource.storage_url
+    first_null_byte = _get_first_null_byte_index(
+        destination_url,
+        self._source_resource,
+        offset=self._offset,
+        length=self._length)
+
+    _, start_byte = (
+        tracker_file_util.read_or_create_download_tracker_file(
+            self._source_resource,
+            destination_url,
+            first_null_byte=first_null_byte,
+            slice_start_byte=self._offset,
+            component_number=self._component_number))
+    end_byte = self._offset + self._length
+
+    if start_byte >= self._source_resource.size:
+      # Component has already been downloaded.
+      return
+
+    self._perform_download(digesters, progress_callback,
+                           cloud_api.DownloadStrategy.RESUMABLE, start_byte,
+                           end_byte, files.BinaryFileWriterMode.MODIFY)
 
   def execute(self, task_status_queue=None):
     """Performs download."""
@@ -154,7 +198,8 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
-        size=self._source_resource.size,
+        offset=0,
+        length=self._source_resource.size,
         source_url=self._source_resource.storage_url,
         destination_url=self._destination_resource.storage_url,
         component_number=self._component_number,
@@ -164,8 +209,8 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         thread_id=threading.get_ident(),
     )
 
-    if self._component_number is not None:
-      self._perform_component_download()
+    if self._source_resource.size and self._component_number is not None:
+      self._perform_component_download(digesters, progress_callback)
     elif (self._source_resource.size and self._source_resource.size >=
           properties.VALUES.storage.resumable_threshold.GetInt()):
       self._perform_resumable_download(digesters, progress_callback)

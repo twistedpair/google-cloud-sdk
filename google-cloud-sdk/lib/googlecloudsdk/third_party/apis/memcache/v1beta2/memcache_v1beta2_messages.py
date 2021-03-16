@@ -153,11 +153,11 @@ class GoogleCloudMemcacheV1beta2LocationMetadata(_messages.Message):
 
       Fields:
         key: Name of the additional property.
-        value: A ZoneMetadata attribute.
+        value: A GoogleCloudMemcacheV1beta2ZoneMetadata attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('ZoneMetadata', 2)
+      value = _messages.MessageField('GoogleCloudMemcacheV1beta2ZoneMetadata', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -188,6 +188,10 @@ class GoogleCloudMemcacheV1beta2OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class GoogleCloudMemcacheV1beta2ZoneMetadata(_messages.Message):
+  r"""A GoogleCloudMemcacheV1beta2ZoneMetadata object."""
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
@@ -442,9 +446,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
   user, indicating published upcoming future maintenance schedule
 
   Fields:
-    canReschedule: Can this scheduled update be rescheduled? By default, it's
-      true and API needs to do explicitly check whether it's set, if it's set
-      as false explicitly, it's false
+    canReschedule: This field will be deprecated, and will be always set to
+      true since reschedule can happen multiple times now.
     endTime: The scheduled end time for the maintenance.
     rolloutManagementPolicy: The rollout management policy this maintenance
       schedule is associated with. When doing reschedule update request, the
@@ -1006,6 +1009,52 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LocationMetadata(_messages.Message):
+  r"""Metadata for the given google.cloud.location.Location.
+
+  Messages:
+    AvailableZonesValue: Output only. The set of available zones in the
+      location. The map is keyed by the lowercase ID of each zone, as defined
+      by GCE. These keys can be specified in the `zones` field when creating a
+      Memcached instance.
+
+  Fields:
+    availableZones: Output only. The set of available zones in the location.
+      The map is keyed by the lowercase ID of each zone, as defined by GCE.
+      These keys can be specified in the `zones` field when creating a
+      Memcached instance.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AvailableZonesValue(_messages.Message):
+    r"""Output only. The set of available zones in the location. The map is
+    keyed by the lowercase ID of each zone, as defined by GCE. These keys can
+    be specified in the `zones` field when creating a Memcached instance.
+
+    Messages:
+      AdditionalProperty: An additional property for a AvailableZonesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AvailableZonesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AvailableZonesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ZoneMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ZoneMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  availableZones = _messages.MessageField('AvailableZonesValue', 1)
 
 
 class MaintenancePolicy(_messages.Message):

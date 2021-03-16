@@ -171,8 +171,6 @@ apis:
         systempolicy:
           path: locations/{locationsId}/policy
   billingbudgets:
-    v1alpha1:
-      discovery_doc: billingbudgets_v1alpha1.json
     v1beta1:
       discovery_doc: billingbudgets_v1beta1.json
     v1:

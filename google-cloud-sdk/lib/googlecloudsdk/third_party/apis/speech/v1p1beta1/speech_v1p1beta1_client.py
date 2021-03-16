@@ -41,7 +41,6 @@ class SpeechV1p1beta1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
     self.projects_locations_customClasses = self.ProjectsLocationsCustomClassesService(self)
-    self.projects_locations_log_data_stats = self.ProjectsLocationsLogDataStatsService(self)
     self.projects_locations_phraseSets = self.ProjectsLocationsPhraseSetsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -255,43 +254,6 @@ class SpeechV1p1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsLogDataStatsService(base_api.BaseApiService):
-    """Service class for the projects_locations_log_data_stats resource."""
-
-    _NAME = 'projects_locations_log_data_stats'
-
-    def __init__(self, client):
-      super(SpeechV1p1beta1.ProjectsLocationsLogDataStatsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists all log data stats associated with requested project.
-
-      Args:
-        request: (SpeechProjectsLocationsLogDataStatsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListLogDataStatsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data_stats',
-        http_method='GET',
-        method_id='speech.projects.locations.log_data_stats.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1p1beta1/{+parent}/log_data_stats',
-        request_field='',
-        request_type_name='SpeechProjectsLocationsLogDataStatsListRequest',
-        response_type_name='ListLogDataStatsResponse',
-        supports_download=False,
-    )
-
   class ProjectsLocationsPhraseSetsService(base_api.BaseApiService):
     """Service class for the projects_locations_phraseSets resource."""
 
@@ -446,33 +408,6 @@ class SpeechV1p1beta1(base_api.BaseApiClient):
       super(SpeechV1p1beta1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def LogData(self, request, global_params=None):
-      r"""Purges all log data associated with requested project. Operation response type is google.protobuf.Empty. Since logs are stored by asynchronous writer process, buffered log data might still end up in storage, even after this call. To ensure all data is purged, call this method 3 days after last recognition call.
-
-      Args:
-        request: (SpeechProjectsLocationsLogDataRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('LogData')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    LogData.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data',
-        http_method='DELETE',
-        method_id='speech.projects.locations.log_data',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['bucketName'],
-        relative_path='v1p1beta1/{+parent}/log_data',
-        request_field='',
-        request_type_name='SpeechProjectsLocationsLogDataRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

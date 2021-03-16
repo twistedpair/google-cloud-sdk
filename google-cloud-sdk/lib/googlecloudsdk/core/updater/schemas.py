@@ -457,6 +457,8 @@ class Component(object):
     platform: ComponentPlatform, Information about what operating systems and
       architectures the compoonent is valid on.
     dependencies: [str], The other components required by this one.
+    platform_required: bool, True if a platform-specific executable is
+      required.
   """
 
   @classmethod
@@ -479,6 +481,7 @@ class Component(object):
     p.Parse('data', func=ComponentData.FromDictionary)
     p.Parse('platform', default={}, func=ComponentPlatform.FromDictionary)
     p.ParseList('dependencies', default=[], sort=True)
+    p.Parse('platform_required', default=False)
     return cls(**p.Args())
 
   def ToDictionary(self):
@@ -497,11 +500,12 @@ class Component(object):
     w.Write('data', func=ComponentData.ToDictionary)
     w.Write('platform', func=ComponentPlatform.ToDictionary)
     w.WriteList('dependencies')
+    w.Write('platform_required')
     return w.Dictionary()
 
   # pylint: disable=redefined-builtin, params must match JSON names
   def __init__(self, id, details, version, dependencies, data, is_hidden,
-               is_required, is_configuration, platform):
+               is_required, is_configuration, platform, platform_required):
     self.id = id
     self.details = details
     self.version = version
@@ -511,6 +515,7 @@ class Component(object):
     self.platform = platform
     self.data = data
     self.dependencies = dependencies
+    self.platform_required = platform_required
 
 
 class Notification(object):

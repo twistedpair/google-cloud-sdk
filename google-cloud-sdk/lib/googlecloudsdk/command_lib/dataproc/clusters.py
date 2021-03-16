@@ -379,6 +379,14 @@ If you want to enable all scopes use the 'cloud-platform' scope.
         security operations, such as remote attestation, encryption, and sealing
         of keys.
         """)
+  parser.add_argument(
+      '--dataproc-metastore',
+      hidden=(False if beta else True),
+      help="""\
+      Specify the name of a Dataproc Metastore service to be used as an
+      external metastore in the format:
+      "projects/{project-id}/locations/{region}/services/{service-name}".
+      """)
 
   autoscaling_group = parser.add_argument_group()
   flags.AddAutoscalingPolicyResourceArgForCluster(
@@ -599,13 +607,7 @@ def _AddDiskArgsDeprecated(parser):
 
 def BetaArgsForClusterRef(parser):
   """Register beta-only flags for creating a Dataproc cluster."""
-  parser.add_argument(
-      '--dataproc-metastore',
-      help="""\
-        Specify the name of a Dataproc Metastore service to be used as an
-        external metastore in the format:
-        "projects/{project-id}/locations/{region}/services/{service-name}".
-        """)
+  pass
 
 
 def GetClusterConfig(args,
@@ -823,10 +825,9 @@ def GetClusterConfig(args,
         enableVtpm=args.shielded_vtpm,
         enableIntegrityMonitoring=args.shielded_integrity_monitoring)
 
-  if beta:
-    if args.dataproc_metastore:
-      cluster_config.metastoreConfig = dataproc.messages.MetastoreConfig(
-          dataprocMetastoreService=args.dataproc_metastore)
+  if args.dataproc_metastore:
+    cluster_config.metastoreConfig = dataproc.messages.MetastoreConfig(
+        dataprocMetastoreService=args.dataproc_metastore)
 
   if include_ttl_config:
     lifecycle_config = dataproc.messages.LifecycleConfig()

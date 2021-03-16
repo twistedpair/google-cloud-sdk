@@ -28,12 +28,13 @@ class FilesAndBytesProgressCallback:
 
   Information is sent to the status_queue, which will print aggregate it
   for printing to the user. Useful for heavy operations like copy or hash.
-  Arguments are the same as thread_messages.ProgressMessage.
+  Arguments similar to thread_messages.ProgressMessage.
   """
 
   def __init__(self,
                status_queue,
-               size,
+               offset,
+               length,
                source_url,
                destination_url=None,
                component_number=None,
@@ -47,7 +48,8 @@ class FilesAndBytesProgressCallback:
       status_queue (multiprocessing.Queue): Where to submit progress messages.
         If we spawn new worker processes, they will lose their reference to the
         correct version of this queue if we don't package it here.
-      size (int): Total size of file/component in bytes.
+      offset (int): Start of byte range to start operation at.
+      length (int): Total size of file or component in bytes.
       source_url (StorageUrl): Represents source of data used by operation.
       destination_url (StorageUrl|None): Represents destination of data used by
         operation. None for unary operations like hashing.
@@ -63,7 +65,8 @@ class FilesAndBytesProgressCallback:
         message (overridable for testing).
     """
     self._status_queue = status_queue
-    self._size = size
+    self._offset = offset
+    self._length = length
     self._source_url = source_url
     self._destination_url = destination_url
     self._component_number = component_number
@@ -72,16 +75,22 @@ class FilesAndBytesProgressCallback:
     self._process_id = process_id
     self._thread_id = thread_id
 
-  def __call__(self, processed_bytes, *args):
-    """See __init__ docstring for processed_bytes arg."""
+  def __call__(self, current_byte, *args):
+    """Sends operation progress information to global status queue.
+
+    Args:
+      current_byte (int): Index of byte being operated on.
+      *args (list[any]): Unused.
+    """
     del args  # Unused.
 
     # Time progress callback is triggered in seconds since epoch (float).
     current_time = time.time()
     self._status_queue.put(
         thread_messages.ProgressMessage(
-            size=self._size,
-            processed_bytes=processed_bytes,
+            offset=self._offset,
+            length=self._length,
+            current_byte=current_byte,
             time=current_time,
             source_url=self._source_url,
             destination_url=self._destination_url,

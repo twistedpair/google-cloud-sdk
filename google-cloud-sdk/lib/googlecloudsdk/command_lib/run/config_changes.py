@@ -71,13 +71,6 @@ def WithChanges(resource, changes):
   return resource
 
 
-def _AssertValidSecretKey(key, platform):
-  if platform == platforms.PLATFORM_MANAGED:
-    if not (key.isdigit() or key == 'latest'):
-      raise exceptions.ConfigurationError(
-          "Secret key must be an integer or 'latest'.")
-
-
 class LabelChanges(ConfigChanger):
   """Represents the user intent to modify metadata labels."""
 
@@ -372,7 +365,7 @@ class SecretEnvVarChanges(ConfigChanger):
     """Initialize a new SecretEnvVarChanges object.
 
     Args:
-      updates: {str, str}, Update env var names and values.
+      updates: {str: ReachableSecret}, Update env var names and values.
       removes: [str], List of env vars to remove.
       clear_others: bool, If true, clear all non-updated env vars.
 
@@ -380,22 +373,9 @@ class SecretEnvVarChanges(ConfigChanger):
       ConfigurationError if a key hasn't been provided for a source.
     """
     super(SecretEnvVarChanges, self).__init__()
-    self._updates = {}
-    for name, v in updates.items():
-      # Split the given values into 2 parts:
-      #    [env var source name, source data item key]
-      value = v.split(':', 1)
-      if len(value) < 2:
-        value.append(self._OmittedSecretKeyDefault(name))
-      self._updates[name] = value
+    self._updates = updates
     self._removes = removes
     self._clear_others = clear_others
-
-  def _OmittedSecretKeyDefault(self, name):
-    if platforms.GetPlatform() == platforms.PLATFORM_MANAGED:
-      return 'latest'
-    raise exceptions.ConfigurationError(
-        'Missing required item key for environment variable [{}].'.format(name))
 
   def Adjust(self, resource):
     """Mutates the given config's env vars to match the desired changes.
@@ -415,21 +395,15 @@ class SecretEnvVarChanges(ConfigChanger):
     env_vars = resource.template.env_vars.secrets
     _PruneMapping(env_vars, self._removes, self._clear_others)
 
-    for name, (source_name, source_key) in self._updates.items():
+    for name, reachable_secret in self._updates.items():
       try:
-        env_vars[name] = self._MakeEnvVarSource(resource.MessagesModule(),
-                                                source_name, source_key)
+        env_vars[name] = reachable_secret.AsEnvVarSource(resource)
       except KeyError:
         raise exceptions.ConfigurationError(
             'Cannot update environment variable [{}] to the given type '
             'because it has already been set with a different type.'.format(
                 name))
     return resource
-
-  def _MakeEnvVarSource(self, messages, name, key):
-    _AssertValidSecretKey(key, platforms.GetPlatform())
-    return messages.EnvVarSource(
-        secretKeyRef=messages.SecretKeySelector(name=name, key=key))
 
 
 class ConfigMapEnvVarChanges(ConfigChanger):
@@ -695,21 +669,13 @@ class SecretVolumeChanges(ConfigChanger):
     """Initialize a new SecretVolumeChanges object.
 
     Args:
-      updates: {str, str}, Update mount path and volume fields.
+      updates: {str: ReachableSecret}, Update mount path and volume fields.
       removes: [str], List of mount paths to remove.
       clear_others: bool, If true, clear all non-updated volumes and mounts of
         the given [volume_type].
     """
     super(SecretVolumeChanges, self).__init__()
-    self._updates = {}
-    for k, v in updates.items():
-      # Split the given values into 2 parts:
-      #    [volume source name, data item key]
-      update_value = v.split(':', 1)
-      # Pad with None if no data item key specified
-      if len(update_value) < 2:
-        update_value.append(None)
-      self._updates[k] = update_value
+    self._updates = updates
     self._removes = removes
     self._clear_others = clear_others
 
@@ -733,8 +699,9 @@ class SecretVolumeChanges(ConfigChanger):
 
     _PruneMapping(volume_mounts, self._removes, self._clear_others)
 
-    for file_path, (source_name, source_key) in self._updates.items():
-      volume_name = _UniqueVolumeName(source_name, resource.template.volumes)
+    for file_path, reachable_secret in self._updates.items():
+      volume_name = _UniqueVolumeName(reachable_secret.secret_name,
+                                      resource.template.volumes)
 
       # volume_mounts is a special mapping that filters for the current kind
       # of mount and KeyErrors on existing keys with other types.
@@ -744,18 +711,10 @@ class SecretVolumeChanges(ConfigChanger):
         raise exceptions.ConfigurationError(
             'Cannot update mount [{}] because its mounted volume '
             'is of a different source type.'.format(file_path))
-      volumes[volume_name] = self._MakeVolumeSource(resource.MessagesModule(),
-                                                    source_name, source_key)
+      volumes[volume_name] = reachable_secret.AsSecretVolumeSource(resource)
 
     _PruneVolumes(volume_mounts, volumes)
     return resource
-
-  def _MakeVolumeSource(self, messages, name, key=None):
-    source = messages.SecretVolumeSource(secretName=name)
-    if key is not None:
-      _AssertValidSecretKey(key, platforms.GetPlatform())
-      source.items.append(messages.KeyToPath(key=key, path=key))
-    return source
 
 
 class ConfigMapVolumeChanges(ConfigChanger):

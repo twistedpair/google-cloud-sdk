@@ -165,7 +165,8 @@ def CreateDiskMessages(args,
         enable_kms=support_kms,
         csek_keys=csek_keys,
         kms_args=args,
-        snapshot_uri=boot_snapshot_uri)
+        snapshot_uri=boot_snapshot_uri,
+        disk_provisioned_iops=args.boot_disk_provisioned_iops)
     persistent_disks = [boot_disk] + persistent_disks
 
   return persistent_disks + persistent_create_disks + local_nvdimms + local_ssds
@@ -249,7 +250,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
                                        enable_image_csek=False,
                                        support_replica_zones=False,
                                        use_disk_type_uri=True,
-                                       support_multi_writer=False):
+                                       support_multi_writer=False,
+                                       support_image_family_scope=False):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -282,6 +284,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
     support_replica_zones: True if we allow creation of regional disks
     use_disk_type_uri: True to use disk type URI, False if naked type.
     support_multi_writer: True if we allow multiple instances to write to disk.
+    support_image_family_scope: True if the zonal image views are supported.
 
   Returns:
     list of API messages for attached disks
@@ -316,6 +319,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
     img = disk.get('image')
     img_family = disk.get('image-family')
     img_project = disk.get('image-project')
+    image_family_scope = disk.get('image_family_scope')
 
     image_uri = None
     if img or img_family:
@@ -325,7 +329,9 @@ def CreatePersistentCreateDiskMessages(compute_client,
           image=img,
           image_family=img_family,
           image_project=img_project,
-          return_image_resource=False)
+          return_image_resource=False,
+          image_family_scope=image_family_scope,
+          support_image_family_scope=support_image_family_scope)
 
     image_key = None
     disk_key = None
@@ -388,6 +394,10 @@ def CreatePersistentCreateDiskMessages(compute_client,
     if support_multi_writer and multi_writer:
       initialize_params.multiWriter = True
 
+    provisioned_iops = disk.get('provisioned-iops')
+    if provisioned_iops:
+      initialize_params.provisionedIops = provisioned_iops
+
     device_name = instance_utils.GetDiskDeviceName(disk, name,
                                                    container_mount_disk)
     create_disk = messages.AttachedDisk(
@@ -419,7 +429,8 @@ def CreateDefaultBootAttachedDiskMessage(compute_client,
                                          kms_args=None,
                                          enable_kms=False,
                                          snapshot_uri=None,
-                                         use_disk_type_uri=True):
+                                         use_disk_type_uri=True,
+                                         disk_provisioned_iops=None):
   """Returns an AttachedDisk message for creating a new boot disk."""
   messages = compute_client.messages
   compute = compute_client.apitools_client
@@ -486,6 +497,9 @@ def CreateDefaultBootAttachedDiskMessage(compute_client,
       diskSizeGb=disk_size_gb,
       diskType=disk_type_uri,
       **kwargs_init_parms)
+
+  if disk_provisioned_iops is not None:
+    initialize_params.provisionedIops = disk_provisioned_iops
 
   if snapshot_uri:
     initialize_params.sourceImage = None
@@ -991,7 +1005,9 @@ def GetImageUri(args,
                 create_boot_disk,
                 project,
                 resource_parser,
-                confidential_vm=False):
+                confidential_vm=False,
+                image_family_scope=None,
+                support_image_family_scope=False):
   """Retrieves the image uri for the specified image."""
   if create_boot_disk:
     image_expander = image_utils.ImageExpander(client, resource_parser)
@@ -1001,7 +1017,9 @@ def GetImageUri(args,
         image_family=args.image_family,
         image_project=args.image_project,
         return_image_resource=False,
-        confidential_vm=confidential_vm)
+        confidential_vm=confidential_vm,
+        image_family_scope=image_family_scope,
+        support_image_family_scope=support_image_family_scope)
     return image_uri
 
 

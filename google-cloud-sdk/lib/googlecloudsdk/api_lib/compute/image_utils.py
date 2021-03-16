@@ -130,7 +130,9 @@ class ImageExpander(object):
                       image_family=None,
                       image_project=None,
                       return_image_resource=False,
-                      confidential_vm=False):
+                      confidential_vm=False,
+                      image_family_scope=None,
+                      support_image_family_scope=False):
     """Resolves the image or image-family value.
 
     If the value of image is one of the aliases defined in the
@@ -148,6 +150,10 @@ class ImageExpander(object):
       return_image_resource: If True, always makes an API call to also
         fetch the image resource.
       confidential_vm: If True, default image is different for confidential VMs
+      image_family_scope: Override for selection of global or zonal image
+        views.
+      support_image_family_scope: If True, add support for the
+        --image-family-scope flag.
 
     Returns:
       A tuple where the first element is the self link of the image. If
@@ -162,6 +168,9 @@ class ImageExpander(object):
           image_project, collection='compute.projects')
       image_project = image_project_ref.Name()
 
+    public_image_project = (image_project and image_project
+                            in constants.PUBLIC_IMAGE_PROJECTS)
+
     image_ref = None
 
     if image:
@@ -174,24 +183,45 @@ class ImageExpander(object):
           collection='compute.images')
     else:
       if image_family is not None:
-        image_ref = self._resources.Parse(
-            image_family,
-            params={
-                'project': image_project
-                           or properties.VALUES.core.project.GetOrFail
-            },
-            collection='compute.images')
+        if support_image_family_scope:
+          image_family_scope = (
+              image_family_scope
+              or properties.VALUES.compute.image_family_scope.Get())
+          if not image_family_scope:
+            image_family_scope = 'zonal' if public_image_project else 'global'
+        else:
+          image_family_scope = 'global'
+
+        if image_family_scope == 'zonal':
+          image_ref = self._resources.Parse(
+              image_family,
+              params={
+                  'project': image_project
+                             or properties.VALUES.core.project.GetOrFail,
+                  'zone': '-'
+              },
+              collection='compute.imageFamilyViews')
+        else:
+          image_ref = self._resources.Parse(
+              image_family,
+              params={
+                  'project': image_project
+                             or properties.VALUES.core.project.GetOrFail
+              },
+              collection='compute.images')
       elif confidential_vm:
         image_ref = self._resources.Parse(
             constants.DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS,
             collection='compute.images',
             params={'project': 'ubuntu-os-cloud'})
       else:
+        # TODO(b/182492207): Support image_family_scope for default family.
         image_ref = self._resources.Parse(
             constants.DEFAULT_IMAGE_FAMILY,
             collection='compute.images',
             params={'project': 'debian-cloud'})
-      if not image_ref.image.startswith(FAMILY_PREFIX):
+      if (hasattr(image_ref, 'image')
+          and not image_ref.image.startswith(FAMILY_PREFIX)):
         relative_name = image_ref.RelativeName()
         relative_name = (relative_name[:-len(image_ref.image)] +
                          FAMILY_PREFIX + image_ref.image)
@@ -338,6 +368,19 @@ def AddGuestOsFeaturesArg(parser, messages):
       image for their boot disks. See
       https://cloud.google.com/compute/docs/images/create-delete-deprecate-private-images#guest-os-features
       for descriptions of the supported features.""")
+
+
+def AddImageFamilyScopeFlag(parser):
+  """Add the image-family-scope flag."""
+  parser.add_argument(
+      '--image-family-scope',
+      metavar='IMAGE_FAMILY_SCOPE',
+      choices=['zonal', 'global'],
+      help="""\
+      Sets the scope for the `--image-family` flag. By default, when
+      specifying an image family in a public image project, the zonal image
+      family view is used. All other projects default to the global
+      image. Use this flag to override this behavior.""")
 
 
 def GetFileContentAndFileType(file_path):

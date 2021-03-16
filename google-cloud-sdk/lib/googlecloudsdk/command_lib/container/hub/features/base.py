@@ -33,6 +33,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import retry
 
 
 class EnableCommand(base.CreateCommand):
@@ -41,9 +42,26 @@ class EnableCommand(base.CreateCommand):
   def RunCommand(self, args, **kwargs):
     try:
       project = properties.VALUES.core.project.GetOrFail()
-      enable_api.EnableServiceIfDisabled(project, self.FEATURE_API)
-      return CreateFeature(project, self.FEATURE_NAME,
-                           self.FEATURE_DISPLAY_NAME, **kwargs)
+      if not enable_api.IsServiceEnabled(project, self.FEATURE_API):
+        enable_api.EnableService(project, self.FEATURE_API)
+        # GKE Hub CreateFeature API uses Chemist to validate the service
+        # enablement status. But there is a delay in api enabled changes to
+        # propograte from TentantManager to Chemist
+        # go/service-activation#distribute-change.
+        # Therefore, we need to retry calling CreateFeature for ~15 seconds till
+        # the api changes propograte. More info: b/28800908.
+        retryer = retry.Retryer(
+            max_retrials=4, exponential_sleep_multiplier=1.75)
+        return retryer.RetryOnException(
+            CreateFeature,
+            args=(project, self.FEATURE_NAME, self.FEATURE_DISPLAY_NAME),
+            kwargs=kwargs,
+            should_retry_if=_ShouldCreateFeatureRetryIf,
+            sleep_ms=1000)
+      else:
+        return CreateFeature(project, self.FEATURE_NAME,
+                             self.FEATURE_DISPLAY_NAME, **kwargs)
+
     except apitools_exceptions.HttpUnauthorizedError as e:
       raise exceptions.Error(
           'You are not authorized to enable {} Feature from project [{}]. '
@@ -59,6 +77,10 @@ class EnableCommand(base.CreateCommand):
         log.status.Print(
             '{} Feature for project [{}] is already enabled'.format(
                 self.FEATURE_DISPLAY_NAME, project))
+    except Exception as e:
+      raise exceptions.Error('Error enabling {} Feature for project [{}]. '
+                             'Underlying error: {}'.format(
+                                 self.FEATURE_DISPLAY_NAME, project, e))
 
 
 class DisableCommand(base.DeleteCommand):
@@ -129,6 +151,12 @@ def CreateMultiClusterServiceDiscoveryFeatureSpec():
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   messages = client.MESSAGES_MODULE
   return messages.MultiClusterServiceDiscoveryFeatureSpec()
+
+
+def CreateServiceDirectoryFeatureSpec():
+  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
+  messages = client.MESSAGES_MODULE
+  return messages.ServiceDirectoryFeatureSpec()
 
 
 def CreateConfigManagementFeatureSpec():
@@ -260,8 +288,8 @@ def UpdateFeature(project, feature_id, feature_display_name, mask, **kwargs):
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   messages = client.MESSAGES_MODULE
   request = messages.GkehubProjectsLocationsGlobalFeaturesPatchRequest(
-      name='projects/{0}/locations/global/features/{1}'.format(project,
-                                                               feature_id),
+      name='projects/{0}/locations/global/features/{1}'.format(
+          project, feature_id),
       updateMask=mask,
       feature=messages.Feature(**kwargs),
   )
@@ -273,9 +301,8 @@ def UpdateFeature(project, feature_id, feature_display_name, mask, **kwargs):
         'feature from project [{}]. Underlying error: {}'.format(
             feature_display_name, project, e))
   except apitools_exceptions.HttpNotFoundError as e:
-    raise exceptions.Error(
-        '{} Feature for project [{}] is not enabled'.format(
-            feature_display_name, project))
+    raise exceptions.Error('{} Feature for project [{}] is not enabled'.format(
+        feature_display_name, project))
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')
   result = waiter.WaitFor(
@@ -333,3 +360,14 @@ def ListMemberships(project):
   return [
       os.path.basename(membership.name) for membership in response.resources
   ]
+
+
+def _ShouldCreateFeatureRetryIf(exc_type, exc_value, unused_traceback,
+                                unused_state):
+  if exc_type == apitools_exceptions.HttpBadRequestError:
+    error = core_api_exceptions.HttpErrorPayload(exc_value)
+    if error.status_description == 'FAILED_PRECONDITION' and \
+       'is not enabled' in error.message:
+      log.status.Print('Waiting for service api enablement to finish...')
+      return True
+  return False

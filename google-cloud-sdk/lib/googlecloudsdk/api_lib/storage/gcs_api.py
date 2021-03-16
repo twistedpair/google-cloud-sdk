@@ -55,7 +55,15 @@ from googlecloudsdk.core.util import retry
 import oauth2client
 
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
-MAX_READ_SIZE = 8 * 1024  # 8 KiB.
+KB = 1024  # Bytes
+MAX_READ_SIZE = 8 * KB
+
+# Call the progress callback every PROGRESS_CALLBACK_THRESHOLD bytes to
+# improve performance.
+PROGRESS_CALLBACK_THRESHOLD = 512 * KB
+# The API limits the number of objects that can be composed in a single call.
+# https://cloud.google.com/storage/docs/json_api/v1/objects/compose
+MAX_OBJECTS_PER_COMPOSE_CALL = 32
 
 
 def _catch_http_error_raise_gcs_api_error(format_str=None):
@@ -188,14 +196,22 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
       raise ValueError('Stream was not found.')
 
     # Start reading the raw stream.
+    bytes_since_last_progress_callback = 0
     while True:
       data = source_stream.read(MAX_READ_SIZE)
       if data:
         self._stream.write(data)
         self._processed_bytes += len(data)
-        if self._progress_callback:
+        bytes_since_last_progress_callback += len(data)
+        if (self._progress_callback and
+            bytes_since_last_progress_callback >= PROGRESS_CALLBACK_THRESHOLD):
           self._progress_callback(self._processed_bytes)
+          bytes_since_last_progress_callback = (
+              bytes_since_last_progress_callback - PROGRESS_CALLBACK_THRESHOLD)
       else:
+        if self._progress_callback and bytes_since_last_progress_callback:
+          # Make a last progress callback call to update the final size.
+          self._progress_callback(self._processed_bytes)
         break
       for hash_object in self._digesters.values():
         hash_object.update(data)
@@ -203,10 +219,6 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
 
 class GcsApi(cloud_api.CloudApi):
   """Client for Google Cloud Storage API."""
-
-  # The API limits the number of objects that can be composed in a single call.
-  # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
-  MAX_OBJECTS_PER_COMPOSE_CALL = 32
 
   def __init__(self):
     self.client = core_apis.GetClientInstance('storage', 'v1')
@@ -862,10 +874,10 @@ class GcsApi(cloud_api.CloudApi):
       raise cloud_errors.GcsApiError(
           'Compose requires at least one component object.')
 
-    if len(source_resources) > self.MAX_OBJECTS_PER_COMPOSE_CALL:
+    if len(source_resources) > MAX_OBJECTS_PER_COMPOSE_CALL:
       raise cloud_errors.GcsApiError(
           'Compose was called with {} objects. The limit is {}.'.format(
-              len(source_resources), self.MAX_OBJECTS_PER_COMPOSE_CALL))
+              len(source_resources), MAX_OBJECTS_PER_COMPOSE_CALL))
 
     validated_request_config = cloud_api.get_provider_request_config(
         request_config, GcsRequestConfig)

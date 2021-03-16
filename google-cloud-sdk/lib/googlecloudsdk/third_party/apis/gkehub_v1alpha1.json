@@ -291,6 +291,10 @@
           "description": "The specification for Anthos Identity Service.",
           "$ref": "IdentityServiceFeatureSpec"
         },
+        "anthosobservabilityFeatureSpec": {
+          "description": "The specification for Anthos Observability.",
+          "$ref": "AnthosObservabilityFeatureSpec"
+        },
         "featureState": {
           "description": "Output only. State of the Feature resource itself.",
           "readOnly": true,
@@ -775,6 +779,13 @@
         }
       }
     },
+    "AnthosObservabilityFeatureSpec": {
+      "id": "AnthosObservabilityFeatureSpec",
+      "description": "Spec for Anthos Observability. This is required since Feature proto requires a spec.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "FeatureState": {
       "id": "FeatureState",
       "description": "FeatureState describes the state of a Feature resource.",
@@ -888,6 +899,10 @@
         "identityserviceFeatureState": {
           "description": "State for the AIS Feature.",
           "$ref": "IdentityServiceFeatureState"
+        },
+        "anthosobservabilityFeatureState": {
+          "description": "State for the Anthos Observability Feature",
+          "$ref": "AnthosObservabilityFeatureState"
         },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
@@ -1615,6 +1630,13 @@
           "description": "The reason of the failure.",
           "type": "string"
         }
+      }
+    },
+    "AnthosObservabilityFeatureState": {
+      "id": "AnthosObservabilityFeatureState",
+      "description": "An empty state for Anthos Observability. This is required since FeatureStateDetails requires a state.",
+      "type": "object",
+      "properties": {
       }
     },
     "ListLocationsResponse": {

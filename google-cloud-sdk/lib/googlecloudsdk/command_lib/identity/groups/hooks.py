@@ -29,6 +29,14 @@ from googlecloudsdk.command_lib.organizations import org_utils
 import six
 
 
+GROUP_TYPE_MAP = {
+    'discussion': ['cloudidentity.googleapis.com/groups.discussion_forum'],
+    'dynamic': ['cloudidentity.googleapis.com/groups.dynamic'],
+    'security': ['cloudidentity.googleapis.com/groups.discussion_forum',
+                 'cloudidentity.googleapis.com/groups.security'],
+}
+
+
 # request hooks
 def SetParent(unused_ref, args, request):
   """Set obfuscated customer id to request.group.parent or request.parent.
@@ -94,6 +102,69 @@ def SetLabels(unused_ref, args, request):
       version = GetApiVersion(args)
       messages = ci_client.GetMessages(version)
       request.group = messages.Group(labels=ReformatLabels(args, args.labels))
+
+  return request
+
+
+def SetLabelsCreate(unused_ref, args, request):
+  """Set Labels to request.group.labels for the create command.
+
+  Labels will be used from args.labels if supplied, otherwise labels
+  will be looked up based on the args.group_type argument. If neither is
+  supplied, labels will be set based on the 'discussion' group type.
+
+  Args:
+    unused_ref: unused.
+    args: The argparse namespace.
+    request: The request to modify.
+
+  Returns:
+    The updated request.
+  """
+  if args.IsSpecified('labels'):
+    labels = args.labels
+  elif args.IsKnownAndSpecified('group_type'):
+    labels = ' '.join(GROUP_TYPE_MAP[args.group_type])
+  else:
+    labels = ' '.join(GROUP_TYPE_MAP['discussion'])
+
+  if hasattr(request.group, 'labels'):
+    request.group.labels = ReformatLabels(args, labels)
+  else:
+    version = GetApiVersion(args)
+    messages = ci_client.GetMessages(version)
+    request.group = messages.Group(labels=ReformatLabels(args, labels))
+
+  return request
+
+
+def SetInitialOwner(unused_ref, args, request):
+  """Set the initial owner.
+
+  Defaults to 'empty' for dynamic groups and to 'with-initial-owner' for
+  other group types.
+
+  Args:
+    unused_ref: unused.
+    args: The argparse namespace.
+    request: The request to modify.
+
+  Returns:
+    The updated request.
+  """
+  if args.IsSpecified('with_initial_owner'):
+    return request
+
+  version = GetApiVersion(args)
+  messages = ci_client.GetMessages(version)
+  create_message = messages.CloudidentityGroupsCreateRequest
+  config_enum = create_message.InitialGroupConfigValueValuesEnum
+
+  if ((args.IsSpecified('group_type') and 'dynamic' in args.group_type)
+      or (args.IsSpecified('labels') and 'dynamic' in args.labels)):
+    request.initialGroupConfig = config_enum.EMPTY
+  else:
+    request.initialGroupConfig = config_enum.WITH_INITIAL_OWNER
 
   return request
 

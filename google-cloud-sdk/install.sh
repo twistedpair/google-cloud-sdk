@@ -13,6 +13,7 @@ echo Welcome to the Google Cloud SDK!
 #  CLOUDSDK_PYTHON_ARGS         (u)  python interpreter arguments
 #  CLOUDSDK_PYTHON_SITEPACKAGES (u)  use python site packages
 #  CLOUDSDK_BQ_PYTHON           (u)  python interpreter for bq
+#  CLOUDSDK_ENCODING            (u)  python io encoding for gcloud
 #
 # (a) always defined by the preamble
 # (u) user definition overrides preamble
@@ -158,10 +159,20 @@ if [ -z "$CLOUDSDK_BQ_PYTHON" ]; then
   CLOUDSDK_BQ_PYTHON="$CLOUDSDK_PYTHON"
 fi
 
+if [ -z "$CLOUDSDK_ENCODING" ]; then
+  if [ -z "$PYTHONIOENCODING" ]; then
+    CLOUDSDK_ENCODING=UTF-8
+  else
+    CLOUDSDK_ENCODING="$PYTHONIOENCODING"
+  fi
+fi
+
 export CLOUDSDK_ROOT_DIR
 export CLOUDSDK_PYTHON_ARGS
 export CLOUDSDK_GSUTIL_PYTHON
 export CLOUDSDK_BQ_PYTHON
+export CLOUDSDK_ENCODING
+export PYTHONIOENCODING="$CLOUDSDK_ENCODING"
 
 case $HOSTNAME in
   *.corp.google.com|*.c.googlers.com) export CLOUDSDK_GOOGLE_AUTH_IS_GOOGLE_DOMAIN=true;;

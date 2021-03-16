@@ -201,19 +201,19 @@ def get_sliced_download_tracker_file_paths(destination_url):
   parallel_tracker_file_path = get_tracker_file_path(
       destination_url, TrackerFileType.SLICED_DOWNLOAD)
   tracker_file_paths = [parallel_tracker_file_path]
-  number_components = 0
+  total_components = 0
 
   tracker_file = None
   try:
     tracker_file = files.FileReader(parallel_tracker_file_path)
-    number_components = json.load(tracker_file)['number_components']
+    total_components = json.load(tracker_file)['total_components']
   except files.MissingFileError:
     return tracker_file_paths
   finally:
     if tracker_file:
       tracker_file.close()
 
-  for i in range(number_components):
+  for i in range(total_components):
     tracker_file_paths.append(
         get_tracker_file_path(
             destination_url,
@@ -229,20 +229,21 @@ def delete_tracker_file(tracker_file_path):
     os.remove(tracker_file_path)
 
 
-def delete_download_tracker_files(destination_url):
+def delete_download_tracker_files(destination_url, tracker_file_type):
   """Deletes all tracker files for an object download.
 
   Args:
     destination_url (storage_url.StorageUrl): Describes the destination file.
+    tracker_file_type (TrackerFileType): Used for getting path to tracker file.
   """
-  # Delete non-sliced download tracker file.
-  delete_tracker_file(
-      get_tracker_file_path(destination_url, TrackerFileType.DOWNLOAD))
 
-  # Delete all sliced download tracker files.
-  tracker_files = get_sliced_download_tracker_file_paths(destination_url)
-  for tracker_file in tracker_files:
-    delete_tracker_file(tracker_file)
+  if tracker_file_type is TrackerFileType.SLICED_DOWNLOAD:
+    tracker_files = get_sliced_download_tracker_file_paths(destination_url)
+    for tracker_file in tracker_files:
+      delete_tracker_file(tracker_file)
+  else:
+    delete_tracker_file(
+        get_tracker_file_path(destination_url, tracker_file_type))
 
 
 def hash_gcs_rewrite_parameters_for_tracker_file(
@@ -326,7 +327,7 @@ def write_json_to_tracker_file(tracker_file_path, data):
 
 def write_tracker_file_with_component_data(tracker_file_path,
                                            source_object_resource,
-                                           download_start_byte=None,
+                                           slice_start_byte=None,
                                            total_components=None):
   """Updates or creates a tracker file for component or multipart download.
 
@@ -334,7 +335,7 @@ def write_tracker_file_with_component_data(tracker_file_path,
     tracker_file_path (str): The path to the tracker file.
     source_object_resource (resource_reference.ObjectResource): Needed for
       object etag and optionally generation.
-    download_start_byte (int|None): Where to resume downloading from. Signals
+    slice_start_byte (int|None): Where to resume downloading from. Signals
       this is the tracker file of a component.
     total_components (int|None): Total number of components in download. Signals
       this is the master tracker file of a sliced download.
@@ -343,14 +344,14 @@ def write_tracker_file_with_component_data(tracker_file_path,
       'etag': source_object_resource.etag,
       'generation': source_object_resource.generation,
   }
-  if download_start_byte is not None:
+  if slice_start_byte is not None:
     if total_components is not None:
       raise ValueError(
-          'Cannot have a tracker file with download_start_byte and'
-          ' total_components. download_start_byte signals a component within a'
+          'Cannot have a tracker file with slice_start_byte and'
+          ' total_components. slice_start_byte signals a component within a'
           ' larger operation. total_components signals the master tracker for'
           ' a multi-component operation.')
-    component_data['download_start_byte'] = download_start_byte
+    component_data['slice_start_byte'] = slice_start_byte
   if total_components is not None:
     component_data['total_components'] = total_components
 
@@ -373,26 +374,26 @@ def write_rewrite_tracker_file(tracker_file_name, rewrite_parameters_hash,
 
 def read_or_create_download_tracker_file(source_object_resource,
                                          destination_url,
-                                         existing_file_size=None,
+                                         first_null_byte=None,
                                          slice_start_byte=None,
                                          component_number=None,
                                          total_components=None,
                                          create=True):
   """Checks for a download tracker file and creates one if it does not exist.
 
-  For normal downloads, if the tracker file exists, the existing_file_size
-  in bytes is presumed to downloaded from the server. Therefore,
-  existing_file_size becomes the download start point.
+  For normal downloads, if the tracker file exists, data up to the
+  first_null_byte is presumed to downloaded from the server. Therefore,
+  first_null_byte becomes the download start point.
 
-  For sliced downloads, the number of bytes previously retrieved from the server
-  cannot be determined from existing_file_size. Therefore, it is retrieved
-  from the tracker file.
+  For sliced downloads, the starting point where a slice start downloading
+  cannot be determined from first_null_byte. Therefore, it is written to
+  or retrieved from the tracker file.
 
   Args:
     source_object_resource (resource_reference.ObjectResource): Needed for
       object etag and generation.
     destination_url (storage_url.StorageUrl): Destination URL for tracker file.
-    existing_file_size (int): Amount of file on disk that already exists.
+    first_null_byte (int|None): Index of last downloaded byte on disk + 1.
     slice_start_byte (int|None): Start byte to use if we cannot find a
       matching tracker file for a download slice.
     component_number (int|None): The download component number to find the start
@@ -420,13 +421,13 @@ def read_or_create_download_tracker_file(source_object_resource,
         ' multi-component operation. slice_start_byte and component_number'
         ' cannot be present since this is not for an individual component.')
 
-  if component_number:
+  if component_number is not None:
     download_name_for_logger = '{} component {}'.format(
         destination_url.object_name, component_number)
     tracker_file_type = TrackerFileType.DOWNLOAD_COMPONENT
   else:
     download_name_for_logger = destination_url.object_name
-    if total_components:
+    if total_components is not None:
       tracker_file_type = TrackerFileType.SLICED_DOWNLOAD
     else:
       tracker_file_type = TrackerFileType.DOWNLOAD
@@ -441,8 +442,8 @@ def read_or_create_download_tracker_file(source_object_resource,
       etag_value = tracker_file.readline().rstrip('\n')
       if etag_value == source_object_resource.etag:
         log.debug('Found tracker file starting at byte {} for {}.'.format(
-            existing_file_size, download_name_for_logger))
-        return tracker_file_path, existing_file_size
+            first_null_byte, download_name_for_logger))
+        return tracker_file_path, first_null_byte
     else:
       component_data = json.loads(tracker_file.read())
       if (component_data['etag'] == source_object_resource.etag and
@@ -452,12 +453,11 @@ def read_or_create_download_tracker_file(source_object_resource,
           log.debug('Found tracker file for sliced download {}.'.format(
               download_name_for_logger))
           return tracker_file_path, None
-        elif tracker_file_type is TrackerFileType.DOWNLOAD_COMPONENT:
-          # Normal resumable download.
-          start_byte = int(component_data['download_start_byte'])
+        elif tracker_file_type is TrackerFileType.DOWNLOAD_COMPONENT and component_data[
+            'slice_start_byte'] == slice_start_byte:
           log.debug('Found tracker file starting at byte {} for {}.'.format(
-              start_byte, download_name_for_logger))
-          return tracker_file_path, start_byte
+              first_null_byte, download_name_for_logger))
+          return tracker_file_path, first_null_byte
 
   except files.MissingFileError:
     # Cannot read from file.
@@ -468,27 +468,33 @@ def read_or_create_download_tracker_file(source_object_resource,
       tracker_file.close()
 
   log.debug('No matching tracker file for {}.'.format(download_name_for_logger))
+  # Remove corrupt tracker files.
+  delete_download_tracker_files(destination_url, tracker_file_type)
 
-  start_byte = 0
+  if tracker_file_type is TrackerFileType.DOWNLOAD:
+    start_byte = 0
+  elif tracker_file_type is TrackerFileType.DOWNLOAD_COMPONENT:
+    start_byte = slice_start_byte
+  elif tracker_file_type is TrackerFileType.SLICED_DOWNLOAD:
+    start_byte = None
+
   if create:
+    log.debug('Creating tracker file {}.'.format(tracker_file_path))
     if tracker_file_type is TrackerFileType.DOWNLOAD:
       _write_tracker_file(tracker_file_path, source_object_resource.etag + '\n')
     elif tracker_file_type is TrackerFileType.DOWNLOAD_COMPONENT:
       write_tracker_file_with_component_data(
           tracker_file_path,
           source_object_resource,
-          download_start_byte=slice_start_byte)
-      start_byte = slice_start_byte
+          slice_start_byte=slice_start_byte)
     elif tracker_file_type is TrackerFileType.SLICED_DOWNLOAD:
-      # Delete component tracker files to reset full sliced download.
-      delete_download_tracker_files(destination_url)
       write_tracker_file_with_component_data(
           tracker_file_path,
           source_object_resource,
           total_components=total_components)
-      start_byte = None
-
-  return tracker_file_path, start_byte
+    return tracker_file_path, start_byte
+  else:
+    return None, start_byte
 
 
 def read_rewrite_tracker_file(tracker_file_path, rewrite_parameters_hash):
@@ -508,30 +514,3 @@ def read_rewrite_tracker_file(tracker_file_path, rewrite_parameters_hash):
     ]
     if existing_hash == rewrite_parameters_hash:
       return rewrite_token
-
-
-def get_download_start_byte(source_object_resource, destination_url,
-                            existing_file_size, slice_start_byte,
-                            component_number):
-  """Returns the download starting point for a component.
-
-  Args:
-    source_object_resource (resource_reference.ObjectResource): Needed for
-      object etag and generation.
-    destination_url (storage_url.StorageUrl): Destination URL for tracker file.
-    existing_file_size (int): Amount of file on disk that already exists.
-    slice_start_byte (int): The start byte of the byte range for this download.
-    component_number (int): The download component number to find the start
-      point for.
-
-  Returns:
-    download_start_byte (int): The first byte that still needs to be downloaded.
-  """
-  _, download_start_byte = read_or_create_download_tracker_file(
-      source_object_resource,
-      destination_url,
-      existing_file_size,
-      slice_start_byte,
-      component_number,
-      create=False)
-  return download_start_byte

@@ -178,14 +178,21 @@ class LinterRenderer(text_renderer.TextRenderer):
     warnings = self.check_for_personal_pronouns("NAME", section)
     if not warnings:
       self.json_object["# NAME_PRONOUN_CHECK SUCCESS"] = ""
-    self.command_name = section.strip().split(" -")[0]
-    if len(section.replace("\n", " ").strip().split(" - ")) == 1:
+    # The section should look like 'command name - command description' but
+    # there may be a newline depending on length of the command.
+    section_parts = re.split(r"\s-\s?", section.strip())
+    self.command_name = section_parts[0].strip()
+    # This is checking if there is a short description in the NAME section. The
+    # section_parts list may have whitespace as the second element but this is
+    # not a description.
+    if len(section_parts) == 1 or (
+        len(section_parts) > 1 and not section_parts[1].strip()):
       self.name_section = ""
       value_object = "Please add an explanation for the command."
       self.json_object["# NAME_DESCRIPTION_CHECK FAILED"] = value_object
       warnings = True
     else:
-      self.name_section = section.strip().split(" -")[1]
+      self.name_section = section_parts[1]
       self.json_object["# NAME_DESCRIPTION_CHECK SUCCESS"] = ""
     self.command_name_length = len(self.command_name)
     # check that name section is not too long

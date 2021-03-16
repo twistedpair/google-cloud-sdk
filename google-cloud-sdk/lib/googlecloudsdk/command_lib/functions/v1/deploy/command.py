@@ -117,11 +117,7 @@ def _GetProject():
   return properties.VALUES.core.project.Get(required=True)
 
 
-def Run(args,
-        track=None,
-        enable_runtime=True,
-        enable_build_worker_pool=False,
-        enable_security_level=False):
+def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
   """Run a function deployment with the given args."""
   # Check for labels that start with `deployment`, which is not allowed.
   labels_util.CheckNoDeploymentLabels('--remove-labels', args.remove_labels)
@@ -245,20 +241,19 @@ def Run(args,
       function.eventTrigger.failurePolicy = None
   elif function.eventTrigger:
     function.eventTrigger.failurePolicy = None
-  if enable_security_level:
-    if args.IsSpecified('security_level'):
-      will_have_http_trigger = had_http_trigger or args.trigger_http
-      if not will_have_http_trigger:
-        raise exceptions.RequiredArgumentException(
-            'trigger-http',
-            'Flag `--trigger-http` is required for setting `security-level`.')
-      security_level_enum = arg_utils.ChoiceEnumMapper(
-          arg_name='security_level',
-          message_enum=function.httpsTrigger.SecurityLevelValueValuesEnum,
-          custom_mappings=flags.SECURITY_LEVEL_MAPPING).GetEnumForChoice(
-              args.security_level)
-      function.httpsTrigger.securityLevel = security_level_enum
-      updated_fields.append('httpsTrigger.securityLevel')
+  if args.IsSpecified('security_level'):
+    will_have_http_trigger = had_http_trigger or args.trigger_http
+    if not will_have_http_trigger:
+      raise exceptions.RequiredArgumentException(
+          'trigger-http',
+          'Flag `--trigger-http` is required for setting `security-level`.')
+    security_level_enum = arg_utils.ChoiceEnumMapper(
+        arg_name='security_level',
+        message_enum=function.httpsTrigger.SecurityLevelValueValuesEnum,
+        custom_mappings=flags.SECURITY_LEVEL_MAPPING).GetEnumForChoice(
+            args.security_level)
+    function.httpsTrigger.securityLevel = security_level_enum
+    updated_fields.append('httpsTrigger.securityLevel')
 
   # Populate source properties of function based on source args.
   # Only Add source to function if its explicitly provided, a new function,

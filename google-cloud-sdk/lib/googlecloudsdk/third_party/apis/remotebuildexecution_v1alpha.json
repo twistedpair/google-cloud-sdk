@@ -1237,6 +1237,24 @@
             "CONFIG_MATCH",
             "CONFIG_MISMATCH"
           ]
+        },
+        "outputLocation": {
+          "description": "Indicates whether output files and\/or output directories were found relative to the execution root or to the user provided work directory or both or none.",
+          "type": "string",
+          "enumDescriptions": [
+            "Location is set to LOCATION_UNDEFINED for tasks where the working directorty is not specified or is identical to the execution root directory.",
+            "No output files or directories were found neither relative to the execution root directory nor relative to the working directory.",
+            "Output files or directories were found relative to the execution root directory but not relative to the working directory.",
+            "Output files or directories were found relative to the working directory but not relative to the execution root directory.",
+            "Output files or directories were found both relative to the execution root directory and relative to the working directory."
+          ],
+          "enum": [
+            "LOCATION_UNDEFINED",
+            "LOCATION_NONE",
+            "LOCATION_EXEC_ROOT_RELATIVE",
+            "LOCATION_WORKING_DIR_RELATIVE",
+            "LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE"
+          ]
         }
       }
     },
@@ -1288,7 +1306,8 @@
             "Docker failed to create process because of file not found.",
             "Docker failed to run containers with CreateComputeSystem error that involves an incorrect parameter (more specific version of DOCKER_CREATE_COMPUTE_SYSTEM_ERROR that is user-caused).",
             "Docker failed to create an overlay mount because of too many levels of symbolic links.",
-            "The local Container Manager is not running."
+            "The local Container Manager is not running.",
+            "Docker failed because a request was denied by the organization's policy."
           ],
           "enum": [
             "OK",
@@ -1330,7 +1349,8 @@
             "DOCKER_CREATE_PROCESS_FILE_NOT_FOUND",
             "DOCKER_CREATE_COMPUTE_SYSTEM_INCORRECT_PARAMETER_ERROR",
             "DOCKER_TOO_MANY_SYMBOLIC_LINK_LEVELS",
-            "LOCAL_CONTAINER_MANAGER_NOT_RUNNING"
+            "LOCAL_CONTAINER_MANAGER_NOT_RUNNING",
+            "DOCKER_IMAGE_VPCSC_PERMISSION_DENIED"
           ]
         },
         "message": {

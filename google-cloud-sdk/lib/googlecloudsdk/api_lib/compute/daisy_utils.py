@@ -801,12 +801,12 @@ def _RunCloudBuild(args,
   client = cloudbuild_util.GetClientInstance()
   messages = cloudbuild_util.GetMessagesModule()
 
-  # Create the build request.
+  # Create the build request. Sort build_args for stable ordering in tests.
   build_config = messages.Build(
       steps=[
           messages.BuildStep(
               name=builder,
-              args=build_args,
+              args=sorted(build_args),
           ),
       ],
       tags=build_tags,
@@ -851,7 +851,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
                       description, labels, machine_type, network, network_tier,
                       subnet, private_network_ip, no_restart_on_failure, os,
                       tags, zone, project, output_filter,
-                      release_track, hostname, no_address):
+                      release_track, hostname, no_address, byol):
   """Run a OVF into VM instance import build on Google Cloud Build.
 
   Args:
@@ -888,6 +888,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
     hostname: hostname of the instance to be imported
     no_address: Specifies that no external IP address will be assigned to the
       instances.
+    byol: Specifies that you want to import an image with an existing license.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -922,6 +923,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   AppendArg(ovf_importer_args, 'private-network-ip', private_network_ip)
   AppendBoolArg(ovf_importer_args, 'no-restart-on-failure',
                 no_restart_on_failure)
+  if byol:
+    AppendBoolArg(ovf_importer_args, 'byol', byol)
   AppendArg(ovf_importer_args, 'os', os)
   if tags:
     AppendArg(ovf_importer_args, 'tags', ','.join(tags))
@@ -1033,7 +1036,10 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
   AppendArg(ovf_importer_args, 'subnet', args.subnet)
   AppendBoolArg(ovf_importer_args, 'no-restart-on-failure',
                 not args.restart_on_failure)
+
   AppendArg(ovf_importer_args, 'os', args.os)
+  if 'byol' in args:
+    AppendBoolArg(ovf_importer_args, 'byol', args.byol)
   if args.tags:
     AppendArg(ovf_importer_args, 'tags', ','.join(args.tags))
   AppendArg(ovf_importer_args, 'zone', properties.VALUES.compute.zone.Get())
@@ -1301,6 +1307,27 @@ def AppendNetworkAndSubnetArgs(args, builder_args):
 
   if args.network:
     AppendArg(builder_args, 'network', args.network.lower())
+
+
+def AddByolArg(parser):
+  """Adds byol arg."""
+  parser.add_argument(
+      '--byol',
+      action='store_true',
+      help="""\
+     Specifies that you want to import an image with an existing license.
+     Importing an image with an existing license is known as bring your
+     own license (BYOL).
+
+     `--byol` can be specified in any of the following ways:
+
+        + `--byol --os=rhel-8`: imports a RHEL 8 image with an existing license.
+        + `--os=rhel-8-byol`: imports a RHEL 8 image with an existing license.
+        + `--byol`: detects the OS contained on the disk, and imports
+           the image with an existing license.
+
+     For more information about BYOL, see:
+     https://cloud.google.com/compute/docs/nodes/bringing-your-own-licenses""")
 
 
 def AddNoAddressArg(parser, operation, docs_url=''):

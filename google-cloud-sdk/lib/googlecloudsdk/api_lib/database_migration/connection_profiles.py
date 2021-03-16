@@ -21,8 +21,14 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.database_migration import api_util
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core import exceptions as core_exceptions
+
+
+class UnsupportedConnectionProfileDBTypeError(core_exceptions.Error):
+  """Error raised when the connection profile database type is unsupported."""
 
 
 class ConnectionProfilesClient(object):
@@ -34,6 +40,7 @@ class ConnectionProfilesClient(object):
     self.messages = api_util.GetMessagesModule(release_track)
     self._service = self.client.projects_locations_connectionProfiles
     self.resource_parser = api_util.GetResourceParser(release_track)
+    self._release_track = release_track
 
   def _ClientCertificateArgName(self):
     if self._api_version == 'v1alpha2':
@@ -44,6 +51,9 @@ class ConnectionProfilesClient(object):
     if self._api_version == 'v1alpha2':
       return 'instance'
     return 'cloudsql_instance'
+
+  def _SupportsPostgresql(self):
+    return self._release_track == base.ReleaseTrack.GA
 
   def _ValidateArgs(self, args):
     self._ValidateSslConfigArgs(args)
@@ -61,7 +71,7 @@ class ConnectionProfilesClient(object):
     cert_lines = cert.split('\n')
     if (not cert_lines[0].startswith('-----')
         or not cert_lines[-1].startswith('-----')):
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           field,
           'The certificate does not appear to be in PEM format:\n{0}'
           .format(cert))
@@ -72,8 +82,8 @@ class ConnectionProfilesClient(object):
         clientCertificate=args.GetValue(self._ClientCertificateArgName()),
         caCertificate=args.ca_certificate)
 
-  def _UpdateSslConfig(self, connection_profile, args, update_fields):
-    """Fills connection_profile and update_fields with SSL data from args."""
+  def _UpdateMySqlSslConfig(self, connection_profile, args, update_fields):
+    """Fills connection_profile and update_fields with MySQL SSL data from args."""
     if args.IsSpecified('ca_certificate'):
       connection_profile.mysql.ssl.caCertificate = args.ca_certificate
       update_fields.append('mysql.ssl.caCertificate')
@@ -114,7 +124,51 @@ class ConnectionProfilesClient(object):
       connection_profile.mysql.cloudSqlId = args.GetValue(
           self._InstanceArgName())
       update_fields.append('mysql.instance')
-    self._UpdateSslConfig(connection_profile, args, update_fields)
+    self._UpdateMySqlSslConfig(connection_profile, args, update_fields)
+
+  def _UpdatePostgreSqlSslConfig(self, connection_profile, args, update_fields):
+    """Fills connection_profile and update_fields with PostgreSQL SSL data from args."""
+    if args.IsSpecified('ca_certificate'):
+      connection_profile.postgresql.ssl.caCertificate = args.ca_certificate
+      update_fields.append('postgresql.ssl.caCertificate')
+    if args.IsSpecified('private_key'):
+      connection_profile.postgresql.ssl.clientKey = args.private_key
+      update_fields.append('postgresql.ssl.clientKey')
+    if args.IsSpecified(self._ClientCertificateArgName()):
+      connection_profile.postgresql.ssl.clientCertificate = args.GetValue(
+          self._ClientCertificateArgName())
+      update_fields.append('postgresql.ssl.clientCertificate')
+
+  def _GetPostgreSqlConnectionProfile(self, args):
+    ssl_config = self._GetSslConfig(args)
+    return self.messages.PostgreSqlConnectionProfile(
+        host=args.host,
+        port=args.port,
+        username=args.username,
+        password=args.password,
+        ssl=ssl_config,
+        cloudSqlId=args.GetValue(self._InstanceArgName()))
+
+  def _UpdatePostgreSqlConnectionProfile(self, connection_profile, args,
+                                         update_fields):
+    """Updates PostgreSQL connection profile."""
+    if args.IsSpecified('host'):
+      connection_profile.postgresql.host = args.host
+      update_fields.append('postgresql.host')
+    if args.IsSpecified('port'):
+      connection_profile.postgresql.port = args.port
+      update_fields.append('postgresql.port')
+    if args.IsSpecified('username'):
+      connection_profile.postgresql.username = args.username
+      update_fields.append('postgresql.username')
+    if args.IsSpecified('password'):
+      connection_profile.postgresql.password = args.password
+      update_fields.append('postgresql.password')
+    if args.IsSpecified(self._InstanceArgName()):
+      connection_profile.postgresql.cloudSqlId = args.GetValue(
+          self._InstanceArgName())
+      update_fields.append('postgresql.instance')
+    self._UpdatePostgreSqlSslConfig(connection_profile, args, update_fields)
 
   def _GetProvider(self, cp_type, provider):
     if provider is None:
@@ -180,22 +234,27 @@ class ConnectionProfilesClient(object):
   def _GetConnectionProfile(self, cp_type, connection_profile_id, args):
     """Returns a connection profile according to type."""
     connection_profile_type = self.messages.ConnectionProfile
-    provider = self._GetProvider(connection_profile_type, args.provider)
     labels = labels_util.ParseCreateArgs(
         args, connection_profile_type.LabelsValue)
     params = {}
     if cp_type == 'MYSQL':
       mysql_connection_profile = self._GetMySqlConnectionProfile(args)
       params['mysql'] = mysql_connection_profile
+      params['provider'] = self._GetProvider(connection_profile_type,
+                                             args.provider)
     elif cp_type == 'CLOUDSQL':
       cloudsql_connection_profile = self._GetCloudSqlConnectionProfile(args)
       params['cloudsql'] = cloudsql_connection_profile
+      params['provider'] = self._GetProvider(connection_profile_type,
+                                             args.provider)
+    elif cp_type == 'POSTGRESQL':
+      postgresql_connection_profile = self._GetPostgreSqlConnectionProfile(args)
+      params['postgresql'] = postgresql_connection_profile
     return connection_profile_type(
         name=connection_profile_id,
         labels=labels,
         state=connection_profile_type.StateValueValuesEnum.CREATING,
         displayName=args.display_name,
-        provider=provider,
         **params)
 
   def _GetExistingConnectionProfile(self, name):
@@ -217,7 +276,6 @@ class ConnectionProfilesClient(object):
     if update_result.needs_update:
       connection_profile.labels = update_result.labels
 
-  # TODO(b/177659340): Avoid raising python build-in exceptions.
   def _GetUpdatedConnectionProfile(self, connection_profile, args):
     """Returns updated connection profile and list of updated fields."""
     update_fields = []
@@ -228,10 +286,16 @@ class ConnectionProfilesClient(object):
       self._UpdateMySqlConnectionProfile(connection_profile,
                                          args,
                                          update_fields)
+    elif (self._SupportsPostgresql() and
+          connection_profile.postgresql is not None):
+      self._UpdatePostgreSqlConnectionProfile(connection_profile, args,
+                                              update_fields)
     else:
-      raise AttributeError(
-          'The connection profile requested does not contain mysql object. '
-          'Currently only mysql connection profile is supported.')
+      raise UnsupportedConnectionProfileDBTypeError(
+          'The requested connection profile does not contain a MySQL or PostgreSQL object. '
+          'Currently only MySQL and PostgreSQL connection profiles are supported.'
+      )
+
     self._UpdateLabels(connection_profile, args)
     return connection_profile, update_fields
 
@@ -240,12 +304,12 @@ class ConnectionProfilesClient(object):
 
     Args:
       parent_ref: a Resource reference to a parent
-        datamigration.projects.locations resource for this connection
-        profile.
+        datamigration.projects.locations resource for this connection profile.
       connection_profile_id: str, the name of the resource to create.
-      cp_type: str, the type of the connection profile ('MYSQL', ''
-      args: argparse.Namespace, The arguments that this command was
-          invoked with.
+      cp_type: str, the type of the connection profile ('MYSQL', 'POSTGRESQL',
+        ''
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
 
     Returns:
       Operation: the operation for creating the connection profile.
@@ -339,4 +403,3 @@ class ConnectionProfilesClient(object):
         name,
         collection='datamigration.projects.locations.connectionProfiles')
     return uri.SelfLink()
-

@@ -6074,6 +6074,20 @@ class ComputeBackendBucketsDeleteSignedUrlKeyRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeBackendBucketsGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeBackendBucketsGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeBackendBucketsGetRequest(_messages.Message):
   r"""A ComputeBackendBucketsGetRequest object.
 
@@ -6183,6 +6197,36 @@ class ComputeBackendBucketsPatchRequest(_messages.Message):
   backendBucketResource = _messages.MessageField('BackendBucket', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeBackendBucketsSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeBackendBucketsSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeBackendBucketsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeBackendBucketsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeBackendBucketsUpdateRequest(_messages.Message):
@@ -12874,6 +12918,21 @@ class ComputeLicenseCodesGetRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class ComputeLicenseCodesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeLicenseCodesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeLicensesDeleteRequest(_messages.Message):
   r"""A ComputeLicensesDeleteRequest object.
 
@@ -13009,6 +13068,21 @@ class ComputeLicensesSetIamPolicyRequest(_messages.Message):
   globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
   project = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
+
+
+class ComputeLicensesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeLicensesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeMachineImagesDeleteRequest(_messages.Message):
@@ -16467,6 +16541,23 @@ class ComputeRegionCommitmentsListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeRegionCommitmentsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionCommitmentsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionCommitmentsUpdateReservationsRequest(_messages.Message):
   r"""A ComputeRegionCommitmentsUpdateReservationsRequest object.
 
@@ -17020,6 +17111,23 @@ class ComputeRegionHealthCheckServicesPatchRequest(_messages.Message):
   requestId = _messages.StringField(5)
 
 
+class ComputeRegionHealthCheckServicesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionHealthCheckServicesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionHealthChecksDeleteRequest(_messages.Message):
   r"""A ComputeRegionHealthChecksDeleteRequest object.
 
@@ -17162,6 +17270,23 @@ class ComputeRegionHealthChecksPatchRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
+
+
+class ComputeRegionHealthChecksTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionHealthChecksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeRegionHealthChecksUpdateRequest(_messages.Message):
@@ -18328,6 +18453,23 @@ class ComputeRegionNotificationEndpointsListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeRegionNotificationEndpointsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionNotificationEndpointsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionOperationsDeleteRequest(_messages.Message):
   r"""A ComputeRegionOperationsDeleteRequest object.
 
@@ -18543,6 +18685,23 @@ class ComputeRegionSslCertificatesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeRegionSslCertificatesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionSslCertificatesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionTargetHttpProxiesDeleteRequest(_messages.Message):
   r"""A ComputeRegionTargetHttpProxiesDeleteRequest object.
 
@@ -18686,6 +18845,23 @@ class ComputeRegionTargetHttpProxiesSetUrlMapRequest(_messages.Message):
   requestId = _messages.StringField(3)
   targetHttpProxy = _messages.StringField(4, required=True)
   urlMapReference = _messages.MessageField('UrlMapReference', 5)
+
+
+class ComputeRegionTargetHttpProxiesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionTargetHttpProxiesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeRegionTargetHttpsProxiesDeleteRequest(_messages.Message):
@@ -18863,6 +19039,23 @@ class ComputeRegionTargetHttpsProxiesSetUrlMapRequest(_messages.Message):
   urlMapReference = _messages.MessageField('UrlMapReference', 5)
 
 
+class ComputeRegionTargetHttpsProxiesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionTargetHttpsProxiesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionUrlMapsDeleteRequest(_messages.Message):
   r"""A ComputeRegionUrlMapsDeleteRequest object.
 
@@ -19000,6 +19193,23 @@ class ComputeRegionUrlMapsPatchRequest(_messages.Message):
   requestId = _messages.StringField(3)
   urlMap = _messages.StringField(4, required=True)
   urlMapResource = _messages.MessageField('UrlMap', 5)
+
+
+class ComputeRegionUrlMapsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionUrlMapsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeRegionUrlMapsUpdateRequest(_messages.Message):
@@ -20399,6 +20609,22 @@ class ComputeServiceAttachmentsDeleteRequest(_messages.Message):
   serviceAttachment = _messages.StringField(4, required=True)
 
 
+class ComputeServiceAttachmentsGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
+
+
 class ComputeServiceAttachmentsGetRequest(_messages.Message):
   r"""A ComputeServiceAttachmentsGetRequest object.
 
@@ -20489,6 +20715,40 @@ class ComputeServiceAttachmentsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeServiceAttachmentsSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeServiceAttachmentsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeSnapshotsDeleteRequest(_messages.Message):
@@ -21542,6 +21802,21 @@ class ComputeTargetGrpcProxiesPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   targetGrpcProxy = _messages.StringField(3, required=True)
   targetGrpcProxyResource = _messages.MessageField('TargetGrpcProxy', 4)
+
+
+class ComputeTargetGrpcProxiesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
@@ -23040,6 +23315,21 @@ class ComputeTargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
   targetTcpProxy = _messages.StringField(4, required=True)
 
 
+class ComputeTargetTcpProxiesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeTargetTcpProxiesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
   r"""A ComputeTargetVpnGatewaysAggregatedListRequest object.
 
@@ -23746,6 +24036,23 @@ class ComputeVpnGatewaysSetLabelsRequest(_messages.Message):
   regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
   requestId = _messages.StringField(4)
   resource = _messages.StringField(5, required=True)
+
+
+class ComputeVpnGatewaysTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeVpnGatewaysTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):

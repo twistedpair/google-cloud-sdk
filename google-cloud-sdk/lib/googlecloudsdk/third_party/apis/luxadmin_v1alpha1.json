@@ -614,6 +614,7 @@
     },
     "Instance": {
       "id": "Instance",
+      "description": "NEXT ID: 13",
       "type": "object",
       "properties": {
         "name": {
@@ -704,12 +705,16 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "readPoolConfiguration": {
+          "description": "Read pool specific config.",
+          "$ref": "ReadPoolConfiguration"
         }
       }
     },
     "NetworkConfiguration": {
       "id": "NetworkConfiguration",
-      "description": "Netwoek Management configuration.",
+      "description": "Network Management configuration.",
       "type": "object",
       "properties": {
         "publicIpEnabled": {
@@ -719,6 +724,18 @@
         "sslRequired": {
           "description": "Whether SSL connections over IP are enforced or not.",
           "type": "boolean"
+        }
+      }
+    },
+    "ReadPoolConfiguration": {
+      "id": "ReadPoolConfiguration",
+      "description": "Read pool configuration for an instance.",
+      "type": "object",
+      "properties": {
+        "readPoolSize": {
+          "description": "Read pool size.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

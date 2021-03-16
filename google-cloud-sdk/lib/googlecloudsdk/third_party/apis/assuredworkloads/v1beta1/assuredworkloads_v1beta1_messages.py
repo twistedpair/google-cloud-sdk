@@ -412,6 +412,10 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       organization or a folder. Must be the same or a child of the Workload
       parent. If not specified all resources are created under the Workload
       parent. Formats: folders/{folder_id} organizations/{organization_id}
+    resourceSettings: Input only. Resource properties that are used to
+      customize workload resources. These properties (such as custom project
+      id) will be used to create workload resources if possible. This field is
+      optional.
     resources: Output only. The resources associated with this workload. These
       resources will be created when creating the workload. If any of the
       projects already exist, the workload creation will fail. Always read
@@ -474,7 +478,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 11)
   name = _messages.StringField(12)
   provisionedResourcesParent = _messages.StringField(13)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 14, repeated=True)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 14, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 15, repeated=True)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):
@@ -562,6 +567,40 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo(_messages.Message):
     ENCRYPTION_KEYS_PROJECT = 2
 
   resourceId = _messages.IntegerField(1)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
+
+
+class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings(_messages.Message):
+  r"""Represent the custom settings for the resources to be created.
+
+  Enums:
+    ResourceTypeValueValuesEnum: Indicates the type of resource. This field
+      should be specified to correspond the id to the right project type
+      (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)
+
+  Fields:
+    resourceId: Resource identifier. For a project this represents project_id.
+      If the project is already taken, the workload creation will fail.
+    resourceType: Indicates the type of resource. This field should be
+      specified to correspond the id to the right project type
+      (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""Indicates the type of resource. This field should be specified to
+    correspond the id to the right project type (CONSUMER_PROJECT or
+    ENCRYPTION_KEYS_PROJECT)
+
+    Values:
+      RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
+      CONSUMER_PROJECT: Consumer project.
+      ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
+    """
+    RESOURCE_TYPE_UNSPECIFIED = 0
+    CONSUMER_PROJECT = 1
+    ENCRYPTION_KEYS_PROJECT = 2
+
+  resourceId = _messages.StringField(1)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
 
 

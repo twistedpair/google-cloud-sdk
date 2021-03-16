@@ -282,8 +282,7 @@
             "NPM package format.",
             "PyPI package format.",
             "APT package format.",
-            "YUM package format.",
-            "GooGet package format."
+            "YUM package format."
           ],
           "enum": [
             "FORMAT_UNSPECIFIED",
@@ -292,8 +291,7 @@
             "NPM",
             "PYPI",
             "APT",
-            "YUM",
-            "GOOGET"
+            "YUM"
           ]
         },
         "description": {

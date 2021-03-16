@@ -347,27 +347,6 @@ value is 1.
             'always deployed on.')).AddToParser(parser)
 
   base.Argument(
-      '--autoscaling-metric-specs',
-      metavar='METRIC-NAME=TARGET',
-      type=arg_parsers.ArgDict(key_type=str, value_type=int),
-      action=arg_parsers.UpdateAction,
-      help="""\
-Metric specifications that overrides a resource utilization metric's target
-value. At most one entry is allowed per metric.
-
-*METRIC-NAME*::: Resource metric name. Choices are {}.
-
-*TARGET*::: Target resource utilization in percentage (1% - 100%) for the
-given metric. If the value is set to 60, the target resource utilization is 60%.
-
-For example:
-`--autoscaling-metric-specs=cpu-usage=70`
-""".format(', '.join([
-    "'{}'".format(c)
-    for c in sorted(constants.OP_AUTOSCALING_METRIC_NAME_MAPPER.keys())]
-                     ))).AddToParser(parser)
-
-  base.Argument(
       '--machine-type',
       help="""\
 The machine resources to be used for each node of this deployment.
@@ -396,6 +375,30 @@ For example:
 `--accelerator=type=nvidia-tesla-k80,count=1`""".format(', '.join([
     "'{}'".format(c) for c in GetAcceleratorTypeMapper(version).choices
   ]))).AddToParser(parser)
+
+
+def GetAutoscalingMetricSpecsArg():
+  """Add arguments for autoscaling metric specs."""
+  return base.Argument(
+      '--autoscaling-metric-specs',
+      metavar='METRIC-NAME=TARGET',
+      type=arg_parsers.ArgDict(key_type=str, value_type=int),
+      action=arg_parsers.UpdateAction,
+      help="""\
+Metric specifications that overrides a resource utilization metric's target
+value. At most one entry is allowed per metric.
+
+*METRIC-NAME*::: Resource metric name. Choices are {}.
+
+*TARGET*::: Target resource utilization in percentage (1% - 100%) for the
+given metric. If the value is set to 60, the target resource utilization is 60%.
+
+For example:
+`--autoscaling-metric-specs=cpu-usage=70`
+""".format(', '.join([
+    "'{}'".format(c)
+    for c in sorted(constants.OP_AUTOSCALING_METRIC_NAME_MAPPER.keys())]
+                     )))
 
 
 def AddAutomaticResourcesArgs(parser, resource_type):
@@ -439,7 +442,24 @@ def GetEnableContainerLoggingArg():
 If true, the container of the deployed model instances will send `stderr` and
 `stdout` streams to Cloud Logging.
 
-Currently, only supported for custom-trained Models and AutoML Tables Models.
+Currently, only supported for custom-trained Models and AutoML Tabular Models.
+""")
+
+
+def GetDisableContainerLoggingArg():
+  return base.Argument(
+      '--disable-container-logging',
+      action='store_true',
+      default=False,
+      required=False,
+      help="""\
+For custom-trained Models and AutoML Tabular Models, the container of the
+deployed model instances will send `stderr` and `stdout` streams to
+Cloud Logging by default. Please note that the logs incur cost,
+which are subject to [Cloud Logging
+pricing](https://cloud.google.com/stackdriver/pricing).
+
+User can disable container logging by setting this flag to true.
 """)
 
 
@@ -594,6 +614,11 @@ inclusive.
   parser.add_argument(
       '--container-health-route',
       help='HTTP path to send health checks to inside the container.')
+
+
+def AddUploadModelBetaFlags(parser):
+  """Adds additional flags for v1beta1 UploadModel."""
+
   # For Explanation.
   parser.add_argument(
       '--explanation-method',
@@ -735,6 +760,23 @@ def GetNetworkArg(required=True):
       """)
 
 
+def TensorboardAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='tensorboard-id',
+      help_text='ID of the tensorboard for the {resource}.')
+
+
+def GetTensorboardExperimentResourceSpec(
+    resource_name='tensorboard_experiment'):
+  return concepts.ResourceSpec(
+      constants.TENSORBOARD_EXPERIMENTS_COLLECTION,
+      resource_name=resource_name,
+      tensorboardsId=TensorboardAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      disable_auto_completers=False)
+
+
 def GetTensorboardResourceSpec(resource_name='tensorboard'):
   return concepts.ResourceSpec(
       constants.TENSORBOARDS_COLLECTION,
@@ -742,6 +784,22 @@ def GetTensorboardResourceSpec(resource_name='tensorboard'):
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=RegionAttributeConfig(),
       disable_auto_completers=False)
+
+
+def AddTensorboardExperimentResourceArg(parser, verb):
+  """Add a resource argument for a Cloud AI Platform Tensorboard experiment.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'tensorboard_experiment',
+      GetTensorboardExperimentResourceSpec(),
+      'The Tensorboard experiment {}.'.format(verb),
+      required=True).AddToParser(parser)
 
 
 def AddTensorboardResourceArg(parser, verb):
@@ -758,6 +816,13 @@ def AddTensorboardResourceArg(parser, verb):
       GetTensorboardResourceSpec(),
       'The tensorboard {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def GetTensorboardExperimentIdArg(required=True):
+  return base.Argument(
+      '--tensorboard-experiment-id',
+      help='Id of the Tensorboard experiment.',
+      required=required)
 
 
 def ParseAcceleratorFlag(accelerator, version):
@@ -777,14 +842,22 @@ The count of the accelerator must be greater than 0.
 """)
   if version == constants.ALPHA_VERSION:
     accelerator_msg = (
-        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                               constants.AI_PLATFORM_API_VERSION[version])
+        apis
+        .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                           constants.AI_PLATFORM_API_VERSION[version])
         .GoogleCloudAiplatformV1alpha1MachineSpec)
+  elif version == constants.BETA_VERSION:
+    accelerator_msg = (
+        apis
+        .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                           constants.AI_PLATFORM_API_VERSION[version])
+        .GoogleCloudAiplatformV1beta1MachineSpec)
   else:
     accelerator_msg = (
-        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                               constants.AI_PLATFORM_API_VERSION[version])
-        .GoogleCloudAiplatformV1beta1MachineSpec)
+        apis
+        .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                           constants.AI_PLATFORM_API_VERSION[version])
+        .GoogleCloudAiplatformV1MachineSpec)
   accelerator_type = arg_utils.ChoiceToEnum(
       raw_type, accelerator_msg.AcceleratorTypeValueValuesEnum)
   return accelerator_msg(
@@ -796,17 +869,32 @@ def GetAcceleratorTypeMapper(version):
   if version == constants.ALPHA_VERSION:
     return arg_utils.ChoiceEnumMapper(
         'generic-accelerator',
-        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                               constants.AI_PLATFORM_API_VERSION[version])
-        .GoogleCloudAiplatformV1beta1MachineSpec.AcceleratorTypeValueValuesEnum,
+        apis
+        .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                           constants.AI_PLATFORM_API_VERSION[version])
+        .GoogleCloudAiplatformV1alpha1MachineSpec
+        .AcceleratorTypeValueValuesEnum,
+        help_str='The available types of accelerators.',
+        include_filter=lambda x: x.startswith('NVIDIA'),
+        required=False)
+  elif version == constants.BETA_VERSION:
+    return arg_utils.ChoiceEnumMapper(
+        'generic-accelerator',
+        apis
+        .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                           constants.AI_PLATFORM_API_VERSION[version])
+        .GoogleCloudAiplatformV1beta1MachineSpec
+        .AcceleratorTypeValueValuesEnum,
         help_str='The available types of accelerators.',
         include_filter=lambda x: x.startswith('NVIDIA'),
         required=False)
   return arg_utils.ChoiceEnumMapper(
       'generic-accelerator',
-      apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                             constants.AI_PLATFORM_API_VERSION[version])
-      .GoogleCloudAiplatformV1beta1MachineSpec.AcceleratorTypeValueValuesEnum,
+      apis
+      .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                         constants.AI_PLATFORM_API_VERSION[version])
+      .GoogleCloudAiplatformV1MachineSpec
+      .AcceleratorTypeValueValuesEnum,
       help_str='The available types of accelerators.',
       include_filter=lambda x: x.startswith('NVIDIA'),
       required=False)

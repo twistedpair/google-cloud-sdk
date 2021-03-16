@@ -501,7 +501,11 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
 
   def StartProxyServer(self):
     """Start accepting connections."""
-    self._TestConnection()
+    try:
+      self._TestConnection()
+    except iap_tunnel_websocket.ConnectionCreationError as e:
+      raise iap_tunnel_websocket.ConnectionCreationError(
+          'While checking if a connection can be made: %s' % six.text_type(e))
     self._server_sockets = _OpenLocalTcpSockets(self._local_host,
                                                 self._local_port)
     log.out.Print('Listening on port [%d].' % self._local_port)

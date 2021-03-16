@@ -54,5 +54,5 @@ class FileDownloadTask(task.Task):
         self._source_resource,
         self._destination_resource,
         offset=0,
-        length=self._source_resource.size,
-    ).execute(task_status_queue=task_status_queue)
+        length=self._source_resource.size).execute(
+            task_status_queue=task_status_queue)

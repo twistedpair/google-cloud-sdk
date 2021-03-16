@@ -23,12 +23,12 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 
 
-def GetOperation(release_track=base.ReleaseTrack.ALPHA):
+def GetOperation(release_track=base.ReleaseTrack.GA):
   return api_util.GetClientInstance(
       release_track=release_track).projects_locations_operations
 
 
-def Delete(relative_resource_name, release_track=base.ReleaseTrack.ALPHA):
+def Delete(relative_resource_name, release_track=base.ReleaseTrack.GA):
   """Calls the Metastore Operations.Delete method.
 
   Args:
@@ -46,7 +46,7 @@ def Delete(relative_resource_name, release_track=base.ReleaseTrack.ALPHA):
           name=relative_resource_name))
 
 
-def WaitForOperation(operation, message, release_track=base.ReleaseTrack.ALPHA):
+def WaitForOperation(operation, message, release_track=base.ReleaseTrack.GA):
   """Waits for an operation to complete.
 
   Polls the operation at least every 15 seconds, showing a progress indicator.
@@ -70,7 +70,7 @@ def WaitForOperation(operation, message, release_track=base.ReleaseTrack.ALPHA):
 class _OperationPoller(waiter.CloudOperationPollerNoResources):
   """Class for polling Metastore longrunning Operations."""
 
-  def __init__(self, release_track=base.ReleaseTrack.ALPHA):
+  def __init__(self, release_track=base.ReleaseTrack.GA):
     super(_OperationPoller,
           self).__init__(GetOperation(release_track=release_track), lambda x: x)
 

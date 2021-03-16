@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for getting temporary resources for composite uploads."""
+# TODO(b/182259875): Merge this file with copy_component_util.py.
 
 from __future__ import absolute_import
 from __future__ import division
@@ -76,4 +77,3 @@ def get_resource(source_resource, destination_resource, component_id):
       component_object_name)
 
   return resource_reference.UnknownResource(component_url)
-

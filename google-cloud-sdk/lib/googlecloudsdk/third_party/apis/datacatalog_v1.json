@@ -240,12 +240,14 @@
           "enumDescriptions": [
             "Default unknown system.",
             "BigQuery.",
-            "Cloud Pub\/Sub."
+            "Cloud Pub\/Sub.",
+            "Dataproc Metastore - Managed Hive Metastore."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
             "BIGQUERY",
-            "CLOUD_PUBSUB"
+            "CLOUD_PUBSUB",
+            "DATAPROC_METASTORE"
           ]
         },
         "userSpecifiedSystem": {
@@ -340,6 +342,10 @@
           "description": "The resource this metadata entry refers to. For Google Cloud Platform resources, `linked_resource` is the [full name of the resource](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name). For example, the `linked_resource` for a table resource from BigQuery is: * \/\/bigquery.googleapis.com\/projects\/projectId\/datasets\/datasetId\/tables\/tableId Output only when Entry is of type in the EntryType enum. For entries with user_specified_type, this field is optional and defaults to an empty string.",
           "type": "string"
         },
+        "fullyQualifiedName": {
+          "description": "Fully Qualified Name of the resource. Set automatically for entries representing resources from synced systems. Settable only during creation and read-only afterwards. Can be used for search and lookup of the entries. There are two main forms of FQNs: {system}:{project}.{dot-separated path to resource} for non-regionalized resources {system}:{project}.{location id}.{dot-separated path to resource} for regionalized resources Example for DPMS table: dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId",
+          "type": "string"
+        },
         "type": {
           "description": "The type of the entry. Only used for Entries with types in the EntryType enum.",
           "type": "string",
@@ -349,7 +355,9 @@
             "Output only. The type of models, examples include https:\/\/cloud.google.com\/bigquery-ml\/docs\/bigqueryml-intro",
             "An entry type which is used for streaming entries. Example: Pub\/Sub topic.",
             "An entry type which is a set of files or objects. Example: Cloud Storage fileset.",
-            "A group of servers that work together. Example: Kafka cluster."
+            "A group of servers that work together. Example: Kafka cluster.",
+            "A database.",
+            "A service (for example Dataproc Metastore service)."
           ],
           "enum": [
             "ENTRY_TYPE_UNSPECIFIED",
@@ -357,7 +365,9 @@
             "MODEL",
             "DATA_STREAM",
             "FILESET",
-            "CLUSTER"
+            "CLUSTER",
+            "DATABASE",
+            "SERVICE"
           ]
         },
         "userSpecifiedType": {
@@ -371,12 +381,14 @@
           "enumDescriptions": [
             "Default unknown system.",
             "BigQuery.",
-            "Cloud Pub\/Sub."
+            "Cloud Pub\/Sub.",
+            "Dataproc Metastore - Managed Hive Metastore."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
             "BIGQUERY",
-            "CLOUD_PUBSUB"
+            "CLOUD_PUBSUB",
+            "DATAPROC_METASTORE"
           ]
         },
         "userSpecifiedSystem": {
@@ -403,6 +415,10 @@
           "description": "Additional specification of a cluster. Present on entries representing clusters.",
           "$ref": "GoogleCloudDatacatalogV1ClusterSpec"
         },
+        "databaseTableSpec": {
+          "description": "Specification that applies to a table resource. This is only valid on entries of type `TABLE`.",
+          "$ref": "GoogleCloudDatacatalogV1DatabaseTableSpec"
+        },
         "displayName": {
           "description": "Display information such as title and description. A short name to identify the entry, for example, \"Analytics Data - Jan 2011\". Default value is an empty string.",
           "type": "string"
@@ -418,6 +434,11 @@
         "sourceSystemTimestamps": {
           "description": "Timestamps about the underlying resource, not about this Data Catalog entry. Output only when Entry is of type in the EntryType enum. For entries with user_specified_type, this field is optional and defaults to an empty timestamp.",
           "$ref": "GoogleCloudDatacatalogV1SystemTimestamps"
+        },
+        "dataSource": {
+          "description": "Output only. Physical location of the entry.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDatacatalogV1DataSource"
         }
       }
     },
@@ -596,6 +617,27 @@
         }
       }
     },
+    "GoogleCloudDatacatalogV1DatabaseTableSpec": {
+      "id": "GoogleCloudDatacatalogV1DatabaseTableSpec",
+      "description": "Specification that applies to a table resource. This is only valid on entries of type `TABLE`.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of this table.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default unknown table type.",
+            "Native table.",
+            "External table."
+          ],
+          "enum": [
+            "TABLE_TYPE_UNSPECIFIED",
+            "NATIVE",
+            "EXTERNAL"
+          ]
+        }
+      }
+    },
     "GoogleCloudDatacatalogV1Schema": {
       "id": "GoogleCloudDatacatalogV1Schema",
       "description": "Represents a schema (e.g. BigQuery, GoogleSQL, Avro schema).",
@@ -668,6 +710,10 @@
         "orc": {
           "description": "Marks an ORC-encoded data source.",
           "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaOrcSchema"
+        },
+        "csv": {
+          "description": "Marks a CSV-encoded data source.",
+          "$ref": "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema"
         }
       }
     },
@@ -716,6 +762,38 @@
       "description": "Marks an ORC-encoded data source.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema": {
+      "id": "GoogleCloudDatacatalogV1PhysicalSchemaCsvSchema",
+      "description": "Marks a CSV-encoded data source.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1DataSource": {
+      "id": "GoogleCloudDatacatalogV1DataSource",
+      "description": "Describes the physical location of an entry.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Service in which the data is physically stored.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default unknown service.",
+            "Google Cloud Storage service.",
+            "BigQuery service."
+          ],
+          "enum": [
+            "SERVICE_UNSPECIFIED",
+            "CLOUD_STORAGE",
+            "BIGQUERY"
+          ]
+        },
+        "resource": {
+          "description": "Full name of the resource as defined by the service, e.g. \/\/bigquery.googleapis.com\/projects\/{project_id}\/locations\/{location}\/datasets\/{dataset_id}\/tables\/{table_id}",
+          "type": "string"
+        }
       }
     },
     "GoogleCloudDatacatalogV1ListEntriesResponse": {
@@ -3035,6 +3113,11 @@
             },
             "sqlResource": {
               "description": "The SQL name of the entry. SQL names are case-sensitive. Examples: * `pubsub.project_id.topic_id` * ``pubsub.project_id.`topic.id.with.dots` `` * `bigquery.table.project_id.dataset_id.table_id` * `bigquery.dataset.project_id.dataset_id` * `datacatalog.entry.project_id.location_id.entry_group_id.entry_id` `*_id`s should satisfy the standard SQL rules for identifiers. https:\/\/cloud.google.com\/bigquery\/docs\/reference\/standard-sql\/lexical.",
+              "location": "query",
+              "type": "string"
+            },
+            "fullyQualifiedName": {
+              "description": "Fully Qualified Name of the resource. There are two main forms of FQNs: {system}:{project}.{dot-separated path to resource} for non-regionalized resources {system}:{project}.{location id}.{dot-separated path to resource} for regionalized resources Examples: * `bigquery:dataset.project_id.dataset_id` * `bigquery:table.project_id.dataset_id.table_id` * `pubsub:project_id.topic_id` * `dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId`",
               "location": "query",
               "type": "string"
             }

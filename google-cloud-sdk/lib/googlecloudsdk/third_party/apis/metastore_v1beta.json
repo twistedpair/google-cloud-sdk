@@ -457,10 +457,6 @@
       "description": "Specifies how metastore metadata should be integrated with the Data Catalog service.",
       "type": "object",
       "properties": {
-        "disabled": {
-          "description": "This field is replaced by the enabled field.",
-          "type": "boolean"
-        },
         "enabled": {
           "description": "Defines whether the metastore metadata should be synced to Data Catalog. The default value is to disable syncing metastore metadata to Data Catalog.",
           "type": "boolean"
@@ -573,11 +569,13 @@
           "type": "string",
           "enumDescriptions": [
             "The type of the database dump is unknown.",
-            "Database dump is a MySQL dump file."
+            "Database dump is a MySQL dump file.",
+            "Database dump contains Avro files."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
-            "MYSQL"
+            "MYSQL",
+            "AVRO"
           ]
         }
       }
@@ -750,11 +748,13 @@
           "type": "string",
           "enumDescriptions": [
             "The type of the database dump is unknown.",
-            "Database dump is a MySQL dump file."
+            "Database dump is a MySQL dump file.",
+            "Database dump contains Avro files."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
-            "MYSQL"
+            "MYSQL",
+            "AVRO"
           ]
         }
       }
@@ -777,11 +777,13 @@
           "type": "string",
           "enumDescriptions": [
             "The type of the database dump is unknown.",
-            "Database dump is a MySQL dump file."
+            "Database dump is a MySQL dump file.",
+            "Database dump contains Avro files."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
-            "MYSQL"
+            "MYSQL",
+            "AVRO"
           ]
         }
       }

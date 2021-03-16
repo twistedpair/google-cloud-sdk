@@ -59,7 +59,8 @@ class FilePartUploadTask(file_part_task.FilePartTask):
     """Performs upload."""
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
-        size=self._length,
+        offset=self._offset,
+        length=self._length,
         source_url=self._source_resource.storage_url,
         destination_url=self._destination_resource.storage_url,
         component_number=self._component_number,

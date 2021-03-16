@@ -882,6 +882,9 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
   Enums:
     CmUsageValueValuesEnum: Indicates if and how Container Manager is being
       used for task execution.
+    OutputLocationValueValuesEnum: Indicates whether output files and/or
+      output directories were found relative to the execution root or to the
+      user provided work directory or both or none.
 
   Fields:
     cmUsage: Indicates if and how Container Manager is being used for task
@@ -892,6 +895,9 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
     inputCacheMiss: The input cache miss ratio.
     numErrors: The number of errors reported.
     numWarnings: The number of warnings reported.
+    outputLocation: Indicates whether output files and/or output directories
+      were found relative to the execution root or to the user provided work
+      directory or both or none.
     usedAsyncContainer: Indicates whether an asynchronous container was used
       for execution.
   """
@@ -912,13 +918,42 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
     CONFIG_MATCH = 1
     CONFIG_MISMATCH = 2
 
+  class OutputLocationValueValuesEnum(_messages.Enum):
+    r"""Indicates whether output files and/or output directories were found
+    relative to the execution root or to the user provided work directory or
+    both or none.
+
+    Values:
+      LOCATION_UNDEFINED: Location is set to LOCATION_UNDEFINED for tasks
+        where the working directorty is not specified or is identical to the
+        execution root directory.
+      LOCATION_NONE: No output files or directories were found neither
+        relative to the execution root directory nor relative to the working
+        directory.
+      LOCATION_EXEC_ROOT_RELATIVE: Output files or directories were found
+        relative to the execution root directory but not relative to the
+        working directory.
+      LOCATION_WORKING_DIR_RELATIVE: Output files or directories were found
+        relative to the working directory but not relative to the execution
+        root directory.
+      LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE: Output files or directories
+        were found both relative to the execution root directory and relative
+        to the working directory.
+    """
+    LOCATION_UNDEFINED = 0
+    LOCATION_NONE = 1
+    LOCATION_EXEC_ROOT_RELATIVE = 2
+    LOCATION_WORKING_DIR_RELATIVE = 3
+    LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE = 4
+
   cmUsage = _messages.EnumField('CmUsageValueValuesEnum', 1)
   dockerCacheHit = _messages.BooleanField(2)
   dockerImageName = _messages.StringField(3)
   inputCacheMiss = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
   numErrors = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   numWarnings = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  usedAsyncContainer = _messages.BooleanField(7)
+  outputLocation = _messages.EnumField('OutputLocationValueValuesEnum', 7)
+  usedAsyncContainer = _messages.BooleanField(8)
 
 
 class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
@@ -999,6 +1034,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         mount because of too many levels of symbolic links.
       LOCAL_CONTAINER_MANAGER_NOT_RUNNING: The local Container Manager is not
         running.
+      DOCKER_IMAGE_VPCSC_PERMISSION_DENIED: Docker failed because a request
+        was denied by the organization's policy.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1040,6 +1077,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_CREATE_COMPUTE_SYSTEM_INCORRECT_PARAMETER_ERROR = 37
     DOCKER_TOO_MANY_SYMBOLIC_LINK_LEVELS = 38
     LOCAL_CONTAINER_MANAGER_NOT_RUNNING = 39
+    DOCKER_IMAGE_VPCSC_PERMISSION_DENIED = 40
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

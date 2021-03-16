@@ -10,3 +10,10 @@ update-asset-type-config-file:
   required: true
   help_text: |-
     File path to a config file in JSON format. It must containe the asset type updated fields and update_mask
+
+complex-type-config-file:
+  arg_name: complex-type-config-file
+  type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
+  required: false
+  help_text: |-
+    File path to a config file in JSON format. It must containe the asset type updated fields and update_mask

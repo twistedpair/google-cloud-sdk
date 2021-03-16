@@ -93,20 +93,6 @@ class ListCustomClassesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListLogDataStatsResponse(_messages.Message):
-  r"""Message received by the client for the `ListLogDataStats` method.
-
-  Fields:
-    logDataEnabled: True if user has opted in for log data collection.
-    logDataStats: The stats for each bucket.
-    totalCount: The overall count for log data (including all bucket data).
-  """
-
-  logDataEnabled = _messages.BooleanField(1)
-  logDataStats = _messages.MessageField('LogBucketStats', 2, repeated=True)
-  totalCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-
-
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -131,18 +117,6 @@ class ListPhraseSetResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   phraseSets = _messages.MessageField('PhraseSet', 2, repeated=True)
-
-
-class LogBucketStats(_messages.Message):
-  r"""Stats for log data within a bucket.
-
-  Fields:
-    bucketName: The display name for the bucket in which logs are collected.
-    count: Number of audio samples that have been collected in this bucket.
-  """
-
-  bucketName = _messages.StringField(1)
-  count = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class LongRunningRecognizeMetadata(_messages.Message):
@@ -959,31 +933,6 @@ class SpeechProjectsLocationsCustomClassesPatchRequest(_messages.Message):
   customClass = _messages.MessageField('CustomClass', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class SpeechProjectsLocationsLogDataRequest(_messages.Message):
-  r"""A SpeechProjectsLocationsLogDataRequest object.
-
-  Fields:
-    bucketName: Bucket name to delete all logs from. If empty, all logs are
-      deleted.
-    parent: Required. Resource name of the parent. Has the format :-
-      "projects/{project_id}/locations/{location_id}"
-  """
-
-  bucketName = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
-
-
-class SpeechProjectsLocationsLogDataStatsListRequest(_messages.Message):
-  r"""A SpeechProjectsLocationsLogDataStatsListRequest object.
-
-  Fields:
-    parent: Required. Resource name of the parent. Has the format :-
-      "projects/{project_id}/locations/{location_id}"
-  """
-
-  parent = _messages.StringField(1, required=True)
 
 
 class SpeechProjectsLocationsPhraseSetsCreateRequest(_messages.Message):

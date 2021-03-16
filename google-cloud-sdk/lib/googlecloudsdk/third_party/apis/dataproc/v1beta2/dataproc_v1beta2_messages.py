@@ -622,6 +622,18 @@ class ClusterStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
+class ConfidentialInstanceConfig(_messages.Message):
+  r"""Confidential Instance Config for clusters using Confidential VMs
+  (https://cloud.google.com/compute/confidential-vm/docs)
+
+  Fields:
+    enableConfidentialCompute: Optional. Defines whether the instance should
+      have confidential compute enabled.
+  """
+
+  enableConfidentialCompute = _messages.BooleanField(1)
+
+
 class DataprocProjectsLocationsAutoscalingPoliciesCreateRequest(_messages.Message):
   r"""A DataprocProjectsLocationsAutoscalingPoliciesCreateRequest object.
 
@@ -2076,6 +2088,9 @@ class GceClusterConfig(_messages.Message):
       metadata#project_and_instance_metadata)).
 
   Fields:
+    confidentialInstanceConfig: Optional. Confidential Instance Config for
+      clusters using Confidential VMs
+      (https://cloud.google.com/compute/confidential-vm/docs)
     internalIpOnly: Optional. If true, all instances in the cluster will only
       have internal IP addresses. By default, clusters are not restricted to
       internal IP addresses, and will have ephemeral external IP addresses
@@ -2190,18 +2205,19 @@ class GceClusterConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  internalIpOnly = _messages.BooleanField(1)
-  metadata = _messages.MessageField('MetadataValue', 2)
-  networkUri = _messages.StringField(3)
-  nodeGroupAffinity = _messages.MessageField('NodeGroupAffinity', 4)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 5)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 6)
-  serviceAccount = _messages.StringField(7)
-  serviceAccountScopes = _messages.StringField(8, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 9)
-  subnetworkUri = _messages.StringField(10)
-  tags = _messages.StringField(11, repeated=True)
-  zoneUri = _messages.StringField(12)
+  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 1)
+  internalIpOnly = _messages.BooleanField(2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  networkUri = _messages.StringField(4)
+  nodeGroupAffinity = _messages.MessageField('NodeGroupAffinity', 5)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 6)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 7)
+  serviceAccount = _messages.StringField(8)
+  serviceAccountScopes = _messages.StringField(9, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 10)
+  subnetworkUri = _messages.StringField(11)
+  tags = _messages.StringField(12, repeated=True)
+  zoneUri = _messages.StringField(13)
 
 
 class GetIamPolicyRequest(_messages.Message):

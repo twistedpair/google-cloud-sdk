@@ -275,7 +275,8 @@ def AddSourceMachineImageEncryptionKey(parser):
       """.format(csek_help=csek_utils.CSEK_HELP_URL))
 
 
-def AddImageArgs(parser, enable_snapshots=False):
+def AddImageArgs(parser, enable_snapshots=False,
+                 support_image_family_scope=False):
   """Adds arguments related to images for instances and instance-templates."""
 
   def AddImageHelp():
@@ -323,6 +324,8 @@ def AddImageArgs(parser, enable_snapshots=False):
           * https://compute.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
           * snapshot
         """)
+  if support_image_family_scope:
+    image_utils.AddImageFamilyScopeFlag(image_parent_group)
 
 
 def AddCanIpForwardArgs(parser):
@@ -607,6 +610,15 @@ def AddBootDiskArgs(parser):
       default=True,
       help='Automatically delete boot disks when their instances are deleted.')
 
+  parser.add_argument(
+      '--boot-disk-provisioned-iops',
+      type=arg_parsers.BoundedInt(10000, 120000),
+      help="""\
+      Indicates how many IOPS to provision for the disk. This sets the number
+      of I/O operations per second that the disk can handle. Value must be
+      between 10,000 and 120,000.
+      """)
+
 
 def AddCreateDiskArgs(parser,
                       enable_kms=False,
@@ -683,6 +695,10 @@ def AddCreateDiskArgs(parser,
 
       *device-name*::: {disk_device}
 
+      *provisioned-iops*::: Indicates how many IOPS to provision for the disk.
+      This sets the number of I/O operations per second that the disk can
+      handle. Value must be between 10,000 and 120,000.
+
       *auto-delete*::: If ``yes'', this persistent disk will be
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
@@ -750,6 +766,7 @@ def AddCreateDiskArgs(parser,
       'type': str,
       'device-name': str,
       'auto-delete': str,
+      'provisioned-iops': int,
   }
 
   if include_name:
@@ -1037,6 +1054,14 @@ def ValidateDiskBootFlags(args, enable_kms=False):
       else:
         boot_disk_specified = True
 
+  if args.IsSpecified('boot_disk_provisioned_iops'):
+    if not args.IsSpecified(
+        'boot_disk_type') or not args.boot_disk_type.endswith('pd-extreme'):
+      raise exceptions.InvalidArgumentException(
+          '--boot-disk-provisioned-iops',
+          '--boot-disk-provisioned-iops can be used only with pd-extreme disk type.'
+      )
+
   if args.image and boot_disk_specified:
     raise exceptions.BadArgumentException(
         '--disk',
@@ -1060,6 +1085,11 @@ def ValidateDiskBootFlags(args, enable_kms=False):
       raise exceptions.BadArgumentException(
           '--boot-disk-size',
           '[--boot-disk-size] can only be used when creating a new boot '
+          'disk.')
+
+    if args.boot_disk_provisioned_iops:
+      raise exceptions.ToolException(
+          '[--boot-disk-provisioned-iops] can only be used when creating a new boot '
           'disk.')
 
     if not args.boot_disk_auto_delete:
@@ -2892,7 +2922,7 @@ def AddThreadsPerCoreArgs(parser):
       type=int,
       help="""
       The number of visible threads per physical core. To disable simultaneous
-      multithreading (SMT) set this to 1. Valid values are currently: 0, 1, or 2.
+      multithreading (SMT) set this to 1. Valid values are currently: 1 or 2.
     """)
 
 
@@ -2969,7 +2999,7 @@ def ValidateNetworkPerformanceConfigsArgs(args):
       raise exceptions.InvalidArgumentException(
           '--network-performance-configs',
           """Invalid total-egress-bandwidth-tier tier value, "{tier}".
-             Tier value must be on of the follwing {tier_values}"""
+             Tier value must be one of the following {tier_values}"""
           .format(tier=total_tier,
                   tier_values=','.join([
                       six.text_type(tier_val)

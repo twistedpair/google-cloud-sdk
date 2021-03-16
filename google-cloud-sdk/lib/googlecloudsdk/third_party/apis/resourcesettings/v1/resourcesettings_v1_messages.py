@@ -139,7 +139,7 @@ class GoogleCloudResourcesettingsV1ValueEnumValue(_messages.Message):
   definitions.
 
   Fields:
-    value: A string attribute.
+    value: The value of this enum
   """
 
   value = _messages.StringField(1)

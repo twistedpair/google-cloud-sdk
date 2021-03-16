@@ -712,12 +712,6 @@ class EdgeCacheService(_messages.Message):
       one (1) edgeSslCertificate specified to enable this.
     routing: Required. Defines how requests are routed, modified, cached
       and/or which origin content is filled from.
-    sslPolicy: Optional. URL of the SslPolicy resource that will be associated
-      with the EdgeCacheService. For example, the following are both valid
-      URLs to an SslPolicy resource: -
-      compute/v1/projects/project/global/sslPolicies/your-policy -
-      /global/sslPolicies/your-policy If not set, the EdgeCacheService has no
-      SSL policy configured, and will default to the "COMPATIBLE" policy.
     updateTime: Output only. Update timestamp in RFC3339 text format.
   """
 
@@ -757,8 +751,7 @@ class EdgeCacheService(_messages.Message):
   name = _messages.StringField(10)
   requireTls = _messages.BooleanField(11)
   routing = _messages.MessageField('Routing', 12)
-  sslPolicy = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  updateTime = _messages.StringField(13)
 
 
 class Empty(_messages.Message):

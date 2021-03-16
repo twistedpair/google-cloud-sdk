@@ -168,6 +168,10 @@ class TaskGraphExecutor:
               self._task_status_queue, self._thread_count,
               self._idle_thread_count))
     self._processes.append(process)
+    log.debug('Adding 1 process with {} threads.'
+              ' Total processes: {}. Total threads: {}.'.format(
+                  self._thread_count, len(self._processes),
+                  len(self._processes) * self._thread_count))
     with self._process_start_lock:
       process.start()
 

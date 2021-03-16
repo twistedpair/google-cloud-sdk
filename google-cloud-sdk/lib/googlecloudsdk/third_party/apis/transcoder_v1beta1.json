@@ -957,12 +957,12 @@
           "type": "string"
         },
         "spriteWidthPixels": {
-          "description": "Required. The width of sprite in pixels. Must be an even integer.",
+          "description": "Required. The width of sprite in pixels. Must be an even integer. To preserve the source aspect ratio, set the SpriteSheet.sprite_width_pixels field or the SpriteSheet.sprite_height_pixels field, but not both (the API will automatically calculate the missing field).",
           "type": "integer",
           "format": "int32"
         },
         "spriteHeightPixels": {
-          "description": "Required. The height of sprite in pixels. Must be an even integer.",
+          "description": "Required. The height of sprite in pixels. Must be an even integer. To preserve the source aspect ratio, set the SpriteSheet.sprite_height_pixels field or the SpriteSheet.sprite_width_pixels field, but not both (the API will automatically calculate the missing field).",
           "type": "integer",
           "format": "int32"
         },
@@ -1027,7 +1027,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "Required. URI of the image in Cloud Storage. For example, `gs:\/\/bucket\/inputs\/image.jpeg`.",
+          "description": "Required. URI of the JPEG image in Cloud Storage. For example, `gs:\/\/bucket\/inputs\/image.jpeg`. JPEG is the only supported image type.",
           "type": "string"
         },
         "resolution": {

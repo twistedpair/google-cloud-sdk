@@ -44,6 +44,18 @@ QUEUE_MANAGEMENT_WARNING = (
 MAX_RATE = 500
 MAX_BUCKET_SIZE = 500
 
+# The maximum amount of time that a task will remain in a queue without being
+# executed. We use this value to have consistent behaviour with superapps's
+# implementation which would have an infinite TTL as they were instead tracking
+# quota usage by memory used by tasks in BigTable. The current TTL set for a
+# legacy queue equals '315576000000.999999999s'.
+MAX_TASK_TTL = '315360000s'  # 10 years
+
+# The maximum amount of time that a task's name will be reserved after deletion.
+# We use this value to have consistent behaviour with the legacy superapps
+# implementation.
+MAX_TASK_TOMBSTONE_TTL = '777600s'  # 9 days
+
 TIME_IN_SECONDS = frozendict.frozendict({
     's': 1,
     'm': 60,
@@ -85,7 +97,7 @@ CRON_JOB_LEGACY_DEFAULT_VALUES = frozendict.frozendict({
     'max_backoff': 3600,
     'max_doublings': 16,
     'max_retry_duration': '0s',
-    'min_backoff': 0.01,
+    'min_backoff': 0.1,
 })
 
 # Note currently CT APIs do not support modifying any pull-queue attributes

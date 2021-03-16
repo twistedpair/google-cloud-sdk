@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.util import apis
 
 _SERVICE_CONSUMER_RESOURCE = 'services/%s/%s'
 _LIMIT_OVERRIDE_RESOURCE = '%s/producerOverrides/%s'
+_VALID_CONSUMER_PREFIX = {'projects/', 'folders/', 'organizations/'}
 
 
 def ListQuotaMetrics(service, consumer, page_size=None, limit=None):
@@ -43,6 +44,7 @@ def ListQuotaMetrics(service, consumer, page_size=None, limit=None):
   Returns:
     The list of quota metrics
   """
+  _ValidateConsumer(consumer)
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
 
@@ -85,6 +87,7 @@ def UpdateQuotaOverrideCall(service,
   Returns:
     The quota override operation.
   """
+  _ValidateConsumer(consumer)
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
 
@@ -136,6 +139,7 @@ def DeleteQuotaOverrideCall(service,
   Returns:
     The quota override operation.
   """
+  _ValidateConsumer(consumer)
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
 
@@ -212,6 +216,13 @@ def GetOperation(name):
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
     exceptions.ReraiseError(e, exceptions.OperationErrorException)
+
+
+def _ValidateConsumer(consumer):
+  for prefix in _VALID_CONSUMER_PREFIX:
+    if consumer.startswith(prefix):
+      return
+  raise exceptions.Error('invalid consumer format "%s".' % consumer)
 
 
 def _GetClientInstance():

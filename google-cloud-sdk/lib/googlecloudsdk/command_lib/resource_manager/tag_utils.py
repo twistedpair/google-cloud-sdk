@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py.exceptions import HttpForbiddenError
 from googlecloudsdk.api_lib.resource_manager import tags
 from googlecloudsdk.api_lib.resource_manager.exceptions import ResourceManagerError
+from googlecloudsdk.command_lib.resource_manager import endpoint_utils as endpoints
 
 
 class InvalidInputError(ResourceManagerError):
@@ -33,7 +34,8 @@ GetResourceFns = {
 
 ListResourceFns = {
     'tagKeys': tags.TagMessages().CloudresourcemanagerTagKeysListRequest,
-    'tagValues': tags.TagMessages().CloudresourcemanagerTagValuesListRequest
+    'tagValues': tags.TagMessages().CloudresourcemanagerTagValuesListRequest,
+    'tagBindings': tags.TagMessages().CloudresourcemanagerTagBindingsListRequest
 }
 
 ServiceFns = {
@@ -128,4 +130,38 @@ def GetResourceFromNamespacedName(namespaced_name, resource_type):
   response = service.Get(req)
 
   return response
+
+
+def ProjectNameToBinding(project_name, tag_value, location=None):
+  """Returns the binding name given a project name and tag value.
+
+  Requires binding list permission.
+
+  Args:
+    project_name: project name provided, fully qualified resource name
+    tag_value: tag value to match the binding name to
+    location: region or zone
+
+  Returns:
+    binding_name
+
+  Raises:
+    InvalidInputError: project not found
+  """
+  service = ServiceFns['tagBindings']()
+  with endpoints.CrmEndpointOverrides(location):
+    req = ListResourceFns['tagBindings'](parent=project_name)
+
+    response = service.List(req)
+
+    for bn in response.tagBindings:
+      if bn.tagValue == tag_value:
+        return bn.name
+
+    raise InvalidInputError(
+        'Binding not found for parent [{}], tagValue [{}]'.format(
+            project_name, tag_value))
+
+
+
 

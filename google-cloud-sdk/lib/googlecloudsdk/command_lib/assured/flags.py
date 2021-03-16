@@ -19,8 +19,18 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope.base import ReleaseTrack
 from googlecloudsdk.command_lib.assured import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+
+_GA_COMPLIANCE_REGIMES = ['CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4']
+_BETA_COMPLIANCE_REGIMES = ['CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4']
+
+compliance_regimes = {
+    ReleaseTrack.GA: _GA_COMPLIANCE_REGIMES,
+    ReleaseTrack.BETA: _BETA_COMPLIANCE_REGIMES,
+    ReleaseTrack.ALPHA: _BETA_COMPLIANCE_REGIMES
+}
 
 
 def AddListWorkloadsFlags(parser):
@@ -53,7 +63,16 @@ def AddListOperationsFlags(parser):
             'provided as an organization ID.'))
 
 
-def AddCreateWorkloadFlags(parser):
+def AddCreateWorkloadFlags(parser, release_track):
+  """Adds required flags to the assured workloads create command.
+
+  Args:
+    parser: Parser, Parser used to construct the command flags.
+    release_track: ReleaseTrack, Release track of the command being called.
+
+  Returns:
+    None.
+  """
   parser.add_argument(
       '--location',
       required=True,
@@ -76,7 +95,7 @@ def AddCreateWorkloadFlags(parser):
   parser.add_argument(
       '--compliance-regime',
       required=True,
-      choices=['CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4'],
+      choices=compliance_regimes.get(release_track),
       help='The compliance regime of the new Assured Workloads environment')
   parser.add_argument(
       '--billing-account',

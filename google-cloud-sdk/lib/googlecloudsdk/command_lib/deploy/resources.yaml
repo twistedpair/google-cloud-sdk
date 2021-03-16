@@ -1,0 +1,112 @@
+project:
+  name: project
+  collection: clouddeploy.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: |
+      Project of the {resource}.
+  disable_auto_completers: false
+
+location:
+  name: location
+  collection: clouddeploy.projects.locations
+  disable_auto_completers: false
+  attributes:
+  - &location
+    parameter_name: locationsId
+    attribute_name: region
+    help: |
+      Location of the {resource}.
+    property: deploy/region
+
+operation:
+  name: operation
+  collection: clouddeploy.projects.locations.operations
+  attributes:
+  - *project
+  - *location
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      Operation of the {resource}.
+  disable_auto_completers: true
+
+delivery_pipeline:
+  name: delivery_pipeline
+  collection: clouddeploy.projects.locations.deliveryPipelines
+  request_id_field: deliveryPipelineId
+  attributes:
+  - *project
+  - *location
+  - &delivery_pipeline
+    parameter_name: deliveryPipelinesId
+    attribute_name: delivery-pipeline
+    help: |
+      The name of the Cloud Deploy delivery pipeline.
+    property: deploy/delivery_pipeline
+  disable_auto_completers: false
+
+# TODO(b/124305522): Delete this and only use delivery_pipeline
+delivery_pipeline_positional:
+  name: delivery_pipeline
+  collection: clouddeploy.projects.locations.deliveryPipelines
+  request_id_field: deliveryPipelineId
+  attributes:
+  - *project
+  - *location
+  - &delivery_pipeline_positional
+    parameter_name: deliveryPipelinesId
+    attribute_name: delivery_pipeline
+    help: |
+      The name of the Cloud Deploy delivery pipeline.
+    property: deploy/delivery_pipeline
+  disable_auto_completers: false
+
+release:
+  name: release
+  collection: clouddeploy.projects.locations.deliveryPipelines.releases
+  request_id_field: releaseId
+  attributes:
+  - *project
+  - *location
+  - *delivery_pipeline
+  - &release
+    parameter_name: releasesId
+    attribute_name: release
+    help: |
+      The name of the Cloud Deploy release.
+  disable_auto_completers: false
+
+target:
+  name: target
+  collection: clouddeploy.projects.locations.deliveryPipelines.targets
+  request_id_field: targetId
+  attributes:
+  - *project
+  - *location
+  - *delivery_pipeline
+  - &target
+    parameter_name: targetsId
+    attribute_name: target
+    help: |
+      The name of the Cloud Deploy target.
+  disable_auto_completers: false
+
+rollout:
+  name: rollout
+  collection: clouddeploy.projects.locations.deliveryPipelines.releases.rollouts
+  request_id_field: rolloutId
+  attributes:
+  - *project
+  - *location
+  - *delivery_pipeline
+  - *release
+  - &rollout
+    parameter_name: rolloutsId
+    attribute_name: rollout
+    help: |
+      The name of the Cloud Deploy rollout.
+  disable_auto_completers: false

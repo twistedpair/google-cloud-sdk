@@ -259,6 +259,7 @@ AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
 BOOT_DISK_KMS_KEY = 'bootDiskKmsKey'
 DISK_SIZE_GB = 'diskSizeGb'
 DISK_TYPE = 'diskType'
+IMAGE_TYPE = 'imageType'
 SHIELDED_INSTANCE_CONFIG = 'shieldedInstanceConfig'
 ENABLE_SECURE_BOOT = 'enableSecureBoot'
 ENABLE_INTEGRITY_MONITORING = 'enableIntegrityMonitoring'
@@ -517,6 +518,7 @@ class CreateClusterOptions(object):
       max_memory=None,
       min_accelerator=None,
       max_accelerator=None,
+      autoprovisioning_image_type=None,
       autoprovisioning_max_surge_upgrade=None,
       autoprovisioning_max_unavailable_upgrade=None,
       enable_autoprovisioning_autoupgrade=None,
@@ -654,6 +656,7 @@ class CreateClusterOptions(object):
     self.max_memory = max_memory
     self.min_accelerator = min_accelerator
     self.max_accelerator = max_accelerator
+    self.autoprovisioning_image_type = autoprovisioning_image_type
     self.autoprovisioning_max_surge_upgrade = autoprovisioning_max_surge_upgrade
     self.autoprovisioning_max_unavailable_upgrade = autoprovisioning_max_unavailable_upgrade
     self.enable_autoprovisioning_autoupgrade = enable_autoprovisioning_autoupgrade
@@ -746,6 +749,7 @@ class UpdateClusterOptions(object):
                min_accelerator=None,
                max_accelerator=None,
                release_channel=None,
+               autoprovisioning_image_type=None,
                autoprovisioning_max_surge_upgrade=None,
                autoprovisioning_max_unavailable_upgrade=None,
                enable_autoprovisioning_autoupgrade=None,
@@ -827,6 +831,7 @@ class UpdateClusterOptions(object):
     self.min_accelerator = min_accelerator
     self.max_accelerator = max_accelerator
     self.release_channel = release_channel
+    self.autoprovisioning_image_type = autoprovisioning_image_type
     self.autoprovisioning_max_surge_upgrade = autoprovisioning_max_surge_upgrade
     self.autoprovisioning_max_unavailable_upgrade = autoprovisioning_max_unavailable_upgrade
     self.enable_autoprovisioning_autoupgrade = enable_autoprovisioning_autoupgrade
@@ -1841,6 +1846,7 @@ class APIAdapter(object):
       autoprovisioning_locations = \
           config.get(AUTOPROVISIONING_LOCATIONS)
       min_cpu_platform = config.get(MIN_CPU_PLATFORM)
+      autoprovisioning_image_type = config.get(IMAGE_TYPE)
       boot_disk_kms_key = config.get(BOOT_DISK_KMS_KEY)
       disk_type = config.get(DISK_TYPE)
       disk_size_gb = config.get(DISK_SIZE_GB)
@@ -1861,6 +1867,7 @@ class APIAdapter(object):
       enable_autorepair = options.enable_autoprovisioning_autorepair
       autoprovisioning_locations = options.autoprovisioning_locations
       min_cpu_platform = options.autoprovisioning_min_cpu_platform
+      autoprovisioning_image_type = options.autoprovisioning_image_type
       boot_disk_kms_key = None
       disk_type = None
       disk_size_gb = None
@@ -1900,6 +1907,7 @@ class APIAdapter(object):
                                           bootDiskKmsKey=boot_disk_kms_key,
                                           diskSizeGb=disk_size_gb,
                                           diskType=disk_type,
+                                          imageType=autoprovisioning_image_type,
                                           shieldedInstanceConfig=
                                           shielded_instance_config)
       if autoprovisioning_locations:
@@ -3548,6 +3556,7 @@ class V1Beta1Adapter(V1Adapter):
       boot_disk_kms_key = config.get(BOOT_DISK_KMS_KEY)
       disk_type = config.get(DISK_TYPE)
       disk_size_gb = config.get(DISK_SIZE_GB)
+      autoprovisioning_image_type = config.get(IMAGE_TYPE)
       shielded_instance_config = config.get(SHIELDED_INSTANCE_CONFIG)
       enable_secure_boot = None
       enable_integrity_monitoring = None
@@ -3568,6 +3577,7 @@ class V1Beta1Adapter(V1Adapter):
       boot_disk_kms_key = None
       disk_type = None
       disk_size_gb = None
+      autoprovisioning_image_type = options.autoprovisioning_image_type
       enable_secure_boot = None
       enable_integrity_monitoring = None
 
@@ -3602,6 +3612,7 @@ class V1Beta1Adapter(V1Adapter):
                                           bootDiskKmsKey=boot_disk_kms_key,
                                           diskSizeGb=disk_size_gb,
                                           diskType=disk_type,
+                                          imageType=autoprovisioning_image_type,
                                           shieldedInstanceConfig=
                                           shielded_instance_config)
       if autoprovisioning_locations:
@@ -4022,6 +4033,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       boot_disk_kms_key = config.get(BOOT_DISK_KMS_KEY)
       disk_type = config.get(DISK_TYPE)
       disk_size_gb = config.get(DISK_SIZE_GB)
+      autoprovisioning_image_type = config.get(IMAGE_TYPE)
       shielded_instance_config = config.get(SHIELDED_INSTANCE_CONFIG)
       enable_secure_boot = None
       enable_integrity_monitoring = None
@@ -4042,6 +4054,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       boot_disk_kms_key = None
       disk_type = None
       disk_size_gb = None
+      autoprovisioning_image_type = options.autoprovisioning_image_type
       enable_secure_boot = None
       enable_integrity_monitoring = None
 
@@ -4078,6 +4091,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
                                           bootDiskKmsKey=boot_disk_kms_key,
                                           diskSizeGb=disk_size_gb,
                                           diskType=disk_type,
+                                          imageType=autoprovisioning_image_type,
                                           shieldedInstanceConfig=
                                           shielded_instance_config)
 

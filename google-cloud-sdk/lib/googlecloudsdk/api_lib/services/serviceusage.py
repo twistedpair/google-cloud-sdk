@@ -32,6 +32,7 @@ _PROJECT_RESOURCE = 'projects/%s'
 _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
 _LIMIT_OVERRIDE_RESOURCE = '%s/producerOverrides/%s'
+_VALID_CONSUMER_PREFIX = {'projects/', 'folders/', 'organizations/'}
 _V1_VERSION = 'v1'
 _V1BETA1_VERSION = 'v1beta1'
 _V1ALPHA_VERSION = 'v1alpha'
@@ -292,6 +293,7 @@ def ListQuotaMetrics(consumer, service, page_size=None, limit=None):
   Returns:
     The list of quota metrics
   """
+  _ValidateConsumer(consumer)
   client = _GetClientInstance(version=_V1BETA1_VERSION)
   messages = client.MESSAGES_MODULE
 
@@ -334,6 +336,7 @@ def UpdateQuotaOverrideCall(consumer,
   Returns:
     The quota override operation.
   """
+  _ValidateConsumer(consumer)
   client = _GetClientInstance(version=_V1BETA1_VERSION)
   messages = client.MESSAGES_MODULE
 
@@ -384,6 +387,7 @@ def DeleteQuotaOverrideCall(consumer,
   Returns:
     The quota override operation.
   """
+  _ValidateConsumer(consumer)
   client = _GetClientInstance(version=_V1BETA1_VERSION)
   messages = client.MESSAGES_MODULE
 
@@ -437,6 +441,13 @@ def _GetMetricResourceName(consumer, service, metric, unit):
           return q.name
   raise exceptions.Error('limit not found with name "%s" and unit "%s".' %
                          (metric, unit))
+
+
+def _ValidateConsumer(consumer):
+  for prefix in _VALID_CONSUMER_PREFIX:
+    if consumer.startswith(prefix):
+      return
+  raise exceptions.Error('invalid consumer format "%s".' % consumer)
 
 
 def _GetClientInstance(version='v1'):

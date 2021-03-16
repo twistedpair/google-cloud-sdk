@@ -235,6 +235,8 @@ def CreatePersistentCreateDiskMessages(client,
              * description - an optional description for the disk,
              * mode - 'rw' (R/W), 'ro' (R/O) access mode,
              * size - the size of the disk,
+             * provisioned-iops - Indicates how many IOPS must be provisioned
+               for the disk.
              * type - the type of the disk (HDD or SSD),
              * image - the name of the image to initialize from,
              * image-family - the image family name,
@@ -292,7 +294,8 @@ def CreatePersistentCreateDiskMessages(client,
         description=disk.get('description'),
         sourceImage=image_uri,
         diskSizeGb=disk_size_gb,
-        diskType=disk.get('type'))
+        diskType=disk.get('type'),
+        provisionedIops=disk.get('provisioned-iops'))
 
     policies = disk.get('disk-resource-policy')
     if policies:
@@ -316,9 +319,15 @@ def CreatePersistentCreateDiskMessages(client,
   return disks_messages
 
 
-def CreateDefaultBootAttachedDiskMessage(
-    messages, disk_type, disk_device_name, disk_auto_delete, disk_size_gb,
-    image_uri, kms_args=None, support_kms=False):
+def CreateDefaultBootAttachedDiskMessage(messages,
+                                         disk_type,
+                                         disk_device_name,
+                                         disk_auto_delete,
+                                         disk_size_gb,
+                                         image_uri,
+                                         kms_args=None,
+                                         support_kms=False,
+                                         disk_provisioned_iops=None):
   """Returns an AttachedDisk message for creating a new boot disk."""
   disk_key = None
 
@@ -326,14 +335,17 @@ def CreateDefaultBootAttachedDiskMessage(
     disk_key = kms_utils.MaybeGetKmsKey(
         kms_args, messages, disk_key, boot_disk_prefix=True)
 
+  initialize_params = messages.AttachedDiskInitializeParams(
+      sourceImage=image_uri, diskSizeGb=disk_size_gb, diskType=disk_type)
+
+  if disk_provisioned_iops is not None:
+    initialize_params.provisionedIops = disk_provisioned_iops
+
   return messages.AttachedDisk(
       autoDelete=disk_auto_delete,
       boot=True,
       deviceName=disk_device_name,
-      initializeParams=messages.AttachedDiskInitializeParams(
-          sourceImage=image_uri,
-          diskSizeGb=disk_size_gb,
-          diskType=disk_type),
+      initializeParams=initialize_params,
       mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
       type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
       diskEncryptionKey=disk_key)

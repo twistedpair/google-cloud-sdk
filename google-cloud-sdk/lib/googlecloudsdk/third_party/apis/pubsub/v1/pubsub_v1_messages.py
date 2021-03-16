@@ -1611,6 +1611,15 @@ class Subscription(_messages.Message):
       retain any backlog. `Pull` and `StreamingPull` requests will return
       FAILED_PRECONDITION. If the subscription is a push subscription, pushes
       to the endpoint will not be made.
+    enableExactlyOnceDelivery: If true, Pub/Sub provides the following
+      guarantees for the delivery of a message with a given value of
+      `message_id` on this subscription: * The message sent to a subscriber is
+      guaranteed not to be resent before the message's acknowledgement
+      deadline expires. * An acknowledged message will not be resent to a
+      subscriber. Note that subscribers may still receive multiple copies of a
+      message when `enable_exactly_once_delivery` is true if the message was
+      published multiple times by a publisher client. These copies are
+      considered distinct by Pub/Sub and have distinct `message_id` values.
     enableMessageOrdering: If true, messages published with the same
       `ordering_key` in `PubsubMessage` will be delivered to the subscribers
       in the order in which they are received by the Pub/Sub system.
@@ -1687,16 +1696,17 @@ class Subscription(_messages.Message):
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   deadLetterPolicy = _messages.MessageField('DeadLetterPolicy', 2)
   detached = _messages.BooleanField(3)
-  enableMessageOrdering = _messages.BooleanField(4)
-  expirationPolicy = _messages.MessageField('ExpirationPolicy', 5)
-  filter = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  messageRetentionDuration = _messages.StringField(8)
-  name = _messages.StringField(9)
-  pushConfig = _messages.MessageField('PushConfig', 10)
-  retainAckedMessages = _messages.BooleanField(11)
-  retryPolicy = _messages.MessageField('RetryPolicy', 12)
-  topic = _messages.StringField(13)
+  enableExactlyOnceDelivery = _messages.BooleanField(4)
+  enableMessageOrdering = _messages.BooleanField(5)
+  expirationPolicy = _messages.MessageField('ExpirationPolicy', 6)
+  filter = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  messageRetentionDuration = _messages.StringField(9)
+  name = _messages.StringField(10)
+  pushConfig = _messages.MessageField('PushConfig', 11)
+  retainAckedMessages = _messages.BooleanField(12)
+  retryPolicy = _messages.MessageField('RetryPolicy', 13)
+  topic = _messages.StringField(14)
 
 
 class TestIamPermissionsRequest(_messages.Message):

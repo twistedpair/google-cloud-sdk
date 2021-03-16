@@ -1042,7 +1042,6 @@ class Repository(_messages.Message):
       PYPI: PyPI package format.
       APT: APT package format.
       YUM: YUM package format.
-      GOOGET: GooGet package format.
     """
     FORMAT_UNSPECIFIED = 0
     DOCKER = 1
@@ -1051,7 +1050,6 @@ class Repository(_messages.Message):
     PYPI = 4
     APT = 5
     YUM = 6
-    GOOGET = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

@@ -3120,6 +3120,22 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesPatchReque
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadBlobDataRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadBl
+  obDataRequest object.
+
+  Fields:
+    blobIds: IDs of the blobs to read.
+    timeSeries: Required. The resource name of the TensorboardTimeSeries to
+      list Blobs. Format: 'projects/{project}/locations/{location}/tensorboard
+      s/{tensorboard}/experiments/{experiment}/runs/{run}/timeSeries/{time_ser
+      ies}'
+  """
+
+  blobIds = _messages.StringField(1, repeated=True)
+  timeSeries = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest(_messages.Message):
   r"""A
   AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest
@@ -3140,22 +3156,6 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadReques
   filter = _messages.StringField(1)
   maxDataPoints = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   tensorboardTimeSeries = _messages.StringField(3, required=True)
-
-
-class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeseriesReadBlobDataRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeseriesReadBl
-  obDataRequest object.
-
-  Fields:
-    blobIds: IDs of the blobs to read.
-    timeSeries: Required. The resource name of the TensorboardTimeSeries to
-      list Blobs. Format: 'projects/{project}/locations/{location}/tensorboard
-      s/{tensorboard}/experiments/{experiment}/runs/{run}/timeseries/{time_ser
-      ies}'
-  """
-
-  blobIds = _messages.StringField(1, repeated=True)
-  timeSeries = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest(_messages.Message):
@@ -19807,14 +19807,18 @@ class GoogleCloudAiplatformV1beta1TensorboardTimeSeriesMetadata(_messages.Messag
   r"""Describes metadata for a TensorboardTimeSeries.
 
   Fields:
+    maxBlobSequenceLength: Output only. The largest blob sequence length
+      (number of blobs) of all data points in this time series, if its
+      ValueType is BLOB_SEQUENCE.
     maxStep: Output only. Max step index of all data points within a
       TensorboardTimeSeries.
     maxWallTime: Output only. Max wall clock timestamp of all data points
       within a TensorboardTimeSeries.
   """
 
-  maxStep = _messages.IntegerField(1)
-  maxWallTime = _messages.StringField(2)
+  maxBlobSequenceLength = _messages.IntegerField(1)
+  maxStep = _messages.IntegerField(2)
+  maxWallTime = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1TimeSeriesData(_messages.Message):

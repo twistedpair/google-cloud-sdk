@@ -331,14 +331,6 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.billingbudgets.v1alpha1',
-                client_classpath='billingbudgets_v1alpha1_client.BillingbudgetsV1alpha1',
-                messages_modulepath='billingbudgets_v1alpha1_messages',
-                default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.billingbudgets.v1beta1',

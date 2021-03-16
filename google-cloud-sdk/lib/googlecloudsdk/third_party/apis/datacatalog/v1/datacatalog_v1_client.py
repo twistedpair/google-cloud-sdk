@@ -117,7 +117,7 @@ class DatacatalogV1(base_api.BaseApiClient):
         method_id='datacatalog.entries.lookup',
         ordered_params=[],
         path_params=[],
-        query_params=['linkedResource', 'sqlResource'],
+        query_params=['fullyQualifiedName', 'linkedResource', 'sqlResource'],
         relative_path='v1/entries:lookup',
         request_field='',
         request_type_name='DatacatalogEntriesLookupRequest',

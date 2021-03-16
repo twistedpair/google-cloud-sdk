@@ -229,6 +229,7 @@ class ArgAdder(object):
     any_group.add_argument(
         '--route-any',
         action='store_true',
+        required=True,
         default=False,
         help='Use Multi Cluster Routing policy.')
     route_to_group = routing_group.add_group('Single Cluster Routing Policy')

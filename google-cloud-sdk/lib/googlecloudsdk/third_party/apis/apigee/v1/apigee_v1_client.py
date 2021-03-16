@@ -469,7 +469,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a Rate Plan which is associated with an api product of an organization. A Rate Plan is used to define the way in which API Product owners would like to monetize their products. Using a Rate Plan, they can define things like: - Billing frequency - The initial setup fee / termination fee for using an API Product - When can the customers start using an API Product - Fixed recurring charges for using an API Product - Consumption based charges for using an API Product - Should the billing be done in a prepaid or postpaid manner - Share revenue with the developers. An API Product can have multiple Rate Plans associated with it but ONLY one rate plan can be active at any point of time. From the developers perspective (people who use the API Products), what this means for them is that they will be buying API products (and not rate plans).
+      r"""Create a rate plan that is associated with an API product in an organization. Using rate plans, API product owners can monetize their API products by configuring one or more of the following: - Billing frequency - Initial setup fees for using an API product - Payment funding model (postpaid only) - Fixed recurring or consumption-based charges for using an API product - Revenue sharing with developer partners An API product can have multiple rate plans associated with it but *only one* rate plan can be active at any point of time. **Note: From the developer's perspective, they purchase API products not rate plans.
 
       Args:
         request: (ApigeeOrganizationsApiproductsRateplansCreateRequest) input message
@@ -496,7 +496,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a particular rate plan. A Rate Plan can only be deleted if it satisfies any of the following: - Rate Plan is in draft state. - Rate Plan is active but has had no active transactions for the last 14 months. - Rate plan has expired.
+      r"""Deletes a rate plan.
 
       Args:
         request: (ApigeeOrganizationsApiproductsRateplansDeleteRequest) input message
@@ -523,7 +523,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the details of a particular rate plan.
+      r"""Gets the details of a rate plan.
 
       Args:
         request: (ApigeeOrganizationsApiproductsRateplansGetRequest) input message
@@ -550,7 +550,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the rate plans.
+      r"""Lists all the rate plans for an API product.
 
       Args:
         request: (ApigeeOrganizationsApiproductsRateplansListRequest) input message
@@ -577,7 +577,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an existing rate plan. Note that a rate plan can only be edited if: - It has no active users. - It has not expired.
+      r"""Updates an existing rate plan.
 
       Args:
         request: (GoogleCloudApigeeV1RatePlan) input message
@@ -951,7 +951,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an API proxy revision. To download the API proxy configuration bundle for the specified revision as a zip file, do the following: * Set the `format` query parameter to `bundle`. * Set the `Accept` header to `application/zip`. If you are using curl, specify `-o filename.zip` to save the output to a file; otherwise, it displays to `stdout`. Then, develop the API proxy configuration locally and upload the updated API proxy configuration revision, as described in [updateApiProxyRevision](updateApiProxyRevision).
+      r"""Gets an API proxy revision. To download the API proxy configuration bundle for the specified revision as a zip file, set the `format` query parameter to `bundle`. If you are using curl, specify `-o filename.zip` to save the output to a file; otherwise, it displays to `stdout`. Then, develop the API proxy configuration locally and upload the updated API proxy configuration revision, as described in [updateApiProxyRevision](updateApiProxyRevision).
 
       Args:
         request: (ApigeeOrganizationsApisRevisionsGetRequest) input message
@@ -6199,7 +6199,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a revision of a shared flow. If `format=bundle` is passed, it instead outputs a shared flow revision as a ZIP-formatted bundle of code and config files.
+      r"""Gets a revision of a shared flow. To download the shared flow configuration bundle for the specified revision as a zip file, set the `format` query parameter to `bundle`. If you are using curl, specify `-o filename.zip` to save the output to a file; otherwise, it displays to `stdout`. Then, develop the shared flow configuration locally and upload the updated sharedFlow configuration revision, as described in [updateSharedFlowRevision](updateSharedFlowRevision).
 
       Args:
         request: (ApigeeOrganizationsSharedflowsRevisionsGetRequest) input message

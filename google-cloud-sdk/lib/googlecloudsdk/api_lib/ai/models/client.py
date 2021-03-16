@@ -79,6 +79,50 @@ class ModelsClient(object):
             googleCloudAiplatformV1beta1UploadModelRequest=self.messages
             .GoogleCloudAiplatformV1beta1UploadModelRequest(model=model)))
 
+  def UploadV1(self,
+               region_ref=None,
+               display_name=None,
+               description=None,
+               artifact_uri=None,
+               container_image_uri=None,
+               container_command=None,
+               container_args=None,
+               container_env_vars=None,
+               container_ports=None,
+               container_predict_route=None,
+               container_health_route=None):
+    """Constructs, sends an UploadModel request and returns the LRO to be done."""
+    container_spec = self.messages.GoogleCloudAiplatformV1ModelContainerSpec(
+        healthRoute=container_health_route,
+        imageUri=container_image_uri,
+        predictRoute=container_predict_route)
+    if container_command:
+      container_spec.command = container_command
+    if container_args:
+      container_spec.args = container_args
+    if container_env_vars:
+      container_spec.env = [
+          self.messages.GoogleCloudAiplatformV1EnvVar(
+              name=k, value=container_env_vars[k]) for k in container_env_vars
+      ]
+    if container_ports:
+      container_spec.ports = [
+          self.messages.GoogleCloudAiplatformV1Port(containerPort=port)
+          for port in container_ports
+      ]
+
+    model = self.messages.GoogleCloudAiplatformV1Model(
+        artifactUri=artifact_uri,
+        containerSpec=container_spec,
+        description=description,
+        displayName=display_name)
+
+    return self._service.Upload(
+        self.messages.AiplatformProjectsLocationsModelsUploadRequest(
+            parent=region_ref.RelativeName(),
+            googleCloudAiplatformV1UploadModelRequest=self.messages
+            .GoogleCloudAiplatformV1UploadModelRequest(model=model)))
+
   def Get(self, model_ref):
     request = self.messages.AiplatformProjectsLocationsModelsGetRequest(
         name=model_ref.RelativeName())

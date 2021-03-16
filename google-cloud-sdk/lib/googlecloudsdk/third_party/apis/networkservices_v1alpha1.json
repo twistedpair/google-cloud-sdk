@@ -766,10 +766,6 @@
             "type": "string"
           }
         },
-        "sslPolicy": {
-          "description": "Optional. URL of the SslPolicy resource that will be associated with the EdgeCacheService. For example, the following are both valid URLs to an SslPolicy resource: - compute\/v1\/projects\/project\/global\/sslPolicies\/your-policy - \/global\/sslPolicies\/your-policy If not set, the EdgeCacheService has no SSL policy configured, and will default to the \"COMPATIBLE\" policy.",
-          "type": "string"
-        },
         "ipv4Addresses": {
           "description": "Output only. The IPv4 addresses associated with this service. Addresses are static for the lifetime of the service. IP addresses provisioned via Bring-Your-Own-IP (BYOIP) are not supported.",
           "readOnly": true,

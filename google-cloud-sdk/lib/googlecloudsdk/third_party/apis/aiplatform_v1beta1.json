@@ -4374,6 +4374,12 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "maxBlobSequenceLength": {
+          "description": "Output only. The largest blob sequence length (number of blobs) of all data points in this time series, if its ValueType is BLOB_SEQUENCE.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -23010,6 +23016,37 @@
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
                               "description": "Reads a TensorboardTimeSeries' data. Data is returned in paginated responses. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points."
+                            },
+                            "readBlobData": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.readBlobData",
+                              "path": "v1beta1/{+timeSeries}:readBlobData",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:readBlobData",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "timeSeries": {
+                                  "description": "Required. The resource name of the TensorboardTimeSeries to list Blobs. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}\/timeSeries\/{time_series}'",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "blobIds": {
+                                  "description": "IDs of the blobs to read.",
+                                  "location": "query",
+                                  "repeated": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "timeSeries"
+                              ],
+                              "response": {
+                                "$ref": "GoogleCloudAiplatformV1beta1ReadTensorboardBlobDataResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Gets bytes of TensorboardBlobs. This is to allow reading blob data stored in consumer project's Cloud Storage bucket without users having to obtain Cloud Storage access permission."
                             }
                           }
                           ,
@@ -23164,41 +23201,6 @@
                                   "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
                                 }
                               }
-                            }
-                          }
-                        },
-                        "timeseries": {
-                          "methods": {
-                            "readBlobData": {
-                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeseries.readBlobData",
-                              "path": "v1beta1/{+timeSeries}:readBlobData",
-                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeseries/{timeseriesId}:readBlobData",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "timeSeries": {
-                                  "description": "Required. The resource name of the TensorboardTimeSeries to list Blobs. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}\/timeseries\/{time_series}'",
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeseries\/[^\/]+$",
-                                  "location": "path",
-                                  "required": true,
-                                  "type": "string"
-                                },
-                                "blobIds": {
-                                  "description": "IDs of the blobs to read.",
-                                  "location": "query",
-                                  "repeated": true,
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "timeSeries"
-                              ],
-                              "response": {
-                                "$ref": "GoogleCloudAiplatformV1beta1ReadTensorboardBlobDataResponse"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Gets bytes of TensorboardBlobs. This is to allow reading blob data stored in consumer project's Cloud Storage bucket without users having to obtain Cloud Storage access permission."
                             }
                           }
                         }

@@ -1263,10 +1263,16 @@ class AdvancedMachineFeatures(_messages.Message):
       simultaneous multithreading (SMT) set this to 1. If unset, the maximum
       number of threads supported per core by the underlying processor is
       assumed.
+    visibleCoreCount: The number of physical cores to expose to an instance.
+      Multiply by the number of threads per core to compute the total number
+      of virtual CPUs to expose to the instance. If unset, the number of cores
+      is inferred from the instance's nominal CPU count and the underlying
+      platform's SMT width.
   """
 
   enableNestedVirtualization = _messages.BooleanField(1)
   threadsPerCore = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  visibleCoreCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class AliasIpRange(_messages.Message):
@@ -20048,6 +20054,406 @@ class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeRegionNetworkFirewallPoliciesAddAssociationRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesAddAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyAssociation: A FirewallPolicyAssociation resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    replaceExistingAssociation: Indicates whether or not to replace it if an
+      association already exists. This is false by default, in which case an
+      error will be returned if an association already exists.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyAssociation = _messages.MessageField('FirewallPolicyAssociation', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  replaceExistingAssociation = _messages.BooleanField(5)
+  requestId = _messages.StringField(6)
+
+
+class ComputeRegionNetworkFirewallPoliciesAddRuleRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesAddRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyRule: A FirewallPolicyRule resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyRule = _messages.MessageField('FirewallPolicyRule', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionNetworkFirewallPoliciesCloneRulesRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesCloneRulesRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sourceFirewallPolicy: The firewall policy from which to copy rules.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  sourceFirewallPolicy = _messages.StringField(5)
+
+
+class ComputeRegionNetworkFirewallPoliciesDeleteRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesDeleteRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to delete.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkFirewallPoliciesGetAssociationRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesGetAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to which the queried
+      association belongs.
+    name: The name of the association to get from the firewall policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  name = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesGetRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesGetRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to get.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesGetRuleRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesGetRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to which the queried rule
+      belongs.
+    priority: The priority of the rule to get from the firewall policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesInsertRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesInsertRequest object.
+
+  Fields:
+    firewallPolicy: A FirewallPolicy resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.MessageField('FirewallPolicy', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkFirewallPoliciesListRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      `=`, `!=`, `>`, or `<`.  For example, if you are filtering Compute
+      Engine instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`.  You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first.  Currently, only sorting by `name`
+      or `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionNetworkFirewallPoliciesPatchRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesPatchRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyResource: A FirewallPolicy resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyResource = _messages.MessageField('FirewallPolicy', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionNetworkFirewallPoliciesPatchRuleRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesPatchRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    firewallPolicyRule: A FirewallPolicyRule resource to be passed as the
+      request body.
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  firewallPolicyRule = _messages.MessageField('FirewallPolicyRule', 2)
+  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  project = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+
+
+class ComputeRegionNetworkFirewallPoliciesRemoveAssociationRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesRemoveAssociationRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    name: Name for the association that will be removed.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  name = _messages.StringField(2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionNetworkFirewallPoliciesRemoveRuleRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesRemoveRuleRequest object.
+
+  Fields:
+    firewallPolicy: Name of the firewall policy to update.
+    priority: The priority of the rule to remove from the firewall policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  firewallPolicy = _messages.StringField(1, required=True)
+  priority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionNetworkFirewallPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
 class ComputeRegionNotificationEndpointsAggregatedListRequest(_messages.Message):
   r"""A ComputeRegionNotificationEndpointsAggregatedListRequest object.
 
@@ -29240,6 +29646,10 @@ class FirewallPolicy(_messages.Message):
     name: [Output Only] Name of the resource. It is a numeric ID allocated by
       GCP which uniquely identifies the Firewall Policy.
     parent: [Output Only] The parent of the firewall policy.
+    region: [Output Only] URL of the region where the regional firewall policy
+      resides. This field is not applicable to global firewall policies. You
+      must specify this field as part of the HTTP request URL. It is not
+      settable as a field in the request body.
     ruleTupleCount: [Output Only] Total count of all firewall policy rule
       tuples. A firewall policy can not exceed a set number of tuples.
     rules: A list of rules that belong to this policy. There must always be a
@@ -29268,11 +29678,12 @@ class FirewallPolicy(_messages.Message):
   kind = _messages.StringField(7, default='compute#firewallPolicy')
   name = _messages.StringField(8)
   parent = _messages.StringField(9)
-  ruleTupleCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  rules = _messages.MessageField('FirewallPolicyRule', 11, repeated=True)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
-  shortName = _messages.StringField(14)
+  region = _messages.StringField(10)
+  ruleTupleCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('FirewallPolicyRule', 12, repeated=True)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
+  shortName = _messages.StringField(15)
 
 
 class FirewallPolicyAssociation(_messages.Message):
@@ -32055,6 +32466,9 @@ class HealthStatus(_messages.Message):
 
   Fields:
     annotations: Metadata defined as annotations for network endpoint.
+    forwardingRule: URL of the forwarding rule associated with the health
+      status of the instance.
+    forwardingRuleIp: A forwarding rule IP address assigned to this instance.
     healthState: Health state of the instance.
     instance: URL of the instance resource.
     ipAddress: For target pool based Network Load Balancing, it indicates the
@@ -32116,12 +32530,14 @@ class HealthStatus(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  healthState = _messages.EnumField('HealthStateValueValuesEnum', 2)
-  instance = _messages.StringField(3)
-  ipAddress = _messages.StringField(4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  weight = _messages.StringField(6)
-  weightError = _messages.EnumField('WeightErrorValueValuesEnum', 7)
+  forwardingRule = _messages.StringField(2)
+  forwardingRuleIp = _messages.StringField(3)
+  healthState = _messages.EnumField('HealthStateValueValuesEnum', 4)
+  instance = _messages.StringField(5)
+  ipAddress = _messages.StringField(6)
+  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  weight = _messages.StringField(8)
+  weightError = _messages.EnumField('WeightErrorValueValuesEnum', 9)
 
 
 class HealthStatusForNetworkEndpoint(_messages.Message):

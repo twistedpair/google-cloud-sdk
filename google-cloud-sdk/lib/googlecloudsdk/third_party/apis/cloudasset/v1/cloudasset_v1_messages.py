@@ -43,6 +43,10 @@ class AnalyzeIamPolicyLongrunningRequest(_messages.Message):
   outputConfig = _messages.MessageField('IamPolicyAnalysisOutputConfig', 2)
 
 
+class AnalyzeIamPolicyLongrunningResponse(_messages.Message):
+  r"""A response message for AssetService.AnalyzeIamPolicyLongrunning."""
+
+
 class AnalyzeIamPolicyResponse(_messages.Message):
   r"""A response message for AssetService.AnalyzeIamPolicy.
 

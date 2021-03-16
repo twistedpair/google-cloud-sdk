@@ -29,8 +29,9 @@ class ProgressMessage(object):
   file, cloud object, or single component.
 
   Attributes:
-    size (int): Total size of file/component in bytes.
-    processed_bytes (int): Number of bytes already operated on.
+    offset (int): Start of byte range to start operation at.
+    length (int): Total size of file or component in bytes.
+    current_byte (int): Index of byte being operated on.
     finished (bool): Indicates if the operation is complete.
     time (float): When message was created (seconds since epoch).
     source_url (StorageUrl): Represents source of data used by operation.
@@ -39,7 +40,7 @@ class ProgressMessage(object):
     component_number (int|None): If a multipart operation, indicates the
       component number.
     total_components (int|None): If a multipart operation, indicates the
-        total number of components.
+      total number of components.
     operation_name (task_status.OperationName|None): Name of the operation
       running on target data.
     process_id (int|None): Identifies process that produced the instance of this
@@ -49,8 +50,9 @@ class ProgressMessage(object):
   """
 
   def __init__(self,
-               size,
-               processed_bytes,
+               offset,
+               length,
+               current_byte,
                time,
                source_url,
                destination_url=None,
@@ -59,10 +61,12 @@ class ProgressMessage(object):
                operation_name=None,
                process_id=None,
                thread_id=None):
+    # pylint:disable=g-doc-args
     """Initializes a ProgressMessage. See attributes docstring for arguments."""
-    self.size = size
-    self.processed_bytes = processed_bytes
-    self.finished = (size == processed_bytes)
+    # pylint:enable=g-doc-args
+    self.offset = offset
+    self.length = length
+    self.current_byte = current_byte
     self.time = time
 
     self.source_url = source_url
@@ -76,21 +80,23 @@ class ProgressMessage(object):
 
   def __repr__(self):
     """Returns a string with a valid constructor for this message."""
+    source_url_string = "'{}'".format(self.source_url)
     destination_url_string = ("'{}'".format(
         self.destination_url)) if self.destination_url else None
     operation_name_string = ("'{}'".format(
         self.operation_name.value)) if self.operation_name else None
-    return ("{class_name}(time={time}, size={size},"
-            " processed_bytes={processed_bytes}, source_url='{source_url}',"
-            " destination_url={destination_url},"
-            " component_number={component_number},"
-            " operation_name={operation_name}, process_id={process_id},"
-            " thread_id={thread_id})").format(
+    return ('{class_name}(time={time}, offset={offset},'
+            ' length={length}, current_byte={current_byte},'
+            ' source_url={source_url}, destination_url={destination_url},'
+            ' component_number={component_number},'
+            ' operation_name={operation_name}, process_id={process_id},'
+            ' thread_id={thread_id})').format(
                 class_name=self.__class__.__name__,
                 time=self.time,
-                size=self.size,
-                processed_bytes=self.processed_bytes,
-                source_url=self.source_url,
+                offset=self.offset,
+                length=self.length,
+                current_byte=self.current_byte,
+                source_url=source_url_string,
                 destination_url=destination_url_string,
                 component_number=self.component_number,
                 operation_name=operation_name_string,

@@ -164,6 +164,16 @@ class IapTunnelWebSocketHelper(object):
     close_msg = '%r: %r' % (close_code, close_reason)
     log.info('Received WebSocket Close message [%s].', close_msg)
     self.Close(msg=close_msg)
+
+    if close_code == 4004:
+      # This is a resumable error indicating that reauthentication is required.
+      # Call self.Close() so that the class that owns us knows we're no longer
+      # active, and can create a brand new IapTunnelWebSocketHelper for a
+      # reconnect attempt. But avoid calling self._on_close() because that
+      # indicates that the entire session is dead and a reconnect shouldn't be
+      # attempted.
+      return
+
     try:
       self._on_close()
     except (EnvironmentError, exceptions.Error):

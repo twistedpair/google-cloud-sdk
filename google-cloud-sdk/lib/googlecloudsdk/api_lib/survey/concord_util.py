@@ -73,6 +73,7 @@ def _UpdateSurveyCache():
 def _ConcordEventForSurvey(survey_instance):
   return {
       'event_metadata': _SurveyEnvironment(),
+      'client_install_id': metrics.GetCID(),
       'console_type': 'CloudSDK',
       'event_type': 'hatsSurvey',
       'hats_response': _HatsResponseFromSurvey(survey_instance)

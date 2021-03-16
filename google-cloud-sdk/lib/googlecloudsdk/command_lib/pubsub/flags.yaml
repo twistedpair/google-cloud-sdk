@@ -79,3 +79,13 @@ delivery-requirement:
     messages persistence in storage.
     See https://cloud.google.com/pubsub/lite/docs/subscriptions#creating_lite_subscriptions
     for more info.
+
+starting-offset:
+  arg_name: starting-offset
+  choices:
+  - arg_value: beginning
+  - arg_value: end
+  help_text: |
+    The offset at which a newly created subscription will start receiving messages. A subscription
+    can be initialized at the offset of the oldest retained message (beginning), or at the current
+    HEAD offset (end).

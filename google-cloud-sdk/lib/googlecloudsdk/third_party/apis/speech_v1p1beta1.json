@@ -806,45 +806,6 @@
         }
       }
     },
-    "ListLogDataStatsResponse": {
-      "id": "ListLogDataStatsResponse",
-      "description": "Message received by the client for the `ListLogDataStats` method.",
-      "type": "object",
-      "properties": {
-        "logDataEnabled": {
-          "description": "True if user has opted in for log data collection.",
-          "type": "boolean"
-        },
-        "logDataStats": {
-          "description": "The stats for each bucket.",
-          "type": "array",
-          "items": {
-            "$ref": "LogBucketStats"
-          }
-        },
-        "totalCount": {
-          "description": "The overall count for log data (including all bucket data).",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "LogBucketStats": {
-      "id": "LogBucketStats",
-      "description": "Stats for log data within a bucket.",
-      "type": "object",
-      "properties": {
-        "bucketName": {
-          "description": "The display name for the bucket in which logs are collected.",
-          "type": "string"
-        },
-        "count": {
-          "description": "Number of audio samples that have been collected in this bucket.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "LongRunningRecognizeMetadata": {
       "id": "LongRunningRecognizeMetadata",
       "description": "Describes the progress of a long-running `LongRunningRecognize` call. It is included in the `metadata` field of the `Operation` returned by the `GetOperation` call of the `google::longrunning::Operations` service.",
@@ -997,39 +958,6 @@
     "projects": {
       "resources": {
         "locations": {
-          "methods": {
-            "log_data": {
-              "id": "speech.projects.locations.log_data",
-              "path": "v1p1beta1/{+parent}/log_data",
-              "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "parent": {
-                  "description": "Required. Resource name of the parent. Has the format :- \"projects\/{project_id}\/locations\/{location_id}\"",
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "bucketName": {
-                  "description": "Bucket name to delete all logs from. If empty, all logs are deleted.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Purges all log data associated with requested project. Operation response type is google.protobuf.Empty. Since logs are stored by asynchronous writer process, buffered log data might still end up in storage, even after this call. To ensure all data is purged, call this method 3 days after last recognition call."
-            }
-          }
-          ,
           "resources": {
             "phraseSets": {
               "methods": {
@@ -1332,35 +1260,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete a custom class."
-                }
-              }
-            },
-            "log_data_stats": {
-              "methods": {
-                "list": {
-                  "id": "speech.projects.locations.log_data_stats.list",
-                  "path": "v1p1beta1/{+parent}/log_data_stats",
-                  "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data_stats",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. Resource name of the parent. Has the format :- \"projects\/{project_id}\/locations\/{location_id}\"",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListLogDataStatsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists all log data stats associated with requested project."
                 }
               }
             }

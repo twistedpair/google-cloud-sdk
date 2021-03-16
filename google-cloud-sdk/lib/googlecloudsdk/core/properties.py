@@ -32,6 +32,7 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import scaled_integer
 from googlecloudsdk.core.util import times
@@ -446,6 +447,7 @@ class _Sections(object):
         self.dataproc,
         self.dataflow,
         self.datafusion,
+        self.deploy,
         self.deployment_manager,
         self.devshell,
         self.diagnostics,
@@ -935,6 +937,14 @@ class _SectionCompute(_Section):
         help_text=(
             'If True, use the new API for listing usable subnets which only '
             'returns subnets in the current project.'))
+    self.image_family_scope = self._Add(
+        'image_family_scope',
+        hidden=True,
+        help_text='Sets how images are selected with image families. By '
+        'default zonal image resources are used when using an image family in '
+        'a public image project, and global image resources are used for all '
+        'other projects. Setting this property to `zonal` or `global` '
+        'overrides the default behavior.')
 
 
 class _SectionFunctions(_Section):
@@ -2398,7 +2408,6 @@ class _SectionStorage(_Section):
     self.sliced_object_download_max_components = self._Add(
         'sliced_object_download_max_components',
         default=4,
-        validator=_HumanReadableByteAmountValidator,
         help_text='Specifies the maximum number of slices to be used when'
         ' performing a sliced object download.')
 
@@ -2442,8 +2451,8 @@ class _SectionStorage(_Section):
 
     self.tracker_files_directory = self._Add(
         'tracker_files_directory',
-        default=os.path.join('~', '.config', 'gcloud', 'surface_data',
-                             'storage', 'tracker_files'),
+        default=os.path.join(files.GetHomeDir(), '.config', 'gcloud',
+                             'surface_data', 'storage', 'tracker_files'),
         help_text='Directory path to tracker files for resumable operations.')
 
     # TODO(b/109938541): Remove this after implementation seems stable.

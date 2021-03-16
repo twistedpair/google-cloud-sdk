@@ -74,7 +74,8 @@ class FinalizeSlicedDownloadTask(task.Task):
     """Validates and clean ups after sliced download."""
     # Clean up master and component tracker files.
     tracker_file_util.delete_download_tracker_files(
-        self._destination_resource.storage_url)
+        self._destination_resource.storage_url,
+        tracker_file_util.TrackerFileType.SLICED_DOWNLOAD)
 
     # Validate final product of sliced download.
     # TODO(b/181340192): See if sharing and concating task hashes is faster.

@@ -637,6 +637,84 @@ class DnsV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create method for the resourceRecordSets service.
+
+      Args:
+        request: (DnsResourceRecordSetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResourceRecordSet) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dns.resourceRecordSets.create',
+        ordered_params=['project', 'managedZone'],
+        path_params=['managedZone', 'project'],
+        query_params=['clientOperationId'],
+        relative_path='projects/{project}/managedZones/{managedZone}/rrsets',
+        request_field='resourceRecordSet',
+        request_type_name='DnsResourceRecordSetsCreateRequest',
+        response_type_name='ResourceRecordSet',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete method for the resourceRecordSets service.
+
+      Args:
+        request: (DnsResourceRecordSetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsResourceRecordSetsDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='dns.resourceRecordSets.delete',
+        ordered_params=['project', 'managedZone', 'name', 'type'],
+        path_params=['managedZone', 'name', 'project', 'type'],
+        query_params=['clientOperationId', 'nameAndType'],
+        relative_path='projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}',
+        request_field='',
+        request_type_name='DnsResourceRecordSetsDeleteRequest',
+        response_type_name='DnsResourceRecordSetsDeleteResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get method for the resourceRecordSets service.
+
+      Args:
+        request: (DnsResourceRecordSetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResourceRecordSet) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='dns.resourceRecordSets.get',
+        ordered_params=['project', 'managedZone', 'name', 'type'],
+        path_params=['managedZone', 'name', 'project', 'type'],
+        query_params=['clientOperationId', 'nameAndType'],
+        relative_path='projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}',
+        request_field='',
+        request_type_name='DnsResourceRecordSetsGetRequest',
+        response_type_name='ResourceRecordSet',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""List method for the resourceRecordSets service.
 
@@ -660,5 +738,31 @@ class DnsV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DnsResourceRecordSetsListRequest',
         response_type_name='ResourceRecordSetsListResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch method for the resourceRecordSets service.
+
+      Args:
+        request: (DnsResourceRecordSetsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ResourceRecordSet) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='dns.resourceRecordSets.patch',
+        ordered_params=['project', 'managedZone', 'name', 'type'],
+        path_params=['managedZone', 'name', 'project', 'type'],
+        query_params=['clientOperationId', 'nameAndType'],
+        relative_path='projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}',
+        request_field='resourceRecordSet',
+        request_type_name='DnsResourceRecordSetsPatchRequest',
+        response_type_name='ResourceRecordSet',
         supports_download=False,
     )

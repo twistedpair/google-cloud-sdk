@@ -42,6 +42,7 @@ from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.run import pretty_print
 from googlecloudsdk.command_lib.run import resource_args
+from googlecloudsdk.command_lib.run import secrets_mapping
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.args import repeated
@@ -355,7 +356,7 @@ def AddTrafficTagsFlags(parser):
       value_metavar='REVISION')
 
 
-def AddUpdateTrafficFlags(parser, release_track):
+def AddUpdateTrafficFlags(parser):
   """Add flags for updating traffic assignments for a service."""
 
   @staticmethod
@@ -404,31 +405,29 @@ def AddUpdateTrafficFlags(parser, release_track):
       'You can use "LATEST" as a special revision name to always put the given '
       'percentage of traffic on the latest ready revision.')
 
-  if release_track and (base.ReleaseTrack.BETA == release_track or
-                        base.ReleaseTrack.ALPHA == release_track):
-    group.add_argument(
-        '--to-tags',
-        metavar='TAG=PERCENTAGE',
-        action=arg_parsers.UpdateAction,
-        type=arg_parsers.ArgDict(
-            key_type=TrafficTargetKey.__func__,
-            value_type=TrafficPercentageValue.__func__),
-        help='Comma separated list of traffic assignments in the form '
-        'TAG=PERCENTAGE. TAG must match a traffic tag on a revision of the '
-        'service. It may match a previously-set tag, or one assigned using'
-        ' the `--set-tags` or `--update-tags` flags on this command. '
-        'PERCENTAGE must be an integer percentage between '
-        '0 and 100 inclusive. '
-        'Up to 100 percent of traffic may be assigned. If 100 percent '
-        'of traffic is assigned, the service traffic is updated as '
-        'specified. If under 100 percent of traffic is assigned, the '
-        'service traffic is updated as specified to the given tags, and other '
-        'traffic is scaled up or down proportionally. For example, assume '
-        'the revision tagged `next` is serving 40 percent of traffic and the '
-        'revision tagged `current` is serving 60 percent. If '
-        '`next` is assigned 45 percent of traffic and no assignment is '
-        'made for `current`, the service is updated with `next` assigned '
-        '45 percent of traffic and `current` scaled down to 55 percent. ')
+  group.add_argument(
+      '--to-tags',
+      metavar='TAG=PERCENTAGE',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgDict(
+          key_type=TrafficTargetKey.__func__,
+          value_type=TrafficPercentageValue.__func__),
+      help='Comma separated list of traffic assignments in the form '
+      'TAG=PERCENTAGE. TAG must match a traffic tag on a revision of the '
+      'service. It may match a previously-set tag, or one assigned using'
+      ' the `--set-tags` or `--update-tags` flags on this command. '
+      'PERCENTAGE must be an integer percentage between '
+      '0 and 100 inclusive. '
+      'Up to 100 percent of traffic may be assigned. If 100 percent '
+      'of traffic is assigned, the service traffic is updated as '
+      'specified. If under 100 percent of traffic is assigned, the '
+      'service traffic is updated as specified to the given tags, and other '
+      'traffic is scaled up or down proportionally. For example, assume '
+      'the revision tagged `next` is serving 40 percent of traffic and the '
+      'revision tagged `current` is serving 60 percent. If '
+      '`next` is assigned 45 percent of traffic and no assignment is '
+      'made for `current`, the service is updated with `next` assigned '
+      '45 percent of traffic and `current` scaled down to 55 percent. ')
 
   group.add_argument(
       '--to-latest',
@@ -743,6 +742,23 @@ def AddLabelsFlags(parser):
   labels_util.GetRemoveLabelsFlag('').AddToParser(remove_group)
 
 
+def AddGeneralAnnotationFlags(parser):
+  """Adds the update command annotation flag to an argparse parser.
+
+  Args:
+    parser: The argparse parser to add the flags to.
+  """
+  parser.add_argument(
+      '--update-annotations',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
+      hidden=True,
+      help=(
+          'List of annotation KEY=VALUE pairs to update. If an annotation '
+          'exists, its value is modified. Otherwise, a new label is created.'))
+
+
 class _ScaleValue(object):
   """Type for min/max-instances flag values."""
 
@@ -1034,10 +1050,14 @@ def _GetSecretsChanges(args):
   updates = _StripKeys(
       getattr(args, 'update_secrets', None) or args.set_secrets or {})
   volume_kwargs['updates'] = {
-      k: v for k, v in updates.items() if _IsVolumeMountKey(k)
+      k: secrets_mapping.ReachableSecret(v, k)
+      for k, v in updates.items()
+      if _IsVolumeMountKey(k)
   }
   env_kwargs['updates'] = {
-      k: v for k, v in updates.items() if not _IsVolumeMountKey(k)
+      k: secrets_mapping.ReachableSecret(v, k)
+      for k, v in updates.items()
+      if not _IsVolumeMountKey(k)
   }
 
   removes = _MapLStrip(getattr(args, 'remove_secrets', None) or [])
@@ -1239,6 +1259,9 @@ def GetConfigurationChanges(args):
         clear=args.clear_labels if 'clear_labels' in args else False)
     if diff.MayHaveUpdates():
       changes.append(config_changes.LabelChanges(diff))
+  if 'update_annotations' in args and args.update_annotations:
+    for key, value in args.update_annotations.items():
+      changes.append(config_changes.SetAnnotationChange(key, value))
   if 'revision_suffix' in args and args.revision_suffix:
     changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
   if 'sandbox' in args and args.sandbox:
@@ -1281,8 +1304,7 @@ def GetConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'binary_authorization'):
     changes.append(
         config_changes.SetAnnotationChange(
-            k8s_object.BINAUTHZ_POLICY_ANNOTATION,
-            args.binary_authorization))
+            k8s_object.BINAUTHZ_POLICY_ANNOTATION, args.binary_authorization))
   if FlagIsExplicitlySet(args, 'clear_binary_authorization'):
     changes.append(
         config_changes.DeleteAnnotationChange(
@@ -1290,8 +1312,7 @@ def GetConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'breakglass'):
     changes.append(
         config_changes.SetAnnotationChange(
-            k8s_object.BINAUTHZ_BREAKGLASS_ANNOTATION,
-            args.breakglass))
+            k8s_object.BINAUTHZ_BREAKGLASS_ANNOTATION, args.breakglass))
   return changes
 
 
@@ -1447,8 +1468,7 @@ def VerifyManagedFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         'The flag --platform={0} is not supported. '
         'Instead of using the flag --platform={0} in "gcloud events", '
-        'run "gcloud eventarc".'
-        .format(platforms.PLATFORM_MANAGED))
+        'run "gcloud eventarc".'.format(platforms.PLATFORM_MANAGED))
 
   error_msg = ('The `{flag}` flag is not supported on the fully managed '
                'version of Cloud Run. Specify `--platform {platform}` or run '

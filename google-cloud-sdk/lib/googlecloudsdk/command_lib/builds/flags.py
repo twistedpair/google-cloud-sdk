@@ -52,8 +52,7 @@ def AddRegionFlag(parser, hidden=False):
       hidden=hidden,
       help='The region of the Cloud Build Service to use.\n'
       'Must be set to a supported region name (e.g. us-central1).\n'
-      'If unset, the global service is used. The global service is isolated '
-      'from all regional services.')
+      'If unset, the global service region is used. This field is restricted.')
 
 
 def AddBuildArg(parser, intro=None):

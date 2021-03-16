@@ -21,8 +21,14 @@ from __future__ import unicode_literals
 
 ALPHA_VERSION = 'ALPHA'
 BETA_VERSION = 'BETA'
-AI_PLATFORM_API_VERSION = {BETA_VERSION: 'v1beta1', ALPHA_VERSION: 'v1alpha1'}
+GA_VERSION = 'GA'
+AI_PLATFORM_API_VERSION = {
+    GA_VERSION: 'v1',
+    BETA_VERSION: 'v1beta1',
+    ALPHA_VERSION: 'v1alpha1'
+}
 AI_PLATFORM_MESSAGE_PREFIX = {
+    GA_VERSION: 'GoogleCloudAiplatformV1',
     BETA_VERSION: 'GoogleCloudAiplatformV1beta1',
     ALPHA_VERSION: 'GoogleCloudAiplatformV1alpha1'
 }
@@ -66,6 +72,8 @@ INDEX_ENDPOINTS_COLLECTION = 'aiplatform.projects.locations.indexEndpoints'
 INDEXES_COLLECTION = 'aiplatform.projects.locations.indexes'
 
 TENSORBOARDS_COLLECTION = 'aiplatform.projects.locations.tensorboards'
+
+TENSORBOARD_EXPERIMENTS_COLLECTION = 'aiplatform.projects.locations.tensorboards.experiments'
 
 HPTUNING_JOB_CREATION_DISPLAY_MESSAGE = """\
 Hyperparameter tuning job [{id}] submitted successfully.

@@ -671,7 +671,7 @@ class Templates(object):
   @staticmethod
   def BuildAndStoreFlexTemplateFile(template_file_gcs_location, image,
                                     template_metadata_json, sdk_language,
-                                    print_only):
+                                    print_only, template_args=None):
     """Builds container spec and stores it in the flex template file in GCS.
 
     Args:
@@ -680,6 +680,7 @@ class Templates(object):
       template_metadata_json: Template metadata in json format.
       sdk_language: SDK language of the flex template.
       print_only: Only prints the container spec and skips write to GCS.
+      template_args: Default runtime parameters specified by template authors.
 
     Returns:
       Container spec json if print_only is set. A sucess message with template
@@ -690,8 +691,37 @@ class Templates(object):
       template_metadata = Templates._BuildTemplateMetadata(
           template_metadata_json)
     sdk_info = Templates._BuildSDKInfo(sdk_language)
+    default_environment = None
+    if template_args:
+      user_labels_list = Templates.__ConvertDictArguments(
+          template_args.additional_user_labels,
+          Templates.FLEX_TEMPLATE_USER_LABELS_VALUE)
+      ip_private = Templates.IP_CONFIGURATION_ENUM_VALUE.WORKER_IP_PRIVATE
+      ip_configuration = ip_private if template_args.disable_public_ips else None
+      enable_streaming_engine = True if template_args.enable_streaming_engine else None
+      default_environment = Templates.FLEX_TEMPLATE_ENVIRONMENT(
+          serviceAccountEmail=template_args.service_account_email,
+          maxWorkers=template_args.max_workers,
+          numWorkers=template_args.num_workers,
+          network=template_args.network,
+          subnetwork=template_args.subnetwork,
+          machineType=template_args.worker_machine_type,
+          tempLocation=template_args.staging_location,
+          kmsKeyName=template_args.kms_key_name,
+          ipConfiguration=ip_configuration,
+          workerRegion=template_args.worker_region,
+          workerZone=template_args.worker_zone,
+          enableStreamingEngine=enable_streaming_engine,
+          additionalExperiments=(
+              template_args.additional_experiments
+              if template_args.additional_experiments
+              else []),
+          additionalUserLabels=Templates.FLEX_TEMPLATE_USER_LABELS_VALUE(
+              additionalProperties=user_labels_list
+          ) if user_labels_list else None)
     container_spec = Templates.CONTAINER_SPEC(
-        image=image, metadata=template_metadata, sdkInfo=sdk_info)
+        image=image, metadata=template_metadata, sdkInfo=sdk_info,
+        defaultEnvironment=default_environment)
     container_spec_json = encoding.MessageToJson(container_spec)
     container_spec_pretty_json = json.dumps(
         json.loads(container_spec_json),

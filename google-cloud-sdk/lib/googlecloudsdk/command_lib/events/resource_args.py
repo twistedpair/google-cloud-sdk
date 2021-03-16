@@ -20,10 +20,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.events import util
 from googlecloudsdk.command_lib.run import resource_args as run_resource_args
-
-
-EVENTS_ALPHA_API_VERSION = 'v1alpha1'
 
 
 def TriggerAttributeConfig():
@@ -32,23 +30,13 @@ def TriggerAttributeConfig():
       help_text='Name of the trigger.')
 
 
-def GetTriggerResourceSpec(api_version=EVENTS_ALPHA_API_VERSION,
-                           resource_collection='run.namespaces.triggers'):
+def GetTriggerResourceSpec():
   return concepts.ResourceSpec(
-      resource_collection,
+      util.ANTHOS_TRIGGER_COLLECTION_NAME,
       namespacesId=run_resource_args.NamespaceAttributeConfig(),
       triggersId=TriggerAttributeConfig(),
       resource_name='Trigger',
-      api_version=api_version)
-
-
-def GetNamespaceResourceSpec(api_version=EVENTS_ALPHA_API_VERSION):
-  """Returns a resource spec for the namespace."""
-  return concepts.ResourceSpec(
-      'run.namespaces',
-      namespacesId=run_resource_args.NamespaceAttributeConfig(),
-      resource_name='namespace',
-      api_version=api_version)
+      api_version='v1beta1')
 
 
 def GetCoreNamespaceResourceSpec():
