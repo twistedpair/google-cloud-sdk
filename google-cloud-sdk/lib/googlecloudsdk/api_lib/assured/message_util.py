@@ -34,6 +34,10 @@ def GetKmsSettings(release_track):
   return KMS_SETTINGS_MAP.get(release_track)
 
 
+def GetResourceSettings(release_track):
+  return RESOURCE_SETTINGS_MAP.get(release_track)
+
+
 def CreateAssuredParent(organization_id, location):
   return 'organizations/{}/locations/{}'.format(organization_id, location)
 
@@ -46,6 +50,7 @@ def CreateAssuredWorkload(display_name=None,
                           labels=None,
                           etag=None,
                           provisioned_resources_parent=None,
+                          resource_settings=None,
                           release_track=ReleaseTrack.GA):
   """Construct an Assured Workload message for Assured Workloads Beta API requests.
 
@@ -63,6 +68,10 @@ def CreateAssuredWorkload(display_name=None,
     etag: str, the etag of the Assured Workloads environment.
     provisioned_resources_parent: str, parent of the provisioned projects,
       for example: folders/{FOLDER_ID}
+    resource_settings: list of key=value pairs to set customized resource
+      settings, which can be one of the following: consumer-project-id,
+      encryption-keys-project-id, for example:
+      consumer-project-id={ID1},encryption-keys-project-id={ID2}
     release_track: ReleaseTrack, gcloud release track being used
 
   Returns:
@@ -87,6 +96,9 @@ def CreateAssuredWorkload(display_name=None,
   if next_rotation_time and rotation_period:
     workload.kmsSettings = GetKmsSettings(release_track)(
         nextRotationTime=next_rotation_time, rotationPeriod=rotation_period)
+  if resource_settings:
+    workload.resourceSettings = CreateResourceSettingsList(
+        resource_settings, release_track)
   return workload
 
 
@@ -97,6 +109,45 @@ def CreateLabels(labels, workload_message):
         key=key, value=value)
     workload_labels.append(new_label)
   return workload_message.LabelsValue(additionalProperties=workload_labels)
+
+
+def CreateResourceSettingsList(resource_settings, release_track):
+  """Construct a list of ResourceSettings for Assured Workload object.
+
+  Args:
+    resource_settings: a list of key=value pairs of customized resource
+      settings.
+    release_track: ReleaseTrack, gcloud release track being used.
+
+  Returns:
+    A list of ResourceSettings for the Assured Workload object.
+  """
+  workload_resource_settings = []
+  for key, value in resource_settings.items():
+    workload_resource_settings.append(
+        CreateResourceSettings(key, value, release_track))
+  return workload_resource_settings
+
+
+def CreateResourceSettings(key, value, release_track):
+  """Construct a ResourceSettings from key=value pair for Assured Workload object.
+
+  Args:
+    key: str, the setting name, which can be one of the following -
+      consumer-project-id, encryption-keys-project-id.
+    value: str, the value of the resource property.
+    release_track: ReleaseTrack, gcloud release track being used.
+
+  Returns:
+    A list of ResourceSettings for the Assured Workload object.
+  """
+  resource_type = None
+  resource_settings_message = GetResourceSettings(release_track)
+  if key == 'consumer-project-id':
+    resource_type = resource_settings_message.ResourceTypeValueValuesEnum.CONSUMER_PROJECT
+  elif key == 'encryption-keys-project-id':
+    resource_type = resource_settings_message.ResourceTypeValueValuesEnum.ENCRYPTION_KEYS_PROJECT
+  return resource_settings_message(resourceType=resource_type, resourceId=value)
 
 
 def CreateUpdateMask(display_name, labels):
@@ -195,4 +246,13 @@ KMS_SETTINGS_MAP = {
     ReleaseTrack.GA:
         GetMessages(ReleaseTrack.GA
                    ).GoogleCloudAssuredworkloadsV1WorkloadKMSSettings
+}
+
+RESOURCE_SETTINGS_MAP = {
+    ReleaseTrack.ALPHA:
+        GetMessages(ReleaseTrack.ALPHA
+                   ).GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings,
+    ReleaseTrack.BETA:
+        GetMessages(ReleaseTrack.BETA
+                   ).GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings
 }

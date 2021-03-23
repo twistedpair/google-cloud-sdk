@@ -124,7 +124,7 @@ def GetPlatform(prompt_if_unset=True):
 def ValidatePlatformIsManaged(unused_ref, unused_args, req):
   """Validate the specified platform is managed.
 
-  This method is referenced by the declaritive iam commands which only work
+  This method is referenced by the declarative iam commands which only work
   against the managed platform.
 
   Args:
@@ -142,3 +142,7 @@ def ValidatePlatformIsManaged(unused_ref, unused_args, req):
         '`gcloud config set run/platform {managed}`.'.format(
             platform=GetPlatform(), managed=PLATFORM_MANAGED))
   return req
+
+
+def IsManaged():
+  return GetPlatform() == PLATFORM_MANAGED

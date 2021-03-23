@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210305",
+ "revision": "20210312",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -78,7 +78,7 @@
      "description": "View your data in Google BigQuery"
     },
     "https://www.googleapis.com/auth/cloud-platform": {
-     "description": "View and manage your data across Google Cloud Platform services"
+     "description": "See, edit, configure, and delete your Google Cloud Platform data"
     },
     "https://www.googleapis.com/auth/cloud-platform.read-only": {
      "description": "View your data across Google Cloud Platform services"
@@ -2699,6 +2699,11 @@
       "$ref": "TableFieldSchema"
      }
     },
+    "maxLength": {
+     "type": "string",
+     "description": "[Optional] Maximum length of values of this field for STRINGS or BYTES. If max_length is not specified, no maximum length constraint is imposed on this field. If type = \"STRING\", then max_length represents the maximum UTF-8 length of strings in this field. If type = \"BYTES\", then max_length represents the maximum number of bytes in this field. It is invalid to set this field if type ≠ \"STRING\" and ≠ \"BYTES\".",
+     "format": "int64"
+    },
     "mode": {
      "type": "string",
      "description": "[Optional] The field mode. Possible values include NULLABLE, REQUIRED and REPEATED. The default value is NULLABLE."
@@ -2718,6 +2723,16 @@
        }
       }
      }
+    },
+    "precision": {
+     "type": "string",
+     "description": "[Optional] Precision (maximum number of total digits in base 10) and scale (maximum number of digits in the fractional part in base 10) constraints for values of this field for NUMERIC or BIGNUMERIC. It is invalid to set precision or scale if type ≠ \"NUMERIC\" and ≠ \"BIGNUMERIC\". If precision and scale are not specified, no value range constraint is imposed on this field insofar as values are permitted by the type. Values of this NUMERIC or BIGNUMERIC field must be in this range when: - Precision (P) and scale (S) are specified: [-10P-S + 10-S, 10P-S - 10-S] - Precision (P) is specified but not scale (and thus scale is interpreted to be equal to zero): [-10P + 1, 10P - 1]. Acceptable values for precision and scale if both are specified: - If type = \"NUMERIC\": 1 ≤ precision - scale ≤ 29 and 0 ≤ scale ≤ 9. - If type = \"BIGNUMERIC\": 1 ≤ precision - scale ≤ 38 and 0 ≤ scale ≤ 38. Acceptable values for precision if only precision is specified but not scale (and thus scale is interpreted to be equal to zero): - If type = \"NUMERIC\": 1 ≤ precision ≤ 29. - If type = \"BIGNUMERIC\": 1 ≤ precision ≤ 38. If scale is specified but not precision, then it is invalid.",
+     "format": "int64"
+    },
+    "scale": {
+     "type": "string",
+     "description": "[Optional] See documentation for precision.",
+     "format": "int64"
     },
     "type": {
      "type": "string",

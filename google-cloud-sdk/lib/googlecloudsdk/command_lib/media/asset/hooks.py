@@ -18,16 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.core import properties
-
-PARENT_TEMPLATE = 'projects/{}/locations/{}'
+from googlecloudsdk.command_lib.media.asset import utils
 
 
 def AddDefaultParentInfoToAssetTypeRequests(ref, args, req):
   """Python hook for yaml commands to wildcard the location in asset type requests."""
   del ref  # Unused
-  project = properties.VALUES.core.project.Get(required=True)
-  location = args.location or properties.VALUES.media_asset.location.Get(
-      required=True)
-  req.parent = PARENT_TEMPLATE.format(project, location)
+  project = utils.GetProject()
+  location = utils.GetLocation(args)
+  req.parent = utils.GetParentTemplate(project, location)
   return req

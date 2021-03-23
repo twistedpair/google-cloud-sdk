@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -557,7 +557,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "description": "Required. The ID of the public key. The ID must be 1-63 characters long, and comply with RFC1035. The name must be 1-64 characters long, and match the regular expression a-zA-Z* which means the first character must be a letter, and all following characters must be a dash, underscore, letter or digit.",
+          "description": "Required. The ID of the public key. The ID must be 1-64 characters long, and match the regular expression a-zA-Z* which means the first character must be a letter, and all following characters must be a dash, underscore, letter or digit.",
           "type": "string"
         },
         "value": {
@@ -905,16 +905,16 @@
       "description": "UrlRedirect defines HTTP redirect configuration for a given request.",
       "type": "object",
       "properties": {
-        "hostRedirect": {
-          "description": "Optional. The host that will be used in the redirect response instead of the one that was supplied in the request. The value must be between 1 and 255 characters.",
-          "type": "string"
-        },
         "pathRedirect": {
           "description": "Optional. The path that will be used in the redirect response instead of the one that was supplied in the request. pathRedirect cannot be supplied together with prefixRedirect. Supply one alone or neither. If neither is supplied, the path of the original request will be used for the redirect. The path value must be between 1 and 1024 characters.",
           "type": "string"
         },
         "prefixRedirect": {
           "description": "Optional. The prefix that replaces the prefixMatch specified in the routeRule, retaining the remaining portion of the URL before redirecting the request. prefixRedirect cannot be supplied together with pathRedirect. Supply one alone or neither. If neither is supplied, the path of the original request will be used for the redirect. The prefix value must be between 1 and 1024 characters.",
+          "type": "string"
+        },
+        "hostRedirect": {
+          "description": "Optional. The host that will be used in the redirect response instead of the one that was supplied in the request. The value must be between 1 and 255 characters.",
           "type": "string"
         },
         "redirectResponseCode": {
@@ -1141,12 +1141,12 @@
           "format": "google-duration"
         },
         "defaultTtl": {
-          "description": "Optional. Specifies the default TTL for cached content served by this origin for responses that do not have an existing valid TTL (max-age or s-max-age). Defaults to 3600s (1 hour). - The TTL must be >= 0 and <= 2592000s (1 month) - Setting a TTL of \"0\" means \"always revalidate\" (equivalent to must-revalidate) - The value of defaultTTL cannot be set to a value greater than that of maxTTL. - Fractions of a second are not allowed. - When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL will overwrite the TTL set in all responses. Note that infrequently accessed objects may be evicted from the cache before the defined TTL. Objects that expire will be revalidated with the origin. When the cache mode is set to \"USE_ORIGIN_HEADERS\" or \"BYPASS_CACHE\", you must omit this field.",
+          "description": "Optional. Specifies the default TTL for cached content served by this origin for responses that do not have an existing valid TTL (max-age or s-max-age). Defaults to 3600s (1 hour). - The TTL must be >= 0 and <= 31,536,000 seconds (1 year) - Setting a TTL of \"0\" means \"always revalidate\" (equivalent to must-revalidate) - The value of defaultTTL cannot be set to a value greater than that of maxTTL. - Fractions of a second are not allowed. - When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL will overwrite the TTL set in all responses. Note that infrequently accessed objects may be evicted from the cache before the defined TTL. Objects that expire will be revalidated with the origin. When the cache mode is set to \"USE_ORIGIN_HEADERS\" or \"BYPASS_CACHE\", you must omit this field.",
           "type": "string",
           "format": "google-duration"
         },
         "maxTtl": {
-          "description": "Optional. Specifies the maximum allowed TTL for cached content served by this origin. Defaults to 86400s (1 day). Cache directives that attempt to set a max-age or s-maxage higher than this, or an Expires header more than maxTtl seconds in the future will be capped at the value of maxTTL, as if it were the value of an s-maxage Cache-Control directive. - The TTL must be >= 0 and <= 2592000s (1 month) - Setting a TTL of \"0\" means \"always revalidate\" - The value of maxTtl must be equal to or greater than defaultTtl. - Fractions of a second are not allowed. When the cache mode is set to \"USE_ORIGIN_HEADERS\", \"FORCE_CACHE_ALL\", or \"BYPASS_CACHE\", you must omit this field.",
+          "description": "Optional. Specifies the maximum allowed TTL for cached content served by this origin. Defaults to 86400s (1 day). Cache directives that attempt to set a max-age or s-maxage higher than this, or an Expires header more than maxTtl seconds in the future will be capped at the value of maxTTL, as if it were the value of an s-maxage Cache-Control directive. - The TTL must be >= 0 and <= 31,536,000 seconds (1 year) - Setting a TTL of \"0\" means \"always revalidate\" - The value of maxTtl must be equal to or greater than defaultTtl. - Fractions of a second are not allowed. When the cache mode is set to \"USE_ORIGIN_HEADERS\", \"FORCE_CACHE_ALL\", or \"BYPASS_CACHE\", you must omit this field.",
           "type": "string",
           "format": "google-duration"
         },
@@ -1218,7 +1218,7 @@
           }
         },
         "includedHeaderNames": {
-          "description": "Optional. Names of HTTP request headers to include in cache keys. The value of the header field will be used as part of the cache key. - Header names must be valid HTTP RFC 7230 header field values. - Header field names are case insensitive - You may specify up to five header names. - To include the HTTP method, use \":method\" Note that specifying several headers, and\/or headers that have a large range of values (e.g. per-user) will dramatically impact the cache hit rate, and may result in a higher eviction rate and reduced performance. You may specify up to 5 header names.",
+          "description": "Optional. Names of HTTP request headers to include in cache keys. The value of the header field will be used as part of the cache key. - Header names must be valid HTTP RFC 7230 header field values. - Header field names are case insensitive - You may specify up to five header names. - To include the HTTP method, use \":method\" Refer to the documentation for the allowed list of header names. range of values (e.g. per-user) will dramatically impact the cache hit rate, and may result in a higher eviction rate and reduced performance. You may specify up to 5 header names.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1354,6 +1354,29 @@
         "description": {
           "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
           "type": "string"
+        },
+        "type": {
+          "description": "Required. The type of the Router resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "The type of Router is unspecified.",
+            "The Router is used in Proxyless gRPC model. Routes being referenced must be gRPC routes for this type."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "PROXYLESS_GRPC"
+          ]
+        },
+        "network": {
+          "description": "Optional. The reference to the VPC network that is using this configuration. Currently only the short name (network name) is supported, for example \"default\", and we assume it is under the same project as the resource by default.",
+          "type": "string"
+        },
+        "routes": {
+          "description": "Optional. List of references to routes that this Router must be able to route traffic for. Example: projects\/12345\/locations\/global\/grpcRoutes\/myGrpcRoute",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1545,18 +1568,18 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The standard list filter.",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The standard list page size.",
+                  "description": "The maximum number of results to return. If not set, the service will select a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "The standard list page token.",
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }

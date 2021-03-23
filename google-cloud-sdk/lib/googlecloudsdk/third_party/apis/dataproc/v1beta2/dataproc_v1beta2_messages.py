@@ -622,18 +622,6 @@ class ClusterStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
-class ConfidentialInstanceConfig(_messages.Message):
-  r"""Confidential Instance Config for clusters using Confidential VMs
-  (https://cloud.google.com/compute/confidential-vm/docs)
-
-  Fields:
-    enableConfidentialCompute: Optional. Defines whether the instance should
-      have confidential compute enabled.
-  """
-
-  enableConfidentialCompute = _messages.BooleanField(1)
-
-
 class DataprocProjectsLocationsAutoscalingPoliciesCreateRequest(_messages.Message):
   r"""A DataprocProjectsLocationsAutoscalingPoliciesCreateRequest object.
 
@@ -1193,21 +1181,6 @@ class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
   region = _messages.StringField(4, required=True)
 
 
-class DataprocProjectsRegionsClustersGetClusterAsTemplateRequest(_messages.Message):
-  r"""A DataprocProjectsRegionsClustersGetClusterAsTemplateRequest object.
-
-  Fields:
-    clusterName: Required. The cluster name.
-    projectId: Required. The ID of the Google Cloud Platform project that the
-      cluster belongs to.
-    region: Required. The Dataproc region in which to handle the request.
-  """
-
-  clusterName = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-
-
 class DataprocProjectsRegionsClustersGetIamPolicyRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersGetIamPolicyRequest object.
 
@@ -1467,21 +1440,6 @@ class DataprocProjectsRegionsJobsGetIamPolicyRequest(_messages.Message):
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
-
-
-class DataprocProjectsRegionsJobsGetJobAsTemplateRequest(_messages.Message):
-  r"""A DataprocProjectsRegionsJobsGetJobAsTemplateRequest object.
-
-  Fields:
-    jobId: Required. The job ID.
-    projectId: Required. The ID of the Google Cloud Platform project that the
-      job belongs to.
-    region: Required. The Dataproc region in which to handle the request.
-  """
-
-  jobId = _messages.StringField(1, required=True)
-  projectId = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
 
 
 class DataprocProjectsRegionsJobsGetRequest(_messages.Message):
@@ -1960,19 +1918,6 @@ class DiskConfig(_messages.Message):
   numLocalSsds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class DriverRunner(_messages.Message):
-  r"""Configurations for the driver runner
-
-  Fields:
-    masterDriverRunner: Optional. (default) Run driver on master node
-    yarnDriverRunner: Optional. Configuration for running the driver on
-      workers using YARN
-  """
-
-  masterDriverRunner = _messages.MessageField('MasterDriverRunner', 1)
-  yarnDriverRunner = _messages.MessageField('YarnDriverRunner', 2)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -2088,9 +2033,6 @@ class GceClusterConfig(_messages.Message):
       metadata#project_and_instance_metadata)).
 
   Fields:
-    confidentialInstanceConfig: Optional. Confidential Instance Config for
-      clusters using Confidential VMs
-      (https://cloud.google.com/compute/confidential-vm/docs)
     internalIpOnly: Optional. If true, all instances in the cluster will only
       have internal IP addresses. By default, clusters are not restricted to
       internal IP addresses, and will have ephemeral external IP addresses
@@ -2205,19 +2147,18 @@ class GceClusterConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 1)
-  internalIpOnly = _messages.BooleanField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  networkUri = _messages.StringField(4)
-  nodeGroupAffinity = _messages.MessageField('NodeGroupAffinity', 5)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 6)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 7)
-  serviceAccount = _messages.StringField(8)
-  serviceAccountScopes = _messages.StringField(9, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 10)
-  subnetworkUri = _messages.StringField(11)
-  tags = _messages.StringField(12, repeated=True)
-  zoneUri = _messages.StringField(13)
+  internalIpOnly = _messages.BooleanField(1)
+  metadata = _messages.MessageField('MetadataValue', 2)
+  networkUri = _messages.StringField(3)
+  nodeGroupAffinity = _messages.MessageField('NodeGroupAffinity', 4)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 5)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 6)
+  serviceAccount = _messages.StringField(7)
+  serviceAccountScopes = _messages.StringField(8, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 9)
+  subnetworkUri = _messages.StringField(10)
+  tags = _messages.StringField(11, repeated=True)
+  zoneUri = _messages.StringField(12)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -2425,46 +2366,6 @@ class HiveJob(_messages.Message):
   queryFileUri = _messages.StringField(4)
   queryList = _messages.MessageField('QueryList', 5)
   scriptVariables = _messages.MessageField('ScriptVariablesValue', 6)
-
-
-class IdentityConfig(_messages.Message):
-  r"""Identity related configuration, including service account based secure
-  multi-tenancy user mappings.
-
-  Messages:
-    UserServiceAccountMappingValue: Required. Map of user to service account.
-
-  Fields:
-    userServiceAccountMapping: Required. Map of user to service account.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class UserServiceAccountMappingValue(_messages.Message):
-    r"""Required. Map of user to service account.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        UserServiceAccountMappingValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        UserServiceAccountMappingValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a UserServiceAccountMappingValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  userServiceAccountMapping = _messages.MessageField('UserServiceAccountMappingValue', 1)
 
 
 class InjectCredentialsRequest(_messages.Message):
@@ -2696,7 +2597,6 @@ class Job(_messages.Message):
       location as driver_output_uri.
     driverOutputResourceUri: Output only. A URI pointing to the location of
       the stdout of the job's driver program.
-    driverRunner: Optional. Configurations for the driver runner
     hadoopJob: Optional. Job is a Hadoop job.
     hiveJob: Optional. Job is a Hive job.
     jobUuid: Output only. A UUID that uniquely identifies a job within the
@@ -2765,24 +2665,23 @@ class Job(_messages.Message):
   done = _messages.BooleanField(1)
   driverControlFilesUri = _messages.StringField(2)
   driverOutputResourceUri = _messages.StringField(3)
-  driverRunner = _messages.MessageField('DriverRunner', 4)
-  hadoopJob = _messages.MessageField('HadoopJob', 5)
-  hiveJob = _messages.MessageField('HiveJob', 6)
-  jobUuid = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  pigJob = _messages.MessageField('PigJob', 9)
-  placement = _messages.MessageField('JobPlacement', 10)
-  prestoJob = _messages.MessageField('PrestoJob', 11)
-  pysparkJob = _messages.MessageField('PySparkJob', 12)
-  reference = _messages.MessageField('JobReference', 13)
-  scheduling = _messages.MessageField('JobScheduling', 14)
-  sparkJob = _messages.MessageField('SparkJob', 15)
-  sparkRJob = _messages.MessageField('SparkRJob', 16)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 17)
-  status = _messages.MessageField('JobStatus', 18)
-  statusHistory = _messages.MessageField('JobStatus', 19, repeated=True)
-  submittedBy = _messages.StringField(20)
-  yarnApplications = _messages.MessageField('YarnApplication', 21, repeated=True)
+  hadoopJob = _messages.MessageField('HadoopJob', 4)
+  hiveJob = _messages.MessageField('HiveJob', 5)
+  jobUuid = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  pigJob = _messages.MessageField('PigJob', 8)
+  placement = _messages.MessageField('JobPlacement', 9)
+  prestoJob = _messages.MessageField('PrestoJob', 10)
+  pysparkJob = _messages.MessageField('PySparkJob', 11)
+  reference = _messages.MessageField('JobReference', 12)
+  scheduling = _messages.MessageField('JobScheduling', 13)
+  sparkJob = _messages.MessageField('SparkJob', 14)
+  sparkRJob = _messages.MessageField('SparkRJob', 15)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 16)
+  status = _messages.MessageField('JobStatus', 17)
+  statusHistory = _messages.MessageField('JobStatus', 18, repeated=True)
+  submittedBy = _messages.StringField(19)
+  yarnApplications = _messages.MessageField('YarnApplication', 20, repeated=True)
 
 
 class JobMetadata(_messages.Message):
@@ -3259,13 +3158,6 @@ class ManagedGroupConfig(_messages.Message):
 
   instanceGroupManagerName = _messages.StringField(1)
   instanceTemplateName = _messages.StringField(2)
-
-
-class MasterDriverRunner(_messages.Message):
-  r"""The default mode of executing drivers: on master nodes Currently no
-  internal fields.
-  """
-
 
 
 class MetastoreConfig(_messages.Message):
@@ -3887,13 +3779,10 @@ class SecurityConfig(_messages.Message):
   r"""Security related configuration, including encryption, Kerberos, etc.
 
   Fields:
-    identityConfig: Optional. Identity related configuration, including
-      service account based secure multi-tenancy user mappings.
     kerberosConfig: Optional. Kerberos related configuration.
   """
 
-  identityConfig = _messages.MessageField('IdentityConfig', 1)
-  kerberosConfig = _messages.MessageField('KerberosConfig', 2)
+  kerberosConfig = _messages.MessageField('KerberosConfig', 1)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -4826,19 +4715,6 @@ class YarnApplication(_messages.Message):
   progress = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   state = _messages.EnumField('StateValueValuesEnum', 3)
   trackingUrl = _messages.StringField(4)
-
-
-class YarnDriverRunner(_messages.Message):
-  r"""Schedule the driver on workers using YARN
-
-  Fields:
-    memoryMb: Optional. The amount of memory in MB this driver is requesting
-      from YARN
-    vcores: Optional. The number of vCPUs this driver is requesting from YARN
-  """
-
-  memoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  vcores = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -40,6 +40,7 @@ from googlecloudsdk.core import exceptions as core_exc
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import transports
+from googlecloudsdk.core.util import scaled_integer
 
 import six
 
@@ -97,7 +98,8 @@ class StorageClient(object):
     the property defined chunk size to the nearest chunk size interval.
     """
     gcs_chunk_granularity = 256 * 1024  # 256 KiB
-    chunksize = properties.VALUES.storage.chunk_size.GetInt()
+    chunksize = scaled_integer.ParseInteger(
+        properties.VALUES.storage.upload_chunk_size.Get())
     if chunksize == 0:
       chunksize = None  # Use apitools default (1048576 B)
     elif chunksize % gcs_chunk_granularity != 0:

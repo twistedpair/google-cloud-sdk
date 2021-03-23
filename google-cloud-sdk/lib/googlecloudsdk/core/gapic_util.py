@@ -46,15 +46,10 @@ class StoredCredentials(credentials.Credentials):
     else:
       self.token = self.stored_credentials.token
     if enable_resource_quota or force_resource_quota:
-      self.quota_project_id = creds.GetQuotaProject(self.stored_credentials,
-                                                    force_resource_quota)
+      self._quota_project_id = creds.GetQuotaProject(self.stored_credentials,
+                                                     force_resource_quota)
     else:
-      self.quota_project_id = None
-
-  def apply(self, headers, token=None):
-    super(StoredCredentials, self).apply(headers, token=token)
-    if self.quota_project_id is not None:
-      headers['x-goog-user-project'] = self.quota_project_id
+      self._quota_project_id = None
 
   def refresh(self, request):
     pass

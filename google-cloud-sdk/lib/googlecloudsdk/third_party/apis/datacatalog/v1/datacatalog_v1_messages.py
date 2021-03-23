@@ -103,15 +103,16 @@ class DatacatalogProjectsLocationsEntryGroupsCreateRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsCreateRequest object.
 
   Fields:
-    entryGroupId: Required. The id of the entry group to create. The id must
-      begin with a letter or underscore, contain only English letters, numbers
-      and underscores, and be at most 64 characters.
+    entryGroupId: Required. The ID of the entry group to create. The ID must
+      contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and
+      must start with a letter or underscore. The maximum size is 64 bytes
+      when encoded in UTF-8.
     googleCloudDatacatalogV1EntryGroup: A GoogleCloudDatacatalogV1EntryGroup
       resource to be passed as the request body.
-    parent: Required. The name of the project this entry group is in. Example:
-      * projects/{project_id}/locations/{location} Note that this EntryGroup
-      and its child resources may not actually be stored in the location in
-      this name.
+    parent: Required. The name of the project this entry group belongs to.
+      Example: `projects/{project_id}/locations/{location}` Note: The entry
+      group itself and its child resources might not be stored in the location
+      specified in its name.
   """
 
   entryGroupId = _messages.StringField(1)
@@ -137,13 +138,15 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest(_messages.Mess
   r"""A DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest object.
 
   Fields:
-    entryId: Required. The id of the entry to create.
+    entryId: Required. The ID of the entry to create. The ID must contain only
+      letters (a-z, A-Z), numbers (0-9), and underscores (_). The maximum size
+      is 64 bytes when encoded in UTF-8.
     googleCloudDatacatalogV1Entry: A GoogleCloudDatacatalogV1Entry resource to
       be passed as the request body.
-    parent: Required. The name of the entry group this entry is in. Example: *
-      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
-      Note that this Entry and its child resources may not actually be stored
-      in the location in this name.
+    parent: Required. The name of the entry group this entry belongs to.
+      Example: `projects/{project_id}/locations/{location}/entryGroups/{entry_
+      group_id}` Note: The entry itself and its child resources might not be
+      stored in the location specified in its name.
   """
 
   entryId = _messages.StringField(1)
@@ -218,10 +221,10 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
   Fields:
     googleCloudDatacatalogV1Entry: A GoogleCloudDatacatalogV1Entry resource to
       be passed as the request body.
-    name: Output only. The Data Catalog resource name of the entry in URL
-      format. Example: * projects/{project_id}/locations/{location}/entryGroup
-      s/{entry_group_id}/entries/{entry_id} Note that this Entry and its child
-      resources may not actually be stored in the location in this name.
+    name: Output only. The resource name of an entry in URL format. Example: `
+      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}/
+      entries/{entry_id}` Note: The entry itself and its child resources might
+      not be stored in the location specified in its name.
     updateMask: Names of fields whose values to overwrite on an entry. If this
       parameter is absent or empty, all modifiable fields are overwritten. If
       such fields are non-required and omitted in the request body, their
@@ -247,10 +250,10 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsCreateRequest(_messages.
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
     parent: Required. The name of the resource to attach this tag to. Tags can
-      be attached to Entries. Example: * projects/{project_id}/locations/{loca
-      tion}/entryGroups/{entry_group_id}/entries/{entry_id} Note that this Tag
-      and its child resources may not actually be stored in the location in
-      this name.
+      be attached to entries. An entry can have up to 1000 attached tags.
+      Example: `projects/{project_id}/locations/{location}/entryGroups/{entry_
+      group_id}/entries/{entry_id}` Note: The tag and its child resources
+      might not be stored in the location specified in its name.
   """
 
   googleCloudDatacatalogV1Tag = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 1)
@@ -296,11 +299,11 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsPatchRequest(_messages.M
   Fields:
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
-    name: The resource name of the tag in URL format. Example: * projects/{pro
-      ject_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entr
-      y_id}/tags/{tag_id} where `tag_id` is a system-generated identifier.
-      Note that this Tag may not actually be stored in the location in this
-      name.
+    name: The resource name of the tag in URL format. Example: `projects/{proj
+      ect_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entry
+      _id}/tags/{tag_id}` where `tag_id` is a system-generated identifier.
+      Note: The tag itself might not be stored in the location specified in
+      its name.
     updateMask: Names of fields whose values to overwrite on a tag. Currently,
       a tag has the only modifiable field with the name `fields`. In general,
       if this parameter is absent or empty, all modifiable fields are
@@ -384,10 +387,10 @@ class DatacatalogProjectsLocationsEntryGroupsPatchRequest(_messages.Message):
   Fields:
     googleCloudDatacatalogV1EntryGroup: A GoogleCloudDatacatalogV1EntryGroup
       resource to be passed as the request body.
-    name: The resource name of the entry group in URL format. Example: *
-      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
-      Note that this EntryGroup and its child resources may not actually be
-      stored in the location in this name.
+    name: The resource name of the entry group in URL format. Example:
+      `projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
+      ` Note: The entry group itself and its child resources might not be
+      stored in the location specified in its name.
     updateMask: Names of fields whose values to overwrite on an entry group.
       If this parameter is absent or empty, all modifiable fields are
       overwritten. If such fields are non-required and omitted in the request
@@ -421,10 +424,10 @@ class DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest(_messages.Message
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
     parent: Required. The name of the resource to attach this tag to. Tags can
-      be attached to Entries. Example: * projects/{project_id}/locations/{loca
-      tion}/entryGroups/{entry_group_id}/entries/{entry_id} Note that this Tag
-      and its child resources may not actually be stored in the location in
-      this name.
+      be attached to entries. An entry can have up to 1000 attached tags.
+      Example: `projects/{project_id}/locations/{location}/entryGroups/{entry_
+      group_id}/entries/{entry_id}` Note: The tag and its child resources
+      might not be stored in the location specified in its name.
   """
 
   googleCloudDatacatalogV1Tag = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 1)
@@ -469,11 +472,11 @@ class DatacatalogProjectsLocationsEntryGroupsTagsPatchRequest(_messages.Message)
   Fields:
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
-    name: The resource name of the tag in URL format. Example: * projects/{pro
-      ject_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entr
-      y_id}/tags/{tag_id} where `tag_id` is a system-generated identifier.
-      Note that this Tag may not actually be stored in the location in this
-      name.
+    name: The resource name of the tag in URL format. Example: `projects/{proj
+      ect_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entry
+      _id}/tags/{tag_id}` where `tag_id` is a system-generated identifier.
+      Note: The tag itself might not be stored in the location specified in
+      its name.
     updateMask: Names of fields whose values to overwrite on a tag. Currently,
       a tag has the only modifiable field with the name `fields`. In general,
       if this parameter is absent or empty, all modifiable fields are
@@ -511,7 +514,10 @@ class DatacatalogProjectsLocationsTagTemplatesCreateRequest(_messages.Message):
     parent: Required. The name of the project and the template location
       [region](https://cloud.google.com/data-catalog/docs/concepts/regions).
       Example: * projects/{project_id}/locations/us-central1
-    tagTemplateId: Required. The id of the tag template to create.
+    tagTemplateId: Required. The ID of the tag template to create. The ID must
+      contain only lowercase letters (a-z), numbers (0-9), or underscores (_),
+      and must start with a letter or underscore. The maximum size is 64 bytes
+      when encoded in UTF-8.
   """
 
   googleCloudDatacatalogV1TagTemplate = _messages.MessageField('GoogleCloudDatacatalogV1TagTemplate', 1)
@@ -668,10 +674,10 @@ class DatacatalogProjectsLocationsTagTemplatesPatchRequest(_messages.Message):
   Fields:
     googleCloudDatacatalogV1TagTemplate: A GoogleCloudDatacatalogV1TagTemplate
       resource to be passed as the request body.
-    name: The resource name of the tag template in URL format. Example: *
-      projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
-      } Note that this TagTemplate and its child resources may not actually be
-      stored in the location in this name.
+    name: The resource name of the tag template in URL format. Example: `proje
+      cts/{project_id}/locations/{location}/tagTemplates/{tag_template_id}`
+      Note: The tag template itself and its child resources might not be
+      stored in the location specified in its name.
     updateMask: Names of fields whose values to overwrite on a tag template.
       Currently, only `display_name` can be overwritten. In general, if this
       parameter is absent or empty, all modifiable fields are overwritten. If
@@ -1133,15 +1139,18 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
   inside other columns.
 
   Fields:
-    column: Required. Name of the column.
+    column: Required. Name of the column. Must be a UTF-8 string without dots
+      (.). The maximum size is 64 bytes.
     description: Optional. Description of the column. Default value is an
-      empty string.
-    mode: Optional. A column's mode indicates whether the values in this
-      column are required, nullable, etc. Only `NULLABLE`, `REQUIRED` and
-      `REPEATED` are supported. Default mode is `NULLABLE`.
+      empty string. The description must be a UTF-8 string with the maximum
+      size of 2000 bytes.
+    mode: Optional. A column's mode indicates if values in this column are
+      required, nullable, or repeated. Only `NULLABLE`, `REQUIRED`, and
+      `REPEATED` values are supported. Default mode is `NULLABLE`.
     subcolumns: Optional. Schema of sub-columns. A column can have zero or
       more sub-columns.
-    type: Required. Type of the column.
+    type: Required. Type of the column. Must be a UTF-8 string with the
+      maximum size of 128 bytes.
   """
 
   column = _messages.StringField(1)
@@ -1259,12 +1268,16 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       entries representing non-pubsub data streams.
     databaseTableSpec: Specification that applies to a table resource. This is
       only valid on entries of type `TABLE`.
-    description: Entry description, which can consist of several sentences or
-      paragraphs that describe entry contents. Default value is an empty
-      string.
-    displayName: Display information such as title and description. A short
-      name to identify the entry, for example, "Analytics Data - Jan 2011".
-      Default value is an empty string.
+    description: Entry description that can consist of several sentences or
+      paragraphs that describe entry contents. The description must not
+      contain Unicode non-characters as well as C0 and C1 control codes except
+      tabs (HT), new lines (LF), carriage returns (CR), and page breaks (FF).
+      The maximum size is 2000 bytes when encoded in UTF-8. Default value is
+      an empty string.
+    displayName: Display name of an entry. The name must contain only Unicode
+      letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and
+      can't start or end with spaces. The maximum size is 200 bytes when
+      encoded in UTF-8. Default value is an empty string.
     fullyQualifiedName: Fully Qualified Name of the resource. Set
       automatically for entries representing resources from synced systems.
       Settable only during creation and read-only afterwards. Can be used for
@@ -1281,14 +1294,17 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       Cloud Platform resources, `linked_resource` is the [full name of the res
       ource](https://cloud.google.com/apis/design/resource_names#full_resource
       _name). For example, the `linked_resource` for a table resource from
-      BigQuery is: * //bigquery.googleapis.com/projects/projectId/datasets/dat
-      asetId/tables/tableId Output only when Entry is of type in the EntryType
-      enum. For entries with user_specified_type, this field is optional and
-      defaults to an empty string.
-    name: Output only. The Data Catalog resource name of the entry in URL
-      format. Example: * projects/{project_id}/locations/{location}/entryGroup
-      s/{entry_group_id}/entries/{entry_id} Note that this Entry and its child
-      resources may not actually be stored in the location in this name.
+      BigQuery is: `//bigquery.googleapis.com/projects/{projectId}/datasets/{d
+      atasetId}/tables/{tableId}` Output only when entry is one of the types
+      in the `EntryType` enum. For entries with a `user_specified_type`, this
+      field is optional and defaults to an empty string. The resource string
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      periods (.), colons (:), slashes (/), dashes (-), and hashes (#). The
+      maximum size is 200 bytes when encoded in UTF-8.
+    name: Output only. The resource name of an entry in URL format. Example: `
+      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}/
+      entries/{entry_id}` Note: The entry itself and its child resources might
+      not be stored in the location specified in its name.
     schema: Schema of the entry. An entry might not have any schema attached
       to it.
     sourceSystemTimestamps: Timestamps about the underlying resource, not
@@ -1387,10 +1403,10 @@ class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
       value is an empty string.
     displayName: A short name to identify the entry group, for example,
       "analytics data - jan 2011". Default value is an empty string.
-    name: The resource name of the entry group in URL format. Example: *
-      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
-      Note that this EntryGroup and its child resources may not actually be
-      stored in the location in this name.
+    name: The resource name of the entry group in URL format. Example:
+      `projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
+      ` Note: The entry group itself and its child resources might not be
+      stored in the location specified in its name.
   """
 
   dataCatalogTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 1)
@@ -1446,8 +1462,12 @@ class GoogleCloudDatacatalogV1FieldTypeEnumType(_messages.Message):
   r"""A GoogleCloudDatacatalogV1FieldTypeEnumType object.
 
   Fields:
-    allowedValues: A GoogleCloudDatacatalogV1FieldTypeEnumTypeEnumValue
-      attribute.
+    allowedValues: The set of allowed values for this enum. This set must not
+      be empty and can include up to 100 allowed values. The display names of
+      the values in this set must not be empty and must be case-insensitively
+      unique within this set. The order of items in this set is preserved.
+      This field can be used to create, remove and reorder enum values. To
+      rename enum values, use the `RenameTagTemplateFieldEnumValue` method.
   """
 
   allowedValues = _messages.MessageField('GoogleCloudDatacatalogV1FieldTypeEnumTypeEnumValue', 1, repeated=True)
@@ -1458,7 +1478,9 @@ class GoogleCloudDatacatalogV1FieldTypeEnumTypeEnumValue(_messages.Message):
 
   Fields:
     displayName: Required. The display name of the enum value. Must not be an
-      empty string.
+      empty string. The name must contain only Unicode letters, numbers (0-9),
+      underscores (_), dashes (-), spaces ( ), and can't start or end with
+      spaces. The maximum length is 200 characters.
   """
 
   displayName = _messages.StringField(1)
@@ -1773,8 +1795,9 @@ class GoogleCloudDatacatalogV1Schema(_messages.Message):
   r"""Represents a schema (e.g. BigQuery, GoogleSQL, Avro schema).
 
   Fields:
-    columns: The unified GoogleSQL-like schema of columns. A maximum of 10,000
-      columns and sub-columns can be specified.
+    columns: The unified GoogleSQL-like schema of columns. The overall maximum
+      number of columns and nested columns is 10,000. The maximum nested depth
+      is 15 levels.
     physicalSchema: Physical Schema is the native schema used to encode the
       data represented by this entry.
   """
@@ -2043,22 +2066,22 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
       fields.
 
   Fields:
-    column: Resources like Entry can have schemas associated with them. This
+    column: Resources like entry can have schemas associated with them. This
       scope allows users to attach tags to an individual column based on that
-      schema. For attaching a tag to a nested column, use `.` to separate the
-      column names. Example: * `outer_column.inner_column`
+      schema. To attach a tag to a nested column, separate column names with a
+      dot (`.`). Example: `column.nested_column`.
     fields: Required. This maps the ID of a tag field to the value of and
       additional information about that field. Valid field IDs are defined by
       the tag's template. A tag must have at least 1 field and at most 500
       fields.
-    name: The resource name of the tag in URL format. Example: * projects/{pro
-      ject_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entr
-      y_id}/tags/{tag_id} where `tag_id` is a system-generated identifier.
-      Note that this Tag may not actually be stored in the location in this
-      name.
+    name: The resource name of the tag in URL format. Example: `projects/{proj
+      ect_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entry
+      _id}/tags/{tag_id}` where `tag_id` is a system-generated identifier.
+      Note: The tag itself might not be stored in the location specified in
+      its name.
     template: Required. The resource name of the tag template that this tag
-      uses. Example: * projects/{project_id}/locations/{location}/tagTemplates
-      /{tag_template_id} This field cannot be modified after creation.
+      uses. Example: `projects/{project_id}/locations/{location}/tagTemplates/
+      {tag_template_id}` This field cannot be modified after creation.
     templateDisplayName: Output only. The display name of the tag template.
   """
 
@@ -2100,7 +2123,8 @@ class GoogleCloudDatacatalogV1TagField(_messages.Message):
   r"""Contains the value and supporting information for a field within a Tag.
 
   Fields:
-    boolValue: Holds the value for a tag field with boolean type.
+    boolValue: Holds the value for a tag field with boolean type. The maximum
+      length is 2000 UTF-8 characters.
     displayName: Output only. The display name of this field.
     doubleValue: Holds the value for a tag field with double type.
     enumValue: Holds the value for a tag field with enum type. This value must
@@ -2152,8 +2176,10 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
       IDs must start with a letter or underscore.
 
   Fields:
-    displayName: The display name for this template. Defaults to an empty
-      string.
+    displayName: Display name for this template. Defaults to an empty string.
+      The name must contain only Unicode letters, numbers (0-9), underscores
+      (_), dashes (-), spaces ( ), and can't start or end with spaces. The
+      maximum length is 200 characters.
     fields: Required. Map of tag template field IDs to the settings for the
       field. This map is an exhaustive list of the allowed fields. This map
       must contain at least one field and at most 500 fields. The keys to this
@@ -2161,10 +2187,10 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
       uppercase and lowercase), numbers (0-9) and underscores (_). Field IDs
       must be at least 1 character long and at most 64 characters long. Field
       IDs must start with a letter or underscore.
-    name: The resource name of the tag template in URL format. Example: *
-      projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
-      } Note that this TagTemplate and its child resources may not actually be
-      stored in the location in this name.
+    name: The resource name of the tag template in URL format. Example: `proje
+      cts/{project_id}/locations/{location}/tagTemplates/{tag_template_id}`
+      Note: The tag template itself and its child resources might not be
+      stored in the location specified in its name.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2208,11 +2234,17 @@ class GoogleCloudDatacatalogV1TagTemplateField(_messages.Message):
   Fields:
     description: The description for this field. Defaults to an empty string.
     displayName: The display name for this field. Defaults to an empty string.
+      The name must contain only Unicode letters, numbers (0-9), underscores
+      (_), dashes (-), spaces ( ), and can't start or end with spaces. The
+      maximum length is 200 characters.
     isRequired: Whether this is a required field. Defaults to false.
     name: Output only. The resource name of the tag template field in URL
-      format. Example: * projects/{project_id}/locations/{location}/tagTemplat
-      es/{tag_template}/fields/{field} Note that this TagTemplateField may not
-      actually be stored in the location in this name.
+      format. Example: `projects/{project_id}/locations/{location}/tagTemplate
+      s/{tag_template}/fields/{field}` Note: The `TagTemplateField` itself
+      might not be stored in the location specified in its name. The name must
+      contain only letters (a-z, A-Z), numbers (0-9), or underscores (_), and
+      must start with a letter or underscore. The maximum length is 64
+      characters.
     order: The order of this field with respect to other fields in this tag
       template. For example, a higher value can indicate a more important
       field. The value can be negative. Multiple fields can have the same

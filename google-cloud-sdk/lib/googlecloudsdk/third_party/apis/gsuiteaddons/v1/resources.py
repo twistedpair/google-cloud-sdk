@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://gsuiteaddons.googleapis.com/v1/'
-DOCS_URL = 'https://developers.google.com/gsuite/add-ons/guides/alternate-runtimes-overview'
+DOCS_URL = 'https://developers.google.com/workspace/add-ons/guides/alternate-runtimes'
 
 
 class Collections(enum.Enum):

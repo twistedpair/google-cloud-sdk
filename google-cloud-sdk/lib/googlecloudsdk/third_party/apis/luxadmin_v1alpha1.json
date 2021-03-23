@@ -103,7 +103,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -450,7 +450,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of this cluster, in the form of projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}",
+          "description": "The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
           "type": "string"
         },
         "createTime": {
@@ -618,7 +618,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of this instance, in the form of projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}\/instances\/{instance_id} Note that location is a GCP region.",
+          "description": "The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
           "type": "string"
         },
         "createTime": {
@@ -695,9 +695,9 @@
           "description": "The GCE zone that the instance should serve from. Optional. This can ONLY be specified for ZONAL instances. If present for a REGIONAL instance, an error will be thrown. If this is absent for a ZONAL instance, instance is created in a random zone with available capacity.",
           "type": "string"
         },
-        "networkConfiguration": {
+        "networkConfig": {
           "description": "The settings for Network \/ IP Management. This allows to enable\/disable public IP, enable\/disable SSL and manage which external networks can connect to the instance.",
-          "$ref": "NetworkConfiguration"
+          "$ref": "NetworkConfig"
         },
         "databaseFlags": {
           "description": "Database flags. Set at instance level. * They are copied from primary instance on read instance creation. * Read instances can set new or override existing flags that are relevant for reads, e.g. for enabling columnar cache on a read instance. Flags set on read instance may or may not be present on primary. ",
@@ -706,14 +706,14 @@
             "type": "string"
           }
         },
-        "readPoolConfiguration": {
+        "readPoolConfig": {
           "description": "Read pool specific config.",
-          "$ref": "ReadPoolConfiguration"
+          "$ref": "ReadPoolConfig"
         }
       }
     },
-    "NetworkConfiguration": {
-      "id": "NetworkConfiguration",
+    "NetworkConfig": {
+      "id": "NetworkConfig",
       "description": "Network Management configuration.",
       "type": "object",
       "properties": {
@@ -727,8 +727,8 @@
         }
       }
     },
-    "ReadPoolConfiguration": {
-      "id": "ReadPoolConfiguration",
+    "ReadPoolConfig": {
+      "id": "ReadPoolConfig",
       "description": "Read pool configuration for an instance.",
       "type": "object",
       "properties": {
@@ -896,18 +896,18 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The standard list filter.",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The standard list page size.",
+                  "description": "The maximum number of results to return. If not set, the service will select a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "The standard list page token.",
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1047,6 +1047,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
+                      "description": "The name of the parent resource. For the required format, see the comment on the Cluster.name field. Additionally, you can perform an aggregated list operation by specifying a value with the following format: * projects\/{project}\/locations\/-",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1088,6 +1089,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
+                      "description": "The name of the resource. For the required format, see the comment on the Cluster.name field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1112,12 +1114,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
+                      "description": "The name of the parent resource. For the required format, see the comment on the Cluster.name field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
+                      "description": "The ID of the cluster, which should satisfy the regex expression \"[a-z0-9-]+\".",
                       "location": "query",
                       "type": "string"
                     },
@@ -1148,7 +1152,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The name of this cluster, in the form of projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}",
+                      "description": "The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1187,6 +1191,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
+                      "description": "The name of the resource. For the required format, see the comment on the Cluster.name field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1216,6 +1221,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
+                      "description": "The name of the resource. For the required format, see the comment on the Cluster.name field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1243,6 +1249,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
+                      "description": "The name of the resource. For the required format, see the comment on the Cluster.name field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1270,6 +1277,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
+                      "description": "The name of the resource. For the required format, see the comment on the Cluster.name field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1297,6 +1305,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
+                      "description": "The name of the resource. For the required format, see the comment on the Cluster.name field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1324,6 +1333,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
+                      "description": "The name of the resource. For the required format, see the comment on the Cluster.name field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1351,6 +1361,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
+                      "description": "The name of the resource. For the required format, see the comment on the Cluster.name field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1410,6 +1421,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
+                          "description": "The name of the parent resource. For the required format, see the comment on the Instance.name field. Additionally, you can perform an aggregated list operation by specifying a value with one of the following formats: * projects\/{project}\/locations\/-\/clusters\/- * projects\/{project}\/locations\/{region}\/clusters\/-",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1451,6 +1463,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
+                          "description": "The name of the resource. For the required format, see the comment on the Instance.name field.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1475,12 +1488,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
+                          "description": "The name of the parent resource. For the required format, see the comment on the Instance.name field.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "instanceId": {
+                          "description": "The ID of the instance, which should satisfy the regex expression \"[a-z0-9-]+\".",
                           "location": "query",
                           "type": "string"
                         },
@@ -1511,7 +1526,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The name of this instance, in the form of projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}\/instances\/{instance_id} Note that location is a GCP region.",
+                          "description": "The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1550,6 +1565,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
+                          "description": "The name of the resource. For the required format, see the comment on the Instance.name field.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1579,6 +1595,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
+                          "description": "The name of the resource. For the required format, see the comment on the Instance.name field.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,

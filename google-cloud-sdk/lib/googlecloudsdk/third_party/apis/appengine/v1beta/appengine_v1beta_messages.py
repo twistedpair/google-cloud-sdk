@@ -426,10 +426,14 @@ class AppengineAppsLocationsListRequest(_messages.Message):
   r"""A AppengineAppsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in AIP-160 (https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the next_page_token field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -2766,7 +2770,7 @@ class Version(_messages.Message):
     apiConfig: Serving configuration for Google Cloud Endpoints
       (https://cloud.google.com/appengine/docs/python/endpoints/).Only
       returned in GET requests if view=FULL is set.
-    appEngineApis: app_engine_apis allows Second Generation runtimes to access
+    appEngineApis: app_engine_apis allows second generation runtimes to access
       the App Engine APIs.
     automaticScaling: Automatic scaling is based on request rate, response
       latencies, and other application metrics. Instances are dynamically

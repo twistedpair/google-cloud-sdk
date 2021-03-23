@@ -954,7 +954,7 @@
           }
         },
         "outputs": {
-          "description": "Required. Map from output names to output metadata. For AI Platform provided Tensorflow images, keys can be any string user defines. For custom images, keys are the name of the output field in the prediction to be explained. Currently only one key is allowed.",
+          "description": "Required. Map from output names to output metadata. For AI Platform provided Tensorflow images, keys can be any user defined string that consists of any UTF-8 characters. For custom images, keys are the name of the output field in the prediction to be explained. Currently only one key is allowed.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1beta1ExplanationMetadataOutputMetadata"
@@ -2093,6 +2093,18 @@
       "description": "Represents specification of a Study.",
       "type": "object",
       "properties": {
+        "decayCurveStoppingSpec": {
+          "description": "The automated early stopping spec using decay curve rule.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecDecayCurveAutomatedStoppingSpec"
+        },
+        "medianAutomatedStoppingSpec": {
+          "description": "The automated early stopping spec using median rule.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecMedianAutomatedStoppingSpec"
+        },
+        "convexStopConfig": {
+          "description": "The automated early stopping using convex stopping rule.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpecConvexStopConfig"
+        },
         "metrics": {
           "description": "Required. Metric specs for the Study.",
           "type": "array",
@@ -2148,6 +2160,58 @@
             "LAST_MEASUREMENT",
             "BEST_MEASUREMENT"
           ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StudySpecDecayCurveAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecDecayCurveAutomatedStoppingSpec",
+      "description": "The decay curve automated stopping rule builds a Gaussian Process Regressor to predict the final objective value of a Trial based on the already completed Trials and the intermediate measurements of the current Trial. Early stopping is requested for the current Trial if there is very low probability to exceed the optimal value found so far.",
+      "type": "object",
+      "properties": {
+        "useElapsedDuration": {
+          "description": "True if Measurement.elapsed_duration is used as the x-axis of each Trials Decay Curve. Otherwise, Measurement.step_count will be used as the x-axis.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StudySpecMedianAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecMedianAutomatedStoppingSpec",
+      "description": "The median automated stopping rule stops a pending Trial if the Trial's best objective_value is strictly below the median 'performance' of all completed Trials reported up to the Trial's last measurement. Currently, 'performance' refers to the running average of the objective values reported by the Trial in each measurement.",
+      "type": "object",
+      "properties": {
+        "useElapsedDuration": {
+          "description": "True if median automated stopping rule applies on Measurement.elapsed_duration. It means that elapsed_duration field of latest measurement of current Trial is used to compute median objective value for each completed Trials.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StudySpecConvexStopConfig": {
+      "id": "GoogleCloudAiplatformV1beta1StudySpecConvexStopConfig",
+      "description": "Configuration for ConvexStopPolicy.",
+      "type": "object",
+      "properties": {
+        "maxNumSteps": {
+          "description": "Steps used in predicting the final objective for early stopped trials. In general, it's set to be the same as the defined steps in training \/ tuning. When use_steps is false, this field is set to the maximum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minNumSteps": {
+          "description": "Minimum number of steps for a trial to complete. Trials which do not have a measurement with num_steps > min_num_steps won't be considered for early stopping. It's ok to set it to 0, and a trial can be early stopped at any stage. By default, min_num_steps is set to be one-tenth of the max_num_steps. When use_steps is false, this field is set to the minimum elapsed seconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "autoregressiveOrder": {
+          "description": "The number of Trial measurements used in autoregressive model for value prediction. A trial won't be considered early stopping if has fewer measurement points.",
+          "type": "string",
+          "format": "int64"
+        },
+        "learningRateParameterName": {
+          "description": "The hyper-parameter name used in the tuning job that stands for learning rate. Leave it blank if learning rate is not in a parameter in tuning. The learning_rate is used to estimate the objective value of the ongoing trial.",
+          "type": "string"
+        },
+        "useSeconds": {
+          "description": "This bool determines whether or not the rule is applied based on elapsed_secs or steps. If use_seconds==false, the early stopping decision is made according to the predicted objective values according to the target steps. If use_seconds==true, elapsed_secs is used instead of steps. Also, in this case, the parameters max_num_steps and min_num_steps are overloaded to contain max_elapsed_seconds and min_elapsed_seconds.",
+          "type": "boolean"
         }
       }
     },
@@ -4570,6 +4634,182 @@
       "properties": {
       }
     },
+    "GoogleCloudAiplatformV1beta1Study": {
+      "id": "GoogleCloudAiplatformV1beta1Study",
+      "description": "A message representing a Study.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of a study. The study's globally unique identifier. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. Describes the Study, default value is empty string.",
+          "type": "string"
+        },
+        "studySpec": {
+          "description": "Required. Configuration of the Study.",
+          "$ref": "GoogleCloudAiplatformV1beta1StudySpec"
+        },
+        "state": {
+          "description": "Output only. The detailed state of a Study.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The study state is unspecified.",
+            "The study is active.",
+            "The study is stopped due to an internal error.",
+            "The study is done when the service exhausts the parameter search space or max_trial_count is reached."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "INACTIVE",
+            "COMPLETED"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. Time at which the study was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "inactiveReason": {
+          "description": "Output only. A human readable reason why the Study is inactive. This should be empty if a study is ACTIVE or COMPLETED.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListStudiesResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListStudiesResponse",
+      "description": "Response message for VizierService.ListStudies.",
+      "type": "object",
+      "properties": {
+        "studies": {
+          "description": "The studies associated with the project.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Study"
+          }
+        },
+        "nextPageToken": {
+          "description": "Passes this token as the `page_token` field of the request for a subsequent call. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1LookupStudyRequest": {
+      "id": "GoogleCloudAiplatformV1beta1LookupStudyRequest",
+      "description": "Request message for VizierService.LookupStudy.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Required. The user-defined display name of the Study",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SuggestTrialsRequest": {
+      "id": "GoogleCloudAiplatformV1beta1SuggestTrialsRequest",
+      "description": "Request message for VizierService.SuggestTrials.",
+      "type": "object",
+      "properties": {
+        "suggestionCount": {
+          "description": "Required. The number of suggestions requested.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "clientId": {
+          "description": "Required. The identifier of the client that is requesting the suggestion. If multiple SuggestTrialsRequests have the same `client_id`, the service will return the identical suggested Trial if the Trial is pending, and provide a new Trial if the last suggested Trial was completed.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListTrialsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListTrialsResponse",
+      "description": "Response message for VizierService.ListTrials.",
+      "type": "object",
+      "properties": {
+        "trials": {
+          "description": "The Trials associated with the Study.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Trial"
+          }
+        },
+        "nextPageToken": {
+          "description": "Pass this token as the `page_token` field of the request for a subsequent call. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1AddTrialMeasurementRequest": {
+      "id": "GoogleCloudAiplatformV1beta1AddTrialMeasurementRequest",
+      "description": "Request message for VizierService.AddTrialMeasurement.",
+      "type": "object",
+      "properties": {
+        "measurement": {
+          "description": "Required. The measurement to be added to a Trial.",
+          "$ref": "GoogleCloudAiplatformV1beta1Measurement"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CompleteTrialRequest": {
+      "id": "GoogleCloudAiplatformV1beta1CompleteTrialRequest",
+      "description": "Request message for VizierService.CompleteTrial.",
+      "type": "object",
+      "properties": {
+        "finalMeasurement": {
+          "description": "Optional. If provided, it will be used as the completed Trial's final_measurement; Otherwise, the service will auto-select a previously reported measurement as the final-measurement",
+          "$ref": "GoogleCloudAiplatformV1beta1Measurement"
+        },
+        "trialInfeasible": {
+          "description": "Optional. True if the Trial cannot be run with the given Parameter, and final_measurement will be ignored.",
+          "type": "boolean"
+        },
+        "infeasibleReason": {
+          "description": "Optional. A human readable reason why the trial was infeasible. This should only be provided if `trial_infeasible` is true.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateRequest": {
+      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateRequest",
+      "description": "Request message for VizierService.CheckTrialEarlyStoppingState.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1StopTrialRequest": {
+      "id": "GoogleCloudAiplatformV1beta1StopTrialRequest",
+      "description": "Request message for VizierService.StopTrial.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListOptimalTrialsRequest": {
+      "id": "GoogleCloudAiplatformV1beta1ListOptimalTrialsRequest",
+      "description": "Request message for VizierService.ListOptimalTrials.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ListOptimalTrialsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ListOptimalTrialsResponse",
+      "description": "Response message for VizierService.ListOptimalTrials.",
+      "type": "object",
+      "properties": {
+        "optimalTrials": {
+          "description": "The pareto-optimal Trials for multiple objective Study or the optimal trial for single objective Study. The definition of pareto-optimal can be checked in wiki page. https:\/\/en.wikipedia.org\/wiki\/Pareto_efficiency",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Trial"
+          }
+        }
+      }
+    },
     "GoogleCloudAiplatformInternalCalculateSavedQueryStatsOperationMetadata": {
       "id": "GoogleCloudAiplatformInternalCalculateSavedQueryStatsOperationMetadata",
       "description": "Runtime operation information for DatasetService.CalculateSavedQueryStats.",
@@ -4910,6 +5150,11 @@
           "type": "integer",
           "format": "int32"
         },
+        "maxReplicaCount": {
+          "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, will use min_replica_count as the default value.",
+          "type": "integer",
+          "format": "int32"
+        },
         "autoscalingMetricSpecs": {
           "description": "Immutable. The metric specifications that overrides a resource utilization metric (CPU utilization, accelerator's duty cycle, and so on) target value (default to 60 if not set). At most one entry is allowed per metric. If machine_spec.accelerator_count is above 0, the autoscaling will be based on both CPU utilization and accelerator's duty cycle metrics and scale up when either metrics exceeds its target value while scale down if both metrics are under their target value. The default target value is 60 for both metrics. If machine_spec.accelerator_count is 0, the autoscaling will be based on CPU utilization metric only with default target value 60 if not explicitly set. For example, in the case of Online Prediction, if you want to override target CPU utilization to 80, you should set autoscaling_metric_specs.metric_name to `aiplatform.googleapis.com\/prediction\/online\/cpu\/utilization` and autoscaling_metric_specs.target to `80`.",
           "type": "array",
@@ -5020,6 +5265,10 @@
           "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
           "$ref": "GoogleCloudAiplatformInternalXraiAttribution"
         },
+        "similarity": {
+          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformInternalSimilarity"
+        },
         "topK": {
           "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
           "type": "integer",
@@ -5129,6 +5378,35 @@
         }
       }
     },
+    "GoogleCloudAiplatformInternalSimilarity": {
+      "id": "GoogleCloudAiplatformInternalSimilarity",
+      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "The Cloud Storage location for the input instances.",
+          "$ref": "GoogleCloudAiplatformInternalGcsSource"
+        },
+        "nearestNeighborSearchConfig": {
+          "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
+          "type": "any"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalGcsSource": {
+      "id": "GoogleCloudAiplatformInternalGcsSource",
+      "description": "The Google Cloud Storage location for the input content.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Required. Google Cloud Storage URI(-s) to the input file(s). May contain wildcards. For more information on wildcards, see https:\/\/cloud.google.com\/storage\/docs\/gsutil\/addlhelp\/WildcardNames.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleCloudAiplatformInternalExplanationMetadata": {
       "id": "GoogleCloudAiplatformInternalExplanationMetadata",
       "description": "Metadata describing the Model's input and output for explanation.",
@@ -5142,7 +5420,7 @@
           }
         },
         "outputs": {
-          "description": "Required. Map from output names to output metadata. For AI Platform provided Tensorflow images, keys can be any string user defines. For custom images, keys are the name of the output field in the prediction to be explained. Currently only one key is allowed.",
+          "description": "Required. Map from output names to output metadata. For AI Platform provided Tensorflow images, keys can be any user defined string that consists of any UTF-8 characters. For custom images, keys are the name of the output field in the prediction to be explained. Currently only one key is allowed.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformInternalExplanationMetadataOutputMetadata"
@@ -5151,6 +5429,13 @@
         "featureAttributionsSchemaUri": {
           "description": "Points to a YAML file stored on Google Cloud Storage describing the format of the feature attributions. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/tinyurl.com\/y538mdwt#schema-object). AutoML tabular Models always have this field populated by AI Platform. Note: The URI given on output may be different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
           "type": "string"
+        },
+        "embeddings": {
+          "description": "Required. Map from embedding names to embedding metadata. For AI Platform provided Tensorflow images, keys can be any user defined string that consists of any UTF-8 characters. Currently only one key is allowed.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformInternalExplanationMetadataEmbeddingMetadata"
+          }
         }
       }
     },
@@ -5365,6 +5650,17 @@
         },
         "outputTensorName": {
           "description": "Name of the output tensor. Required and is only applicable to AI Platform provided images for Tensorflow.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalExplanationMetadataEmbeddingMetadata": {
+      "id": "GoogleCloudAiplatformInternalExplanationMetadataEmbeddingMetadata",
+      "description": "Metadata of the embedding to be used for similarity.",
+      "type": "object",
+      "properties": {
+        "outputTensorName": {
+          "description": "Required. Name of the output tensor.",
           "type": "string"
         }
       }
@@ -5588,6 +5884,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "encryptionSpec": {
+          "description": "Customer-managed encryption key spec for the human in the loop configuration. If set, this human in the loop configuration will be secured by this key. Note: Annotations created in the DataLabelingJob from the human in the loop configuration are associated with the EncryptionSpec of the Dataset they are exported to.",
+          "$ref": "GoogleCloudAiplatformInternalEncryptionSpec"
         }
       }
     },
@@ -5686,6 +5986,10 @@
             "REQUIRED_ONCE",
             "REQUIRED_MULTIPLE"
           ]
+        },
+        "skipHumanReview": {
+          "description": "Specified by the customer, determine if this field should be skipped in the human review process.",
+          "type": "boolean"
         }
       }
     },
@@ -5714,6 +6018,17 @@
           "description": "A new labeling task will be generated once the oldest collected data item is pending for longer than pending_duration.",
           "type": "string",
           "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalEncryptionSpec": {
+      "id": "GoogleCloudAiplatformInternalEncryptionSpec",
+      "description": "Represents a customer-managed encryption key spec that can be applied to a top-level resource.",
+      "type": "object",
+      "properties": {
+        "kmsKeyName": {
+          "description": "Required. The Cloud KMS resource identifier of the customer managed encryption key used to protect a resource. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. The key needs to be in the same region as where the compute resource is created.",
+          "type": "string"
         }
       }
     },
@@ -6472,6 +6787,36 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiCheckTrialEarlyStoppingStateMetatdata": {
+      "id": "GoogleCloudAiplatformUiCheckTrialEarlyStoppingStateMetatdata",
+      "description": "This message will be placed in the metadata field of a google.longrunning.Operation associated with a CheckTrialEarlyStoppingState request.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        },
+        "study": {
+          "description": "The name of the Study that the Trial belongs to.",
+          "type": "string"
+        },
+        "trial": {
+          "description": "The Trial name.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiCheckTrialEarlyStoppingStateResponse": {
+      "id": "GoogleCloudAiplatformUiCheckTrialEarlyStoppingStateResponse",
+      "description": "Response message for VizierService.CheckTrialEarlyStoppingState.",
+      "type": "object",
+      "properties": {
+        "shouldStop": {
+          "description": "True if the Trial should stop.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudAiplatformUiCreateSpecialistPoolOperationMetadata": {
       "id": "GoogleCloudAiplatformUiCreateSpecialistPoolOperationMetadata",
       "description": "Runtime operation information for SpecialistPoolService.CreateSpecialistPool.",
@@ -6739,6 +7084,10 @@
           "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
           "$ref": "GoogleCloudAiplatformUiXraiAttribution"
         },
+        "similarity": {
+          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformUiSimilarity"
+        },
         "topK": {
           "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
           "type": "integer",
@@ -6848,6 +7197,35 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiSimilarity": {
+      "id": "GoogleCloudAiplatformUiSimilarity",
+      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "The Cloud Storage location for the input instances.",
+          "$ref": "GoogleCloudAiplatformUiGcsSource"
+        },
+        "nearestNeighborSearchConfig": {
+          "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
+          "type": "any"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiGcsSource": {
+      "id": "GoogleCloudAiplatformUiGcsSource",
+      "description": "The Google Cloud Storage location for the input content.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Required. Google Cloud Storage URI(-s) to the input file(s). May contain wildcards. For more information on wildcards, see https:\/\/cloud.google.com\/storage\/docs\/gsutil\/addlhelp\/WildcardNames.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleCloudAiplatformUiExplanationMetadata": {
       "id": "GoogleCloudAiplatformUiExplanationMetadata",
       "description": "Metadata describing the Model's input and output for explanation.",
@@ -6861,7 +7239,7 @@
           }
         },
         "outputs": {
-          "description": "Required. Map from output names to output metadata. For AI Platform provided Tensorflow images, keys can be any string user defines. For custom images, keys are the name of the output field in the prediction to be explained. Currently only one key is allowed.",
+          "description": "Required. Map from output names to output metadata. For AI Platform provided Tensorflow images, keys can be any user defined string that consists of any UTF-8 characters. For custom images, keys are the name of the output field in the prediction to be explained. Currently only one key is allowed.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformUiExplanationMetadataOutputMetadata"
@@ -6870,6 +7248,13 @@
         "featureAttributionsSchemaUri": {
           "description": "Points to a YAML file stored on Google Cloud Storage describing the format of the feature attributions. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/tinyurl.com\/y538mdwt#schema-object). AutoML tabular Models always have this field populated by AI Platform. Note: The URI given on output may be different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
           "type": "string"
+        },
+        "embeddings": {
+          "description": "Required. Map from embedding names to embedding metadata. For AI Platform provided Tensorflow images, keys can be any user defined string that consists of any UTF-8 characters. Currently only one key is allowed.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformUiExplanationMetadataEmbeddingMetadata"
+          }
         }
       }
     },
@@ -7084,6 +7469,17 @@
         },
         "outputTensorName": {
           "description": "Name of the output tensor. Required and is only applicable to AI Platform provided images for Tensorflow.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiExplanationMetadataEmbeddingMetadata": {
+      "id": "GoogleCloudAiplatformUiExplanationMetadataEmbeddingMetadata",
+      "description": "Metadata of the embedding to be used for similarity.",
+      "type": "object",
+      "properties": {
+        "outputTensorName": {
+          "description": "Required. Name of the output tensor.",
           "type": "string"
         }
       }
@@ -7313,6 +7709,185 @@
           "description": "Output only. The objective of the DataLabelingJob, same as SavedQuery.problem_type.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSuggestTrialsMetadata": {
+      "id": "GoogleCloudAiplatformUiSuggestTrialsMetadata",
+      "description": "Details of operations that perform Trials suggestion.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        },
+        "clientId": {
+          "description": "The identifier of the client that is requesting the suggestion. If multiple SuggestTrialsRequests have the same `client_id`, the service will return the identical suggested Trial if the Trial is pending, and provide a new Trial if the last suggested Trial was completed.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSuggestTrialsResponse": {
+      "id": "GoogleCloudAiplatformUiSuggestTrialsResponse",
+      "description": "Response message for VizierService.SuggestTrials.",
+      "type": "object",
+      "properties": {
+        "trials": {
+          "description": "A list of Trials.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiTrial"
+          }
+        },
+        "studyState": {
+          "description": "The state of the Study.",
+          "type": "string",
+          "enumDescriptions": [
+            "The study state is unspecified.",
+            "The study is active.",
+            "The study is stopped due to an internal error.",
+            "The study is done when the service exhausts the parameter search space or max_trial_count is reached."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "INACTIVE",
+            "COMPLETED"
+          ]
+        },
+        "startTime": {
+          "description": "The time at which the operation was started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time at which operation processing completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiTrial": {
+      "id": "GoogleCloudAiplatformUiTrial",
+      "description": "A message representing a Trial. A Trial contains a unique set of Parameters that has been or will be evaluated, along with the objective metrics got by running the Trial.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the Trial assigned by the service.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "id": {
+          "description": "Output only. The identifier of the Trial assigned by the service.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The detailed state of the Trial.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The Trial state is unspecified.",
+            "Indicates that a specific Trial has been requested, but it has not yet been suggested by the service.",
+            "Indicates that the Trial has been suggested.",
+            "Indicates that the Trial should stop according to the service.",
+            "Indicates that the Trial is completed successfully.",
+            "Indicates that the Trial should not be attempted again. The service will set a Trial to INFEASIBLE when it's done but missing the final_measurement."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "REQUESTED",
+            "ACTIVE",
+            "STOPPING",
+            "SUCCEEDED",
+            "INFEASIBLE"
+          ]
+        },
+        "parameters": {
+          "description": "Output only. The parameters of the Trial.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiTrialParameter"
+          }
+        },
+        "finalMeasurement": {
+          "description": "Output only. The final measurement containing the objective value.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformUiMeasurement"
+        },
+        "startTime": {
+          "description": "Output only. Time when the Trial was started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Time when the Trial's status changed to `SUCCEEDED` or `INFEASIBLE`.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "customJob": {
+          "description": "Output only. The CustomJob name linked to the Trial. It's set for a HyperparameterTuningJob's Trial.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiTrialParameter": {
+      "id": "GoogleCloudAiplatformUiTrialParameter",
+      "description": "A message representing a parameter to be tuned.",
+      "type": "object",
+      "properties": {
+        "parameterId": {
+          "description": "Output only. The ID of the parameter. The parameter should be defined in StudySpec's Parameters.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "value": {
+          "description": "Output only. The value of the parameter. `number_value` will be set if a parameter defined in StudySpec is in type 'INTEGER', 'DOUBLE' or 'DISCRETE'. `string_value` will be set if a parameter defined in StudySpec is in type 'CATEGORICAL'.",
+          "readOnly": true,
+          "type": "any"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiMeasurement": {
+      "id": "GoogleCloudAiplatformUiMeasurement",
+      "description": "A message representing a Measurement of a Trial. A Measurement contains the Metrics got by executing a Trial using suggested hyperparameter values.",
+      "type": "object",
+      "properties": {
+        "stepCount": {
+          "description": "Output only. The number of steps the machine learning model has been trained for. Must be non-negative.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "metrics": {
+          "description": "Output only. A list of metrics got by evaluating the objective functions using suggested Parameter values.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiMeasurementMetric"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiMeasurementMetric": {
+      "id": "GoogleCloudAiplatformUiMeasurementMetric",
+      "description": "A message representing a metric in the measurement.",
+      "type": "object",
+      "properties": {
+        "metricId": {
+          "description": "Output only. The ID of the Metric. The Metric should be defined in StudySpec's Metrics.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "value": {
+          "description": "Output only. The value for this metric.",
+          "readOnly": true,
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -8544,6 +9119,36 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1alpha1CheckTrialEarlyStoppingStateMetatdata": {
+      "id": "GoogleCloudAiplatformV1alpha1CheckTrialEarlyStoppingStateMetatdata",
+      "description": "This message will be placed in the metadata field of a google.longrunning.Operation associated with a CheckTrialEarlyStoppingState request.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        },
+        "study": {
+          "description": "The name of the Study that the Trial belongs to.",
+          "type": "string"
+        },
+        "trial": {
+          "description": "The Trial name.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1CheckTrialEarlyStoppingStateResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1CheckTrialEarlyStoppingStateResponse",
+      "description": "Response message for VizierService.CheckTrialEarlyStoppingState.",
+      "type": "object",
+      "properties": {
+        "shouldStop": {
+          "description": "True if the Trial should stop.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1alpha1CreateSpecialistPoolOperationMetadata": {
       "id": "GoogleCloudAiplatformV1alpha1CreateSpecialistPoolOperationMetadata",
       "description": "Runtime operation information for SpecialistPoolService.CreateSpecialistPool.",
@@ -8729,6 +9334,10 @@
         "sampledShapleyAttribution": {
           "description": "An attribution method that approximates Shapley values for features that contribute to the label being predicted. A sampling strategy is used to approximate the value rather than considering all subsets of features. Refer to this paper for model details: https:\/\/arxiv.org\/abs\/1306.4265.",
           "$ref": "GoogleCloudAiplatformV1alpha1SampledShapleyAttribution"
+        },
+        "similarity": {
+          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformV1alpha1Similarity"
         }
       }
     },
@@ -8741,6 +9350,35 @@
           "description": "Required. The number of feature permutations to consider when approximating the Shapley values. Valid range of its value is [1, 50], inclusively.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1Similarity": {
+      "id": "GoogleCloudAiplatformV1alpha1Similarity",
+      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "The Cloud Storage location for the input instances.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GcsSource"
+        },
+        "nearestNeighborSearchConfig": {
+          "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
+          "type": "any"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1GcsSource": {
+      "id": "GoogleCloudAiplatformV1alpha1GcsSource",
+      "description": "The Google Cloud Storage location for the input content.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Required. Google Cloud Storage URI(-s) to the input file(s). May contain wildcards. For more information on wildcards, see https:\/\/cloud.google.com\/storage\/docs\/gsutil\/addlhelp\/WildcardNames.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -8757,7 +9395,7 @@
           }
         },
         "outputs": {
-          "description": "Required. Map from output names to output metadata. For AI Platform provided Tensorflow images, keys can be any string user defines. For custom images, keys are the name of the output field in the prediction to be explained. Currently only one key is allowed.",
+          "description": "Required. Map from output names to output metadata. For AI Platform provided Tensorflow images, keys can be any user defined string that consists of any UTF-8 characters. For custom images, keys are the name of the output field in the prediction to be explained. Currently only one key is allowed.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1alpha1ExplanationMetadataOutputMetadata"
@@ -8766,6 +9404,13 @@
         "featureAttributionsSchemaUri": {
           "description": "Points to a YAML file stored on Google Cloud Storage describing the format of the feature attributions. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/tinyurl.com\/y538mdwt#schema-object). AutoML tabular Models always have this field populated by AI Platform. Note: The URI given on output may be different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
           "type": "string"
+        },
+        "embeddings": {
+          "description": "Required. Map from embedding names to embedding metadata. For AI Platform provided Tensorflow images, keys can be any user defined string that consists of any UTF-8 characters. Currently only one key is allowed.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1alpha1ExplanationMetadataEmbeddingMetadata"
+          }
         }
       }
     },
@@ -8794,6 +9439,17 @@
         },
         "displayNameMappingKey": {
           "description": "Specify a field name in the prediction to look for the display name. Use this if the prediction contains the display names for the outputs. The display names in the prediction must have the same shape of the outputs, so that it can be located by Attribution.output_index for a specific output.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ExplanationMetadataEmbeddingMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1ExplanationMetadataEmbeddingMetadata",
+      "description": "Metadata of the embedding to be used for similarity.",
+      "type": "object",
+      "properties": {
+        "outputTensorName": {
+          "description": "Required. Name of the output tensor.",
           "type": "string"
         }
       }
@@ -9022,6 +9678,180 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SuggestTrialsMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1SuggestTrialsMetadata",
+      "description": "Details of operations that perform Trials suggestion.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        },
+        "clientId": {
+          "description": "The identifier of the client that is requesting the suggestion. If multiple SuggestTrialsRequests have the same `client_id`, the service will return the identical suggested Trial if the Trial is pending, and provide a new Trial if the last suggested Trial was completed.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SuggestTrialsResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1SuggestTrialsResponse",
+      "description": "Response message for VizierService.SuggestTrials.",
+      "type": "object",
+      "properties": {
+        "trials": {
+          "description": "A list of Trials.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1Trial"
+          }
+        },
+        "studyState": {
+          "description": "The state of the Study.",
+          "type": "string",
+          "enumDescriptions": [
+            "The study state is unspecified.",
+            "The study is active.",
+            "The study is stopped due to an internal error.",
+            "The study is done when the service exhausts the parameter search space or max_trial_count is reached."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "INACTIVE",
+            "COMPLETED"
+          ]
+        },
+        "startTime": {
+          "description": "The time at which the operation was started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time at which operation processing completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1Trial": {
+      "id": "GoogleCloudAiplatformV1alpha1Trial",
+      "description": "A message representing a Trial. A Trial contains a unique set of Parameters that has been or will be evaluated, along with the objective metrics got by running the Trial.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the Trial assigned by the service.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "id": {
+          "description": "Output only. The identifier of the Trial assigned by the service.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The detailed state of the Trial.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The Trial state is unspecified.",
+            "Indicates that a specific Trial has been requested, but it has not yet been suggested by the service.",
+            "Indicates that the Trial has been suggested.",
+            "Indicates that the Trial should stop according to the service.",
+            "Indicates that the Trial is completed successfully.",
+            "Indicates that the Trial should not be attempted again. The service will set a Trial to INFEASIBLE when it's done but missing the final_measurement."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "REQUESTED",
+            "ACTIVE",
+            "STOPPING",
+            "SUCCEEDED",
+            "INFEASIBLE"
+          ]
+        },
+        "parameters": {
+          "description": "Output only. The parameters of the Trial.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1TrialParameter"
+          }
+        },
+        "finalMeasurement": {
+          "description": "Output only. The final measurement containing the objective value.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1alpha1Measurement"
+        },
+        "startTime": {
+          "description": "Output only. Time when the Trial was started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Time when the Trial's status changed to `SUCCEEDED` or `INFEASIBLE`.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1TrialParameter": {
+      "id": "GoogleCloudAiplatformV1alpha1TrialParameter",
+      "description": "A message representing a parameter to be tuned.",
+      "type": "object",
+      "properties": {
+        "parameterId": {
+          "description": "Output only. The ID of the parameter. The parameter should be defined in StudySpec's Parameters.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "value": {
+          "description": "Output only. The value of the parameter. `number_value` will be set if a parameter defined in StudySpec is in type 'INTEGER', 'DOUBLE' or 'DISCRETE'. `string_value` will be set if a parameter defined in StudySpec is in type 'CATEGORICAL'.",
+          "readOnly": true,
+          "type": "any"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1Measurement": {
+      "id": "GoogleCloudAiplatformV1alpha1Measurement",
+      "description": "A message representing a Measurement of a Trial. A Measurement contains the Metrics got by executing a Trial using suggested hyperparameter values.",
+      "type": "object",
+      "properties": {
+        "stepCount": {
+          "description": "Output only. The number of steps the machine learning model has been trained for. Must be non-negative.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "metrics": {
+          "description": "Output only. A list of metrics got by evaluating the objective functions using suggested Parameter values.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1MeasurementMetric"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1MeasurementMetric": {
+      "id": "GoogleCloudAiplatformV1alpha1MeasurementMetric",
+      "description": "A message representing a metric in the measurement.",
+      "type": "object",
+      "properties": {
+        "metricId": {
+          "description": "Output only. The ID of the Metric. The Metric should be defined in StudySpec's Metrics.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "value": {
+          "description": "Output only. The value for this metric.",
+          "readOnly": true,
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -9925,6 +10755,36 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata": {
+      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata",
+      "description": "This message will be placed in the metadata field of a google.longrunning.Operation associated with a CheckTrialEarlyStoppingState request.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "study": {
+          "description": "The name of the Study that the Trial belongs to.",
+          "type": "string"
+        },
+        "trial": {
+          "description": "The Trial name.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse": {
+      "id": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse",
+      "description": "Response message for VizierService.CheckTrialEarlyStoppingState.",
+      "type": "object",
+      "properties": {
+        "shouldStop": {
+          "description": "True if the Trial should stop.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1CreateSpecialistPoolOperationMetadata": {
       "id": "GoogleCloudAiplatformV1beta1CreateSpecialistPoolOperationMetadata",
       "description": "Runtime operation information for SpecialistPoolService.CreateSpecialistPool.",
@@ -10087,6 +10947,61 @@
       "description": "Response message for DatasetService.ImportData.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SuggestTrialsMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1SuggestTrialsMetadata",
+      "description": "Details of operations that perform Trials suggestion.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "clientId": {
+          "description": "The identifier of the client that is requesting the suggestion. If multiple SuggestTrialsRequests have the same `client_id`, the service will return the identical suggested Trial if the Trial is pending, and provide a new Trial if the last suggested Trial was completed.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SuggestTrialsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1SuggestTrialsResponse",
+      "description": "Response message for VizierService.SuggestTrials.",
+      "type": "object",
+      "properties": {
+        "trials": {
+          "description": "A list of Trials.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Trial"
+          }
+        },
+        "studyState": {
+          "description": "The state of the Study.",
+          "type": "string",
+          "enumDescriptions": [
+            "The study state is unspecified.",
+            "The study is active.",
+            "The study is stopped due to an internal error.",
+            "The study is done when the service exhausts the parameter search space or max_trial_count is reached."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "INACTIVE",
+            "COMPLETED"
+          ]
+        },
+        "startTime": {
+          "description": "The time at which the operation was started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time at which operation processing completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
       }
     },
     "GoogleCloudAiplatformV1beta1UndeployModelOperationMetadata": {
@@ -10885,7 +11800,7 @@
           "format": "int64"
         },
         "pastHorizon": {
-          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that it lets algorithm to define the value. Inclusive.",
+          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that the model does not take any history into account. Inclusive. Deprecated. Use historical_window_length instead.",
           "type": "string",
           "format": "int64"
         },
@@ -10904,6 +11819,11 @@
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. \"ignore-validation\" - ignore the results of the validation and continue",
           "type": "string"
+        },
+        "historicalWindowLength": {
+          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that the model does not take any history into account. Inclusive.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -13840,7 +14760,7 @@
           "format": "int64"
         },
         "pastHorizon": {
-          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that it lets algorithm to define the value. Inclusive.",
+          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that the model does not take any history into account. Inclusive. Deprecated. Use historical_window_length instead.",
           "type": "string",
           "format": "int64"
         },
@@ -13859,6 +14779,11 @@
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. \"ignore-validation\" - ignore the results of the validation and continue",
           "type": "string"
+        },
+        "historicalWindowLength": {
+          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that the model does not take any history into account. Inclusive.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -15817,18 +16742,18 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The standard list filter.",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The standard list page size.",
+                  "description": "The maximum number of results to return. If not set, the service will select a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "The standard list page token.",
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }
@@ -16638,165 +17563,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
-                    }
-                  }
-                }
-              }
-            },
-            "studies": {
-              "resources": {
-                "trials": {
-                  "resources": {
-                    "operations": {
-                      "methods": {
-                        "list": {
-                          "id": "aiplatform.projects.locations.studies.trials.operations.list",
-                          "path": "v1beta1/{+name}/operations",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}/operations",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "name": {
-                              "description": "The name of the operation's parent resource.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "filter": {
-                              "description": "The standard list filter.",
-                              "location": "query",
-                              "type": "string"
-                            },
-                            "pageSize": {
-                              "description": "The standard list page size.",
-                              "location": "query",
-                              "type": "integer",
-                              "format": "int32"
-                            },
-                            "pageToken": {
-                              "description": "The standard list page token.",
-                              "location": "query",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "GoogleLongrunningListOperationsResponse"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                        },
-                        "get": {
-                          "id": "aiplatform.projects.locations.studies.trials.operations.get",
-                          "path": "v1beta1/{+name}",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}/operations/{operationsId}",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "name": {
-                              "description": "The name of the operation resource.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+\/operations\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "GoogleLongrunningOperation"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                        },
-                        "delete": {
-                          "id": "aiplatform.projects.locations.studies.trials.operations.delete",
-                          "path": "v1beta1/{+name}",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}/operations/{operationsId}",
-                          "httpMethod": "DELETE",
-                          "parameters": {
-                            "name": {
-                              "description": "The name of the operation resource to be deleted.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+\/operations\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "GoogleProtobufEmpty"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                        },
-                        "cancel": {
-                          "id": "aiplatform.projects.locations.studies.trials.operations.cancel",
-                          "path": "v1beta1/{+name}:cancel",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}/operations/{operationsId}:cancel",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "name": {
-                              "description": "The name of the operation resource to be cancelled.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+\/operations\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "GoogleProtobufEmpty"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                        },
-                        "wait": {
-                          "id": "aiplatform.projects.locations.studies.trials.operations.wait",
-                          "path": "v1beta1/{+name}:wait",
-                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}/operations/{operationsId}:wait",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "name": {
-                              "description": "The name of the operation resource to wait on.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+\/operations\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "timeout": {
-                              "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
-                              "location": "query",
-                              "type": "string",
-                              "format": "google-duration"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "GoogleLongrunningOperation"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
-                        }
-                      }
                     }
                   }
                 }
@@ -21920,7 +22686,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of Tensorboards to return. The service may return fewer than this value. If unspecified, at most 50 Tensorboards will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "description": "The maximum number of Tensorboards to return. The service may return fewer than this value. If unspecified, at most 100 Tensorboards will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -23203,6 +23969,595 @@
                               }
                             }
                           }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "studies": {
+              "methods": {
+                "create": {
+                  "id": "aiplatform.projects.locations.studies.create",
+                  "path": "v1beta1/{+parent}/studies",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location to create the CustomJob in. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1Study"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1Study"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a Study. A resource name will be generated after creation of the Study."
+                },
+                "get": {
+                  "id": "aiplatform.projects.locations.studies.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Study resource. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1Study"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a Study by name."
+                },
+                "list": {
+                  "id": "aiplatform.projects.locations.studies.list",
+                  "path": "v1beta1/{+parent}/studies",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location to list the Study from. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A page token to request the next page of results. If unspecified, there are no subsequent pages.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of studies to return per \"page\" of results. If unspecified, service will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1ListStudiesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists all the studies in a region for an associated project."
+                },
+                "delete": {
+                  "id": "aiplatform.projects.locations.studies.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Study resource to be deleted. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleProtobufEmpty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a Study."
+                },
+                "lookup": {
+                  "id": "aiplatform.projects.locations.studies.lookup",
+                  "path": "v1beta1/{+parent}/studies:lookup",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies:lookup",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the Location to get the Study from. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1LookupStudyRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1Study"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Looks a study up using the user-defined display_name field instead of the fully qualified resource name."
+                }
+              }
+              ,
+              "resources": {
+                "trials": {
+                  "methods": {
+                    "suggest": {
+                      "id": "aiplatform.projects.locations.studies.trials.suggest",
+                      "path": "v1beta1/{+parent}/trials:suggest",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials:suggest",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The project and location that the Study belongs to. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1SuggestTrialsRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Adds one or more Trials to a Study, with parameter values suggested by AI Platform Vizier. Returns a long-running operation associated with the generation of Trial suggestions. When this long-running operation succeeds, it will contain a SuggestTrialsResponse."
+                    },
+                    "create": {
+                      "id": "aiplatform.projects.locations.studies.trials.create",
+                      "path": "v1beta1/{+parent}/trials",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the Study to create the Trial in. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1Trial"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1Trial"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Adds a user provided Trial to a Study."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.studies.trials.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the Trial resource. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}\/trials\/{trial}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1Trial"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets a Trial."
+                    },
+                    "list": {
+                      "id": "aiplatform.projects.locations.studies.trials.list",
+                      "path": "v1beta1/{+parent}/trials",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the Study to list the Trial from. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageToken": {
+                          "description": "Optional. A page token to request the next page of results. If unspecified, there are no subsequent pages.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The number of Trials to retrieve per \"page\" of results. If unspecified, the service will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1ListTrialsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists the Trials associated with a Study."
+                    },
+                    "addTrialMeasurement": {
+                      "id": "aiplatform.projects.locations.studies.trials.addTrialMeasurement",
+                      "path": "v1beta1/{+trialName}:addTrialMeasurement",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:addTrialMeasurement",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "trialName": {
+                          "description": "Required. The name of the trial to add measurement. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}\/trials\/{trial}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "trialName"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1AddTrialMeasurementRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1Trial"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Adds a measurement of the objective metrics to a Trial. This measurement is assumed to have been taken before the Trial is complete."
+                    },
+                    "complete": {
+                      "id": "aiplatform.projects.locations.studies.trials.complete",
+                      "path": "v1beta1/{+name}:complete",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:complete",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The Trial's name. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}\/trials\/{trial}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1CompleteTrialRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1Trial"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Marks a Trial as complete."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.studies.trials.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The Trial's name. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}\/trials\/{trial}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a Trial."
+                    },
+                    "checkTrialEarlyStoppingState": {
+                      "id": "aiplatform.projects.locations.studies.trials.checkTrialEarlyStoppingState",
+                      "path": "v1beta1/{+trialName}:checkTrialEarlyStoppingState",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:checkTrialEarlyStoppingState",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "trialName": {
+                          "description": "Required. The Trial's name. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}\/trials\/{trial}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "trialName"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Checks whether a Trial should stop or not. Returns a long-running operation. When the operation is successful, it will contain a CheckTrialEarlyStoppingStateResponse."
+                    },
+                    "stop": {
+                      "id": "aiplatform.projects.locations.studies.trials.stop",
+                      "path": "v1beta1/{+name}:stop",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}:stop",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The Trial's name. Format: `projects\/{project}\/locations\/{location}\/studies\/{study}\/trials\/{trial}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1StopTrialRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1Trial"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Stops a Trial."
+                    },
+                    "listOptimalTrials": {
+                      "id": "aiplatform.projects.locations.studies.trials.listOptimalTrials",
+                      "path": "v1beta1/{+parent}/trials:listOptimalTrials",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials:listOptimalTrials",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The name of the Study that the optimal Trial belongs to.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1ListOptimalTrialsRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1ListOptimalTrialsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists the pareto-optimal Trials for multi-objective Study or the optimal Trials for single-objective Study. The definition of pareto-optimal can be checked in wiki page. https:\/\/en.wikipedia.org\/wiki\/Pareto_efficiency"
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "operations": {
+                      "methods": {
+                        "list": {
+                          "id": "aiplatform.projects.locations.studies.trials.operations.list",
+                          "path": "v1beta1/{+name}/operations",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}/operations",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation's parent resource.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "The standard list filter.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The standard list page size.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The standard list page token.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleLongrunningListOperationsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                        },
+                        "get": {
+                          "id": "aiplatform.projects.locations.studies.trials.operations.get",
+                          "path": "v1beta1/{+name}",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}/operations/{operationsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+\/operations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleLongrunningOperation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                        },
+                        "delete": {
+                          "id": "aiplatform.projects.locations.studies.trials.operations.delete",
+                          "path": "v1beta1/{+name}",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}/operations/{operationsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource to be deleted.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+\/operations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleProtobufEmpty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                        },
+                        "cancel": {
+                          "id": "aiplatform.projects.locations.studies.trials.operations.cancel",
+                          "path": "v1beta1/{+name}:cancel",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}/operations/{operationsId}:cancel",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource to be cancelled.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+\/operations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleProtobufEmpty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                        },
+                        "wait": {
+                          "id": "aiplatform.projects.locations.studies.trials.operations.wait",
+                          "path": "v1beta1/{+name}:wait",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/trials/{trialsId}/operations/{operationsId}:wait",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource to wait on.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/trials\/[^\/]+\/operations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "timeout": {
+                              "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-duration"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleLongrunningOperation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
                         }
                       }
                     }

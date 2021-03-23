@@ -320,9 +320,11 @@ class CloudidentityGroupsListRequest(_messages.Message):
       500 for `View.FULL`.
     pageToken: The `next_page_token` value returned from a previous list
       request, if any.
-    parent: Required. The parent resource under which to list all `Group`s.
-      Must be of the form `identitysources/{identity_source_id}` for external-
-      identity-mapped groups or `customers/{customer_id}` for Google Groups.
+    parent: Required. The parent resource under which to list all `Group`
+      resources. Must be of the form `identitysources/{identity_source_id}`
+      for external- identity-mapped groups or `customers/{customer_id}` for
+      Google Groups. The `customer_id` must begin with "C" (for example,
+      'C046psxkn').
     view: The level of detail to be returned. If unspecified, defaults to
       `View.BASIC`.
   """
@@ -561,8 +563,11 @@ class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Mess
     query: Required. A CEL expression that MUST include member specification
       AND label(s). This is a `required` field. Users can search on label
       attributes of groups. CONTAINS match ('in') is supported on labels.
-      Example query: member_key_id == 'member_key_id_value' [ &&
-      member_key_namespace == 'member_key_namespace_value' ] && in labels
+      Identity-mapped groups are uniquely identified by both a `member_key_id`
+      and a `member_key_namespace`, which requires an additional query input:
+      `member_key_namespace`. Example query: member_key_id ==
+      'member_key_id_value' [ && member_key_namespace ==
+      'member_key_namespace_value' ] && in labels
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -628,7 +633,8 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
       Language](https://opensource.google/projects/cel). May only contain
       equality operators on the parent and inclusion operators on labels
       (e.g., `parent == 'customers/{customer_id}' &&
-      'cloudidentity.googleapis.com/groups.discussion_forum' in labels`).
+      'cloudidentity.googleapis.com/groups.discussion_forum' in labels`). The
+      `customer_id` must begin with "C" (for example, 'C046psxkn').
     view: The level of detail to be returned. If unspecified, defaults to
       `View.BASIC`.
   """
@@ -1600,11 +1606,17 @@ class Group(_messages.Message):
   of entities, where each entity is either a user or another group.
 
   Messages:
-    LabelsValue: Required. The labels that apply to the `Group`. Must not
-      contain more than one entry. Must contain the entry
-      `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
-      `Group` is a Google Group or `'system/groups/external': ''` if the
-      `Group` is an external-identity-mapped group.
+    LabelsValue: Required. One or more label entries that apply to the Group.
+      Currently supported labels contain a key with an empty value. Google
+      Groups are the default type of group and have a label with a key of
+      `cloudidentity.googleapis.com/groups.discussion_forum` and an empty
+      value. Existing Google Groups can have an additional label with a key of
+      `cloudidentity.googleapis.com/groups.security` and an empty value added
+      to them. **This is an immutable change and the security label cannot be
+      removed once added.** Dynamic groups have a label with a key of
+      `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
+      for Cloud Search have a label with a key of `system/groups/external` and
+      an empty value.
 
   Fields:
     createTime: Output only. The time when the `Group` was created.
@@ -1613,11 +1625,17 @@ class Group(_messages.Message):
     displayName: The display name of the `Group`.
     dynamicGroupMetadata: Dynamic group metadata like queries and status.
     groupKey: Required. Immutable. The `EntityKey` of the `Group`.
-    labels: Required. The labels that apply to the `Group`. Must not contain
-      more than one entry. Must contain the entry
-      `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
-      `Group` is a Google Group or `'system/groups/external': ''` if the
-      `Group` is an external-identity-mapped group.
+    labels: Required. One or more label entries that apply to the Group.
+      Currently supported labels contain a key with an empty value. Google
+      Groups are the default type of group and have a label with a key of
+      `cloudidentity.googleapis.com/groups.discussion_forum` and an empty
+      value. Existing Google Groups can have an additional label with a key of
+      `cloudidentity.googleapis.com/groups.security` and an empty value added
+      to them. **This is an immutable change and the security label cannot be
+      removed once added.** Dynamic groups have a label with a key of
+      `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
+      for Cloud Search have a label with a key of `system/groups/external` and
+      an empty value.
     name: Output only. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Group`. Shall be of the form `groups/{group_id}`.
@@ -1625,17 +1643,24 @@ class Group(_messages.Message):
       this `Group` resides in the Cloud Identity resource hierarchy. Must be
       of the form `identitysources/{identity_source_id}` for external-
       identity-mapped groups or `customers/{customer_id}` for Google Groups.
+      The `customer_id` must begin with "C" (for example, 'C046psxkn').
     posixGroups: The POSIX groups associated with the `Group`.
     updateTime: Output only. The time when the `Group` was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Required. The labels that apply to the `Group`. Must not contain more
-    than one entry. Must contain the entry
-    `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
-    `Group` is a Google Group or `'system/groups/external': ''` if the `Group`
-    is an external-identity-mapped group.
+    r"""Required. One or more label entries that apply to the Group. Currently
+    supported labels contain a key with an empty value. Google Groups are the
+    default type of group and have a label with a key of
+    `cloudidentity.googleapis.com/groups.discussion_forum` and an empty value.
+    Existing Google Groups can have an additional label with a key of
+    `cloudidentity.googleapis.com/groups.security` and an empty value added to
+    them. **This is an immutable change and the security label cannot be
+    removed once added.** Dynamic groups have a label with a key of
+    `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups for
+    Cloud Search have a label with a key of `system/groups/external` and an
+    empty value.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1820,7 +1845,7 @@ class ListGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.ListGroups.
 
   Fields:
-    groups: The `Group`s under the specified `parent`.
+    groups: The `Group` resources under the specified `parent`.
     nextPageToken: A continuation token to retrieve the next page of results,
       or empty if there are no more results available.
   """
@@ -2227,7 +2252,7 @@ class SearchGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.SearchGroups.
 
   Fields:
-    groups: The `Group`s that match the search query.
+    groups: The `Group` resources that match the search query.
     nextPageToken: A continuation token to retrieve the next page of results,
       or empty if there are no more results available.
   """

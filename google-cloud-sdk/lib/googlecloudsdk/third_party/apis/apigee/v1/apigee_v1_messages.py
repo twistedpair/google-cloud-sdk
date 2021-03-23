@@ -2792,14 +2792,17 @@ class ApigeeOrganizationsInstancesCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsInstancesCreateRequest object.
 
   Fields:
+    environments: Optional. List of environments that will be attached to the
+      instance during creation.
     googleCloudApigeeV1Instance: A GoogleCloudApigeeV1Instance resource to be
       passed as the request body.
     parent: Required. Name of the organization. Use the following structure in
       your request: `organizations/{org}`.
   """
 
-  googleCloudApigeeV1Instance = _messages.MessageField('GoogleCloudApigeeV1Instance', 1)
-  parent = _messages.StringField(2, required=True)
+  environments = _messages.StringField(1, repeated=True)
+  googleCloudApigeeV1Instance = _messages.MessageField('GoogleCloudApigeeV1Instance', 2)
+  parent = _messages.StringField(3, required=True)
 
 
 class ApigeeOrganizationsInstancesDeleteRequest(_messages.Message):
@@ -2908,6 +2911,22 @@ class ApigeeOrganizationsInstancesNatAddressesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsInstancesPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1Instance: A GoogleCloudApigeeV1Instance resource to be
+      passed as the request body.
+    name: Required. Name of the instance. Use the following structure in your
+      request: `organizations/{org}/instances/{instance}`.
+    updateMask: List of fields to be updated.
+  """
+
+  googleCloudApigeeV1Instance = _messages.MessageField('GoogleCloudApigeeV1Instance', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ApigeeOrganizationsInstancesReportStatusRequest(_messages.Message):
@@ -3439,10 +3458,12 @@ class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
   Fields:
     advancedApiOpsConfig: Configuration for the Advanced API Ops add-on.
     integrationConfig: Configuration for the Integration add-on.
+    monetizationConfig: Configuration for the Monetization add-on.
   """
 
   advancedApiOpsConfig = _messages.MessageField('GoogleCloudApigeeV1AdvancedApiOpsConfig', 1)
   integrationConfig = _messages.MessageField('GoogleCloudApigeeV1IntegrationConfig', 2)
+  monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 3)
 
 
 class GoogleCloudApigeeV1AdvancedApiOpsConfig(_messages.Message):
@@ -3608,6 +3629,12 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       deployed in another environment. This setting is used, for example, to
       prevent resources associated with API proxies in `prod` from being
       accessed by API proxies deployed in `test`.
+    graphqlOperationGroup: Configuration used to group Apigee proxies or
+      remote services with graphQL operation name, graphQL operation type and
+      quotas. This grouping allows us to precisely set quota for a particular
+      combination of graphQL name and operation type for a particular proxy
+      request. If graphQL name is not set, this would imply quota will be
+      applied on all graphQL requests matching the operation type.
     lastModifiedAt: Response only. Modified time of this environment as
       milliseconds since epoch.
     name: Internal name of the API product. Characters you can use in the name
@@ -3649,14 +3676,15 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
   description = _messages.StringField(5)
   displayName = _messages.StringField(6)
   environments = _messages.StringField(7, repeated=True)
-  lastModifiedAt = _messages.IntegerField(8)
-  name = _messages.StringField(9)
-  operationGroup = _messages.MessageField('GoogleCloudApigeeV1OperationGroup', 10)
-  proxies = _messages.StringField(11, repeated=True)
-  quota = _messages.StringField(12)
-  quotaInterval = _messages.StringField(13)
-  quotaTimeUnit = _messages.StringField(14)
-  scopes = _messages.StringField(15, repeated=True)
+  graphqlOperationGroup = _messages.MessageField('GoogleCloudApigeeV1GraphQLOperationGroup', 8)
+  lastModifiedAt = _messages.IntegerField(9)
+  name = _messages.StringField(10)
+  operationGroup = _messages.MessageField('GoogleCloudApigeeV1OperationGroup', 11)
+  proxies = _messages.StringField(12, repeated=True)
+  quota = _messages.StringField(13)
+  quotaInterval = _messages.StringField(14)
+  quotaTimeUnit = _messages.StringField(15)
+  scopes = _messages.StringField(16, repeated=True)
 
 
 class GoogleCloudApigeeV1ApiProductRef(_messages.Message):
@@ -4835,8 +4863,6 @@ class GoogleCloudApigeeV1DeveloperSubscription(_messages.Message):
       since epoch.
     endTime: The time when the subscription will end. Specified as
       milliseconds since epoch.
-    lastBilledTime: Output only. The date when the developer was last billed
-      for this subscription. Specified as milliseconds since epoch.
     lastModifiedAt: Output only. Modified time of this subscription in
       milliseconds since epoch.
     name: Output only. The ID of the DeveloperSubscription.
@@ -4847,10 +4873,9 @@ class GoogleCloudApigeeV1DeveloperSubscription(_messages.Message):
   apiproduct = _messages.StringField(1)
   createdAt = _messages.IntegerField(2)
   endTime = _messages.IntegerField(3)
-  lastBilledTime = _messages.IntegerField(4)
-  lastModifiedAt = _messages.IntegerField(5)
-  name = _messages.StringField(6)
-  startTime = _messages.IntegerField(7)
+  lastModifiedAt = _messages.IntegerField(4)
+  name = _messages.StringField(5)
+  startTime = _messages.IntegerField(6)
 
 
 class GoogleCloudApigeeV1DimensionMetric(_messages.Message):
@@ -5286,6 +5311,70 @@ class GoogleCloudApigeeV1GenerateUploadUrlResponse(_messages.Message):
 
 class GoogleCloudApigeeV1GetSyncAuthorizationRequest(_messages.Message):
   r"""Request for GetSyncAuthorization."""
+
+
+class GoogleCloudApigeeV1GraphQLOperation(_messages.Message):
+  r"""GraphQLOperation represents the pairing of graphQL operation types and
+  the graphQL operation name.
+
+  Fields:
+    operation: GraphQL operation name, along with operation type which will be
+      used to associate quotas with. If no name is specified, the quota will
+      be applied to all graphQL operations irrespective of their operation
+      names in the payload.
+    operationType: Required. `query`, `mutation` and `subscription` are the
+      three operation types offered by graphQL. Currently we support only
+      `query` and `mutation`.
+  """
+
+  operation = _messages.StringField(1)
+  operationType = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudApigeeV1GraphQLOperationConfig(_messages.Message):
+  r"""GraphQLOperationConfig binds the resources in a proxy or remote service
+  with the graphQL operation and its associated quota enforcement.
+
+  Fields:
+    apiSource: Required. API proxy endpoint or remote service name with which
+      the graphQL operation, and quota are associated.
+    attributes: Custom attributes associated with the operation.
+    operations: Required. List of graphQL name/Operation type pairs for the
+      proxy/remote service, upon which quota will applied. If GraphQLOperation
+      operation has only the operation type(s), that would imply that quota
+      will be applied on all graphQL requests irrespective of the graphQL
+      name. **Note**: Currently, we can specify only a single
+      GraphQLOperation. Specifying more than one will result in failure of the
+      operation.
+    quota: Quota parameters to be enforced for the resources, methods,
+      api_source combination. If none are specified, quota enforcement will
+      not be done.
+  """
+
+  apiSource = _messages.StringField(1)
+  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
+  operations = _messages.MessageField('GoogleCloudApigeeV1GraphQLOperation', 3, repeated=True)
+  quota = _messages.MessageField('GoogleCloudApigeeV1Quota', 4)
+
+
+class GoogleCloudApigeeV1GraphQLOperationGroup(_messages.Message):
+  r"""List of graphQL operation configuration details associated with Apigee
+  API proxies or remote services. Remote services are non-Apigee proxies, such
+  as Istio-Envoy.
+
+  Fields:
+    operationConfigType: Flag that specifes whether the configuration is for
+      Apigee API proxy or a remote service. Valid values are `proxy` or
+      `remoteservice`. Defaults to `proxy`. Set to `proxy` when Apigee API
+      proxies are associated with the API product. Set to `remoteservice` when
+      non-Apigee proxies like Istio-Envoy are associated with the API product.
+    operationConfigs: Required. List of operation configurations for either
+      Apigee API proxies or other remote services that are associated with
+      this API product.
+  """
+
+  operationConfigType = _messages.StringField(1)
+  operationConfigs = _messages.MessageField('GoogleCloudApigeeV1GraphQLOperationConfig', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1IngressConfig(_messages.Message):
@@ -5891,6 +5980,20 @@ class GoogleCloudApigeeV1Metric(_messages.Message):
 
   name = _messages.StringField(1)
   values = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1MonetizationConfig(_messages.Message):
+  r"""Configuration for the Monetization add-on.
+
+  Fields:
+    enabled: Flag that specifies whether the Monetization add-on is enabled.
+    expiresAt: Output only. Time at which the Monetization add-on expires in
+      in milliseconds since epoch. If unspecified, the add-on will never
+      expire.
+  """
+
+  enabled = _messages.BooleanField(1)
+  expiresAt = _messages.IntegerField(2)
 
 
 class GoogleCloudApigeeV1NatAddress(_messages.Message):

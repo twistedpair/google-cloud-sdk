@@ -59,20 +59,13 @@ class UserCredWithReauth(credentials.Credentials):
   reauth. This class is to override the refresh method to handle reauth.
   """
 
-  def __init__(self,
-               token,
-               refresh_token=None,
-               id_token=None,
-               token_uri=None,
-               client_id=None,
-               client_secret=None,
-               scopes=None,
-               quota_project_id=None,
-               rapt_token=None):
-    super(UserCredWithReauth,
-          self).__init__(token, refresh_token, id_token, token_uri,
-                         client_id, client_secret, scopes, quota_project_id)
-    self._rapt_token = rapt_token
+  def __init__(self, *args, **kwargs):
+    if 'rapt_token' in kwargs:
+      self._rapt_token = kwargs['rapt_token']
+      del kwargs['rapt_token']
+    else:
+      self._rapt_token = None
+    super(UserCredWithReauth, self).__init__(*args, **kwargs)
 
   def __setstate__(self, d):
     super(UserCredWithReauth, self).__setstate__(d)

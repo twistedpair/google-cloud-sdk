@@ -694,6 +694,10 @@ class GoogleCloudRecommenderV1alpha2Recommendation(_messages.Message):
       "google.iam.policy.Recommender", recommender_subtype can be one of
       "REMOVE_ROLE"/"REPLACE_ROLE"
     stateInfo: Information for state. Contains state and metadata.
+    xorGroupId: Mutually exclusive group ID. A non-empty ID indicates this
+      recommendation belongs to a mutually exclusive group, where only one
+      recommendation within is suggested to be applied. Unique per
+      recommender.
   """
 
   additionalImpact = _messages.MessageField('GoogleCloudRecommenderV1alpha2Impact', 1, repeated=True)
@@ -706,6 +710,7 @@ class GoogleCloudRecommenderV1alpha2Recommendation(_messages.Message):
   primaryImpact = _messages.MessageField('GoogleCloudRecommenderV1alpha2Impact', 8)
   recommenderSubtype = _messages.StringField(9)
   stateInfo = _messages.MessageField('GoogleCloudRecommenderV1alpha2RecommendationStateInfo', 10)
+  xorGroupId = _messages.StringField(11)
 
 
 class GoogleCloudRecommenderV1alpha2RecommendationContent(_messages.Message):
@@ -925,12 +930,12 @@ class RecommenderBillingAccountsLocationsInsightTypesInsightsListRequest(_messag
       `next_page_token` from the previous response. The values of other method
       parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
-      nsightTypes/[INSIGHT_TYPE_ID]" 2. "billingAccounts/[BILLING_ACCOUNT_ID]/
-      locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]" 3. "folders/[FOLDER
-      _ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]" 4. "organizati
+      Acceptable formats: 1. `projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
+      nsightTypes/[INSIGHT_TYPE_ID]` 2. `billingAccounts/[BILLING_ACCOUNT_ID]/
+      locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]` 3. `folders/[FOLDER
+      _ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]` 4. `organizati
       ons/[ORGANIZATION_ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID
-      ]" LOCATION here refers to GCP Locations:
+      ]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ INSIGHT_TYPE_ID refers to
       supported insight types:
       https://cloud.google.com/recommender/docs/insights/insight-types.
@@ -1019,12 +1024,12 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsListRequest(
       `next_page_token` from the previous response. The values of other method
       parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
-      ecommenders/[RECOMMENDER_ID]" 2. "billingAccounts/[BILLING_ACCOUNT_ID]/l
-      ocations/[LOCATION]/recommenders/[RECOMMENDER_ID]" 3.
-      "folders/[FOLDER_ID]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]"
-      4. "organizations/[ORGANIZATION_ID]/locations/[LOCATION]/recommenders/[R
-      ECOMMENDER_ID]" LOCATION here refers to GCP Locations:
+      Acceptable formats: 1. `projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
+      ecommenders/[RECOMMENDER_ID]` 2. `billingAccounts/[BILLING_ACCOUNT_ID]/l
+      ocations/[LOCATION]/recommenders/[RECOMMENDER_ID]` 3.
+      `folders/[FOLDER_ID]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]`
+      4. `organizations/[ORGANIZATION_ID]/locations/[LOCATION]/recommenders/[R
+      ECOMMENDER_ID]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ RECOMMENDER_ID refers to
       supported recommenders:
       https://cloud.google.com/recommender/docs/recommenders.
@@ -1135,12 +1140,12 @@ class RecommenderFoldersLocationsInsightTypesInsightsListRequest(_messages.Messa
       `next_page_token` from the previous response. The values of other method
       parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
-      nsightTypes/[INSIGHT_TYPE_ID]" 2. "billingAccounts/[BILLING_ACCOUNT_ID]/
-      locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]" 3. "folders/[FOLDER
-      _ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]" 4. "organizati
+      Acceptable formats: 1. `projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
+      nsightTypes/[INSIGHT_TYPE_ID]` 2. `billingAccounts/[BILLING_ACCOUNT_ID]/
+      locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]` 3. `folders/[FOLDER
+      _ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]` 4. `organizati
       ons/[ORGANIZATION_ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID
-      ]" LOCATION here refers to GCP Locations:
+      ]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ INSIGHT_TYPE_ID refers to
       supported insight types:
       https://cloud.google.com/recommender/docs/insights/insight-types.
@@ -1224,12 +1229,12 @@ class RecommenderFoldersLocationsRecommendersRecommendationsListRequest(_message
       `next_page_token` from the previous response. The values of other method
       parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
-      ecommenders/[RECOMMENDER_ID]" 2. "billingAccounts/[BILLING_ACCOUNT_ID]/l
-      ocations/[LOCATION]/recommenders/[RECOMMENDER_ID]" 3.
-      "folders/[FOLDER_ID]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]"
-      4. "organizations/[ORGANIZATION_ID]/locations/[LOCATION]/recommenders/[R
-      ECOMMENDER_ID]" LOCATION here refers to GCP Locations:
+      Acceptable formats: 1. `projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
+      ecommenders/[RECOMMENDER_ID]` 2. `billingAccounts/[BILLING_ACCOUNT_ID]/l
+      ocations/[LOCATION]/recommenders/[RECOMMENDER_ID]` 3.
+      `folders/[FOLDER_ID]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]`
+      4. `organizations/[ORGANIZATION_ID]/locations/[LOCATION]/recommenders/[R
+      ECOMMENDER_ID]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ RECOMMENDER_ID refers to
       supported recommenders:
       https://cloud.google.com/recommender/docs/recommenders.
@@ -1347,12 +1352,12 @@ class RecommenderOrganizationsLocationsInsightTypesInsightsListRequest(_messages
       `next_page_token` from the previous response. The values of other method
       parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
-      nsightTypes/[INSIGHT_TYPE_ID]" 2. "billingAccounts/[BILLING_ACCOUNT_ID]/
-      locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]" 3. "folders/[FOLDER
-      _ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]" 4. "organizati
+      Acceptable formats: 1. `projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
+      nsightTypes/[INSIGHT_TYPE_ID]` 2. `billingAccounts/[BILLING_ACCOUNT_ID]/
+      locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]` 3. `folders/[FOLDER
+      _ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]` 4. `organizati
       ons/[ORGANIZATION_ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID
-      ]" LOCATION here refers to GCP Locations:
+      ]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ INSIGHT_TYPE_ID refers to
       supported insight types:
       https://cloud.google.com/recommender/docs/insights/insight-types.
@@ -1439,12 +1444,12 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsListRequest(_m
       `next_page_token` from the previous response. The values of other method
       parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
-      ecommenders/[RECOMMENDER_ID]" 2. "billingAccounts/[BILLING_ACCOUNT_ID]/l
-      ocations/[LOCATION]/recommenders/[RECOMMENDER_ID]" 3.
-      "folders/[FOLDER_ID]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]"
-      4. "organizations/[ORGANIZATION_ID]/locations/[LOCATION]/recommenders/[R
-      ECOMMENDER_ID]" LOCATION here refers to GCP Locations:
+      Acceptable formats: 1. `projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
+      ecommenders/[RECOMMENDER_ID]` 2. `billingAccounts/[BILLING_ACCOUNT_ID]/l
+      ocations/[LOCATION]/recommenders/[RECOMMENDER_ID]` 3.
+      `folders/[FOLDER_ID]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]`
+      4. `organizations/[ORGANIZATION_ID]/locations/[LOCATION]/recommenders/[R
+      ECOMMENDER_ID]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ RECOMMENDER_ID refers to
       supported recommenders:
       https://cloud.google.com/recommender/docs/recommenders.
@@ -1555,12 +1560,12 @@ class RecommenderProjectsLocationsInsightTypesInsightsListRequest(_messages.Mess
       `next_page_token` from the previous response. The values of other method
       parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
-      nsightTypes/[INSIGHT_TYPE_ID]" 2. "billingAccounts/[BILLING_ACCOUNT_ID]/
-      locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]" 3. "folders/[FOLDER
-      _ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]" 4. "organizati
+      Acceptable formats: 1. `projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
+      nsightTypes/[INSIGHT_TYPE_ID]` 2. `billingAccounts/[BILLING_ACCOUNT_ID]/
+      locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]` 3. `folders/[FOLDER
+      _ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]` 4. `organizati
       ons/[ORGANIZATION_ID]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID
-      ]" LOCATION here refers to GCP Locations:
+      ]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ INSIGHT_TYPE_ID refers to
       supported insight types:
       https://cloud.google.com/recommender/docs/insights/insight-types.
@@ -1656,12 +1661,12 @@ class RecommenderProjectsLocationsRecommendersRecommendationsListRequest(_messag
       `next_page_token` from the previous response. The values of other method
       parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
-      ecommenders/[RECOMMENDER_ID]" 2. "billingAccounts/[BILLING_ACCOUNT_ID]/l
-      ocations/[LOCATION]/recommenders/[RECOMMENDER_ID]" 3.
-      "folders/[FOLDER_ID]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]"
-      4. "organizations/[ORGANIZATION_ID]/locations/[LOCATION]/recommenders/[R
-      ECOMMENDER_ID]" LOCATION here refers to GCP Locations:
+      Acceptable formats: 1. `projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
+      ecommenders/[RECOMMENDER_ID]` 2. `billingAccounts/[BILLING_ACCOUNT_ID]/l
+      ocations/[LOCATION]/recommenders/[RECOMMENDER_ID]` 3.
+      `folders/[FOLDER_ID]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]`
+      4. `organizations/[ORGANIZATION_ID]/locations/[LOCATION]/recommenders/[R
+      ECOMMENDER_ID]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ RECOMMENDER_ID refers to
       supported recommenders:
       https://cloud.google.com/recommender/docs/recommenders.

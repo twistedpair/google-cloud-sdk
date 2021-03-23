@@ -86,7 +86,7 @@ def UpdateAssetSecurityMarksReqHook(ref, args, req):
   """Generate a security mark's name using org, source and finding."""
   del ref
   _ValidateMutexOnAssetAndOrganization(args)
-  req.name = _GetAssetName(args) + "/securityMarks"
+  req.name = _GetAssetNameForParent(args) + "/securityMarks"
   if req.updateMask is not None:
     req.updateMask = CleanUpUserInput(req.updateMask)
   return req

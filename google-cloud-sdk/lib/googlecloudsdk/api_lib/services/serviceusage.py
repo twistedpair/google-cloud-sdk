@@ -31,7 +31,7 @@ from googlecloudsdk.core.credentials import transports
 _PROJECT_RESOURCE = 'projects/%s'
 _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
-_LIMIT_OVERRIDE_RESOURCE = '%s/producerOverrides/%s'
+_LIMIT_OVERRIDE_RESOURCE = '%s/consumerOverrides/%s'
 _VALID_CONSUMER_PREFIX = {'projects/', 'folders/', 'organizations/'}
 _V1_VERSION = 'v1'
 _V1BETA1_VERSION = 'v1beta1'

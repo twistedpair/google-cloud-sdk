@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.ai.tensorboard_time_series import client
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import resources
 
 
@@ -30,7 +32,23 @@ def ParseTensorboardOperation(operation_name):
   Returns:
     The operation reference object
   """
-  if '/tensorboards/' in operation_name:
+  if '/tensorboards/' in operation_name and '/experiments/' in operation_name and '/runs/' in operation_name:
+    try:
+      return resources.REGISTRY.ParseRelativeName(
+          operation_name,
+          collection=
+          'aiplatform.projects.locations.tensorboards.experiments.runs.operations')
+    except resources.WrongResourceCollectionException:
+      pass
+  elif '/tensorboards/' in operation_name and '/experiments/' in operation_name:
+    try:
+      return resources.REGISTRY.ParseRelativeName(
+          operation_name,
+          collection=
+          'aiplatform.projects.locations.tensorboards.experiments.operations')
+    except resources.WrongResourceCollectionException:
+      pass
+  elif '/tensorboards/' in operation_name:
     try:
       return resources.REGISTRY.ParseRelativeName(
           operation_name,
@@ -39,3 +57,34 @@ def ParseTensorboardOperation(operation_name):
       pass
   return resources.REGISTRY.ParseRelativeName(
       operation_name, collection='aiplatform.projects.locations.operations')
+
+
+_TYPE_CHOICES = {
+    'SCALAR': (
+        'scalar',
+        'Used for tensorboard-time-series that is a list of scalars. E.g. '
+        'accuracy of a model over epochs/time.'
+    ),
+    'TENSOR': (
+        'tensor',
+        'Used for tensorboard-time-series that is a list of tensors. E.g. '
+        'histograms of weights of layer in a model over epoch/time.'
+    ),
+    'BLOB_SEQUENCE': (
+        'blob-sequence',
+        'Used for tensorboard-time-series that is a list of blob sequences. '
+        'E.g. set of sample images with labels over epochs/time.'
+    ),
+}
+
+
+def GetTensorboardTimeSeriesTypeArg(noun):
+  return arg_utils.ChoiceEnumMapper(
+      '--type',
+      client.GetMessagesModule(
+      ).GoogleCloudAiplatformV1alpha1TensorboardTimeSeries
+      .ValueTypeValueValuesEnum,
+      required=True,
+      custom_mappings=_TYPE_CHOICES,
+      help_str='Value type of the {noun}.'.format(noun=noun),
+      default=None)

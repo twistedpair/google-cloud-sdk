@@ -365,6 +365,33 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def LroList(self, request, global_params=None):
+      r"""Lists assets in a given project and location.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesAssetsLroListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAssetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('LroList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LroList.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets:lroList',
+        http_method='POST',
+        method_id='mediaasset.projects.locations.assetTypes.assets.lroList',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/assets:lroList',
+        request_field='listAssetsRequest',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsLroListRequest',
+        response_type_name='ListAssetsResponse',
+        supports_download=False,
+    )
+
     def LroUpdate(self, request, global_params=None):
       r"""Updates the parameters of a single asset.
 

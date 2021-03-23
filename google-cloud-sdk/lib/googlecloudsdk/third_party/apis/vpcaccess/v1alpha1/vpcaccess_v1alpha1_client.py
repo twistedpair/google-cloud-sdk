@@ -135,6 +135,33 @@ class VpcaccessV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Heartbeat(self, request, global_params=None):
+      r"""A heartbeat from a VM, reporting its IP and serving status.
+
+      Args:
+        request: (VpcaccessProjectsLocationsConnectorsHeartbeatRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HeartbeatConnectorResponse) The response message.
+      """
+      config = self.GetMethodConfig('Heartbeat')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Heartbeat.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}:heartbeat',
+        http_method='POST',
+        method_id='vpcaccess.projects.locations.connectors.heartbeat',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:heartbeat',
+        request_field='heartbeatConnectorRequest',
+        request_type_name='VpcaccessProjectsLocationsConnectorsHeartbeatRequest',
+        response_type_name='HeartbeatConnectorResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Serverless VPC Access connectors.
 

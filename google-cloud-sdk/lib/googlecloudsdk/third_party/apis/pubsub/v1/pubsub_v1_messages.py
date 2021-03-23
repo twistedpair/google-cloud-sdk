@@ -1746,6 +1746,16 @@ class Topic(_messages.Message):
       is `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     labels: See [Creating and managing labels]
       (https://cloud.google.com/pubsub/docs/labels).
+    messageRetentionDuration: Indicates the minimum duration to retain a
+      message after it is published to the topic. If this field is set,
+      messages published to the topic in the last `message_retention_duration`
+      are always available to subscribers. For instance, it allows any
+      attached subscription to [seek to a
+      timestamp](https://cloud.google.com/pubsub/docs/replay-
+      overview#seek_to_a_time) that is up to `message_retention_duration` in
+      the past. If this field is not set, message retention is controlled by
+      settings on individual subscriptions. Cannot be more than 7 days or less
+      than 10 minutes.
     messageStoragePolicy: Policy constraining the set of Google Cloud Platform
       regions where messages published to the topic may be stored. If not
       present, then no constraints are in effect.
@@ -1788,10 +1798,11 @@ class Topic(_messages.Message):
 
   kmsKeyName = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
-  messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 3)
-  name = _messages.StringField(4)
-  satisfiesPzs = _messages.BooleanField(5)
-  schemaSettings = _messages.MessageField('SchemaSettings', 6)
+  messageRetentionDuration = _messages.StringField(3)
+  messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 4)
+  name = _messages.StringField(5)
+  satisfiesPzs = _messages.BooleanField(6)
+  schemaSettings = _messages.MessageField('SchemaSettings', 7)
 
 
 class UpdateSnapshotRequest(_messages.Message):

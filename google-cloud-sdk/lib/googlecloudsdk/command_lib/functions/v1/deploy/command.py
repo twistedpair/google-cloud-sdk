@@ -23,6 +23,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.functions.v1 import env_vars as env_vars_api_util
 from googlecloudsdk.api_lib.functions.v1 import util as api_util
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.functions.v1.deploy import labels_util
@@ -176,6 +177,12 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
     max_instances = 0 if args.clear_max_instances else args.max_instances
     function.maxInstances = max_instances
     updated_fields.append('maxInstances')
+  if track == calliope_base.ReleaseTrack.ALPHA:
+    if (args.IsSpecified('min_instances') or
+        args.IsSpecified('clear_min_instances')):
+      min_instances = 0 if args.clear_min_instances else args.min_instances
+      function.minInstances = min_instances
+      updated_fields.append('minInstances')
   if enable_runtime:
     if args.IsSpecified('runtime'):
       function.runtime = args.runtime

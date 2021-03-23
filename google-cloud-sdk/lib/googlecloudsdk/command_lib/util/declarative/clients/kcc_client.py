@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import collections
 import io
 import os
+import re
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.asset import client_util
@@ -30,6 +31,8 @@ from googlecloudsdk.command_lib.util.declarative.clients import client_base
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
+# from googlecloudsdk.core import yaml_validator
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.resource import resource_filter
@@ -37,10 +40,22 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 
 _ASSET_INVENTORY_STRING = '{{"name":"{}","asset_type":"{}"}}\n'
-ApiClientArgs = collections.namedtuple(
-    'ApiClientArgs',
-    ['snapshot_time', 'limit', 'page_size',
-     'asset_types', 'parent', 'content_type', 'filter_func'])
+_ASSET_TYPE_REGEX = re.compile(r'\"asset_type\"\: (\".*?)\,')
+
+ApiClientArgs = collections.namedtuple('ApiClientArgs', [
+    'snapshot_time', 'limit', 'page_size', 'asset_types', 'parent',
+    'content_type', 'filter_func'
+])
+
+KrmGroupValueKind = collections.namedtuple('KrmGroupValueKind', [
+    'kind', 'service', 'group', 'bulk_export_supported', 'export_supported',
+    'resource_name_format'
+])
+
+RESOURCE_LIST_FORMAT = (
+    'table[box](GVK.Kind, SupportsBulkExport.yesno("x", ""):label="BULK '
+    'EXPORT?", SupportsExport.yesno("x", ""):label="EXPORT?", '
+    'ResourceNameFormat:label="RESOURCE NAME FORMAT")')
 
 
 class ResourceNotFoundException(client_base.ClientException):
@@ -90,19 +105,33 @@ def _GetTempAssetInventoryFilePath():
                       'gcloud_assetexport_temp_{}.json'.format(date_string))
 
 
+def _BuildAssetTypeFilterFromGVK(kind_list):
+  """Get Asset Inventory list AssetType Filter from KrmGroupValueKind data."""
+  if not kind_list:
+    return None
+  kind_filters = []
+  for gvk in kind_list:
+    asset_name = re.sub(gvk.service, '', gvk.kind, flags=re.IGNORECASE)
+    filter_string = '.*{}.*/{}'.format(gvk.service, asset_name)
+    kind_filters.append(filter_string)
+  return kind_filters
+
+
 def _GetAssetInventoryListInput(folder,
                                 project,
                                 org,
                                 file_path=None,
                                 asset_types_filter=None,
-                                filter_expression=None):
-  """Generate a AssetInventory export file from api list call.
+                                filter_expression=None,
+                                gvk_kind_filter=None):
+  """Generate a AssetInventory export data set from api list call.
 
 
   Calls AssetInventory List API via shared api client (AssetListClient) and
-  writes the list of exportable assets to a temp file on disk. If the
-  `filter_func` parameter is set will filter out non-matching resources in the
-  result.
+  generates a list of exportable assets. If `asset_types_filter`,
+  `gvk_kind_filter` or `filter_expression` is passed, it will filter out
+  non-matching resources. If `file_path` is None list will be returned as a
+  string otherwise it is written to disk at specified path.
 
   Args:
     folder: string, folder parent for resource export.
@@ -114,6 +143,8 @@ def _GetAssetInventoryListInput(folder,
       file.
     filter_expression: string, a valid gcloud filter expression.
       See `gcloud topic filter` for more details.
+    gvk_kind_filter: [string], like of KrmGroupValueKinds corresponding to asset
+    types to include in the output.
 
   Returns:
     string: file path where AssetInventory data has been written or raw data if
@@ -131,11 +162,15 @@ def _GetAssetInventoryListInput(folder,
   asset_client = client_util.AssetListClient(root_asset)
   filter_func = (resource_filter.Compile(filter_expression.strip()).Evaluate
                  if filter_expression else None)
+  kind_filter = _BuildAssetTypeFilterFromGVK(gvk_kind_filter)
+  asset_filter = asset_types_filter or []
+  if kind_filter:
+    asset_filter.extend(kind_filter)
   args = ApiClientArgs(snapshot_time=None,
                        limit=None,
                        page_size=None,
                        content_type=None,
-                       asset_types=asset_types_filter or [],
+                       asset_types=asset_filter,
                        parent=root_asset,
                        filter_func=filter_func)
   asset_results = asset_client.List(args, do_filter=True)
@@ -344,16 +379,19 @@ class KccClient(client_base.DeclarativeClient):
   def BulkExportFromAssetList(self, args):
     """BulkExport with support for resource kind/asset type and filtering."""
     args.all = True  # Remove scope (e.g. project, org & folder) from cmd.
+    kind_filters = getattr(args, 'resource_types', None)
+    if kind_filters:
+      kind_filters = self._GetKrmResourceTypeTable(filter_kinds=kind_filters)
     asset_list_input = _GetAssetInventoryListInput(
         folder=getattr(args, 'folder', None),
         project=getattr(args, 'project', None),
         org=getattr(args, 'organization', None),
-        asset_types_filter=getattr(args, 'resource_types', None),
+        gvk_kind_filter=kind_filters,
         filter_expression=getattr(args, 'filter', None))
     cmd = self._GetBinaryCommand(args, 'bulk-export')
     return self._CallBulkExport(cmd, args, asset_list_input=asset_list_input)
 
-  def ListResources(self, output_format='table'):
+  def _CallPrintResources(self, output_format='table'):
     cmd = [
         self._export_service, 'print-resources', '--output-format',
         output_format
@@ -363,5 +401,91 @@ class KccClient(client_base.DeclarativeClient):
       raise client_base.ClientException(
           'Error occured while listing available resources: [{}]'.format(
               error_value))
-    else:
-      return output_value
+    return output_value
+
+  def ListResources(self,
+                    output_format='table',
+                    project=None,
+                    organization=None,
+                    folder=None):
+    """List all exportable resources.
+
+    If parent (e.g. project, organization or folder) is passed then only list
+    the exportable resources for that parent.
+
+    Args:
+      output_format: string, format of the results. Must be one of yaml, json,
+        table.
+      project: string, project to list exportable resources for.
+      organization: string, organization to list exportable resources for.
+      folder: string, folder to list exportable resources for.
+
+    Returns:
+      supported resources formatted output listing exportable resources.
+
+    """
+    if not (project or organization or folder):
+      return self._CallPrintResources(output_format)
+    with progress_tracker.ProgressTracker(
+        message='Listing exportable resources',
+        aborted_message='Aborted Export.'):
+      supported_kinds = self.ListSupportedResourcesForParent(
+          project=project, organization=organization, folder=folder)
+      supported_kinds = [x._asdict() for x in supported_kinds]
+      for kind in supported_kinds:
+        del kind['service']  # Exclude 'service' from output
+      return supported_kinds
+
+  # TODO(b/182609806): Cache print resources data or load to static table.
+  def _GetKrmResourceTypeTable(self, input_data=None, filter_kinds=None):
+    """Retrieve or Build KRM Kind mapping table."""
+    krm_resource_list_string = (input_data or
+                                self._CallPrintResources(output_format='yaml'))
+    yaml_obj_list = yaml.load(krm_resource_list_string, round_trip=True)
+    table = []
+    for gvk in yaml_obj_list:
+      kind_val = gvk['GVK']['Kind']
+      group_val = gvk['GVK']['Group']
+      group_kind_val = group_val+'/'+kind_val
+      service_val = group_val.split('.')[0].lower()
+      # Check if filter contains either the kind value or the group/kind value
+      if (filter_kinds and
+          kind_val not in filter_kinds and
+          group_kind_val not in filter_kinds):
+        continue
+      group_val = gvk['GVK']['Group']
+      service_val = group_val.split('.')[0].lower()
+      table.append(KrmGroupValueKind(
+          kind=kind_val, service=service_val, group=group_val,
+          bulk_export_supported=gvk['SupportsBulkExport'],
+          export_supported=gvk['SupportsExport'],
+          resource_name_format=gvk['ResourceNameFormat']))
+    return table
+
+  def ListSupportedResourcesForParent(self,
+                                      kind_data=None,
+                                      project=None,
+                                      organization=None,
+                                      folder=None):
+    """List all exportable resource types for a given project, org or folder."""
+    if not (project or organization or folder):
+      raise client_base.ClientException(
+          'At least one of project, organization or folder must '
+          'be specified for this operation')
+    krm_type_table = self._GetKrmResourceTypeTable(input_data=kind_data)
+    asset_list_data = _GetAssetInventoryListInput(
+        folder=folder, org=organization, project=project)
+    # Extract unique asset types from list data string
+    asset_types = set([
+        x.replace('\"', '').lower()
+        for x in _ASSET_TYPE_REGEX.findall(asset_list_data)
+    ])
+    exportable_kinds = []
+    for asset in asset_types:
+      asset_uri, asset_type_name = asset.split('/')
+      for gvk in krm_type_table:
+        key = gvk.kind.lower().replace(gvk.service, '')
+        if (key == asset_type_name and
+            gvk.service in asset_uri):
+          exportable_kinds.append(gvk)
+    return sorted(exportable_kinds, key=lambda x: x.kind)

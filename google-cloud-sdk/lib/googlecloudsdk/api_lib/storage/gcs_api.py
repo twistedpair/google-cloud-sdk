@@ -51,16 +51,16 @@ from googlecloudsdk.core import requests
 from googlecloudsdk.core.credentials import transports
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
+from googlecloudsdk.core.util import scaled_integer
 
 import oauth2client
 
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
-KB = 1024  # Bytes
-MAX_READ_SIZE = 8 * KB
 
 # Call the progress callback every PROGRESS_CALLBACK_THRESHOLD bytes to
 # improve performance.
-PROGRESS_CALLBACK_THRESHOLD = 512 * KB
+KB = 1024  # Bytes.
+MINIMUM_PROGRESS_CALLBACK_THRESHOLD = 512 * KB
 # The API limits the number of objects that can be composed in a single call.
 # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
 MAX_OBJECTS_PER_COMPOSE_CALL = 32
@@ -165,6 +165,13 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
     self._processed_bytes = 0,
     self._progress_callback = None
 
+    self._chunk_size = scaled_integer.ParseInteger(
+        properties.VALUES.storage.download_chunk_size.Get())
+    # If progress callbacks is called more frequently than every 512 KB, it
+    # can degrate performance.
+    self._progress_callback_threshold = max(MINIMUM_PROGRESS_CALLBACK_THRESHOLD,
+                                            self._chunk_size)
+
   def update_destination_info(self, stream,
                               digesters=None,
                               processed_bytes=0,
@@ -198,16 +205,17 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
     # Start reading the raw stream.
     bytes_since_last_progress_callback = 0
     while True:
-      data = source_stream.read(MAX_READ_SIZE)
+      data = source_stream.read(self._chunk_size)
       if data:
         self._stream.write(data)
         self._processed_bytes += len(data)
         bytes_since_last_progress_callback += len(data)
-        if (self._progress_callback and
-            bytes_since_last_progress_callback >= PROGRESS_CALLBACK_THRESHOLD):
+        if (self._progress_callback and bytes_since_last_progress_callback >=
+            self._progress_callback_threshold):
           self._progress_callback(self._processed_bytes)
           bytes_since_last_progress_callback = (
-              bytes_since_last_progress_callback - PROGRESS_CALLBACK_THRESHOLD)
+              bytes_since_last_progress_callback -
+              self._progress_callback_threshold)
       else:
         if self._progress_callback and bytes_since_last_progress_callback:
           # Make a last progress callback call to update the final size.
@@ -224,8 +232,8 @@ class GcsApi(cloud_api.CloudApi):
     self.client = core_apis.GetClientInstance('storage', 'v1')
     self.messages = core_apis.GetMessagesModule('storage', 'v1')
     self._stream_response_handler = _StorageStreamResponseHandler()
-    self._download_http_client = transports.GetApitoolsTransport(
-        response_encoding=None, response_handler=self._stream_response_handler)
+    self._download_http_client = None
+    self._upload_http_client = None
 
   def _get_projection(self, fields_scope, message_class):
     """Generate query projection from fields_scope.
@@ -490,7 +498,8 @@ class GcsApi(cloud_api.CloudApi):
     if request_config.max_bytes_per_call:
       max_bytes_per_call = request_config.max_bytes_per_call
     else:
-      max_bytes_per_call = properties.VALUES.storage.chunk_size.GetInt()
+      max_bytes_per_call = scaled_integer.ParseInteger(
+          properties.VALUES.storage.copy_chunk_size.Get())
 
     if request_config.predefined_acl_string:
       predefined_acl = getattr(
@@ -711,6 +720,11 @@ class GcsApi(cloud_api.CloudApi):
         digesters=digesters,
         processed_bytes=start_byte,
         progress_callback=progress_callback)
+
+    if self._download_http_client is None:
+      self._download_http_client = transports.GetApitoolsTransport(
+          response_encoding=None,
+          response_handler=self._stream_response_handler)
     apitools_download.bytes_http = self._download_http_client
 
     # TODO(b/161460749) Handle download retries.
@@ -799,11 +813,16 @@ class GcsApi(cloud_api.CloudApi):
           source_stream,
           content_type,
           auto_transfer=True,
-          chunksize=properties.VALUES.storage.chunk_size.GetInt(),
+          chunksize=scaled_integer.ParseInteger(
+              properties.VALUES.storage.upload_chunk_size.Get()),
           gzip_encoded=request_config.gzip_encoded,
           num_retries=properties.VALUES.storage.max_retries.GetInt(),
           progress_callback=progress_callback,
           total_size=request_config.size)
+
+      if self._upload_http_client is None:
+        self._upload_http_client = transports.GetApitoolsTransport()
+      apitools_upload.bytes_http = self._upload_http_client
 
       result_object_metadata = self.client.objects.Insert(
           request, upload=apitools_upload)

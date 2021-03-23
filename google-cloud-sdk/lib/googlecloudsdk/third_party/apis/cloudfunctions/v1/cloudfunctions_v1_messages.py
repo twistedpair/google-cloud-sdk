@@ -216,6 +216,8 @@ class CloudFunction(_messages.Message):
       tolerate. See the [Max
       Instances](https://cloud.google.com/functions/docs/max-instances) Guide
       for more details.
+    minInstances: A lower bound for the number function instances that may
+      coexist at a given time.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
     network: The VPC Network that this cloud function can connect to. It can
@@ -412,22 +414,23 @@ class CloudFunction(_messages.Message):
   ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 10)
   labels = _messages.MessageField('LabelsValue', 11)
   maxInstances = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  name = _messages.StringField(13)
-  network = _messages.StringField(14)
-  runtime = _messages.StringField(15)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 16, repeated=True)
-  secretVolumes = _messages.MessageField('SecretVolume', 17, repeated=True)
-  serviceAccountEmail = _messages.StringField(18)
-  sourceArchiveUrl = _messages.StringField(19)
-  sourceRepository = _messages.MessageField('SourceRepository', 20)
-  sourceToken = _messages.StringField(21)
-  sourceUploadUrl = _messages.StringField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  timeout = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
-  versionId = _messages.IntegerField(26)
-  vpcConnector = _messages.StringField(27)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 28)
+  minInstances = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  name = _messages.StringField(14)
+  network = _messages.StringField(15)
+  runtime = _messages.StringField(16)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 17, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 18, repeated=True)
+  serviceAccountEmail = _messages.StringField(19)
+  sourceArchiveUrl = _messages.StringField(20)
+  sourceRepository = _messages.MessageField('SourceRepository', 21)
+  sourceToken = _messages.StringField(22)
+  sourceUploadUrl = _messages.StringField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  timeout = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
+  versionId = _messages.IntegerField(27)
+  vpcConnector = _messages.StringField(28)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 29)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -632,10 +635,14 @@ class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)

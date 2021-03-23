@@ -42,24 +42,86 @@ class GoogleCloudResourcesettingsV1SearchSettingValuesResponse(_messages.Message
 
 
 class GoogleCloudResourcesettingsV1Setting(_messages.Message):
-  r"""The schema for setting values. At a given Cloud resource, a setting can
-  parent at most one setting value.
+  r"""The schema for settings.
+
+  Enums:
+    DataTypeValueValuesEnum: Output only. The data type for this setting.
+
+  Fields:
+    dataType: Output only. The data type for this setting.
+    defaultValue: Output only. The value provided by Setting.effective_value
+      if no setting value is explicitly set. Note: not all settings have a
+      default value.
+    description: Output only. A detailed description of what this setting
+      does.
+    displayName: Output only. The human readable name for this setting.
+    effectiveValue: Output only. The computed effective value of the setting
+      at the given parent resource (based on the resource hierarchy). The
+      effective value evaluates to one of the following options in the given
+      order (the next option is used if the previous one does not exist): 1.
+      the local setting value on the given resource: Setting.local_value 2. if
+      one of the given resource's ancestors have a local setting value, the
+      local value at the nearest such ancestor 3. the setting's default value:
+      SettingMetadata.default_value 4. an empty value (defined as a `Value`
+      with all fields unset) The data type of Value must always be consistent
+      with the data type defined in Setting.metadata.
+    etag: A fingerprint used for optimistic concurrency. See UpdateSetting for
+      more details.
+    localValue: The configured value of the setting at the given parent
+      resource (ignoring the resource hierarchy). The data type of Value must
+      always be consistent with the data type defined in Setting.metadata.
+    metadata: Output only. Metadata about a setting which is not editable by
+      the end user.
+    name: The resource name of the setting. Must be in one of the following
+      forms: * `projects/{project_number}/settings/{setting_name}` *
+      `folders/{folder_id}/settings/{setting_name}` *
+      `organizations/{organization_id}/settings/{setting_name}` For example,
+      "/projects/123/settings/gcp-enableMyFeature"
+    readOnly: Output only. A flag indicating that values of this setting
+      cannot be modified (see documentation of the specific setting for
+      updates and reasons).
+  """
+
+  class DataTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The data type for this setting.
+
+    Values:
+      DATA_TYPE_UNSPECIFIED: Unspecified data type.
+      BOOLEAN: A boolean setting.
+      STRING: A string setting.
+      STRING_SET: A string set setting.
+      ENUM_VALUE: A Enum setting
+    """
+    DATA_TYPE_UNSPECIFIED = 0
+    BOOLEAN = 1
+    STRING = 2
+    STRING_SET = 3
+    ENUM_VALUE = 4
+
+  dataType = _messages.EnumField('DataTypeValueValuesEnum', 1)
+  defaultValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  effectiveValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 5)
+  etag = _messages.StringField(6)
+  localValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 7)
+  metadata = _messages.MessageField('GoogleCloudResourcesettingsV1SettingMetadata', 8)
+  name = _messages.StringField(9)
+  readOnly = _messages.BooleanField(10)
+
+
+class GoogleCloudResourcesettingsV1SettingMetadata(_messages.Message):
+  r"""Metadata about a setting which is not editable by the end user.
 
   Enums:
     DataTypeValueValuesEnum: The data type for this setting.
 
   Fields:
     dataType: The data type for this setting.
-    defaultValue: The value received by LookupEffectiveSettingValue if no
-      setting value is explicitly set. Note: not all settings have a default
-      value.
+    defaultValue: The value provided by Setting.effective_value if no setting
+      value is explicitly set. Note: not all settings have a default value.
     description: A detailed description of what this setting does.
     displayName: The human readable name for this setting.
-    name: The resource name of the setting. Must be in one of the following
-      forms: * `projects/{project_number}/settings/{setting_name}` *
-      `folders/{folder_id}/settings/{setting_name}` *
-      `organizations/{organization_id}/settings/{setting_name}` For example,
-      "/projects/123/settings/gcp-enableMyFeature"
     readOnly: A flag indicating that values of this setting cannot be modified
       (see documentation of the specific setting for updates and reasons).
   """
@@ -84,8 +146,7 @@ class GoogleCloudResourcesettingsV1Setting(_messages.Message):
   defaultValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 2)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  readOnly = _messages.BooleanField(6)
+  readOnly = _messages.BooleanField(5)
 
 
 class GoogleCloudResourcesettingsV1SettingValue(_messages.Message):
@@ -147,8 +208,8 @@ class GoogleCloudResourcesettingsV1ValueEnumValue(_messages.Message):
 
 class GoogleCloudResourcesettingsV1ValueStringSet(_messages.Message):
   r"""A string set value that can hold a set of strings. The maximum length of
-  each string is 60 characters and there can be a maximum of 50 strings in the
-  string set.
+  each string is 200 characters and there can be a maximum of 50 strings in
+  the string set.
 
   Fields:
     values: The strings in the set
@@ -178,6 +239,39 @@ class ResourcesettingsFoldersSettingsDeleteValueRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ResourcesettingsFoldersSettingsGetRequest(_messages.Message):
+  r"""A ResourcesettingsFoldersSettingsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: The SettingView for this request.
+
+  Fields:
+    name: Required. The name of the setting to get. See Setting for naming
+      requirements.
+    view: The SettingView for this request.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The SettingView for this request.
+
+    Values:
+      SETTING_VIEW_UNSPECIFIED: The default / unset value. The API will
+        default to the SETTING_VIEW_BASIC view.
+      SETTING_VIEW_BASIC: Include Setting.metadata, but nothing else. This is
+        the default value (for both ListSettings and GetSetting).
+      SETTING_VIEW_EFFECTIVE_VALUE: Include Setting.effective_value, but
+        nothing else.
+      SETTING_VIEW_LOCAL_VALUE: Include Setting.local_value, but nothing else.
+    """
+    SETTING_VIEW_UNSPECIFIED = 0
+    SETTING_VIEW_BASIC = 1
+    SETTING_VIEW_EFFECTIVE_VALUE = 2
+    SETTING_VIEW_LOCAL_VALUE = 3
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
 class ResourcesettingsFoldersSettingsGetValueRequest(_messages.Message):
   r"""A ResourcesettingsFoldersSettingsGetValueRequest object.
 
@@ -192,6 +286,9 @@ class ResourcesettingsFoldersSettingsGetValueRequest(_messages.Message):
 class ResourcesettingsFoldersSettingsListRequest(_messages.Message):
   r"""A ResourcesettingsFoldersSettingsListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: The SettingView for this request.
+
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
@@ -199,11 +296,30 @@ class ResourcesettingsFoldersSettingsListRequest(_messages.Message):
       one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
       `organizations/{organization_id}`
+    view: The SettingView for this request.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The SettingView for this request.
+
+    Values:
+      SETTING_VIEW_UNSPECIFIED: The default / unset value. The API will
+        default to the SETTING_VIEW_BASIC view.
+      SETTING_VIEW_BASIC: Include Setting.metadata, but nothing else. This is
+        the default value (for both ListSettings and GetSetting).
+      SETTING_VIEW_EFFECTIVE_VALUE: Include Setting.effective_value, but
+        nothing else.
+      SETTING_VIEW_LOCAL_VALUE: Include Setting.local_value, but nothing else.
+    """
+    SETTING_VIEW_UNSPECIFIED = 0
+    SETTING_VIEW_BASIC = 1
+    SETTING_VIEW_EFFECTIVE_VALUE = 2
+    SETTING_VIEW_LOCAL_VALUE = 3
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class ResourcesettingsFoldersSettingsSearchRequest(_messages.Message):
@@ -282,6 +398,39 @@ class ResourcesettingsOrganizationsSettingsDeleteValueRequest(_messages.Message)
   name = _messages.StringField(1, required=True)
 
 
+class ResourcesettingsOrganizationsSettingsGetRequest(_messages.Message):
+  r"""A ResourcesettingsOrganizationsSettingsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: The SettingView for this request.
+
+  Fields:
+    name: Required. The name of the setting to get. See Setting for naming
+      requirements.
+    view: The SettingView for this request.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The SettingView for this request.
+
+    Values:
+      SETTING_VIEW_UNSPECIFIED: The default / unset value. The API will
+        default to the SETTING_VIEW_BASIC view.
+      SETTING_VIEW_BASIC: Include Setting.metadata, but nothing else. This is
+        the default value (for both ListSettings and GetSetting).
+      SETTING_VIEW_EFFECTIVE_VALUE: Include Setting.effective_value, but
+        nothing else.
+      SETTING_VIEW_LOCAL_VALUE: Include Setting.local_value, but nothing else.
+    """
+    SETTING_VIEW_UNSPECIFIED = 0
+    SETTING_VIEW_BASIC = 1
+    SETTING_VIEW_EFFECTIVE_VALUE = 2
+    SETTING_VIEW_LOCAL_VALUE = 3
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
 class ResourcesettingsOrganizationsSettingsGetValueRequest(_messages.Message):
   r"""A ResourcesettingsOrganizationsSettingsGetValueRequest object.
 
@@ -296,6 +445,9 @@ class ResourcesettingsOrganizationsSettingsGetValueRequest(_messages.Message):
 class ResourcesettingsOrganizationsSettingsListRequest(_messages.Message):
   r"""A ResourcesettingsOrganizationsSettingsListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: The SettingView for this request.
+
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
@@ -303,11 +455,30 @@ class ResourcesettingsOrganizationsSettingsListRequest(_messages.Message):
       one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
       `organizations/{organization_id}`
+    view: The SettingView for this request.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The SettingView for this request.
+
+    Values:
+      SETTING_VIEW_UNSPECIFIED: The default / unset value. The API will
+        default to the SETTING_VIEW_BASIC view.
+      SETTING_VIEW_BASIC: Include Setting.metadata, but nothing else. This is
+        the default value (for both ListSettings and GetSetting).
+      SETTING_VIEW_EFFECTIVE_VALUE: Include Setting.effective_value, but
+        nothing else.
+      SETTING_VIEW_LOCAL_VALUE: Include Setting.local_value, but nothing else.
+    """
+    SETTING_VIEW_UNSPECIFIED = 0
+    SETTING_VIEW_BASIC = 1
+    SETTING_VIEW_EFFECTIVE_VALUE = 2
+    SETTING_VIEW_LOCAL_VALUE = 3
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class ResourcesettingsOrganizationsSettingsSearchRequest(_messages.Message):
@@ -386,6 +557,39 @@ class ResourcesettingsProjectsSettingsDeleteValueRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ResourcesettingsProjectsSettingsGetRequest(_messages.Message):
+  r"""A ResourcesettingsProjectsSettingsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: The SettingView for this request.
+
+  Fields:
+    name: Required. The name of the setting to get. See Setting for naming
+      requirements.
+    view: The SettingView for this request.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The SettingView for this request.
+
+    Values:
+      SETTING_VIEW_UNSPECIFIED: The default / unset value. The API will
+        default to the SETTING_VIEW_BASIC view.
+      SETTING_VIEW_BASIC: Include Setting.metadata, but nothing else. This is
+        the default value (for both ListSettings and GetSetting).
+      SETTING_VIEW_EFFECTIVE_VALUE: Include Setting.effective_value, but
+        nothing else.
+      SETTING_VIEW_LOCAL_VALUE: Include Setting.local_value, but nothing else.
+    """
+    SETTING_VIEW_UNSPECIFIED = 0
+    SETTING_VIEW_BASIC = 1
+    SETTING_VIEW_EFFECTIVE_VALUE = 2
+    SETTING_VIEW_LOCAL_VALUE = 3
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
 class ResourcesettingsProjectsSettingsGetValueRequest(_messages.Message):
   r"""A ResourcesettingsProjectsSettingsGetValueRequest object.
 
@@ -400,6 +604,9 @@ class ResourcesettingsProjectsSettingsGetValueRequest(_messages.Message):
 class ResourcesettingsProjectsSettingsListRequest(_messages.Message):
   r"""A ResourcesettingsProjectsSettingsListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: The SettingView for this request.
+
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
@@ -407,11 +614,30 @@ class ResourcesettingsProjectsSettingsListRequest(_messages.Message):
       one of the following forms: * `projects/{project_number}` *
       `projects/{project_id}` * `folders/{folder_id}` *
       `organizations/{organization_id}`
+    view: The SettingView for this request.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The SettingView for this request.
+
+    Values:
+      SETTING_VIEW_UNSPECIFIED: The default / unset value. The API will
+        default to the SETTING_VIEW_BASIC view.
+      SETTING_VIEW_BASIC: Include Setting.metadata, but nothing else. This is
+        the default value (for both ListSettings and GetSetting).
+      SETTING_VIEW_EFFECTIVE_VALUE: Include Setting.effective_value, but
+        nothing else.
+      SETTING_VIEW_LOCAL_VALUE: Include Setting.local_value, but nothing else.
+    """
+    SETTING_VIEW_UNSPECIFIED = 0
+    SETTING_VIEW_BASIC = 1
+    SETTING_VIEW_EFFECTIVE_VALUE = 2
+    SETTING_VIEW_LOCAL_VALUE = 3
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class ResourcesettingsProjectsSettingsSearchRequest(_messages.Message):

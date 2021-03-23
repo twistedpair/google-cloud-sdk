@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -812,6 +812,17 @@
         }
       }
     },
+    "UpdateShieldedInstanceConfigRequest": {
+      "id": "UpdateShieldedInstanceConfigRequest",
+      "description": "Request for updating the Shielded Instance config for a notebook instance. You can only use this method on a stopped instance",
+      "type": "object",
+      "properties": {
+        "shieldedInstanceConfig": {
+          "description": "ShieldedInstance configuration to be updated.",
+          "$ref": "ShieldedInstanceConfig"
+        }
+      }
+    },
     "SetInstanceLabelsRequest": {
       "id": "SetInstanceLabelsRequest",
       "description": "Request for setting instance labels.",
@@ -1465,18 +1476,18 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The standard list filter.",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The standard list page size.",
+                  "description": "The maximum number of results to return. If not set, the service will select a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "The standard list page token.",
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1822,6 +1833,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates the machine type of a single Instance."
+                },
+                "updateShieldedInstanceConfig": {
+                  "id": "notebooks.projects.locations.instances.updateShieldedInstanceConfig",
+                  "path": "v1/{+name}:updateShieldedInstanceConfig",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:updateShieldedInstanceConfig",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UpdateShieldedInstanceConfigRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the Shielded instance configuration of a single Instance."
                 },
                 "setLabels": {
                   "id": "notebooks.projects.locations.instances.setLabels",

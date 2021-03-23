@@ -207,7 +207,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. This lets you the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. You cannot retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -552,7 +552,7 @@
       "type": "object",
       "properties": {
         "namespaceUrl": {
-          "description": "The fully qualified URL of the namespace associated with the zone. This should be formatted like https:\/\/servicedirectory.googleapis.com\/v1\/projects\/{project}\/locations\/{location}\/namespaces\/{namespace}",
+          "description": "The fully qualified URL of the namespace associated with the zone. Format must be https:\/\/servicedirectory.googleapis.com\/v1\/projects\/{project}\/locations\/{location}\/namespaces\/{namespace}",
           "type": "string"
         },
         "deletionTime": {
@@ -643,7 +643,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your pagination token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a \"snapshot\" of collections larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your pagination token. This lets you retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. You cannot retrieve a \"snapshot\" of collections larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -783,7 +783,7 @@
     },
     "Project": {
       "id": "Project",
-      "description": "A project resource. The project is a top level container for resources including Cloud DNS ManagedZones. Projects can be created only in the APIs console.",
+      "description": "A project resource. The project is a top level container for resources including Cloud DNS ManagedZones. Projects can be created only in the APIs console. Next tag: 7.",
       "type": "object",
       "properties": {
         "number": {
@@ -990,7 +990,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. This lets you retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. You cannot retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -1014,7 +1014,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. This lets you the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. You cannot retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -1143,7 +1143,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. This lets you the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. You cannot retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         },
         "kind": {
@@ -1237,7 +1237,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. This lets you the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. You cannot retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         }
       }
@@ -1329,7 +1329,7 @@
           }
         },
         "nextPageToken": {
-          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. In this way you can retrieve the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. There is no way to retrieve a consistent snapshot of a collection larger than the maximum page size.",
+          "description": "The presence of this field indicates that there exist more results following your last page of results in pagination order. To fetch them, make another list request using this value as your page token. This lets you the complete contents of even very large collections one page at a time. However, if the contents of the collection change between the first and last paginated list request, the set of all elements returned are an inconsistent view of the collection. You cannot retrieve a consistent snapshot of a collection larger than the maximum page size.",
           "type": "string"
         }
       }
@@ -1464,7 +1464,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Enumerate PeeringZones that target a given network through DNS peering."
+          "description": "Enumerates PeeringZones that target a given network through DNS peering."
         },
         "getPeeringZoneInfo": {
           "id": "dns.activePeeringZones.getPeeringZoneInfo",
@@ -1504,7 +1504,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Fetch the representation of an existing PeeringZone."
+          "description": "Fetches the representation of an existing PeeringZone."
         },
         "deactivate": {
           "id": "dns.activePeeringZones.deactivate",
@@ -1542,7 +1542,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Deactivate a Peering Zone if it's not already deactivated. Returns an error if the managed zone cannot be found, is not a peering zone. If the zone is already deactivated, returns false for deactivate_succeeded field."
+          "description": "Deactivates a Peering Zone if it's not already deactivated. Returns an error if the managed zone cannot be found, is not a peering zone. If the zone is already deactivated, returns false for deactivate_succeeded field."
         }
       }
     },
@@ -1749,7 +1749,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Fetch the representation of an existing DnsKey."
+          "description": "Fetches the representation of an existing DnsKey."
         },
         "list": {
           "id": "dns.dnsKeys.list",
@@ -1799,7 +1799,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Enumerate DnsKeys to a ResourceRecordSet collection."
+          "description": "Enumerates DnsKeys to a ResourceRecordSet collection."
         }
       }
     },
@@ -1835,7 +1835,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Fetch the representation of an existing Project."
+          "description": "Fetches the representation of an existing Project."
         }
       }
       ,
@@ -1882,7 +1882,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
                   ],
-                  "description": "Create a new ResourceRecordSet."
+                  "description": "Creates a new ResourceRecordSet."
                 },
                 "get": {
                   "id": "dns.projects.managedZones.rrsets.get",
@@ -1935,7 +1935,7 @@
                     "https://www.googleapis.com/auth/ndev.clouddns.readonly",
                     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
                   ],
-                  "description": "Fetch the representation of an existing ResourceRecordSet."
+                  "description": "Fetches the representation of an existing ResourceRecordSet."
                 },
                 "delete": {
                   "id": "dns.projects.managedZones.rrsets.delete",
@@ -1983,7 +1983,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
                   ],
-                  "description": "Delete a previously created ResourceRecordSet."
+                  "description": "Deletes a previously created ResourceRecordSet."
                 },
                 "patch": {
                   "id": "dns.projects.managedZones.rrsets.patch",
@@ -2037,7 +2037,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
                   ],
-                  "description": "Apply a partial update to an existing ResourceRecordSet."
+                  "description": "Applies a partial update to an existing ResourceRecordSet."
                 }
               }
             }
@@ -2187,7 +2187,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Create a new ManagedZone."
+          "description": "Creates a new ManagedZone."
         },
         "get": {
           "id": "dns.managedZones.get",
@@ -2226,7 +2226,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Fetch the representation of an existing ManagedZone."
+          "description": "Fetches the representation of an existing ManagedZone."
         },
         "list": {
           "id": "dns.managedZones.list",
@@ -2269,7 +2269,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Enumerate ManagedZones that have been created but not yet deleted."
+          "description": "Enumerates ManagedZones that have been created but not yet deleted."
         },
         "delete": {
           "id": "dns.managedZones.delete",
@@ -2303,7 +2303,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Delete a previously created ManagedZone."
+          "description": "Deletes a previously created ManagedZone."
         },
         "patch": {
           "id": "dns.managedZones.patch",
@@ -2343,7 +2343,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Apply a partial update to an existing ManagedZone."
+          "description": "Applies a partial update to an existing ManagedZone."
         },
         "update": {
           "id": "dns.managedZones.update",
@@ -2383,7 +2383,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Update an existing ManagedZone."
+          "description": "Updates an existing ManagedZone."
         }
       }
     },
@@ -2571,7 +2571,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Apply a partial update to an existing Policy."
+          "description": "Applies a partial update to an existing Policy."
         },
         "update": {
           "id": "dns.policies.update",
@@ -2611,7 +2611,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Update an existing Policy."
+          "description": "Updates an existing Policy."
         }
       }
     },
@@ -2687,7 +2687,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Fetch the representation of an existing Response Policy."
+          "description": "Fetches the representation of an existing Response Policy."
         },
         "list": {
           "id": "dns.responsePolicies.list",
@@ -2725,7 +2725,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Enumerate all Response Policies associated with a project."
+          "description": "Enumerates all Response Policies associated with a project."
         },
         "delete": {
           "id": "dns.responsePolicies.delete",
@@ -2759,7 +2759,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Delete a previously created Response Policy. Fails if the response policy is non-empty or still being referenced by a network."
+          "description": "Deletes a previously created Response Policy. Fails if the response policy is non-empty or still being referenced by a network."
         },
         "patch": {
           "id": "dns.responsePolicies.patch",
@@ -2799,7 +2799,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Apply a partial update to an existing Response Policy."
+          "description": "Applies a partial update to an existing Response Policy."
         },
         "update": {
           "id": "dns.responsePolicies.update",
@@ -2839,7 +2839,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Update an existing Response Policy."
+          "description": "Updates an existing Response Policy."
         }
       }
     },
@@ -2929,7 +2929,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Fetch the representation of an existing Response Policy Rule."
+          "description": "Fetches the representation of an existing Response Policy Rule."
         },
         "delete": {
           "id": "dns.responsePolicyRules.delete",
@@ -2970,7 +2970,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Delete a previously created Response Policy Rule."
+          "description": "Deletes a previously created Response Policy Rule."
         },
         "list": {
           "id": "dns.responsePolicyRules.list",
@@ -3015,7 +3015,7 @@
             "https://www.googleapis.com/auth/ndev.clouddns.readonly",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Enumerate all Response Policy Rules associated with a project."
+          "description": "Enumerates all Response Policy Rules associated with a project."
         },
         "patch": {
           "id": "dns.responsePolicyRules.patch",
@@ -3062,7 +3062,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Apply a partial update to an existing Response Policy Rule."
+          "description": "Applies a partial update to an existing Response Policy Rule."
         },
         "update": {
           "id": "dns.responsePolicyRules.update",
@@ -3109,7 +3109,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/ndev.clouddns.readwrite"
           ],
-          "description": "Update an existing Response Policy Rule."
+          "description": "Updates an existing Response Policy Rule."
         }
       }
     }

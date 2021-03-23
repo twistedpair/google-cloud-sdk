@@ -192,25 +192,25 @@ class CDNPolicy(_messages.Message):
     defaultTtl: Optional. Specifies the default TTL for cached content served
       by this origin for responses that do not have an existing valid TTL
       (max-age or s-max-age). Defaults to 3600s (1 hour). - The TTL must be >=
-      0 and <= 2592000s (1 month) - Setting a TTL of "0" means "always
-      revalidate" (equivalent to must-revalidate) - The value of defaultTTL
-      cannot be set to a value greater than that of maxTTL. - Fractions of a
-      second are not allowed. - When the cacheMode is set to FORCE_CACHE_ALL,
-      the defaultTTL will overwrite the TTL set in all responses. Note that
-      infrequently accessed objects may be evicted from the cache before the
-      defined TTL. Objects that expire will be revalidated with the origin.
-      When the cache mode is set to "USE_ORIGIN_HEADERS" or "BYPASS_CACHE",
-      you must omit this field.
+      0 and <= 31,536,000 seconds (1 year) - Setting a TTL of "0" means
+      "always revalidate" (equivalent to must-revalidate) - The value of
+      defaultTTL cannot be set to a value greater than that of maxTTL. -
+      Fractions of a second are not allowed. - When the cacheMode is set to
+      FORCE_CACHE_ALL, the defaultTTL will overwrite the TTL set in all
+      responses. Note that infrequently accessed objects may be evicted from
+      the cache before the defined TTL. Objects that expire will be
+      revalidated with the origin. When the cache mode is set to
+      "USE_ORIGIN_HEADERS" or "BYPASS_CACHE", you must omit this field.
     maxTtl: Optional. Specifies the maximum allowed TTL for cached content
       served by this origin. Defaults to 86400s (1 day). Cache directives that
       attempt to set a max-age or s-maxage higher than this, or an Expires
       header more than maxTtl seconds in the future will be capped at the
       value of maxTTL, as if it were the value of an s-maxage Cache-Control
-      directive. - The TTL must be >= 0 and <= 2592000s (1 month) - Setting a
-      TTL of "0" means "always revalidate" - The value of maxTtl must be equal
-      to or greater than defaultTtl. - Fractions of a second are not allowed.
-      When the cache mode is set to "USE_ORIGIN_HEADERS", "FORCE_CACHE_ALL",
-      or "BYPASS_CACHE", you must omit this field.
+      directive. - The TTL must be >= 0 and <= 31,536,000 seconds (1 year) -
+      Setting a TTL of "0" means "always revalidate" - The value of maxTtl
+      must be equal to or greater than defaultTtl. - Fractions of a second are
+      not allowed. When the cache mode is set to "USE_ORIGIN_HEADERS",
+      "FORCE_CACHE_ALL", or "BYPASS_CACHE", you must omit this field.
     negativeCaching: Optional. Negative caching allows per-status code TTLs to
       be set, in order to apply fine-grained caching for common errors or
       redirects. This can reduce the load on your origin and improve end-user
@@ -413,11 +413,11 @@ class CacheKeyPolicy(_messages.Message):
       cache keys. The value of the header field will be used as part of the
       cache key. - Header names must be valid HTTP RFC 7230 header field
       values. - Header field names are case insensitive - You may specify up
-      to five header names. - To include the HTTP method, use ":method" Note
-      that specifying several headers, and/or headers that have a large range
-      of values (e.g. per-user) will dramatically impact the cache hit rate,
-      and may result in a higher eviction rate and reduced performance. You
-      may specify up to 5 header names.
+      to five header names. - To include the HTTP method, use ":method" Refer
+      to the documentation for the allowed list of header names. range of
+      values (e.g. per-user) will dramatically impact the cache hit rate, and
+      may result in a higher eviction rate and reduced performance. You may
+      specify up to 5 header names.
     includedQueryParameters: Optional. Names of query string parameters to
       include in cache keys. All other parameters will be excluded. Either
       specify includedQueryParameters or excludedQueryParameters, not both.
@@ -2087,10 +2087,14 @@ class NetworkservicesProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -2476,10 +2480,9 @@ class PublicKey(_messages.Message):
   r"""An Ed25519 public key used for validating signed requests.
 
   Fields:
-    id: Required. The ID of the public key. The ID must be 1-63 characters
-      long, and comply with RFC1035. The name must be 1-64 characters long,
-      and match the regular expression a-zA-Z* which means the first character
-      must be a letter, and all following characters must be a dash,
+    id: Required. The ID of the public key. The ID must be 1-64 characters
+      long, and match the regular expression a-zA-Z* which means the first
+      character must be a letter, and all following characters must be a dash,
       underscore, letter or digit.
     value: Required. The base64-encoded value of the Ed25519 public key. The
       base64 encoding can be padded (44 bytes) or unpadded (43 bytes).
@@ -2590,6 +2593,9 @@ class Router(_messages.Message):
   responsible for forwarding traffic and applying policies. For example, it
   could be a load balancer, sidecar proxy or a GRPC client.
 
+  Enums:
+    TypeValueValuesEnum: Required. The type of the Router resource.
+
   Messages:
     LabelsValue: Optional. Set of label tags associated with the Router
       resource.
@@ -2601,8 +2607,27 @@ class Router(_messages.Message):
     labels: Optional. Set of label tags associated with the Router resource.
     name: Required. Name of the Router resource. It matches pattern
       `projects/*/locations/global/routers/`.
+    network: Optional. The reference to the VPC network that is using this
+      configuration. Currently only the short name (network name) is
+      supported, for example "default", and we assume it is under the same
+      project as the resource by default.
+    routes: Optional. List of references to routes that this Router must be
+      able to route traffic for. Example:
+      projects/12345/locations/global/grpcRoutes/myGrpcRoute
+    type: Required. The type of the Router resource.
     updateTime: Output only. The timestamp when the resource was updated.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the Router resource.
+
+    Values:
+      TYPE_UNSPECIFIED: The type of Router is unspecified.
+      PROXYLESS_GRPC: The Router is used in Proxyless gRPC model. Routes being
+        referenced must be gRPC routes for this type.
+    """
+    TYPE_UNSPECIFIED = 0
+    PROXYLESS_GRPC = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2632,7 +2657,10 @@ class Router(_messages.Message):
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  network = _messages.StringField(5)
+  routes = _messages.StringField(6, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class Routing(_messages.Message):

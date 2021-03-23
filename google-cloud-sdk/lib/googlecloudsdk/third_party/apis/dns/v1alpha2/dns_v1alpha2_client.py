@@ -63,7 +63,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Deactivate(self, request, global_params=None):
-      r"""Deactivate a Peering Zone if it's not already deactivated. Returns an error if the managed zone cannot be found, is not a peering zone. If the zone is already deactivated, returns false for deactivate_succeeded field.
+      r"""Deactivates a Peering Zone if it's not already deactivated. Returns an error if the managed zone cannot be found, is not a peering zone. If the zone is already deactivated, returns false for deactivate_succeeded field.
 
       Args:
         request: (DnsActivePeeringZonesDeactivateRequest) input message
@@ -89,7 +89,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def GetPeeringZoneInfo(self, request, global_params=None):
-      r"""Fetch the representation of an existing PeeringZone.
+      r"""Fetches the representation of an existing PeeringZone.
 
       Args:
         request: (DnsActivePeeringZonesGetPeeringZoneInfoRequest) input message
@@ -115,7 +115,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate PeeringZones that target a given network through DNS peering.
+      r"""Enumerates PeeringZones that target a given network through DNS peering.
 
       Args:
         request: (DnsActivePeeringZonesListRequest) input message
@@ -239,7 +239,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing DnsKey.
+      r"""Fetches the representation of an existing DnsKey.
 
       Args:
         request: (DnsDnsKeysGetRequest) input message
@@ -265,7 +265,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate DnsKeys to a ResourceRecordSet collection.
+      r"""Enumerates DnsKeys to a ResourceRecordSet collection.
 
       Args:
         request: (DnsDnsKeysListRequest) input message
@@ -363,7 +363,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a new ManagedZone.
+      r"""Creates a new ManagedZone.
 
       Args:
         request: (DnsManagedZonesCreateRequest) input message
@@ -389,7 +389,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a previously created ManagedZone.
+      r"""Deletes a previously created ManagedZone.
 
       Args:
         request: (DnsManagedZonesDeleteRequest) input message
@@ -415,7 +415,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing ManagedZone.
+      r"""Fetches the representation of an existing ManagedZone.
 
       Args:
         request: (DnsManagedZonesGetRequest) input message
@@ -441,7 +441,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate ManagedZones that have been created but not yet deleted.
+      r"""Enumerates ManagedZones that have been created but not yet deleted.
 
       Args:
         request: (DnsManagedZonesListRequest) input message
@@ -467,7 +467,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Apply a partial update to an existing ManagedZone.
+      r"""Applies a partial update to an existing ManagedZone.
 
       Args:
         request: (DnsManagedZonesPatchRequest) input message
@@ -493,7 +493,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Update an existing ManagedZone.
+      r"""Updates an existing ManagedZone.
 
       Args:
         request: (DnsManagedZonesUpdateRequest) input message
@@ -633,7 +633,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Apply a partial update to an existing Policy.
+      r"""Applies a partial update to an existing Policy.
 
       Args:
         request: (DnsPoliciesPatchRequest) input message
@@ -659,7 +659,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Update an existing Policy.
+      r"""Updates an existing Policy.
 
       Args:
         request: (DnsPoliciesUpdateRequest) input message
@@ -695,7 +695,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a new ResourceRecordSet.
+      r"""Creates a new ResourceRecordSet.
 
       Args:
         request: (DnsProjectsManagedZonesRrsetsCreateRequest) input message
@@ -721,7 +721,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a previously created ResourceRecordSet.
+      r"""Deletes a previously created ResourceRecordSet.
 
       Args:
         request: (DnsProjectsManagedZonesRrsetsDeleteRequest) input message
@@ -747,7 +747,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing ResourceRecordSet.
+      r"""Fetches the representation of an existing ResourceRecordSet.
 
       Args:
         request: (DnsProjectsManagedZonesRrsetsGetRequest) input message
@@ -773,7 +773,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Apply a partial update to an existing ResourceRecordSet.
+      r"""Applies a partial update to an existing ResourceRecordSet.
 
       Args:
         request: (DnsProjectsManagedZonesRrsetsPatchRequest) input message
@@ -819,7 +819,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing Project.
+      r"""Fetches the representation of an existing Project.
 
       Args:
         request: (DnsProjectsGetRequest) input message
@@ -917,7 +917,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a previously created Response Policy. Fails if the response policy is non-empty or still being referenced by a network.
+      r"""Deletes a previously created Response Policy. Fails if the response policy is non-empty or still being referenced by a network.
 
       Args:
         request: (DnsResponsePoliciesDeleteRequest) input message
@@ -943,7 +943,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing Response Policy.
+      r"""Fetches the representation of an existing Response Policy.
 
       Args:
         request: (DnsResponsePoliciesGetRequest) input message
@@ -969,7 +969,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate all Response Policies associated with a project.
+      r"""Enumerates all Response Policies associated with a project.
 
       Args:
         request: (DnsResponsePoliciesListRequest) input message
@@ -995,7 +995,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Apply a partial update to an existing Response Policy.
+      r"""Applies a partial update to an existing Response Policy.
 
       Args:
         request: (DnsResponsePoliciesPatchRequest) input message
@@ -1021,7 +1021,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Update an existing Response Policy.
+      r"""Updates an existing Response Policy.
 
       Args:
         request: (DnsResponsePoliciesUpdateRequest) input message
@@ -1083,7 +1083,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a previously created Response Policy Rule.
+      r"""Deletes a previously created Response Policy Rule.
 
       Args:
         request: (DnsResponsePolicyRulesDeleteRequest) input message
@@ -1109,7 +1109,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Fetch the representation of an existing Response Policy Rule.
+      r"""Fetches the representation of an existing Response Policy Rule.
 
       Args:
         request: (DnsResponsePolicyRulesGetRequest) input message
@@ -1135,7 +1135,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Enumerate all Response Policy Rules associated with a project.
+      r"""Enumerates all Response Policy Rules associated with a project.
 
       Args:
         request: (DnsResponsePolicyRulesListRequest) input message
@@ -1161,7 +1161,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Apply a partial update to an existing Response Policy Rule.
+      r"""Applies a partial update to an existing Response Policy Rule.
 
       Args:
         request: (DnsResponsePolicyRulesPatchRequest) input message
@@ -1187,7 +1187,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Update an existing Response Policy Rule.
+      r"""Updates an existing Response Policy Rule.
 
       Args:
         request: (DnsResponsePolicyRulesUpdateRequest) input message

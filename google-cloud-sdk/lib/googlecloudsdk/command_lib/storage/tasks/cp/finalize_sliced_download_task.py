@@ -27,15 +27,17 @@ import os
 import shutil
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
-from googlecloudsdk.command_lib.storage import util
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 
 def _should_decompress_gzip(source_resource, destination_resource):
   """Checks if file has gzip metadata and is actually gzipped."""
-  if 'gzip' not in getattr(source_resource.metadata, 'contentEncoding', ''):
+  content_encoding = getattr(source_resource.metadata, 'contentEncoding', '')
+  if content_encoding is None or 'gzip' not in content_encoding.split(','):
     return False
   try:
     with gzip.open(destination_resource.storage_url.object_name) as file_stream:
@@ -49,7 +51,8 @@ def _ungzip_file(file_path):
   """Unzips gzip file."""
   temporary_file_path = file_path + '.tmp'
   with gzip.open(file_path, 'rb') as gzipped_file:
-    with files.BinaryFileWriter(temporary_file_path) as ungzipped_file:
+    with files.BinaryFileWriter(
+        temporary_file_path, create_path=True) as ungzipped_file:
       shutil.copyfileobj(gzipped_file, ungzipped_file)
   shutil.move(temporary_file_path, file_path)
 
@@ -77,23 +80,26 @@ class FinalizeSlicedDownloadTask(task.Task):
         self._destination_resource.storage_url,
         tracker_file_util.TrackerFileType.SLICED_DOWNLOAD)
 
-    # Validate final product of sliced download.
-    # TODO(b/181340192): See if sharing and concating task hashes is faster.
-    with files.BinaryFileReader(
-        self._destination_resource.storage_url.object_name) as downloaded_file:
-      # TODO(b/172048376): Test other hash algorithms.
-      downloaded_file_hash_object = util.get_hash_from_file_stream(
-          downloaded_file, util.HashAlgorithms.MD5)
+    if (properties.VALUES.storage.check_hashes.Get() != 'never' and
+        self._source_resource.md5_hash):
+      # Validate final product of sliced download.
+      # TODO(b/181340192): See if sharing and concating task hashes is faster.
+      with files.BinaryFileReader(self._destination_resource.storage_url
+                                  .object_name) as downloaded_file:
+        # TODO(b/172048376): Test other hash algorithms.
+        downloaded_file_hash_object = hash_util.get_hash_from_file_stream(
+            downloaded_file, hash_util.HashAlgorithm.MD5)
 
-    downloaded_file_hash_digest = util.get_base64_hash_digest_string(
-        downloaded_file_hash_object)
-    try:
-      util.validate_object_hashes_match(self._destination_resource.storage_url,
-                                        self._source_resource.md5_hash,
-                                        downloaded_file_hash_digest)
-    except errors.HashMismatchError:
-      os.remove(self._destination_resource.storage_url.object_name)
-      raise
+      downloaded_file_hash_digest = hash_util.get_base64_hash_digest_string(
+          downloaded_file_hash_object)
+
+      try:
+        hash_util.validate_object_hashes_match(
+            self._destination_resource.storage_url,
+            self._source_resource.md5_hash, downloaded_file_hash_digest)
+      except errors.HashMismatchError:
+        os.remove(self._destination_resource.storage_url.object_name)
+        raise
 
     if _should_decompress_gzip(self._source_resource,
                                self._destination_resource):

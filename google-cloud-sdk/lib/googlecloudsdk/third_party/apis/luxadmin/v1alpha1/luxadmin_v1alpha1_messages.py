@@ -198,8 +198,12 @@ class Cluster(_messages.Message):
     labels: The resource labels to use to annotate any related underlying
       cluster resources. An object containing a list of "key": "value" pairs.
       Example: `{ "name": "wrench", "mass": "1.3kg", "count": "3" }`.
-    name: The name of this cluster, in the form of
-      projects/{project}/locations/{location}/clusters/{cluster_id}
+    name: The name of the cluster resource with the format: *
+      projects/{project}/locations/{region}/clusters/{cluster_id} where the
+      cluster ID segment should satisfy the regex expression "[a-z0-9-]+". For
+      more details see https://google.aip.dev/122. The prefix of the cluster
+      resource name is the name of the parent resource: *
+      projects/{project}/locations/{region}
     network: The resource link for the VPC network in which cluster resources
       are created and from which they are accessible via Private IP. The
       network must belong to the same project as the cluster. It is specified
@@ -428,13 +432,17 @@ class Instance(_messages.Message):
     labels: User-provided resource labels, represented as a dictionary where
       each label is a single key value pair. An object containing a list of
       "key": "value" pairs.
-    name: The name of this instance, in the form of projects/{project}/locatio
-      ns/{location}/clusters/{cluster_id}/instances/{instance_id} Note that
-      location is a GCP region.
-    networkConfiguration: The settings for Network / IP Management. This
-      allows to enable/disable public IP, enable/disable SSL and manage which
-      external networks can connect to the instance.
-    readPoolConfiguration: Read pool specific config.
+    name: The name of the instance resource with the format: * projects/{proje
+      ct}/locations/{region}/clusters/{cluster_id}/instances/{instance_id}
+      where the cluster and instance ID segments should satisfy the regex
+      expression "[a-z0-9-]+". For more details see
+      https://google.aip.dev/122. The prefix of the instance resource name is
+      the name of the parent resource: *
+      projects/{project}/locations/{region}/clusters/{cluster_id}
+    networkConfig: The settings for Network / IP Management. This allows to
+      enable/disable public IP, enable/disable SSL and manage which external
+      networks can connect to the instance.
+    readPoolConfig: Read pool specific config.
     state: The current serving state of the instance.
     tier: The tier (or machine type) for this instance, for example *db-
       custom-1-3840* (PostgreSQL instances). Required for new instances and
@@ -560,8 +568,8 @@ class Instance(_messages.Message):
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  networkConfiguration = _messages.MessageField('NetworkConfiguration', 8)
-  readPoolConfiguration = _messages.MessageField('ReadPoolConfiguration', 9)
+  networkConfig = _messages.MessageField('NetworkConfig', 8)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
   tier = _messages.StringField(11)
   updateTime = _messages.StringField(12)
@@ -810,8 +818,10 @@ class LuxadminProjectsLocationsClustersCreateRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    clusterId: A string attribute.
-    parent: A string attribute.
+    clusterId: The ID of the cluster, which should satisfy the regex
+      expression "[a-z0-9-]+".
+    parent: The name of the parent resource. For the required format, see the
+      comment on the Cluster.name field.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -835,7 +845,8 @@ class LuxadminProjectsLocationsClustersDeleteRequest(_messages.Message):
   r"""A LuxadminProjectsLocationsClustersDeleteRequest object.
 
   Fields:
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Cluster.name field.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -859,7 +870,8 @@ class LuxadminProjectsLocationsClustersExportRequest(_messages.Message):
   Fields:
     exportFromClusterRequest: A ExportFromClusterRequest resource to be passed
       as the request body.
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Cluster.name field.
   """
 
   exportFromClusterRequest = _messages.MessageField('ExportFromClusterRequest', 1)
@@ -872,7 +884,8 @@ class LuxadminProjectsLocationsClustersFailoverRequest(_messages.Message):
   Fields:
     failoverClusterRequest: A FailoverClusterRequest resource to be passed as
       the request body.
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Cluster.name field.
   """
 
   failoverClusterRequest = _messages.MessageField('FailoverClusterRequest', 1)
@@ -904,7 +917,8 @@ class LuxadminProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A LuxadminProjectsLocationsClustersGetRequest object.
 
   Fields:
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Cluster.name field.
   """
 
   name = _messages.StringField(1, required=True)
@@ -916,7 +930,8 @@ class LuxadminProjectsLocationsClustersImportRequest(_messages.Message):
   Fields:
     importIntoClusterRequest: A ImportIntoClusterRequest resource to be passed
       as the request body.
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Cluster.name field.
   """
 
   importIntoClusterRequest = _messages.MessageField('ImportIntoClusterRequest', 1)
@@ -928,8 +943,10 @@ class LuxadminProjectsLocationsClustersInstancesCreateRequest(_messages.Message)
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    instanceId: A string attribute.
-    parent: A string attribute.
+    instanceId: The ID of the instance, which should satisfy the regex
+      expression "[a-z0-9-]+".
+    parent: The name of the parent resource. For the required format, see the
+      comment on the Instance.name field.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -953,7 +970,8 @@ class LuxadminProjectsLocationsClustersInstancesDeleteRequest(_messages.Message)
   r"""A LuxadminProjectsLocationsClustersInstancesDeleteRequest object.
 
   Fields:
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Instance.name field.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -975,7 +993,8 @@ class LuxadminProjectsLocationsClustersInstancesGetRequest(_messages.Message):
   r"""A LuxadminProjectsLocationsClustersInstancesGetRequest object.
 
   Fields:
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Instance.name field.
   """
 
   name = _messages.StringField(1, required=True)
@@ -989,7 +1008,11 @@ class LuxadminProjectsLocationsClustersInstancesListRequest(_messages.Message):
     orderBy: A string attribute.
     pageSize: A integer attribute.
     pageToken: A string attribute.
-    parent: A string attribute.
+    parent: The name of the parent resource. For the required format, see the
+      comment on the Instance.name field. Additionally, you can perform an
+      aggregated list operation by specifying a value with one of the
+      following formats: * projects/{project}/locations/-/clusters/- *
+      projects/{project}/locations/{region}/clusters/-
   """
 
   filter = _messages.StringField(1)
@@ -1004,9 +1027,13 @@ class LuxadminProjectsLocationsClustersInstancesPatchRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    name: The name of this instance, in the form of projects/{project}/locatio
-      ns/{location}/clusters/{cluster_id}/instances/{instance_id} Note that
-      location is a GCP region.
+    name: The name of the instance resource with the format: * projects/{proje
+      ct}/locations/{region}/clusters/{cluster_id}/instances/{instance_id}
+      where the cluster and instance ID segments should satisfy the regex
+      expression "[a-z0-9-]+". For more details see
+      https://google.aip.dev/122. The prefix of the instance resource name is
+      the name of the parent resource: *
+      projects/{project}/locations/{region}/clusters/{cluster_id}
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1035,7 +1062,8 @@ class LuxadminProjectsLocationsClustersInstancesRestartRequest(_messages.Message
   r"""A LuxadminProjectsLocationsClustersInstancesRestartRequest object.
 
   Fields:
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Instance.name field.
     restartInstanceRequest: A RestartInstanceRequest resource to be passed as
       the request body.
   """
@@ -1052,7 +1080,10 @@ class LuxadminProjectsLocationsClustersListRequest(_messages.Message):
     orderBy: A string attribute.
     pageSize: A integer attribute.
     pageToken: A string attribute.
-    parent: A string attribute.
+    parent: The name of the parent resource. For the required format, see the
+      comment on the Cluster.name field. Additionally, you can perform an
+      aggregated list operation by specifying a value with the following
+      format: * projects/{project}/locations/-
   """
 
   filter = _messages.StringField(1)
@@ -1067,8 +1098,12 @@ class LuxadminProjectsLocationsClustersPatchRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    name: The name of this cluster, in the form of
-      projects/{project}/locations/{location}/clusters/{cluster_id}
+    name: The name of the cluster resource with the format: *
+      projects/{project}/locations/{region}/clusters/{cluster_id} where the
+      cluster ID segment should satisfy the regex expression "[a-z0-9-]+". For
+      more details see https://google.aip.dev/122. The prefix of the cluster
+      resource name is the name of the parent resource: *
+      projects/{project}/locations/{region}
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1097,7 +1132,8 @@ class LuxadminProjectsLocationsClustersPromoteRequest(_messages.Message):
   r"""A LuxadminProjectsLocationsClustersPromoteRequest object.
 
   Fields:
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Cluster.name field.
     promoteClusterRequest: A PromoteClusterRequest resource to be passed as
       the request body.
   """
@@ -1138,7 +1174,8 @@ class LuxadminProjectsLocationsClustersStartExternalSyncRequest(_messages.Messag
   r"""A LuxadminProjectsLocationsClustersStartExternalSyncRequest object.
 
   Fields:
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Cluster.name field.
     startExternalSyncRequest: A StartExternalSyncRequest resource to be passed
       as the request body.
   """
@@ -1273,7 +1310,8 @@ class LuxadminProjectsLocationsClustersVerifyExternalSyncSettingsRequest(_messag
   object.
 
   Fields:
-    name: A string attribute.
+    name: The name of the resource. For the required format, see the comment
+      on the Cluster.name field.
     verifyExternalSyncSettingsRequest: A VerifyExternalSyncSettingsRequest
       resource to be passed as the request body.
   """
@@ -1296,10 +1334,14 @@ class LuxadminProjectsLocationsListRequest(_messages.Message):
   r"""A LuxadminProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -1357,7 +1399,7 @@ class LuxadminProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class NetworkConfiguration(_messages.Message):
+class NetworkConfig(_messages.Message):
   r"""Network Management configuration.
 
   Fields:
@@ -1597,7 +1639,7 @@ class PromoteClusterRequest(_messages.Message):
   requestId = _messages.StringField(1)
 
 
-class ReadPoolConfiguration(_messages.Message):
+class ReadPoolConfig(_messages.Message):
   r"""Read pool configuration for an instance.
 
   Fields:

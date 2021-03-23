@@ -485,14 +485,6 @@ class Collections(enum.Enum):
       ['project', 'securityPolicy', 'securityPolicyRule'],
       True
   )
-  SERVICEATTACHMENTS = (
-      'serviceAttachments',
-      'projects/{project}/regions/{region}/serviceAttachments/'
-      '{serviceAttachment}',
-      {},
-      ['project', 'region', 'serviceAttachment'],
-      True
-  )
   SNAPSHOTS = (
       'snapshots',
       'projects/{project}/global/snapshots/{snapshot}',

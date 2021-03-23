@@ -235,3 +235,13 @@ def ConfirmPartitionsUpdate(resource_ref, args, request):
       default=True,
       cancel_on_no=True)
   return request
+
+
+def UpdateSkipBacklogField(resource_ref, args, request):
+  # Unused resource reference
+  del resource_ref
+
+  if hasattr(args, 'starting_offset'):
+    request.skipBacklog = (args.starting_offset == 'end')
+
+  return request

@@ -195,8 +195,8 @@ def CreatePersistentAttachedDiskMessages(resources,
     else:
       mode = messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
 
-    boot = disk.get('boot') == 'yes'
-    auto_delete = disk.get('auto-delete') == 'yes'
+    boot = disk.get('boot', False)
+    auto_delete = disk.get('auto-delete', False)
 
     if 'scope' in disk and disk['scope'] == 'regional':
       scope = compute_scopes.ScopeEnum.REGION
@@ -303,9 +303,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
     else:
       mode = messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
 
-    auto_delete_value = disk.get('auto-delete', 'yes')
-    auto_delete = auto_delete_value == 'yes'
-
+    auto_delete = disk.get('auto-delete', True)
     disk_size_gb = utils.BytesToGb(disk.get('size'))
     disk_type = disk.get('type')
     if disk_type:
@@ -388,7 +386,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
       snapshot_key_file = disk.get('source_snapshot_csek')
       if snapshot_key_file:
         initialize_params.snapshotKeyFile = snapshot_key_file
-    boot = disk.get('boot') == 'yes'
+    boot = disk.get('boot', False)
 
     multi_writer = disk.get('multi-writer')
     if support_multi_writer and multi_writer:

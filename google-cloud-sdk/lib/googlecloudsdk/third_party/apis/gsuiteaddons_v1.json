@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://developers.google.com/gsuite/add-ons/guides/alternate-runtimes-overview",
+  "documentationLink": "https://developers.google.com/workspace/add-ons/guides/alternate-runtimes",
   "protocol": "rest",
   "rootUrl": "https://gsuiteaddons.googleapis.com/",
   "mtlsRootUrl": "https://gsuiteaddons.mtls.googleapis.com/",

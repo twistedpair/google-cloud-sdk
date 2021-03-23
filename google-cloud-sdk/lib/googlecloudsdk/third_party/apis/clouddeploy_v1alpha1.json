@@ -103,7 +103,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -280,7 +280,8 @@
           "type": "string"
         },
         "condition": {
-          "description": "Information around the state of the Delivery Pipeline.",
+          "description": "Output only. Information around the state of the Delivery Pipeline.",
+          "readOnly": true,
           "$ref": "PipelineCondition"
         },
         "etag": {
@@ -560,8 +561,12 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "skaffoldConfigUri": {
+          "description": "GCS URI of tar.gz archive containing Skaffold configuration.",
+          "type": "string"
+        },
         "skaffoldConfigPath": {
-          "description": "Tarball location of user's Skaffold file.",
+          "description": "Filepath of the Skaffold config inside of the config URI.",
           "type": "string"
         },
         "buildArtifacts": {
@@ -600,6 +605,14 @@
         "manifestBucket": {
           "description": "GCS bucket to store the rendered manifests. If empty, a bucket will be provided.",
           "type": "string"
+        },
+        "renderedManifests": {
+          "description": "Output only. Map from target ID to GCS path of the rendered manifest for that target.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "renderBuild": {
           "description": "Output only. The resource name of the Cloud Build `Build` object that is used to render the manifests. Format is `projects\/{project}\/builds\/{build}` or `projects\/{project}\/locations\/{location}\/builds\/{build}`",
@@ -1072,164 +1085,6 @@
   "resources": {
     "projects": {
       "resources": {
-        "deliveryPipelines": {
-          "resources": {
-            "releases": {
-              "resources": {
-                "deliveryPipelines": {
-                  "methods": {
-                    "list": {
-                      "id": "clouddeploy.projects.deliveryPipelines.releases.deliveryPipelines.list",
-                      "path": "v1alpha1/{+parent}/deliveryPipelines",
-                      "flatPath": "v1alpha1/projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/deliveryPipelines",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The parent, which owns this collection of pipelines. Format must be projects\/{projectID}\/locations\/{locationName}.",
-                          "pattern": "^projects\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The maximum number of pipelines to return. The service may return fewer than this value. If unspecified, at most 50 pipelines will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "A page token, received from a previous `ListDeliveryPipelines` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListDeliveryPipelinesResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists DeliveryPipelines in a given project and location."
-                    },
-                    "get": {
-                      "id": "clouddeploy.projects.deliveryPipelines.releases.deliveryPipelines.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/deliveryPipelines/{deliveryPipelinesId1}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. Name of the `DeliveryPipeline`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}.",
-                          "pattern": "^projects\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/deliveryPipelines\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "DeliveryPipeline"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets details of a single DeliveryPipeline."
-                    }
-                  }
-                },
-                "targets": {
-                  "methods": {
-                    "list": {
-                      "id": "clouddeploy.projects.deliveryPipelines.releases.targets.list",
-                      "path": "v1alpha1/{+parent}/targets",
-                      "flatPath": "v1alpha1/projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/targets",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The `DeliveryPipeline` which owns this collection of `Target` objects.",
-                          "pattern": "^projects\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The maximum number of `Target` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Target` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "A page token, received from a previous `ListTargets` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListTargetsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists Targets in a given project and location."
-                    },
-                    "get": {
-                      "id": "clouddeploy.projects.deliveryPipelines.releases.targets.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/targets/{targetsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. Name of the `Target`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/targets\/{targetName}.",
-                          "pattern": "^projects\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/targets\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Target"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets details of a single Target."
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
         "locations": {
           "methods": {
             "list": {
@@ -1246,18 +1101,18 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The standard list filter.",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The standard list page size.",
+                  "description": "The maximum number of results to return. If not set, the service will select a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "The standard list page token.",
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1878,6 +1733,11 @@
                           "description": "If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                           "location": "query",
                           "type": "boolean"
+                        },
+                        "etag": {
+                          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -2171,6 +2031,11 @@
                           "description": "If set, validate the request and preview the review, but do not actually post it.",
                           "location": "query",
                           "type": "boolean"
+                        },
+                        "etag": {
+                          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [

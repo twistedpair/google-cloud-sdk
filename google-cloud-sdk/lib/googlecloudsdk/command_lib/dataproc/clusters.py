@@ -19,12 +19,14 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import textwrap
 from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.compute import utils as api_utils
 from googlecloudsdk.api_lib.dataproc import compute_helpers
 from googlecloudsdk.api_lib.dataproc import constants
 from googlecloudsdk.api_lib.dataproc import exceptions
+from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
@@ -381,7 +383,6 @@ If you want to enable all scopes use the 'cloud-platform' scope.
         """)
   parser.add_argument(
       '--dataproc-metastore',
-      hidden=(False if beta else True),
       help="""\
       Specify the name of a Dataproc Metastore service to be used as an
       external metastore in the format:
@@ -422,6 +423,9 @@ If you want to enable all scopes use the 'cloud-platform' scope.
           """)
 
   AddKerberosGroup(parser)
+
+  if not beta:
+    AddSecureMultiTenancyGroup(parser)
 
   flags.AddMinCpuPlatformArgs(parser)
 
@@ -809,6 +813,26 @@ def GetClusterConfig(args,
         if kerberos_kms_ref:
           kerberos_config.kmsKeyUri = kerberos_kms_ref.RelativeName()
       cluster_config.securityConfig.kerberosConfig = kerberos_config
+
+  if not beta:
+    if args.identity_config_file or args.secure_multi_tenancy_user_mapping:
+      if cluster_config.securityConfig is None:
+        cluster_config.securityConfig = dataproc.messages.SecurityConfig()
+
+      if args.identity_config_file:
+        cluster_config.securityConfig.identityConfig = ParseIdentityConfigFile(
+            dataproc, args.identity_config_file)
+      else:
+        user_service_account_mapping = (
+            ParseSecureMultiTenancyUserServiceAccountMappingString(
+                args.secure_multi_tenancy_user_mapping))
+        identity_config = dataproc.messages.IdentityConfig()
+        identity_config.userServiceAccountMapping = (
+            encoding.DictToAdditionalPropertyMessage(
+                user_service_account_mapping,
+                dataproc.messages.IdentityConfig.UserServiceAccountMappingValue)
+        )
+        cluster_config.securityConfig.identityConfig = identity_config
 
   if args.autoscaling_policy:
     cluster_config.autoscalingConfig = dataproc.messages.AutoscalingConfig(
@@ -1212,11 +1236,11 @@ The YAML file is formatted as follows:
   # The default value is true.
   enable_kerberos: true
 
-  # Required. The Google Cloud Storage URI of a KMS encrypted file
+  # Optional. The Google Cloud Storage URI of a KMS encrypted file
   # containing the root principal password.
   root_principal_password_uri: gs://bucket/password.encrypted
 
-  # Required. The URI of the KMS key used to encrypt various
+  # Optional. The URI of the Cloud KMS key used to encrypt
   # sensitive files.
   kms_key_uri:
     projects/myproject/locations/global/keyRings/mykeyring/cryptoKeys/my-key
@@ -1326,3 +1350,76 @@ def ParseKerberosConfigFile(dataproc, kerberos_config_file):
       crossRealmTrustSharedPasswordUri=cross_realm_trust_shared_password_uri)
 
   return kerberos_config_msg
+
+
+def AddSecureMultiTenancyGroup(parser):
+  """Adds the argument group to handle Secure Multi-Tenancy configurations."""
+  secure_multi_tenancy_group = parser.add_argument_group(
+      mutex=True,
+      help='Specifying these flags will enable Secure Multi-Tenancy for the cluster.'
+  )
+  secure_multi_tenancy_group.add_argument(
+      '--identity-config-file',
+      help="""\
+Path to a YAML (or JSON) file containing the configuration for Secure Multi-Tenancy
+on the cluster. The path can be a Cloud Storage URL (Example: 'gs://path/to/file')
+or a local file system path. If you pass "-" as the value of the flag the file content
+will be read from stdin.
+
+The YAML file is formatted as follows:
+
+```
+  # Required. The mapping from user accounts to service accounts.
+  user_service_account_mapping:
+    bob@company.com: service-account-bob@project.iam.gserviceaccount.com
+    alice@company.com: service-account-alice@project.iam.gserviceaccount.com
+```
+        """)
+  secure_multi_tenancy_group.add_argument(
+      '--secure-multi-tenancy-user-mapping',
+      help=textwrap.dedent("""\
+          A string of user-to-service-account mappings. Mappings are separated
+          by commas, and each mapping takes the form of
+          "user-account:service-account". Example:
+          "bob@company.com:service-account-bob@project.iam.gserviceaccount.com,alice@company.com:service-account-alice@project.iam.gserviceaccount.com"."""
+                          ))
+
+
+def ParseIdentityConfigFile(dataproc, identity_config_file):
+  """Parses a identity-config-file into the IdentityConfig message."""
+
+  if identity_config_file.startswith('gs://'):
+    data = storage_helpers.ReadObject(identity_config_file)
+  else:
+    data = console_io.ReadFromFileOrStdin(identity_config_file, binary=False)
+
+  try:
+    identity_config_data = yaml.load(data)
+  except Exception as e:
+    raise exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+
+  user_service_account_mapping = encoding.DictToAdditionalPropertyMessage(
+      identity_config_data.get('user_service_account_mapping', {}),
+      dataproc.messages.IdentityConfig.UserServiceAccountMappingValue)
+
+  identity_config_data_msg = dataproc.messages.IdentityConfig(
+      userServiceAccountMapping=user_service_account_mapping)
+
+  return identity_config_data_msg
+
+
+def ParseSecureMultiTenancyUserServiceAccountMappingString(
+    user_service_account_mapping_string):
+  """Parses a secure-multi-tenancy-user-mapping string into a dictionary."""
+
+  user_service_account_mapping = collections.OrderedDict()
+  # parse the string, throw error if string is not in
+  # "user1:service-account1,user2:service-account2" format
+  mapping_str_list = user_service_account_mapping_string.split(',')
+  for mapping_str in mapping_str_list:
+    mapping = mapping_str.split(':')
+    if len(mapping) != 2:
+      raise exceptions.ArgumentError(
+          'Invalid Secure Multi-Tenancy User Mapping.')
+    user_service_account_mapping[mapping[0]] = mapping[1]
+  return user_service_account_mapping

@@ -144,85 +144,6 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class ClouddeployProjectsDeliveryPipelinesReleasesDeliveryPipelinesGetRequest(_messages.Message):
-  r"""A
-  ClouddeployProjectsDeliveryPipelinesReleasesDeliveryPipelinesGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the `DeliveryPipeline`. Format must be projects/{p
-      rojectID}/locations/{locationName}/deliveryPipelines/{pipelineName}.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ClouddeployProjectsDeliveryPipelinesReleasesDeliveryPipelinesListRequest(_messages.Message):
-  r"""A
-  ClouddeployProjectsDeliveryPipelinesReleasesDeliveryPipelinesListRequest
-  object.
-
-  Fields:
-    filter: Filter builds to be returned. See https://google.aip.dev/160 for
-      more details.
-    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
-      more details.
-    pageSize: The maximum number of pipelines to return. The service may
-      return fewer than this value. If unspecified, at most 50 pipelines will
-      be returned. The maximum value is 1000; values above 1000 will be set to
-      1000.
-    pageToken: A page token, received from a previous `ListDeliveryPipelines`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other provided parameters match the call that provided the page token.
-    parent: Required. The parent, which owns this collection of pipelines.
-      Format must be projects/{projectID}/locations/{locationName}.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class ClouddeployProjectsDeliveryPipelinesReleasesTargetsGetRequest(_messages.Message):
-  r"""A ClouddeployProjectsDeliveryPipelinesReleasesTargetsGetRequest object.
-
-  Fields:
-    name: Required. Name of the `Target`. Format must be projects/{projectID}/
-      locations/{locationName}/deliveryPipelines/{pipelineName}/targets/{targe
-      tName}.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ClouddeployProjectsDeliveryPipelinesReleasesTargetsListRequest(_messages.Message):
-  r"""A ClouddeployProjectsDeliveryPipelinesReleasesTargetsListRequest object.
-
-  Fields:
-    filter: Filter builds to be returned. See https://google.aip.dev/160 for
-      more details.
-    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
-      more details.
-    pageSize: The maximum number of `Target` objects to return. The service
-      may return fewer than this value. If unspecified, at most 50 `Target`
-      objects will be returned. The maximum value is 1000; values above 1000
-      will be set to 1000.
-    pageToken: A page token, received from a previous `ListTargets` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      provided parameters match the call that provided the page token.
-    parent: Required. The `DeliveryPipeline` which owns this collection of
-      `Target` objects.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
 class ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest object.
 
@@ -429,6 +350,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest(_messag
   Fields:
     allowMissing: If set to true, then deleting an already deleted or non-
       existing `DeliveryPipeline` will succeed.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding.
     name: Required. The name of the `Release` to delete. Format is projects/{p
       rojectID}/locations/{locationName}/deliveryPipelines/{pipelineName}/rele
       ase/{releaseName}.
@@ -448,9 +372,10 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest(_messag
   """
 
   allowMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetIamPolicyRequest(_messages.Message):
@@ -846,6 +771,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(_messages
   Fields:
     allowMissing: If set to true, updating a `Target` that does not exist will
       result in the creation of a new `Target`.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding.
     name: Required. Name of the `Target`. Format is
       projects/{project}/locations/{location}/
       deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
@@ -871,11 +799,12 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(_messages
   """
 
   allowMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  target = _messages.MessageField('Target', 4)
-  updateMask = _messages.StringField(5)
-  validateOnly = _messages.BooleanField(6)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  target = _messages.MessageField('Target', 5)
+  updateMask = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesTargetsSetIamPolicyRequest(_messages.Message):
@@ -941,10 +870,14 @@ class ClouddeployProjectsLocationsListRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -1023,7 +956,8 @@ class DeliveryPipeline(_messages.Message):
       by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
-    condition: Information around the state of the Delivery Pipeline.
+    condition: Output only. Information around the state of the Delivery
+      Pipeline.
     createTime: Output only. Time at which the pipeline was created.
     description: Description of the `DeliveryPipeline`. Max length is 255
       characters.
@@ -1633,6 +1567,8 @@ class Release(_messages.Message):
       Each resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
+    RenderedManifestsValue: Output only. Map from target ID to GCS path of the
+      rendered manifest for that target.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
@@ -1664,7 +1600,12 @@ class Release(_messages.Message):
     renderEndTime: Output only. Time at which the render completed.
     renderStartTime: Output only. Time at which the render began.
     renderState: Current state of the render operation.
-    skaffoldConfigPath: Tarball location of user's Skaffold file.
+    renderedManifests: Output only. Map from target ID to GCS path of the
+      rendered manifest for that target.
+    skaffoldConfigPath: Filepath of the Skaffold config inside of the config
+      URI.
+    skaffoldConfigUri: GCS URI of tar.gz archive containing Skaffold
+      configuration.
     targetSnapshot: A Target attribute.
     uid: Output only. Unique identifier of the `Release`.
   """
@@ -1738,6 +1679,33 @@ class Release(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RenderedManifestsValue(_messages.Message):
+    r"""Output only. Map from target ID to GCS path of the rendered manifest
+    for that target.
+
+    Messages:
+      AdditionalProperty: An additional property for a RenderedManifestsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        RenderedManifestsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RenderedManifestsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   buildArtifacts = _messages.MessageField('BuildArtifact', 2, repeated=True)
   createTime = _messages.StringField(3)
@@ -1751,9 +1719,11 @@ class Release(_messages.Message):
   renderEndTime = _messages.StringField(11)
   renderStartTime = _messages.StringField(12)
   renderState = _messages.EnumField('RenderStateValueValuesEnum', 13)
-  skaffoldConfigPath = _messages.StringField(14)
-  targetSnapshot = _messages.MessageField('Target', 15, repeated=True)
-  uid = _messages.StringField(16)
+  renderedManifests = _messages.MessageField('RenderedManifestsValue', 14)
+  skaffoldConfigPath = _messages.StringField(15)
+  skaffoldConfigUri = _messages.StringField(16)
+  targetSnapshot = _messages.MessageField('Target', 17, repeated=True)
+  uid = _messages.StringField(18)
 
 
 class Rollout(_messages.Message):

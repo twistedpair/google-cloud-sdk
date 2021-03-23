@@ -52,10 +52,5 @@ def GetUpdateManager(group_args):
   url = (files.ExpandHomeDir(group_args.snapshot_url_override)
          if group_args.snapshot_url_override else None)
 
-  if hasattr(group_args, 'enable_fallback') and group_args.enable_fallback:
-    return update_manager.UpdateManager(
-        sdk_root=root, url=url, platform_filter=platform,
-        enable_fallback=group_args.enable_fallback)
-
   return update_manager.UpdateManager(
       sdk_root=root, url=url, platform_filter=platform)

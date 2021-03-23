@@ -3845,9 +3845,9 @@ class SoftwareConfig(_messages.Message):
         not supported in the Dataproc 2.0 image. The 2.0 image is pre-
         installed with Miniconda.
       DOCKER: Docker
-      DRUID: The Druid query engine.
+      DRUID: The Druid query engine. (beta)
       FLINK: Flink
-      HBASE: HBase.
+      HBASE: HBase. (beta)
       HIVE_WEBHCAT: The Hive Web HCatalog (the REST service for accessing
         HCatalog).
       JUPYTER: The Jupyter Notebook.

@@ -67,8 +67,8 @@ def AddIngressSettingsFlag(parser):
   ingress_settings_arg = base.ChoiceArgument(
       '--ingress-settings',
       choices=[x.lower() for x in INGRESS_SETTINGS],
-      help_str='Ingress settings controls what traffic can reach the function.'
-      'By default `all` will be used.')
+      help_str='Ingress settings controls what traffic can reach the '
+      'function. By default `all` will be used.')
   ingress_settings_arg.AddToParser(parser)
 
 
@@ -375,6 +375,24 @@ def AddMaxInstancesFlag(parser):
       action='store_true',
       help="""\
         Clears the maximum instances setting for the function.
+      """)
+
+
+def AddMinInstancesFlag(parser):
+  """Add flag for specifying the min instances for a function."""
+  mutex_group = parser.add_group(mutex=True)
+  mutex_group.add_argument(
+      '--min-instances',
+      type=arg_parsers.BoundedInt(lower_bound=0),
+      help="""\
+        Sets the minimum number of instances for the function. This is helpful
+        for reducing cold start times. Defaults to zero.
+      """)
+  mutex_group.add_argument(
+      '--clear-min-instances',
+      action='store_true',
+      help="""\
+        Clears the minimum instances setting for the function.
       """)
 
 

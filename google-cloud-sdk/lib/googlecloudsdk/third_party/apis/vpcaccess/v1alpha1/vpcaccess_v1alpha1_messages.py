@@ -75,6 +75,31 @@ class Connector(_messages.Message):
   subnet = _messages.MessageField('Subnet', 12)
 
 
+class HeartbeatConnectorRequest(_messages.Message):
+  r"""Heartbeat requests come in from each connector VM to report their IP and
+  serving state.
+
+  Fields:
+    forwarded: False if the request has been received directly from a VM.
+    heartbeatTime: Required. When this request was sent.
+    ipAddress: Required. The IP address of the VM.
+    lameduck: If the VM is in lameduck mode, meaning that it is in the process
+      of shutting down and should not be used for new connections.
+  """
+
+  forwarded = _messages.BooleanField(1)
+  heartbeatTime = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
+  lameduck = _messages.BooleanField(4)
+
+
+class HeartbeatConnectorResponse(_messages.Message):
+  r"""This is an empty placeholder (as opposed to using google.protobuf.Empty)
+  for fields to potentially be added in the future.
+  """
+
+
+
 class ListConnectorsResponse(_messages.Message):
   r"""Response for listing Serverless VPC Access connectors.
 
@@ -519,6 +544,19 @@ class VpcaccessProjectsLocationsConnectorsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class VpcaccessProjectsLocationsConnectorsHeartbeatRequest(_messages.Message):
+  r"""A VpcaccessProjectsLocationsConnectorsHeartbeatRequest object.
+
+  Fields:
+    heartbeatConnectorRequest: A HeartbeatConnectorRequest resource to be
+      passed as the request body.
+    name: Required.
+  """
+
+  heartbeatConnectorRequest = _messages.MessageField('HeartbeatConnectorRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class VpcaccessProjectsLocationsConnectorsListRequest(_messages.Message):
   r"""A VpcaccessProjectsLocationsConnectorsListRequest object.
 
@@ -554,10 +592,14 @@ class VpcaccessProjectsLocationsListRequest(_messages.Message):
   r"""A VpcaccessProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)

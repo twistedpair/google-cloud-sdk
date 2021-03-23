@@ -68,13 +68,20 @@ def AddOnErrorFlag(parser):
             'are encountered without logging, specify "ignore".'))
 
 
-def AddListResourcesFormatFlag(parser):
+def AddListResourcesFlags(parser):
   parser.add_argument(
       '--output-format',
       choices=['table', 'yaml', 'json'],
       default='table',
-      help='Determines the output format of the supported resources.'
-    )
+      help='Determines the output format of the supported resources.')
+  _GetBulkExportParentGroup(
+      parser,
+      project_help=('Project ID to list supported '
+                    'resources for.'),
+      org_help=('Organization ID to list supported '
+                'resources for.'),
+      folder_help=('Folder ID to list supported '
+                   'resources for.'))
 
 
 def AddResourceTypeFlag(parser):
@@ -83,9 +90,10 @@ def AddResourceTypeFlag(parser):
       '--resource-types',
       type=arg_parsers.ArgList(),
       metavar='RESOURCE_TYPE',
-      help="""List of Asset Inventory resource types to export.
-  For a full list of supported resource types see:
-  [Cloud Asset Inventory - Supported Asset Types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+      help="""List of Config Connector KRM Kinds to export.
+  For a full list of supported resource types for a given parent scope run:
+
+  $ gcloud resource-config list-resources --[project|organization|folder]=<PARENT>
   """)
 
 
@@ -95,10 +103,7 @@ def AddBulkExportArgs(parser):
   AddPathFlag(parser)
   AddFormatFlag(parser)
   AddResourceTypeFlag(parser)
-  group = parser.add_group(mutex=True)
-  group.add_argument('--organization', type=str, help='Organization ID')
-  group.add_argument('--project', help='Project ID')
-  group.add_argument('--folder', type=str, help='Folder ID')
+  _GetBulkExportParentGroup(parser)
 
 
 def ValidateAllPathArgs(args):
@@ -107,3 +112,15 @@ def ValidateAllPathArgs(args):
       raise client_base.ClientException(
           'Error executing export: "{}" must be a directory when --all is specified.'
           .format(args.path))
+
+
+def _GetBulkExportParentGroup(parser,
+                              required=False,
+                              project_help='Project ID',
+                              org_help='Organization ID',
+                              folder_help='Folder ID'):
+  group = parser.add_group(mutex=True, required=required)
+  group.add_argument('--organization', type=str, help=org_help)
+  group.add_argument('--project', help=project_help)
+  group.add_argument('--folder', type=str, help=folder_help)
+  return group

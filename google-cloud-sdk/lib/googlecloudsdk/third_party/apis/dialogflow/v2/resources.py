@@ -104,6 +104,27 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_AGENT_KNOWLEDGEBASES = (
+      'projects.agent.knowledgeBases',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_AGENT_KNOWLEDGEBASES_DOCUMENTS = (
+      'projects.agent.knowledgeBases.documents',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}/'
+              'documents/{documentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_AGENT_SESSIONS = (
       'projects.agent.sessions',
       'projects/{projectsId}/agent/sessions/{sessionsId}',
@@ -191,6 +212,106 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}',
       {},
       ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_AGENT_ENTITYTYPES = (
+      'projects.locations.agent.entityTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/agent/'
+              'entityTypes/{entityTypesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_AGENT_ENVIRONMENTS = (
+      'projects.locations.agent.environments',
+      'projects/{projectsId}/locations/{locationsId}/agent/environments/'
+      '{environmentsId}',
+      {},
+      ['projectsId', 'locationsId', 'environmentsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_AGENT_ENVIRONMENTS_USERS = (
+      'projects.locations.agent.environments.users',
+      'projects/{projectsId}/locations/{locationsId}/agent/environments/'
+      '{environmentsId}/users/{usersId}',
+      {},
+      ['projectsId', 'locationsId', 'environmentsId', 'usersId'],
+      True
+  )
+  PROJECTS_LOCATIONS_AGENT_ENVIRONMENTS_USERS_SESSIONS = (
+      'projects.locations.agent.environments.users.sessions',
+      'projects/{projectsId}/locations/{locationsId}/agent/environments/'
+      '{environmentsId}/users/{usersId}/sessions/{sessionsId}',
+      {},
+      ['projectsId', 'locationsId', 'environmentsId', 'usersId', 'sessionsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_AGENT_ENVIRONMENTS_USERS_SESSIONS_CONTEXTS = (
+      'projects.locations.agent.environments.users.sessions.contexts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/agent/'
+              'environments/{environmentsId}/users/{usersId}/sessions/'
+              '{sessionsId}/contexts/{contextsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_AGENT_ENVIRONMENTS_USERS_SESSIONS_ENTITYTYPES = (
+      'projects.locations.agent.environments.users.sessions.entityTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/agent/'
+              'environments/{environmentsId}/users/{usersId}/sessions/'
+              '{sessionsId}/entityTypes/{entityTypesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_AGENT_INTENTS = (
+      'projects.locations.agent.intents',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/agent/intents/'
+              '{intentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_AGENT_SESSIONS = (
+      'projects.locations.agent.sessions',
+      'projects/{projectsId}/locations/{locationsId}/agent/sessions/'
+      '{sessionsId}',
+      {},
+      ['projectsId', 'locationsId', 'sessionsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_AGENT_SESSIONS_CONTEXTS = (
+      'projects.locations.agent.sessions.contexts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/agent/sessions/'
+              '{sessionsId}/contexts/{contextsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_AGENT_SESSIONS_ENTITYTYPES = (
+      'projects.locations.agent.sessions.entityTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/agent/sessions/'
+              '{sessionsId}/entityTypes/{entityTypesId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CONVERSATIONPROFILES = (

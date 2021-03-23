@@ -844,6 +844,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     self.PrintNameSection()
     self.PrintSynopsisSection()
     self.PrintSectionIfExists('DESCRIPTION')
+    self.PrintSectionIfExists('EXAMPLES')
     self.PrintPositionalsAndFlagsSections()
     self.PrintSubGroups()
     self.PrintSubCommands()

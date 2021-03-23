@@ -85,6 +85,10 @@ class Error(exceptions.Error):
   """Exceptions for the credentials module."""
 
 
+class NoImpersonationAccountError(Error):
+  """Exception when there is no account to impersonate."""
+
+
 class AuthenticationException(Error):
   """Exceptions that tell the users to re-login."""
 
@@ -560,6 +564,26 @@ def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=True):
       use_google_auth=use_google_auth)
 
 
+def ParseImpersonationAccounts(service_account_ids):
+  """Finds the target impersonation principal and the delegates.
+
+  Args:
+     service_account_ids: str, A list of service account ids separated using
+       comma.
+
+  Returns:
+     A tuple (target_principal, delegates).
+
+  Raises:
+    NoImpersonationAccountError: if the input does not contain service accounts.
+  """
+  service_account_ids = service_account_ids.split(',')
+  service_account_ids = [sa_id.strip() for sa_id in service_account_ids]
+  if not service_account_ids:
+    raise NoImpersonationAccountError('No service account to impersonate.')
+  return service_account_ids[-1], (service_account_ids[:-1] or None)
+
+
 def Load(account=None,
          scopes=None,
          prevent_refresh=False,
@@ -618,22 +642,23 @@ def Load(account=None,
   impersonate_service_account = (
       properties.VALUES.auth.impersonate_service_account.Get())
   if allow_account_impersonation and impersonate_service_account:
+    target_principal, delegates = ParseImpersonationAccounts(
+        impersonate_service_account)
     if not IMPERSONATION_TOKEN_PROVIDER:
       raise AccountImpersonationError(
           'gcloud is configured to impersonate service account [{}] but '
           'impersonation support is not available.'.format(
-              impersonate_service_account))
+              target_principal))
     log.warning(
-        'This command is using service account impersonation. All API calls will '
-        'be executed as [{}].'.format(impersonate_service_account))
-
+        'This command is using service account impersonation. All API calls '
+        'will be executed as [{}].'.format(target_principal))
     if use_google_auth:
       google_auth_source_creds = Load(
           account=account,
           allow_account_impersonation=False,
           use_google_auth=use_google_auth)
       cred = IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessTokenGoogleAuth(
-          google_auth_source_creds, impersonate_service_account, scopes or
+          google_auth_source_creds, target_principal, delegates, scopes or
           config.CLOUDSDK_SCOPES)
     else:
       cred = IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessToken(

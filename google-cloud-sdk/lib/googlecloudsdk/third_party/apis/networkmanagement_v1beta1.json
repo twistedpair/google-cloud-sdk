@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -442,7 +442,7 @@
     },
     "Trace": {
       "id": "Trace",
-      "description": "Trace represents one simulated packet forwarding path. - Each trace contains multiple ordered steps. - Each step is in a particular state and has an associated configuration. - State is categorized as a final or non-final state. - Each final state has a reason associated with it. - Each trace must end with a final state (the last step). |---------------------Trace----------------------| Step1(State) Step2(State) --- StepN(State(final)) ",
+      "description": "Trace represents one simulated packet forwarding path. * Each trace contains multiple ordered Steps. * Each step is in a particular state with associated configuration. * State is categorized as final or non-final states. * Each final state has a reason associated. * Each trace must end with a final state (the last step). ``` |---------------------Trace----------------------| Step1(State) Step2(State) --- StepN(State(final)) ```",
       "type": "object",
       "properties": {
         "endpointInfo": {
@@ -672,15 +672,15 @@
     },
     "FirewallInfo": {
       "id": "FirewallInfo",
-      "description": "For display only. Metadata associated with a Compute Engine firewall rule.",
+      "description": "For display only. Metadata associated with a VPC firewall rule, an implied VPC firewall rule, or a hierarchical firewall policy rule.",
       "type": "object",
       "properties": {
         "displayName": {
-          "description": "Name of a Compute Engine firewall rule.",
+          "description": "The display name of the VPC firewall rule. This field is not applicable to hierarchical firewall policy rules.",
           "type": "string"
         },
         "uri": {
-          "description": "URI of a Compute Engine firewall rule. Implied default rule does not have URI.",
+          "description": "The URI of the VPC firewall rule. This field is not applicable to implied firewall rules or hierarchical firewall policy rules.",
           "type": "string"
         },
         "direction": {
@@ -692,27 +692,47 @@
           "type": "string"
         },
         "priority": {
-          "description": "Priority of the firewall rule.",
+          "description": "The priority of the firewall rule.",
           "type": "integer",
           "format": "int32"
         },
         "networkUri": {
-          "description": "URI of a Compute Engine network.",
+          "description": "The URI of the VPC network that the firewall rule is associated with. This field is not applicable to hierarchical firewall policy rules.",
           "type": "string"
         },
         "targetTags": {
-          "description": "Target tags of the firewall rule.",
+          "description": "The target tags defined by the VPC firewall rule. This field is not applicable to hierarchical firewall policy rules.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "targetServiceAccounts": {
-          "description": "Target service accounts of the firewall rule.",
+          "description": "The target service accounts specified by the firewall rule.",
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "policy": {
+          "description": "The hierarchical firewall policy that this rule is associated with. This field is not applicable to VPC firewall rules.",
+          "type": "string"
+        },
+        "firewallRuleType": {
+          "description": "The firewall rule's type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified type.",
+            "Hierarchical firewall policy rule. For details, see [Hierarchical firewall policy rules](https:\/\/cloud.google.com\/vpc\/docs\/firewall-policies).",
+            "VPC firewall rule. For details, see [VPC firewall rules overview](https:\/\/cloud.google.com\/vpc\/docs\/firewalls).",
+            "Implied VPC firewall rule. For details, see [Implied rules](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#default_firewall_rules)."
+          ],
+          "enum": [
+            "FIREWALL_RULE_TYPE_UNSPECIFIED",
+            "HIERARCHICAL_FIREWALL_POLICY_RULE",
+            "VPC_FIREWALL_RULE",
+            "IMPLIED_VPC_FIREWALL_RULE"
+          ]
         }
       }
     },
@@ -1593,18 +1613,18 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The standard list filter.",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The standard list page size.",
+                  "description": "The maximum number of results to return. If not set, the service will select a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "The standard list page token.",
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }

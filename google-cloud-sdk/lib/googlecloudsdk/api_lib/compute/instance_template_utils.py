@@ -175,9 +175,8 @@ def CreatePersistentAttachedDiskMessages(
     disks: disk objects - contains following properties
              * name - the name of disk,
              * mode - 'rw' (R/W), 'ro' (R/O) access mode,
-             * boot - whether it is a boot disk ('yes' if True),
-             * autodelete - whether disks is deleted when VM is deleted ('yes'
-               if True),
+             * boot - whether it is a boot disk,
+             * auto-delete - whether disks is deleted when VM is deleted,
              * device-name - device name on VM.
     container_mount_disk: list of disks to be mounted to container, if any.
 
@@ -195,8 +194,8 @@ def CreatePersistentAttachedDiskMessages(
     else:
       mode = messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
 
-    boot = disk.get('boot') == 'yes'
-    auto_delete = disk.get('auto-delete') == 'yes'
+    boot = disk.get('boot', False)
+    auto_delete = disk.get('auto-delete', False)
     device_name = instance_utils.GetDiskDeviceName(disk, name,
                                                    container_mount_disk)
 
@@ -264,8 +263,8 @@ def CreatePersistentCreateDiskMessages(client,
     else:
       mode = client.messages.AttachedDisk.ModeValueValuesEnum.READ_ONLY
 
-    auto_delete = disk.get('auto-delete') == 'yes'
-    boot = disk.get('boot') == 'yes'
+    auto_delete = disk.get('auto-delete', False)
+    boot = disk.get('boot', False)
     disk_size_gb = utils.BytesToGb(disk.get('size'))
     img = disk.get('image')
     img_family = disk.get('image-family')

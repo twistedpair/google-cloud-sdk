@@ -150,6 +150,33 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
+
+      Args:
+        request: (ResourcesettingsFoldersSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudResourcesettingsV1Setting) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/settings/{settingsId}',
+        http_method='GET',
+        method_id='resourcesettings.folders.settings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ResourcesettingsFoldersSettingsGetRequest',
+        response_type_name='GoogleCloudResourcesettingsV1Setting',
+        supports_download=False,
+    )
+
     def GetValue(self, request, global_params=None):
       r"""Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist.
 
@@ -196,11 +223,38 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         method_id='resourcesettings.folders.settings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/settings',
         request_field='',
         request_type_name='ResourcesettingsFoldersSettingsListRequest',
         response_type_name='GoogleCloudResourcesettingsV1ListSettingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field.
+
+      Args:
+        request: (GoogleCloudResourcesettingsV1Setting) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudResourcesettingsV1Setting) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/settings/{settingsId}',
+        http_method='PATCH',
+        method_id='resourcesettings.folders.settings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudResourcesettingsV1Setting',
+        response_type_name='GoogleCloudResourcesettingsV1Setting',
         supports_download=False,
     )
 
@@ -369,6 +423,33 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
+
+      Args:
+        request: (ResourcesettingsOrganizationsSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudResourcesettingsV1Setting) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/settings/{settingsId}',
+        http_method='GET',
+        method_id='resourcesettings.organizations.settings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ResourcesettingsOrganizationsSettingsGetRequest',
+        response_type_name='GoogleCloudResourcesettingsV1Setting',
+        supports_download=False,
+    )
+
     def GetValue(self, request, global_params=None):
       r"""Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist.
 
@@ -415,11 +496,38 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         method_id='resourcesettings.organizations.settings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/settings',
         request_field='',
         request_type_name='ResourcesettingsOrganizationsSettingsListRequest',
         response_type_name='GoogleCloudResourcesettingsV1ListSettingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field.
+
+      Args:
+        request: (GoogleCloudResourcesettingsV1Setting) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudResourcesettingsV1Setting) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/settings/{settingsId}',
+        http_method='PATCH',
+        method_id='resourcesettings.organizations.settings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudResourcesettingsV1Setting',
+        response_type_name='GoogleCloudResourcesettingsV1Setting',
         supports_download=False,
     )
 
@@ -588,6 +696,33 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
+
+      Args:
+        request: (ResourcesettingsProjectsSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudResourcesettingsV1Setting) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/settings/{settingsId}',
+        http_method='GET',
+        method_id='resourcesettings.projects.settings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ResourcesettingsProjectsSettingsGetRequest',
+        response_type_name='GoogleCloudResourcesettingsV1Setting',
+        supports_download=False,
+    )
+
     def GetValue(self, request, global_params=None):
       r"""Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist.
 
@@ -634,11 +769,38 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         method_id='resourcesettings.projects.settings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/settings',
         request_field='',
         request_type_name='ResourcesettingsProjectsSettingsListRequest',
         response_type_name='GoogleCloudResourcesettingsV1ListSettingsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field.
+
+      Args:
+        request: (GoogleCloudResourcesettingsV1Setting) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudResourcesettingsV1Setting) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/settings/{settingsId}',
+        http_method='PATCH',
+        method_id='resourcesettings.projects.settings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudResourcesettingsV1Setting',
+        response_type_name='GoogleCloudResourcesettingsV1Setting',
         supports_download=False,
     )
 

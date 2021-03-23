@@ -684,10 +684,14 @@ class MetastoreProjectsLocationsListRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in AIP-160 (https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the next_page_token field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -1271,6 +1275,8 @@ class Service(_messages.Message):
   r"""A managed metastore service that serves metadata queries.
 
   Enums:
+    ReleaseChannelValueValuesEnum: Immutable. The release channel of the
+      service. If unspecified, defaults to STABLE.
     StateValueValuesEnum: Output only. The current state of the metastore
       service.
     TierValueValuesEnum: The tier of the service.
@@ -1303,6 +1309,8 @@ class Service(_messages.Message):
       form:"projects/{project_number}/global/networks/{network_id}".
     port: The TCP port at which the metastore service is reached. Default:
       9083.
+    releaseChannel: Immutable. The release channel of the service. If
+      unspecified, defaults to STABLE.
     state: Output only. The current state of the metastore service.
     stateMessage: Output only. Additional information about the current state
       of the metastore service, if available.
@@ -1312,6 +1320,23 @@ class Service(_messages.Message):
     updateTime: Output only. The time when the metastore service was last
       updated.
   """
+
+  class ReleaseChannelValueValuesEnum(_messages.Enum):
+    r"""Immutable. The release channel of the service. If unspecified,
+    defaults to STABLE.
+
+    Values:
+      RELEASE_CHANNEL_UNSPECIFIED: Release channel is not specified.
+      CANARY: The CANARY release channel contains the newest features, which
+        may be unstable and subject to unresolved issues with no known
+        workarounds. Services using the CANARY release channel are not subject
+        to any SLAs.
+      STABLE: The STABLE release channel contains features that are considered
+        stable and have been validated for production use.
+    """
+    RELEASE_CHANNEL_UNSPECIFIED = 0
+    CANARY = 1
+    STABLE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the metastore service.
@@ -1390,11 +1415,12 @@ class Service(_messages.Message):
   name = _messages.StringField(9)
   network = _messages.StringField(10)
   port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  stateMessage = _messages.StringField(13)
-  tier = _messages.EnumField('TierValueValuesEnum', 14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  stateMessage = _messages.StringField(14)
+  tier = _messages.EnumField('TierValueValuesEnum', 15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class SetIamPolicyRequest(_messages.Message):

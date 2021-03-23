@@ -43,6 +43,19 @@ properties:
       fault_injection_policy. Not supported when the URL map is bound to target
       gRPC proxy that has validateForProxyless field set to true.
     $ref: HttpFaultInjection.yaml
+  maxStreamDuration:
+    description: |-
+      Specifies the maximum duration (timeout) for streams on the selected
+      route. Unlike the timeout field where the timeout duration starts from the
+      time the request has been fully processed (i.e. end-of- stream), the
+      duration in this field is computed from the beginning of the stream until
+      the response has been completely processed, including all retries. A
+      stream that does not complete in this duration is closed. If not
+      specified, will use the largest maxStreamDuration among all backend
+      services associated with the route. This field is only allowed if the Url
+      map is used with backend services with loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
+    $ref: Duration.yaml
   requestMirrorPolicy:
     description: |-
       Specifies the policy on how requests intended for the route's backends are

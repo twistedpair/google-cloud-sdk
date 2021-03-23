@@ -22,6 +22,8 @@ from __future__ import unicode_literals
 import datetime
 
 from apitools.base.py import exceptions as apitools_exceptions
+from google.auth import exceptions as google_auth_exceptions
+
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -29,12 +31,16 @@ from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import transports
+
 from oauth2client import client
-from google.auth import exceptions as google_auth_exceptions
 
 
 class Error(core_exceptions.Error):
   """Exception that are defined by this module."""
+
+
+class InvalidImpersonationAccount(Error):
+  """Exception when the service account id is invalid."""
 
 
 class ImpersonatedCredGoogleAuthRefreshError(Error):
@@ -110,6 +116,11 @@ class ImpersonationAccessTokenProvider(object):
   """
 
   def GetElevationAccessToken(self, service_account_id, scopes):
+    if ',' in service_account_id:
+      raise InvalidImpersonationAccount(
+          'More than one service accounts were specified, '
+          'which is not supported. If being set, please unset the '
+          'auth/disable_load_google_auth property and retry.')
     response = GenerateAccessToken(service_account_id, scopes)
     return ImpersonationCredentials(
         service_account_id, response.accessToken, response.expireTime, scopes)
@@ -118,7 +129,7 @@ class ImpersonationAccessTokenProvider(object):
     return GenerateIdToken(service_account_id, audience, include_email)
 
   def GetElevationAccessTokenGoogleAuth(self, source_credentials,
-                                        service_account_id, scopes):
+                                        target_principal, delegates, scopes):
     """Creates a fresh impersonation credential using google-auth library."""
     request_client = core_requests.GoogleAuthRequest()
     # google-auth makes a shadow copy of the source_credentials and refresh
@@ -133,9 +144,11 @@ class ImpersonationAccessTokenProvider(object):
     # pylint: disable=g-import-not-at-top
     from google.auth import impersonated_credentials as google_auth_impersonated_creds
     # pylint: enable=g-import-not-at-top
-    cred = google_auth_impersonated_creds.Credentials(source_credentials,
-                                                      service_account_id,
-                                                      scopes)
+    cred = google_auth_impersonated_creds.Credentials(
+        source_credentials=source_credentials,
+        target_principal=target_principal,
+        target_scopes=scopes,
+        delegates=delegates)
     try:
       cred.refresh(request_client)
     except google_auth_exceptions.RefreshError:
@@ -143,7 +156,7 @@ class ImpersonationAccessTokenProvider(object):
           'Failed to impersonate [{service_acc}]. Make sure the '
           'account that\'s trying to impersonate it has access to the service '
           'account itself and the "roles/iam.serviceAccountTokenCreator" '
-          'role.'.format(service_acc=service_account_id))
+          'role.'.format(service_acc=target_principal))
     return cred
 
   def GetElevationIdTokenGoogleAuth(self, google_auth_impersonation_credentials,

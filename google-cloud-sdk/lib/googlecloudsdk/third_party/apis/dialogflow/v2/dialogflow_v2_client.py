@@ -48,6 +48,8 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_agent_environments_users = self.ProjectsAgentEnvironmentsUsersService(self)
     self.projects_agent_environments = self.ProjectsAgentEnvironmentsService(self)
     self.projects_agent_intents = self.ProjectsAgentIntentsService(self)
+    self.projects_agent_knowledgeBases_documents = self.ProjectsAgentKnowledgeBasesDocumentsService(self)
+    self.projects_agent_knowledgeBases = self.ProjectsAgentKnowledgeBasesService(self)
     self.projects_agent_sessions_contexts = self.ProjectsAgentSessionsContextsService(self)
     self.projects_agent_sessions_entityTypes = self.ProjectsAgentSessionsEntityTypesService(self)
     self.projects_agent_sessions = self.ProjectsAgentSessionsService(self)
@@ -61,6 +63,18 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_conversations = self.ProjectsConversationsService(self)
     self.projects_knowledgeBases_documents = self.ProjectsKnowledgeBasesDocumentsService(self)
     self.projects_knowledgeBases = self.ProjectsKnowledgeBasesService(self)
+    self.projects_locations_agent_entityTypes_entities = self.ProjectsLocationsAgentEntityTypesEntitiesService(self)
+    self.projects_locations_agent_entityTypes = self.ProjectsLocationsAgentEntityTypesService(self)
+    self.projects_locations_agent_environments_users_sessions_contexts = self.ProjectsLocationsAgentEnvironmentsUsersSessionsContextsService(self)
+    self.projects_locations_agent_environments_users_sessions_entityTypes = self.ProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesService(self)
+    self.projects_locations_agent_environments_users_sessions = self.ProjectsLocationsAgentEnvironmentsUsersSessionsService(self)
+    self.projects_locations_agent_environments_users = self.ProjectsLocationsAgentEnvironmentsUsersService(self)
+    self.projects_locations_agent_environments = self.ProjectsLocationsAgentEnvironmentsService(self)
+    self.projects_locations_agent_intents = self.ProjectsLocationsAgentIntentsService(self)
+    self.projects_locations_agent_sessions_contexts = self.ProjectsLocationsAgentSessionsContextsService(self)
+    self.projects_locations_agent_sessions_entityTypes = self.ProjectsLocationsAgentSessionsEntityTypesService(self)
+    self.projects_locations_agent_sessions = self.ProjectsLocationsAgentSessionsService(self)
+    self.projects_locations_agent = self.ProjectsLocationsAgentService(self)
     self.projects_locations_answerRecords = self.ProjectsLocationsAnswerRecordsService(self)
     self.projects_locations_conversationProfiles = self.ProjectsLocationsConversationProfilesService(self)
     self.projects_locations_conversations_callMatchers = self.ProjectsLocationsConversationsCallMatchersService(self)
@@ -999,6 +1013,323 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='googleCloudDialogflowV2Intent',
         request_type_name='DialogflowProjectsAgentIntentsPatchRequest',
         response_type_name='GoogleCloudDialogflowV2Intent',
+        supports_download=False,
+    )
+
+  class ProjectsAgentKnowledgeBasesDocumentsService(base_api.BaseApiService):
+    """Service class for the projects_agent_knowledgeBases_documents resource."""
+
+    _NAME = 'projects_agent_knowledgeBases_documents'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsAgentKnowledgeBasesDocumentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new document. Operation .
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesDocumentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}/documents',
+        http_method='POST',
+        method_id='dialogflow.projects.agent.knowledgeBases.documents.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/documents',
+        request_field='googleCloudDialogflowV2Document',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesDocumentsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified document. Operation .
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesDocumentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.agent.knowledgeBases.documents.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesDocumentsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified document.
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesDocumentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Document) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.agent.knowledgeBases.documents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesDocumentsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Document',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all documents of the knowledge base.
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesDocumentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListDocumentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}/documents',
+        http_method='GET',
+        method_id='dialogflow.projects.agent.knowledgeBases.documents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/documents',
+        request_field='',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesDocumentsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListDocumentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified document. Operation .
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesDocumentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.agent.knowledgeBases.documents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Document',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesDocumentsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Reload(self, request, global_params=None):
+      r"""Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`. Operation .
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesDocumentsReloadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Reload')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reload.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}/documents/{documentsId}:reload',
+        http_method='POST',
+        method_id='dialogflow.projects.agent.knowledgeBases.documents.reload',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:reload',
+        request_field='googleCloudDialogflowV2ReloadDocumentRequest',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesDocumentsReloadRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsAgentKnowledgeBasesService(base_api.BaseApiService):
+    """Service class for the projects_agent_knowledgeBases resource."""
+
+    _NAME = 'projects_agent_knowledgeBases'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsAgentKnowledgeBasesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a knowledge base.
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2KnowledgeBase) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases',
+        http_method='POST',
+        method_id='dialogflow.projects.agent.knowledgeBases.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/knowledgeBases',
+        request_field='googleCloudDialogflowV2KnowledgeBase',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2KnowledgeBase',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified knowledge base.
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.agent.knowledgeBases.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified knowledge base.
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2KnowledgeBase) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}',
+        http_method='GET',
+        method_id='dialogflow.projects.agent.knowledgeBases.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesGetRequest',
+        response_type_name='GoogleCloudDialogflowV2KnowledgeBase',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all knowledge bases of the specified agent.
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListKnowledgeBasesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases',
+        http_method='GET',
+        method_id='dialogflow.projects.agent.knowledgeBases.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/knowledgeBases',
+        request_field='',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListKnowledgeBasesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified knowledge base.
+
+      Args:
+        request: (DialogflowProjectsAgentKnowledgeBasesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2KnowledgeBase) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/agent/knowledgeBases/{knowledgeBasesId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.agent.knowledgeBases.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2KnowledgeBase',
+        request_type_name='DialogflowProjectsAgentKnowledgeBasesPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2KnowledgeBase',
         supports_download=False,
     )
 
@@ -2563,6 +2894,1476 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsAgentEntityTypesEntitiesService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_entityTypes_entities resource."""
+
+    _NAME = 'projects_locations_agent_entityTypes_entities'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentEntityTypesEntitiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchCreate(self, request, global_params=None):
+      r"""Creates multiple new entities in the specified entity type. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/entityTypes/{entityTypesId}/entities:batchCreate',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.entityTypes.entities.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/entities:batchCreate',
+        request_field='googleCloudDialogflowV2BatchCreateEntitiesRequest',
+        request_type_name='DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def BatchDelete(self, request, global_params=None):
+      r"""Deletes entities in the specified entity type. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchDelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchDelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/entityTypes/{entityTypesId}/entities:batchDelete',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.entityTypes.entities.batchDelete',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/entities:batchDelete',
+        request_field='googleCloudDialogflowV2BatchDeleteEntitiesRequest',
+        request_type_name='DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def BatchUpdate(self, request, global_params=None):
+      r"""Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchUpdate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchUpdate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/entityTypes/{entityTypesId}/entities:batchUpdate',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.entityTypes.entities.batchUpdate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/entities:batchUpdate',
+        request_field='googleCloudDialogflowV2BatchUpdateEntitiesRequest',
+        request_type_name='DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchUpdateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentEntityTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_entityTypes resource."""
+
+    _NAME = 'projects_locations_agent_entityTypes'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentEntityTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchDelete(self, request, global_params=None):
+      r"""Deletes entity types in the specified agent. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEntityTypesBatchDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchDelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchDelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/entityTypes:batchDelete',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.entityTypes.batchDelete',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/entityTypes:batchDelete',
+        request_field='googleCloudDialogflowV2BatchDeleteEntityTypesRequest',
+        request_type_name='DialogflowProjectsLocationsAgentEntityTypesBatchDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def BatchUpdate(self, request, global_params=None):
+      r"""Updates/Creates multiple entity types in the specified agent. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEntityTypesBatchUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchUpdate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchUpdate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/entityTypes:batchUpdate',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.entityTypes.batchUpdate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/entityTypes:batchUpdate',
+        request_field='googleCloudDialogflowV2BatchUpdateEntityTypesRequest',
+        request_type_name='DialogflowProjectsLocationsAgentEntityTypesBatchUpdateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates an entity type in the specified agent.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEntityTypesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2EntityType) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/entityTypes',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.entityTypes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['languageCode'],
+        relative_path='v2/{+parent}/entityTypes',
+        request_field='googleCloudDialogflowV2EntityType',
+        request_type_name='DialogflowProjectsLocationsAgentEntityTypesCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2EntityType',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified entity type.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEntityTypesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/entityTypes/{entityTypesId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.agent.entityTypes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEntityTypesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified entity type.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEntityTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2EntityType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/entityTypes/{entityTypesId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.entityTypes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['languageCode'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEntityTypesGetRequest',
+        response_type_name='GoogleCloudDialogflowV2EntityType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all entity types in the specified agent.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEntityTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListEntityTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/entityTypes',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.entityTypes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['languageCode', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/entityTypes',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEntityTypesListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListEntityTypesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified entity type.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEntityTypesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2EntityType) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/entityTypes/{entityTypesId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.agent.entityTypes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['languageCode', 'updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2EntityType',
+        request_type_name='DialogflowProjectsLocationsAgentEntityTypesPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2EntityType',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentEnvironmentsUsersSessionsContextsService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_environments_users_sessions_contexts resource."""
+
+    _NAME = 'projects_locations_agent_environments_users_sessions_contexts'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentEnvironmentsUsersSessionsContextsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a context. If the specified context already exists, overrides the context.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Context) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.contexts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/contexts',
+        request_field='googleCloudDialogflowV2Context',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2Context',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified context.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.contexts.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified context.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Context) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.contexts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Context',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all contexts in the specified session.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListContextsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.contexts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/contexts',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListContextsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified context.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Context) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts/{contextsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.contexts.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Context',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2Context',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_environments_users_sessions_entityTypes resource."""
+
+    _NAME = 'projects_locations_agent_environments_users_sessions_entityTypes'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a session entity type. If the specified session entity type already exists, overrides the session entity type. This method doesn't work with Google Assistant integration. Contact Dialogflow support if you need to use session entities with Google Assistant integration.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SessionEntityType) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.entityTypes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/entityTypes',
+        request_field='googleCloudDialogflowV2SessionEntityType',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2SessionEntityType',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified session entity type. This method doesn't work with Google Assistant integration. Contact Dialogflow support if you need to use session entities with Google Assistant integration.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes/{entityTypesId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.entityTypes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified session entity type. This method doesn't work with Google Assistant integration. Contact Dialogflow support if you need to use session entities with Google Assistant integration.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SessionEntityType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes/{entityTypesId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.entityTypes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesGetRequest',
+        response_type_name='GoogleCloudDialogflowV2SessionEntityType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all session entity types in the specified session. This method doesn't work with Google Assistant integration. Contact Dialogflow support if you need to use session entities with Google Assistant integration.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListSessionEntityTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.entityTypes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/entityTypes',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListSessionEntityTypesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified session entity type. This method doesn't work with Google Assistant integration. Contact Dialogflow support if you need to use session entities with Google Assistant integration.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SessionEntityType) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/entityTypes/{entityTypesId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.entityTypes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2SessionEntityType',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2SessionEntityType',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentEnvironmentsUsersSessionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_environments_users_sessions resource."""
+
+    _NAME = 'projects_locations_agent_environments_users_sessions'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentEnvironmentsUsersSessionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def DeleteContexts(self, request, global_params=None):
+      r"""Deletes all active contexts in the specified session.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsDeleteContextsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('DeleteContexts')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteContexts.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}/contexts',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.deleteContexts',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/contexts',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsDeleteContextsRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def DetectIntent(self, request, global_params=None):
+      r"""Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries. Note: Always use agent versions for production traffic. See [Versions and environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsDetectIntentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2DetectIntentResponse) The response message.
+      """
+      config = self.GetMethodConfig('DetectIntent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetectIntent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/users/{usersId}/sessions/{sessionsId}:detectIntent',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.environments.users.sessions.detectIntent',
+        ordered_params=['session'],
+        path_params=['session'],
+        query_params=[],
+        relative_path='v2/{+session}:detectIntent',
+        request_field='googleCloudDialogflowV2DetectIntentRequest',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsDetectIntentRequest',
+        response_type_name='GoogleCloudDialogflowV2DetectIntentResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentEnvironmentsUsersService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_environments_users resource."""
+
+    _NAME = 'projects_locations_agent_environments_users'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentEnvironmentsUsersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsAgentEnvironmentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_environments resource."""
+
+    _NAME = 'projects_locations_agent_environments'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentEnvironmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all non-draft environments of the specified agent.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListEnvironmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.environments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/environments',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListEnvironmentsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentIntentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_intents resource."""
+
+    _NAME = 'projects_locations_agent_intents'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentIntentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchDelete(self, request, global_params=None):
+      r"""Deletes intents in the specified agent. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentIntentsBatchDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchDelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchDelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/intents:batchDelete',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.intents.batchDelete',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/intents:batchDelete',
+        request_field='googleCloudDialogflowV2BatchDeleteIntentsRequest',
+        request_type_name='DialogflowProjectsLocationsAgentIntentsBatchDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def BatchUpdate(self, request, global_params=None):
+      r"""Updates/Creates multiple intents in the specified agent. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentIntentsBatchUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchUpdate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchUpdate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/intents:batchUpdate',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.intents.batchUpdate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/intents:batchUpdate',
+        request_field='googleCloudDialogflowV2BatchUpdateIntentsRequest',
+        request_type_name='DialogflowProjectsLocationsAgentIntentsBatchUpdateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates an intent in the specified agent.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentIntentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Intent) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/intents',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.intents.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['intentView', 'languageCode'],
+        relative_path='v2/{+parent}/intents',
+        request_field='googleCloudDialogflowV2Intent',
+        request_type_name='DialogflowProjectsLocationsAgentIntentsCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2Intent',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified intent and its direct or indirect followup intents.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentIntentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/intents/{intentsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.agent.intents.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentIntentsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified intent.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentIntentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Intent) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/intents/{intentsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.intents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['intentView', 'languageCode'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentIntentsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Intent',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all intents in the specified agent.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentIntentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListIntentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/intents',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.intents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['intentView', 'languageCode', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/intents',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentIntentsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListIntentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified intent.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentIntentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Intent) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/intents/{intentsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.agent.intents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['intentView', 'languageCode', 'updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Intent',
+        request_type_name='DialogflowProjectsLocationsAgentIntentsPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2Intent',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentSessionsContextsService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_sessions_contexts resource."""
+
+    _NAME = 'projects_locations_agent_sessions_contexts'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentSessionsContextsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a context. If the specified context already exists, overrides the context.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsContextsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Context) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/contexts',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.sessions.contexts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/contexts',
+        request_field='googleCloudDialogflowV2Context',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsContextsCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2Context',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified context.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsContextsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/contexts/{contextsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.agent.sessions.contexts.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsContextsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified context.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsContextsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Context) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/contexts/{contextsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.sessions.contexts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsContextsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Context',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all contexts in the specified session.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsContextsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListContextsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/contexts',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.sessions.contexts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/contexts',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsContextsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListContextsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified context.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsContextsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Context) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/contexts/{contextsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.agent.sessions.contexts.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Context',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsContextsPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2Context',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentSessionsEntityTypesService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_sessions_entityTypes resource."""
+
+    _NAME = 'projects_locations_agent_sessions_entityTypes'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentSessionsEntityTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a session entity type. If the specified session entity type already exists, overrides the session entity type. This method doesn't work with Google Assistant integration. Contact Dialogflow support if you need to use session entities with Google Assistant integration.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsEntityTypesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SessionEntityType) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/entityTypes',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.sessions.entityTypes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/entityTypes',
+        request_field='googleCloudDialogflowV2SessionEntityType',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsEntityTypesCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2SessionEntityType',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified session entity type. This method doesn't work with Google Assistant integration. Contact Dialogflow support if you need to use session entities with Google Assistant integration.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsEntityTypesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/entityTypes/{entityTypesId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.agent.sessions.entityTypes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsEntityTypesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified session entity type. This method doesn't work with Google Assistant integration. Contact Dialogflow support if you need to use session entities with Google Assistant integration.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsEntityTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SessionEntityType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/entityTypes/{entityTypesId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.sessions.entityTypes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsEntityTypesGetRequest',
+        response_type_name='GoogleCloudDialogflowV2SessionEntityType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all session entity types in the specified session. This method doesn't work with Google Assistant integration. Contact Dialogflow support if you need to use session entities with Google Assistant integration.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsEntityTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListSessionEntityTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/entityTypes',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.sessions.entityTypes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/entityTypes',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsEntityTypesListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListSessionEntityTypesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified session entity type. This method doesn't work with Google Assistant integration. Contact Dialogflow support if you need to use session entities with Google Assistant integration.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsEntityTypesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SessionEntityType) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/entityTypes/{entityTypesId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.agent.sessions.entityTypes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2SessionEntityType',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsEntityTypesPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2SessionEntityType',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentSessionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_sessions resource."""
+
+    _NAME = 'projects_locations_agent_sessions'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentSessionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def DeleteContexts(self, request, global_params=None):
+      r"""Deletes all active contexts in the specified session.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsDeleteContextsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('DeleteContexts')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteContexts.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}/contexts',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.agent.sessions.deleteContexts',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/contexts',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsDeleteContextsRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def DetectIntent(self, request, global_params=None):
+      r"""Processes a natural language query and returns structured, actionable data as a result. This method is not idempotent, because it may cause contexts and session entity types to be updated, which in turn might affect results of future queries. Note: Always use agent versions for production traffic. See [Versions and environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSessionsDetectIntentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2DetectIntentResponse) The response message.
+      """
+      config = self.GetMethodConfig('DetectIntent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetectIntent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/sessions/{sessionsId}:detectIntent',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.sessions.detectIntent',
+        ordered_params=['session'],
+        path_params=['session'],
+        query_params=[],
+        relative_path='v2/{+session}:detectIntent',
+        request_field='googleCloudDialogflowV2DetectIntentRequest',
+        request_type_name='DialogflowProjectsLocationsAgentSessionsDetectIntentRequest',
+        response_type_name='GoogleCloudDialogflowV2DetectIntentResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent resource."""
+
+    _NAME = 'projects_locations_agent'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Export(self, request, global_params=None):
+      r"""Exports the specified agent to a ZIP file. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent:export',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.export',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/agent:export',
+        request_field='googleCloudDialogflowV2ExportAgentRequest',
+        request_type_name='DialogflowProjectsLocationsAgentExportRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def GetFulfillment(self, request, global_params=None):
+      r"""Retrieves the fulfillment.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentGetFulfillmentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Fulfillment) The response message.
+      """
+      config = self.GetMethodConfig('GetFulfillment')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetFulfillment.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/fulfillment',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.getFulfillment',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentGetFulfillmentRequest',
+        response_type_name='GoogleCloudDialogflowV2Fulfillment',
+        supports_download=False,
+    )
+
+    def GetValidationResult(self, request, global_params=None):
+      r"""Gets agent validation result. Agent validation is performed during training time and is updated automatically when training is completed.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentGetValidationResultRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ValidationResult) The response message.
+      """
+      config = self.GetMethodConfig('GetValidationResult')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetValidationResult.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/validationResult',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.getValidationResult',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['languageCode'],
+        relative_path='v2/{+parent}/agent/validationResult',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentGetValidationResultRequest',
+        response_type_name='GoogleCloudDialogflowV2ValidationResult',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. Operation An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent:import',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/agent:import',
+        request_field='googleCloudDialogflowV2ImportAgentRequest',
+        request_type_name='DialogflowProjectsLocationsAgentImportRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. Operation An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent:restore',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.restore',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/agent:restore',
+        request_field='googleCloudDialogflowV2RestoreAgentRequest',
+        request_type_name='DialogflowProjectsLocationsAgentRestoreRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Search(self, request, global_params=None):
+      r"""Returns the list of agents. Since there is at most one conversational agent per project, this method is useful primarily for listing all agents across projects the caller has access to. One can achieve that with a wildcard project collection id "-". Refer to [List Sub-Collections](https://cloud.google.com/apis/design/design_patterns#list_sub-collections).
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentSearchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SearchAgentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent:search',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.search',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/agent:search',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentSearchRequest',
+        response_type_name='GoogleCloudDialogflowV2SearchAgentsResponse',
+        supports_download=False,
+    )
+
+    def Train(self, request, global_params=None):
+      r"""Trains the specified agent. Operation .
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentTrainRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Train')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Train.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent:train',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.agent.train',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/agent:train',
+        request_field='googleCloudDialogflowV2TrainAgentRequest',
+        request_type_name='DialogflowProjectsLocationsAgentTrainRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def UpdateFulfillment(self, request, global_params=None):
+      r"""Updates the fulfillment.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentUpdateFulfillmentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Fulfillment) The response message.
+      """
+      config = self.GetMethodConfig('UpdateFulfillment')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateFulfillment.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/fulfillment',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.agent.updateFulfillment',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Fulfillment',
+        request_type_name='DialogflowProjectsLocationsAgentUpdateFulfillmentRequest',
+        response_type_name='GoogleCloudDialogflowV2Fulfillment',
+        supports_download=False,
+    )
+
   class ProjectsLocationsAnswerRecordsService(base_api.BaseApiService):
     """Service class for the projects_locations_answerRecords resource."""
 
@@ -3644,6 +5445,87 @@ class DialogflowV2(base_api.BaseApiClient):
       super(DialogflowV2.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def DeleteAgent(self, request, global_params=None):
+      r"""Deletes the specified agent.
+
+      Args:
+        request: (DialogflowProjectsLocationsDeleteAgentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('DeleteAgent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteAgent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.deleteAgent',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/agent',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsDeleteAgentRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def GetAgent(self, request, global_params=None):
+      r"""Retrieves the specified agent.
+
+      Args:
+        request: (DialogflowProjectsLocationsGetAgentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Agent) The response message.
+      """
+      config = self.GetMethodConfig('GetAgent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAgent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.getAgent',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/agent',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsGetAgentRequest',
+        response_type_name='GoogleCloudDialogflowV2Agent',
+        supports_download=False,
+    )
+
+    def SetAgent(self, request, global_params=None):
+      r"""Creates/updates the specified agent.
+
+      Args:
+        request: (DialogflowProjectsLocationsSetAgentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Agent) The response message.
+      """
+      config = self.GetMethodConfig('SetAgent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetAgent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.setAgent',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['updateMask'],
+        relative_path='v2/{+parent}/agent',
+        request_field='googleCloudDialogflowV2Agent',
+        request_type_name='DialogflowProjectsLocationsSetAgentRequest',
+        response_type_name='GoogleCloudDialogflowV2Agent',
+        supports_download=False,
+    )
 
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""

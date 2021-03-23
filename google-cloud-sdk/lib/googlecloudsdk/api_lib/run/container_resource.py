@@ -27,6 +27,7 @@ USER_IMAGE_ANNOTATION = k8s_object.CLIENT_GROUP + '/user-image'
 CLOUDSQL_ANNOTATION = k8s_object.RUN_GROUP + '/cloudsql-instances'
 VPC_ACCESS_ANNOTATION = 'run.googleapis.com/vpc-access-connector'
 SANDBOX_ANNOTATION = 'run.googleapis.com/sandbox'
+CMEK_KEY_ANNOTATION = 'run.googleapis.com/encryption-key'
 
 EGRESS_SETTINGS_ANNOTATION = 'run.googleapis.com/vpc-access-egress'
 EGRESS_SETTINGS_ALL = 'all'

@@ -172,54 +172,46 @@ class ImageExpander(object):
                             in constants.PUBLIC_IMAGE_PROJECTS)
 
     image_ref = None
+    collection = 'compute.images'
+    project = image_project or properties.VALUES.core.project.GetOrFail
+    params = {'project': project}
 
     if image:
       image_ref = self._resources.Parse(
           image,
-          params={
-              'project': image_project
-                         or properties.VALUES.core.project.GetOrFail,
-          },
-          collection='compute.images')
+          params=params,
+          collection=collection)
     else:
-      if image_family is not None:
-        if support_image_family_scope:
-          image_family_scope = (
-              image_family_scope
-              or properties.VALUES.compute.image_family_scope.Get())
-          if not image_family_scope:
-            image_family_scope = 'zonal' if public_image_project else 'global'
-        else:
-          image_family_scope = 'global'
+      # Determine whether the 'global' or 'zonal' image view should be used.
+      # image_family_scope will be set based on the flag or property, defaulting
+      # to None if unset. If image_project is a public image and
+      # image_family_scope is unset, it will be set to 'zonal'
+      if support_image_family_scope:
+        image_family_scope = (
+            image_family_scope
+            or properties.VALUES.compute.image_family_scope.Get())
+        if not image_family_scope:
+          image_family_scope = 'zonal' if public_image_project else None
 
+      if image_family:
         if image_family_scope == 'zonal':
-          image_ref = self._resources.Parse(
-              image_family,
-              params={
-                  'project': image_project
-                             or properties.VALUES.core.project.GetOrFail,
-                  'zone': '-'
-              },
-              collection='compute.imageFamilyViews')
-        else:
-          image_ref = self._resources.Parse(
-              image_family,
-              params={
-                  'project': image_project
-                             or properties.VALUES.core.project.GetOrFail
-              },
-              collection='compute.images')
+          params['zone'] = '-'
+          collection = 'compute.imageFamilyViews'
       elif confidential_vm:
-        image_ref = self._resources.Parse(
-            constants.DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS,
-            collection='compute.images',
-            params={'project': 'ubuntu-os-cloud'})
+        image_family = constants.DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS
+        params['project'] = 'ubuntu-os-cloud'
       else:
-        # TODO(b/182492207): Support image_family_scope for default family.
-        image_ref = self._resources.Parse(
-            constants.DEFAULT_IMAGE_FAMILY,
-            collection='compute.images',
-            params={'project': 'debian-cloud'})
+        image_family = constants.DEFAULT_IMAGE_FAMILY
+        params['project'] = 'debian-cloud'
+        if support_image_family_scope and image_family_scope != 'global':
+          params['zone'] = '-'
+          collection = 'compute.imageFamilyViews'
+
+      image_ref = self._resources.Parse(
+          image_family,
+          params=params,
+          collection=collection)
+
       if (hasattr(image_ref, 'image')
           and not image_ref.image.startswith(FAMILY_PREFIX)):
         relative_name = image_ref.RelativeName()

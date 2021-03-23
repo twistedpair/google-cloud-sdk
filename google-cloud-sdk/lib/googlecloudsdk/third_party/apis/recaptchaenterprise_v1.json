@@ -262,6 +262,23 @@
             "PASSWORD_CORRECT",
             "PASSWORD_INCORRECT"
           ]
+        },
+        "reasons": {
+          "description": "Optional. Optional reasons for the annotation that will be assigned to the Event.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Default unspecified reason.",
+              "Indicates a chargeback for fraud was issued for the transaction associated with the assessment.",
+              "Indicates the transaction associated with the assessment is suspected of being fraudulent based on the payment method, billing details, shipping address or other transaction information."
+            ],
+            "enum": [
+              "REASON_UNSPECIFIED",
+              "CHARGEBACK",
+              "PAYMENT_HEURISTICS"
+            ]
+          }
         }
       }
     },
@@ -594,7 +611,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Annotates a previously created Assessment to provide additional information on whether the event turned out to be authentic or fradulent."
+              "description": "Annotates a previously created Assessment to provide additional information on whether the event turned out to be authentic or fraudulent."
             }
           }
         },

@@ -3493,10 +3493,10 @@ class BackendService(_messages.Message):
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE.  When the loadBalancingScheme is EXTERNAL: * For
       Network Load Balancing, the possible values are NONE, CLIENT_IP,
-      CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO. * For all other load balancers
-      that use loadBalancingScheme=EXTERNAL, the possible values are NONE,
-      CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the
-      protocol is HTTP, HTTP2, or HTTPS.  When the loadBalancingScheme is
+      CLIENT_IP_PROTO, or  CLIENT_IP_PORT_PROTO. * For all other load
+      balancers that use loadBalancingScheme=EXTERNAL, the possible values are
+      NONE, CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if
+      the protocol is HTTP, HTTP2, or HTTPS.  When the loadBalancingScheme is
       INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
       CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
       INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE,
@@ -10981,6 +10981,35 @@ class ComputeInstanceGroupManagersResizeRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersResumeInstancesRequest: A
+      InstanceGroupManagersResumeInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersResumeInstancesRequest = _messages.MessageField('InstanceGroupManagersResumeInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Message):
   r"""A ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest object.
 
@@ -11063,6 +11092,93 @@ class ComputeInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagersSetTargetPoolsRequest = _messages.MessageField('InstanceGroupManagersSetTargetPoolsRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersStartInstancesRequest: A
+      InstanceGroupManagersStartInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersStartInstancesRequest = _messages.MessageField('InstanceGroupManagersStartInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersStopInstancesRequest: A
+      InstanceGroupManagersStopInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersStopInstancesRequest = _messages.MessageField('InstanceGroupManagersStopInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersSuspendInstancesRequest: A
+      InstanceGroupManagersSuspendInstancesRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersSuspendInstancesRequest = _messages.MessageField('InstanceGroupManagersSuspendInstancesRequest', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
@@ -12254,6 +12370,24 @@ class ComputeInstancesResumeRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstancesSendDiagnosticInterruptRequest(_messages.Message):
+  r"""A ComputeInstancesSendDiagnosticInterruptRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeInstancesSendDiagnosticInterruptResponse(_messages.Message):
+  r"""An empty ComputeInstancesSendDiagnosticInterrupt response."""
 
 
 class ComputeInstancesSetDeletionProtectionRequest(_messages.Message):
@@ -19345,6 +19479,35 @@ class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
   size = _messages.IntegerField(5, required=True, variant=_messages.Variant.INT32)
 
 
+class ComputeRegionInstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersResumeInstancesRequest: A
+      RegionInstanceGroupManagersResumeInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersResumeInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersResumeInstancesRequest', 4)
+  requestId = _messages.StringField(5)
+
+
 class ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Message):
   r"""A ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest
   object.
@@ -19430,6 +19593,93 @@ class ComputeRegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersSetTargetPoolsRequest = _messages.MessageField('RegionInstanceGroupManagersSetTargetPoolsRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersStartInstancesRequest: A
+      RegionInstanceGroupManagersStartInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersStartInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersStartInstancesRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersStopInstancesRequest: A
+      RegionInstanceGroupManagersStopInstancesRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersStopInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersStopInstancesRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersSuspendInstancesRequest: A
+      RegionInstanceGroupManagersSuspendInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersSuspendInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersSuspendInstancesRequest', 4)
   requestId = _messages.StringField(5)
 
 
@@ -31136,6 +31386,8 @@ class HTTP2HealthCheck(_messages.Message):
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
+    WeightReportModeValueValuesEnum: Weight report mode. used for weighted
+      Load Balancing.
 
   Fields:
     host: The value of the host header in the HTTP/2 health check request. If
@@ -31160,6 +31412,7 @@ class HTTP2HealthCheck(_messages.Message):
     response: The string to match anywhere in the first 1024 bytes of the
       response body. If left empty (the default value), the status code
       determines health. The response data can only be ASCII.
+    weightReportMode: Weight report mode. used for weighted Load Balancing.
   """
 
   class PortSpecificationValueValuesEnum(_messages.Enum):
@@ -31192,6 +31445,18 @@ class HTTP2HealthCheck(_messages.Message):
     NONE = 0
     PROXY_V1 = 1
 
+  class WeightReportModeValueValuesEnum(_messages.Enum):
+    r"""Weight report mode. used for weighted Load Balancing.
+
+    Values:
+      DISABLE: <no description>
+      DRY_RUN: <no description>
+      ENABLE: <no description>
+    """
+    DISABLE = 0
+    DRY_RUN = 1
+    ENABLE = 2
+
   host = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   portName = _messages.StringField(3)
@@ -31199,6 +31464,7 @@ class HTTP2HealthCheck(_messages.Message):
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 5)
   requestPath = _messages.StringField(6)
   response = _messages.StringField(7)
+  weightReportMode = _messages.EnumField('WeightReportModeValueValuesEnum', 8)
 
 
 class HTTPHealthCheck(_messages.Message):
@@ -31217,6 +31483,8 @@ class HTTPHealthCheck(_messages.Message):
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
+    WeightReportModeValueValuesEnum: Weight report mode. used for weighted
+      Load Balancing.
 
   Fields:
     host: The value of the host header in the HTTP health check request. If
@@ -31241,6 +31509,7 @@ class HTTPHealthCheck(_messages.Message):
     response: The string to match anywhere in the first 1024 bytes of the
       response body. If left empty (the default value), the status code
       determines health. The response data can only be ASCII.
+    weightReportMode: Weight report mode. used for weighted Load Balancing.
   """
 
   class PortSpecificationValueValuesEnum(_messages.Enum):
@@ -31273,6 +31542,18 @@ class HTTPHealthCheck(_messages.Message):
     NONE = 0
     PROXY_V1 = 1
 
+  class WeightReportModeValueValuesEnum(_messages.Enum):
+    r"""Weight report mode. used for weighted Load Balancing.
+
+    Values:
+      DISABLE: <no description>
+      DRY_RUN: <no description>
+      ENABLE: <no description>
+    """
+    DISABLE = 0
+    DRY_RUN = 1
+    ENABLE = 2
+
   host = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   portName = _messages.StringField(3)
@@ -31280,6 +31561,7 @@ class HTTPHealthCheck(_messages.Message):
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 5)
   requestPath = _messages.StringField(6)
   response = _messages.StringField(7)
+  weightReportMode = _messages.EnumField('WeightReportModeValueValuesEnum', 8)
 
 
 class HTTPSHealthCheck(_messages.Message):
@@ -31298,6 +31580,8 @@ class HTTPSHealthCheck(_messages.Message):
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
+    WeightReportModeValueValuesEnum: Weight report mode. used for weighted
+      Load Balancing.
 
   Fields:
     host: The value of the host header in the HTTPS health check request. If
@@ -31322,6 +31606,7 @@ class HTTPSHealthCheck(_messages.Message):
     response: The string to match anywhere in the first 1024 bytes of the
       response body. If left empty (the default value), the status code
       determines health. The response data can only be ASCII.
+    weightReportMode: Weight report mode. used for weighted Load Balancing.
   """
 
   class PortSpecificationValueValuesEnum(_messages.Enum):
@@ -31354,6 +31639,18 @@ class HTTPSHealthCheck(_messages.Message):
     NONE = 0
     PROXY_V1 = 1
 
+  class WeightReportModeValueValuesEnum(_messages.Enum):
+    r"""Weight report mode. used for weighted Load Balancing.
+
+    Values:
+      DISABLE: <no description>
+      DRY_RUN: <no description>
+      ENABLE: <no description>
+    """
+    DISABLE = 0
+    DRY_RUN = 1
+    ENABLE = 2
+
   host = _messages.StringField(1)
   port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   portName = _messages.StringField(3)
@@ -31361,6 +31658,7 @@ class HTTPSHealthCheck(_messages.Message):
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 5)
   requestPath = _messages.StringField(6)
   response = _messages.StringField(7)
+  weightReportMode = _messages.EnumField('WeightReportModeValueValuesEnum', 8)
 
 
 class HealthCheck(_messages.Message):
@@ -35003,6 +35301,8 @@ class InstanceGroupManager(_messages.Message):
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
+    instanceLifecyclePolicy: Instance lifecycle policy for this Instance Group
+      Manager.
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create all
       new instances in the managed instance group. The templates for existing
@@ -35035,6 +35335,16 @@ class InstanceGroupManager(_messages.Message):
       instance group. You can reduce this number by using the
       instanceGroupManager deleteInstances or abandonInstances methods.
       Resizing the group also changes this number.
+    targetStoppedSize: The target number of stopped instances for this managed
+      instance group. This number changes when you:   - Stop instance using
+      the stopInstances method or start instances using the startInstances
+      method.  - Manually change the targetStoppedSize using the update
+      method.
+    targetSuspendedSize: The target number of suspended instances for this
+      managed instance group. This number changes when you:   - Suspend
+      instance using the suspendInstances method or resume instances using the
+      resumeInstances method.  - Manually change the targetSuspendedSize using
+      the update method.
     updatePolicy: The update policy for this managed instance group.
     versions: Specifies the instance templates used by this managed instance
       group to create instances.  Each version is defined by an
@@ -35069,21 +35379,24 @@ class InstanceGroupManager(_messages.Message):
   fingerprint = _messages.BytesField(8)
   id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
   instanceGroup = _messages.StringField(10)
-  instanceTemplate = _messages.StringField(11)
-  kind = _messages.StringField(12, default='compute#instanceGroupManager')
-  name = _messages.StringField(13)
-  namedPorts = _messages.MessageField('NamedPort', 14, repeated=True)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  serviceAccount = _messages.StringField(18)
-  statefulPolicy = _messages.MessageField('StatefulPolicy', 19)
-  status = _messages.MessageField('InstanceGroupManagerStatus', 20)
-  targetPools = _messages.StringField(21, repeated=True)
-  targetSize = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 23)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 24, repeated=True)
-  zone = _messages.StringField(25)
+  instanceLifecyclePolicy = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicy', 11)
+  instanceTemplate = _messages.StringField(12)
+  kind = _messages.StringField(13, default='compute#instanceGroupManager')
+  name = _messages.StringField(14)
+  namedPorts = _messages.MessageField('NamedPort', 15, repeated=True)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  serviceAccount = _messages.StringField(19)
+  statefulPolicy = _messages.MessageField('StatefulPolicy', 20)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 21)
+  targetPools = _messages.StringField(22, repeated=True)
+  targetSize = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  targetStoppedSize = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  targetSuspendedSize = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 26)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 27, repeated=True)
+  zone = _messages.StringField(28)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -35119,6 +35432,15 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
     restarting: [Output Only] The number of instances in the managed instance
       group that are scheduled to be restarted or are currently being
       restarted.
+    resuming: [Output Only] The number of instances in the managed instance
+      group that are scheduled to be resumed or are currently being resumed.
+    starting: [Output Only] The number of instances in the managed instance
+      group that are scheduled to be started or are currently being started.
+    stopping: [Output Only] The number of instances in the managed instance
+      group that are scheduled to be stopped or are currently being stopped.
+    suspending: [Output Only] The number of instances in the managed instance
+      group that are scheduled to be suspended or are currently being
+      suspended.
     verifying: [Output Only] The number of instances in the managed instance
       group that are being verified. See the managedInstances[].currentAction
       property in the listManagedInstances method documentation.
@@ -35132,7 +35454,11 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
   recreating = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   refreshing = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   restarting = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  verifying = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  resuming = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  starting = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  stopping = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  suspending = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  verifying = _messages.IntegerField(13, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerAggregatedList(_messages.Message):
@@ -35322,6 +35648,39 @@ class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
   healthCheck = _messages.StringField(1)
   initialDelaySec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   maxUnavailable = _messages.MessageField('FixedOrPercent', 3)
+
+
+class InstanceGroupManagerInstanceLifecyclePolicy(_messages.Message):
+  r"""A InstanceGroupManagerInstanceLifecyclePolicy object.
+
+  Fields:
+    metadataBasedReadinessSignal: The configuration for metadata based
+      readiness signal sent by the instance during initialization when
+      stopping / suspending an instance. The Instance Group Manager will wait
+      for a signal that indicates successful initialization before stopping /
+      suspending an instance.  If a successful readiness signal is not sent
+      before timeout, the corresponding instance will not be stopped /
+      suspended. Instead, an error will be visible in the lastAttempt.errors
+      field of the managed instance in the listmanagedinstances method.  If
+      metadataBasedReadinessSignal.timeoutSec is unset, the Instance Group
+      Manager will directly proceed to suspend / stop instances, skipping
+      initialization on them.
+  """
+
+  metadataBasedReadinessSignal = _messages.MessageField('InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal', 1)
+
+
+class InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal(_messages.Message):
+  r"""A
+  InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal
+  object.
+
+  Fields:
+    timeoutSec: The number of seconds to wait for a readiness signal during
+      initialization before timing out.
+  """
+
+  timeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerList(_messages.Message):
@@ -36096,6 +36455,17 @@ class InstanceGroupManagersResizeAdvancedRequest(_messages.Message):
   targetSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class InstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to resume. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
 class InstanceGroupManagersScopedList(_messages.Message):
   r"""A InstanceGroupManagersScopedList object.
 
@@ -36258,6 +36628,46 @@ class InstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
 
   fingerprint = _messages.BytesField(1)
   targetPools = _messages.StringField(2, repeated=True)
+
+
+class InstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to start. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class InstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    forceStop: If this flag is set to true, the Instance Group Manager will
+      proceed to stop the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to stop. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceStop = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
+
+
+class InstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    forceSuspend: If this flag is set to true, the Instance Group Manager will
+      proceed to suspend the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to suspend. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceSuspend = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
 
 
 class InstanceGroupManagersUpdatePerInstanceConfigsReq(_messages.Message):
@@ -36894,6 +37304,10 @@ class InstanceManagedByIgmErrorInstanceActionDetails(_messages.Message):
       RECREATING: <no description>
       REFRESHING: <no description>
       RESTARTING: <no description>
+      RESUMING: <no description>
+      STARTING: <no description>
+      STOPPING: <no description>
+      SUSPENDING: <no description>
       VERIFYING: <no description>
     """
     ABANDONING = 0
@@ -36904,7 +37318,11 @@ class InstanceManagedByIgmErrorInstanceActionDetails(_messages.Message):
     RECREATING = 5
     REFRESHING = 6
     RESTARTING = 7
-    VERIFYING = 8
+    RESUMING = 8
+    STARTING = 9
+    STOPPING = 10
+    SUSPENDING = 11
+    VERIFYING = 12
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   instance = _messages.StringField(2)
@@ -41389,6 +41807,10 @@ class ManagedInstance(_messages.Message):
       RECREATING: <no description>
       REFRESHING: <no description>
       RESTARTING: <no description>
+      RESUMING: <no description>
+      STARTING: <no description>
+      STOPPING: <no description>
+      SUSPENDING: <no description>
       VERIFYING: <no description>
     """
     ABANDONING = 0
@@ -41399,7 +41821,11 @@ class ManagedInstance(_messages.Message):
     RECREATING = 5
     REFRESHING = 6
     RESTARTING = 7
-    VERIFYING = 8
+    RESUMING = 8
+    STARTING = 9
+    STOPPING = 10
+    SUSPENDING = 11
+    VERIFYING = 12
 
   class InstanceStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. This field is empty when the
@@ -49612,7 +50038,7 @@ class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
     skipInapplicableInstances: Skip instances which cannot be deleted
       (instances not belonging to this managed group, already being deleted or
       being abandoned). If `false`, fail whole flow, if such instance is
-      passed.
+      passed. DEPRECATED: Use skip_instances_on_validation_error instead.
   """
 
   instances = _messages.StringField(1, repeated=True)
@@ -49813,6 +50239,17 @@ class RegionInstanceGroupManagersResizeAdvancedRequest(_messages.Message):
   targetSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class RegionInstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to resume. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
 class RegionInstanceGroupManagersSetAutoHealingRequest(_messages.Message):
   r"""A RegionInstanceGroupManagersSetAutoHealingRequest object.
 
@@ -49848,6 +50285,46 @@ class RegionInstanceGroupManagersSetTemplateRequest(_messages.Message):
   """
 
   instanceTemplate = _messages.StringField(1)
+
+
+class RegionInstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to start. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    forceStop: If this flag is set to true, the Instance Group Manager will
+      proceed to stop the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to stop. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceStop = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
+
+
+class RegionInstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    forceSuspend: If this flag is set to true, the Instance Group Manager will
+      proceed to suspend the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to suspend. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceSuspend = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
 
 
 class RegionInstanceGroupsListInstances(_messages.Message):
@@ -51824,6 +52301,10 @@ class Route(_messages.Message):
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
+    allowConflictingSubnetworks: Whether this route can conflict with existing
+      subnetworks. Setting this to true allows this route to conflict with
+      subnetworks that have already been configured on the corresponding
+      network.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this field
@@ -51981,26 +52462,27 @@ class Route(_messages.Message):
     data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
     message = _messages.StringField(3)
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  destRange = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#route')
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  nextHopGateway = _messages.StringField(8)
-  nextHopIlb = _messages.StringField(9)
-  nextHopInstance = _messages.StringField(10)
-  nextHopInterconnectAttachment = _messages.StringField(11)
-  nextHopIp = _messages.StringField(12)
-  nextHopNetwork = _messages.StringField(13)
-  nextHopPeering = _messages.StringField(14)
-  nextHopVpnTunnel = _messages.StringField(15)
-  priority = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
-  selfLink = _messages.StringField(17)
-  selfLinkWithId = _messages.StringField(18)
-  tags = _messages.StringField(19, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 20, repeated=True)
+  allowConflictingSubnetworks = _messages.BooleanField(1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  destRange = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default='compute#route')
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  nextHopGateway = _messages.StringField(9)
+  nextHopIlb = _messages.StringField(10)
+  nextHopInstance = _messages.StringField(11)
+  nextHopInterconnectAttachment = _messages.StringField(12)
+  nextHopIp = _messages.StringField(13)
+  nextHopNetwork = _messages.StringField(14)
+  nextHopPeering = _messages.StringField(15)
+  nextHopVpnTunnel = _messages.StringField(16)
+  priority = _messages.IntegerField(17, variant=_messages.Variant.UINT32)
+  selfLink = _messages.StringField(18)
+  selfLinkWithId = _messages.StringField(19)
+  tags = _messages.StringField(20, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 21, repeated=True)
 
 
 class RouteList(_messages.Message):
@@ -53181,6 +53663,10 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
+    routerApplianceInstance: [Output only] URI of the VM instance that is used
+      as third-party router appliances such as Next Gen Firewalls, Virtual
+      Routers, or Router Appliances. The VM instance is the peer side of the
+      BGP session.
     state: BGP state as specified in RFC1771.
     status: Status of the BGP peer: {UP, DOWN}
     uptime: Time this session has been up. Format: 14 years, 51 weeks, 6 days,
@@ -53207,10 +53693,11 @@ class RouterStatusBgpPeerStatus(_messages.Message):
   name = _messages.StringField(5)
   numLearnedRoutes = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
   peerIpAddress = _messages.StringField(7)
-  state = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  uptime = _messages.StringField(10)
-  uptimeSeconds = _messages.StringField(11)
+  routerApplianceInstance = _messages.StringField(8)
+  state = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  uptime = _messages.StringField(11)
+  uptimeSeconds = _messages.StringField(12)
 
 
 class RouterStatusNatStatus(_messages.Message):
@@ -54413,18 +54900,13 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
 
   Fields:
     banDurationSec: Can only be specified if the action for the rule is
-      "rate_based_ban". If specified, the key will be banned for the
-      configured 'ban_duration' when the number of requests that exceed the
-      'rate_limit_threshold' also exceed this 'ban_threshold'.
+      "rate_based_ban". If specified, determines the time (in seconds) the
+      traffic will continue to be banned by the rate limit after the rate
+      falls below the threshold.
     banThreshold: Can only be specified if the action for the rule is
       "rate_based_ban". If specified, the key will be banned for the
-      configured 'ban_duration' when the number of requests that exceed the
-      'rate_limit_threshold' also exceed this 'ban_threshold'.
-    blockDuration: Can only be specified if the action for the rule is
-      "rate_based_ban" If specified, determines the time (in seconds) the
-      traffic will continue to be blocked by the rate limit after the rate
-      falls below the threshold. The default value is 0 seconds. [Deprecated]
-      This field is deprecated.
+      configured 'ban_duration_sec' when the number of requests that exceed
+      the 'rate_limit_threshold' also exceed this 'ban_threshold'.
     conformAction: Action to take when requests are under the given threshold.
       When requests are throttled, this is also the action for all requests
       which are not dropped. Valid options are "allow", "fairshare", and
@@ -54437,8 +54919,6 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       specified. Valid options are "deny()" where valid values for status are
       403, 404, 429, and 502.
     rateLimitThreshold: Threshold at which to begin ratelimiting.
-    thresholdRps: Rate in requests per second at which to begin ratelimiting.
-      [Deprecated] This field is deprecated.
   """
 
   class EnforceOnKeyValueValuesEnum(_messages.Enum):
@@ -54455,12 +54935,10 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
 
   banDurationSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   banThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 2)
-  blockDuration = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  conformAction = _messages.StringField(4)
-  enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 5)
-  exceedAction = _messages.StringField(6)
-  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 7)
-  thresholdRps = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  conformAction = _messages.StringField(3)
+  enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 4)
+  exceedAction = _messages.StringField(5)
+  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 6)
 
 
 class SecurityPolicyRuleRateLimitOptionsThreshold(_messages.Message):

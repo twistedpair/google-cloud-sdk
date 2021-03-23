@@ -25,13 +25,14 @@ import boto3
 import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
-from googlecloudsdk.command_lib.storage import util as hash_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import scaled_integer
 
 
 # S3 does not allow upload of size > 5 GiB for put_object.
@@ -335,7 +336,8 @@ class S3Api(cloud_api.CloudApi):
       )
       processed_bytes = start_byte
       for chunk in response['Body'].iter_chunks(
-          properties.VALUES.storage.chunk_size.GetInt()):
+          scaled_integer.ParseInteger(
+              properties.VALUES.storage.download_chunk_size.Get())):
         download_stream.write(chunk)
         processed_bytes += len(chunk)
         if progress_callback:

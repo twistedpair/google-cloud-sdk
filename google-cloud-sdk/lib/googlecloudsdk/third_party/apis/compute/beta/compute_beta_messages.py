@@ -730,6 +730,7 @@ class Address(_messages.Message):
     Values:
       DNS_RESOLVER: <no description>
       GCE_ENDPOINT: <no description>
+      IPSEC_INTERCONNECT: <no description>
       NAT_AUTO: <no description>
       PRIVATE_SERVICE_CONNECT: <no description>
       SHARED_LOADBALANCER_VIP: <no description>
@@ -737,10 +738,11 @@ class Address(_messages.Message):
     """
     DNS_RESOLVER = 0
     GCE_ENDPOINT = 1
-    NAT_AUTO = 2
-    PRIVATE_SERVICE_CONNECT = 3
-    SHARED_LOADBALANCER_VIP = 4
-    VPC_PEERING = 5
+    IPSEC_INTERCONNECT = 2
+    NAT_AUTO = 3
+    PRIVATE_SERVICE_CONNECT = 4
+    SHARED_LOADBALANCER_VIP = 5
+    VPC_PEERING = 6
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -3209,10 +3211,10 @@ class BackendService(_messages.Message):
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE.  When the loadBalancingScheme is EXTERNAL: * For
       Network Load Balancing, the possible values are NONE, CLIENT_IP,
-      CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO. * For all other load balancers
-      that use loadBalancingScheme=EXTERNAL, the possible values are NONE,
-      CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the
-      protocol is HTTP, HTTP2, or HTTPS.  When the loadBalancingScheme is
+      CLIENT_IP_PROTO, or  CLIENT_IP_PORT_PROTO. * For all other load
+      balancers that use loadBalancingScheme=EXTERNAL, the possible values are
+      NONE, CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if
+      the protocol is HTTP, HTTP2, or HTTPS.  When the loadBalancingScheme is
       INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
       CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
       INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE,
@@ -3515,6 +3517,7 @@ class BackendService(_messages.Message):
 
     Values:
       CLIENT_IP: <no description>
+      CLIENT_IP_NO_DESTINATION: <no description>
       CLIENT_IP_PORT_PROTO: <no description>
       CLIENT_IP_PROTO: <no description>
       GENERATED_COOKIE: <no description>
@@ -3523,12 +3526,13 @@ class BackendService(_messages.Message):
       NONE: <no description>
     """
     CLIENT_IP = 0
-    CLIENT_IP_PORT_PROTO = 1
-    CLIENT_IP_PROTO = 2
-    GENERATED_COOKIE = 3
-    HEADER_FIELD = 4
-    HTTP_COOKIE = 5
-    NONE = 6
+    CLIENT_IP_NO_DESTINATION = 1
+    CLIENT_IP_PORT_PROTO = 2
+    CLIENT_IP_PROTO = 3
+    GENERATED_COOKIE = 4
+    HEADER_FIELD = 5
+    HTTP_COOKIE = 6
+    NONE = 7
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backends = _messages.MessageField('Backend', 2, repeated=True)
@@ -29387,6 +29391,9 @@ class HealthStatus(_messages.Message):
 
   Fields:
     annotations: Metadata defined as annotations for network endpoint.
+    forwardingRule: URL of the forwarding rule associated with the health
+      status of the instance.
+    forwardingRuleIp: A forwarding rule IP address assigned to this instance.
     healthState: Health state of the instance.
     instance: URL of the instance resource.
     ipAddress: For target pool based Network Load Balancing, it indicates the
@@ -29448,12 +29455,14 @@ class HealthStatus(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  healthState = _messages.EnumField('HealthStateValueValuesEnum', 2)
-  instance = _messages.StringField(3)
-  ipAddress = _messages.StringField(4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  weight = _messages.StringField(6)
-  weightError = _messages.EnumField('WeightErrorValueValuesEnum', 7)
+  forwardingRule = _messages.StringField(2)
+  forwardingRuleIp = _messages.StringField(3)
+  healthState = _messages.EnumField('HealthStateValueValuesEnum', 4)
+  instance = _messages.StringField(5)
+  ipAddress = _messages.StringField(6)
+  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  weight = _messages.StringField(8)
+  weightError = _messages.EnumField('WeightErrorValueValuesEnum', 9)
 
 
 class HealthStatusForNetworkEndpoint(_messages.Message):
@@ -34448,6 +34457,14 @@ class InterconnectAttachment(_messages.Message):
       via the pairing key, so that the provisioned circuit will lie in the
       specified domain. If not specified, the value will default to
       AVAILABILITY_DOMAIN_ANY.
+    EncryptionValueValuesEnum: Indicates the user-supplied encryption option
+      of this interconnect attachment:  - NONE is the default value, which
+      means that the attachment carries unencrypted traffic. VMs can send
+      traffic to, or receive traffic from, this type of attachment.  - IPSEC
+      indicates that the attachment carries only traffic encrypted by an IPsec
+      device such as an HA VPN gateway. VMs cannot directly send traffic to,
+      or receive traffic from, such an attachment. To use IPsec-encrypted
+      Cloud Interconnect, create the attachment using this option.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional, which can
       take one of the following values:  - OS_ACTIVE: The attachment has been
@@ -34521,6 +34538,14 @@ class InterconnectAttachment(_messages.Message):
       via the pairing key, so that the provisioned circuit will lie in the
       specified domain. If not specified, the value will default to
       AVAILABILITY_DOMAIN_ANY.
+    encryption: Indicates the user-supplied encryption option of this
+      interconnect attachment:  - NONE is the default value, which means that
+      the attachment carries unencrypted traffic. VMs can send traffic to, or
+      receive traffic from, this type of attachment.  - IPSEC indicates that
+      the attachment carries only traffic encrypted by an IPsec device such as
+      an HA VPN gateway. VMs cannot directly send traffic to, or receive
+      traffic from, such an attachment. To use IPsec-encrypted Cloud
+      Interconnect, create the attachment using this option.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues. [Deprecated] This field is not used.
@@ -34528,6 +34553,20 @@ class InterconnectAttachment(_messages.Message):
       is defined by the server.
     interconnect: URL of the underlying Interconnect object that this
       attachment's traffic will traverse through.
+    ipsecInternalAddresses: URL of addresses that have been reserved for the
+      interconnect attachment, Used only for interconnect attachment that has
+      the encryption option as IPSEC. The addresses must be RFC 1918 IP
+      address ranges. When creating HA VPN gateway over the interconnect
+      attachment, if the attachment is configured to use an RFC 1918 IP
+      address, then the VPN gateway?s IP address will be allocated from the IP
+      address range specified here. For example, if the HA VPN gateway?s
+      interface 0 is paired to this interconnect attachment, then an RFC 1918
+      IP address for the VPN gateway interface 0 will be allocated from the IP
+      address specified for this interconnect attachment. If this field is not
+      specified for interconnect attachment that has encryption option as
+      IPSEC, later on when creating HA VPN gateway on this interconnect
+      attachment, the HA VPN gateway's IP address will be allocated from
+      regional external IP address pool.
     kind: [Output Only] Type of the resource. Always
       compute#interconnectAttachment for interconnect attachments.
     labelFingerprint: A fingerprint for the labels being applied to this
@@ -34661,6 +34700,23 @@ class InterconnectAttachment(_messages.Message):
     AVAILABILITY_DOMAIN_2 = 1
     AVAILABILITY_DOMAIN_ANY = 2
 
+  class EncryptionValueValuesEnum(_messages.Enum):
+    r"""Indicates the user-supplied encryption option of this interconnect
+    attachment:  - NONE is the default value, which means that the attachment
+    carries unencrypted traffic. VMs can send traffic to, or receive traffic
+    from, this type of attachment.  - IPSEC indicates that the attachment
+    carries only traffic encrypted by an IPsec device such as an HA VPN
+    gateway. VMs cannot directly send traffic to, or receive traffic from,
+    such an attachment. To use IPsec-encrypted Cloud Interconnect, create the
+    attachment using this option.
+
+    Values:
+      IPSEC: <no description>
+      NONE: <no description>
+    """
+    IPSEC = 0
+    NONE = 1
+
   class OperationalStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The current status of whether or not this interconnect
     attachment is functional, which can take one of the following values:  -
@@ -34761,25 +34817,27 @@ class InterconnectAttachment(_messages.Message):
   dataplaneVersion = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   description = _messages.StringField(8)
   edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 9)
-  googleReferenceId = _messages.StringField(10)
-  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(12)
-  kind = _messages.StringField(13, default='compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  mtu = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  name = _messages.StringField(17)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 18)
-  pairingKey = _messages.StringField(19)
-  partnerAsn = _messages.IntegerField(20)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 21)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 22)
-  region = _messages.StringField(23)
-  router = _messages.StringField(24)
-  selfLink = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  type = _messages.EnumField('TypeValueValuesEnum', 27)
-  vlanTag8021q = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  encryption = _messages.EnumField('EncryptionValueValuesEnum', 10)
+  googleReferenceId = _messages.StringField(11)
+  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(13)
+  ipsecInternalAddresses = _messages.StringField(14, repeated=True)
+  kind = _messages.StringField(15, default='compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  mtu = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  name = _messages.StringField(19)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 20)
+  pairingKey = _messages.StringField(21)
+  partnerAsn = _messages.IntegerField(22)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 23)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 24)
+  region = _messages.StringField(25)
+  router = _messages.StringField(26)
+  selfLink = _messages.StringField(27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  type = _messages.EnumField('TypeValueValuesEnum', 29)
+  vlanTag8021q = _messages.IntegerField(30, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -46797,6 +46855,9 @@ class Router(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    encryptedInterconnectRouter: Field to indicate if a router is dedicated to
+      use with encrypted Interconnect Attachment (IPsec-encrypted Cloud
+      Interconnect feature).
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: Router interfaces. Each interface requires either one linked
@@ -46822,14 +46883,15 @@ class Router(_messages.Message):
   bgpPeers = _messages.MessageField('RouterBgpPeer', 2, repeated=True)
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  interfaces = _messages.MessageField('RouterInterface', 6, repeated=True)
-  kind = _messages.StringField(7, default='compute#router')
-  name = _messages.StringField(8)
-  nats = _messages.MessageField('RouterNat', 9, repeated=True)
-  network = _messages.StringField(10)
-  region = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
+  encryptedInterconnectRouter = _messages.BooleanField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  interfaces = _messages.MessageField('RouterInterface', 7, repeated=True)
+  kind = _messages.StringField(8, default='compute#router')
+  name = _messages.StringField(9)
+  nats = _messages.MessageField('RouterNat', 10, repeated=True)
+  network = _messages.StringField(11)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
 
 
 class RouterAdvertisedIpRange(_messages.Message):
@@ -47128,6 +47190,11 @@ class RouterBgpPeer(_messages.Message):
       use a different value.
     peerIpAddress: IP address of the BGP interface outside Google Cloud
       Platform. Only IPv4 is supported.
+    routerApplianceInstance: URI of the VM instance that is used as third-
+      party router appliances such as Next Gen Firewalls, Virtual Routers, or
+      Router Appliances. The VM instance must be located in zones contained in
+      the same region as this Cloud Router. The VM instance is the peer side
+      of the BGP session.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -47190,6 +47257,7 @@ class RouterBgpPeer(_messages.Message):
   name = _messages.StringField(10)
   peerAsn = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
   peerIpAddress = _messages.StringField(12)
+  routerApplianceInstance = _messages.StringField(13)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -47289,6 +47357,26 @@ class RouterInterface(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
+    privateIpAddress: The regional private internal IP address that is used to
+      establish BGP sessions to a VM instance acting as a third-party Router
+      Appliance, such as a Next Gen Firewall, a Virtual Router, or an SD-WAN
+      VM.
+    redundantInterface: Name of the interface that will be redundant with the
+      current interface you are creating. The redundantInterface must belong
+      to the same Cloud Router as the interface here. To establish the BGP
+      session to a Router Appliance VM, you must create two BGP peers. The two
+      BGP peers must be attached to two separate interfaces that are redundant
+      with each other. The redundant_interface must be 1-63 characters long,
+      and comply with RFC1035. Specifically, the redundant_interface must be
+      1-63 characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
+    subnetwork: The URL of the subnetwork resource that this interface belongs
+      to, which must be in the same region as the Cloud Router. When you
+      establish a BGP session to a VM instance using this interface, the VM
+      instance must belong to the same subnetwork as the subnetwork specified
+      here.
   """
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
@@ -47312,6 +47400,9 @@ class RouterInterface(_messages.Message):
   linkedVpnTunnel = _messages.StringField(3)
   managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 4)
   name = _messages.StringField(5)
+  privateIpAddress = _messages.StringField(6)
+  redundantInterface = _messages.StringField(7)
+  subnetwork = _messages.StringField(8)
 
 
 class RouterList(_messages.Message):
@@ -47673,6 +47764,10 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
+    routerApplianceInstance: [Output only] URI of the VM instance that is used
+      as third-party router appliances such as Next Gen Firewalls, Virtual
+      Routers, or Router Appliances. The VM instance is the peer side of the
+      BGP session.
     state: BGP state as specified in RFC1771.
     status: Status of the BGP peer: {UP, DOWN}
     uptime: Time this session has been up. Format: 14 years, 51 weeks, 6 days,
@@ -47699,10 +47794,11 @@ class RouterStatusBgpPeerStatus(_messages.Message):
   name = _messages.StringField(5)
   numLearnedRoutes = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
   peerIpAddress = _messages.StringField(7)
-  state = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  uptime = _messages.StringField(10)
-  uptimeSeconds = _messages.StringField(11)
+  routerApplianceInstance = _messages.StringField(8)
+  state = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  uptime = _messages.StringField(11)
+  uptimeSeconds = _messages.StringField(12)
 
 
 class RouterStatusNatStatus(_messages.Message):
@@ -53698,6 +53794,7 @@ class TargetPool(_messages.Message):
 
     Values:
       CLIENT_IP: <no description>
+      CLIENT_IP_NO_DESTINATION: <no description>
       CLIENT_IP_PORT_PROTO: <no description>
       CLIENT_IP_PROTO: <no description>
       GENERATED_COOKIE: <no description>
@@ -53706,12 +53803,13 @@ class TargetPool(_messages.Message):
       NONE: <no description>
     """
     CLIENT_IP = 0
-    CLIENT_IP_PORT_PROTO = 1
-    CLIENT_IP_PROTO = 2
-    GENERATED_COOKIE = 3
-    HEADER_FIELD = 4
-    HTTP_COOKIE = 5
-    NONE = 6
+    CLIENT_IP_NO_DESTINATION = 1
+    CLIENT_IP_PORT_PROTO = 2
+    CLIENT_IP_PROTO = 3
+    GENERATED_COOKIE = 4
+    HEADER_FIELD = 5
+    HTTP_COOKIE = 6
+    NONE = 7
 
   backupPool = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
@@ -56705,12 +56803,18 @@ class VpnGatewayVpnGatewayInterface(_messages.Message):
 
   Fields:
     id: The numeric ID of this VPN gateway interface.
+    interconnectAttachment: URL of the interconnect attachment resource. When
+      the value of this field is present, the VPN Gateway will be used for
+      IPsec-encrypted Cloud Interconnect; all Egress or Ingress traffic for
+      this VPN Gateway interface will go through the specified interconnect
+      attachment resource.
     ipAddress: [Output Only] The external IP address for this VPN gateway
       interface.
   """
 
   id = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
-  ipAddress = _messages.StringField(2)
+  interconnectAttachment = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
 
 
 class VpnGatewaysGetStatusResponse(_messages.Message):

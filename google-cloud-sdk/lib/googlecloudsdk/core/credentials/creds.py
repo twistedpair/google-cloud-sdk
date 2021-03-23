@@ -1111,7 +1111,7 @@ def _ConvertGoogleAuthCredentialsToADC(credentials):
   """Converts a google-auth credentials to application default credentials."""
   creds_type = CredentialTypeGoogleAuth.FromCredentials(credentials)
   if creds_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
-    adc = credentials.to_json(strip=('token', 'token_uri', 'scopes'))
+    adc = credentials.to_json(strip=('token', 'token_uri', 'scopes', 'expiry'))
     adc = json.loads(adc)
     adc['type'] = creds_type.key
     return adc

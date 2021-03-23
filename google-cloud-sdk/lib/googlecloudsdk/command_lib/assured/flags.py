@@ -23,8 +23,13 @@ from googlecloudsdk.calliope.base import ReleaseTrack
 from googlecloudsdk.command_lib.assured import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
-_GA_COMPLIANCE_REGIMES = ['CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4']
-_BETA_COMPLIANCE_REGIMES = ['CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4']
+_GA_COMPLIANCE_REGIMES = [
+    'CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4', 'US_REGIONAL_ACCESS'
+]
+_BETA_COMPLIANCE_REGIMES = [
+    'CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4', 'US_REGIONAL_ACCESS',
+    'HIPAA', 'HITRUST'
+]
 
 compliance_regimes = {
     ReleaseTrack.GA: _GA_COMPLIANCE_REGIMES,
@@ -120,6 +125,21 @@ def AddCreateWorkloadFlags(parser, release_track):
       '--provisioned-resources-parent',
       help=('The parent of the provisioned projects, for example, '
             'folders/{FOLDER_ID}'))
+  if release_track != ReleaseTrack.GA:
+    parser.add_argument(
+        '--resource-settings',
+        type=arg_parsers.ArgDict(spec={
+            'consumer-project-id': str,
+            'encryption-keys-project-id': str
+        }),
+        metavar='KEY=VALUE',
+        help=(
+            'A comma-separated, key=value map of custom resource settings such '
+            'as custom project ids, for example: consumer-project-id={CONSUMER_PROJECT_ID} '
+            'Note: Currently only consumer-project-id and '
+            'encryption-keys-project-id are supported. The '
+            'encryption-keys-project-id setting can be specified only if KMS settings '
+            'are provided'))
 
 
 def AddDeleteWorkloadFlags(parser):

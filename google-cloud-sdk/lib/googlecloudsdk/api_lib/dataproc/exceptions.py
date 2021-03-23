@@ -53,6 +53,10 @@ class FileUploadError(Error):
   """File upload error."""
 
 
+class ObjectReadError(Error):
+  """Cloud Storage Object read error."""
+
+
 class ValidationError(Error):
   """Error while validating YAML against schema."""
 

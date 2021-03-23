@@ -2856,13 +2856,6 @@
         }
       }
     },
-    "DisableServiceResponse": {
-      "id": "DisableServiceResponse",
-      "description": "Operation payload for DisableService method.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "EnableServiceResponse": {
       "id": "EnableServiceResponse",
       "description": "Operation payload for EnableService method.",

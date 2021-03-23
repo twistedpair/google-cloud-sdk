@@ -798,7 +798,7 @@
           }
         },
         "parent": {
-          "description": "Required. Immutable. The resource name of the entity under which this `Group` resides in the Cloud Identity resource hierarchy. Must be of the form `identitysources\/{identity_source_id}` for external- identity-mapped groups or `customers\/{customer_id}` for Google Groups.",
+          "description": "Required. Immutable. The resource name of the entity under which this `Group` resides in the Cloud Identity resource hierarchy. Must be of the form `identitysources\/{identity_source_id}` for external- identity-mapped groups or `customers\/{customer_id}` for Google Groups. The `customer_id` must begin with \"C\" (for example, 'C046psxkn').",
           "type": "string"
         },
         "displayName": {
@@ -822,7 +822,7 @@
           "format": "google-datetime"
         },
         "labels": {
-          "description": "Required. One or more label entries that apply to the Group. Currently supported labels contain a key with an empty value. Google Groups are the default type of group and have a label with a key of `cloudidentity.googleapis.com\/groups.discussion_forum` and an empty value. Existing Google Groups can have an additional label with a key of `cloudidentity.googleapis.com\/groups.security` and an empty value added to them. **This is an immutable change and the security label cannot be removed once added.** Dynamic groups have a label with a key of `cloudidentity.googleapis.com\/groups.dynamic`. Identity-mapped groups for Cloud Search have a label with a key of `system\/groups\/external` and an empty value. Examples: {\"cloudidentity.googleapis.com\/groups.discussion_forum\": \"\"} or {\"system\/groups\/external\": \"\"}.",
+          "description": "Required. One or more label entries that apply to the Group. Currently supported labels contain a key with an empty value. Google Groups are the default type of group and have a label with a key of `cloudidentity.googleapis.com\/groups.discussion_forum` and an empty value. Existing Google Groups can have an additional label with a key of `cloudidentity.googleapis.com\/groups.security` and an empty value added to them. **This is an immutable change and the security label cannot be removed once added.** Dynamic groups have a label with a key of `cloudidentity.googleapis.com\/groups.dynamic`. Identity-mapped groups for Cloud Search have a label with a key of `system\/groups\/external` and an empty value.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -934,7 +934,7 @@
       "type": "object",
       "properties": {
         "groups": {
-          "description": "The `Group`s that match the search query.",
+          "description": "The `Group` resources that match the search query.",
           "type": "array",
           "items": {
             "$ref": "Group"
@@ -952,7 +952,7 @@
       "type": "object",
       "properties": {
         "groups": {
-          "description": "The `Group`s under the specified `parent`.",
+          "description": "The `Group` resources under the specified `parent`.",
           "type": "array",
           "items": {
             "$ref": "Group"
@@ -2680,7 +2680,7 @@
           "httpMethod": "GET",
           "parameters": {
             "query": {
-              "description": "Required. The search query. Must be specified in [Common Expression Language](https:\/\/opensource.google\/projects\/cel). May only contain equality operators on the parent and inclusion operators on labels (e.g., `parent == 'customers\/{customer_id}' && 'cloudidentity.googleapis.com\/groups.discussion_forum' in labels`).",
+              "description": "Required. The search query. Must be specified in [Common Expression Language](https:\/\/opensource.google\/projects\/cel). May only contain equality operators on the parent and inclusion operators on labels (e.g., `parent == 'customers\/{customer_id}' && 'cloudidentity.googleapis.com\/groups.discussion_forum' in labels`). The `customer_id` must begin with \"C\" (for example, 'C046psxkn').",
               "location": "query",
               "type": "string"
             },
@@ -2719,7 +2719,7 @@
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Searches for `Group`s matching a specified query."
+          "description": "Searches for `Group` resources matching a specified query."
         },
         "list": {
           "id": "cloudidentity.groups.list",
@@ -2728,7 +2728,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "Required. The parent resource under which to list all `Group`s. Must be of the form `identitysources\/{identity_source_id}` for external- identity-mapped groups or `customers\/{customer_id}` for Google Groups.",
+              "description": "Required. The parent resource under which to list all `Group` resources. Must be of the form `identitysources\/{identity_source_id}` for external- identity-mapped groups or `customers\/{customer_id}` for Google Groups. The `customer_id` must begin with \"C\" (for example, 'C046psxkn').",
               "location": "query",
               "type": "string"
             },
@@ -2769,7 +2769,7 @@
             "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Lists the `Group`s under a customer or namespace."
+          "description": "Lists the `Group` resources under a customer or namespace."
         }
       }
       ,
@@ -3027,7 +3027,7 @@
                   "type": "string"
                 },
                 "query": {
-                  "description": "Required. A CEL expression that MUST include member specification AND label(s). This is a `required` field. Users can search on label attributes of groups. CONTAINS match ('in') is supported on labels. Certain groups are uniquely identified by both a 'member_key_id' and a 'member_key_namespace', which requires an additional query input: 'member_key_namespace'. Example query: `member_key_id == 'member_key_id_value' && in labels`",
+                  "description": "Required. A CEL expression that MUST include member specification AND label(s). This is a `required` field. Users can search on label attributes of groups. CONTAINS match ('in') is supported on labels. Identity-mapped groups are uniquely identified by both a `member_key_id` and a `member_key_namespace`, which requires an additional query input: `member_key_namespace`. Example query: `member_key_id == 'member_key_id_value' && in labels`",
                   "location": "query",
                   "type": "string"
                 },
@@ -3148,7 +3148,7 @@
               "response": {
                 "$ref": "UserInvitation"
               },
-              "description": "Retrieves a UserInvitation resource. **Note:** New consumer accounts with the customer\u2019s verified domain created within the previous 48 hours will not appear in the result. This delay also applies to newly-verified domains."
+              "description": "Retrieves a UserInvitation resource. **Note:** New consumer accounts with the customer's verified domain created within the previous 48 hours will not appear in the result. This delay also applies to newly-verified domains."
             },
             "list": {
               "id": "cloudidentity.customers.userinvitations.list",
@@ -3191,7 +3191,7 @@
               "response": {
                 "$ref": "ListUserInvitationsResponse"
               },
-              "description": "Retrieves a list of UserInvitation resources. **Note:** New consumer accounts with the customer\u2019s verified domain created within the previous 48 hours will not appear in the result. This delay also applies to newly-verified domains."
+              "description": "Retrieves a list of UserInvitation resources. **Note:** New consumer accounts with the customer's verified domain created within the previous 48 hours will not appear in the result. This delay also applies to newly-verified domains."
             },
             "send": {
               "id": "cloudidentity.customers.userinvitations.send",
@@ -3263,7 +3263,7 @@
               "response": {
                 "$ref": "IsInvitableUserResponse"
               },
-              "description": "Verifies whether a user account is eligible to receive a UserInvitation (is an unmanaged account). Eligibility is based on the following criteria: * the email address is a consumer account and it\u2019s the primary email address of the account, and * the domain of the email address matches an existing verified Google Workspace or Cloud Identity domain If both conditions are met, the user is eligible. **Note:** This method is not supported for Workspace Essentials customers."
+              "description": "Verifies whether a user account is eligible to receive a UserInvitation (is an unmanaged account). Eligibility is based on the following criteria: * the email address is a consumer account and it's the primary email address of the account, and * the domain of the email address matches an existing verified Google Workspace or Cloud Identity domain If both conditions are met, the user is eligible. **Note:** This method is not supported for Workspace Essentials customers."
             }
           }
         }

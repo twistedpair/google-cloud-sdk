@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.data_catalog import util
 
 VERSION = 'v1'
@@ -26,6 +28,8 @@ VERSION = 'v1'
 def ParseResourceIntoLookupRequest(resource, request):
   if resource.startswith('//'):
     request.linkedResource = resource
+  elif re.match('[a-zA-z_-]+:', resource):
+    request.fullyQualifiedName = resource
   else:
     request.sqlResource = resource
   return request

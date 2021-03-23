@@ -499,6 +499,8 @@ class Cluster(_messages.Message):
       Domain_Routing) notation (e.g. `1.2.3.4/29`).
     verticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
+    workloadCertificates: Configuration for issuance of mTLS keys and
+      certificates to Kubernetes pods.
     workloadIdentityConfig: Configuration for the use of Kubernetes Service
       Accounts in GCP IAM policies.
     workloadMonitoringEnabledEap: Whether to send workload metrics from the
@@ -624,9 +626,10 @@ class Cluster(_messages.Message):
   tpuConfig = _messages.MessageField('TpuConfig', 61)
   tpuIpv4CidrBlock = _messages.StringField(62)
   verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 63)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 64)
-  workloadMonitoringEnabledEap = _messages.BooleanField(65)
-  zone = _messages.StringField(66)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 64)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 65)
+  workloadMonitoringEnabledEap = _messages.BooleanField(66)
+  zone = _messages.StringField(67)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -805,6 +808,8 @@ class ClusterUpdate(_messages.Message):
     desiredTpuConfig: The desired Cloud TPU configuration.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
+    desiredWorkloadCertificates: Configuration for issuance of mTLS keys and
+      certificates to Kubernetes pods.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
     desiredWorkloadMonitoringEapConfig: Configuration for workload monitoring
       EAP.
@@ -818,7 +823,7 @@ class ClusterUpdate(_messages.Message):
       LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
       ADVANCED_DATAPATH: Use the eBPF based GKE Dataplane V2 with additional
         features. See the [GKE Dataplane V2
-        documentation](https://cloud.google.com/kubernetes-enginw/docs/how-
+        documentation](https://cloud.google.com/kubernetes-engine/docs/how-
         to/dataplane-v2) for more.
     """
     DATAPATH_PROVIDER_UNSPECIFIED = 0
@@ -880,8 +885,9 @@ class ClusterUpdate(_messages.Message):
   desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 36)
   desiredTpuConfig = _messages.MessageField('TpuConfig', 37)
   desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 38)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 39)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 40)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 39)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 40)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 41)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2424,7 +2430,7 @@ class NetworkConfig(_messages.Message):
       LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
       ADVANCED_DATAPATH: Use the eBPF based GKE Dataplane V2 with additional
         features. See the [GKE Dataplane V2
-        documentation](https://cloud.google.com/kubernetes-enginw/docs/how-
+        documentation](https://cloud.google.com/kubernetes-engine/docs/how-
         to/dataplane-v2) for more.
     """
     DATAPATH_PROVIDER_UNSPECIFIED = 0
@@ -2829,23 +2835,26 @@ class NodeNetworkConfig(_messages.Message):
   `ip_allocation_policy.use_ip_aliases` is true.
 
   Fields:
-    createPodRange: Input only. [Input only] Whether to create a new range for
-      pod IPs in this node pool. Defaults are provided for `pod_range` and
+    createPodRange: Input only. Whether to create a new range for pod IPs in
+      this node pool. Defaults are provided for `pod_range` and
       `pod_ipv4_cidr_block` if they are not specified. If neither
       `create_pod_range` or `pod_range` are specified, the cluster-level
       default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used.
-    createSubnetwork: Input only. [Input only] Whether to create a new
-      subnetwork for the node pool. Defaults are provided for `subnetwork` and
+    createSubnetwork: Input only. Whether to create a new subnetwork for the
+      node pool. Defaults are provided for `subnetwork` and
       `node_ipv4_cidr_block` if they are not specified. If neither
       `create_subnetwork` or `subnetwork` are specified, the cluster-level
       default (`ip_allocation_policy.subnetwork_name`) is used.
     enableEndpointsliceProxying: If true, kube-proxy will read from
       EndpointSlices instead of Endpoints. This flag only applies to GKE 1.18.
+    enablePrivateNodes: Whether nodes have internal IP addresses only. If
+      enable_private_nodes is not specified, then the value is derived from
+      cluster.privateClusterConfig.enablePrivateNodes
     nodeIpv4CidrBlock: The IP address range for node IPs in this node pool.
       Only applicable if `create_subnetwork` is true. Set to blank to have a
       range chosen with the default size. Set to /netmask (e.g. `/14`) to have
       a range chosen with a specific netmask. Set to a
-      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
@@ -2853,25 +2862,24 @@ class NodeNetworkConfig(_messages.Message):
       applicable if `create_pod_range` is true. Set to blank to have a range
       chosen with the default size. Set to /netmask (e.g. `/14`) to have a
       range chosen with a specific netmask. Set to a
-      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) to pick a specific range to use.
     podRange: The ID of the secondary range for pod IPs. If `create_pod_range`
-      is true, this ID is used for the new range.
-    privateNodesConfig: Configuration for controlling private nodes settings.
-      If there are no private_nodes specified, then
-      private_cluster_cofnig.enable_private_node's value used as a default.
+      is true, this ID is used for the new range. If `create_pod_range` is
+      false, uses an existing secondary range with this ID.
     subnetwork: The ID of the [subnetwork](https://cloud.google.com/vpc/docs/v
       pc#vpc_networks_and_subnets) for this node pool. If `create_subnetwork`
-      is true, this ID is used for the new subnet.
+      is true, this ID is used for the new subnet. If `create_subnetwork` is
+      false, uses an existing subnetwork with this ID.
   """
 
   createPodRange = _messages.BooleanField(1)
   createSubnetwork = _messages.BooleanField(2)
   enableEndpointsliceProxying = _messages.BooleanField(3)
-  nodeIpv4CidrBlock = _messages.StringField(4)
-  podIpv4CidrBlock = _messages.StringField(5)
-  podRange = _messages.StringField(6)
-  privateNodesConfig = _messages.MessageField('PrivateNodesConfig', 7)
+  enablePrivateNodes = _messages.BooleanField(4)
+  nodeIpv4CidrBlock = _messages.StringField(5)
+  podIpv4CidrBlock = _messages.StringField(6)
+  podRange = _messages.StringField(7)
   subnetwork = _messages.StringField(8)
 
 
@@ -3273,16 +3281,6 @@ class PrivateClusterMasterGlobalAccessConfig(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
-
-
-class PrivateNodesConfig(_messages.Message):
-  r"""Configuration for controlling private nodes settings.
-
-  Fields:
-    privateNodes: Whether nodes have internal IP addresses only.
-  """
-
-  privateNodes = _messages.BooleanField(1)
 
 
 class PubSub(_messages.Message):
@@ -4632,6 +4630,21 @@ class VerticalPodAutoscaling(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class WorkloadCertificates(_messages.Message):
+  r"""Configuration for issuance of mTLS keys and certificates to Kubernetes
+  pods.
+
+  Fields:
+    enableCertificates: enable_certificates controls issuance of workload mTLS
+      certificates. If set, the GKE Workload Identity Certificates controller
+      and node agent will be deployed in the cluster, which can then be
+      configured by creating a WorkloadCertificateConfig Custom Resource.
+      Requires Workload Identity (workload_pool must be non-empty).
+  """
+
+  enableCertificates = _messages.BooleanField(1)
+
+
 class WorkloadIdentityConfig(_messages.Message):
   r"""Configuration for the use of Kubernetes Service Accounts in GCP IAM
   policies.
@@ -4639,11 +4652,6 @@ class WorkloadIdentityConfig(_messages.Message):
   Fields:
     enableAlts: enable_alts controls whether the alts handshaker should be
       enabled or not for direct-path.
-    enableCertificates: enable_certificates controls issuance of workload mTLS
-      certificates. If set, the GKE Workload Identity Certificates controller
-      and node agent will be deployed in the cluster, which can then be
-      configured by creating a WorkloadCertificateConfig Custom Resource.
-      Requires Workload Identity (workload_pool must be non-empty).
     identityNamespace: IAM Identity Namespace to attach all Kubernetes Service
       Accounts to.
     identityProvider: identity provider is the third party identity provider.
@@ -4658,11 +4666,10 @@ class WorkloadIdentityConfig(_messages.Message):
   """
 
   enableAlts = _messages.BooleanField(1)
-  enableCertificates = _messages.BooleanField(2)
-  identityNamespace = _messages.StringField(3)
-  identityProvider = _messages.StringField(4)
-  issuingCertificateAuthority = _messages.StringField(5)
-  workloadPool = _messages.StringField(6)
+  identityNamespace = _messages.StringField(2)
+  identityProvider = _messages.StringField(3)
+  issuingCertificateAuthority = _messages.StringField(4)
+  workloadPool = _messages.StringField(5)
 
 
 class WorkloadMetadataConfig(_messages.Message):

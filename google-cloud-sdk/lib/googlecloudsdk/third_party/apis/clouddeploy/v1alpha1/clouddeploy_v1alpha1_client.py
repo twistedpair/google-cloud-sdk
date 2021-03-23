@@ -39,10 +39,6 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_deliveryPipelines_releases_deliveryPipelines = self.ProjectsDeliveryPipelinesReleasesDeliveryPipelinesService(self)
-    self.projects_deliveryPipelines_releases_targets = self.ProjectsDeliveryPipelinesReleasesTargetsService(self)
-    self.projects_deliveryPipelines_releases = self.ProjectsDeliveryPipelinesReleasesService(self)
-    self.projects_deliveryPipelines = self.ProjectsDeliveryPipelinesService(self)
     self.projects_locations_deliveryPipelines_releases_rollouts = self.ProjectsLocationsDeliveryPipelinesReleasesRolloutsService(self)
     self.projects_locations_deliveryPipelines_releases = self.ProjectsLocationsDeliveryPipelinesReleasesService(self)
     self.projects_locations_deliveryPipelines_targets = self.ProjectsLocationsDeliveryPipelinesTargetsService(self)
@@ -50,154 +46,6 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsDeliveryPipelinesReleasesDeliveryPipelinesService(base_api.BaseApiService):
-    """Service class for the projects_deliveryPipelines_releases_deliveryPipelines resource."""
-
-    _NAME = 'projects_deliveryPipelines_releases_deliveryPipelines'
-
-    def __init__(self, client):
-      super(ClouddeployV1alpha1.ProjectsDeliveryPipelinesReleasesDeliveryPipelinesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single DeliveryPipeline.
-
-      Args:
-        request: (ClouddeployProjectsDeliveryPipelinesReleasesDeliveryPipelinesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (DeliveryPipeline) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/deliveryPipelines/{deliveryPipelinesId1}',
-        http_method='GET',
-        method_id='clouddeploy.projects.deliveryPipelines.releases.deliveryPipelines.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='ClouddeployProjectsDeliveryPipelinesReleasesDeliveryPipelinesGetRequest',
-        response_type_name='DeliveryPipeline',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists DeliveryPipelines in a given project and location.
-
-      Args:
-        request: (ClouddeployProjectsDeliveryPipelinesReleasesDeliveryPipelinesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListDeliveryPipelinesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/deliveryPipelines',
-        http_method='GET',
-        method_id='clouddeploy.projects.deliveryPipelines.releases.deliveryPipelines.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/deliveryPipelines',
-        request_field='',
-        request_type_name='ClouddeployProjectsDeliveryPipelinesReleasesDeliveryPipelinesListRequest',
-        response_type_name='ListDeliveryPipelinesResponse',
-        supports_download=False,
-    )
-
-  class ProjectsDeliveryPipelinesReleasesTargetsService(base_api.BaseApiService):
-    """Service class for the projects_deliveryPipelines_releases_targets resource."""
-
-    _NAME = 'projects_deliveryPipelines_releases_targets'
-
-    def __init__(self, client):
-      super(ClouddeployV1alpha1.ProjectsDeliveryPipelinesReleasesTargetsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Target.
-
-      Args:
-        request: (ClouddeployProjectsDeliveryPipelinesReleasesTargetsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Target) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/targets/{targetsId}',
-        http_method='GET',
-        method_id='clouddeploy.projects.deliveryPipelines.releases.targets.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='ClouddeployProjectsDeliveryPipelinesReleasesTargetsGetRequest',
-        response_type_name='Target',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists Targets in a given project and location.
-
-      Args:
-        request: (ClouddeployProjectsDeliveryPipelinesReleasesTargetsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListTargetsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/targets',
-        http_method='GET',
-        method_id='clouddeploy.projects.deliveryPipelines.releases.targets.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/targets',
-        request_field='',
-        request_type_name='ClouddeployProjectsDeliveryPipelinesReleasesTargetsListRequest',
-        response_type_name='ListTargetsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsDeliveryPipelinesReleasesService(base_api.BaseApiService):
-    """Service class for the projects_deliveryPipelines_releases resource."""
-
-    _NAME = 'projects_deliveryPipelines_releases'
-
-    def __init__(self, client):
-      super(ClouddeployV1alpha1.ProjectsDeliveryPipelinesReleasesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ProjectsDeliveryPipelinesService(base_api.BaseApiService):
-    """Service class for the projects_deliveryPipelines resource."""
-
-    _NAME = 'projects_deliveryPipelines'
-
-    def __init__(self, client):
-      super(ClouddeployV1alpha1.ProjectsDeliveryPipelinesService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class ProjectsLocationsDeliveryPipelinesReleasesRolloutsService(base_api.BaseApiService):
     """Service class for the projects_locations_deliveryPipelines_releases_rollouts resource."""
@@ -427,7 +275,7 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
         method_id='clouddeploy.projects.locations.deliveryPipelines.releases.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'requestId', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'requestId', 'validateOnly'],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest',
@@ -761,7 +609,7 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
         method_id='clouddeploy.projects.locations.deliveryPipelines.targets.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'requestId', 'updateMask', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'requestId', 'updateMask', 'validateOnly'],
         relative_path='v1alpha1/{+name}',
         request_field='target',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest',

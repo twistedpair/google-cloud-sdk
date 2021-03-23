@@ -26,7 +26,6 @@ from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
 from googlecloudsdk.command_lib.scc.hooks import GetOrganization
 from googlecloudsdk.command_lib.scc.hooks import GetParent
-from googlecloudsdk.command_lib.scc.hooks import GetSourceFromResourceName
 from googlecloudsdk.command_lib.scc.hooks import GetSourceParentFromResourceName
 from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
 
@@ -35,8 +34,8 @@ def CreateFindingsReqHook(ref, args, req):
   """Generate a finding's name and parent using org, source and finding."""
   del ref
   _ValidateMutexOnFindingAndSourceAndOrganization(args)
-  finding_name = _GetFindingName(args)
-  req.parent = GetSourceFromResourceName(finding_name)
+  finding_name = _GetFindingNameForParent(args)
+  req.parent = GetSourceParentFromResourceName(finding_name)
   req.findingId = _GetFindingIdFromName(finding_name)
   messages = sc_client.GetMessages()
   if not req.finding:
@@ -94,7 +93,7 @@ def UpdateFindingsReqHook(ref, args, req):
   """Generate a finding's name using org, source and finding id."""
   del ref
   _ValidateMutexOnFindingAndSourceAndOrganization(args)
-  req.name = _GetFindingName(args)
+  req.name = _GetFindingNameForParent(args)
   req.updateMask = CleanUpUserInput(req.updateMask)
   # All requests require an event time
   if args.event_time is None:
@@ -111,7 +110,7 @@ def UpdateFindingSecurityMarksReqHook(ref, args, req):
   """Generate a security mark's name using org, source and finding id."""
   del ref
   _ValidateMutexOnFindingAndSourceAndOrganization(args)
-  req.name = _GetFindingName(args) + "/securityMarks"
+  req.name = _GetFindingNameForParent(args) + "/securityMarks"
   if req.updateMask is not None:
     req.updateMask = CleanUpUserInput(req.updateMask)
   return req
@@ -180,10 +179,12 @@ def _GetSourceName(args):
 def _GetFindingIdFromName(finding_name):
   """Gets a finding id from the full resource name."""
   resource_pattern = re.compile(
-      "organizations/[0-9]+/sources/[0-9-]+/findings/[a-zA-Z0-9]+$")
-  assert resource_pattern.match(finding_name), (
-      "When providing a full resource path, it must include the pattern "
-      "organizations/[0-9]+/sources/[0-9-]+/findings/[a-zA-Z0-9]+.")
+      "(organizations|projects|folders)/.*/sources/[0-9-]+/findings/[a-zA-Z0-9]+$"
+  )
+  if not resource_pattern.match(finding_name):
+    raise InvalidSCCInputError(
+        "When providing a full resource path, it must include the pattern "
+        "organizations/[0-9]+/sources/[0-9-]+/findings/[a-zA-Z0-9]+.")
   list_finding_components = finding_name.split("/")
   return list_finding_components[len(list_finding_components) - 1]
 

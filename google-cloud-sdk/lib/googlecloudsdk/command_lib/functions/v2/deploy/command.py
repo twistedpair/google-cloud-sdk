@@ -23,6 +23,8 @@ import re
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
+from googlecloudsdk.command_lib.functions import flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import properties
 
@@ -50,11 +52,6 @@ LEGACY_V1_FLAGS = [
 LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
 
 
-def _GetProject():
-  """Determine the user's project."""
-  return properties.VALUES.core.project.Get(required=True)
-
-
 def _GetSource(source_arg):
   """Parse the source bucket and object from the --source flag."""
   if not source_arg:
@@ -72,11 +69,17 @@ def _GetServiceConfig(args, messages):
   env_var_flags = map_util.GetMapFlagsFromArgs('env-vars', args)
   env_vars = map_util.ApplyMapFlags({}, **env_var_flags)
 
+  vpc_connector, vpc_egress_settings = (
+      _GetVpcAndVpcEgressSettings(args, messages))
+
   return messages.ServiceConfig(
       availableMemoryMb=utils.BytesToMb(args.memory) if args.memory else None,
       maxInstanceCount=args.max_instances,
       serviceAccountEmail=args.run_service_account or args.service_account,
       timeoutSeconds=args.timeout,
+      ingressSettings=_GetIngressSettings(args, messages),
+      vpcConnector=vpc_connector,
+      vpcConnectorEgressSettings=vpc_egress_settings,
       environmentVariables=messages.ServiceConfig.EnvironmentVariablesValue(
           additionalProperties=[
               messages.ServiceConfig.EnvironmentVariablesValue
@@ -151,6 +154,40 @@ def _GetBuildConfig(args, messages, event_trigger):
           ]))
 
 
+def _GetIngressSettings(args, messages):
+  """Construct ingress setting enum from command-line arguments."""
+  if args.IsSpecified('ingress_settings'):
+    ingress_settings_enum = arg_utils.ChoiceEnumMapper(
+        arg_name='ingress_settings',
+        message_enum=messages.ServiceConfig.IngressSettingsValueValuesEnum,
+        custom_mappings=flags.INGRESS_SETTINGS_MAPPING).GetEnumForChoice(
+            args.ingress_settings)
+    return ingress_settings_enum
+  else:
+    return None
+
+
+def _GetVpcAndVpcEgressSettings(args, messages):
+  """Construct vpc connector and egress settings from command-line arguments."""
+  vpc_connector = args.vpc_connector
+
+  if not args.IsSpecified('egress_settings'):
+    return vpc_connector, None
+
+  if vpc_connector is None:
+    raise exceptions.RequiredArgumentException(
+        'vpc-connector', 'Flag `--vpc-connector` is '
+        'required for setting `egress-settings`.')
+  vpc_egress_settings = arg_utils.ChoiceEnumMapper(
+      arg_name='egress_settings',
+      message_enum=messages.ServiceConfig
+      .VpcConnectorEgressSettingsValueValuesEnum,
+      custom_mappings=flags.EGRESS_SETTINGS_MAPPING).GetEnumForChoice(
+          args.egress_settings)
+
+  return vpc_connector, vpc_egress_settings
+
+
 def _ValidateLegacyV1Flags(args):
   for flag_variable, flag_name in LEGACY_V1_FLAGS:
     if args.IsSpecified(flag_variable):
@@ -184,7 +221,8 @@ def Run(args, release_track):
       labels=_GetLabels(args, messages))
 
   create_request = messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
-      parent='projects/%s/locations/%s' % (_GetProject(), args.region),
+      parent='projects/%s/locations/%s' %
+      (properties.VALUES.core.project.GetOrFail(), args.region),
       functionId=function_ref.Name(),
       function=function)
 

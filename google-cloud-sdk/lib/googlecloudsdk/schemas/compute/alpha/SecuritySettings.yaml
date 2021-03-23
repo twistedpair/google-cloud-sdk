@@ -64,7 +64,8 @@ properties:
       Infrastructure which provisions server identities. Only applies to a
       global BackendService with loadBalancingScheme set to
       INTERNAL_SELF_MANAGED. Only applies when BackendService has an attached
-      clientTlsPolicy with clientCertificate (mTLS mode).
+      clientTlsPolicy with clientCertificate (mTLS mode). Note: This field
+      currently has no impact.
     type: array
     items:
       type: string

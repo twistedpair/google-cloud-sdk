@@ -752,6 +752,33 @@ class NotebooksV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UpdateShieldedInstanceConfig(self, request, global_params=None):
+      r"""Updates the Shielded instance configuration of a single Instance.
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesUpdateShieldedInstanceConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateShieldedInstanceConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateShieldedInstanceConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:updateShieldedInstanceConfig',
+        http_method='PATCH',
+        method_id='notebooks.projects.locations.instances.updateShieldedInstanceConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:updateShieldedInstanceConfig',
+        request_field='updateShieldedInstanceConfigRequest',
+        request_type_name='NotebooksProjectsLocationsInstancesUpdateShieldedInstanceConfigRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Upgrade(self, request, global_params=None):
       r"""Upgrades a notebook instance to the latest version.
 

@@ -75,6 +75,10 @@ TENSORBOARDS_COLLECTION = 'aiplatform.projects.locations.tensorboards'
 
 TENSORBOARD_EXPERIMENTS_COLLECTION = 'aiplatform.projects.locations.tensorboards.experiments'
 
+TENSORBOARD_RUNS_COLLECTION = 'aiplatform.projects.locations.tensorboards.experiments.runs'
+
+TENSORBOARD_TIME_SERIES_COLLECTION = 'aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries'
+
 HPTUNING_JOB_CREATION_DISPLAY_MESSAGE = """\
 Hyperparameter tuning job [{id}] submitted successfully.
 

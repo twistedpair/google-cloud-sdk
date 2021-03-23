@@ -27,13 +27,15 @@ import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import tracker_file_util
-from googlecloudsdk.command_lib.storage import util
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import scaled_integer
 
 
 def _get_first_null_byte_index(destination_url, resource, offset, length):
@@ -108,49 +110,42 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
           end_byte=end_byte)
 
     # TODO(b/172048376): Add crc32c, and make this a loop.
-    if util.HashAlgorithms.MD5 in digesters:
-      calculated_digest = util.get_base64_hash_digest_string(
-          digesters[util.HashAlgorithms.MD5])
-      util.validate_object_hashes_match(self._source_resource.storage_url,
-                                        self._source_resource.md5_hash,
-                                        calculated_digest)
+    if hash_util.HashAlgorithm.MD5 in digesters:
+      calculated_digest = hash_util.get_base64_hash_digest_string(
+          digesters[hash_util.HashAlgorithm.MD5])
+      hash_util.validate_object_hashes_match(self._source_resource.storage_url,
+                                             self._source_resource.md5_hash,
+                                             calculated_digest)
 
   def _perform_one_shot_download(self, digesters, progress_callback):
     """Sets up a basic download based on task attributes."""
     start_byte = self._offset
-    end_byte = self._offset + self._length
+    end_byte = self._offset + self._length - 1
     self._perform_download(digesters, progress_callback,
                            cloud_api.DownloadStrategy.ONE_SHOT, start_byte,
                            end_byte, files.BinaryFileWriterMode.TRUNCATE)
 
   def _perform_resumable_download(self, digesters, progress_callback):
     """Resume or start download that can be resumabled."""
+    copy_component_util.create_file_if_needed(self._source_resource,
+                                              self._destination_resource)
+
     destination_url = self._destination_resource.storage_url
     first_null_byte = _get_first_null_byte_index(destination_url,
                                                  self._source_resource,
                                                  self._offset, self._length)
-    if first_null_byte >= self._source_resource.size:
-      # Existing file at location needs to be re-downloaded.
-      first_null_byte = 0
-      with files.BinaryFileWriter(
-          destination_url.object_name,
-          mode=files.BinaryFileWriterMode.TRUNCATE):
-        # Wipe file.
-        pass
-
-    tracker_file_path, start_byte = (
+    tracker_file_path, found_tracker_file = (
         tracker_file_util.read_or_create_download_tracker_file(
-            self._source_resource,
-            destination_url,
-            first_null_byte=first_null_byte))
-    end_byte = self._source_resource.size
+            self._source_resource, destination_url))
+    start_byte = first_null_byte if found_tracker_file else 0
+    end_byte = self._source_resource.size - 1
 
     if start_byte:
       write_mode = files.BinaryFileWriterMode.MODIFY
       with files.BinaryFileReader(destination_url.object_name) as file_reader:
         # Get hash of partially-downloaded file as start for validation.
         for hash_algorithm in digesters:
-          digesters[hash_algorithm] = util.get_hash_from_file_stream(
+          digesters[hash_algorithm] = hash_util.get_hash_from_file_stream(
               file_reader, hash_algorithm, start=0, stop=start_byte)
     else:
       # TRUNCATE can create new file unlike MODIFY.
@@ -171,14 +166,14 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         offset=self._offset,
         length=self._length)
 
-    _, start_byte = (
+    _, found_tracker_file = (
         tracker_file_util.read_or_create_download_tracker_file(
             self._source_resource,
             destination_url,
-            first_null_byte=first_null_byte,
             slice_start_byte=self._offset,
             component_number=self._component_number))
-    end_byte = self._offset + self._length
+    start_byte = first_null_byte if found_tracker_file else self._offset
+    end_byte = self._offset + self._length - 1
 
     if start_byte >= self._source_resource.size:
       # Component has already been downloaded.
@@ -190,16 +185,17 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
   def execute(self, task_status_queue=None):
     """Performs download."""
-    if self._source_resource.md5_hash and self._component_number is None:
+    if (properties.VALUES.storage.check_hashes.Get() != 'never' and
+        self._source_resource.md5_hash and self._component_number is None):
       # Checks component_number to avoid hashing slices in sliced downloads.
-      digesters = {util.HashAlgorithms.MD5: util.get_md5_hash()}
+      digesters = {hash_util.HashAlgorithm.MD5: hash_util.get_md5_hash()}
     else:
       digesters = {}
 
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
-        offset=0,
-        length=self._source_resource.size,
+        offset=self._offset,
+        length=self._length,
         source_url=self._source_resource.storage_url,
         destination_url=self._destination_resource.storage_url,
         component_number=self._component_number,
@@ -211,8 +207,9 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
     if self._source_resource.size and self._component_number is not None:
       self._perform_component_download(digesters, progress_callback)
-    elif (self._source_resource.size and self._source_resource.size >=
-          properties.VALUES.storage.resumable_threshold.GetInt()):
+    elif (self._source_resource.size and
+          self._source_resource.size >= scaled_integer.ParseInteger(
+              properties.VALUES.storage.resumable_threshold.Get())):
       self._perform_resumable_download(digesters, progress_callback)
     else:
       self._perform_one_shot_download(digesters, progress_callback)

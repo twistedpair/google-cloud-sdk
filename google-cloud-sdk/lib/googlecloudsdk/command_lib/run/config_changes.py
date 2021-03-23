@@ -433,7 +433,7 @@ class ConfigMapEnvVarChanges(ConfigChanger):
     self._clear_others = clear_others
 
   def _OmittedSecretKeyDefault(self, name):
-    if platforms.GetPlatform() == platforms.PLATFORM_MANAGED:
+    if platforms.IsManaged():
       return 'latest'
     raise exceptions.ConfigurationError(
         'Missing required item key for environment variable [{}].'.format(name))
@@ -697,7 +697,14 @@ class SecretVolumeChanges(ConfigChanger):
     volume_mounts = resource.template.volume_mounts.secrets
     volumes = resource.template.volumes.secrets
 
-    _PruneMapping(volume_mounts, self._removes, self._clear_others)
+    # TODO(b/182412304): This is not going to work on secrets in the same dir
+    # (but it could be made to work if they're versions of one secret.)
+    if platforms.IsManaged():
+      removes = [p.rsplit('/', 1)[0] for p in self._removes]
+    else:
+      removes = self._removes
+
+    _PruneMapping(volume_mounts, removes, self._clear_others)
 
     for file_path, reachable_secret in self._updates.items():
       volume_name = _UniqueVolumeName(reachable_secret.secret_name,
@@ -706,7 +713,11 @@ class SecretVolumeChanges(ConfigChanger):
       # volume_mounts is a special mapping that filters for the current kind
       # of mount and KeyErrors on existing keys with other types.
       try:
-        volume_mounts[file_path] = volume_name
+        mount_point = file_path
+        if platforms.IsManaged():
+          # TODO(b/182412304): SubPath handling is not ready.
+          mount_point = file_path.rsplit('/', 1)[0]
+        volume_mounts[mount_point] = volume_name
       except KeyError:
         raise exceptions.ConfigurationError(
             'Cannot update mount [{}] because its mounted volume '

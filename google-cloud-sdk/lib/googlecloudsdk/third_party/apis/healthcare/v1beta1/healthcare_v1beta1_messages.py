@@ -1741,8 +1741,8 @@ class FhirStore(_messages.Message):
       existent resource return errors. It is strongly advised not to include
       or encode any sensitive data such as patient identifiers in client-
       specified resource IDs. Those IDs are part of the FHIR resource path
-      recorded in Cloud audit logs and Cloud Pub/Sub notifications. Those IDs
-      can also be contained in reference fields within other resources.
+      recorded in Cloud audit logs and Pub/Sub notifications. Those IDs can
+      also be contained in reference fields within other resources.
     labels: User-supplied key-value pairs used to organize FHIR stores. Label
       keys must be between 1 and 63 characters long, have a UTF-8 encoding of
       maximum 128 bytes, and must conform to the following PCRE regular
@@ -1755,9 +1755,9 @@ class FhirStore(_messages.Message):
       `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`
       .
     notificationConfig: If non-empty, publish all resource modifications of
-      this FHIR store to this destination. The Cloud Pub/Sub message
-      attributes contain a map with a string describing the action that has
-      triggered the notification. For example, "action":"CreateResource".
+      this FHIR store to this destination. The Pub/Sub message attributes
+      contain a map with a string describing the action that has triggered the
+      notification. For example, "action":"CreateResource".
     streamConfigs: A list of streaming configs that configure the destinations
       of streaming export for every resource mutation in this FHIR store. Each
       store is allowed to have up to 10 streaming configs. After a new config
@@ -5143,10 +5143,14 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -5275,10 +5279,10 @@ class Hl7V2NotificationConfig(_messages.Message):
       the label with key `x` as set using the Message.labels map. For example,
       `labels."priority"="high"`. The operator `:*` can be used to assert the
       existence of a label. For example, `labels."priority":*`.
-    pubsubTopic: The [Cloud Pub/Sub](https://cloud.google.com/pubsub/docs/)
-      topic that notifications of changes are published on. Supplied by the
-      client. The notification is a `PubsubMessage` with the following fields:
-      * `PubsubMessage.Data` contains the resource name. *
+    pubsubTopic: The [Pub/Sub](https://cloud.google.com/pubsub/docs/) topic
+      that notifications of changes are published on. Supplied by the client.
+      The notification is a `PubsubMessage` with the following fields: *
+      `PubsubMessage.Data` contains the resource name. *
       `PubsubMessage.MessageId` is the ID of this notification. It is
       guaranteed to be unique within the topic. * `PubsubMessage.PublishTime`
       is the time when the message was published. Note that notifications are
@@ -5287,8 +5291,8 @@ class Hl7V2NotificationConfig(_messages.Message):
       scoped to a project. Cloud Healthcare API service account must have
       publisher permissions on the given Pub/Sub topic. Not having adequate
       permissions causes the calls that send notifications to fail. If a
-      notification can't be published to Cloud Pub/Sub, errors are logged to
-      Cloud Logging. For more information, see [Viewing error logs in Cloud
+      notification can't be published to Pub/Sub, errors are logged to Cloud
+      Logging. For more information, see [Viewing error logs in Cloud
       Logging](/healthcare/docs/how-tos/logging).
   """
 
@@ -6079,23 +6083,22 @@ class NotificationConfig(_messages.Message):
   r"""Specifies where to send notifications upon changes to a data store.
 
   Fields:
-    pubsubTopic: The [Cloud Pub/Sub](https://cloud.google.com/pubsub/docs/)
-      topic that notifications of changes are published on. Supplied by the
-      client. PubsubMessage.Data contains the resource name.
-      PubsubMessage.MessageId is the ID of this message. It is guaranteed to
-      be unique within the topic. PubsubMessage.PublishTime is the time at
-      which the message was published. Notifications are only sent if the
-      topic is non-empty. [Topic
+    pubsubTopic: The [Pub/Sub](https://cloud.google.com/pubsub/docs/) topic
+      that notifications of changes are published on. Supplied by the client.
+      PubsubMessage.Data contains the resource name. PubsubMessage.MessageId
+      is the ID of this message. It is guaranteed to be unique within the
+      topic. PubsubMessage.PublishTime is the time at which the message was
+      published. Notifications are only sent if the topic is non-empty. [Topic
       names](https://cloud.google.com/pubsub/docs/overview#names) must be
       scoped to a project. Cloud Healthcare API service account must have
-      publisher permissions on the given Cloud Pub/Sub topic. Not having
-      adequate permissions causes the calls that send notifications to fail.
-      If a notification can't be published to Cloud Pub/Sub, errors are logged
-      to Cloud Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)).
-      If the number of errors exceeds a certain rate, some aren't submitted.
-      Note that not all operations trigger notifications, see [Configuring
-      Pub/Sub notifications](https://cloud.google.com/healthcare/docs/how-
-      tos/pubsub) for specific details.
+      publisher permissions on the given Pub/Sub topic. Not having adequate
+      permissions causes the calls that send notifications to fail. If a
+      notification can't be published to Pub/Sub, errors are logged to Cloud
+      Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)). If the
+      number of errors exceeds a certain rate, some aren't submitted. Note
+      that not all operations trigger notifications, see [Configuring Pub/Sub
+      notifications](https://cloud.google.com/healthcare/docs/how-tos/pubsub)
+      for specific details.
   """
 
   pubsubTopic = _messages.StringField(1)

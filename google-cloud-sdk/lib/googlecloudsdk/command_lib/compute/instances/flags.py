@@ -78,13 +78,11 @@ MIGRATION_OPTIONS = {
 
 LOCAL_SSD_INTERFACES = ['NVME', 'SCSI']
 
-DISK_METAVAR = (
-    'name=NAME [mode={ro,rw}] [boot={yes,no}] [device-name=DEVICE_NAME] '
-    '[auto-delete={yes,no}]')
+DISK_METAVAR = ('name=NAME [mode={ro,rw}] [device-name=DEVICE_NAME] ')
 
 DISK_METAVAR_ZONAL_OR_REGIONAL = (
-    'name=NAME [mode={ro,rw}] [boot={yes,no}] [device-name=DEVICE_NAME] '
-    '[auto-delete={yes,no}] [scope={zonal,regional}]')
+    'name=NAME [mode={ro,rw}] [device-name=DEVICE_NAME] '
+    '[scope={zonal,regional}]')
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -524,9 +522,9 @@ def AddDiskArgs(parser,
   disk_arg_spec = {
       'name': str,
       'mode': str,
-      'boot': str,
+      'boot': arg_parsers.ArgBoolean(),
       'device-name': str,
-      'auto-delete': str,
+      'auto-delete': arg_parsers.ArgBoolean(),
   }
 
   if enable_regional_disks:
@@ -765,7 +763,7 @@ def AddCreateDiskArgs(parser,
       'size': arg_parsers.BinarySize(lower_bound='1GB'),
       'type': str,
       'device-name': str,
-      'auto-delete': str,
+      'auto-delete': arg_parsers.ArgBoolean(),
       'provisioned-iops': int,
   }
 
@@ -779,7 +777,7 @@ def AddCreateDiskArgs(parser,
     spec['kms-keyring'] = str
 
   if support_boot:
-    spec['boot'] = str
+    spec['boot'] = arg_parsers.ArgBoolean()
 
   if enable_snapshots:
     disk_help += """
@@ -846,9 +844,11 @@ def AddCreateDiskArgs(parser,
 
   if support_replica_zones:
     disk_help += """
-      *replica-zones*::: If specified, the created disk is regional. The disk
-      will be replicated to the specified replica zone and the zone of the
-      newly created instance.
+      *replica-zones*::: If specified, the created disk is regional.
+      Only one zone can be specified and it has to be different from
+      the zone of the instance, the other replica zone will be inferred from
+      the instance zone. The disk will be replicated to the specified replica zone
+      and the zone of the newly created instance.
       """
     spec['replica-zones'] = arg_parsers.ArgList(max_length=1)
 
@@ -1010,13 +1010,6 @@ def ValidateDiskCommonFlags(args, include_name=True):
           'Value for [mode] in [--disk] must be [rw] or [ro], not [{0}].'
           .format(mode_value))
 
-    auto_delete_value = disk.get('auto-delete')
-    if auto_delete_value and auto_delete_value not in ['yes', 'no']:
-      raise exceptions.InvalidArgumentException(
-          '--disk',
-          'Value for [auto-delete] in [--disk] must be [yes] or [no], not '
-          '[{0}].'.format(auto_delete_value))
-
 
 def ValidateDiskAccessModeFlags(args):
   """Checks disks R/O and R/W access mode."""
@@ -1038,14 +1031,8 @@ def ValidateDiskBootFlags(args, enable_kms=False):
   for disk in args.disk or []:
     # If this is a boot disk and we have already seen a boot disk,
     # we need to fail because only one boot disk can be attached.
-    boot_value = disk.get('boot')
-    if boot_value and boot_value not in ('yes', 'no'):
-      raise exceptions.InvalidArgumentException(
-          '--disk',
-          'Value for [boot] in [--disk] must be [yes] or [no], not [{0}].'
-          .format(boot_value))
-
-    if boot_value == 'yes':
+    boot_value = disk.get('boot', False)
+    if boot_value:
       if boot_disk_specified:
         raise exceptions.BadArgumentException(
             '--disk',

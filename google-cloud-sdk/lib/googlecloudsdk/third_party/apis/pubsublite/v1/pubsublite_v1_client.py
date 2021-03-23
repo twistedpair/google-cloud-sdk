@@ -84,7 +84,7 @@ class PubsubliteV1(base_api.BaseApiClient):
         method_id='pubsublite.admin.projects.locations.subscriptions.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['subscriptionId'],
+        query_params=['skipBacklog', 'subscriptionId'],
         relative_path='v1/admin/{+parent}/subscriptions',
         request_field='subscription',
         request_type_name='PubsubliteAdminProjectsLocationsSubscriptionsCreateRequest',

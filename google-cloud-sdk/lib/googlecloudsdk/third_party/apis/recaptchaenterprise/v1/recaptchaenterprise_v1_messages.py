@@ -29,9 +29,12 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
   Enums:
     AnnotationValueValuesEnum: Required. The annotation that will be assigned
       to the Event.
+    ReasonsValueListEntryValuesEnum:
 
   Fields:
     annotation: Required. The annotation that will be assigned to the Event.
+    reasons: Optional. Optional reasons for the annotation that will be
+      assigned to the Event.
   """
 
   class AnnotationValueValuesEnum(_messages.Enum):
@@ -54,7 +57,24 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
     PASSWORD_CORRECT = 3
     PASSWORD_INCORRECT = 4
 
+  class ReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""ReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      REASON_UNSPECIFIED: Default unspecified reason.
+      CHARGEBACK: Indicates a chargeback for fraud was issued for the
+        transaction associated with the assessment.
+      PAYMENT_HEURISTICS: Indicates the transaction associated with the
+        assessment is suspected of being fraudulent based on the payment
+        method, billing details, shipping address or other transaction
+        information.
+    """
+    REASON_UNSPECIFIED = 0
+    CHARGEBACK = 1
+    PAYMENT_HEURISTICS = 2
+
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 1)
+  reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 2, repeated=True)
 
 
 class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentResponse(_messages.Message):

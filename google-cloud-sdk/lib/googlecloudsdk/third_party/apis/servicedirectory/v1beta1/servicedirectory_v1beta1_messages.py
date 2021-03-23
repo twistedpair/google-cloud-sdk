@@ -427,6 +427,7 @@ class Endpoint(_messages.Message):
     address: Optional. An IPv4 or IPv6 address. Service Directory rejects bad
       addresses like: * `8.8.8` * `8.8.8.8:53` * `test:bad:address` * `[::1]`
       * `[::1]:8080` Limited to 45 characters.
+    createTime: Output only. The timestamp when the endpoint was created.
     metadata: Optional. Metadata for the endpoint. This data can be consumed
       by service clients. Restrictions: * The entire metadata dictionary may
       contain up to 512 characters, spread accoss all key-value pairs.
@@ -452,6 +453,7 @@ class Endpoint(_messages.Message):
       Project existence is not checked. Example: `projects/project-
       number/locations/global/networks/my-network`
     port: Optional. Service Directory rejects values outside of `[0, 65535]`.
+    updateTime: Output only. The timestamp when the endpoint was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -495,10 +497,12 @@ class Endpoint(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   address = _messages.StringField(1)
-  metadata = _messages.MessageField('MetadataValue', 2)
-  name = _messages.StringField(3)
-  network = _messages.StringField(4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(7)
 
 
 class Expr(_messages.Message):
@@ -721,11 +725,14 @@ class Namespace(_messages.Message):
       keys and values can be no longer than 63 characters.
 
   Fields:
+    createTime: Output only. The timestamp when the namespace was created.
     labels: Optional. Resource labels associated with this namespace. No more
       than 64 user labels can be associated with a given resource. Label keys
       and values can be no longer than 63 characters.
     name: Immutable. The resource name for the namespace in the format
       `projects/*/locations/*/namespaces/*`.
+    updateTime: Output only. The timestamp when the namespace was last
+      updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -754,8 +761,10 @@ class Namespace(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  name = _messages.StringField(2)
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class Policy(_messages.Message):
@@ -963,6 +972,7 @@ class Service(_messages.Message):
       Directory.
 
   Fields:
+    createTime: Output only. The timestamp when the service was created.
     endpoints: Output only. Endpoints associated with this service. Returned
       on LookupService.ResolveService. Control plane clients should use
       RegistrationService.ListEndpoints.
@@ -996,6 +1006,7 @@ class Service(_messages.Message):
       provider is authorized. Examples: `spiffe_id:spiffe://example.org/my-
       service` `service_account:my-service@iam.gserviceaccount.com` Limits:
       service_identities list is limited to 10 items.
+    updateTime: Output only. The timestamp when the service was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1038,11 +1049,13 @@ class Service(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  endpoints = _messages.MessageField('Endpoint', 1, repeated=True)
-  hostname = _messages.StringField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
-  serviceIdentities = _messages.MessageField('ServiceIdentity', 5, repeated=True)
+  createTime = _messages.StringField(1)
+  endpoints = _messages.MessageField('Endpoint', 2, repeated=True)
+  hostname = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
+  serviceIdentities = _messages.MessageField('ServiceIdentity', 6, repeated=True)
+  updateTime = _messages.StringField(7)
 
 
 class ServiceIdentity(_messages.Message):
@@ -1077,12 +1090,16 @@ class ServicedirectoryProjectsLocationsListRequest(_messages.Message):
   r"""A ServicedirectoryProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     includeUnrevealedLocations: If true, the returned list will include
       locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)

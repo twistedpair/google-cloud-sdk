@@ -1348,6 +1348,21 @@ class NotebooksProjectsLocationsInstancesTestIamPermissionsRequest(_messages.Mes
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NotebooksProjectsLocationsInstancesUpdateShieldedInstanceConfigRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesUpdateShieldedInstanceConfigRequest
+  object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    updateShieldedInstanceConfigRequest: A UpdateShieldedInstanceConfigRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateShieldedInstanceConfigRequest = _messages.MessageField('UpdateShieldedInstanceConfigRequest', 2)
+
+
 class NotebooksProjectsLocationsInstancesUpgradeInternalRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesUpgradeInternalRequest object.
 
@@ -1380,10 +1395,14 @@ class NotebooksProjectsLocationsListRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -2169,6 +2188,17 @@ class TestIamPermissionsResponse(_messages.Message):
 
 class TriggerScheduleRequest(_messages.Message):
   r"""Request for created scheduled notebooks"""
+
+
+class UpdateShieldedInstanceConfigRequest(_messages.Message):
+  r"""Request for updating the Shielded Instance config for a notebook
+  instance. You can only use this method on a stopped instance
+
+  Fields:
+    shieldedInstanceConfig: ShieldedInstance configuration to be updated.
+  """
+
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 1)
 
 
 class UpgradeHistoryEntry(_messages.Message):

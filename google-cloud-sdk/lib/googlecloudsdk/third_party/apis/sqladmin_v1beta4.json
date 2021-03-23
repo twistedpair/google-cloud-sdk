@@ -103,7 +103,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         },
         "https://www.googleapis.com/auth/sqlservice.admin": {
           "description": "Manage your Google SQL Service instances"
@@ -767,7 +767,7 @@
             "String type flag.",
             "Integer type flag.",
             "Flag type used for a server startup option.",
-            "Type introduced specically for MySQL TimeZone offset. Accept a string value with the format [-12:59, 13:00].",
+            "Type introduced specially for MySQL TimeZone offset. Accept a string value with the format [-12:59, 13:00].",
             "Float type flag.",
             "Comma-separated list of the strings in a SqlFlagType enum."
           ],
@@ -1477,6 +1477,10 @@
           "items": {
             "$ref": "AclEntry"
           }
+        },
+        "reservedIpRange": {
+          "description": "The name of the reserved ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the reserved range. The range name must comply with [RFC 1035](https:\/\/tools.ietf.org\/html\/rfc1035). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?.",
+          "type": "string"
         }
       }
     },
@@ -1697,7 +1701,7 @@
           "type": "boolean"
         },
         "queryStringLength": {
-          "description": "Maximum query length stored in bytes. Default value: 1024 bytes. Range: 256-4500 bytes. Query length more than this field value will be truncated to this value. When unset, query length will be the default value.",
+          "description": "Maximum query length stored in bytes. Default value: 1024 bytes. Range: 256-4500 bytes. Query length more than this field value will be truncated to this value. When unset, query length will be the default value. Changing query length will restart the database.",
           "type": "integer",
           "format": "int32"
         }

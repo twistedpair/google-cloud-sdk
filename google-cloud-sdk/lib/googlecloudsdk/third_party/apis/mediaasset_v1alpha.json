@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -353,10 +353,6 @@
         "required": {
           "description": "If true, this asset metadata is required to be specified during asset creation.",
           "type": "boolean"
-        },
-        "manageGcsContent": {
-          "description": "If true, any Cloud Storage content referenced in this metadata block will be managed by the media asset service (validated, deleted etc.). This field is temporarily hidden from the public until the feature is supported.",
-          "type": "boolean"
         }
       }
     },
@@ -575,6 +571,31 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "ListAssetsRequest": {
+      "id": "ListAssetsRequest",
+      "description": "Request message for AssetsService.ListAssets.",
+      "type": "object",
+      "properties": {
+        "pageSize": {
+          "description": "The maximum number of items to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more realms left to be queried.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "The next_page_token value returned from a previous List request, if any.",
+          "type": "string"
+        },
+        "filter": {
+          "description": "The filter to apply to list results.",
+          "type": "string"
+        },
+        "readMask": {
+          "description": "Extra fields to be poplulated as part of the asset resource in the response. Currently, this only supports populating asset metadata (no wildcards and no contents of the entire asset).",
+          "type": "string",
+          "format": "google-fieldmask"
         }
       }
     },
@@ -1312,7 +1333,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The standard list filter.",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
@@ -1322,13 +1343,13 @@
                   "type": "boolean"
                 },
                 "pageSize": {
-                  "description": "The standard list page size.",
+                  "description": "The maximum number of results to return. If not set, the service will select a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "The standard list page token.",
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1872,6 +1893,34 @@
                       "parameterOrder": [
                         "parent"
                       ],
+                      "response": {
+                        "$ref": "ListAssetsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists assets in a given project and location."
+                    },
+                    "lroList": {
+                      "id": "mediaasset.projects.locations.assetTypes.assets.lroList",
+                      "path": "v1alpha/{+parent}/assets:lroList",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets:lroList",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The parent resource name, in the following form: `projects\/{project}\/locations\/{location}\/assetTypes\/{type}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ListAssetsRequest"
+                      },
                       "response": {
                         "$ref": "ListAssetsResponse"
                       },

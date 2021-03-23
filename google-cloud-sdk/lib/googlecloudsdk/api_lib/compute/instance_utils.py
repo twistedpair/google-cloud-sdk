@@ -447,7 +447,7 @@ def ParseDiskType(resources, disk_type, project, location, scope):
 
 def UseExistingBootDisk(disks):
   """Returns True if the user has specified an existing boot disk."""
-  return any(disk.get('boot') == 'yes' for disk in disks)
+  return any(disk.get('boot', False) for disk in disks)
 
 
 def IsAnySpecified(args, *dests):

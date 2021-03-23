@@ -345,6 +345,8 @@ class Templates(object):
                                      'java11-template-launcher-base:latest')
   FLEX_TEMPLATE_JAVA8_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
                                     'java8-template-launcher-base:latest')
+  FLEX_TEMPLATE_PYTHON3_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
+                                      'python3-template-launcher-base:latest')
   # Mapping of apitools request message fields to their json parameters
   _CUSTOM_JSON_FIELD_MAPPINGS = {
       'dynamicTemplate_gcsPath': 'dynamicTemplate.gcsPath',
@@ -508,15 +510,13 @@ class Templates(object):
     return params_list
 
   @staticmethod
-  def _BuildDockerfile(flex_template_base_image, jar_paths, env,
-                       sdk_language):
-    """Validates ParameterMetadata objects in template metadata.
+  def BuildJavaImageDockerfile(flex_template_base_image, pipeline_paths, env):
+    """Builds Dockerfile contents for java flex template image.
 
     Args:
       flex_template_base_image: SDK version or base image to use.
-      jar_paths: List of jar paths to pipelines and dependencies.
+      pipeline_paths: List of paths to pipelines and dependencies.
       env: Dictionary of env variables to set in the container image.
-      sdk_language: SDK language of the flex template.
 
     Returns:
       Dockerfile contents as string.
@@ -527,19 +527,98 @@ class Templates(object):
     {env}
 
     {copy}
+
+    {commands}
     """
-    if sdk_language == 'JAVA':
-      env['FLEX_TEMPLATE_JAVA_CLASSPATH'] = '/template/*'
-    envs = ['ENV {}={}'.format(k, v) for k, v in env.items()]
+    commands = ''
+    env['FLEX_TEMPLATE_JAVA_CLASSPATH'] = '/template/*'
+    envs = ['ENV {}={}'.format(k, v) for k, v in sorted(env.items())]
     env_list = '\n'.join(envs)
-    copy_commands = '\n'.join(
-        ['COPY {} /template/'.format(path) for path in jar_paths])
+    copy_commands = '\n'.join([
+        'COPY {} /template/'.format(path) for path in pipeline_paths
+    ])
+
     dockerfile_contents = textwrap.dedent(dockerfile_template).format(
         base_image=Templates._GetFlexTemplateBaseImage(
             flex_template_base_image),
         env=env_list,
-        copy=copy_commands)
+        copy=copy_commands,
+        commands='\n'.join(commands))
     return dockerfile_contents
+
+  @staticmethod
+  def BuildPythonImageDockerfile(flex_template_base_image, pipeline_paths, env):
+    """Builds Dockerfile contents for python flex template image.
+
+    Args:
+      flex_template_base_image: SDK version or base image to use.
+      pipeline_paths: List of paths to pipelines and dependencies.
+      env: Dictionary of env variables to set in the container image.
+
+    Returns:
+      Dockerfile contents as string.
+    """
+    dockerfile_template = """
+    FROM {base_image}
+
+    {env}
+
+    {copy}
+
+    {commands}
+    """
+    commands = [
+        'apt-get update',
+        'apt-get install -y libffi-dev git',
+        'rm -rf /var/lib/apt/lists/*',
+    ]
+
+    env['FLEX_TEMPLATE_PYTHON_PY_FILE'] = '/template/{}'.format(
+        (env['FLEX_TEMPLATE_PYTHON_PY_FILE']))
+    if 'FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE' in env:
+      env['FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE'] = '/template/{}'.format(
+          env['FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE'])
+      commands.append('pip install --no-cache-dir -U -r {}'.format(
+          env['FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE']))
+    if 'FLEX_TEMPLATE_PYTHON_SETUP_FILE' in env:
+      env['FLEX_TEMPLATE_PYTHON_SETUP_FILE'] = '/template/{}'.format(
+          env['FLEX_TEMPLATE_PYTHON_SETUP_FILE'])
+
+    envs = ['ENV {}={}'.format(k, v) for k, v in sorted(env.items())]
+    env_list = '\n'.join(envs)
+    copy_commands = '\n'.join([
+        'COPY {path} /template/{path}'.format(path=path)
+        for path in pipeline_paths
+    ])
+
+    dockerfile_contents = textwrap.dedent(dockerfile_template).format(
+        base_image=Templates._GetFlexTemplateBaseImage(
+            flex_template_base_image),
+        env=env_list,
+        copy=copy_commands,
+        commands='RUN ' + ' && '.join(commands))
+    return dockerfile_contents
+
+  @staticmethod
+  def BuildDockerfile(flex_template_base_image, pipeline_paths, env,
+                      sdk_language):
+    """Builds Dockerfile contents for flex template image.
+
+    Args:
+      flex_template_base_image: SDK version or base image to use.
+      pipeline_paths: List of paths to pipelines and dependencies.
+      env: Dictionary of env variables to set in the container image.
+      sdk_language: SDK language of the flex template.
+
+    Returns:
+      Dockerfile contents as string.
+    """
+    if sdk_language == 'JAVA':
+      return Templates.BuildJavaImageDockerfile(
+          flex_template_base_image, pipeline_paths, env)
+    elif sdk_language == 'PYTHON':
+      return Templates.BuildPythonImageDockerfile(
+          flex_template_base_image, pipeline_paths, env)
 
   @staticmethod
   def _ValidateTemplateParameters(parameters):
@@ -582,6 +661,9 @@ class Templates(object):
     if sdk_language == 'JAVA' and 'FLEX_TEMPLATE_JAVA_MAIN_CLASS' not in env:
       raise ValueError(('FLEX_TEMPLATE_JAVA_MAIN_CLASS environment variable '
                         'should be provided for all JAVA jobs.'))
+    elif sdk_language == 'PYTHON' and 'FLEX_TEMPLATE_PYTHON_PY_FILE' not in env:
+      raise ValueError(('FLEX_TEMPLATE_PYTHON_PY_FILE environment variable '
+                        'should be provided for all PYTHON jobs.'))
 
     return True
 
@@ -631,6 +713,8 @@ class Templates(object):
       return Templates.FLEX_TEMPLATE_JAVA11_BASE_IMAGE
     elif flex_template_base_image == 'JAVA8':
       return Templates.FLEX_TEMPLATE_JAVA8_BASE_IMAGE
+    elif flex_template_base_image == 'PYTHON3':
+      return Templates.FLEX_TEMPLATE_PYTHON3_BASE_IMAGE
     return flex_template_base_image
 
   @staticmethod
@@ -743,13 +827,14 @@ class Templates(object):
 
   @staticmethod
   def BuildAndStoreFlexTemplateImage(image_gcr_path, flex_template_base_image,
-                                     jar_paths, env, sdk_language):
+                                     jar_paths, py_paths, env, sdk_language):
     """Builds the flex template docker container image and stores it in GCR.
 
     Args:
       image_gcr_path: GCR location to store the flex template container image.
       flex_template_base_image: SDK version or base image to use.
       jar_paths: List of jar paths to pipelines and dependencies.
+      py_paths: List of python paths to pipelines and dependencies.
       env: Dictionary of env variables to set in the container image.
       sdk_language: SDK language of the flex template.
 
@@ -763,16 +848,24 @@ class Templates(object):
     with files.TemporaryDirectory() as temp_dir:
       log.status.Print(
           'Copying files to a temp directory {}'.format(temp_dir))
-      jar_files = []
-      for jar_path in jar_paths:
-        absl_path = os.path.abspath(jar_path)
-        shutil.copy2(absl_path, temp_dir)
-        jar_files.append(os.path.split(absl_path)[1])
+
+      pipeline_files = []
+      paths = jar_paths
+      if py_paths:
+        paths = py_paths
+      for path in paths:
+        absl_path = os.path.abspath(path)
+        if os.path.isfile(absl_path):
+          shutil.copy2(absl_path, temp_dir)
+        else:
+          shutil.copytree(
+              absl_path, '{}/{}'.format(temp_dir, os.path.basename(absl_path)))
+        pipeline_files.append(os.path.split(absl_path)[1])
 
       log.status.Print(
           'Generating dockerfile to build the flex template container image...')
-      dockerfile_contents = Templates._BuildDockerfile(
-          flex_template_base_image, jar_files, env, sdk_language)
+      dockerfile_contents = Templates.BuildDockerfile(
+          flex_template_base_image, pipeline_files, env, sdk_language)
 
       dockerfile_path = os.path.join(temp_dir, 'Dockerfile')
       files.WriteFileContents(dockerfile_path, dockerfile_contents)

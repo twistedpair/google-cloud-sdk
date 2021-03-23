@@ -571,29 +571,61 @@ class Expr(_messages.Message):
 
 
 class FirewallInfo(_messages.Message):
-  r"""For display only. Metadata associated with a Compute Engine firewall
-  rule.
+  r"""For display only. Metadata associated with a VPC firewall rule, an
+  implied VPC firewall rule, or a hierarchical firewall policy rule.
+
+  Enums:
+    FirewallRuleTypeValueValuesEnum: The firewall rule's type.
 
   Fields:
     action: Possible values: ALLOW, DENY
     direction: Possible values: INGRESS, EGRESS
-    displayName: Name of a Compute Engine firewall rule.
-    networkUri: URI of a Compute Engine network.
-    priority: Priority of the firewall rule.
-    targetServiceAccounts: Target service accounts of the firewall rule.
-    targetTags: Target tags of the firewall rule.
-    uri: URI of a Compute Engine firewall rule. Implied default rule does not
-      have URI.
+    displayName: The display name of the VPC firewall rule. This field is not
+      applicable to hierarchical firewall policy rules.
+    firewallRuleType: The firewall rule's type.
+    networkUri: The URI of the VPC network that the firewall rule is
+      associated with. This field is not applicable to hierarchical firewall
+      policy rules.
+    policy: The hierarchical firewall policy that this rule is associated
+      with. This field is not applicable to VPC firewall rules.
+    priority: The priority of the firewall rule.
+    targetServiceAccounts: The target service accounts specified by the
+      firewall rule.
+    targetTags: The target tags defined by the VPC firewall rule. This field
+      is not applicable to hierarchical firewall policy rules.
+    uri: The URI of the VPC firewall rule. This field is not applicable to
+      implied firewall rules or hierarchical firewall policy rules.
   """
+
+  class FirewallRuleTypeValueValuesEnum(_messages.Enum):
+    r"""The firewall rule's type.
+
+    Values:
+      FIREWALL_RULE_TYPE_UNSPECIFIED: Unspecified type.
+      HIERARCHICAL_FIREWALL_POLICY_RULE: Hierarchical firewall policy rule.
+        For details, see [Hierarchical firewall policy
+        rules](https://cloud.google.com/vpc/docs/firewall-policies).
+      VPC_FIREWALL_RULE: VPC firewall rule. For details, see [VPC firewall
+        rules overview](https://cloud.google.com/vpc/docs/firewalls).
+      IMPLIED_VPC_FIREWALL_RULE: Implied VPC firewall rule. For details, see
+        [Implied rules](https://cloud.google.com/vpc/docs/firewalls#default_fi
+        rewall_rules).
+    """
+    FIREWALL_RULE_TYPE_UNSPECIFIED = 0
+    HIERARCHICAL_FIREWALL_POLICY_RULE = 1
+    VPC_FIREWALL_RULE = 2
+    IMPLIED_VPC_FIREWALL_RULE = 3
 
   action = _messages.StringField(1)
   direction = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  networkUri = _messages.StringField(4)
-  priority = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  targetServiceAccounts = _messages.StringField(6, repeated=True)
-  targetTags = _messages.StringField(7, repeated=True)
-  uri = _messages.StringField(8)
+  firewallRuleType = _messages.EnumField('FirewallRuleTypeValueValuesEnum', 4)
+  networkUri = _messages.StringField(5)
+  policy = _messages.StringField(6)
+  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  targetServiceAccounts = _messages.StringField(8, repeated=True)
+  targetTags = _messages.StringField(9, repeated=True)
+  uri = _messages.StringField(10)
 
 
 class ForwardInfo(_messages.Message):
@@ -1186,10 +1218,14 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkmanagementProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -1893,13 +1929,13 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class Trace(_messages.Message):
-  r"""Trace represents one simulated packet forwarding path. - Each trace
-  contains multiple ordered steps. - Each step is in a particular state and
-  has an associated configuration. - State is categorized as a final or non-
-  final state. - Each final state has a reason associated with it. - Each
-  trace must end with a final state (the last step).
+  r"""Trace represents one simulated packet forwarding path. * Each trace
+  contains multiple ordered Steps. * Each step is in a particular state with
+  associated configuration. * State is categorized as final or non-final
+  states. * Each final state has a reason associated. * Each trace must end
+  with a final state (the last step). ```
   |---------------------Trace----------------------| Step1(State) Step2(State)
-  --- StepN(State(final))
+  --- StepN(State(final)) ```
 
   Fields:
     endpointInfo: Derived from the source and destination endpoints

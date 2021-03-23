@@ -508,8 +508,7 @@ class ComponentSnapshot(object):
         size += d.data.size or 0
     return size
 
-  def CreateDiff(self, latest_snapshot, platform_filter=None,
-                 enable_fallback=False):
+  def CreateDiff(self, latest_snapshot, platform_filter=None):
     """Creates a ComponentSnapshotDiff based on this snapshot and the given one.
 
     Args:
@@ -517,15 +516,12 @@ class ComponentSnapshot(object):
         want to compare to.
       platform_filter: platforms.Platform, A platform that components must
         match in order to be considered for any operations.
-      enable_fallback: bool, True to enable fallback from darwin arm64 version
-        to darwin x86_64 version of the component.
 
     Returns:
       A ComponentSnapshotDiff object.
     """
     return ComponentSnapshotDiff(self, latest_snapshot,
-                                 platform_filter=platform_filter,
-                                 enable_fallback=enable_fallback)
+                                 platform_filter=platform_filter)
 
   def CreateComponentInfos(self, platform_filter=None):
     all_components = self.AllComponentIdsMatching(platform_filter)
@@ -610,8 +606,7 @@ class ComponentSnapshotDiff(object):
   DARWIN_X86_64 = platforms.Platform(platforms.OperatingSystem.MACOSX,
                                      platforms.Architecture.x86_64)
 
-  def __init__(self, current, latest, platform_filter=None,
-               enable_fallback=False):
+  def __init__(self, current, latest, platform_filter=None):
     """Creates a new diff between two ComponentSnapshots.
 
     Args:
@@ -619,16 +614,11 @@ class ComponentSnapshotDiff(object):
       latest: The ComponentSnapshot representing a new state we can move to
       platform_filter: platforms.Platform, A platform that components must
         match in order to be considered for any operations.
-      enable_fallback: bool, True to enable fallback from darwin arm64 version
-        to darwin x86_64 version of the component.
     """
     self.current = current
     self.latest = latest
     self.__platform_filter = platform_filter
-    self.__enable_fallback = (
-        enable_fallback and platform_filter and
-        platform_filter.operating_system == platforms.OperatingSystem.MACOSX and
-        platform_filter.architecture == platforms.Architecture.arm)
+    self.__enable_fallback = self._EnableFallback()
 
     self.__all_components = (current.AllComponentIdsMatching(platform_filter) |
                              latest.AllComponentIdsMatching(platform_filter))
@@ -665,6 +655,12 @@ class ComponentSnapshotDiff(object):
                                     if diff.state is
                                     ComponentState.UPDATE_AVAILABLE)
 
+  def _EnableFallback(self):
+    # pylint: disable=line-too-long
+    return (self.__platform_filter and
+            self.__platform_filter.operating_system == platforms.OperatingSystem.MACOSX and
+            self.__platform_filter.architecture == platforms.Architecture.arm)
+
   def InvalidUpdateSeeds(self, component_ids):
     """Sees if any of the given components don't exist locally or remotely.
 
@@ -675,14 +671,10 @@ class ComponentSnapshotDiff(object):
       set of str, The component ids that do not exist anywhere.
     """
     invalid_seeds = set(component_ids) - self.__all_components
-    missing_platform = self.current.CheckMissingPlatformExecutable(
+    missing_platform = self.latest.CheckMissingPlatformExecutable(
         component_ids, self.__platform_filter)
-    missing_platform |= self.latest.CheckMissingPlatformExecutable(
-        component_ids, self.__platform_filter)
-    if self.__enable_fallback:
-      missing_platform_x86_64 = self.current.CheckMissingPlatformExecutable(
-          component_ids, self.DARWIN_X86_64)
-      missing_platform_x86_64 |= self.latest.CheckMissingPlatformExecutable(
+    if self._EnableFallback():
+      missing_platform_x86_64 = self.latest.CheckMissingPlatformExecutable(
           component_ids, self.DARWIN_X86_64)
       missing_platform &= missing_platform_x86_64
       native_invalid_ids = set(component_ids) - self.__native_all_components
@@ -690,11 +682,7 @@ class ComponentSnapshotDiff(object):
       if arm_x86_ids:
         rosetta2_installed = os.path.isfile(
             '/Library/Apple/System/Library/LaunchDaemons/com.apple.oahd.plist')
-        if rosetta2_installed:
-          log.warning('The ARM versions of the following components are not '
-                      'available yet, using x86_64 versions instead: [{}].'
-                      .format(', '.join(arm_x86_ids)))
-        else:
+        if not rosetta2_installed:
           log.warning('The ARM versions of the components [{}] are not '
                       'available yet. To download and execute the x86_64 '
                       'version of the components, please install Rosetta 2 '
@@ -771,7 +759,7 @@ class ComponentSnapshotDiff(object):
     """
     # Get the full set of everything that needs to be updated together that we
     # currently have installed
-    if self.__enable_fallback:
+    if self._EnableFallback():
       native_seed = set(update_seed) & self.__native_all_components
       darwin_x86_64 = set(update_seed) - native_seed
       connected = self.current.ConnectedComponents(
@@ -812,10 +800,22 @@ class ComponentSnapshotDiff(object):
       set of str, The component ids that should be removed.
     """
     installed_components = list(self.current.components.keys())
+    missing_platform = self.latest.CheckMissingPlatformExecutable(
+        update_seed, self.__platform_filter)
 
-    if self.__enable_fallback:
-      native_seed = set(update_seed) & self.__native_all_components
+    if self._EnableFallback():
+      missing_platform_darwin_x86_64 = self.latest.CheckMissingPlatformExecutable(
+          update_seed, self.DARWIN_X86_64)
+      native_valid_seed = self.__native_all_components - missing_platform
+      native_seed = set(update_seed) & native_valid_seed
       darwin_x86_64 = set(update_seed) - native_seed
+      darwin_x86_64 -= missing_platform_darwin_x86_64
+
+      if darwin_x86_64:
+        log.warning('The ARM versions of the following components are not '
+                    'available yet, using x86_64 versions instead: [{}].'
+                    .format(', '.join([c_id for c_id in darwin_x86_64
+                                       if 'darwin' not in c_id])))
 
       local_connected = self.current.ConnectedComponents(
           native_seed, platform_filter=self.__platform_filter)
@@ -894,6 +894,8 @@ class ComponentInfo(object):
     is_hidden: bool, If the component is hidden.
     is_configuration: bool, True if this should be displayed in the packages
       section of the component manager.
+    platform_required: bool, True if a platform-specific executable is
+      required.
   """
 
   def __init__(self, component_id, snapshot, platform_filter=None):
@@ -916,7 +918,7 @@ class ComponentInfo(object):
 
   @property
   def platform(self):
-    return str(self._platform_filter)
+    return self._platform_filter
 
   @property
   def current_version_string(self):
@@ -935,6 +937,10 @@ class ComponentInfo(object):
     return self._component.is_configuration
 
   @property
+  def platform_required(self):
+    return self._component.platform_required
+
+  @property
   def size(self):
     return self._snapshot.GetEffectiveComponentSize(
         self._id, platform_filter=self._platform_filter)
@@ -947,6 +953,7 @@ class ComponentInfo(object):
                 current_version=self.current_version_string))
 
 
+# pylint: disable=g-missing-from-attributes
 class ComponentDiff(object):
   """Encapsulates the difference for a single component between snapshots.
 
@@ -983,8 +990,9 @@ class ComponentDiff(object):
     self.name = data_provider.details.display_name
     self.is_hidden = data_provider.is_hidden
     self.is_configuration = data_provider.is_configuration
+    self.platform_required = data_provider.platform_required
     self.state = self._ComputeState()
-
+    self.platform = platform_filter
     active_snapshot = latest_snapshot if self.__latest else current_snapshot
     self.size = active_snapshot.GetEffectiveComponentSize(
         component_id, platform_filter=platform_filter)

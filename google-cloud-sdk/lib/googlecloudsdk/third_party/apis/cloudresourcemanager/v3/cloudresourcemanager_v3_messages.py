@@ -632,19 +632,21 @@ class CloudresourcemanagerProjectsSearchRequest(_messages.Message):
       ------------|----------------------------------------------| |
       displayName, name | Filters by displayName. | | parent.type | Parent's
       type: `folder` or `organization`. | | parent.id | Parent's id number
-      (e.g. 123) | | id, projectId | Filters by projectId. | | state,
-      lifecycleState | Filters by state. | | labels | Filters by label name or
-      value. | | labels. (where *key* is the name of a label) | Filters by
-      label name. | Search expressions are case insensitive. Some examples
-      queries: | Query | Description | |------------------|-------------------
-      ----------------------------------| | name:how* | The project's name
-      starts with "how". | | name:Howl | The project's name is `Howl` or
-      `howl`. | | name:HOWL | Equivalent to above. | | NAME:howl | Equivalent
-      to above. | | labels.color:* | The project has the label `color`. | |
-      labels.color:red | The project's label `color` has the value `red`. | |
-      labels.color:red labels.size:big | The project's label `color` has the
-      value `red` and its label `size` has the value `big`. | If no query is
-      specified, the call will return projects for which the user has the
+      (e.g. 123) | | parent | Project's parent. (e.g. folders/123,
+      organizations/*) Prefer parent field over parent.id and parent.type. | |
+      id, projectId | Filters by projectId. | | state, lifecycleState |
+      Filters by state. | | labels | Filters by label name or value. | |
+      labels. (where *key* is the name of a label) | Filters by label name. |
+      Search expressions are case insensitive. Some examples queries: | Query
+      | Description | |------------------|------------------------------------
+      -----------------| | name:how* | The project's name starts with "how". |
+      | name:Howl | The project's name is `Howl` or `howl`. | | name:HOWL |
+      Equivalent to above. | | NAME:howl | Equivalent to above. | |
+      labels.color:* | The project has the label `color`. | | labels.color:red
+      | The project's label `color` has the value `red`. | | labels.color:red
+      labels.size:big | The project's label `color` has the value `red` and
+      its label `size` has the value `big`. | If no query is specified, the
+      call will return projects for which the user has the
       `resourcemanager.projects.get` permission.
   """
 
@@ -727,8 +729,8 @@ class CloudresourcemanagerTagBindingsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of TagBindings to return in the
-      response. This is currently not used by the server and will return the
-      full page even if a size is specified.
+      response. The server allows a maximum of 300 TagBindings to return. If
+      unspecified, the server will use 100 as the default.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListTagBindings` that indicates where this listing should continue
       from.
@@ -804,11 +806,10 @@ class CloudresourcemanagerTagKeysListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of TagKeys to return in the
-      response. This is currently not used by the server and will return the
-      full page even if a size is specified currently.
+      response. The server allows a maximum of 300 TagKeys to return. If
+      unspecified, the server will use 100 as the default.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListTagKey` that indicates where this listing should continue from.
-      This is currently not used by the server.
     parent: Required. The resource name of the new TagKey's parent. Must be of
       the form `folders/{folder_id}` or `organizations/{org_id}`.
   """
@@ -930,11 +931,10 @@ class CloudresourcemanagerTagValuesListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of TagValues to return in the
-      response. This is currently not used by the server and will return the
-      full page even if a size is specified currently.
+      response. The server allows a maximum of 300 TagValues to return. If
+      unspecified, the server will use 100 as the default.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListTagValues` that indicates where this listing should continue from.
-      This is currently not used by the server.
     parent: Required. Resource name for TagKey, parent of the TagValues to be
       listed, in the format `tagKeys/123`.
   """
@@ -1356,8 +1356,6 @@ class ListTagBindingsResponse(_messages.Message):
   Fields:
     nextPageToken: A pagination token returned from a previous call to
       `ListTagBindings` that indicates from where listing should continue.
-      This is currently not used, but the server may at any point start
-      supplying a valid token.
     tagBindings: A possibly paginated list of TagBindings for the specified
       TagValue or resource.
   """
@@ -1371,9 +1369,7 @@ class ListTagKeysResponse(_messages.Message):
 
   Fields:
     nextPageToken: A pagination token returned from a previous call to
-      `ListTagKeys` that indicates from where listing should continue. This is
-      currently not used, but the server may at any point start supplying a
-      valid token.
+      `ListTagKeys` that indicates from where listing should continue.
     tagKeys: List of TagKeys that live under the specified parent in the
       request.
   """
@@ -1442,15 +1438,15 @@ class MoveProjectRequest(_messages.Message):
   r"""The request sent to MoveProject method.
 
   Fields:
+    destinationParent: Required. The new parent to move the Project under.
     etag: Optional. The etag known to the client for the expected state of the
       Project. This is to be used for optimistic concurrency.
-    parent: Required. The new parent to move the Project under.
     validateOnly: Optional. True to perform validations necessary for moving
       the project, but not actually perform the action.
   """
 
-  etag = _messages.StringField(1)
-  parent = _messages.StringField(2)
+  destinationParent = _messages.StringField(1)
+  etag = _messages.StringField(2)
   validateOnly = _messages.BooleanField(3)
 
 

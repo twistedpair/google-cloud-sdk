@@ -5661,7 +5661,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.instances.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['environments'],
         relative_path='v1/{+parent}/instances',
         request_field='googleCloudApigeeV1Instance',
         request_type_name='ApigeeOrganizationsInstancesCreateRequest',
@@ -5747,6 +5747,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsInstancesListRequest',
         response_type_name='GoogleCloudApigeeV1ListInstancesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an Apigee runtime instance. You can update the fields described in NodeConfig. No other fields will be updated. **Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances/{instancesId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.instances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1Instance',
+        request_type_name='ApigeeOrganizationsInstancesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

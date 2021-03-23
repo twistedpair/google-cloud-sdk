@@ -59,8 +59,8 @@ class EssentialcontactsFoldersContactsComputeRequest(_messages.Message):
       PRIVACY: Deprecated. Please use security instead.
       SECURITY: Notifications related to security/privacy incidents,
         notifications, and vulnerabilities.
-      TECHNICAL: Notifications related to outages, errors, bugs, and other
-        technical issues.
+      TECHNICAL: Notifications related to technical events and issues such as
+        outages, errors, or bugs.
       BILLING: Notifications related to billing and payments notifications,
         price updates, errors, or credits.
       LEGAL: Notifications related to enforcement actions, regulatory
@@ -96,8 +96,8 @@ class EssentialcontactsFoldersContactsComputeRequest(_messages.Message):
       PRIVACY: Deprecated. Please use security instead.
       SECURITY: Notifications related to security/privacy incidents,
         notifications, and vulnerabilities.
-      TECHNICAL: Notifications related to outages, errors, bugs, and other
-        technical issues.
+      TECHNICAL: Notifications related to technical events and issues such as
+        outages, errors, or bugs.
       BILLING: Notifications related to billing and payments notifications,
         price updates, errors, or credits.
       LEGAL: Notifications related to enforcement actions, regulatory
@@ -291,8 +291,8 @@ class EssentialcontactsOrganizationsContactsComputeRequest(_messages.Message):
       PRIVACY: Deprecated. Please use security instead.
       SECURITY: Notifications related to security/privacy incidents,
         notifications, and vulnerabilities.
-      TECHNICAL: Notifications related to outages, errors, bugs, and other
-        technical issues.
+      TECHNICAL: Notifications related to technical events and issues such as
+        outages, errors, or bugs.
       BILLING: Notifications related to billing and payments notifications,
         price updates, errors, or credits.
       LEGAL: Notifications related to enforcement actions, regulatory
@@ -328,8 +328,8 @@ class EssentialcontactsOrganizationsContactsComputeRequest(_messages.Message):
       PRIVACY: Deprecated. Please use security instead.
       SECURITY: Notifications related to security/privacy incidents,
         notifications, and vulnerabilities.
-      TECHNICAL: Notifications related to outages, errors, bugs, and other
-        technical issues.
+      TECHNICAL: Notifications related to technical events and issues such as
+        outages, errors, or bugs.
       BILLING: Notifications related to billing and payments notifications,
         price updates, errors, or credits.
       LEGAL: Notifications related to enforcement actions, regulatory
@@ -523,8 +523,8 @@ class EssentialcontactsProjectsContactsComputeRequest(_messages.Message):
       PRIVACY: Deprecated. Please use security instead.
       SECURITY: Notifications related to security/privacy incidents,
         notifications, and vulnerabilities.
-      TECHNICAL: Notifications related to outages, errors, bugs, and other
-        technical issues.
+      TECHNICAL: Notifications related to technical events and issues such as
+        outages, errors, or bugs.
       BILLING: Notifications related to billing and payments notifications,
         price updates, errors, or credits.
       LEGAL: Notifications related to enforcement actions, regulatory
@@ -560,8 +560,8 @@ class EssentialcontactsProjectsContactsComputeRequest(_messages.Message):
       PRIVACY: Deprecated. Please use security instead.
       SECURITY: Notifications related to security/privacy incidents,
         notifications, and vulnerabilities.
-      TECHNICAL: Notifications related to outages, errors, bugs, and other
-        technical issues.
+      TECHNICAL: Notifications related to technical events and issues such as
+        outages, errors, or bugs.
       BILLING: Notifications related to billing and payments notifications,
         price updates, errors, or credits.
       LEGAL: Notifications related to enforcement actions, regulatory
@@ -765,8 +765,8 @@ class GoogleCloudEssentialcontactsV1alpha1Contact(_messages.Message):
       PRIVACY: Deprecated. Please use security instead.
       SECURITY: Notifications related to security/privacy incidents,
         notifications, and vulnerabilities.
-      TECHNICAL: Notifications related to outages, errors, bugs, and other
-        technical issues.
+      TECHNICAL: Notifications related to technical events and issues such as
+        outages, errors, or bugs.
       BILLING: Notifications related to billing and payments notifications,
         price updates, errors, or credits.
       LEGAL: Notifications related to enforcement actions, regulatory

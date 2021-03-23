@@ -964,7 +964,7 @@ class Flag(_messages.Message):
       STRING: String type flag.
       INTEGER: Integer type flag.
       NONE: Flag type used for a server startup option.
-      MYSQL_TIMEZONE_OFFSET: Type introduced specically for MySQL TimeZone
+      MYSQL_TIMEZONE_OFFSET: Type introduced specially for MySQL TimeZone
         offset. Accept a string value with the format [-12:59, 13:00].
       FLOAT: Float type flag.
       REPEATED_STRING: Comma-separated list of the strings in a SqlFlagType
@@ -1106,7 +1106,7 @@ class InsightsConfig(_messages.Message):
     queryStringLength: Maximum query length stored in bytes. Default value:
       1024 bytes. Range: 256-4500 bytes. Query length more than this field
       value will be truncated to this value. When unset, query length will be
-      the default value.
+      the default value. Changing query length will restart the database.
     recordApplicationTags: Whether Query Insights will record application tags
       from query when enabled.
     recordClientAddress: Whether Query Insights will record client address
@@ -1246,12 +1246,19 @@ class IpConfiguration(_messages.Message):
       */projects/myProject/global/networks/default*. This setting can be
       updated, but it cannot be removed after it is set.
     requireSsl: Whether SSL connections over IP are enforced or not.
+    reservedIpRange: The name of the reserved ip range for the private ip
+      CloudSQL instance. For example: "google-managed-services-default". If
+      set, the instance ip will be created in the reserved range. The range
+      name must comply with [RFC 1035](https://tools.ietf.org/html/rfc1035).
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?.
   """
 
   authorizedNetworks = _messages.MessageField('AclEntry', 1, repeated=True)
   ipv4Enabled = _messages.BooleanField(2)
   privateNetwork = _messages.StringField(3)
   requireSsl = _messages.BooleanField(4)
+  reservedIpRange = _messages.StringField(5)
 
 
 class IpMapping(_messages.Message):

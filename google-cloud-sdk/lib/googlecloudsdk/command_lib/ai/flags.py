@@ -760,10 +760,47 @@ def GetNetworkArg(required=True):
       """)
 
 
+def TensorboardRunAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='tensorboard-run-id',
+      help_text='ID of the tensorboard run for the {resource}.')
+
+
+def TensorboardExperimentAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='tensorboard-experiment-id',
+      help_text='ID of the tensorboard experiment for the {resource}.')
+
+
 def TensorboardAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='tensorboard-id',
       help_text='ID of the tensorboard for the {resource}.')
+
+
+def GetTensorboardTimeSeriesResourceSpec(
+    resource_name='tensorboard_time_series'):
+  return concepts.ResourceSpec(
+      constants.TENSORBOARD_TIME_SERIES_COLLECTION,
+      resource_name=resource_name,
+      tensorboardsId=TensorboardAttributeConfig(),
+      experimentsId=TensorboardExperimentAttributeConfig(),
+      runsId=TensorboardRunAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      disable_auto_completers=False)
+
+
+def GetTensorboardRunResourceSpec(
+    resource_name='tensorboard_run'):
+  return concepts.ResourceSpec(
+      constants.TENSORBOARD_RUNS_COLLECTION,
+      resource_name=resource_name,
+      tensorboardsId=TensorboardAttributeConfig(),
+      experimentsId=TensorboardExperimentAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      disable_auto_completers=False)
 
 
 def GetTensorboardExperimentResourceSpec(
@@ -784,6 +821,38 @@ def GetTensorboardResourceSpec(resource_name='tensorboard'):
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=RegionAttributeConfig(),
       disable_auto_completers=False)
+
+
+def AddTensorboardTimeSeriesResourceArg(parser, verb):
+  """Add a resource argument for a Cloud AI Platform Tensorboard time series.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'tensorboard_time_series',
+      GetTensorboardTimeSeriesResourceSpec(),
+      'The Tensorboard time series {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddTensorboardRunResourceArg(parser, verb):
+  """Add a resource argument for a Cloud AI Platform Tensorboard run.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'tensorboard_run',
+      GetTensorboardRunResourceSpec(),
+      'The Tensorboard run {}.'.format(verb),
+      required=True).AddToParser(parser)
 
 
 def AddTensorboardExperimentResourceArg(parser, verb):
@@ -823,6 +892,29 @@ def GetTensorboardExperimentIdArg(required=True):
       '--tensorboard-experiment-id',
       help='Id of the Tensorboard experiment.',
       required=required)
+
+
+def GetTensorboardRunIdArg(required=True):
+  return base.Argument(
+      '--tensorboard-run-id',
+      help='ID of the Tensorboard run.',
+      required=required)
+
+
+def GetPluginNameArg(noun):
+  return base.Argument(
+      '--plugin-name',
+      required=False,
+      default=None,
+      help='Plugin name of the {noun}.'.format(noun=noun))
+
+
+def GetPluginDataArg(noun):
+  return base.Argument(
+      '--plugin-data',
+      required=False,
+      default=None,
+      help='Plugin data of the {noun}.'.format(noun=noun))
 
 
 def ParseAcceleratorFlag(accelerator, version):

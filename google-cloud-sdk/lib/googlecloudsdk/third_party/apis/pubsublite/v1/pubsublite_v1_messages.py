@@ -241,6 +241,10 @@ class PubsubliteAdminProjectsLocationsSubscriptionsCreateRequest(_messages.Messa
   Fields:
     parent: Required. The parent location in which to create the subscription.
       Structured like `projects/{project_number}/locations/{location}`.
+    skipBacklog: If true, the newly created subscription will only receive
+      messages published after the subscription was created. Otherwise, the
+      entire message backlog will be received on the subscription. Defaults to
+      false.
     subscription: A Subscription resource to be passed as the request body.
     subscriptionId: Required. The ID to use for the subscription, which will
       become the final component of the subscription's name. This value is
@@ -248,8 +252,9 @@ class PubsubliteAdminProjectsLocationsSubscriptionsCreateRequest(_messages.Messa
   """
 
   parent = _messages.StringField(1, required=True)
-  subscription = _messages.MessageField('Subscription', 2)
-  subscriptionId = _messages.StringField(3)
+  skipBacklog = _messages.BooleanField(2)
+  subscription = _messages.MessageField('Subscription', 3)
+  subscriptionId = _messages.StringField(4)
 
 
 class PubsubliteAdminProjectsLocationsSubscriptionsDeleteRequest(_messages.Message):

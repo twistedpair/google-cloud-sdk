@@ -61,15 +61,25 @@ _VISIBILITY_MODES = {
 }
 
 _INGRESS_MODES = {
-    'all': 'Inbound requests from all sources are allowed.',
+    'all':
+        'Inbound requests from all sources are allowed.',
     'internal':
-        'For Cloud Run (fully managed), only inbound requests from VPC networks'
-        ' in the same project are allowed. For Cloud Run for Anthos, only '
-        'inbound requests from the same cluster are allowed.',
+        """\
+        For Cloud Run (fully managed), only inbound requests from VPC networks
+        in the same project or VPC Service Controls perimeter, as well as
+        Pub/Sub subscriptions and Eventarc events in the same project or VPC
+        Service Controls perimeter are allowed. All other requests are rejected.
+        See https://cloud.google.com/run/docs/securing/ingress for full details
+        on the definition of internal traffic for Cloud Run (fully managed). For
+        Cloud Run for Anthos, only inbound requests from the same cluster are
+        allowed.
+        """,
     'internal-and-cloud-load-balancing':
-        'Only supported for Cloud Run (fully managed). Only inbound requests'
-        ' from VPC networks in the same project or from Google Cloud Load '
-        'Balancing are allowed.'
+        """\
+        Only supported for Cloud Run (fully managed). Only inbound requests
+        from Google Cloud Load Balancing or a traffic source allowed by the
+        internal option are allowed.
+        """
 }
 
 _SANDBOX_CHOICES = {
@@ -106,40 +116,6 @@ def AddImageArg(parser, required=True):
       required=required,
       help='Name of the container image to deploy (e.g. '
       '`gcr.io/cloudrun/hello:latest`).')
-
-
-def AddConfigFlags(parser):
-  """Add config flags."""
-  build_config = parser.add_mutually_exclusive_group()
-  build_config.add_argument(
-      '--image',
-      help='Name of the container image to deploy (e.g. '
-      '`gcr.io/cloudrun/hello:latest`).')
-  build_config.add_argument(
-      '--config',
-      hidden=True,
-      default='cloudbuild.yaml',  # By default, find this in the current dir
-      help='The YAML or JSON file to use as the build configuration file.')
-  build_config.add_argument(
-      '--pack',
-      hidden=True,
-      type=arg_parsers.ArgDict(
-          spec={
-              'image': str,
-              'builder': str,
-              'env': str
-          },
-          required_keys=['image']),
-      action='append',
-      help='Uses CNCF buildpack (https://buildpacks.io/) to create image.  '
-      'The "image" key/value must be provided.  The image name must be in the '
-      'gcr.io/*, *.gcr.io, or pkg.dev namespaces. By default '
-      'gcr.io/buildpacks/builder will be used. To specify your own builder '
-      'image use the optional "builder" key/value argument.  To pass '
-      'environment variables to the builder use the optional "env" key/value '
-      'argument where value is a list of key values using '
-      'escaping (https://cloud.google.com/sdk/gcloud/reference/topic/escaping) '
-      'if neccessary.')
 
 
 _ARG_GROUP_HELP_TEXT = ('Only applicable if connecting to {platform_desc}. '
@@ -835,6 +811,14 @@ def AddClientNameAndVersionFlags(parser):
       'current gcloud version if this and --client-name are both unspecified.')
 
 
+def AddCmekKeyFlag(parser):
+  """Add CMEK key flag."""
+  parser.add_argument(
+      '--key',
+      hidden=True,
+      help=('KMS key reference to encrypt the container with.'))
+
+
 def _PortValue(value):
   """Returns True if port value is an int within range or 'default'."""
   try:
@@ -1313,6 +1297,10 @@ def GetConfigurationChanges(args):
     changes.append(
         config_changes.SetAnnotationChange(
             k8s_object.BINAUTHZ_BREAKGLASS_ANNOTATION, args.breakglass))
+  if FlagIsExplicitlySet(args, 'key'):
+    changes.append(
+        config_changes.SetTemplateAnnotationChange(
+            container_resource.CMEK_KEY_ANNOTATION, args.key))
   return changes
 
 
@@ -1663,6 +1651,14 @@ def VerifyGKEFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'key'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--key',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1764,6 +1760,14 @@ def VerifyKubernetesFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'key'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--key',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'cluster'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1819,18 +1823,6 @@ def GetAndValidatePlatform(args, release_track, product, allow_empty=False):
                 '- {}: {}'.format(k, v) for k, v in platforms.PLATFORMS.items()
             ])))
   return platform
-
-
-# TODO(b/165145546): Remove advanced build flags for 'gcloud run deploy'
-def AddBuildTimeoutFlag(parser):
-  parser.add_argument(
-      '--build-timeout',
-      hidden=True,
-      help='Set the maximum request execution time (timeout) to build the '
-      'resource. It is specified as a duration; for example, "10m5s" is ten '
-      'minutes, and five seconds. If you don\'t specify a unit, seconds is '
-      'assumed. For example, "10" is 10 seconds.',
-      action=actions.StoreProperty(properties.VALUES.builds.timeout))
 
 
 def AddSourceFlag(parser):

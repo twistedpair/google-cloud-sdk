@@ -44,6 +44,8 @@ _INVALID_REPO_NAME_ERROR = (
 _INVALID_REPO_LOCATION_ERROR = ("GCR repository {} can only be created in the "
                                 "{} multi-region.")
 
+_INVALID_GCR_REPO_FORMAT_ERROR = "GCR repository {} must be of DOCKER format."
+
 _ALLOWED_GCR_REPO_LOCATION = {
     "gcr.io": "us",
     "us.gcr.io": "us",
@@ -110,21 +112,31 @@ def GetLocationList(args):
   return ar_requests.ListLocations(GetProject(args), args.page_size)
 
 
+def ValidateGcrRepo(repo_name, repo_format, location, docker_format):
+  """Validates input for a gcr.io repository."""
+  expected_location = _ALLOWED_GCR_REPO_LOCATION.get(repo_name, "")
+  if location != expected_location:
+    raise ar_exceptions.InvalidInputValueError(
+        _INVALID_REPO_LOCATION_ERROR.format(repo_name, expected_location))
+  if repo_format != docker_format:
+    raise ar_exceptions.InvalidInputValueError(
+        _INVALID_GCR_REPO_FORMAT_ERROR.format(repo_name))
+
+
 def AppendRepoDataToRequest(repo_ref, repo_args, request):
   """Adds repository data to CreateRepositoryRequest."""
   repo_name = repo_ref.repositoriesId
+  location = GetLocation(repo_args)
+  messages = _GetMessagesForResource(repo_ref)
+  docker_format = messages.Repository.FormatValueValuesEnum.DOCKER
+  repo_format = messages.Repository.FormatValueValuesEnum(
+      repo_args.repository_format.upper())
   if repo_name in _ALLOWED_GCR_REPO_LOCATION:
-    location = _ALLOWED_GCR_REPO_LOCATION.get(repo_name, "")
-    if location != GetLocation(repo_args):
-      raise ar_exceptions.InvalidInputValueError(
-          _INVALID_REPO_LOCATION_ERROR.format(repo_name, location))
+    ValidateGcrRepo(repo_name, repo_format, location, docker_format)
   elif not _IsValidRepoName(repo_ref.repositoriesId):
     raise ar_exceptions.InvalidInputValueError(_INVALID_REPO_NAME_ERROR)
 
-  messages = _GetMessagesForResource(repo_ref)
-  repo_format = messages.Repository.FormatValueValuesEnum(
-      repo_args.repository_format.upper())
-  if repo_format != messages.Repository.FormatValueValuesEnum.DOCKER:
+  if repo_format != docker_format:
     log.status.Print("Note: Language package support is in Alpha.\n")
 
   request.repository.name = repo_ref.RelativeName()

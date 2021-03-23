@@ -201,6 +201,7 @@ _AGENT_RULE_TEMPLATES = {
 
             do {
                 googet --noconfirm remove google-cloud-ops-agent
+                Start-Sleep -Seconds 5
                 googet --noconfirm install google-cloud-ops-agent%s
                 if ( $? ) {
                     $Stoploop = $true

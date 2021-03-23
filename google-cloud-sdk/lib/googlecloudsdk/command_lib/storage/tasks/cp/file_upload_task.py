@@ -27,7 +27,6 @@ import math
 import os
 
 from googlecloudsdk.api_lib.storage import gcs_api
-from googlecloudsdk.command_lib.storage import temporary_components
 from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
 from googlecloudsdk.command_lib.storage.tasks import delete_object_task
 from googlecloudsdk.command_lib.storage.tasks import task
@@ -99,7 +98,7 @@ class FileUploadTask(task.Task):
       delete_object_tasks = []
       for i, (offset, length) in enumerate(component_offsets_and_lengths):
 
-        temporary_component_resource = temporary_components.get_resource(
+        temporary_component_resource = copy_component_util.get_temporary_component_resource(
             self._source_resource, self._destination_resource, i)
 
         compose_objects_sources.append(temporary_component_resource)

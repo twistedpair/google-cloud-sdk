@@ -308,6 +308,10 @@
           "description": "Configuration for the use of k8s Service Accounts in GCP IAM policies.",
           "$ref": "WorkloadIdentityConfig"
         },
+        "workloadCertificates": {
+          "description": "Configuration for issuance of mTLS keys and certificates to Kubernetes pods.",
+          "$ref": "WorkloadCertificates"
+        },
         "costManagementConfig": {
           "description": "Configuration for the fine-grained cost management feature.",
           "$ref": "CostManagementConfig"
@@ -1297,46 +1301,35 @@
       "type": "object",
       "properties": {
         "createSubnetwork": {
-          "description": "Input only. [Input only] Whether to create a new subnetwork for the node pool. Defaults are provided for `subnetwork` and `node_ipv4_cidr_block` if they are not specified. If neither `create_subnetwork` or `subnetwork` are specified, the cluster-level default (`ip_allocation_policy.subnetwork_name`) is used.",
+          "description": "Input only. Whether to create a new subnetwork for the node pool. Defaults are provided for `subnetwork` and `node_ipv4_cidr_block` if they are not specified. If neither `create_subnetwork` or `subnetwork` are specified, the cluster-level default (`ip_allocation_policy.subnetwork_name`) is used.",
           "type": "boolean"
         },
         "subnetwork": {
-          "description": "The ID of the [subnetwork](https:\/\/cloud.google.com\/vpc\/docs\/vpc#vpc_networks_and_subnets) for this node pool. If `create_subnetwork` is true, this ID is used for the new subnet.",
+          "description": "The ID of the [subnetwork](https:\/\/cloud.google.com\/vpc\/docs\/vpc#vpc_networks_and_subnets) for this node pool. If `create_subnetwork` is true, this ID is used for the new subnet. If `create_subnetwork` is false, uses an existing subnetwork with this ID.",
           "type": "string"
         },
         "nodeIpv4CidrBlock": {
-          "description": "The IP address range for node IPs in this node pool. Only applicable if `create_subnetwork` is true. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. `\/14`) to have a range chosen with a specific netmask. Set to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g. `10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range to use.",
+          "description": "The IP address range for node IPs in this node pool. Only applicable if `create_subnetwork` is true. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. `\/14`) to have a range chosen with a specific netmask. Set to a [CIDR](https:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g. `10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range to use.",
           "type": "string"
         },
         "createPodRange": {
-          "description": "Input only. [Input only] Whether to create a new range for pod IPs in this node pool. Defaults are provided for `pod_range` and `pod_ipv4_cidr_block` if they are not specified. If neither `create_pod_range` or `pod_range` are specified, the cluster-level default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used.",
+          "description": "Input only. Whether to create a new range for pod IPs in this node pool. Defaults are provided for `pod_range` and `pod_ipv4_cidr_block` if they are not specified. If neither `create_pod_range` or `pod_range` are specified, the cluster-level default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used.",
           "type": "boolean"
         },
         "podRange": {
-          "description": "The ID of the secondary range for pod IPs. If `create_pod_range` is true, this ID is used for the new range.",
+          "description": "The ID of the secondary range for pod IPs. If `create_pod_range` is true, this ID is used for the new range. If `create_pod_range` is false, uses an existing secondary range with this ID.",
           "type": "string"
         },
         "podIpv4CidrBlock": {
-          "description": "The IP address range for pod IPs in this node pool. Only applicable if `create_pod_range` is true. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. `\/14`) to have a range chosen with a specific netmask. Set to a [CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `10.96.0.0\/14`) to pick a specific range to use.",
+          "description": "The IP address range for pod IPs in this node pool. Only applicable if `create_pod_range` is true. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. `\/14`) to have a range chosen with a specific netmask. Set to a [CIDR](https:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `10.96.0.0\/14`) to pick a specific range to use.",
           "type": "string"
         },
         "enableEndpointsliceProxying": {
           "description": "If true, kube-proxy will read from EndpointSlices instead of Endpoints. This flag only applies to GKE 1.18.",
           "type": "boolean"
         },
-        "privateNodesConfig": {
-          "description": "Configuration for controlling private nodes settings. If there are no private_nodes specified, then private_cluster_cofnig.enable_private_node\u2019s value used as a default.",
-          "$ref": "PrivateNodesConfig"
-        }
-      }
-    },
-    "PrivateNodesConfig": {
-      "id": "PrivateNodesConfig",
-      "description": "Configuration for controlling private nodes settings.",
-      "type": "object",
-      "properties": {
-        "privateNodes": {
-          "description": "Whether nodes have internal IP addresses only.",
+        "enablePrivateNodes": {
+          "description": "Whether nodes have internal IP addresses only. If enable_private_nodes is not specified, then the value is derived from cluster.privateClusterConfig.enablePrivateNodes",
           "type": "boolean"
         }
       }
@@ -2224,12 +2217,19 @@
           "description": "DEPRECATED: Use enable_certificates instead issuing_certificate_authority controls issuance of workload mTLS certificates. If non-empty, it must be a Private CA resource URL of the form \"\/\/privateca.googleapis.com\/projects\/{project}\/locations\/{location}\/certificateAuthorities\/{name}\". If non-empty, Workload Identity (standard or Hub) must be active (workload_pool must be non-empty).",
           "type": "string"
         },
-        "enableCertificates": {
-          "description": "enable_certificates controls issuance of workload mTLS certificates. If set, the GKE Workload Identity Certificates controller and node agent will be deployed in the cluster, which can then be configured by creating a WorkloadCertificateConfig Custom Resource. Requires Workload Identity (workload_pool must be non-empty).",
-          "type": "boolean"
-        },
         "enableAlts": {
           "description": "enable_alts controls whether the alts handshaker should be enabled or not for direct-path.",
+          "type": "boolean"
+        }
+      }
+    },
+    "WorkloadCertificates": {
+      "id": "WorkloadCertificates",
+      "description": "Configuration for issuance of mTLS keys and certificates to Kubernetes pods.",
+      "type": "object",
+      "properties": {
+        "enableCertificates": {
+          "description": "enable_certificates controls issuance of workload mTLS certificates. If set, the GKE Workload Identity Certificates controller and node agent will be deployed in the cluster, which can then be configured by creating a WorkloadCertificateConfig Custom Resource. Requires Workload Identity (workload_pool must be non-empty).",
           "type": "boolean"
         }
       }
@@ -2875,6 +2875,10 @@
         "desiredWorkloadIdentityConfig": {
           "description": "Configuration for Workload Identity.",
           "$ref": "WorkloadIdentityConfig"
+        },
+        "desiredWorkloadCertificates": {
+          "description": "Configuration for issuance of mTLS keys and certificates to Kubernetes pods.",
+          "$ref": "WorkloadCertificates"
         },
         "desiredShieldedNodes": {
           "description": "Configuration for Shielded Nodes.",

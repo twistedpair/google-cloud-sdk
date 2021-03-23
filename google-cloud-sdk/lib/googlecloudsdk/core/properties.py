@@ -1570,7 +1570,21 @@ class _SectionAuth(_Section):
         'service account, your currently selected account must have an IAM '
         'role that includes the iam.serviceAccounts.getAccessToken permission '
         'for the service account. The roles/iam.serviceAccountTokenCreator '
-        'role has this permission or you may create a custom role.')
+        'role has this permission or you may create a custom role. '
+        'A list of service accounts, separated with comma, can be '
+        'specified. In such cases, it creates an impersonation '
+        'delegation chain. Any given service account in the list must '
+        'have the roles/iam.serviceAccountTokenCreator role on its '
+        'subsequent service account. For example, when '
+        '--impersonate-service-account=sv1@developer.gserviceaccount.com,'
+        'sv2@developer.gserviceaccount.com, the active account must have '
+        'the roles/iam.serviceAccountTokenCreator role on '
+        'sv1@developer.gserviceaccount.com which must has the '
+        'roles/iam.serviceAccountTokenCreator role on '
+        'sv2@developer.gserviceaccount.com. '
+        'sv2@developer.gserviceaccount.com is target impersonated service '
+        'account and sv1@developer.gserviceaccount.com is the delegate.',
+    )
     self.disable_load_google_auth = self._AddBool(
         'disable_load_google_auth',
         default=False,
@@ -2357,8 +2371,10 @@ class _SectionStorage(_Section):
   MAXIMUM_DEFAULT_PROCESS_COUNT = 12
   DEFAULT_THREAD_COUNT = 4
 
-  DEFAULT_CHUNK_SIZE = 104857600  # 100 MB, or 1024 * 1024 * 100.
-  DEFAULT_RESUMABLE_THRESHOLD = 8388608  # 8 MB, or 1024 * 1024 * 8.
+  DEFAULT_COPY_CHUNK_SIZE = '100Mi'
+  DEFAULT_DOWNLOAD_CHUNK_SIZE = '256Ki'
+  DEFAULT_UPLOAD_CHUNK_SIZE = '100Mi'
+  DEFAULT_RESUMABLE_THRESHOLD = '8Mi'
 
   def __init__(self):
     super(_SectionStorage, self).__init__('storage', hidden=True)
@@ -2368,11 +2384,23 @@ class _SectionStorage(_Section):
         help_text=self._CHECK_HASHES_HELP_TEXT,
         choices=('if_fast_else_fail', 'if_fast_else_skip', 'always', 'never'))
 
-    self.chunk_size = self._Add(
-        'chunk_size',
-        default=self.DEFAULT_CHUNK_SIZE,
-        help_text='Chunk size used for uploading and downloading from '
-        'Cloud Storage.')
+    self.copy_chunk_size = self._Add(
+        'copy_chunk_size',
+        default=self.DEFAULT_COPY_CHUNK_SIZE,
+        validator=_HumanReadableByteAmountValidator,
+        help_text='Chunk size used for copying to in clouds or on disk.')
+
+    self.download_chunk_size = self._Add(
+        'download_chunk_size',
+        default=self.DEFAULT_DOWNLOAD_CHUNK_SIZE,
+        validator=_HumanReadableByteAmountValidator,
+        help_text='Chunk size used for downloadinging to clouds.')
+
+    self.upload_chunk_size = self._Add(
+        'upload_chunk_size',
+        default=self.DEFAULT_UPLOAD_CHUNK_SIZE,
+        validator=_HumanReadableByteAmountValidator,
+        help_text='Chunk size used for uploading to clouds.')
 
     self.max_retries = self._Add(
         'max_retries',
@@ -2395,25 +2423,26 @@ class _SectionStorage(_Section):
     self.resumable_threshold = self._Add(
         'resumable_threshold',
         default=self.DEFAULT_RESUMABLE_THRESHOLD,
+        validator=_HumanReadableByteAmountValidator,
         help_text='File operations above this size in bytes will use resumable'
         ' instead of one-shot strategies. For example, a resumable download.')
 
     self.sliced_object_download_component_size = self._Add(
         'sliced_object_download_component_size',
-        default='200M',
+        default='200Mi',
         validator=_HumanReadableByteAmountValidator,
         help_text='Target size and upper bound for files to be sliced into.'
         ' Analogous to parallel_composite_upload_component_size.')
 
     self.sliced_object_download_max_components = self._Add(
         'sliced_object_download_max_components',
-        default=4,
+        default=None,
         help_text='Specifies the maximum number of slices to be used when'
-        ' performing a sliced object download.')
+        ' performing a sliced object download. Set None for no limit.')
 
     self.sliced_object_download_threshold = self._Add(
         'sliced_object_download_threshold',
-        default='150M',
+        default='100Mi',
         validator=_HumanReadableByteAmountValidator,
         help_text='Slice files larger than this value. Zero will block sliced'
         ' downloads. Analogous to parallel_composite_upload_threshold.')

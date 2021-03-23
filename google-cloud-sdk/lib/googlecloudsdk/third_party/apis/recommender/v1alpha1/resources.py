@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://recommender.googleapis.com/v1alpha1/'
+BASE_URL = 'https://recommender.googleapis.com/'
 DOCS_URL = 'https://cloud.google.com/recommender/docs/'
 
 
@@ -29,13 +29,6 @@ class Collections(enum.Enum):
       'operations/{+operationId}',
       {},
       ['operationId'],
-      True
-  )
-  PROJECTS = (
-      'projects',
-      'projects/{projectsId}',
-      {},
-      ['projectsId'],
       True
   )
   PROJECTS_LOCATIONS = (
@@ -55,24 +48,11 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_RECOMMENDERS_RECOMMENDATIONS = (
       'projects.locations.recommenders.recommendations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/recommenders/'
-              '{recommendersId}/recommendations/{recommendationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_RULES = (
-      'projects.rules',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/rules/{rulesId}',
-      },
-      ['name'],
-      True
+      'projects/{projectsId}/locations/{locationsId}/recommenders/'
+      '{recommendersId}/recommendations/{recommendationsId}',
+      {},
+      ['projectsId', 'locationsId', 'recommendersId', 'recommendationsId'],
+      False
   )
 
   def __init__(self, collection_name, path, flat_paths, params,

@@ -95,7 +95,6 @@ class ResourceCannotBeResolvedException(Error):
 def AddAutoscalerArgs(
     parser,
     autoscaling_file_enabled=False,
-    scheduled=False,
     patch_args=False):
   """Adds commandline arguments to parser."""
   parser.add_argument(
@@ -213,8 +212,7 @@ Mutually exclusive with `--update-stackdriver-metric`.
 
   AddScaleInControlFlag(parser)
 
-  if scheduled:
-    AddScheduledAutoscaling(parser, patch_args)
+  AddScheduledAutoscaling(parser, patch_args)
 
 
 def AddMinMaxControl(parser, max_required=True):
@@ -250,7 +248,7 @@ def GetModeFlag():
       help_str="""\
           Set the mode of an autoscaler for a managed instance group.
 
-          You can turn off or restrict MIG autoscaler activities without
+          You can turn off or restrict a group's autoscaler activities without
           affecting your autoscaler configuration. The autoscaler configuration
           persists while the activities are turned off or restricted, and the
           activities resume when the autoscaler is turned on again or when the
@@ -311,12 +309,12 @@ def AddPredictiveAutoscaling(parser, standard=True):
        when calculating the number of VM instances.""",
       'optimize-availability': """
       Predictive autoscaling predicts the future values of the
-      scaling metric and scales a MIG in advance to ensure that new
+      scaling metric and scales the group in advance to ensure that new
       VM instances are ready in time to cover the predicted peak."""}
   if standard:
     choices['standard'] = """
     Standard predictive autoscaling  predicts the future values of
-    the scaling metric and then scales a MIG to ensure that new VM
+    the scaling metric and then scales the group to ensure that new VM
     instances are ready in time to cover the predicted peak."""
   parser.add_argument(
       '--cpu-utilization-predictive-method',
@@ -332,12 +330,15 @@ def AddScheduledAutoscaling(parser, patch_args):
     arg_group_config = parser.add_group()
     arg_group.add_argument(
         '--set-schedule',
+        metavar='SCHEDULE_NAME',
         help='A unique name for the scaling schedule to be configured.')
     arg_group.add_argument(
         '--update-schedule',
+        metavar='SCHEDULE_NAME',
         help='Name of the scaling schedule to be updated.')
     arg_group.add_argument(
         '--remove-schedule',
+        metavar='SCHEDULE_NAME',
         help="""\
           Name of the scaling schedule to be removed.
 
@@ -355,9 +356,15 @@ def AddScheduledAutoscaling(parser, patch_args):
           """)
     arg_group.add_argument(
         '--enable-schedule',
-        help='Name of the scaling schedule to be enabled.')
+        metavar='SCHEDULE_NAME',
+        help="""\
+        Name of the scaling schedule to be enabled.
+
+        See --disable-schedule for details.
+        """)
     arg_group.add_argument(
         '--disable-schedule',
+        metavar='SCHEDULE_NAME',
         help="""\
           Name of the scaling schedule to be disabled.
 
@@ -377,7 +384,8 @@ def AddScheduledAutoscaling(parser, patch_args):
     arg_group = parser
     parser.add_argument(
         '--set-schedule',
-        help='A unique name of the scaling schedule.')
+        metavar='SCHEDULE_NAME',
+        help='Unique name for the scaling schedule.')
     AddScheduledAutoscalingConfigurationArguments(parser.add_group())
 
 
@@ -385,52 +393,56 @@ def AddScheduledAutoscalingConfigurationArguments(arg_group):
   """Add arguments that are common to adding or modifying a scaling schedule."""
   arg_group.add_argument(
       '--schedule-cron',
+      metavar='CRON_EXPRESSION',
       help="""\
         Start time of the scaling schedule in cron format.
 
-        This is when the autoscaler starts creating new VMs, if the MIG's
+        This is when the autoscaler starts creating new VMs, if the group's
         current size is less than the minimum required instances. Set the start
         time to allow enough time for new VMs to boot and initialize. For
         example if your workload takes 10 minutes from VM creation to start
-        serving then set start time 10 minutes earlier than the time you need
-        VMs to be ready.
+        serving then set the start time 10 minutes earlier than the time you
+        need VMs to be ready.
         """)
   arg_group.add_argument(
       '--schedule-duration-sec',
+      metavar='DURATION',
       type=arg_parsers.BoundedInt(300, sys.maxsize),
       help="""\
         How long should the scaling schedule be active, measured in seconds.
 
         Minimum duration is 5 minutes. A scaling schedule is active from its
         start time and for its configured duration. During this time, the
-        autoscaler scales the MIG to have at least as many VMs as defined by the
-        minimum required instances. After the configured duration, if there is
-        no need to maintain capacity, the autoscaler starts removing instances
-        after a 10-minute stabilization period and (if configured) following
-        scale-in controls.
+        autoscaler scales the group to have at least as many VMs as defined by
+        the minimum required instances. After the configured duration, if there
+        is no need to maintain capacity, the autoscaler starts removing
+        instances after a 10-minute stabilization period and (if configured)
+        following scale-in controls.
         """)
   arg_group.add_argument(
       '--schedule-min-required-replicas',
+      metavar='MIN_REQUIRED_REPLICAS',
       type=arg_parsers.BoundedInt(0, sys.maxsize),
       help="""\
         How many VMs the autoscaler should provision for the duration of this
         scaling schedule.
 
         Autoscaler provides at least this number of instances when the scaling
-        schedule is active. A MIG can have more VMs if there are other scaling
-        schedules active with more required instances or if another autoscaling
-        policy (for example, scaling based on CPU) requires more instances to
-        meet its target.
+        schedule is active. A managed instance group can have more VMs if there
+        are other scaling schedules active with more required instances or if
+        another signal (for example, scaling based on CPU) requires more
+        instances to meet its target.
 
 
         This configuration does not change autoscaling minimum and maximum
         instance limits which are always in effect. Autoscaler does not create
-        more than the maximum number of instances configured for MIG.
+        more than the maximum number of instances configured for a group.
         """)
   arg_group.add_argument(
       '--schedule-time-zone',
+      metavar='TIME_ZONE',
       help="""\
-        Name of the timezone scaling schedule's start time is in.
+        Name of the timezone that the scaling schedule's start time is in.
 
         It should be provided as a name from the IANA tz database (for
         example Europe/Paris or UTC). It automatically adjusts for daylight
@@ -442,6 +454,7 @@ def AddScheduledAutoscalingConfigurationArguments(arg_group):
         """)
   arg_group.add_argument(
       '--schedule-description',
+      metavar='DESCRIPTION',
       help='A verbose description of the scaling schedule.')
 
 
@@ -1111,8 +1124,7 @@ def BuildScheduled(args, messages):
                   **scaling_schedule))])
 
 
-def _BuildAutoscalerPolicy(args, messages, original, predictive=False,
-                           scheduled=False):
+def _BuildAutoscalerPolicy(args, messages, original, predictive=False):
   """Builds AutoscalingPolicy from args.
 
   Args:
@@ -1121,8 +1133,6 @@ def _BuildAutoscalerPolicy(args, messages, original, predictive=False,
     original: original autoscaler message.
     predictive: bool, whether to inclue the
       `autoscalingPolicy.cpuUtilization.predictiveMethod` field in the message.
-    scheduled: bool, whether to include the
-      `autoscalingPolicy.scalingSchedules` field in the message.
   Returns:
     AutoscalingPolicy message object.
   """
@@ -1138,8 +1148,7 @@ def _BuildAutoscalerPolicy(args, messages, original, predictive=False,
   }
   policy_dict['mode'] = _BuildMode(args, messages, original)
   policy_dict['scaleInControl'] = BuildScaleIn(args, messages)
-  if scheduled:
-    policy_dict['scalingSchedules'] = BuildScheduled(args, messages)
+  policy_dict['scalingSchedules'] = BuildScheduled(args, messages)
 
   return messages.AutoscalingPolicy(
       **dict((key, value) for key, value in six.iteritems(policy_dict)
@@ -1176,16 +1185,14 @@ def BuildAutoscaler(args,
                     igm_ref,
                     name,
                     original,
-                    predictive=False,
-                    scheduled=False):
+                    predictive=False):
   """Builds autoscaler message protocol buffer."""
   autoscaler = messages.Autoscaler(
       autoscalingPolicy=_BuildAutoscalerPolicy(
           args,
           messages,
           original,
-          predictive=predictive,
-          scheduled=scheduled),
+          predictive=predictive),
       description=args.description,
       name=name,
       target=igm_ref.SelfLink(),

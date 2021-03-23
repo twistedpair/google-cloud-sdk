@@ -128,9 +128,9 @@ class _ColumnType(six.with_metaclass(abc.ABCMeta, object)):
         (if the column is an array).
   """
   # For Scalar types: there are 8 scalar types in Cloud Spanner considered as
-  # valid key and column types.
+  # valid key and column types. 'JSON' however, is not a valid key type.
   _SCALAR_TYPES = ('BOOL', 'BYTES', 'DATE', 'FLOAT64', 'INT64', 'STRING',
-                   'TIMESTAMP', 'NUMERIC')
+                   'TIMESTAMP', 'NUMERIC', 'JSON')
 
   def __init__(self, scalar_type):
     self.scalar_type = scalar_type
@@ -194,8 +194,8 @@ def ConvertJsonValueForScalarTypes(scalar_type, scalar_value):
       return extra_types.JsonValue(double_value=float(scalar_value))
   else:
     # TODO(b/73077622): add bytes conversion.
-    # For other data types (INT, STRING, TIMESTAMP, DATE, NUMERIC), the json
-    # format would be string.
+    # For other data types (INT, STRING, TIMESTAMP, DATE, NUMERIC, JSON), the
+    # json format would be string.
     return extra_types.JsonValue(string_value=scalar_value)
 
 

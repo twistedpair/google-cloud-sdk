@@ -19,6 +19,17 @@ location:
     property: media_asset/location
     help: Google Cloud location.
 
+operation:
+  name: operation
+  collection: mediaasset.projects.locations.operations
+  attributes:
+  - *project
+  - *location
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: Cloud Media Asset Operation.
+
 asset_type:
   name: asset_type
   collection: mediaasset.projects.locations.assetTypes
@@ -34,6 +45,7 @@ asset_type:
 asset:
   name: asset
   collection: mediaasset.projects.locations.assetTypes.assets
+  request_id_field: assetId
   attributes:
   - *project
   - *location
@@ -46,6 +58,7 @@ asset:
 complex_type:
   name: complex_type
   collection: mediaasset.projects.locations.complexTypes
+  request_id_field: complexTypeId
   attributes:
   - *project
   - *location
@@ -70,6 +83,7 @@ transformation:
 transformer:
   name: transformer
   collection: mediaasset.projects.locations.transformer
+  request_id_field: transformerId
   attributes:
   - *project
   - *location

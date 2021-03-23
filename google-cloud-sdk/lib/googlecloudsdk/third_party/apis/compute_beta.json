@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20210305",
+ "revision": "20210312",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -69,7 +69,7 @@
   "oauth2": {
    "scopes": {
     "https://www.googleapis.com/auth/cloud-platform": {
-     "description": "View and manage your data across Google Cloud Platform services"
+     "description": "See, edit, configure, and delete your Google Cloud Platform data"
     },
     "https://www.googleapis.com/auth/compute": {
      "description": "View and manage your Google Compute Engine resources"
@@ -645,12 +645,14 @@
      "enum": [
       "DNS_RESOLVER",
       "GCE_ENDPOINT",
+      "IPSEC_INTERCONNECT",
       "NAT_AUTO",
       "PRIVATE_SERVICE_CONNECT",
       "SHARED_LOADBALANCER_VIP",
       "VPC_PEERING"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -2642,9 +2644,10 @@
     },
     "sessionAffinity": {
      "type": "string",
-     "description": "Type of session affinity to use. The default is NONE.\n\nWhen the loadBalancingScheme is EXTERNAL: * For Network Load Balancing, the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO. * For all other load balancers that use loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is HTTP, HTTP2, or HTTPS.\n\nWhen the loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.\n\nWhen the loadBalancingScheme is INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+     "description": "Type of session affinity to use. The default is NONE.\n\nWhen the loadBalancingScheme is EXTERNAL: * For Network Load Balancing, the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or  CLIENT_IP_PORT_PROTO. * For all other load balancers that use loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is HTTP, HTTP2, or HTTPS.\n\nWhen the loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.\n\nWhen the loadBalancingScheme is INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "enum": [
       "CLIENT_IP",
+      "CLIENT_IP_NO_DESTINATION",
       "CLIENT_IP_PORT_PROTO",
       "CLIENT_IP_PROTO",
       "GENERATED_COOKIE",
@@ -2653,6 +2656,7 @@
       "NONE"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -8220,6 +8224,14 @@
       "type": "string"
      }
     },
+    "forwardingRule": {
+     "type": "string",
+     "description": "URL of the forwarding rule associated with the health status of the instance."
+    },
+    "forwardingRuleIp": {
+     "type": "string",
+     "description": "A forwarding rule IP address assigned to this instance."
+    },
     "healthState": {
      "type": "string",
      "description": "Health state of the instance.",
@@ -12689,6 +12701,18 @@
       ""
      ]
     },
+    "encryption": {
+     "type": "string",
+     "description": "Indicates the user-supplied encryption option of this interconnect attachment: \n- NONE is the default value, which means that the attachment carries unencrypted traffic. VMs can send traffic to, or receive traffic from, this type of attachment. \n- IPSEC indicates that the attachment carries only traffic encrypted by an IPsec device such as an HA VPN gateway. VMs cannot directly send traffic to, or receive traffic from, such an attachment. To use IPsec-encrypted Cloud Interconnect, create the attachment using this option.",
+     "enum": [
+      "IPSEC",
+      "NONE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "googleReferenceId": {
      "type": "string",
      "description": "[Output Only] Google reference ID, to be used when raising support tickets with Google or otherwise to debug backend connectivity issues. [Deprecated] This field is not used."
@@ -12701,6 +12725,13 @@
     "interconnect": {
      "type": "string",
      "description": "URL of the underlying Interconnect object that this attachment's traffic will traverse through."
+    },
+    "ipsecInternalAddresses": {
+     "type": "array",
+     "description": "URL of addresses that have been reserved for the interconnect attachment, Used only for interconnect attachment that has the encryption option as IPSEC. The addresses must be RFC 1918 IP address ranges. When creating HA VPN gateway over the interconnect attachment, if the attachment is configured to use an RFC 1918 IP address, then the VPN gateway?s IP address will be allocated from the IP address range specified here. For example, if the HA VPN gateway?s interface 0 is paired to this interconnect attachment, then an RFC 1918 IP address for the VPN gateway interface 0 will be allocated from the IP address specified for this interconnect attachment. If this field is not specified for interconnect attachment that has encryption option as IPSEC, later on when creating HA VPN gateway on this interconnect attachment, the HA VPN gateway's IP address will be allocated from regional external IP address pool.",
+     "items": {
+      "type": "string"
+     }
     },
     "kind": {
      "type": "string",
@@ -23443,6 +23474,10 @@
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
     },
+    "encryptedInterconnectRouter": {
+     "type": "boolean",
+     "description": "Field to indicate if a router is dedicated to use with encrypted Interconnect Attachment (IPsec-encrypted Cloud Interconnect feature)."
+    },
     "id": {
      "type": "string",
      "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
@@ -23784,6 +23819,10 @@
     "peerIpAddress": {
      "type": "string",
      "description": "IP address of the BGP interface outside Google Cloud Platform. Only IPv4 is supported."
+    },
+    "routerApplianceInstance": {
+     "type": "string",
+     "description": "URI of the VM instance that is used as third-party router appliances such as Next Gen Firewalls, Virtual Routers, or Router Appliances. The VM instance must be located in zones contained in the same region as this Cloud Router. The VM instance is the peer side of the BGP session."
     }
    }
   },
@@ -23859,6 +23898,19 @@
        "compute.routers.insert"
       ]
      }
+    },
+    "privateIpAddress": {
+     "type": "string",
+     "description": "The regional private internal IP address that is used to establish BGP sessions to a VM instance acting as a third-party Router Appliance, such as a Next Gen Firewall, a Virtual Router, or an SD-WAN VM."
+    },
+    "redundantInterface": {
+     "type": "string",
+     "description": "Name of the interface that will be redundant with the current interface you are creating. The redundantInterface must belong to the same Cloud Router as the interface here. To establish the BGP session to a Router Appliance VM, you must create two BGP peers. The two BGP peers must be attached to two separate interfaces that are redundant with each other. The redundant_interface must be 1-63 characters long, and comply with RFC1035. Specifically, the redundant_interface must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "subnetwork": {
+     "type": "string",
+     "description": "The URL of the subnetwork resource that this interface belongs to, which must be in the same region as the Cloud Router. When you establish a BGP session to a VM instance using this interface, the VM instance must belong to the same subnetwork as the subnetwork specified here."
     }
    }
   },
@@ -24199,6 +24251,10 @@
     "peerIpAddress": {
      "type": "string",
      "description": "IP address of the remote BGP interface."
+    },
+    "routerApplianceInstance": {
+     "type": "string",
+     "description": "[Output only] URI of the VM instance that is used as third-party router appliances such as Next Gen Firewalls, Virtual Routers, or Router Appliances. The VM instance is the peer side of the BGP session."
     },
     "state": {
      "type": "string",
@@ -29238,6 +29294,7 @@
      "description": "Session affinity option, must be one of the following values:\nNONE: Connections from the same client IP may go to any instance in the pool.\nCLIENT_IP: Connections from the same client IP will go to the same instance in the pool while that instance remains healthy.\nCLIENT_IP_PROTO: Connections from the same client IP with the same IP protocol will go to the same instance in the pool while that instance remains healthy.",
      "enum": [
       "CLIENT_IP",
+      "CLIENT_IP_NO_DESTINATION",
       "CLIENT_IP_PORT_PROTO",
       "CLIENT_IP_PROTO",
       "GENERATED_COOKIE",
@@ -29246,6 +29303,7 @@
       "NONE"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -31884,6 +31942,10 @@
      "type": "integer",
      "description": "The numeric ID of this VPN gateway interface.",
      "format": "uint32"
+    },
+    "interconnectAttachment": {
+     "type": "string",
+     "description": "URL of the interconnect attachment resource. When the value of this field is present, the VPN Gateway will be used for IPsec-encrypted Cloud Interconnect; all Egress or Ingress traffic for this VPN Gateway interface will go through the specified interconnect attachment resource."
     },
     "ipAddress": {
      "type": "string",

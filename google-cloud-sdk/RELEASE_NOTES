@@ -5,6 +5,116 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 333.0.0 (2021-03-23)
+
+### Cloud SDK
+
+*   `--impersonate-service-account` flag can accept a list of service accounts
+    for impersonation delegation.
+
+### Assured Workloads
+
+*   Added `--resource-settings` flag to `gcloud assured workloads create` command.
+*   Added US_REGIONAL_ACCESS as compliance regime option for `gcloud assured workloads create` command.
+*   Added HIPAA and HITRUST as compliance regime options for `gcloud assured workloads create` command.
+
+### Cloud Build
+
+* Updated `gcloud builds submit` and `gcloud builds log` to tell users when they
+  cannot read the default logs bucket because of VPC-SC.
+
+### Cloud Dataflow
+
+* Added flex template docker container building support for python in build command `gcloud beta dataflow flex-template build`.
+
+### Cloud Dataproc
+
+*  Added `gcloud dataproc clusters stop` and `gcloud dataproc clusters start`
+   which stop and start clusters.
+*  Promoted `--dataproc-metastore` flag of `gcloud dataproc clusters create` to
+   GA.
+*  Promoted `--dataproc-metastore` flag of `gcloud dataproc workflow-templates
+   set-managed-cluster` to GA.
+*  Added `--secure-multi-tenancy-user-mapping` and `--identity-config-file` flags
+   to `gcloud dataproc clusters create` and
+   `gcloud dataproc workflow-templates set-managed-cluster`.
+
+### Cloud Logging
+
+* Promoted `gcloud logging views` command group to GA.
+
+### Cloud On Demand Scanning
+
+* Improved error messages for `local-extract`.
+
+### Cloud Pub/Sub
+
+* Added `--starting-offset` flag to `gcloud pubsub lite-subscriptions create` to allow subscriptions to be created at HEAD.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.60.
+
+### Compute Engine
+
+* Fixed `gcloud compute url-maps import` for correctly removing top-level
+  properties of an existing Url map, when they are not specified in the YAML
+  file.
+* Updated import and export schemas for:
+  - `gcloud compute forwarding-rules`.
+  - `gcloud compute backend-services`.
+* Added `--compute-service-account` flag for `gcloud compute instances import`
+  in beta.
+* Added `--compute-service-account` flag for
+  `gcloud compute machine-images import` in beta.
+* Promoted `--description` and `--family` flags of `gcloud compute images
+  update` to GA.
+* Promoted the following flags in `gcloud compute instance-groups managed
+  set-autoscaling` to GA:
+    * `--set-schedule`
+    * `--schedule-cron`
+    * `--schedule-duration-sec`
+    * `--schedule-min-required-replicas`
+    * `--schedule-time-zone`
+    * `--schedule-description`
+  For more information see `<https://cloud.google.com/compute/docs/autoscaler/scaling-schedules>`.
+* Promoted the following flags in `gcloud compute instance-groups managed
+  update-autoscaling` to GA:
+    * `--min-num-replicas`
+    * `--max-num-replicas`
+    * `--set-schedule`
+    * `--update-schedule`
+    * `--disable-schedule`
+    * `--enable-schedule`
+    * `--remove-schedule`
+    * `--schedule-cron`
+    * `--schedule-duration-sec`
+    * `--schedule-min-required-replicas`
+    * `--schedule-time-zone`
+    * `--schedule-description`
+  For more information see `<https://cloud.google.com/compute/docs/autoscaler/scaling-schedules>`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.42.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kpt
+
+* Updated kpt from v0.37.1 to v0.38.1.
+* Updated import of cli-utils from v0.21.1 to v0.23.5.
+* Updated import of kyaml from v0.9.5 to v0.10.13.
+* Updated import of cmd/config from v0.8.5 to v0.9.5.
+
+### Miscellaneous
+
+* Reordered contents of help text pages to make "Examples" section more
+  prominent.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 332.0.0 (2021-03-16)
 
 ### Breaking Changes

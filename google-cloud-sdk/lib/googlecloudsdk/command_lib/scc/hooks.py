@@ -184,17 +184,6 @@ def GetParentFromResourceName(resource_name):
   return list_organization_components[0] + "/" + list_organization_components[1]
 
 
-def GetSourceFromResourceName(resource_name):
-  # TODO(b/129564913) Cleanup regex's into single variable.
-  resource_pattern = re.compile("organizations/[0-9]+/sources/[0-9]+")
-  assert resource_pattern.match(resource_name), (
-      "When providing a full resource path, it must also include the pattern "
-      "organizations/[0-9]+/sources/[0-9]+.")
-  list_source_components = resource_name.split("/")
-  return (GetOrganizationFromResourceName(resource_name) + "/" +
-          list_source_components[2] + "/" + list_source_components[3])
-
-
 def GetSourceParentFromResourceName(resource_name):
   resource_pattern = re.compile(
       "(organizations|projects|folders)/.*/sources/[0-9]+")

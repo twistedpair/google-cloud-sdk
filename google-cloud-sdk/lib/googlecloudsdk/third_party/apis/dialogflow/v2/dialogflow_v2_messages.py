@@ -725,6 +725,170 @@ class DialogflowProjectsAgentIntentsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(5)
 
 
+class DialogflowProjectsAgentKnowledgeBasesCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesCreateRequest object.
+
+  Fields:
+    googleCloudDialogflowV2KnowledgeBase: A
+      GoogleCloudDialogflowV2KnowledgeBase resource to be passed as the
+      request body.
+    parent: Required. The project to create a knowledge base for. Format:
+      `projects//locations/`.
+  """
+
+  googleCloudDialogflowV2KnowledgeBase = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeBase', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsAgentKnowledgeBasesDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesDeleteRequest object.
+
+  Fields:
+    force: Optional. Force deletes the knowledge base. When set to true, any
+      documents in the knowledge base are also deleted.
+    name: Required. The name of the knowledge base to delete. Format:
+      `projects//locations//knowledgeBases/`.
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsAgentKnowledgeBasesDocumentsCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesDocumentsCreateRequest object.
+
+  Fields:
+    googleCloudDialogflowV2Document: A GoogleCloudDialogflowV2Document
+      resource to be passed as the request body.
+    parent: Required. The knowledge base to create a document for. Format:
+      `projects//locations//knowledgeBases/`.
+  """
+
+  googleCloudDialogflowV2Document = _messages.MessageField('GoogleCloudDialogflowV2Document', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsAgentKnowledgeBasesDocumentsDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesDocumentsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the document to delete. Format:
+      `projects//locations//knowledgeBases//documents/`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsAgentKnowledgeBasesDocumentsGetRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesDocumentsGetRequest object.
+
+  Fields:
+    name: Required. The name of the document to retrieve. Format
+      `projects//locations//knowledgeBases//documents/`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsAgentKnowledgeBasesDocumentsListRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesDocumentsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return in a single page. By
+      default 10 and at most 100.
+    pageToken: The next_page_token value returned from a previous list
+      request.
+    parent: Required. The knowledge base to list all documents for. Format:
+      `projects//locations//knowledgeBases/`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsAgentKnowledgeBasesDocumentsPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesDocumentsPatchRequest object.
+
+  Fields:
+    googleCloudDialogflowV2Document: A GoogleCloudDialogflowV2Document
+      resource to be passed as the request body.
+    name: Optional. The document resource name. The name must be empty when
+      creating a document. Format:
+      `projects//locations//knowledgeBases//documents/`.
+    updateMask: Optional. Not specified means `update all`. Currently, only
+      `display_name` can be updated, an InvalidArgument will be returned for
+      attempting to update other fields.
+  """
+
+  googleCloudDialogflowV2Document = _messages.MessageField('GoogleCloudDialogflowV2Document', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DialogflowProjectsAgentKnowledgeBasesDocumentsReloadRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesDocumentsReloadRequest object.
+
+  Fields:
+    googleCloudDialogflowV2ReloadDocumentRequest: A
+      GoogleCloudDialogflowV2ReloadDocumentRequest resource to be passed as
+      the request body.
+    name: Required. The name of the document to reload. Format:
+      `projects//locations//knowledgeBases//documents/`
+  """
+
+  googleCloudDialogflowV2ReloadDocumentRequest = _messages.MessageField('GoogleCloudDialogflowV2ReloadDocumentRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsAgentKnowledgeBasesGetRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesGetRequest object.
+
+  Fields:
+    name: Required. The name of the knowledge base to retrieve. Format
+      `projects//locations//knowledgeBases/`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsAgentKnowledgeBasesListRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return in a single page. By
+      default 10 and at most 100.
+    pageToken: The next_page_token value returned from a previous list
+      request.
+    parent: Required. The project to list of knowledge bases for. Format:
+      `projects//locations/`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsAgentKnowledgeBasesPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsAgentKnowledgeBasesPatchRequest object.
+
+  Fields:
+    googleCloudDialogflowV2KnowledgeBase: A
+      GoogleCloudDialogflowV2KnowledgeBase resource to be passed as the
+      request body.
+    name: The knowledge base resource name. The name must be empty when
+      creating a knowledge base. Format:
+      `projects//locations//knowledgeBases/`.
+    updateMask: Optional. Not specified means `update all`. Currently, only
+      `display_name` can be updated, an InvalidArgument will be returned for
+      attempting to update other fields.
+  """
+
+  googleCloudDialogflowV2KnowledgeBase = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeBase', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class DialogflowProjectsAgentRestoreRequest(_messages.Message):
   r"""A DialogflowProjectsAgentRestoreRequest object.
 
@@ -1107,8 +1271,8 @@ class DialogflowProjectsConversationProfilesPatchRequest(_messages.Message):
     googleCloudDialogflowV2ConversationProfile: A
       GoogleCloudDialogflowV2ConversationProfile resource to be passed as the
       request body.
-    name: Optional. The unique identifier of this conversation profile.
-      Format: `projects//locations//conversationProfiles/`.
+    name: The unique identifier of this conversation profile. Format:
+      `projects//locations//conversationProfiles/`.
     updateMask: Required. The mask to control which fields to update.
   """
 
@@ -1554,6 +1718,963 @@ class DialogflowProjectsKnowledgeBasesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class DialogflowProjectsLocationsAgentEntityTypesBatchDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEntityTypesBatchDeleteRequest object.
+
+  Fields:
+    googleCloudDialogflowV2BatchDeleteEntityTypesRequest: A
+      GoogleCloudDialogflowV2BatchDeleteEntityTypesRequest resource to be
+      passed as the request body.
+    parent: Required. The name of the agent to delete all entities types for.
+      Format: `projects//agent`.
+  """
+
+  googleCloudDialogflowV2BatchDeleteEntityTypesRequest = _messages.MessageField('GoogleCloudDialogflowV2BatchDeleteEntityTypesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentEntityTypesBatchUpdateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEntityTypesBatchUpdateRequest object.
+
+  Fields:
+    googleCloudDialogflowV2BatchUpdateEntityTypesRequest: A
+      GoogleCloudDialogflowV2BatchUpdateEntityTypesRequest resource to be
+      passed as the request body.
+    parent: Required. The name of the agent to update or create entity types
+      in. Format: `projects//agent`.
+  """
+
+  googleCloudDialogflowV2BatchUpdateEntityTypesRequest = _messages.MessageField('GoogleCloudDialogflowV2BatchUpdateEntityTypesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentEntityTypesCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEntityTypesCreateRequest object.
+
+  Fields:
+    googleCloudDialogflowV2EntityType: A GoogleCloudDialogflowV2EntityType
+      resource to be passed as the request body.
+    languageCode: Optional. The language used to access language-specific
+      data. If not specified, the agent's default language is used. For more
+      information, see [Multilingual intent and entity
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
+    parent: Required. The agent to create a entity type for. Format:
+      `projects//agent`.
+  """
+
+  googleCloudDialogflowV2EntityType = _messages.MessageField('GoogleCloudDialogflowV2EntityType', 1)
+  languageCode = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsAgentEntityTypesDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEntityTypesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the entity type to delete. Format:
+      `projects//agent/entityTypes/`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchCreateRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2BatchCreateEntitiesRequest: A
+      GoogleCloudDialogflowV2BatchCreateEntitiesRequest resource to be passed
+      as the request body.
+    parent: Required. The name of the entity type to create entities in.
+      Format: `projects//agent/entityTypes/`.
+  """
+
+  googleCloudDialogflowV2BatchCreateEntitiesRequest = _messages.MessageField('GoogleCloudDialogflowV2BatchCreateEntitiesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchDeleteRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2BatchDeleteEntitiesRequest: A
+      GoogleCloudDialogflowV2BatchDeleteEntitiesRequest resource to be passed
+      as the request body.
+    parent: Required. The name of the entity type to delete entries for.
+      Format: `projects//agent/entityTypes/`.
+  """
+
+  googleCloudDialogflowV2BatchDeleteEntitiesRequest = _messages.MessageField('GoogleCloudDialogflowV2BatchDeleteEntitiesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchUpdateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchUpdateRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2BatchUpdateEntitiesRequest: A
+      GoogleCloudDialogflowV2BatchUpdateEntitiesRequest resource to be passed
+      as the request body.
+    parent: Required. The name of the entity type to update or create entities
+      in. Format: `projects//agent/entityTypes/`.
+  """
+
+  googleCloudDialogflowV2BatchUpdateEntitiesRequest = _messages.MessageField('GoogleCloudDialogflowV2BatchUpdateEntitiesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentEntityTypesGetRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEntityTypesGetRequest object.
+
+  Fields:
+    languageCode: Optional. The language used to access language-specific
+      data. If not specified, the agent's default language is used. For more
+      information, see [Multilingual intent and entity
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
+    name: Required. The name of the entity type. Format:
+      `projects//agent/entityTypes/`.
+  """
+
+  languageCode = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentEntityTypesListRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEntityTypesListRequest object.
+
+  Fields:
+    languageCode: Optional. The language used to access language-specific
+      data. If not specified, the agent's default language is used. For more
+      information, see [Multilingual intent and entity
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The agent to list all entity types from. Format:
+      `projects//agent`.
+  """
+
+  languageCode = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class DialogflowProjectsLocationsAgentEntityTypesPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEntityTypesPatchRequest object.
+
+  Fields:
+    googleCloudDialogflowV2EntityType: A GoogleCloudDialogflowV2EntityType
+      resource to be passed as the request body.
+    languageCode: Optional. The language used to access language-specific
+      data. If not specified, the agent's default language is used. For more
+      information, see [Multilingual intent and entity
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
+    name: The unique identifier of the entity type. Required for
+      EntityTypes.UpdateEntityType and EntityTypes.BatchUpdateEntityTypes
+      methods. Format: `projects//agent/entityTypes/`.
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  googleCloudDialogflowV2EntityType = _messages.MessageField('GoogleCloudDialogflowV2EntityType', 1)
+  languageCode = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsListRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The agent to list all environments from. Format:
+      `projects//agent`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsCreat
+  eRequest object.
+
+  Fields:
+    googleCloudDialogflowV2Context: A GoogleCloudDialogflowV2Context resource
+      to be passed as the request body.
+    parent: Required. The session to create a context for. Format:
+      `projects//agent/sessions/` or
+      `projects//agent/environments//users//sessions/`. If `Environment ID` is
+      not specified, we assume default 'draft' environment. If `User ID` is
+      not specified, we assume default '-' user.
+  """
+
+  googleCloudDialogflowV2Context = _messages.MessageField('GoogleCloudDialogflowV2Context', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsDelet
+  eRequest object.
+
+  Fields:
+    name: Required. The name of the context to delete. Format:
+      `projects//agent/sessions//contexts/` or
+      `projects//agent/environments//users//sessions//contexts/`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsGetRequest(_messages.Message):
+  r"""A
+  DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the context. Format:
+      `projects//agent/sessions//contexts/` or
+      `projects//agent/environments//users//sessions//contexts/`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsListRequest(_messages.Message):
+  r"""A
+  DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The session to list all contexts from. Format:
+      `projects//agent/sessions/` or
+      `projects//agent/environments//users//sessions/`. If `Environment ID` is
+      not specified, we assume default 'draft' environment. If `User ID` is
+      not specified, we assume default '-' user.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsContextsPatch
+  Request object.
+
+  Fields:
+    googleCloudDialogflowV2Context: A GoogleCloudDialogflowV2Context resource
+      to be passed as the request body.
+    name: Required. The unique identifier of the context. Format:
+      `projects//agent/sessions//contexts/`, or
+      `projects//agent/environments//users//sessions//contexts/`. The `Context
+      ID` is always converted to lowercase, may only contain characters in
+      a-zA-Z0-9_-% and may be at most 250 bytes long. If `Environment ID` is
+      not specified, we assume default 'draft' environment. If `User ID` is
+      not specified, we assume default '-' user. The following context names
+      are reserved for internal use by Dialogflow. You should not use these
+      contexts or create contexts with these names: * `__system_counters__` *
+      `*_id_dialog_context` * `*_dialog_params_size`
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  googleCloudDialogflowV2Context = _messages.MessageField('GoogleCloudDialogflowV2Context', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsDeleteContextsRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsDeleteContext
+  sRequest object.
+
+  Fields:
+    parent: Required. The name of the session to delete all contexts from.
+      Format: `projects//agent/sessions/` or
+      `projects//agent/environments//users//sessions/`. If `Environment ID` is
+      not specified we assume default 'draft' environment. If `User ID` is not
+      specified, we assume default '-' user.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsDetectIntentRequest(_messages.Message):
+  r"""A
+  DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsDetectIntentRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2DetectIntentRequest: A
+      GoogleCloudDialogflowV2DetectIntentRequest resource to be passed as the
+      request body.
+    session: Required. The name of the session this query is sent to. Format:
+      `projects//agent/sessions/`, or
+      `projects//agent/environments//users//sessions/`. If `Environment ID` is
+      not specified, we assume default 'draft' environment (`Environment ID`
+      might be referred to as environment name at some places). If `User ID`
+      is not specified, we are using "-". It's up to the API caller to choose
+      an appropriate `Session ID` and `User Id`. They can be a random number
+      or some type of user and session identifiers (preferably hashed). The
+      length of the `Session ID` and `User ID` must not exceed 36 characters.
+      For more information, see the [API interactions
+      guide](https://cloud.google.com/dialogflow/docs/api-overview). Note:
+      Always use agent versions for production traffic. See [Versions and
+      environments](https://cloud.google.com/dialogflow/es/docs/agents-
+      versions).
+  """
+
+  googleCloudDialogflowV2DetectIntentRequest = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentRequest', 1)
+  session = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesCr
+  eateRequest object.
+
+  Fields:
+    googleCloudDialogflowV2SessionEntityType: A
+      GoogleCloudDialogflowV2SessionEntityType resource to be passed as the
+      request body.
+    parent: Required. The session to create a session entity type for. Format:
+      `projects//agent/sessions/` or `projects//agent/environments//users//
+      sessions/`. If `Environment ID` is not specified, we assume default
+      'draft' environment. If `User ID` is not specified, we assume default
+      '-' user.
+  """
+
+  googleCloudDialogflowV2SessionEntityType = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesDe
+  leteRequest object.
+
+  Fields:
+    name: Required. The name of the entity type to delete. Format:
+      `projects//agent/sessions//entityTypes/` or
+      `projects//agent/environments//users//sessions//entityTypes/`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesGetRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesGe
+  tRequest object.
+
+  Fields:
+    name: Required. The name of the session entity type. Format:
+      `projects//agent/sessions//entityTypes/` or
+      `projects//agent/environments//users//sessions//entityTypes/`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesListRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesLi
+  stRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The session to list all session entity types from.
+      Format: `projects//agent/sessions/` or
+      `projects//agent/environments//users// sessions/`. If `Environment ID`
+      is not specified, we assume default 'draft' environment. If `User ID` is
+      not specified, we assume default '-' user.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesPa
+  tchRequest object.
+
+  Fields:
+    googleCloudDialogflowV2SessionEntityType: A
+      GoogleCloudDialogflowV2SessionEntityType resource to be passed as the
+      request body.
+    name: Required. The unique identifier of this session entity type. Format:
+      `projects//agent/sessions//entityTypes/`, or
+      `projects//agent/environments//users//sessions//entityTypes/`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+      `` must be the display name of an existing entity type in the same agent
+      that will be overridden or supplemented.
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  googleCloudDialogflowV2SessionEntityType = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DialogflowProjectsLocationsAgentExportRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentExportRequest object.
+
+  Fields:
+    googleCloudDialogflowV2ExportAgentRequest: A
+      GoogleCloudDialogflowV2ExportAgentRequest resource to be passed as the
+      request body.
+    parent: Required. The project that the agent to export is associated with.
+      Format: `projects/`.
+  """
+
+  googleCloudDialogflowV2ExportAgentRequest = _messages.MessageField('GoogleCloudDialogflowV2ExportAgentRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentGetFulfillmentRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentGetFulfillmentRequest object.
+
+  Fields:
+    name: Required. The name of the fulfillment. Format:
+      `projects//agent/fulfillment`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentGetValidationResultRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentGetValidationResultRequest object.
+
+  Fields:
+    languageCode: Optional. The language for which you want a validation
+      result. If not specified, the agent's default language is used. [Many
+      languages](https://cloud.google.com/dialogflow/docs/reference/language)
+      are supported. Note: languages must be enabled in the agent before they
+      can be used.
+    parent: Required. The project that the agent is associated with. Format:
+      `projects/`.
+  """
+
+  languageCode = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentImportRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentImportRequest object.
+
+  Fields:
+    googleCloudDialogflowV2ImportAgentRequest: A
+      GoogleCloudDialogflowV2ImportAgentRequest resource to be passed as the
+      request body.
+    parent: Required. The project that the agent to import is associated with.
+      Format: `projects/`.
+  """
+
+  googleCloudDialogflowV2ImportAgentRequest = _messages.MessageField('GoogleCloudDialogflowV2ImportAgentRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentIntentsBatchDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentIntentsBatchDeleteRequest object.
+
+  Fields:
+    googleCloudDialogflowV2BatchDeleteIntentsRequest: A
+      GoogleCloudDialogflowV2BatchDeleteIntentsRequest resource to be passed
+      as the request body.
+    parent: Required. The name of the agent to delete all entities types for.
+      Format: `projects//agent`.
+  """
+
+  googleCloudDialogflowV2BatchDeleteIntentsRequest = _messages.MessageField('GoogleCloudDialogflowV2BatchDeleteIntentsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentIntentsBatchUpdateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentIntentsBatchUpdateRequest object.
+
+  Fields:
+    googleCloudDialogflowV2BatchUpdateIntentsRequest: A
+      GoogleCloudDialogflowV2BatchUpdateIntentsRequest resource to be passed
+      as the request body.
+    parent: Required. The name of the agent to update or create intents in.
+      Format: `projects//agent`.
+  """
+
+  googleCloudDialogflowV2BatchUpdateIntentsRequest = _messages.MessageField('GoogleCloudDialogflowV2BatchUpdateIntentsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentIntentsCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentIntentsCreateRequest object.
+
+  Enums:
+    IntentViewValueValuesEnum: Optional. The resource view to apply to the
+      returned intent.
+
+  Fields:
+    googleCloudDialogflowV2Intent: A GoogleCloudDialogflowV2Intent resource to
+      be passed as the request body.
+    intentView: Optional. The resource view to apply to the returned intent.
+    languageCode: Optional. The language used to access language-specific
+      data. If not specified, the agent's default language is used. For more
+      information, see [Multilingual intent and entity
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
+    parent: Required. The agent to create a intent for. Format:
+      `projects//agent`.
+  """
+
+  class IntentViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The resource view to apply to the returned intent.
+
+    Values:
+      INTENT_VIEW_UNSPECIFIED: Training phrases field is not populated in the
+        response.
+      INTENT_VIEW_FULL: All fields are populated.
+    """
+    INTENT_VIEW_UNSPECIFIED = 0
+    INTENT_VIEW_FULL = 1
+
+  googleCloudDialogflowV2Intent = _messages.MessageField('GoogleCloudDialogflowV2Intent', 1)
+  intentView = _messages.EnumField('IntentViewValueValuesEnum', 2)
+  languageCode = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class DialogflowProjectsLocationsAgentIntentsDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentIntentsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the intent to delete. If this intent has
+      direct or indirect followup intents, we also delete them. Format:
+      `projects//agent/intents/`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentIntentsGetRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentIntentsGetRequest object.
+
+  Enums:
+    IntentViewValueValuesEnum: Optional. The resource view to apply to the
+      returned intent.
+
+  Fields:
+    intentView: Optional. The resource view to apply to the returned intent.
+    languageCode: Optional. The language used to access language-specific
+      data. If not specified, the agent's default language is used. For more
+      information, see [Multilingual intent and entity
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
+    name: Required. The name of the intent. Format:
+      `projects//agent/intents/`.
+  """
+
+  class IntentViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The resource view to apply to the returned intent.
+
+    Values:
+      INTENT_VIEW_UNSPECIFIED: Training phrases field is not populated in the
+        response.
+      INTENT_VIEW_FULL: All fields are populated.
+    """
+    INTENT_VIEW_UNSPECIFIED = 0
+    INTENT_VIEW_FULL = 1
+
+  intentView = _messages.EnumField('IntentViewValueValuesEnum', 1)
+  languageCode = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsAgentIntentsListRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentIntentsListRequest object.
+
+  Enums:
+    IntentViewValueValuesEnum: Optional. The resource view to apply to the
+      returned intent.
+
+  Fields:
+    intentView: Optional. The resource view to apply to the returned intent.
+    languageCode: Optional. The language used to access language-specific
+      data. If not specified, the agent's default language is used. For more
+      information, see [Multilingual intent and entity
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The agent to list all intents from. Format:
+      `projects//agent`.
+  """
+
+  class IntentViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The resource view to apply to the returned intent.
+
+    Values:
+      INTENT_VIEW_UNSPECIFIED: Training phrases field is not populated in the
+        response.
+      INTENT_VIEW_FULL: All fields are populated.
+    """
+    INTENT_VIEW_UNSPECIFIED = 0
+    INTENT_VIEW_FULL = 1
+
+  intentView = _messages.EnumField('IntentViewValueValuesEnum', 1)
+  languageCode = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DialogflowProjectsLocationsAgentIntentsPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentIntentsPatchRequest object.
+
+  Enums:
+    IntentViewValueValuesEnum: Optional. The resource view to apply to the
+      returned intent.
+
+  Fields:
+    googleCloudDialogflowV2Intent: A GoogleCloudDialogflowV2Intent resource to
+      be passed as the request body.
+    intentView: Optional. The resource view to apply to the returned intent.
+    languageCode: Optional. The language used to access language-specific
+      data. If not specified, the agent's default language is used. For more
+      information, see [Multilingual intent and entity
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
+    name: Optional. The unique identifier of this intent. Required for
+      Intents.UpdateIntent and Intents.BatchUpdateIntents methods. Format:
+      `projects//agent/intents/`.
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  class IntentViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The resource view to apply to the returned intent.
+
+    Values:
+      INTENT_VIEW_UNSPECIFIED: Training phrases field is not populated in the
+        response.
+      INTENT_VIEW_FULL: All fields are populated.
+    """
+    INTENT_VIEW_UNSPECIFIED = 0
+    INTENT_VIEW_FULL = 1
+
+  googleCloudDialogflowV2Intent = _messages.MessageField('GoogleCloudDialogflowV2Intent', 1)
+  intentView = _messages.EnumField('IntentViewValueValuesEnum', 2)
+  languageCode = _messages.StringField(3)
+  name = _messages.StringField(4, required=True)
+  updateMask = _messages.StringField(5)
+
+
+class DialogflowProjectsLocationsAgentRestoreRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentRestoreRequest object.
+
+  Fields:
+    googleCloudDialogflowV2RestoreAgentRequest: A
+      GoogleCloudDialogflowV2RestoreAgentRequest resource to be passed as the
+      request body.
+    parent: Required. The project that the agent to restore is associated
+      with. Format: `projects/`.
+  """
+
+  googleCloudDialogflowV2RestoreAgentRequest = _messages.MessageField('GoogleCloudDialogflowV2RestoreAgentRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentSearchRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSearchRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: The next_page_token value returned from a previous list
+      request.
+    parent: Required. The project to list agents from. Format: `projects/`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsContextsCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsContextsCreateRequest object.
+
+  Fields:
+    googleCloudDialogflowV2Context: A GoogleCloudDialogflowV2Context resource
+      to be passed as the request body.
+    parent: Required. The session to create a context for. Format:
+      `projects//agent/sessions/` or
+      `projects//agent/environments//users//sessions/`. If `Environment ID` is
+      not specified, we assume default 'draft' environment. If `User ID` is
+      not specified, we assume default '-' user.
+  """
+
+  googleCloudDialogflowV2Context = _messages.MessageField('GoogleCloudDialogflowV2Context', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsContextsDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsContextsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the context to delete. Format:
+      `projects//agent/sessions//contexts/` or
+      `projects//agent/environments//users//sessions//contexts/`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsContextsGetRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsContextsGetRequest object.
+
+  Fields:
+    name: Required. The name of the context. Format:
+      `projects//agent/sessions//contexts/` or
+      `projects//agent/environments//users//sessions//contexts/`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsContextsListRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsContextsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The session to list all contexts from. Format:
+      `projects//agent/sessions/` or
+      `projects//agent/environments//users//sessions/`. If `Environment ID` is
+      not specified, we assume default 'draft' environment. If `User ID` is
+      not specified, we assume default '-' user.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsContextsPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsContextsPatchRequest object.
+
+  Fields:
+    googleCloudDialogflowV2Context: A GoogleCloudDialogflowV2Context resource
+      to be passed as the request body.
+    name: Required. The unique identifier of the context. Format:
+      `projects//agent/sessions//contexts/`, or
+      `projects//agent/environments//users//sessions//contexts/`. The `Context
+      ID` is always converted to lowercase, may only contain characters in
+      a-zA-Z0-9_-% and may be at most 250 bytes long. If `Environment ID` is
+      not specified, we assume default 'draft' environment. If `User ID` is
+      not specified, we assume default '-' user. The following context names
+      are reserved for internal use by Dialogflow. You should not use these
+      contexts or create contexts with these names: * `__system_counters__` *
+      `*_id_dialog_context` * `*_dialog_params_size`
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  googleCloudDialogflowV2Context = _messages.MessageField('GoogleCloudDialogflowV2Context', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DialogflowProjectsLocationsAgentSessionsDeleteContextsRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsDeleteContextsRequest object.
+
+  Fields:
+    parent: Required. The name of the session to delete all contexts from.
+      Format: `projects//agent/sessions/` or
+      `projects//agent/environments//users//sessions/`. If `Environment ID` is
+      not specified we assume default 'draft' environment. If `User ID` is not
+      specified, we assume default '-' user.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsDetectIntentRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsDetectIntentRequest object.
+
+  Fields:
+    googleCloudDialogflowV2DetectIntentRequest: A
+      GoogleCloudDialogflowV2DetectIntentRequest resource to be passed as the
+      request body.
+    session: Required. The name of the session this query is sent to. Format:
+      `projects//agent/sessions/`, or
+      `projects//agent/environments//users//sessions/`. If `Environment ID` is
+      not specified, we assume default 'draft' environment (`Environment ID`
+      might be referred to as environment name at some places). If `User ID`
+      is not specified, we are using "-". It's up to the API caller to choose
+      an appropriate `Session ID` and `User Id`. They can be a random number
+      or some type of user and session identifiers (preferably hashed). The
+      length of the `Session ID` and `User ID` must not exceed 36 characters.
+      For more information, see the [API interactions
+      guide](https://cloud.google.com/dialogflow/docs/api-overview). Note:
+      Always use agent versions for production traffic. See [Versions and
+      environments](https://cloud.google.com/dialogflow/es/docs/agents-
+      versions).
+  """
+
+  googleCloudDialogflowV2DetectIntentRequest = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentRequest', 1)
+  session = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsEntityTypesCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsEntityTypesCreateRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2SessionEntityType: A
+      GoogleCloudDialogflowV2SessionEntityType resource to be passed as the
+      request body.
+    parent: Required. The session to create a session entity type for. Format:
+      `projects//agent/sessions/` or `projects//agent/environments//users//
+      sessions/`. If `Environment ID` is not specified, we assume default
+      'draft' environment. If `User ID` is not specified, we assume default
+      '-' user.
+  """
+
+  googleCloudDialogflowV2SessionEntityType = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsEntityTypesDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsEntityTypesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the entity type to delete. Format:
+      `projects//agent/sessions//entityTypes/` or
+      `projects//agent/environments//users//sessions//entityTypes/`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsEntityTypesGetRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsEntityTypesGetRequest object.
+
+  Fields:
+    name: Required. The name of the session entity type. Format:
+      `projects//agent/sessions//entityTypes/` or
+      `projects//agent/environments//users//sessions//entityTypes/`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsEntityTypesListRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsEntityTypesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The session to list all session entity types from.
+      Format: `projects//agent/sessions/` or
+      `projects//agent/environments//users// sessions/`. If `Environment ID`
+      is not specified, we assume default 'draft' environment. If `User ID` is
+      not specified, we assume default '-' user.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsAgentSessionsEntityTypesPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentSessionsEntityTypesPatchRequest
+  object.
+
+  Fields:
+    googleCloudDialogflowV2SessionEntityType: A
+      GoogleCloudDialogflowV2SessionEntityType resource to be passed as the
+      request body.
+    name: Required. The unique identifier of this session entity type. Format:
+      `projects//agent/sessions//entityTypes/`, or
+      `projects//agent/environments//users//sessions//entityTypes/`. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+      `` must be the display name of an existing entity type in the same agent
+      that will be overridden or supplemented.
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  googleCloudDialogflowV2SessionEntityType = _messages.MessageField('GoogleCloudDialogflowV2SessionEntityType', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class DialogflowProjectsLocationsAgentTrainRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentTrainRequest object.
+
+  Fields:
+    googleCloudDialogflowV2TrainAgentRequest: A
+      GoogleCloudDialogflowV2TrainAgentRequest resource to be passed as the
+      request body.
+    parent: Required. The project that the agent to train is associated with.
+      Format: `projects/`.
+  """
+
+  googleCloudDialogflowV2TrainAgentRequest = _messages.MessageField('GoogleCloudDialogflowV2TrainAgentRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DialogflowProjectsLocationsAgentUpdateFulfillmentRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentUpdateFulfillmentRequest object.
+
+  Fields:
+    googleCloudDialogflowV2Fulfillment: A GoogleCloudDialogflowV2Fulfillment
+      resource to be passed as the request body.
+    name: Required. The unique identifier of the fulfillment. Format:
+      `projects//agent/fulfillment`.
+    updateMask: Required. The mask to control which fields get updated. If the
+      mask is not present, all fields will be updated.
+  """
+
+  googleCloudDialogflowV2Fulfillment = _messages.MessageField('GoogleCloudDialogflowV2Fulfillment', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class DialogflowProjectsLocationsAnswerRecordsListRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsAnswerRecordsListRequest object.
 
@@ -1655,8 +2776,8 @@ class DialogflowProjectsLocationsConversationProfilesPatchRequest(_messages.Mess
     googleCloudDialogflowV2ConversationProfile: A
       GoogleCloudDialogflowV2ConversationProfile resource to be passed as the
       request body.
-    name: Optional. The unique identifier of this conversation profile.
-      Format: `projects//locations//conversationProfiles/`.
+    name: The unique identifier of this conversation profile. Format:
+      `projects//locations//conversationProfiles/`.
     updateMask: Required. The mask to control which fields to update.
   """
 
@@ -1923,6 +3044,28 @@ class DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestFaqA
   parent = _messages.StringField(2, required=True)
 
 
+class DialogflowProjectsLocationsDeleteAgentRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsDeleteAgentRequest object.
+
+  Fields:
+    parent: Required. The project that the agent to delete is associated with.
+      Format: `projects/`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsGetAgentRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsGetAgentRequest object.
+
+  Fields:
+    parent: Required. The project that the agent to fetch is associated with.
+      Format: `projects/`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class DialogflowProjectsLocationsKnowledgeBasesCreateRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsKnowledgeBasesCreateRequest object.
 
@@ -2124,6 +3267,21 @@ class DialogflowProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class DialogflowProjectsLocationsSetAgentRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsSetAgentRequest object.
+
+  Fields:
+    googleCloudDialogflowV2Agent: A GoogleCloudDialogflowV2Agent resource to
+      be passed as the request body.
+    parent: Required. The project of this agent. Format: `projects/`.
+    updateMask: Optional. The mask to control which fields get updated.
+  """
+
+  googleCloudDialogflowV2Agent = _messages.MessageField('GoogleCloudDialogflowV2Agent', 1)
+  parent = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class DialogflowProjectsOperationsCancelRequest(_messages.Message):
@@ -6663,8 +7821,8 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
       unspecified, the default language code en-us applies. Users need to
       create a ConversationProfile for each language they want to support.
     loggingConfig: Configuration for logging conversation lifecycle events.
-    name: Optional. The unique identifier of this conversation profile.
-      Format: `projects//locations//conversationProfiles/`.
+    name: The unique identifier of this conversation profile. Format:
+      `projects//locations//conversationProfiles/`.
     newMessageEventNotificationConfig: Configuration for publishing new
       message events. Event will be sent in format of ConversationEvent
     notificationConfig: Configuration for publishing conversation lifecycle

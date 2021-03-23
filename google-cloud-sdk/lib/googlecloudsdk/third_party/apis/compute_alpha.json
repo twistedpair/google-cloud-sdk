@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20210305",
+ "revision": "20210312",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -69,7 +69,7 @@
   "oauth2": {
    "scopes": {
     "https://www.googleapis.com/auth/cloud-platform": {
-     "description": "View and manage your data across Google Cloud Platform services"
+     "description": "See, edit, configure, and delete your Google Cloud Platform data"
     },
     "https://www.googleapis.com/auth/compute": {
      "description": "View and manage your Google Compute Engine resources"
@@ -2868,7 +2868,7 @@
     },
     "sessionAffinity": {
      "type": "string",
-     "description": "Type of session affinity to use. The default is NONE.\n\nWhen the loadBalancingScheme is EXTERNAL: * For Network Load Balancing, the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO. * For all other load balancers that use loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is HTTP, HTTP2, or HTTPS.\n\nWhen the loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.\n\nWhen the loadBalancingScheme is INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+     "description": "Type of session affinity to use. The default is NONE.\n\nWhen the loadBalancingScheme is EXTERNAL: * For Network Load Balancing, the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or  CLIENT_IP_PORT_PROTO. * For all other load balancers that use loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is HTTP, HTTP2, or HTTPS.\n\nWhen the loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.\n\nWhen the loadBalancingScheme is INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "enum": [
       "CLIENT_IP",
       "CLIENT_IP_NO_DESTINATION",
@@ -7929,6 +7929,20 @@
     "response": {
      "type": "string",
      "description": "The string to match anywhere in the first 1024 bytes of the response body. If left empty (the default value), the status code determines health. The response data can only be ASCII."
+    },
+    "weightReportMode": {
+     "type": "string",
+     "description": "Weight report mode. used for weighted Load Balancing.",
+     "enum": [
+      "DISABLE",
+      "DRY_RUN",
+      "ENABLE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -7982,6 +7996,20 @@
     "response": {
      "type": "string",
      "description": "The string to match anywhere in the first 1024 bytes of the response body. If left empty (the default value), the status code determines health. The response data can only be ASCII."
+    },
+    "weightReportMode": {
+     "type": "string",
+     "description": "Weight report mode. used for weighted Load Balancing.",
+     "enum": [
+      "DISABLE",
+      "DRY_RUN",
+      "ENABLE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -8035,6 +8063,20 @@
     "response": {
      "type": "string",
      "description": "The string to match anywhere in the first 1024 bytes of the response body. If left empty (the default value), the status code determines health. The response data can only be ASCII."
+    },
+    "weightReportMode": {
+     "type": "string",
+     "description": "Weight report mode. used for weighted Load Balancing.",
+     "enum": [
+      "DISABLE",
+      "DRY_RUN",
+      "ENABLE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -11206,6 +11248,10 @@
      "type": "string",
      "description": "[Output Only] The URL of the Instance Group resource."
     },
+    "instanceLifecyclePolicy": {
+     "$ref": "InstanceGroupManagerInstanceLifecyclePolicy",
+     "description": "Instance lifecycle policy for this Instance Group Manager."
+    },
     "instanceTemplate": {
      "type": "string",
      "description": "The URL of the instance template that is specified for this managed instance group. The group uses this template to create all new instances in the managed instance group. The templates for existing instances in the group do not change unless you run recreateInstances, run applyUpdatesToInstances, or set the group's updatePolicy.type to PROACTIVE."
@@ -11275,6 +11321,16 @@
       ]
      }
     },
+    "targetStoppedSize": {
+     "type": "integer",
+     "description": "The target number of stopped instances for this managed instance group. This number changes when you:  \n- Stop instance using the stopInstances method or start instances using the startInstances method. \n- Manually change the targetStoppedSize using the update method.",
+     "format": "int32"
+    },
+    "targetSuspendedSize": {
+     "type": "integer",
+     "description": "The target number of suspended instances for this managed instance group. This number changes when you:  \n- Suspend instance using the suspendInstances method or resume instances using the resumeInstances method. \n- Manually change the targetSuspendedSize using the update method.",
+     "format": "int32"
+    },
     "updatePolicy": {
      "$ref": "InstanceGroupManagerUpdatePolicy",
      "description": "The update policy for this managed instance group."
@@ -11334,6 +11390,26 @@
     "restarting": {
      "type": "integer",
      "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be restarted or are currently being restarted.",
+     "format": "int32"
+    },
+    "resuming": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be resumed or are currently being resumed.",
+     "format": "int32"
+    },
+    "starting": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be started or are currently being started.",
+     "format": "int32"
+    },
+    "stopping": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be stopped or are currently being stopped.",
+     "format": "int32"
+    },
+    "suspending": {
+     "type": "integer",
+     "description": "[Output Only] The number of instances in the managed instance group that are scheduled to be suspended or are currently being suspended.",
      "format": "int32"
     },
     "verifying": {
@@ -11483,6 +11559,27 @@
     "maxUnavailable": {
      "$ref": "FixedOrPercent",
      "description": "Maximum number of instances that can be unavailable when autohealing. When 'percent' is used, the value is rounded UP. The instance is considered available if all of the following conditions are satisfied: 1. Instance's status is RUNNING. 2. Instance's currentAction is NONE (in particular its liveness health check result was observed to be HEALTHY at least once as it passed VERIFYING). 3. There is no outgoing action on an instance triggered by IGM.\n\nBy default, number of concurrently autohealed instances is smaller than the managed instance group target size. However, if a zonal managed instance group has only one instance, or a regional managed instance group has only one instance per zone, autohealing will recreate these instances when they become unhealthy."
+    }
+   }
+  },
+  "InstanceGroupManagerInstanceLifecyclePolicy": {
+   "id": "InstanceGroupManagerInstanceLifecyclePolicy",
+   "type": "object",
+   "properties": {
+    "metadataBasedReadinessSignal": {
+     "$ref": "InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal",
+     "description": "The configuration for metadata based readiness signal sent by the instance during initialization when stopping / suspending an instance. The Instance Group Manager will wait for a signal that indicates successful initialization before stopping / suspending an instance.\n\nIf a successful readiness signal is not sent before timeout, the corresponding instance will not be stopped / suspended. Instead, an error will be visible in the lastAttempt.errors field of the managed instance in the listmanagedinstances method.\n\nIf metadataBasedReadinessSignal.timeoutSec is unset, the Instance Group Manager will directly proceed to suspend / stop instances, skipping initialization on them."
+    }
+   }
+  },
+  "InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal": {
+   "id": "InstanceGroupManagerInstanceLifecyclePolicyMetadataBasedReadinessSignal",
+   "type": "object",
+   "properties": {
+    "timeoutSec": {
+     "type": "integer",
+     "description": "The number of seconds to wait for a readiness signal during initialization before timing out.",
+     "format": "int32"
     }
    }
   },
@@ -12069,6 +12166,19 @@
     }
    }
   },
+  "InstanceGroupManagersResumeInstancesRequest": {
+   "id": "InstanceGroupManagersResumeInstancesRequest",
+   "type": "object",
+   "properties": {
+    "instances": {
+     "type": "array",
+     "description": "The URLs of one or more instances to resume. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
   "InstanceGroupManagersScopedList": {
    "id": "InstanceGroupManagersScopedList",
    "type": "object",
@@ -12201,6 +12311,53 @@
     "targetPools": {
      "type": "array",
      "description": "The list of target pool URLs that instances in this managed instance group belong to. The managed instance group applies these target pools to all of the instances in the group. Existing instances and new instances in the group all receive these target pool settings.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "InstanceGroupManagersStartInstancesRequest": {
+   "id": "InstanceGroupManagersStartInstancesRequest",
+   "type": "object",
+   "properties": {
+    "instances": {
+     "type": "array",
+     "description": "The URLs of one or more instances to start. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "InstanceGroupManagersStopInstancesRequest": {
+   "id": "InstanceGroupManagersStopInstancesRequest",
+   "type": "object",
+   "properties": {
+    "forceStop": {
+     "type": "boolean",
+     "description": "If this flag is set to true, the Instance Group Manager will proceed to stop the instances, skipping initialization on them."
+    },
+    "instances": {
+     "type": "array",
+     "description": "The URLs of one or more instances to stop. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "InstanceGroupManagersSuspendInstancesRequest": {
+   "id": "InstanceGroupManagersSuspendInstancesRequest",
+   "type": "object",
+   "properties": {
+    "forceSuspend": {
+     "type": "boolean",
+     "description": "If this flag is set to true, the Instance Group Manager will proceed to suspend the instances, skipping initialization on them."
+    },
+    "instances": {
+     "type": "array",
+     "description": "The URLs of one or more instances to suspend. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
      "items": {
       "type": "string"
      }
@@ -12762,9 +12919,17 @@
       "RECREATING",
       "REFRESHING",
       "RESTARTING",
+      "RESUMING",
+      "STARTING",
+      "STOPPING",
+      "SUSPENDING",
       "VERIFYING"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -16577,9 +16742,17 @@
       "RECREATING",
       "REFRESHING",
       "RESTARTING",
+      "RESUMING",
+      "STARTING",
+      "STOPPING",
+      "SUSPENDING",
       "VERIFYING"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -23864,7 +24037,7 @@
     },
     "skipInapplicableInstances": {
      "type": "boolean",
-     "description": "Skip instances which cannot be deleted (instances not belonging to this managed group, already being deleted or being abandoned). If `false`, fail whole flow, if such instance is passed."
+     "description": "Skip instances which cannot be deleted (instances not belonging to this managed group, already being deleted or being abandoned). If `false`, fail whole flow, if such instance is passed. DEPRECATED: Use skip_instances_on_validation_error instead."
     }
    }
   },
@@ -24032,6 +24205,19 @@
     }
    }
   },
+  "RegionInstanceGroupManagersResumeInstancesRequest": {
+   "id": "RegionInstanceGroupManagersResumeInstancesRequest",
+   "type": "object",
+   "properties": {
+    "instances": {
+     "type": "array",
+     "description": "The URLs of one or more instances to resume. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
   "RegionInstanceGroupManagersSetAutoHealingRequest": {
    "id": "RegionInstanceGroupManagersSetAutoHealingRequest",
    "type": "object",
@@ -24069,6 +24255,53 @@
     "instanceTemplate": {
      "type": "string",
      "description": "URL of the InstanceTemplate resource from which all new instances will be created."
+    }
+   }
+  },
+  "RegionInstanceGroupManagersStartInstancesRequest": {
+   "id": "RegionInstanceGroupManagersStartInstancesRequest",
+   "type": "object",
+   "properties": {
+    "instances": {
+     "type": "array",
+     "description": "The URLs of one or more instances to start. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "RegionInstanceGroupManagersStopInstancesRequest": {
+   "id": "RegionInstanceGroupManagersStopInstancesRequest",
+   "type": "object",
+   "properties": {
+    "forceStop": {
+     "type": "boolean",
+     "description": "If this flag is set to true, the Instance Group Manager will proceed to stop the instances, skipping initialization on them."
+    },
+    "instances": {
+     "type": "array",
+     "description": "The URLs of one or more instances to stop. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "RegionInstanceGroupManagersSuspendInstancesRequest": {
+   "id": "RegionInstanceGroupManagersSuspendInstancesRequest",
+   "type": "object",
+   "properties": {
+    "forceSuspend": {
+     "type": "boolean",
+     "description": "If this flag is set to true, the Instance Group Manager will proceed to suspend the instances, skipping initialization on them."
+    },
+    "instances": {
+     "type": "array",
+     "description": "The URLs of one or more instances to suspend. This can be a full URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -25775,6 +26008,10 @@
    "type": "object",
    "description": "Represents a Route resource.\n\nA route defines a path from VM instances in the VPC network to a specific destination. This destination can be inside or outside the VPC network. For more information, read the Routes overview. (== resource_for {$api_version}.routes ==)",
    "properties": {
+    "allowConflictingSubnetworks": {
+     "type": "boolean",
+     "description": "Whether this route can conflict with existing subnetworks. Setting this to true allows this route to conflict with subnetworks that have already been configured on the corresponding network."
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -26989,6 +27226,10 @@
      "type": "string",
      "description": "IP address of the remote BGP interface."
     },
+    "routerApplianceInstance": {
+     "type": "string",
+     "description": "[Output only] URI of the VM instance that is used as third-party router appliances such as Next Gen Firewalls, Virtual Routers, or Router Appliances. The VM instance is the peer side of the BGP session."
+    },
     "state": {
      "type": "string",
      "description": "BGP state as specified in RFC1771."
@@ -28145,17 +28386,12 @@
    "properties": {
     "banDurationSec": {
      "type": "integer",
-     "description": "Can only be specified if the action for the rule is \"rate_based_ban\". If specified, the key will be banned for the configured 'ban_duration' when the number of requests that exceed the 'rate_limit_threshold' also exceed this 'ban_threshold'.",
+     "description": "Can only be specified if the action for the rule is \"rate_based_ban\". If specified, determines the time (in seconds) the traffic will continue to be banned by the rate limit after the rate falls below the threshold.",
      "format": "int32"
     },
     "banThreshold": {
      "$ref": "SecurityPolicyRuleRateLimitOptionsThreshold",
-     "description": "Can only be specified if the action for the rule is \"rate_based_ban\". If specified, the key will be banned for the configured 'ban_duration' when the number of requests that exceed the 'rate_limit_threshold' also exceed this 'ban_threshold'."
-    },
-    "blockDuration": {
-     "type": "integer",
-     "description": "Can only be specified if the action for the rule is \"rate_based_ban\" If specified, determines the time (in seconds) the traffic will continue to be blocked by the rate limit after the rate falls below the threshold. The default value is 0 seconds. [Deprecated] This field is deprecated.",
-     "format": "int32"
+     "description": "Can only be specified if the action for the rule is \"rate_based_ban\". If specified, the key will be banned for the configured 'ban_duration_sec' when the number of requests that exceed the 'rate_limit_threshold' also exceed this 'ban_threshold'."
     },
     "conformAction": {
      "type": "string",
@@ -28180,11 +28416,6 @@
     "rateLimitThreshold": {
      "$ref": "SecurityPolicyRuleRateLimitOptionsThreshold",
      "description": "Threshold at which to begin ratelimiting."
-    },
-    "thresholdRps": {
-     "type": "integer",
-     "description": "Rate in requests per second at which to begin ratelimiting. [Deprecated] This field is deprecated.",
-     "format": "int32"
     }
    }
   },
@@ -44465,6 +44696,53 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "resumeInstances": {
+     "id": "compute.instanceGroupManagers.resumeInstances",
+     "path": "projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resumeInstances",
+     "httpMethod": "POST",
+     "description": "Flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method.\n\nIn this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method.\n\nIf a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where the managed instance group is located.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManagersResumeInstancesRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setAutoHealingPolicies": {
      "id": "compute.instanceGroupManagers.setAutoHealingPolicies",
      "path": "projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies",
@@ -44597,6 +44875,147 @@
      ],
      "request": {
       "$ref": "InstanceGroupManagersSetTargetPoolsRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "startInstances": {
+     "id": "compute.instanceGroupManagers.startInstances",
+     "path": "projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/startInstances",
+     "httpMethod": "POST",
+     "description": "Flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method.\n\nIn this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method.\n\nIf a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where the managed instance group is located.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManagersStartInstancesRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "stopInstances": {
+     "id": "compute.instanceGroupManagers.stopInstances",
+     "path": "projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/stopInstances",
+     "httpMethod": "POST",
+     "description": "Flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method.\n\nIf the instanceLifecyclePolicy.metadataBasedReadinessSignal field is set on the Instance Group Manager, each instance will be initialized before it is stopped, to give user programs time to perform necessary tasks. To initialize an instance, the Instance Group Manager sets the metadata key google-compute-initialization-intent to value INITIALIZE_AND_STOP on the instance, and waits for the user program to signal it is ready. This is done by setting the guest attribute path google-compute/initialization-state to value INITIALIZED. If the instance does not signal successful initialization (does not set the guest attribute to INITIALIZED) before timeout, the initialization is considered failed and the instance is not stopped.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended.\n\nStopped instances can be started using the startInstances method.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where the managed instance group is located.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManagersStopInstancesRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "suspendInstances": {
+     "id": "compute.instanceGroupManagers.suspendInstances",
+     "path": "projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/suspendInstances",
+     "httpMethod": "POST",
+     "description": "Flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method.\n\nIf the instanceLifecyclePolicy.metadataBasedReadinessSignal field is set on the Instance Group Manager, each instance will be initialized before it is suspended, to give user programs time to perform necessary tasks. To initialize an instance, the Instance Group Manager sets the metadata key google-compute-initialization-intent to value INITIALIZE_AND_SUSPEND on the instance, and waits for the user program to signal it is ready. This is done by setting the guest attribute path google-compute/initialization-state to value INITIALIZED. If the instance does not signal successful initialization (does not set the guest attribute to INITIALIZED) before timeout, the initialization is considered failed and the instance is not suspended.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended.\n\nSuspended instances can be resumed using the resumeInstances method.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where the managed instance group is located.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManagersSuspendInstancesRequest"
      },
      "response": {
       "$ref": "Operation"
@@ -46644,6 +47063,44 @@
      "response": {
       "$ref": "Operation"
      },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "sendDiagnosticInterrupt": {
+     "id": "compute.instances.sendDiagnosticInterrupt",
+     "path": "projects/{project}/zones/{zone}/instances/{instance}/sendDiagnosticInterrupt",
+     "httpMethod": "POST",
+     "description": "TODO(b/180520210): Add IAM permission for this API. Sends diagnostic interrupt to the instance.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Name of the instance scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance"
+     ],
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute"
@@ -58361,6 +58818,53 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "resumeInstances": {
+     "id": "compute.regionInstanceGroupManagers.resumeInstances",
+     "path": "projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resumeInstances",
+     "httpMethod": "POST",
+     "description": "Flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method.\n\nIn this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method.\n\nIf a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "Name of the managed instance group.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "RegionInstanceGroupManagersResumeInstancesRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setAutoHealingPolicies": {
      "id": "compute.regionInstanceGroupManagers.setAutoHealingPolicies",
      "path": "projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies",
@@ -58493,6 +58997,147 @@
      ],
      "request": {
       "$ref": "RegionInstanceGroupManagersSetTargetPoolsRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "startInstances": {
+     "id": "compute.regionInstanceGroupManagers.startInstances",
+     "path": "projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/startInstances",
+     "httpMethod": "POST",
+     "description": "Flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method.\n\nIn this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method.\n\nIf a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "Name of the managed instance group.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "RegionInstanceGroupManagersStartInstancesRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "stopInstances": {
+     "id": "compute.regionInstanceGroupManagers.stopInstances",
+     "path": "projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/stopInstances",
+     "httpMethod": "POST",
+     "description": "Flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method.\n\nIf the instanceLifecyclePolicy.metadataBasedReadinessSignal field is set on the Instance Group Manager, each instance will be initialized before it is stopped, to give user programs time to perform necessary tasks. To initialize an instance, the Instance Group Manager sets the metadata key google-compute-initialization-intent to value INITIALIZE_AND_STOP on the instance, and waits for the user program to signal it is ready. This is done by setting the guest attribute path google-compute/initialization-state to value INITIALIZED. If the instance does not signal successful initialization (does not set the guest attribute to INITIALIZED) before timeout, the initialization is considered failed and the instance is not stopped.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended.\n\nStopped instances can be started using the startInstances method.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "RegionInstanceGroupManagersStopInstancesRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "suspendInstances": {
+     "id": "compute.regionInstanceGroupManagers.suspendInstances",
+     "path": "projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/suspendInstances",
+     "httpMethod": "POST",
+     "description": "Flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method.\n\nIf the instanceLifecyclePolicy.metadataBasedReadinessSignal field is set on the Instance Group Manager, each instance will be initialized before it is suspended, to give user programs time to perform necessary tasks. To initialize an instance, the Instance Group Manager sets the metadata key google-compute-initialization-intent to value INITIALIZE_AND_SUSPEND on the instance, and waits for the user program to signal it is ready. This is done by setting the guest attribute path google-compute/initialization-state to value INITIALIZED. If the instance does not signal successful initialization (does not set the guest attribute to INITIALIZED) before timeout, the initialization is considered failed and the instance is not suspended.\n\nIf the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended.\n\nSuspended instances can be resumed using the resumeInstances method.\n\nYou can specify a maximum of 1000 instances with this method per request.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "Name of the managed instance group.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "RegionInstanceGroupManagersSuspendInstancesRequest"
      },
      "response": {
       "$ref": "Operation"

@@ -37,6 +37,7 @@ from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import times
+
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
 import six.moves.http_client
@@ -493,7 +494,7 @@ class CreateClusterOptions(object):
       enable_resource_consumption_metering=None,
       workload_pool=None,
       identity_provider=None,
-      workload_identity_certificate_authority=None,
+      enable_workload_certificates=None,
       enable_gke_oidc=None,
       enable_shielded_nodes=None,
       linux_sysctls=None,
@@ -543,6 +544,7 @@ class CreateClusterOptions(object):
       enable_gcfs=None,
       private_endpoint_subnetwork=None,
       cross_connect_subnetworks=None,
+      enable_service_externalips=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -631,7 +633,7 @@ class CreateClusterOptions(object):
     self.enable_resource_consumption_metering = enable_resource_consumption_metering
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
-    self.workload_identity_certificate_authority = workload_identity_certificate_authority
+    self.enable_workload_certificates = enable_workload_certificates
     self.enable_gke_oidc = enable_gke_oidc
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
@@ -681,6 +683,7 @@ class CreateClusterOptions(object):
     self.enable_gcfs = enable_gcfs
     self.private_endpoint_subnetwork = private_endpoint_subnetwork
     self.cross_connect_subnetworks = cross_connect_subnetworks
+    self.enable_service_externalips = enable_service_externalips
 
 
 class UpdateClusterOptions(object):
@@ -726,8 +729,7 @@ class UpdateClusterOptions(object):
                workload_pool=None,
                identity_provider=None,
                disable_workload_identity=None,
-               workload_identity_certificate_authority=None,
-               disable_workload_identity_certificates=None,
+               enable_workload_certificates=None,
                enable_gke_oidc=None,
                enable_shielded_nodes=None,
                disable_default_snat=None,
@@ -767,7 +769,8 @@ class UpdateClusterOptions(object):
                disable_autopilot=None,
                add_cross_connect_subnetworks=None,
                remove_cross_connect_subnetworks=None,
-               clear_cross_connect_subnetworks=None):
+               clear_cross_connect_subnetworks=None,
+               enable_service_externalips=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -807,8 +810,7 @@ class UpdateClusterOptions(object):
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
     self.disable_workload_identity = disable_workload_identity
-    self.workload_identity_certificate_authority = workload_identity_certificate_authority
-    self.disable_workload_identity_certificates = disable_workload_identity_certificates
+    self.enable_workload_certificates = enable_workload_certificates
     self.enable_gke_oidc = enable_gke_oidc
     self.enable_shielded_nodes = enable_shielded_nodes
     self.disable_default_snat = disable_default_snat
@@ -850,6 +852,7 @@ class UpdateClusterOptions(object):
     self.add_cross_connect_subnetworks = add_cross_connect_subnetworks
     self.remove_cross_connect_subnetworks = remove_cross_connect_subnetworks
     self.clear_cross_connect_subnetworks = clear_cross_connect_subnetworks
+    self.enable_service_externalips = enable_service_externalips
 
 
 class SetMasterAuthOptions(object):
@@ -1018,8 +1021,7 @@ class UpdateNodePoolOptions(object):
             self.max_surge_upgrade is not None or
             self.max_unavailable_upgrade is not None or
             self.system_config_from_file is not None or
-            self.node_labels is not None or
-            self.node_taints is not None or
+            self.node_labels is not None or self.node_taints is not None or
             self.tags is not None)
 
 
@@ -1561,9 +1563,15 @@ class APIAdapter(object):
       type_name = options.accelerators['type']
       # Accelerator count defaults to 1.
       count = int(options.accelerators.get('count', 1))
+      accelerator_config = self.messages.AcceleratorConfig(
+          acceleratorType=type_name, acceleratorCount=count)
+
+      gpu_partition_size = options.accelerators.get('gpu-partition-size', '')
+      if gpu_partition_size:
+        accelerator_config.gpuPartitionSize = gpu_partition_size
+
       node_config.accelerators = [
-          self.messages.AcceleratorConfig(
-              acceleratorType=type_name, acceleratorCount=count)
+          accelerator_config,
       ]
 
   def ParseResourceLabels(self, options, cluster):
@@ -2200,8 +2208,7 @@ class APIAdapter(object):
 
     if options.release_channel is not None:
       update = self.messages.ClusterUpdate(
-          desiredReleaseChannel=_GetReleaseChannel(
-              options, self.messages))
+          desiredReleaseChannel=_GetReleaseChannel(options, self.messages))
 
     if options.disable_default_snat is not None:
       disable_default_snat = self.messages.DefaultSnatStatus(
@@ -2222,8 +2229,7 @@ class APIAdapter(object):
 
     dns_config = self.ParseClusterDNSOptions(options)
     if dns_config is not None:
-      update = self.messages.ClusterUpdate(
-          desiredDnsConfig=dns_config)
+      update = self.messages.ClusterUpdate(desiredDnsConfig=dns_config)
 
     if options.notification_config is not None:
       update = self.messages.ClusterUpdate(
@@ -2609,14 +2615,7 @@ class APIAdapter(object):
     else:
       node_config.tags = []
 
-    if options.accelerators is not None:
-      type_name = options.accelerators['type']
-      # Accelerator count defaults to 1.
-      count = int(options.accelerators.get('count', 1))
-      node_config.accelerators = [
-          self.messages.AcceleratorConfig(
-              acceleratorType=type_name, acceleratorCount=count)
-      ]
+    self.ParseAcceleratorOptions(options, node_config)
 
     _AddMetadataToNodeConfig(node_config, options)
     _AddNodeLabelsToNodeConfig(node_config, options)
@@ -2968,8 +2967,8 @@ class APIAdapter(object):
       A NetworkConfig object that contains the options for how the network
       for the nodepool needs to be configured.
     """
-    if (options.pod_ipv4_range is None
-        and options.create_pod_ipv4_range is None):
+    if (options.pod_ipv4_range is None and
+        options.create_pod_ipv4_range is None):
       return None
 
     network_config = self.messages.NodeNetworkConfig()
@@ -3326,8 +3325,15 @@ class V1Beta1Adapter(V1Adapter):
           workloadPool=options.workload_pool)
       if options.identity_provider:
         cluster.workloadIdentityConfig.identityProvider = options.identity_provider
-      if options.workload_identity_certificate_authority:
-        cluster.workloadIdentityConfig.issuingCertificateAuthority = options.workload_identity_certificate_authority
+    if options.enable_workload_certificates:
+      if not options.workload_pool:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='workload-pool',
+                opt='enable-workload-certificates'))
+      if cluster.workloadCertificates is None:
+        cluster.workloadCertificates = self.messages.WorkloadCertificates()
+      cluster.workloadCertificates.enableCertificates = options.enable_workload_certificates
     if options.enable_gke_oidc:
       cluster.gkeOidcConfig = self.messages.GkeOidcConfig(
           enabled=options.enable_gke_oidc)
@@ -3415,15 +3421,11 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               workloadPool=''))
-    elif options.workload_identity_certificate_authority:
+
+    if options.enable_workload_certificates is not None:
       update = self.messages.ClusterUpdate(
-          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
-              issuingCertificateAuthority=options
-              .workload_identity_certificate_authority,))
-    elif options.disable_workload_identity_certificates:
-      update = self.messages.ClusterUpdate(
-          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
-              issuingCertificateAuthority='',))
+          desiredWorkloadCertificates=self.messages.WorkloadCertificates(
+              enableCertificates=options.enable_workload_certificates))
 
     if options.enable_gke_oidc is not None:
       update = self.messages.ClusterUpdate(
@@ -3432,8 +3434,7 @@ class V1Beta1Adapter(V1Adapter):
 
     if options.disable_autopilot is not None:
       update = self.messages.ClusterUpdate(
-          desiredAutopilot=self.messages.Autopilot(
-              enabled=False))
+          desiredAutopilot=self.messages.Autopilot(enabled=False))
 
     if options.enable_stackdriver_kubernetes:
       update = self.messages.ClusterUpdate(
@@ -3774,8 +3775,15 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           workloadPool=options.workload_pool)
       if options.identity_provider:
         cluster.workloadIdentityConfig.identityProvider = options.identity_provider
-      if options.workload_identity_certificate_authority:
-        cluster.workloadIdentityConfig.issuingCertificateAuthority = options.workload_identity_certificate_authority
+    if options.enable_workload_certificates:
+      if not options.workload_pool:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='workload-pool',
+                opt='enable-workload-certificates'))
+      if cluster.workloadCertificates is None:
+        cluster.workloadCertificates = self.messages.WorkloadCertificates()
+      cluster.workloadCertificates.enableCertificates = options.enable_workload_certificates
     if options.enable_gke_oidc:
       cluster.gkeOidcConfig = self.messages.GkeOidcConfig(
           enabled=options.enable_gke_oidc)
@@ -3792,6 +3800,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       else:
         cluster.networkConfig.enablePrivateIpv6Access = \
             options.enable_private_ipv6_access
+    if options.enable_service_externalips is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.serviceExternalIpsConfig = self.messages.ServiceExternalIPsConfig(
+          enabled=options.enable_service_externalips)
     if options.enable_master_global_access is not None:
       if not options.enable_private_nodes:
         raise util.Error(
@@ -3868,15 +3881,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               workloadPool=''))
-    elif options.workload_identity_certificate_authority:
+
+    if options.enable_workload_certificates is not None:
       update = self.messages.ClusterUpdate(
-          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
-              issuingCertificateAuthority=options
-              .workload_identity_certificate_authority,))
-    elif options.disable_workload_identity_certificates:
-      update = self.messages.ClusterUpdate(
-          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
-              issuingCertificateAuthority='',))
+          desiredWorkloadCertificates=self.messages.WorkloadCertificates(
+              enableCertificates=options.enable_workload_certificates))
 
     if options.enable_gke_oidc is not None:
       update = self.messages.ClusterUpdate(
@@ -3890,13 +3899,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
     if options.release_channel is not None:
       update = self.messages.ClusterUpdate(
-          desiredReleaseChannel=_GetReleaseChannel(
-              options, self.messages))
+          desiredReleaseChannel=_GetReleaseChannel(options, self.messages))
 
     if options.disable_autopilot is not None:
       update = self.messages.ClusterUpdate(
-          desiredAutopilot=self.messages.Autopilot(
-              enabled=False))
+          desiredAutopilot=self.messages.Autopilot(enabled=False))
 
     if options.enable_stackdriver_kubernetes:
       update = self.messages.ClusterUpdate(
@@ -3927,6 +3934,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if kubernetes_objects_export_config is not None:
       update = self.messages.ClusterUpdate(
           desiredKubernetesObjectsExportConfig=kubernetes_objects_export_config)
+
+    if options.enable_service_externalips is not None:
+      update = self.messages.ClusterUpdate(
+          desiredServiceExternalIpsConfig=self.messages
+          .ServiceExternalIPsConfig(enabled=options.enable_service_externalips))
 
     if not update:
       # if reached here, it's possible:

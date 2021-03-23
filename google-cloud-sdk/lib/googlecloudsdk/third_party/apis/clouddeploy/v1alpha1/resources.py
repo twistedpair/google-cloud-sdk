@@ -31,43 +31,6 @@ class Collections(enum.Enum):
       ['projectsId'],
       True
   )
-  PROJECTS_DELIVERYPIPELINES = (
-      'projects.deliveryPipelines',
-      'projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}',
-      {},
-      ['projectsId', 'deliveryPipelinesId'],
-      True
-  )
-  PROJECTS_DELIVERYPIPELINES_RELEASES = (
-      'projects.deliveryPipelines.releases',
-      'projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/'
-      'releases/{releasesId}',
-      {},
-      ['projectsId', 'deliveryPipelinesId', 'releasesId'],
-      True
-  )
-  PROJECTS_DELIVERYPIPELINES_RELEASES_DELIVERYPIPELINES = (
-      'projects.deliveryPipelines.releases.deliveryPipelines',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/'
-              'releases/{releasesId}/deliveryPipelines/{deliveryPipelinesId1}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_DELIVERYPIPELINES_RELEASES_TARGETS = (
-      'projects.deliveryPipelines.releases.targets',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/deliveryPipelines/{deliveryPipelinesId}/'
-              'releases/{releasesId}/targets/{targetsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       '{+name}',

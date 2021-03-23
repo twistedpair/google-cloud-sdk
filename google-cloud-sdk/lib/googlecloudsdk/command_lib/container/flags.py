@@ -407,17 +407,23 @@ https://cloud.google.com/compute/docs/disks/customer-managed-encryption"""
       default='')
 
 
-def AddAcceleratorArgs(parser):
+def AddAcceleratorArgs(parser, enable_gpu_partition=False):
   """Adds Accelerator-related args."""
+
+  spec = {
+      'type': str,
+      'count': int,
+  }
+
+  if enable_gpu_partition:
+    spec['gpu-partition-size'] = str
+
   parser.add_argument(
       '--accelerator',
       type=arg_parsers.ArgDict(
-          spec={
-              'type': str,
-              'count': int,
-          },
+          spec=spec,
           required_keys=['type'],
-          max_length=2),
+          max_length=len(spec)),
       metavar='type=TYPE,[count=COUNT]',
       help="""\
       Attaches accelerators (e.g. GPUs) to all nodes.
@@ -2483,9 +2489,7 @@ of RAM:
   parser.add_argument('--machine-type', '-m', help=help_text)
 
 
-def AddWorkloadIdentityFlags(parser,
-                             use_identity_provider=False,
-                             use_workload_certificates=False):
+def AddWorkloadIdentityFlags(parser, use_identity_provider=False):
   """Adds Workload Identity flags to the parser."""
   parser.add_argument(
       '--workload-pool',
@@ -2508,8 +2512,7 @@ For more information on Workload Identity, see
           # Don't document hub.id.goog in the error, but still pass it through
           # for now.
           r'^[a-z][-a-z0-9]{4,}[a-z0-9]\.(svc|hub)\.id\.goog$',
-          "Must be in format of '[PROJECT_ID].svc.id.goog'"
-      ),
+          "Must be in format of '[PROJECT_ID].svc.id.goog'"),
   )
   if use_identity_provider:
     parser.add_argument(
@@ -2518,24 +2521,9 @@ For more information on Workload Identity, see
         help="""\
   Enable 3P identity provider on the cluster.
     """)
-  if use_workload_certificates:
-    parser.add_argument(
-        '--workload-identity-certificate-authority',
-        default=None,
-        hidden=True,
-        type=arg_parsers.RegexpValidator(
-            r'^//privateca\.googleapis\.com/projects/[^/]+/locations/[^/]+/certificateAuthorities/[^/]+$',
-            'Must be of the form //privateca.googleapis.com/projects/{project}/locations/{location}/certificateAuthorities/{ca}'
-        ),
-        help="""\
-Enable issuance of Workload Identity certificates from this certificate authority.
-
-Must be a Private CA resource URL of the form
-`//privateca.googleapis.com/projects/{project}/locations/{location}/certificateAuthorities/{ca}`.
-""")
 
 
-def AddWorkloadIdentityUpdateFlags(parser, use_workload_certificates=False):
+def AddWorkloadIdentityUpdateFlags(parser):
   """Adds Workload Identity update flags to the parser."""
   parser.add_argument(
       '--disable-workload-identity',
@@ -2549,14 +2537,22 @@ For more information on Workload Identity, see
             https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 """)
 
-  if use_workload_certificates:
-    parser.add_argument(
-        '--disable-workload-identity-certificates',
-        default=False,
-        action='store_true',
-        hidden=True,
-        help="""\
-Disable Workload Identity certificates on the cluster.
+
+def AddWorkloadCertificatesFlags(parser):
+  """Adds Workload Certificates flags to the parser."""
+  parser.add_argument(
+      '--enable-workload-certificates',
+      default=None,
+      hidden=True,
+      action='store_true',
+      help="""\
+Enable Workload Certificates.
+
+After the cluster is created, configure an issuing certificate authority using
+the Kubernetes API.
+
+To disable Workload Certificates in an existing cluster, explicitly set flag
+`--no-enable-workload-certificates`.
 """)
 
 
@@ -3675,3 +3671,16 @@ Create a new pod range with the name ``my-range'' with a default range.
 Must be used in VPC native clusters. Can not be used in conjunction with the
 `--pod-ipv4-range` option.
 """)
+
+
+def AddEnableServiceExternalIPs(parser):
+  """Adds a --enable-service-externalips flag to the given parser."""
+  help_text = """\
+Enables use of services with externalIPs field.
+"""
+  parser.add_argument(
+      '--enable-service-externalips',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=True)

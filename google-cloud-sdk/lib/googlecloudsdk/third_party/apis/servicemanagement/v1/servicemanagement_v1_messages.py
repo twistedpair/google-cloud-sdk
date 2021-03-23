@@ -848,10 +848,6 @@ class Diagnostic(_messages.Message):
   message = _messages.StringField(3)
 
 
-class DisableServiceResponse(_messages.Message):
-  r"""Operation payload for DisableService method."""
-
-
 class Documentation(_messages.Message):
   r"""`Documentation` provides the information for describing a service.
   Example: documentation: summary: > The Google Calendar API gives access to

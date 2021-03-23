@@ -73,12 +73,12 @@ class ChangesListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your
-      pagination token. In this way you can retrieve the complete contents of
-      even very large collections one page at a time. However, if the contents
-      of the collection change between the first and last paginated list
-      request, the set of all elements returned are an inconsistent view of
-      the collection. There is no way to retrieve a "snapshot" of collections
-      larger than the maximum page size.
+      pagination token. This lets you retrieve the complete contents of even
+      very large collections one page at a time. However, if the contents of
+      the collection change between the first and last paginated list request,
+      the set of all elements returned are an inconsistent view of the
+      collection. You cannot retrieve a "snapshot" of collections larger than
+      the maximum page size.
   """
 
   changes = _messages.MessageField('Change', 1, repeated=True)
@@ -1325,12 +1325,12 @@ class ManagedZoneOperationsListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your page
-      token. In this way you can retrieve the complete contents of even very
-      large collections one page at a time. However, if the contents of the
+      token. This lets you retrieve the complete contents of even very large
+      collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
       set of all elements returned are an inconsistent view of the collection.
-      There is no way to retrieve a consistent snapshot of a collection larger
-      than the maximum page size.
+      You cannot retrieve a consistent snapshot of a collection larger than
+      the maximum page size.
     operations: The operation resources.
   """
 
@@ -1450,8 +1450,8 @@ class ManagedZoneServiceDirectoryConfigNamespace(_messages.Message):
       Output only.
     kind: A string attribute.
     namespaceUrl: The fully qualified URL of the namespace associated with the
-      zone. This should be formatted like https://servicedirectory.googleapis.
-      com/v1/projects/{project}/locations/{location}/namespaces/{namespace}
+      zone. Format must be https://servicedirectory.googleapis.com/v1/projects
+      /{project}/locations/{location}/namespaces/{namespace}
   """
 
   deletionTime = _messages.StringField(1)
@@ -1469,12 +1469,12 @@ class ManagedZonesListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your page
-      token. In this way you can retrieve the complete contents of even very
-      large collections one page at a time. However, if the contents of the
+      token. This lets you the complete contents of even very large
+      collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
       set of all elements returned are an inconsistent view of the collection.
-      There is no way to retrieve a consistent snapshot of a collection larger
-      than the maximum page size.
+      You cannot retrieve a consistent snapshot of a collection larger than
+      the maximum page size.
   """
 
   header = _messages.MessageField('ResponseHeader', 1)
@@ -1588,12 +1588,12 @@ class PeeringZonesListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your page
-      token. In this way you can retrieve the complete contents of even very
-      large collections one page at a time. However, if the contents of the
+      token. This lets you the complete contents of even very large
+      collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
       set of all elements returned are an inconsistent view of the collection.
-      There is no way to retrieve a consistent snapshot of a collection larger
-      than the maximum page size.
+      You cannot retrieve a consistent snapshot of a collection larger than
+      the maximum page size.
     peeringZones: The active peering zone resources matching the request. Each
       ManagedZone has only the id field set.
   """
@@ -1613,12 +1613,12 @@ class PoliciesListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your page
-      token. In this way you can retrieve the complete contents of even very
-      large collections one page at a time. However, if the contents of the
+      token. This lets you the complete contents of even very large
+      collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
       set of all elements returned are an inconsistent view of the collection.
-      There is no way to retrieve a consistent snapshot of a collection larger
-      than the maximum page size.
+      You cannot retrieve a consistent snapshot of a collection larger than
+      the maximum page size.
     policies: The policy resources.
   """
 
@@ -1764,7 +1764,7 @@ class PolicyNetwork(_messages.Message):
 class Project(_messages.Message):
   r"""A project resource. The project is a top level container for resources
   including Cloud DNS ManagedZones. Projects can be created only in the APIs
-  console.
+  console. Next tag: 7.
 
   Fields:
     id: User assigned unique identifier for the resource (output only).
@@ -1901,12 +1901,12 @@ class ResponsePoliciesListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your page
-      token. In this way you can retrieve the complete contents of even very
-      large collections one page at a time. However, if the contents of the
+      token. This lets you the complete contents of even very large
+      collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
       set of all elements returned are an inconsistent view of the collection.
-      There is no way to retrieve a consistent snapshot of a collection larger
-      than the maximum page size.
+      You cannot retrieve a consistent snapshot of a collection larger than
+      the maximum page size.
     responsePolicies: The Response Policy resources.
   """
 
@@ -2040,12 +2040,12 @@ class ResponsePolicyRulesListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your page
-      token. In this way you can retrieve the complete contents of even very
-      large collections one page at a time. However, if the contents of the
+      token. This lets you the complete contents of even very large
+      collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
       set of all elements returned are an inconsistent view of the collection.
-      There is no way to retrieve a consistent snapshot of a collection larger
-      than the maximum page size.
+      You cannot retrieve a consistent snapshot of a collection larger than
+      the maximum page size.
     responsePolicyRules: The Response Policy Rule resources.
   """
 

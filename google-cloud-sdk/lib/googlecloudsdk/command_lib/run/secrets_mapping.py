@@ -29,7 +29,14 @@ class MountAll(object):
   MountAll means the mount path shall become a directory with all the secret
   versions in it, as opposed to being a file with one secret version.
   """
-  pass
+
+
+class Unset(object):
+  """A token for ReachableSecret.secret_version.
+
+  Unset means the user didn't set a version and we're leaving the behavior
+  (assume 'latest', error, etc) up to the service.
+  """
 
 
 class ReachableSecret(object):
@@ -51,7 +58,7 @@ class ReachableSecret(object):
         text.
     """
 
-    self._for_env = connector_name is None or not connector_name.startswith('/')
+    self._connector = connector_name
     self._InitWithLocalSecret(flag_value, connector_name)
 
   def _InitWithLocalSecret(self, flag_value, connector_name):
@@ -68,8 +75,8 @@ class ReachableSecret(object):
   def __repr__(self):
     # Used in testing.
     version_display = self.secret_version
-    if self.secret_version is MountAll:
-      version_display = 'MountAll'
+    if self.secret_version in [MountAll, Unset]:
+      version_display = version_display.__name__
 
     return ('<ReachableSecret '
             'name={secret_name} '
@@ -95,23 +102,28 @@ class ReachableSecret(object):
     Raises:
       ConfigurationError: If the key is required on this platform.
     """
-    if platforms.GetPlatform() == platforms.PLATFORM_MANAGED:
-      if self._for_env:
-        return 'latest'
-      else:  # for a mount point
-        return MountAll
+    if platforms.IsManaged():
+      return Unset
     else:  # for GKE+K8S
-      if self._for_env:
+      if not self._connector.startswith('/'):
         raise exceptions.ConfigurationError(
-            'Missing required item key for [{}].'.format(name))
+            'Missing required item key for the secret at [{}].'.format(name))
       else:  # for a mount point
         return MountAll
 
   def _AssertValidSecretKey(self, key):
-    if platforms.GetPlatform() == platforms.PLATFORM_MANAGED:
-      if not (key is MountAll or key.isdigit() or key == 'latest'):
+    if platforms.IsManaged():
+      if not (key is Unset or key.isdigit() or key == 'latest'):
         raise exceptions.ConfigurationError(
             "Secret key must be an integer or 'latest'.")
+
+  def _PathTail(self):
+    """Last path component of self._connector."""
+    if not self._connector.startswith('/'):
+      raise TypeError(
+          "Can't make SecretVolumeSource message for secret connected to env var %r"
+          % self._connector)
+    return self._connector.rsplit('/', 1)[-1]
 
   def AsSecretVolumeSource(self, resource):
     """Build message for adding to revision.template.volumes.secrets.
@@ -122,6 +134,21 @@ class ReachableSecret(object):
     Returns:
       messages.SecretVolumeSource
     """
+    if platforms.IsManaged():
+      return self._AsSecretVolumeSource_ManagedMode(resource)
+    else:
+      return self._AsSecretVolumeSource_NonManagedMode(resource)
+
+  def _AsSecretVolumeSource_ManagedMode(self, resource):
+    messages = resource.MessagesModule()
+    out = messages.SecretVolumeSource(secretName=self.secret_name)
+    item = messages.KeyToPath(path=self._PathTail())
+    if self.secret_version is not Unset:
+      item.key = self.secret_version
+    out.items.append(item)
+    return out
+
+  def _AsSecretVolumeSource_NonManagedMode(self, resource):
     messages = resource.MessagesModule()
     out = messages.SecretVolumeSource(secretName=self.secret_name)
     if self.secret_version is not MountAll:
@@ -139,6 +166,7 @@ class ReachableSecret(object):
       messages.EnvVarSource
     """
     messages = resource.MessagesModule()
-    return messages.EnvVarSource(
-        secretKeyRef=messages.SecretKeySelector(
-            name=self.secret_name, key=self.secret_version))
+    selector = messages.SecretKeySelector(name=self.secret_name)
+    if self.secret_version is not Unset:
+      selector.key = self.secret_version
+    return messages.EnvVarSource(secretKeyRef=selector)

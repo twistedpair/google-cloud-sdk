@@ -369,6 +369,10 @@
           "items": {
             "$ref": "GoogleCloudRecommenderV1alpha2RecommendationInsightReference"
           }
+        },
+        "xorGroupId": {
+          "description": "Mutually exclusive group ID. A non-empty ID indicates this recommendation belongs to a mutually exclusive group, where only one recommendation within is suggested to be applied. Unique per recommender.",
+          "type": "string"
         }
       }
     },
@@ -711,7 +715,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. `projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 2. `billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 3. `folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 4. `organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -897,7 +901,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. `projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 2. `billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 3. `folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 4. `organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1151,7 +1155,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. `projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 2. `billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 3. `folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 4. `organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
                           "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1309,7 +1313,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. `projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 2. `billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 3. `folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 4. `organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
                           "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1531,7 +1535,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. `projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 2. `billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 3. `folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 4. `organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
                           "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1689,7 +1693,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. `projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 2. `billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 3. `folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 4. `organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
                           "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1911,7 +1915,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. `projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 2. `billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 3. `folders\/[FOLDER_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` 4. `organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/insightTypes\/[INSIGHT_TYPE_ID]` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ INSIGHT_TYPE_ID refers to supported insight types: https:\/\/cloud.google.com\/recommender\/docs\/insights\/insight-types.",
                           "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/insightTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2069,7 +2073,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 2. \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 3. \"folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" 4. \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\" LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. `projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 2. `billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 3. `folders\/[FOLDER_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` 4. `organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ RECOMMENDER_ID refers to supported recommenders: https:\/\/cloud.google.com\/recommender\/docs\/recommenders.",
                           "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "location": "path",
                           "required": true,

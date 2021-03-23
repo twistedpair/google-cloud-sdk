@@ -748,9 +748,11 @@ class CloudidentityGroupsListRequest(_messages.Message):
       500 for `View.FULL`.
     pageToken: The `next_page_token` value returned from a previous list
       request, if any.
-    parent: Required. The parent resource under which to list all `Group`s.
-      Must be of the form `identitysources/{identity_source_id}` for external-
-      identity-mapped groups or `customers/{customer_id}` for Google Groups.
+    parent: Required. The parent resource under which to list all `Group`
+      resources. Must be of the form `identitysources/{identity_source_id}`
+      for external- identity-mapped groups or `customers/{customer_id}` for
+      Google Groups. The `customer_id` must begin with "C" (for example,
+      'C046psxkn').
     view: The level of detail to be returned. If unspecified, defaults to
       `View.BASIC`.
   """
@@ -971,9 +973,9 @@ class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Mess
     query: Required. A CEL expression that MUST include member specification
       AND label(s). This is a `required` field. Users can search on label
       attributes of groups. CONTAINS match ('in') is supported on labels.
-      Certain groups are uniquely identified by both a 'member_key_id' and a
-      'member_key_namespace', which requires an additional query input:
-      'member_key_namespace'. Example query: `member_key_id ==
+      Identity-mapped groups are uniquely identified by both a `member_key_id`
+      and a `member_key_namespace`, which requires an additional query input:
+      `member_key_namespace`. Example query: `member_key_id ==
       'member_key_id_value' && in labels`
   """
 
@@ -1040,7 +1042,8 @@ class CloudidentityGroupsSearchRequest(_messages.Message):
       Language](https://opensource.google/projects/cel). May only contain
       equality operators on the parent and inclusion operators on labels
       (e.g., `parent == 'customers/{customer_id}' &&
-      'cloudidentity.googleapis.com/groups.discussion_forum' in labels`).
+      'cloudidentity.googleapis.com/groups.discussion_forum' in labels`). The
+      `customer_id` must begin with "C" (for example, 'C046psxkn').
     view: The level of detail to be returned. If unspecified, defaults to
       `View.BASIC`.
   """
@@ -2034,9 +2037,7 @@ class Group(_messages.Message):
       removed once added.** Dynamic groups have a label with a key of
       `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
       for Cloud Search have a label with a key of `system/groups/external` and
-      an empty value. Examples:
-      {"cloudidentity.googleapis.com/groups.discussion_forum": ""} or
-      {"system/groups/external": ""}.
+      an empty value.
 
   Fields:
     additionalGroupKeys: Additional entity key aliases for a Group.
@@ -2057,9 +2058,7 @@ class Group(_messages.Message):
       removed once added.** Dynamic groups have a label with a key of
       `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups
       for Cloud Search have a label with a key of `system/groups/external` and
-      an empty value. Examples:
-      {"cloudidentity.googleapis.com/groups.discussion_forum": ""} or
-      {"system/groups/external": ""}.
+      an empty value.
     name: Output only. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Group`. Shall be of the form `groups/{group_id}`.
@@ -2067,6 +2066,7 @@ class Group(_messages.Message):
       this `Group` resides in the Cloud Identity resource hierarchy. Must be
       of the form `identitysources/{identity_source_id}` for external-
       identity-mapped groups or `customers/{customer_id}` for Google Groups.
+      The `customer_id` must begin with "C" (for example, 'C046psxkn').
     updateTime: Output only. The time when the `Group` was last updated.
   """
 
@@ -2082,9 +2082,7 @@ class Group(_messages.Message):
     removed once added.** Dynamic groups have a label with a key of
     `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups for
     Cloud Search have a label with a key of `system/groups/external` and an
-    empty value. Examples:
-    {"cloudidentity.googleapis.com/groups.discussion_forum": ""} or
-    {"system/groups/external": ""}.
+    empty value.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2241,7 +2239,7 @@ class ListGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.ListGroups.
 
   Fields:
-    groups: The `Group`s under the specified `parent`.
+    groups: The `Group` resources under the specified `parent`.
     nextPageToken: A continuation token to retrieve the next page of results,
       or empty if there are no more results available.
   """
@@ -2596,7 +2594,7 @@ class SearchGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.SearchGroups.
 
   Fields:
-    groups: The `Group`s that match the search query.
+    groups: The `Group` resources that match the search query.
     nextPageToken: A continuation token to retrieve the next page of results,
       or empty if there are no more results available.
   """

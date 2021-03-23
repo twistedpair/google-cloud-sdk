@@ -195,10 +195,14 @@ class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -763,6 +767,14 @@ class ServiceConfig(_messages.Message):
       tolerate. See the [Max
       Instances](https://cloud.google.com/functions/docs/max-instances) Guide
       for more details.
+    minInstanceCount: The limit on the minimum number of function instances
+      that may coexist at a given time. Function instances are kept in idle
+      state for a short period after they finished executing the request to
+      reduce cold start time for subsequent requests. Setting a minimum
+      instance count will ensure that the given number of instances are kept
+      running in idle state always. This can help with cold start times when
+      jump in incoming request count occurs after the idle instance would have
+      been stopped in the default case.
     service: Output only. Name of the service associated with a Function. The
       format of this field is
       `projects/{project}/locations/{region}/services/{service}`
@@ -841,12 +853,13 @@ class ServiceConfig(_messages.Message):
   environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 2)
   ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 3)
   maxInstanceCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  service = _messages.StringField(5)
-  serviceAccountEmail = _messages.StringField(6)
-  timeoutSeconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(8)
-  vpcConnector = _messages.StringField(9)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 10)
+  minInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  service = _messages.StringField(6)
+  serviceAccountEmail = _messages.StringField(7)
+  timeoutSeconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(9)
+  vpcConnector = _messages.StringField(10)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 11)
 
 
 class Source(_messages.Message):

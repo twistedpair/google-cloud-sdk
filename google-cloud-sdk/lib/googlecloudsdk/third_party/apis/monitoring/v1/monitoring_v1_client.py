@@ -80,7 +80,7 @@ class MonitoringV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing custom dashboard.This method requires the monitoring.dashboards.delete permission on the specified dashboard. For more information, see Google Cloud IAM (https://cloud.google.com/iam).
+      r"""Deletes an existing custom dashboard.This method requires the monitoring.dashboards.delete permission on the specified dashboard. For more information, see Cloud Identity and Access Management (https://cloud.google.com/iam).
 
       Args:
         request: (MonitoringProjectsDashboardsDeleteRequest) input message
@@ -107,7 +107,7 @@ class MonitoringV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Fetches a specific dashboard.This method requires the monitoring.dashboards.get permission on the specified dashboard. For more information, see Google Cloud IAM (https://cloud.google.com/iam).
+      r"""Fetches a specific dashboard.This method requires the monitoring.dashboards.get permission on the specified dashboard. For more information, see Cloud Identity and Access Management (https://cloud.google.com/iam).
 
       Args:
         request: (MonitoringProjectsDashboardsGetRequest) input message
@@ -134,7 +134,7 @@ class MonitoringV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the existing dashboards.This method requires the monitoring.dashboards.list permission on the specified project. For more information, see Google Cloud IAM (https://cloud.google.com/iam).
+      r"""Lists the existing dashboards.This method requires the monitoring.dashboards.list permission on the specified project. For more information, see Cloud Identity and Access Management (https://cloud.google.com/iam).
 
       Args:
         request: (MonitoringProjectsDashboardsListRequest) input message
@@ -161,7 +161,7 @@ class MonitoringV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Replaces an existing custom dashboard with a new definition.This method requires the monitoring.dashboards.update permission on the specified dashboard. For more information, see Google Cloud IAM (https://cloud.google.com/iam).
+      r"""Replaces an existing custom dashboard with a new definition.This method requires the monitoring.dashboards.update permission on the specified dashboard. For more information, see Cloud Identity and Access Management (https://cloud.google.com/iam).
 
       Args:
         request: (MonitoringProjectsDashboardsPatchRequest) input message

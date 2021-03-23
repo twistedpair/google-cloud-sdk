@@ -222,6 +222,18 @@
           "items": {
             "$ref": "ServiceIdentity"
           }
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the service was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the service was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -253,6 +265,18 @@
         "network": {
           "description": "Immutable. Specifies the Google Compute Engine Network (VPC) of the Endpoint. Project MUST be specified by project-number, project-id is rejected. Invalid networks (bad format) are rejected. Network and Project existence is not checked. Example: `projects\/project-number\/locations\/global\/networks\/my-network`",
           "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the endpoint was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the endpoint was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -286,6 +310,18 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the namespace was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the namespace was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -853,7 +889,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The standard list filter.",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
@@ -863,13 +899,13 @@
                   "type": "boolean"
                 },
                 "pageSize": {
-                  "description": "The standard list page size.",
+                  "description": "The maximum number of results to return. If not set, the service will select a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "The standard list page token.",
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }

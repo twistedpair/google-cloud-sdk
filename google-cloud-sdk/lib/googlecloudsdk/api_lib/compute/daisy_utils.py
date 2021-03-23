@@ -850,8 +850,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
                       no_guest_environment, can_ip_forward, deletion_protection,
                       description, labels, machine_type, network, network_tier,
                       subnet, private_network_ip, no_restart_on_failure, os,
-                      tags, zone, project, output_filter,
-                      release_track, hostname, no_address, byol):
+                      tags, zone, project, output_filter, release_track,
+                      hostname, no_address, byol, compute_service_account):
   """Run a OVF into VM instance import build on Google Cloud Build.
 
   Args:
@@ -889,6 +889,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
     no_address: Specifies that no external IP address will be assigned to the
       instances.
     byol: Specifies that you want to import an image with an existing license.
+    compute_service_account: Compute service account to be used for worker
+      instances.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -902,7 +904,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
 
   _CheckIamPermissions(project_id,
                        frozenset(IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
-                       frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT))
+                       frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT),
+                       compute_service_account)
 
   ovf_importer_args = []
   AppendArg(ovf_importer_args, 'instance-names', instance_name)
@@ -937,6 +940,9 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   AppendArg(ovf_importer_args, 'hostname', hostname)
   AppendArg(ovf_importer_args, 'client-version', config.CLOUD_SDK_VERSION)
   AppendBoolArg(ovf_importer_args, 'no-external-ip', no_address)
+  if compute_service_account:
+    AppendArg(ovf_importer_args, 'compute-service-account',
+              compute_service_account)
 
   build_tags = ['gce-daisy', 'gce-ovf-import']
 
@@ -1006,7 +1012,9 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
 
   _CheckIamPermissions(project_id,
                        frozenset(IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT),
-                       frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT))
+                       frozenset(IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT),
+                       args.compute_service_account
+                       if 'compute_service_account' in args else '')
 
   machine_type = None
   if args.machine_type or args.custom_cpu or args.custom_memory:
@@ -1049,6 +1057,10 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
     AppendArg(ovf_importer_args, 'release-track', release_track)
   AppendArg(ovf_importer_args, 'client-version', config.CLOUD_SDK_VERSION)
   AppendBoolArg(ovf_importer_args, 'no-external-ip', args.no_address)
+  if 'compute_service_account' in args:
+    AppendArg(ovf_importer_args, 'compute-service-account',
+              args.compute_service_account)
+
   build_tags = ['gce-daisy', 'gce-ovf-machine-image-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15

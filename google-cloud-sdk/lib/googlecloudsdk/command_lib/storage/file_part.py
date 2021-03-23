@@ -33,7 +33,7 @@ class FilePart:
   that all bytes have been uploaded.
   """
 
-  def __init__(self, stream, offset, length):
+  def __init__(self, stream, offset, length, digesters=None):
     """Initializes a FilePart instance.
 
     Args:
@@ -41,12 +41,15 @@ class FilePart:
       offset (int): The position (in bytes) in the original file that
         corresponds to the first byte of the FilePart.
       length: The total number of bytes in the FilePart.
+      digesters (dict[util.HashAlgorithm, hashlib hash object]): Values are
+        updated with with data as it's read.
     """
     self._stream = stream
     self._length = length
     self._start_byte = offset
     self._end_byte = self._start_byte + self._length
     self._stream.seek(self._start_byte)
+    self._digesters = digesters if digesters is not None else {}
 
   def tell(self):
     """Returns the current position relative to the part's start byte."""
@@ -57,7 +60,11 @@ class FilePart:
     if size < 0:
       size = self._length
     size = min(size, self._end_byte - self._stream.tell())
-    return self._stream.read(max(0, size))
+    data = self._stream.read(max(0, size))
+    if data:
+      for hash_object in self._digesters.values():
+        hash_object.update(data)
+    return data
 
   def seek(self, offset, whence=os.SEEK_SET):
     """Goes to a specific point in the stream.

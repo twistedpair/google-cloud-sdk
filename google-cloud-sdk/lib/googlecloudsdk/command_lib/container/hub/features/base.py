@@ -91,7 +91,7 @@ class DisableCommand(base.DeleteCommand):
     parser.add_argument(
         '--force',
         action='store_true',
-        help='Completely disable this feature, even if it is currently in use. '
+        help='Disable this feature, even if it is currently in use. '
         'Force disablement may result in unexpected behavior.')
 
   def RunCommand(self, args):
@@ -177,6 +177,17 @@ def CreateIdentityServiceFeatureSpec():
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   messages = client.MESSAGES_MODULE
   return messages.IdentityServiceFeatureSpec()
+
+
+def CreateServiceMeshFeatureSpec():
+  """Creates an empty Hub Feature Spec for the Service Mesh Feature.
+
+  Returns:
+    The empty Service Mesh Hub Feature Spec.
+  """
+  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
+  messages = client.MESSAGES_MODULE
+  return messages.ServiceMeshFeatureSpec()
 
 
 def CreateFeature(project, feature_id, feature_display_name, **kwargs):

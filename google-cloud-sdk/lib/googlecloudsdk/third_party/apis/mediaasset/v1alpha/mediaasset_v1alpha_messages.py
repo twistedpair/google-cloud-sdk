@@ -1118,6 +1118,28 @@ class ListAssetTypesResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListAssetsRequest(_messages.Message):
+  r"""Request message for AssetsService.ListAssets.
+
+  Fields:
+    filter: The filter to apply to list results.
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more realms left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    readMask: Extra fields to be poplulated as part of the asset resource in
+      the response. Currently, this only supports populating asset metadata
+      (no wildcards and no contents of the entire asset).
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  readMask = _messages.StringField(4)
+
+
 class ListAssetsResponse(_messages.Message):
   r"""Response message for AssetsService.ListAssets.
 
@@ -1411,6 +1433,20 @@ class MediaassetProjectsLocationsAssetTypesAssetsLroDeleteRequest(_messages.Mess
   etag = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class MediaassetProjectsLocationsAssetTypesAssetsLroListRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsLroListRequest object.
+
+  Fields:
+    listAssetsRequest: A ListAssetsRequest resource to be passed as the
+      request body.
+    parent: The parent resource name, in the following form:
+      `projects/{project}/locations/{location}/assetTypes/{type}`.
+  """
+
+  listAssetsRequest = _messages.MessageField('ListAssetsRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsLroUpdateRequest(_messages.Message):
@@ -1947,12 +1983,16 @@ class MediaassetProjectsLocationsListRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     includeUnrevealedLocations: If true, the returned list will include
       locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -2185,17 +2225,12 @@ class MetadataConfig(_messages.Message):
   Fields:
     complexType: Reference to the complex type name, in the following form:
       `projects/{project}/locations/{location}/complexTypes/{name}`.
-    manageGcsContent: If true, any Cloud Storage content referenced in this
-      metadata block will be managed by the media asset service (validated,
-      deleted etc.). This field is temporarily hidden from the public until
-      the feature is supported.
     required: If true, this asset metadata is required to be specified during
       asset creation.
   """
 
   complexType = _messages.StringField(1)
-  manageGcsContent = _messages.BooleanField(2)
-  required = _messages.BooleanField(3)
+  required = _messages.BooleanField(2)
 
 
 class MetadataInfo(_messages.Message):

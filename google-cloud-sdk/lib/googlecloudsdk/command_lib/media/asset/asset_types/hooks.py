@@ -24,6 +24,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.media.asset import utils
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import resources
 
 
 def ParseCreateConfigFile(ref, args, req):
@@ -69,3 +70,40 @@ def ParseUpdateConfigFile(ref, args, req):
   req.assetType = at
   req.updateMask = ','.join(update_mask)
   return req
+
+
+def GetExistingResource(api_version, request_message):
+  """Get the modified resource.
+
+  Args:
+    api_version: the request's release track.
+    request_message: request message type in the python client.
+
+  Returns:
+    The modified resource.
+  """
+  return utils.GetClient(api_version).projects_locations_assetTypes.Get(
+      request_message)
+
+
+def ProcessOutput(response, args):
+  """Wait for operations to finish and return the resource."""
+  api_version = utils.GetApiVersionFromArgs(args)
+  utils.WaitForOperation(response, api_version)
+
+  project = utils.GetProject()
+  location = utils.GetLocation(args)
+  resource_ref = resources.REGISTRY.Create(
+      'mediaasset.projects.locations.assetTypes',
+      projectsId=project,
+      locationsId=location,
+      assetTypesId=args.asset_type)
+
+  if 'delete' in args.command_path:
+    # No need to send another get request to check for the deleted complex type.
+    return response
+  request_message = utils.GetApiMessage(
+      api_version).MediaassetProjectsLocationsAssetTypesGetRequest(
+          name=resource_ref.RelativeName())
+
+  return GetExistingResource(api_version, request_message)

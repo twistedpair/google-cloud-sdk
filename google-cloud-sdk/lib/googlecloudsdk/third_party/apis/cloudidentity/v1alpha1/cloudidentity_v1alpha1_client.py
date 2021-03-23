@@ -440,7 +440,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the `Group`s under a customer or namespace.
+      r"""Lists the `Group` resources under a customer or namespace.
 
       Args:
         request: (CloudidentityGroupsListRequest) input message
@@ -519,7 +519,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""Searches for `Group`s matching a specified query.
+      r"""Searches for `Group` resources matching a specified query.
 
       Args:
         request: (CloudidentityGroupsSearchRequest) input message

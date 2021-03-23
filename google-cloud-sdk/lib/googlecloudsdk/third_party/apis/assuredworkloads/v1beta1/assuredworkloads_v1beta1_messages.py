@@ -338,6 +338,8 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
       FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
       US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
         controls
+      HIPAA: Health Insurance Portability and Accountability Act controls
+      HITRUST: Health Information Trust Alliance controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -345,6 +347,8 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     FEDRAMP_HIGH = 3
     FEDRAMP_MODERATE = 4
     US_REGIONAL_ACCESS = 5
+    HIPAA = 6
+    HITRUST = 7
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -433,6 +437,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
       US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
         controls
+      HIPAA: Health Insurance Portability and Accountability Act controls
+      HITRUST: Health Information Trust Alliance controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -440,6 +446,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     FEDRAMP_HIGH = 3
     FEDRAMP_MODERATE = 4
     US_REGIONAL_ACCESS = 5
+    HIPAA = 6
+    HITRUST = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

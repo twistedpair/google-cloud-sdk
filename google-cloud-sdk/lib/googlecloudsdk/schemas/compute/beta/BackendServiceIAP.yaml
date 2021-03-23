@@ -26,13 +26,19 @@ properties:
     items:
       type: string
   enabled:
-    description: A boolean attribute.
+    description: |-
+      Whether the serving infrastructure will authenticate and authorize all
+      incoming requests. If true, the oauth2ClientId and oauth2ClientSecret
+      fields must be non-empty.
     type: boolean
   oauth2ClientId:
-    description: A string attribute.
+    description: OAuth2 client ID to use for the authentication flow.
     type: string
   oauth2ClientSecret:
-    description: A string attribute.
+    description: |-
+      OAuth2 client secret to use for the authentication flow. For security
+      reasons, this value cannot be retrieved via the API. Instead, the SHA-256
+      hash of the value is returned in the oauth2ClientSecretSha256 field.
     type: string
   oauth2ClientSecretSha256:
     description: |-

@@ -168,3 +168,13 @@ def AddRateLimitOptions(parser):
             '``rate_based_ban". If specified, determines the time (in seconds) '
             'the traffic will continue to be banned by the rate limit after '
             'the rate falls below the threshold.'))
+
+
+def AddRequestHeadersToAdd(parser):
+  """Adds request-headers-to-add argument to the argparse."""
+  parser.add_argument(
+      '--request-headers-to-add',
+      metavar='REQUEST_HEADERS_TO_ADD',
+      type=arg_parsers.ArgDict(),
+      help=('A dict of headers names and values to add to requests that match '
+            'this rule.'))

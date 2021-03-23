@@ -269,8 +269,7 @@ class UpdateManager(object):
     # pylint: disable=protected-access
     manager._PerformUpdateCheck(command_path, force=force)
 
-  def __init__(self, sdk_root=None, url=None, platform_filter=None, warn=True,
-               enable_fallback=False):
+  def __init__(self, sdk_root=None, url=None, platform_filter=None, warn=True):
     """Creates a new UpdateManager.
 
     Args:
@@ -287,8 +286,6 @@ class UpdateManager(object):
         to False when using this class for background operations like checking
         for updates so the user only sees the warnings when they are actually
         dealing directly with the component manager.
-      enable_fallback: bool, True to enable fallback from darwin arm64 version
-        to darwin x86_64 version of the component.
 
     Raises:
       local_state.InvalidSDKRootError: If the Cloud SDK root cannot be found.
@@ -319,13 +316,18 @@ class UpdateManager(object):
     self.__text_wrapper = textwrap.TextWrapper(replace_whitespace=False,
                                                drop_whitespace=False)
     self.__warn = warn
-    self.__enable_fallback = (
-        enable_fallback and platform_filter and
-        platform_filter.operating_system == platforms.OperatingSystem.MACOSX and
-        platform_filter.architecture == platforms.Architecture.arm)
+    # True to fallback from darwin arm64 version to darwin x86_64 version
+    # of the component.
+    self.__enable_fallback = self._EnableFallback()
 
     fixed_version = properties.VALUES.component_manager.fixed_sdk_version.Get()
     self.__fixed_version = fixed_version
+
+  def _EnableFallback(self):
+    # pylint: disable=line-too-long
+    return (self.__platform_filter and
+            self.__platform_filter.operating_system == platforms.OperatingSystem.MACOSX and
+            self.__platform_filter.architecture == platforms.Architecture.arm)
 
   def __Write(self, stream, msg='', word_wrap=False):
     """Writes the given message to the out stream with a new line.
@@ -639,8 +641,7 @@ version [{1}].  To clear your fixed version setting, run:
     latest_snapshot = self._GetLatestSnapshot(version=version,
                                               command_path=command_path)
     diff = install_state.DiffCurrentState(
-        latest_snapshot, platform_filter=self.__platform_filter,
-        enable_fallback=self.__enable_fallback)
+        latest_snapshot, platform_filter=self.__platform_filter)
     return install_state, diff
 
   def GetCurrentVersionsInformation(self, include_hidden=False):
@@ -727,7 +728,7 @@ version [{1}].  To clear your fixed version setting, run:
     install_state = self._GetInstallState()
     to_print = install_state.Snapshot().CreateComponentInfos(
         platform_filter=self.__platform_filter)
-    if self.__enable_fallback:
+    if self._EnableFallback():
       native_ids = set(c.id for c in to_print)
       darwin_x86_64_all = install_state.Snapshot().CreateComponentInfos(
           platform_filter=self.DARWIN_X86_64)
@@ -945,6 +946,9 @@ version [{1}].  To clear your fixed version setting, run:
     to_remove = diff.ToRemove(update_seed)
     to_install = diff.ToInstall(update_seed)
 
+    # Deal with bad install state of kubectl component on darwin-arm machines
+    self._HandleBadComponentInstallState(update_seed, to_install)
+
     self.__Write(log.status)
     if not to_remove and not to_install:
       self.__Write(log.status, 'All components are up to date.')
@@ -1076,6 +1080,19 @@ To revert your SDK to the previously installed version, you may run:
   """.format('\n  '.join(duplicate_commands)))
 
     return True
+
+  def _HandleBadComponentInstallState(self, update_seed, to_install):
+    """Deal with bad install state of kubectl component on darwin-arm machines.
+
+    Args:
+      update_seed: list of str, A list of component ids to update.
+      to_install: set of str, A set of component ids to install.
+
+    """
+    if self._EnableFallback() and 'kubectl' in set(update_seed) | to_install:
+      if not os.path.isfile(self.__sdk_root + '/bin/kubectl'):
+        # Change to kubectl-darwin-arm when the component is available.
+        to_install.add('kubectl-darwin-x86_64')
 
   def _HandleInvalidUpdateSeeds(self, diff, version, update_seed):
     """Checks that the update seeds are valid components.
@@ -1231,7 +1248,7 @@ To revert your SDK to the previously installed version, you may run:
 
     to_remove = snapshot.ConsumerClosureForComponents(
         ids, platform_filter=self.__platform_filter)
-    if self.__enable_fallback:
+    if self._EnableFallback():
       to_remove |= snapshot.ConsumerClosureForComponents(
           ids, platform_filter=self.DARWIN_X86_64)
     if not to_remove:

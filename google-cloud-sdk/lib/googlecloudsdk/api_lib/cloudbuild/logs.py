@@ -48,12 +48,28 @@ and set:
   export CLOUDSDK_PYTHON_SITEPACKAGES=1
 """
 
+DEFAULT_LOGS_BUCKET_IS_OUTSIDE_SECURITY_PERIMETER_TEXT = """
+The build is running, and logs are being written to the default logs bucket.
+Unfortunately, the default logs bucket is always outside any VPC-SC security
+perimeter, so this tool cannot stream the logs for you.
+
+If you want your logs saved inside your VPC-SC perimeter, use your own bucket.
+See https://cloud.google.com/build/docs/securing-builds/store-manage-build-logs.
+"""
+
 
 class NoLogsBucketException(exceptions.Error):
 
   def __init__(self):
     msg = 'Build does not specify logsBucket, unable to stream logs'
     super(NoLogsBucketException, self).__init__(msg)
+
+
+class DefaultLogsBucketIsOutsideSecurityPerimeterException(exceptions.Error):
+
+  def __init__(self):
+    super(DefaultLogsBucketIsOutsideSecurityPerimeterException,
+          self).__init__(DEFAULT_LOGS_BUCKET_IS_OUTSIDE_SECURITY_PERIMETER_TEXT)
 
 
 Response = collections.namedtuple('Response', ['status', 'headers', 'body'])
@@ -231,19 +247,18 @@ class GCLLogTailer(TailerBase):
     """Print GCL logs to the console."""
     parent = 'projects/{project_id}'.format(project_id=self.project_id)
 
-    log_filter = ('logName="projects/{project_id}/logs/cloudbuild" AND '
-                  'resource.type="build" AND '
-                  # timestamp needed for faster querying in GCL
-                  'timestamp>="{timestamp}" AND '
-                  'resource.labels.build_id="{build_id}"').format(
-                      project_id=self.project_id,
-                      timestamp=self.timestamp,
-                      build_id=self.build_id)
+    log_filter = (
+        'logName="projects/{project_id}/logs/cloudbuild" AND '
+        'resource.type="build" AND '
+        # timestamp needed for faster querying in GCL
+        'timestamp>="{timestamp}" AND '
+        'resource.labels.build_id="{build_id}"').format(
+            project_id=self.project_id,
+            timestamp=self.timestamp,
+            build_id=self.build_id)
 
     output_logs = common.FetchLogs(
-        log_filter=log_filter,
-        order_by='asc',
-        parent=parent)
+        log_filter=log_filter, order_by='asc', parent=parent)
 
     self._PrintFirstLine()
 
@@ -415,7 +430,15 @@ class ThreadInterceptor(threading.Thread):
   def run(self):
     try:
       self.target()
-    except (api_exceptions.HttpError, api_exceptions.CommunicationError) as e:
+    except api_exceptions.HttpError as e:
+      if e.status_code == 403:
+        # The only way to successfully create a build and then be unable to read
+        # the logs bucket is if you are using the default logs bucket and
+        # VPC-SC.
+        self.exception = DefaultLogsBucketIsOutsideSecurityPerimeterException()
+      else:
+        self.exception = e
+    except api_exceptions.CommunicationError as e:
       self.exception = e
 
 

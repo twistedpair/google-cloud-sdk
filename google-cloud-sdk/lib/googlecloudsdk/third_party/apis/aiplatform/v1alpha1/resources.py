@@ -499,17 +499,24 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_STUDIES = (
       'projects.locations.studies',
-      'projects/{projectsId}/locations/{locationsId}/studies/{studiesId}',
-      {},
-      ['projectsId', 'locationsId', 'studiesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/studies/'
+              '{studiesId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_STUDIES_TRIALS = (
       'projects.locations.studies.trials',
-      'projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/'
-      'trials/{trialsId}',
-      {},
-      ['projectsId', 'locationsId', 'studiesId', 'trialsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/studies/'
+              '{studiesId}/trials/{trialsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_STUDIES_TRIALS_OPERATIONS = (

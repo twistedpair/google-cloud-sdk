@@ -23,6 +23,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import io
 import os
 import sys
 
@@ -97,6 +98,31 @@ def _UploadGsutil(files, destination):
     raise dp_exceptions.FileUploadError(
         "Failed to upload files ['{0}'] to '{1}' using gsutil.".format(
             "', '".join(files), destination))
+
+
+def ReadObject(object_url, storage_client=None):
+  """Reads an object's content from GCS.
+
+  Args:
+    object_url: The URL of the object to be read. Must have "gs://" prefix.
+    storage_client: Storage api client used to read files from gcs.
+
+  Raises:
+    ObjectReadError:
+      If the read of GCS object is not successful.
+
+  Returns:
+    A str for the content of the GCS object.
+  """
+  client = storage_client or storage_api.StorageClient()
+  object_ref = storage_util.ObjectReference.FromUrl(object_url)
+  try:
+    bytes_io = client.ReadObject(object_ref)
+    wrapper = io.TextIOWrapper(bytes_io, encoding='utf-8')
+    return wrapper.read()
+  except exceptions.BadFileException:
+    raise dp_exceptions.ObjectReadError(
+        "Failed to read file '{0}'.".format(object_url))
 
 
 def GetObjectRef(path, messages):

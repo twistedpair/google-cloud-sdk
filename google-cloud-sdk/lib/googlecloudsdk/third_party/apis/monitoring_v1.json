@@ -1147,7 +1147,7 @@
                 "https://www.googleapis.com/auth/monitoring",
                 "https://www.googleapis.com/auth/monitoring.read"
               ],
-              "description": "Lists the existing dashboards.This method requires the monitoring.dashboards.list permission on the specified project. For more information, see Google Cloud IAM (https:\/\/cloud.google.com\/iam)."
+              "description": "Lists the existing dashboards.This method requires the monitoring.dashboards.list permission on the specified project. For more information, see Cloud Identity and Access Management (https:\/\/cloud.google.com\/iam)."
             },
             "get": {
               "id": "monitoring.projects.dashboards.get",
@@ -1174,7 +1174,7 @@
                 "https://www.googleapis.com/auth/monitoring",
                 "https://www.googleapis.com/auth/monitoring.read"
               ],
-              "description": "Fetches a specific dashboard.This method requires the monitoring.dashboards.get permission on the specified dashboard. For more information, see Google Cloud IAM (https:\/\/cloud.google.com\/iam)."
+              "description": "Fetches a specific dashboard.This method requires the monitoring.dashboards.get permission on the specified dashboard. For more information, see Cloud Identity and Access Management (https:\/\/cloud.google.com\/iam)."
             },
             "delete": {
               "id": "monitoring.projects.dashboards.delete",
@@ -1201,7 +1201,7 @@
                 "https://www.googleapis.com/auth/monitoring",
                 "https://www.googleapis.com/auth/monitoring.write"
               ],
-              "description": "Deletes an existing custom dashboard.This method requires the monitoring.dashboards.delete permission on the specified dashboard. For more information, see Google Cloud IAM (https:\/\/cloud.google.com\/iam)."
+              "description": "Deletes an existing custom dashboard.This method requires the monitoring.dashboards.delete permission on the specified dashboard. For more information, see Cloud Identity and Access Management (https:\/\/cloud.google.com\/iam)."
             },
             "patch": {
               "id": "monitoring.projects.dashboards.patch",
@@ -1231,7 +1231,7 @@
                 "https://www.googleapis.com/auth/monitoring",
                 "https://www.googleapis.com/auth/monitoring.write"
               ],
-              "description": "Replaces an existing custom dashboard with a new definition.This method requires the monitoring.dashboards.update permission on the specified dashboard. For more information, see Google Cloud IAM (https:\/\/cloud.google.com\/iam)."
+              "description": "Replaces an existing custom dashboard with a new definition.This method requires the monitoring.dashboards.update permission on the specified dashboard. For more information, see Cloud Identity and Access Management (https:\/\/cloud.google.com\/iam)."
             }
           }
         }

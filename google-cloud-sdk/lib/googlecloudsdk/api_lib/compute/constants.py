@@ -158,6 +158,7 @@ PUBLIC_IMAGE_PROJECTS = [
     'suse-cloud',
     'suse-sap-cloud',
     'ubuntu-os-cloud',
+    'ubuntu-os-pro-cloud',
 ] + WINDOWS_IMAGE_PROJECTS
 PREVIEW_IMAGE_PROJECTS = []
 

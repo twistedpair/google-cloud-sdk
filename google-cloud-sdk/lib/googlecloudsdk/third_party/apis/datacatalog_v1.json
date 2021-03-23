@@ -262,7 +262,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the entry group in URL format. Example: * projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id} Note that this EntryGroup and its child resources may not actually be stored in the location in this name.",
+          "description": "The resource name of the entry group in URL format. Example: `projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}` Note: The entry group itself and its child resources might not be stored in the location specified in its name.",
           "type": "string"
         },
         "displayName": {
@@ -334,12 +334,12 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The Data Catalog resource name of the entry in URL format. Example: * projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id} Note that this Entry and its child resources may not actually be stored in the location in this name.",
+          "description": "Output only. The resource name of an entry in URL format. Example: `projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}` Note: The entry itself and its child resources might not be stored in the location specified in its name.",
           "readOnly": true,
           "type": "string"
         },
         "linkedResource": {
-          "description": "The resource this metadata entry refers to. For Google Cloud Platform resources, `linked_resource` is the [full name of the resource](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name). For example, the `linked_resource` for a table resource from BigQuery is: * \/\/bigquery.googleapis.com\/projects\/projectId\/datasets\/datasetId\/tables\/tableId Output only when Entry is of type in the EntryType enum. For entries with user_specified_type, this field is optional and defaults to an empty string.",
+          "description": "The resource this metadata entry refers to. For Google Cloud Platform resources, `linked_resource` is the [full name of the resource](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name). For example, the `linked_resource` for a table resource from BigQuery is: `\/\/bigquery.googleapis.com\/projects\/{projectId}\/datasets\/{datasetId}\/tables\/{tableId}` Output only when entry is one of the types in the `EntryType` enum. For entries with a `user_specified_type`, this field is optional and defaults to an empty string. The resource string must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), periods (.), colons (:), slashes (\/), dashes (-), and hashes (#). The maximum size is 200 bytes when encoded in UTF-8.",
           "type": "string"
         },
         "fullyQualifiedName": {
@@ -420,11 +420,11 @@
           "$ref": "GoogleCloudDatacatalogV1DatabaseTableSpec"
         },
         "displayName": {
-          "description": "Display information such as title and description. A short name to identify the entry, for example, \"Analytics Data - Jan 2011\". Default value is an empty string.",
+          "description": "Display name of an entry. The name must contain only Unicode letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and can't start or end with spaces. The maximum size is 200 bytes when encoded in UTF-8. Default value is an empty string.",
           "type": "string"
         },
         "description": {
-          "description": "Entry description, which can consist of several sentences or paragraphs that describe entry contents. Default value is an empty string.",
+          "description": "Entry description that can consist of several sentences or paragraphs that describe entry contents. The description must not contain Unicode non-characters as well as C0 and C1 control codes except tabs (HT), new lines (LF), carriage returns (CR), and page breaks (FF). The maximum size is 2000 bytes when encoded in UTF-8. Default value is an empty string.",
           "type": "string"
         },
         "schema": {
@@ -644,7 +644,7 @@
       "type": "object",
       "properties": {
         "columns": {
-          "description": "The unified GoogleSQL-like schema of columns. A maximum of 10,000 columns and sub-columns can be specified.",
+          "description": "The unified GoogleSQL-like schema of columns. The overall maximum number of columns and nested columns is 10,000. The maximum nested depth is 15 levels.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDatacatalogV1ColumnSchema"
@@ -662,19 +662,19 @@
       "type": "object",
       "properties": {
         "column": {
-          "description": "Required. Name of the column.",
+          "description": "Required. Name of the column. Must be a UTF-8 string without dots (.). The maximum size is 64 bytes.",
           "type": "string"
         },
         "type": {
-          "description": "Required. Type of the column.",
+          "description": "Required. Type of the column. Must be a UTF-8 string with the maximum size of 128 bytes.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. Description of the column. Default value is an empty string.",
+          "description": "Optional. Description of the column. Default value is an empty string. The description must be a UTF-8 string with the maximum size of 2000 bytes.",
           "type": "string"
         },
         "mode": {
-          "description": "Optional. A column's mode indicates whether the values in this column are required, nullable, etc. Only `NULLABLE`, `REQUIRED` and `REPEATED` are supported. Default mode is `NULLABLE`.",
+          "description": "Optional. A column's mode indicates if values in this column are required, nullable, or repeated. Only `NULLABLE`, `REQUIRED`, and `REPEATED` values are supported. Default mode is `NULLABLE`.",
           "type": "string"
         },
         "subcolumns": {
@@ -820,11 +820,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the tag template in URL format. Example: * projects\/{project_id}\/locations\/{location}\/tagTemplates\/{tag_template_id} Note that this TagTemplate and its child resources may not actually be stored in the location in this name.",
+          "description": "The resource name of the tag template in URL format. Example: `projects\/{project_id}\/locations\/{location}\/tagTemplates\/{tag_template_id}` Note: The tag template itself and its child resources might not be stored in the location specified in its name.",
           "type": "string"
         },
         "displayName": {
-          "description": "The display name for this template. Defaults to an empty string.",
+          "description": "Display name for this template. Defaults to an empty string. The name must contain only Unicode letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and can't start or end with spaces. The maximum length is 200 characters.",
           "type": "string"
         },
         "fields": {
@@ -842,12 +842,12 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the tag template field in URL format. Example: * projects\/{project_id}\/locations\/{location}\/tagTemplates\/{tag_template}\/fields\/{field} Note that this TagTemplateField may not actually be stored in the location in this name.",
+          "description": "Output only. The resource name of the tag template field in URL format. Example: `projects\/{project_id}\/locations\/{location}\/tagTemplates\/{tag_template}\/fields\/{field}` Note: The `TagTemplateField` itself might not be stored in the location specified in its name. The name must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_), and must start with a letter or underscore. The maximum length is 64 characters.",
           "readOnly": true,
           "type": "string"
         },
         "displayName": {
-          "description": "The display name for this field. Defaults to an empty string.",
+          "description": "The display name for this field. Defaults to an empty string. The name must contain only Unicode letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and can't start or end with spaces. The maximum length is 200 characters.",
           "type": "string"
         },
         "type": {
@@ -902,6 +902,7 @@
       "type": "object",
       "properties": {
         "allowedValues": {
+          "description": "The set of allowed values for this enum. This set must not be empty and can include up to 100 allowed values. The display names of the values in this set must not be empty and must be case-insensitively unique within this set. The order of items in this set is preserved. This field can be used to create, remove and reorder enum values. To rename enum values, use the `RenameTagTemplateFieldEnumValue` method.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDatacatalogV1FieldTypeEnumTypeEnumValue"
@@ -914,7 +915,7 @@
       "type": "object",
       "properties": {
         "displayName": {
-          "description": "Required. The display name of the enum value. Must not be an empty string.",
+          "description": "Required. The display name of the enum value. Must not be an empty string. The name must contain only Unicode letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and can't start or end with spaces. The maximum length is 200 characters.",
           "type": "string"
         }
       }
@@ -947,11 +948,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the tag in URL format. Example: * projects\/{project_id}\/locations\/{location}\/entrygroups\/{entry_group_id}\/entries\/{entry_id}\/tags\/{tag_id} where `tag_id` is a system-generated identifier. Note that this Tag may not actually be stored in the location in this name.",
+          "description": "The resource name of the tag in URL format. Example: `projects\/{project_id}\/locations\/{location}\/entrygroups\/{entry_group_id}\/entries\/{entry_id}\/tags\/{tag_id}` where `tag_id` is a system-generated identifier. Note: The tag itself might not be stored in the location specified in its name.",
           "type": "string"
         },
         "template": {
-          "description": "Required. The resource name of the tag template that this tag uses. Example: * projects\/{project_id}\/locations\/{location}\/tagTemplates\/{tag_template_id} This field cannot be modified after creation.",
+          "description": "Required. The resource name of the tag template that this tag uses. Example: `projects\/{project_id}\/locations\/{location}\/tagTemplates\/{tag_template_id}` This field cannot be modified after creation.",
           "type": "string"
         },
         "templateDisplayName": {
@@ -960,7 +961,7 @@
           "type": "string"
         },
         "column": {
-          "description": "Resources like Entry can have schemas associated with them. This scope allows users to attach tags to an individual column based on that schema. For attaching a tag to a nested column, use `.` to separate the column names. Example: * `outer_column.inner_column`",
+          "description": "Resources like entry can have schemas associated with them. This scope allows users to attach tags to an individual column based on that schema. To attach a tag to a nested column, separate column names with a dot (`.`). Example: `column.nested_column`.",
           "type": "string"
         },
         "fields": {
@@ -992,7 +993,7 @@
           "type": "string"
         },
         "boolValue": {
-          "description": "Holds the value for a tag field with boolean type.",
+          "description": "Holds the value for a tag field with boolean type. The maximum length is 2000 UTF-8 characters.",
           "type": "boolean"
         },
         "timestampValue": {
@@ -1456,14 +1457,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the project this entry group is in. Example: * projects\/{project_id}\/locations\/{location} Note that this EntryGroup and its child resources may not actually be stored in the location in this name.",
+                      "description": "Required. The name of the project this entry group belongs to. Example: `projects\/{project_id}\/locations\/{location}` Note: The entry group itself and its child resources might not be stored in the location specified in its name.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "entryGroupId": {
-                      "description": "Required. The id of the entry group to create. The id must begin with a letter or underscore, contain only English letters, numbers and underscores, and be at most 64 characters.",
+                      "description": "Required. The ID of the entry group to create. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and must start with a letter or underscore. The maximum size is 64 bytes when encoded in UTF-8.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1520,7 +1521,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the entry group in URL format. Example: * projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id} Note that this EntryGroup and its child resources may not actually be stored in the location in this name.",
+                      "description": "The resource name of the entry group in URL format. Example: `projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}` Note: The entry group itself and its child resources might not be stored in the location specified in its name.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1709,14 +1710,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The name of the entry group this entry is in. Example: * projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id} Note that this Entry and its child resources may not actually be stored in the location in this name.",
+                          "description": "Required. The name of the entry group this entry belongs to. Example: `projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}` Note: The entry itself and its child resources might not be stored in the location specified in its name.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "entryId": {
-                          "description": "Required. The id of the entry to create.",
+                          "description": "Required. The ID of the entry to create. The ID must contain only letters (a-z, A-Z), numbers (0-9), and underscores (_). The maximum size is 64 bytes when encoded in UTF-8.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1742,7 +1743,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The Data Catalog resource name of the entry in URL format. Example: * projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id} Note that this Entry and its child resources may not actually be stored in the location in this name.",
+                          "description": "Output only. The resource name of an entry in URL format. Example: `projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}` Note: The entry itself and its child resources might not be stored in the location specified in its name.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1929,7 +1930,7 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "parent": {
-                              "description": "Required. The name of the resource to attach this tag to. Tags can be attached to Entries. Example: * projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id} Note that this Tag and its child resources may not actually be stored in the location in this name.",
+                              "description": "Required. The name of the resource to attach this tag to. Tags can be attached to entries. An entry can have up to 1000 attached tags. Example: `projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}` Note: The tag and its child resources might not be stored in the location specified in its name.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -1957,7 +1958,7 @@
                           "httpMethod": "PATCH",
                           "parameters": {
                             "name": {
-                              "description": "The resource name of the tag in URL format. Example: * projects\/{project_id}\/locations\/{location}\/entrygroups\/{entry_group_id}\/entries\/{entry_id}\/tags\/{tag_id} where `tag_id` is a system-generated identifier. Note that this Tag may not actually be stored in the location in this name.",
+                              "description": "The resource name of the tag in URL format. Example: `projects\/{project_id}\/locations\/{location}\/entrygroups\/{entry_group_id}\/entries\/{entry_id}\/tags\/{tag_id}` where `tag_id` is a system-generated identifier. Note: The tag itself might not be stored in the location specified in its name.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+\/tags\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -2058,7 +2059,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The name of the resource to attach this tag to. Tags can be attached to Entries. Example: * projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id} Note that this Tag and its child resources may not actually be stored in the location in this name.",
+                          "description": "Required. The name of the resource to attach this tag to. Tags can be attached to entries. An entry can have up to 1000 attached tags. Example: `projects\/{project_id}\/locations\/{location}\/entryGroups\/{entry_group_id}\/entries\/{entry_id}` Note: The tag and its child resources might not be stored in the location specified in its name.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2086,7 +2087,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The resource name of the tag in URL format. Example: * projects\/{project_id}\/locations\/{location}\/entrygroups\/{entry_group_id}\/entries\/{entry_id}\/tags\/{tag_id} where `tag_id` is a system-generated identifier. Note that this Tag may not actually be stored in the location in this name.",
+                          "description": "The resource name of the tag in URL format. Example: `projects\/{project_id}\/locations\/{location}\/entrygroups\/{entry_group_id}\/entries\/{entry_id}\/tags\/{tag_id}` where `tag_id` is a system-generated identifier. Note: The tag itself might not be stored in the location specified in its name.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/tags\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2194,7 +2195,7 @@
                       "type": "string"
                     },
                     "tagTemplateId": {
-                      "description": "Required. The id of the tag template to create.",
+                      "description": "Required. The ID of the tag template to create. The ID must contain only lowercase letters (a-z), numbers (0-9), or underscores (_), and must start with a letter or underscore. The maximum size is 64 bytes when encoded in UTF-8.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2245,7 +2246,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the tag template in URL format. Example: * projects\/{project_id}\/locations\/{location}\/tagTemplates\/{tag_template_id} Note that this TagTemplate and its child resources may not actually be stored in the location in this name.",
+                      "description": "The resource name of the tag template in URL format. Example: `projects\/{project_id}\/locations\/{location}\/tagTemplates\/{tag_template_id}` Note: The tag template itself and its child resources might not be stored in the location specified in its name.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tagTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,

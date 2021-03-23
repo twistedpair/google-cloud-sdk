@@ -178,4 +178,5 @@ SCHEMA = s.Message(
     version=s.Value('id', converter=c.ToJsonString),
     vm=s.Value(),
     vm_settings=s.Map('beta_settings'),
-    vpc_access_connector=s.Message(name=s.Value(converter=c.ToJsonString)))
+    vpc_access_connector=s.Message(name=s.Value(converter=c.ToJsonString)),
+    zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)))

@@ -264,8 +264,7 @@ class InstallationState(object):
     """Generates a ComponentSnapshot from the currently installed components."""
     return snapshots.ComponentSnapshot.FromInstallState(self)
 
-  def DiffCurrentState(self, latest_snapshot, platform_filter=None,
-                       enable_fallback=False):
+  def DiffCurrentState(self, latest_snapshot, platform_filter=None,):
     """Generates a ComponentSnapshotDiff from current state and the given state.
 
     Args:
@@ -273,15 +272,12 @@ class InstallationState(object):
         world to diff against.
       platform_filter: platforms.Platform, A platform that components must
         match in order to be considered for any operations.
-      enable_fallback: bool, True to enable fallback from darwin arm64 version
-        to darwin x86_64 version of the component.
 
     Returns:
       A ComponentSnapshotDiff.
     """
     return self.Snapshot().CreateDiff(latest_snapshot,
-                                      platform_filter=platform_filter,
-                                      enable_fallback=enable_fallback)
+                                      platform_filter=platform_filter)
 
   @_RaisesPermissionsError
   def CloneToStaging(self, progress_callback=None):

@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.assured import endpoint_util
 from googlecloudsdk.api_lib.assured import message_util
 from googlecloudsdk.api_lib.assured import workloads as apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.base import ReleaseTrack
 from googlecloudsdk.core import log
 
 _DETAILED_HELP = {
@@ -29,22 +30,23 @@ _DETAILED_HELP = {
         'Create a new Assured Workloads environment',
     'EXAMPLES':
         """ \
-        The following example command creates a new Assured Workloads environment with these properties:
+    The following example command creates a new Assured Workloads environment with these properties:
 
-        * belonging to an organization with ID 123
-        * located in the `us-central1` region
-        * display name `Test-Workload`
-        * compliance regime `FEDRAMP_MODERATE`
-        * billing account `billingAccounts/456`
-        * first key rotation set for 10:15am on the December 30, 2020
-        * key rotation interval set for every 48 hours
-        * with the label: key = 'LabelKey1', value = 'LabelValue1'
-        * with the label: key = 'LabelKey2', value = 'LabelValue2'
-        * provisioned resources parent 'folders/789'
+    * belonging to an organization with ID 123
+    * located in the `us-central1` region
+    * display name `Test-Workload`
+    * compliance regime `FEDRAMP_MODERATE`
+    * billing account `billingAccounts/456`
+    * first key rotation set for 10:15am on the December 30, 2020
+    * key rotation interval set for every 48 hours
+    * with the label: key = 'LabelKey1', value = 'LabelValue1'
+    * with the label: key = 'LabelKey2', value = 'LabelValue2'
+    * provisioned resources parent 'folders/789'
+    * with custom project id 'my-custom-id' for consumer project
 
-          $ {command} --organization=123 --location=us-central1 --display-name=Test-Workload --compliance-regime=FEDRAMP_MODERATE --billing-account=billingAccounts/456 --next-rotation-time=2020-12-30T10:15:00.00Z --rotation-period=172800s --labels=LabelKey1=LabelValue1,LabelKey2=LabelValue2 --provisioned-resources-parent=folders/789
+      $ {command} --organization=123 --location=us-central1 --display-name=Test-Workload --compliance-regime=FEDRAMP_MODERATE --billing-account=billingAccounts/456 --next-rotation-time=2020-12-30T10:15:00.00Z --rotation-period=172800s --labels=LabelKey1=LabelValue1,LabelKey2=LabelValue2 --provisioned-resources-parent=folders/789 --resource-settings=consumer-project-id=my-custom-id
 
-        """,
+    """,
 }
 
 
@@ -55,6 +57,8 @@ class CreateWorkload(base.CreateCommand):
 
   def Run(self, args):
     """Run the create command."""
+    resource_settings = args.resource_settings if self.ReleaseTrack(
+    ) != ReleaseTrack.GA else None
     with endpoint_util.AssuredWorkloadsEndpointOverridesFromRegion(
         release_track=self.ReleaseTrack(), region=args.location):
       parent = message_util.CreateAssuredParent(
@@ -67,6 +71,7 @@ class CreateWorkload(base.CreateCommand):
           rotation_period=args.rotation_period,
           labels=args.labels,
           provisioned_resources_parent=args.provisioned_resources_parent,
+          resource_settings=resource_settings,
           release_track=self.ReleaseTrack())
       client = apis.WorkloadsClient(release_track=self.ReleaseTrack())
       self.created_resource = client.Create(

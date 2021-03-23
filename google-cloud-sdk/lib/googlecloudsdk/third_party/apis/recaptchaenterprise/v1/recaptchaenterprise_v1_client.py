@@ -54,7 +54,7 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
           }
 
     def Annotate(self, request, global_params=None):
-      r"""Annotates a previously created Assessment to provide additional information on whether the event turned out to be authentic or fradulent.
+      r"""Annotates a previously created Assessment to provide additional information on whether the event turned out to be authentic or fraudulent.
 
       Args:
         request: (RecaptchaenterpriseProjectsAssessmentsAnnotateRequest) input message

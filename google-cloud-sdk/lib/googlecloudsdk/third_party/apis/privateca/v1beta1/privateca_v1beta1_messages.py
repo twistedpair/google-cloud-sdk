@@ -1801,10 +1801,14 @@ class PrivatecaProjectsLocationsListRequest(_messages.Message):
   r"""A PrivatecaProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -1987,6 +1991,18 @@ class PublicKey(_messages.Message):
 
   key = _messages.BytesField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class ReconciliationOperationMetadata(_messages.Message):
+  r"""Operation metadata returned by the CLH during resource state
+  reconciliation.
+
+  Fields:
+    deleteResource: If set to TRUE, the resource has to be deleted. When using
+      this bit, the CLH should fail the operation.
+  """
+
+  deleteResource = _messages.BooleanField(1)
 
 
 class RestoreCertificateAuthorityRequest(_messages.Message):

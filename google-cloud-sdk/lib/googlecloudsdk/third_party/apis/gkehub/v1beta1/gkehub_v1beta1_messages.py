@@ -279,10 +279,14 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -813,7 +817,7 @@ class Membership(_messages.Message):
       https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
     createTime: Output only. When the Membership was created.
     deleteTime: Output only. When the Membership was deleted.
-    description: Required. Description of this membership, limited to 63
+    description: Optional. Description of this membership, limited to 63
       characters. Must match the regex: `a-zA-Z0-9*`
     endpoint: Optional. Endpoint information to reach this member.
     externalId: Optional. An externally-generated and managed ID for this
