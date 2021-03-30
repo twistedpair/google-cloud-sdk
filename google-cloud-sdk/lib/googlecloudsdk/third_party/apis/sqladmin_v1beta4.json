@@ -802,7 +802,11 @@
               "The database version is PostgreSQL 10.",
               "The database version is PostgreSQL 12.",
               "The database version is MySQL 8.",
-              "The database version is PostgreSQL 13."
+              "The database version is PostgreSQL 13.",
+              "The database version is SQL Server 2019 Standard.",
+              "The database version is SQL Server 2019 Enterprise.",
+              "The database version is SQL Server 2019 Express.",
+              "The database version is SQL Server 2019 Web."
             ],
             "enum": [
               "SQL_DATABASE_VERSION_UNSPECIFIED",
@@ -819,7 +823,11 @@
               "POSTGRES_10",
               "POSTGRES_12",
               "MYSQL_8_0",
-              "POSTGRES_13"
+              "POSTGRES_13",
+              "SQLSERVER_2019_STANDARD",
+              "SQLSERVER_2019_ENTERPRISE",
+              "SQLSERVER_2019_EXPRESS",
+              "SQLSERVER_2019_WEB"
             ]
           }
         },
@@ -1089,7 +1097,11 @@
             "The database version is PostgreSQL 10.",
             "The database version is PostgreSQL 12.",
             "The database version is MySQL 8.",
-            "The database version is PostgreSQL 13."
+            "The database version is PostgreSQL 13.",
+            "The database version is SQL Server 2019 Standard.",
+            "The database version is SQL Server 2019 Enterprise.",
+            "The database version is SQL Server 2019 Express.",
+            "The database version is SQL Server 2019 Web."
           ],
           "enum": [
             "SQL_DATABASE_VERSION_UNSPECIFIED",
@@ -1106,7 +1118,11 @@
             "POSTGRES_10",
             "POSTGRES_12",
             "MYSQL_8_0",
-            "POSTGRES_13"
+            "POSTGRES_13",
+            "SQLSERVER_2019_STANDARD",
+            "SQLSERVER_2019_ENTERPRISE",
+            "SQLSERVER_2019_EXPRESS",
+            "SQLSERVER_2019_WEB"
           ]
         },
         "settings": {

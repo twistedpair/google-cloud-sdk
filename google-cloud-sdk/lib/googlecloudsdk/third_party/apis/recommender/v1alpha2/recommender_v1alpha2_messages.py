@@ -821,13 +821,17 @@ class GoogleCloudRecommenderV1alpha2RecommenderConfig(_messages.Message):
       [LOCATION]/recommenders/[RECOMMENDER_ID]/config
     recommenderGenerationConfig: RecommenderGenerationConfig which configures
       the Generation of recommendations for this recommender.
+    revisionId: Output only. Immutable. The revision ID of the config. A new
+      revision is committed whenever the config is changed in any way. The
+      format is an 8-character hexadecimal string.
     updateTime: Last time when the config was updated.
   """
 
   etag = _messages.StringField(1)
   name = _messages.StringField(2)
   recommenderGenerationConfig = _messages.MessageField('GoogleCloudRecommenderV1alpha2RecommenderGenerationConfig', 3)
-  updateTime = _messages.StringField(4)
+  revisionId = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class GoogleCloudRecommenderV1alpha2RecommenderGenerationConfig(_messages.Message):

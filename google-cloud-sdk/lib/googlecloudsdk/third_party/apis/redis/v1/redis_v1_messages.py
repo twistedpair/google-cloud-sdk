@@ -266,11 +266,13 @@ class Instance(_messages.Message):
       are: * `REDIS_3_2` for Redis 3.2 compatibility * `REDIS_4_0` for Redis
       4.0 compatibility (default) * `REDIS_5_0` for Redis 5.0 compatibility *
       `REDIS_6_X` for Redis 6.x compatibility
-    reservedIpRange: Optional. The CIDR range of internal addresses that are
-      reserved for this instance. If not provided, the service will choose an
-      unused /29 block, for example, 10.0.0.0/29 or 192.168.0.0/29. Ranges
-      must be unique and non-overlapping with existing subnets in an
-      authorized network.
+    reservedIpRange: Optional. For DIRECT_PEERING mode, the CIDR range of
+      internal addresses that are reserved for this instance. Range must be
+      unique and non-overlapping with existing subnets in an authorized
+      network. For PRIVATE_SERVICE_ACCESS mode, the name of one allocated IP
+      address ranges associated with this private service access connection.
+      If not provided, the service will choose an unused /29 block, for
+      example, 10.0.0.0/29 or 192.168.0.0/29.
     serverCaCerts: Output only. List of server CA certificates for the
       instance.
     state: Output only. The current state of this instance.

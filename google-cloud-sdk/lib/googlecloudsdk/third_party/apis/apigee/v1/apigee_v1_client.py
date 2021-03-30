@@ -2640,7 +2640,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def GetSchemav2(self, request, global_params=None):
-      r"""Get a list of metrics and dimensions which can be used for creating analytics queries and reports. Each schema element contains the name of the field with its associated type and if it is either custom field or standard field.
+      r"""Gets a list of metrics and dimensions that can be used to create analytics queries and reports. Each schema element contains the name of the field, its associated type, and a flag indicating whether it is a standard or custom field.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsAnalyticsAdminGetSchemav2Request) input message
@@ -2658,7 +2658,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.environments.analytics.admin.getSchemav2',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['type'],
+        query_params=['disableCache', 'type'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsAnalyticsAdminGetSchemav2Request',
@@ -6666,6 +6666,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsGetDeployedIngressConfigRequest',
         response_type_name='GoogleCloudApigeeV1IngressConfig',
+        supports_download=False,
+    )
+
+    def GetRuntimeConfig(self, request, global_params=None):
+      r"""Get runtime config for an organization.
+
+      Args:
+        request: (ApigeeOrganizationsGetRuntimeConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1RuntimeConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetRuntimeConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRuntimeConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/runtimeConfig',
+        http_method='GET',
+        method_id='apigee.organizations.getRuntimeConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsGetRuntimeConfigRequest',
+        response_type_name='GoogleCloudApigeeV1RuntimeConfig',
         supports_download=False,
     )
 

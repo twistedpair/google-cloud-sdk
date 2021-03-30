@@ -2229,8 +2229,7 @@
           ]
         },
         "billingType": {
-          "description": "Output only. Billing type of the Apigee organization. See [Apigee pricing](https:\/\/cloud.google.com\/apigee\/pricing).",
-          "readOnly": true,
+          "description": "Billing type of the Apigee organization. See [Apigee pricing](https:\/\/cloud.google.com\/apigee\/pricing).",
           "type": "string",
           "enumDescriptions": [
             "Billing type not specified.",
@@ -2771,6 +2770,21 @@
         }
       }
     },
+    "GoogleCloudApigeeV1RuntimeConfig": {
+      "id": "GoogleCloudApigeeV1RuntimeConfig",
+      "description": "Runtime configuration for the organization. Response for GetRuntimeConfig.",
+      "type": "object",
+      "properties": {
+        "analyticsBucket": {
+          "description": "Cloud Storage bucket used for uploading Analytics records.",
+          "type": "string"
+        },
+        "traceBucket": {
+          "description": "Cloud Storage bucket used for uploading Trace records.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudApigeeV1ListSharedFlowsResponse": {
       "id": "GoogleCloudApigeeV1ListSharedFlowsResponse",
       "type": "object",
@@ -3205,14 +3219,14 @@
       "type": "object",
       "properties": {
         "dimensions": {
-          "description": "List of schema fiels grouped as dimensions.",
+          "description": "List of schema fields grouped as dimensions.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1SchemaSchemaElement"
           }
         },
         "metrics": {
-          "description": "List of schema fields grouped as dimensions. These are fields that can be used with an aggregate function such as sum, avg, min, max.",
+          "description": "List of schema fields grouped as dimensions that can be used with an aggregate function such as `sum`, `avg`, `min`, and `max`.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1SchemaSchemaElement"
@@ -3233,26 +3247,26 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the field",
+          "description": "Name of the field.",
           "type": "string"
         },
         "properties": {
-          "description": "Property of the schema field E.g. { \"createTime\": \"2016-02-26T10:23:09.592Z\", \"custom\": \"false\", \"type\": \"string\" }",
+          "description": "Properties for the schema field. For example: { \"createTime\": \"2016-02-26T10:23:09.592Z\", \"custom\": \"false\", \"type\": \"string\" }",
           "$ref": "GoogleCloudApigeeV1SchemaSchemaProperty"
         }
       }
     },
     "GoogleCloudApigeeV1SchemaSchemaProperty": {
       "id": "GoogleCloudApigeeV1SchemaSchemaProperty",
-      "description": "Message type for schema property",
+      "description": "Properties for the schema field.",
       "type": "object",
       "properties": {
         "createTime": {
-          "description": "Creation time of the field",
+          "description": "Time the field was created in RFC3339 string form. For example: `2016-02-26T10:23:09.592Z`.",
           "type": "string"
         },
         "custom": {
-          "description": "Custom is a flag signifying if the field was provided as part of the standard dataset or a custom field created by the customer",
+          "description": "Flag that specifies whether the field is standard in the dataset or a custom field created by the customer. `true` indicates that it is a custom field.",
           "type": "string"
         },
         "type": {
@@ -3498,7 +3512,7 @@
       "description": "GraphQLOperation represents the pairing of graphQL operation types and the graphQL operation name.",
       "type": "object",
       "properties": {
-        "operationType": {
+        "operationTypes": {
           "description": "Required. `query`, `mutation` and `subscription` are the three operation types offered by graphQL. Currently we support only `query` and `mutation`.",
           "type": "array",
           "items": {
@@ -4845,6 +4859,10 @@
           "items": {
             "$ref": "GoogleCloudApigeeV1RatePlan"
           }
+        },
+        "nextStartKey": {
+          "description": "A key that can be sent as `start_key` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
         }
       }
     },
@@ -5809,6 +5827,31 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Gets the deployed ingress configuration for an organization."
+        },
+        "getRuntimeConfig": {
+          "id": "apigee.organizations.getRuntimeConfig",
+          "path": "v1/{+name}",
+          "flatPath": "v1/organizations/{organizationsId}/runtimeConfig",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. Name of the runtime config for the organization in the following format: 'organizations\/{org}\/runtimeConfig'.",
+              "pattern": "^organizations\/[^\/]+\/runtimeConfig$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "GoogleCloudApigeeV1RuntimeConfig"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get runtime config for an organization."
         }
       }
       ,
@@ -8717,16 +8760,21 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The parent organization and environment names. Must be of the form `organizations\/{org}\/environments\/{env}\/analytics\/admin\/schemav2`.",
+                          "description": "Required. Path to the schema. Use the following structure in your request: `organizations\/{org}\/environments\/{env}\/analytics\/admin\/schemav2`.",
                           "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/analytics\/admin\/schemav2$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "type": {
-                          "description": "Required. Type refers to the dataset name whose schema needs to be retrieved E.g. type=fact or type=agg_cus1",
+                          "description": "Required. Name of the dataset for which you want to retrieve the schema. For example: `fact` or `agg_cus1`",
                           "location": "query",
                           "type": "string"
+                        },
+                        "disableCache": {
+                          "description": "Flag that specifies whether the schema is be read from the database or cache. Set to `true` to read the schema from the database. Defaults to cache.",
+                          "location": "query",
+                          "type": "boolean"
                         }
                       },
                       "parameterOrder": [
@@ -8738,7 +8786,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Get a list of metrics and dimensions which can be used for creating analytics queries and reports. Each schema element contains the name of the field with its associated type and if it is either custom field or standard field."
+                      "description": "Gets a list of metrics and dimensions that can be used to create analytics queries and reports. Each schema element contains the name of the field, its associated type, and a flag indicating whether it is a standard or custom field."
                     }
                   }
                 },

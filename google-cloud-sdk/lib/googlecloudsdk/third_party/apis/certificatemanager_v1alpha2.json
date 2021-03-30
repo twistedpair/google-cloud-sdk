@@ -293,7 +293,7 @@
           "type": "string",
           "enumDescriptions": [
             "Certificates with default scope are served from core Google data centers. If unsure, choose this option.",
-            "Certificates with scope EDGE_CACHE are special-purposed certificates, served from non-core Google data centers. Currently allowed only for managed certificates."
+            "Certificates with scope EDGE_CACHE are special-purposed certificates, served from non-core Google data centers."
           ],
           "enum": [
             "DEFAULT",

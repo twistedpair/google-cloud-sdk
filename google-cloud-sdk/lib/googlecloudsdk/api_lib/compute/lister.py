@@ -971,7 +971,7 @@ class MultiScopeLister(object):
                global_service=None,
                aggregation_service=None,
                allow_partial_server_failure=True,
-               return_partial_success=False):
+               return_partial_success=True):
     self.client = client
     self.zonal_service = zonal_service
     self.regional_service = regional_service

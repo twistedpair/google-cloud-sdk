@@ -495,6 +495,7 @@ class CreateClusterOptions(object):
       workload_pool=None,
       identity_provider=None,
       enable_workload_certificates=None,
+      enable_alts=None,
       enable_gke_oidc=None,
       enable_shielded_nodes=None,
       linux_sysctls=None,
@@ -634,6 +635,7 @@ class CreateClusterOptions(object):
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
     self.enable_workload_certificates = enable_workload_certificates
+    self.enable_alts = enable_alts
     self.enable_gke_oidc = enable_gke_oidc
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
@@ -730,6 +732,7 @@ class UpdateClusterOptions(object):
                identity_provider=None,
                disable_workload_identity=None,
                enable_workload_certificates=None,
+               enable_alts=None,
                enable_gke_oidc=None,
                enable_shielded_nodes=None,
                disable_default_snat=None,
@@ -811,6 +814,7 @@ class UpdateClusterOptions(object):
     self.identity_provider = identity_provider
     self.disable_workload_identity = disable_workload_identity
     self.enable_workload_certificates = enable_workload_certificates
+    self.enable_alts = enable_alts
     self.enable_gke_oidc = enable_gke_oidc
     self.enable_shielded_nodes = enable_shielded_nodes
     self.disable_default_snat = disable_default_snat
@@ -3334,6 +3338,15 @@ class V1Beta1Adapter(V1Adapter):
       if cluster.workloadCertificates is None:
         cluster.workloadCertificates = self.messages.WorkloadCertificates()
       cluster.workloadCertificates.enableCertificates = options.enable_workload_certificates
+    if options.enable_alts:
+      if not options.workload_pool:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='workload-pool',
+                opt='enable-alts'))
+      if cluster.workloadAltsConfig is None:
+        cluster.workloadAltsConfig = self.messages.WorkloadALTSConfig()
+      cluster.workloadAltsConfig.enableAlts = options.enable_alts
     if options.enable_gke_oidc:
       cluster.gkeOidcConfig = self.messages.GkeOidcConfig(
           enabled=options.enable_gke_oidc)
@@ -3426,6 +3439,11 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadCertificates=self.messages.WorkloadCertificates(
               enableCertificates=options.enable_workload_certificates))
+
+    if options.enable_alts is not None:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadAltsConfig=self.messages.WorkloadALTSConfig(
+              enableAlts=options.enable_alts))
 
     if options.enable_gke_oidc is not None:
       update = self.messages.ClusterUpdate(
@@ -3784,6 +3802,15 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       if cluster.workloadCertificates is None:
         cluster.workloadCertificates = self.messages.WorkloadCertificates()
       cluster.workloadCertificates.enableCertificates = options.enable_workload_certificates
+    if options.enable_alts:
+      if not options.workload_pool:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='workload-pool',
+                opt='enable-alts'))
+      if cluster.workloadAltsConfig is None:
+        cluster.workloadAltsConfig = self.messages.WorkloadALTSConfig()
+      cluster.workloadAltsConfig.enableAlts = options.enable_alts
     if options.enable_gke_oidc:
       cluster.gkeOidcConfig = self.messages.GkeOidcConfig(
           enabled=options.enable_gke_oidc)
@@ -3886,6 +3913,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadCertificates=self.messages.WorkloadCertificates(
               enableCertificates=options.enable_workload_certificates))
+
+    if options.enable_alts is not None:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadAltsConfig=self.messages.WorkloadALTSConfig(
+              enableAlts=options.enable_alts))
 
     if options.enable_gke_oidc is not None:
       update = self.messages.ClusterUpdate(

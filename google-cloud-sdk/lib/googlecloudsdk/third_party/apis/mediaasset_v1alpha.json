@@ -1788,6 +1788,39 @@
               "resources": {
                 "assets": {
                   "methods": {
+                    "create": {
+                      "id": "mediaasset.projects.locations.assetTypes.assets.create",
+                      "path": "v1alpha/{+parent}/assets",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The parent resource name, in the following form: `projects\/{project}\/locations\/{location}\/assetTypes\/{type}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "assetId": {
+                          "description": "The ID of the asset resource to be created.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Asset"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new asset in a given project and location."
+                    },
                     "get": {
                       "id": "mediaasset.projects.locations.assetTypes.assets.get",
                       "path": "v1alpha/{+name}",
@@ -1961,7 +1994,7 @@
                         "$ref": "Asset"
                       },
                       "response": {
-                        "$ref": "Asset"
+                        "$ref": "Operation"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"

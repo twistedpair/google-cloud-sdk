@@ -55,6 +55,15 @@ properties:
       An optional description of this resource. Provide this property when you
       create the resource.
     type: string
+  fingerprint:
+    description: |-
+      Fingerprint of this resource. A hash of the contents stored in this
+      object. This field is used in optimistic locking. This field will be
+      ignored when inserting a TargetHttpsProxy. An up-to-date fingerprint must
+      be provided in order to update the UrlMap, otherwise the request will
+      fail with error 412 conditionNotMet.  To see the latest fingerprint, make a
+      get() request to retrieve a TargetHttpsProxy.
+    type: string
   httpFilters:
     description: |-
       URLs to networkservices.HttpFilter resources enabled for xDS clients using

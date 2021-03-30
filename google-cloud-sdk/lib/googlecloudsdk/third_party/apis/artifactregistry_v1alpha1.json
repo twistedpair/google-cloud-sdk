@@ -259,6 +259,35 @@
         }
       }
     },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest",
+      "description": "The request to import new googet artifacts.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/my_object).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse": {
       "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse",
       "description": "The response message from importing artifacts.",
@@ -422,6 +451,64 @@
         "gcsSource": {
           "description": "Google Cloud Storage location requested.",
           "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GcsSource"
+        },
+        "error": {
+          "description": "The detailed error status.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsResponse",
+      "description": "The response message from importing artifacts.",
+      "type": "object",
+      "properties": {
+        "googetArtifacts": {
+          "description": "The googet artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact"
+          }
+        },
+        "errors": {
+          "description": "Detailed error info for packages that were not imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo"
+          }
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact",
+      "description": "A detailed representation of a GooGet artifact.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The Artifact Registry resource name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Output only. The googet package name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "architecture": {
+          "description": "Output only. Operating system architecture of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo",
+      "description": "Error information explaining why a package was not imported.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location requested.",
+          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource"
         },
         "error": {
           "description": "The detailed error status.",
@@ -727,6 +814,38 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Imports Yum (RPM) artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "gooGetArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.gooGetArtifacts.import",
+                      "path": "v1alpha1/{+parent}/gooGetArtifacts:import",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/gooGetArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports GooGet artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
                     }
                   }
                 }

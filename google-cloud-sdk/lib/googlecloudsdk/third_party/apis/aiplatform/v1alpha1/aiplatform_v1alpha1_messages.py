@@ -3892,6 +3892,43 @@ class GoogleCloudAiplatformInternalCreateSpecialistPoolOperationMetadata(_messag
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformInternalDeIdentificationConfig(_messages.Message):
+  r"""Configuration describing whether and how to de-identify the documents.
+
+  Fields:
+    redactionConfig: The config to redact the original documents by fake
+      values.
+    redactionSchemas: Redaction schemas. All annotations with these types will
+      be considered being redacted by default, but human labelers can edit
+      them.
+  """
+
+  redactionConfig = _messages.MessageField('GoogleCloudAiplatformInternalDeIdentificationConfigRedactionConfig', 1)
+  redactionSchemas = _messages.MessageField('GoogleCloudAiplatformInternalDeIdentificationConfigRedactionSchema', 2, repeated=True)
+
+
+class GoogleCloudAiplatformInternalDeIdentificationConfigRedactionConfig(_messages.Message):
+  r"""Configuration describing whether and how to redact the original
+  documents.
+
+  Fields:
+    enableRendering: Whether enable rendering the new documents using fake
+      values.
+  """
+
+  enableRendering = _messages.BooleanField(1)
+
+
+class GoogleCloudAiplatformInternalDeIdentificationConfigRedactionSchema(_messages.Message):
+  r"""The schema used to redact the documents.
+
+  Fields:
+    type: The type of the schema.
+  """
+
+  type = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformInternalDedicatedResources(_messages.Message):
   r"""A description of resources that are dedicated to a DeployedModel, and
   that need a higher degree of manual configuration.
@@ -4800,7 +4837,7 @@ class GoogleCloudAiplatformInternalGenericOperationMetadata(_messages.Message):
 class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
   r"""A human in the loop configuration describing how to trigger a human
   labeling job in a prediction process and properties of the human labeling
-  job. Next id: 23
+  job. Next id: 24
 
   Enums:
     GoogleSpecialistRegionValueValuesEnum: Residency of Google in-house
@@ -4835,6 +4872,8 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       DataLabelingJob created from this configuration.
     dataLabelingJobParameters: Required. Input configuration parameters for
       the DataLabelingJob created from this configuration.
+    deIdConfig: The de-identification config. If set this field, it will run
+      HITL de-id instead of regular HITL pipeline.
     displayName: Required. The user-defined name of the Human in the Loop. The
       name can be up to 128 characters long and can be consist of any UTF-8
       characters. This field should be unique on project-level.
@@ -4949,22 +4988,23 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
   createTime = _messages.StringField(4)
   dataLabelingJobInputsSchemaUri = _messages.StringField(5)
   dataLabelingJobParameters = _messages.MessageField('extra_types.JsonValue', 6)
-  displayName = _messages.StringField(7)
-  documentCriteria = _messages.MessageField('GoogleCloudAiplatformInternalDocumentCriteria', 8)
-  documentMetadata = _messages.MessageField('GoogleCloudAiplatformInternalDocumentMetadata', 9)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformInternalEncryptionSpec', 10)
-  googleSpecialistRegion = _messages.EnumField('GoogleSpecialistRegionValueValuesEnum', 11)
-  instructionUri = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  outputPath = _messages.StringField(15)
-  pendingDataItemsCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  replicaCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  runningDataItemsCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  runningDataLabelingJobsCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  specialistPool = _messages.StringField(20, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  updateTime = _messages.StringField(22)
+  deIdConfig = _messages.MessageField('GoogleCloudAiplatformInternalDeIdentificationConfig', 7)
+  displayName = _messages.StringField(8)
+  documentCriteria = _messages.MessageField('GoogleCloudAiplatformInternalDocumentCriteria', 9)
+  documentMetadata = _messages.MessageField('GoogleCloudAiplatformInternalDocumentMetadata', 10)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformInternalEncryptionSpec', 11)
+  googleSpecialistRegion = _messages.EnumField('GoogleSpecialistRegionValueValuesEnum', 12)
+  instructionUri = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  outputPath = _messages.StringField(16)
+  pendingDataItemsCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  replicaCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  runningDataItemsCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  runningDataLabelingJobsCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  specialistPool = _messages.StringField(21, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  updateTime = _messages.StringField(23)
 
 
 class GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling(_messages.Message):
@@ -6472,7 +6512,15 @@ class GoogleCloudAiplatformUiImportDataOperationMetadata(_messages.Message):
 
 
 class GoogleCloudAiplatformUiImportDataResponse(_messages.Message):
-  r"""Response message for DatasetService.ImportData."""
+  r"""Response message for DatasetService.ImportData.
+
+  Fields:
+    importedAnnotationsCount: The count of successfully imported Annotations.
+    importedDataItemsCount: The count of successfully imported DataItems.
+  """
+
+  importedAnnotationsCount = _messages.IntegerField(1)
+  importedDataItemsCount = _messages.IntegerField(2)
 
 
 class GoogleCloudAiplatformUiIntegratedGradientsAttribution(_messages.Message):
@@ -8407,10 +8455,13 @@ class GoogleCloudAiplatformV1PythonPackageSpec(_messages.Message):
   Fields:
     args: Command line arguments to be passed to the Python task.
     env: Environment variables to be passed to the python module.
-    executorImageUri: Required. The URI of a container image in the Container
-      Registry that will run the provided python package. AI Platform provides
-      wide range of executor images with pre-installed packages to meet users'
-      various use cases. Only one of the provided images can be set here.
+    executorImageUri: Required. The URI of a container image in Artifact
+      Registry that will run the provided Python package. AI Platform provides
+      a wide range of executor images with pre-installed packages to meet
+      users' various use cases. See the list of [pre-built containers for
+      training](https://cloud.google.com/ai-platform-
+      unified/docs/training/pre-built-containers). You must use an image from
+      this list.
     packageUris: Required. The Google Cloud Storage location of the Python
       package files which are the training program and its dependent packages.
       The maximum number of package URIs is 100.
@@ -10562,10 +10613,14 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoActionRecogni
         Google Cloud, can also be exported (see ModelService.ExportModel) as a
         TensorFlow or TensorFlow Lite model and used on a mobile or edge
         device afterwards.
+      MOBILE_JETSON_VERSATILE_1: A model that, in addition to being available
+        within Google Cloud, can also be exported (see
+        ModelService.ExportModel) to a Jetson device afterwards.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD = 1
     MOBILE_VERSATILE_1 = 2
+    MOBILE_JETSON_VERSATILE_1 = 3
 
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
 
@@ -13842,12 +13897,11 @@ class GoogleCloudAiplatformV1alpha1IndexEndpoint(_messages.Message):
       labels.
     name: Output only. The resource name of the IndexEndpoint.
     network: Required. Immutable. The full name of the Google Compute Engine
-      [network](https: //cloud.google.com/compute/docs/networks-and-
+      [network](https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the IndexEndpoint should be peered. Private
       services access must already be configured for the network. If left
-      unspecified, the Endpoint is not peered with any network.
-      [Format](https:
-      //cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
+      unspecified, the Endpoint is not peered with any network. [Format](https
+      ://cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
       projects/{project}/global/networks/{network}. Where {project} is a
       project number, as in '12345', and {network} is network name.
     updateTime: Output only. Timestamp when this IndexEndpoint was last
@@ -14841,7 +14895,10 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       ModelService.UploadModel, stored internally, and this original path is
       afterwards not used. To learn about the requirements for the Docker
       image itself, see [Custom container
-      requirements](https://tinyurl.com/cust-cont-reqs).
+      requirements](https://tinyurl.com/cust-cont-reqs). You can use the URI
+      to one of AI Platform's [pre-built container images for
+      prediction](https://cloud.google.com/ai-platform-
+      unified/docs/predictions/pre-built-containers) in this field.
     ports: Immutable. List of ports to expose from the container. AI Platform
       sends any prediction requests that it receives to the first port on this
       list. AI Platform also sends [liveness and health
@@ -15201,10 +15258,13 @@ class GoogleCloudAiplatformV1alpha1PythonPackageSpec(_messages.Message):
 
   Fields:
     args: Command line arguments to be passed to the Python task.
-    executorImageUri: Required. The URI of a container image in the Container
-      Registry that will run the provided python package. AI Platform provides
-      wide range of executor images with pre-installed packages to meet users'
-      various use cases. Only one of the provided images can be set here.
+    executorImageUri: Required. The URI of a container image in Artifact
+      Registry that will run the provided Python package. AI Platform provides
+      a wide range of executor images with pre-installed packages to meet
+      users' various use cases. See the list of [pre-built containers for
+      training](https://cloud.google.com/ai-platform-
+      unified/docs/training/pre-built-containers). You must use an image from
+      this list.
     packageUris: Required. The Google Cloud Storage location of the Python
       package files which are the training program and its dependent packages.
       The maximum number of package URIs is 100.
@@ -16530,9 +16590,8 @@ class GoogleCloudAiplatformV1alpha1TensorboardTensor(_messages.Message):
   r"""One point viewable on a tensor metric plot.
 
   Fields:
-    value: Required. Serialized form of https:
-      //github.com/tensorflow/tensorflow/blob/ //
-      master/tensorflow/core/framework/tensor.proto
+    value: Required. Serialized form of https://github.com/tensorflow/tensorfl
+      ow/blob/master/tensorflow/core/framework/tensor.proto
     versionNumber: Optional. Version number of TensorProto used to serialize
       value.
   """
@@ -17103,8 +17162,8 @@ class GoogleCloudAiplatformV1alpha1UserActionReference(_messages.Message):
     dataLabelingJob: For API calls that start a LabelingJob. Resource name of
       the LabelingJob. Format: 'projects/{project}/locations/{location}/dataLa
       belingJobs/{data_labeling_job}'
-    method: The method name of the API call. For example,
-      "/google.cloud.aiplatform.v1alpha1.DatasetService.CreateDataset"
+    method: The method name of the API RPC call. For example,
+      "/google.cloud.aiplatform.master.DatasetService.CreateDataset"
     operation: For API calls that return a long running operation. Resource
       name of the long running operation. Format:
       'projects/{project}/locations/{location}/operations/{operation}'
@@ -17495,8 +17554,16 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
       resources (at least their minimal amount) even if the DeployedIndex
       receives no traffic.
     createTime: Output only. Timestamp when the DeployedIndex was created.
+    deployedIndexAuthConfig: Optional. If set, the authentication is enabled
+      for the private endpoint.
     displayName: The display name of the DeployedIndex. If not provided upon
       creation, the Index's display_name is used.
+    enableAccessLogging: Optional. If true, private endpoint's access logs are
+      sent to StackDriver Logging. These logs are like standard server access
+      logs, containing information like timestamp and latency for each
+      MatchRequest. Note that Stackdriver logs may incur a cost, especially if
+      the deployed index receives a high queries per second rate (QPS).
+      Estimate your costs before enabling this option.
     id: Required. The user specified ID of the DeployedIndex. The ID can be up
       to 128 characters long and must start with a letter and only contain
       letters, numbers, and underscores. The ID must be unique within the
@@ -17522,11 +17589,38 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
   createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  id = _messages.StringField(4)
-  index = _messages.StringField(5)
-  indexSyncTime = _messages.StringField(6)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexPrivateEndpoints', 7)
+  deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig', 3)
+  displayName = _messages.StringField(4)
+  enableAccessLogging = _messages.BooleanField(5)
+  id = _messages.StringField(6)
+  index = _messages.StringField(7)
+  indexSyncTime = _messages.StringField(8)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexPrivateEndpoints', 9)
+
+
+class GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig(_messages.Message):
+  r"""Used to set up the auth on the DeployedIndex's private endpoint.
+
+  Fields:
+    authProvider: Defines the authentication provider that the DeployedIndex
+      uses.
+  """
+
+  authProvider = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndexAuthConfigAuthProvider', 1)
+
+
+class GoogleCloudAiplatformV1beta1DeployedIndexAuthConfigAuthProvider(_messages.Message):
+  r"""Configuration for an authentication provider, including support for
+  [JSON Web Token (JWT)](https://tools.ietf.org/html/draft-ietf-oauth-json-
+  web-token-32).
+
+  Fields:
+    audiences: The list of JWT [audiences](https://tools.ietf.org/html/draft-
+      ietf-oauth-json-web-token-32#section-4.1.3). that are allowed to access.
+      A JWT containing any of these audiences will be accepted.
+  """
+
+  audiences = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
@@ -18600,10 +18694,13 @@ class GoogleCloudAiplatformV1beta1PythonPackageSpec(_messages.Message):
 
   Fields:
     args: Command line arguments to be passed to the Python task.
-    executorImageUri: Required. The URI of a container image in the Container
-      Registry that will run the provided python package. AI Platform provides
-      wide range of executor images with pre-installed packages to meet users'
-      various use cases. Only one of the provided images can be set here.
+    executorImageUri: Required. The URI of a container image in Artifact
+      Registry that will run the provided Python package. AI Platform provides
+      a wide range of executor images with pre-installed packages to meet
+      users' various use cases. See the list of [pre-built containers for
+      training](https://cloud.google.com/ai-platform-
+      unified/docs/training/pre-built-containers). You must use an image from
+      this list.
     packageUris: Required. The Google Cloud Storage location of the Python
       package files which are the training program and its dependent packages.
       The maximum number of package URIs is 100.
@@ -20813,10 +20910,14 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoActionRe
         Google Cloud, can also be exported (see ModelService.ExportModel) as a
         TensorFlow or TensorFlow Lite model and used on a mobile or edge
         device afterwards.
+      MOBILE_JETSON_VERSATILE_1: A model that, in addition to being available
+        within Google Cloud, can also be exported (see
+        ModelService.ExportModel) to a Jetson device afterwards.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD = 1
     MOBILE_VERSATILE_1 = 2
+    MOBILE_JETSON_VERSATILE_1 = 3
 
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
 
@@ -22073,18 +22174,18 @@ class GoogleRpcStatus(_messages.Message):
 class GoogleTypeColor(_messages.Message):
   r"""Represents a color in the RGBA color space. This representation is
   designed for simplicity of conversion to/from color representations in
-  various languages over compactness; for example, the fields of this
+  various languages over compactness. For example, the fields of this
   representation can be trivially provided to the constructor of
-  "java.awt.Color" in Java; it can also be trivially provided to UIColor's
-  "+colorWithRed:green:blue:alpha" method in iOS; and, with just a little
-  work, it can be easily formatted into a CSS "rgba()" string in JavaScript,
-  as well. Note: this proto does not carry information about the absolute
-  color space that should be used to interpret the RGB value (e.g. sRGB, Adobe
-  RGB, DCI-P3, BT.2020, etc.). By default, applications SHOULD assume the sRGB
-  color space. Note: when color equality needs to be decided, implementations,
-  unless documented otherwise, will treat two colors to be equal if all their
-  red, green, blue and alpha values each differ by at most 1e-5. Example
-  (Java): import com.google.type.Color; // ... public static java.awt.Color
+  `java.awt.Color` in Java; it can also be trivially provided to UIColor's
+  `+colorWithRed:green:blue:alpha` method in iOS; and, with just a little
+  work, it can be easily formatted into a CSS `rgba()` string in JavaScript.
+  This reference page doesn't carry information about the absolute color space
+  that should be used to interpret the RGB value (e.g. sRGB, Adobe RGB,
+  DCI-P3, BT.2020, etc.). By default, applications should assume the sRGB
+  color space. When color equality needs to be decided, implementations,
+  unless documented otherwise, treat two colors as equal if all their red,
+  green, blue, and alpha values each differ by at most 1e-5. Example (Java):
+  import com.google.type.Color; // ... public static java.awt.Color
   fromProto(Color protocolor) { float alpha = protocolor.hasAlpha() ?
   protocolor.getAlpha().getValue() : 1.0; return new java.awt.Color(
   protocolor.getRed(), protocolor.getGreen(), protocolor.getBlue(), alpha); }
@@ -22110,10 +22211,10 @@ class GoogleTypeColor(_messages.Message):
   0.0; var greenFrac = rgb_color.green || 0.0; var blueFrac = rgb_color.blue
   || 0.0; var red = Math.floor(redFrac * 255); var green =
   Math.floor(greenFrac * 255); var blue = Math.floor(blueFrac * 255); if
-  (!('alpha' in rgb_color)) { return rgbToCssColor_(red, green, blue); } var
+  (!('alpha' in rgb_color)) { return rgbToCssColor(red, green, blue); } var
   alphaFrac = rgb_color.alpha.value || 0.0; var rgbParams = [red, green,
   blue].join(','); return ['rgba(', rgbParams, ',', alphaFrac, ')'].join('');
-  }; var rgbToCssColor_ = function(red, green, blue) { var rgbNumber = new
+  }; var rgbToCssColor = function(red, green, blue) { var rgbNumber = new
   Number((red << 16) | (green << 8) | blue); var hexString =
   rgbNumber.toString(16); var missingZeros = 6 - hexString.length; var
   resultBuilder = ['#']; for (var i = 0; i < missingZeros; i++) {
@@ -22122,14 +22223,14 @@ class GoogleTypeColor(_messages.Message):
 
   Fields:
     alpha: The fraction of this color that should be applied to the pixel.
-      That is, the final pixel color is defined by the equation: pixel color =
-      alpha * (this color) + (1.0 - alpha) * (background color) This means
+      That is, the final pixel color is defined by the equation: `pixel color
+      = alpha * (this color) + (1.0 - alpha) * (background color)` This means
       that a value of 1.0 corresponds to a solid color, whereas a value of 0.0
       corresponds to a completely transparent color. This uses a wrapper
       message rather than a simple float scalar so that it is possible to
       distinguish between a default value and the value being unset. If
-      omitted, this color object is to be rendered as a solid color (as if the
-      alpha value had been explicitly given with a value of 1.0).
+      omitted, this color object is rendered as a solid color (as if the alpha
+      value had been explicitly given a value of 1.0).
     blue: The amount of blue in the color as a value in the interval [0, 1].
     green: The amount of green in the color as a value in the interval [0, 1].
     red: The amount of red in the color as a value in the interval [0, 1].

@@ -32,7 +32,50 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import collections
+import enum
 import six
+
+
+class Topic(enum.Enum):
+  ERROR = 'error'
+
+
+# Holds information to be passed between tasks.
+#
+# Attributes:
+#   topic (Topic): The type of information this message holds.
+#   payload (Any): The information itself.
+Message = collections.namedtuple(
+    'Message',
+    ['topic', 'payload']
+)
+
+
+# Holds information returned from Task.Execute.
+#
+# Note that because information here is sent between processes, all data in this
+# class must be picklable.
+#
+# Attributes:
+#   additional_task_iterators (Optional[Iterable[Iterable[Task]]]): Tasks to be
+#     executed such that all tasks in each Iterable[Task] are executed before
+#     any tasks in the next Iterable[Task]. Tasks within each Iterable[Task] are
+#     unordered. For example, if this value were the following:
+#
+#     [
+#       [UploadObjectTask(), UploadObjectTask(), UploadObjectTask()],
+#       [ComposeObjectsTask()]
+#     ]
+#
+#     All UploadObjectTasks should be completed before the ComposeObjectTask
+#     could begin, but the UploadObjectTasks could be executed in parallel.
+#   messages (Optional[Iterable[Message]]): Information to be passed to all
+#     dependent tasks.
+Output = collections.namedtuple(
+    'Output',
+    ['additional_task_iterators', 'messages']
+)
 
 
 class Task(six.with_metaclass(abc.ABCMeta, object)):
@@ -40,13 +83,16 @@ class Task(six.with_metaclass(abc.ABCMeta, object)):
 
   Attributes:
     parallel_processing_key (Optional[Hashable]): Identifies a task during
-    execution. If this value is not None, the executor will skip this task if
-    another task being executed is using the same key. If this value is None,
-    the executor will not skip any tasks based on it.
+      execution. If this value is not None, the executor will skip this task if
+      another task being executed is using the same key. If this value is None,
+      the executor will not skip any tasks based on it.
+    received_messages (Iterable[Message]): Messages sent to this task
+      by its dependencies.
   """
 
   def __init__(self):
     self.parallel_processing_key = None
+    self.received_messages = []
 
   @abc.abstractmethod
   def execute(self, task_status_queue=None):
@@ -57,21 +103,6 @@ class Task(six.with_metaclass(abc.ABCMeta, object)):
         progress to a central location.
 
     Returns:
-      An Optional[Iterable[Iterable[Task]]], which should be executed such that
-      all tasks in each Iterable[Task] are executed before any tasks
-      in the next Iterable[Task] can begin. Tasks within each Iterable[Task] are
-      unordered. For example, if the execute method returned the following:
-
-      [
-        [UploadObjectTask(), UploadObjectTask(), UploadObjectTask()],
-        [ComposeObjectsTask()]
-      ]
-
-      All UploadObjectTasks should be completed before the ComposeObjectTask
-      can begin, but the UploadObjectTasks can be executed in parallel.
-
-      Note that because the results of execute are sent between processes, the
-      return value has to be picklable, which means execute cannot return a
-      generator.
+      An Output instance, or None.
     """
     pass

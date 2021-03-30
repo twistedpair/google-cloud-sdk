@@ -274,8 +274,7 @@ def GetPypiSettingsSnippet(args):
   sa_creds = _GetServiceAccountCreds(args)
 
   if sa_creds:
-    data["password"] = base64.b64encode(
-        sa_creds.encode("utf-8")).decode("utf-8")
+    data["password"] = sa_creds
     return pypi.SERVICE_ACCOUNT_SETTING_TEMPLATE.format(**data)
   else:
     return pypi.NO_SERVICE_ACCOUNT_SETTING_TEMPLATE.format(**data)

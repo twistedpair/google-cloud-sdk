@@ -161,6 +161,45 @@ class S3Api(cloud_api.CloudApi):
     with BOTO3_CLIENT_LOCK:
       self.client = boto3.client(storage_url.ProviderPrefix.S3.value)
 
+  def create_bucket(self, bucket_resource, fields_scope=None):
+    """See super class."""
+    del fields_scope  # Unused in S3 client.
+
+    if bucket_resource.retention_period:
+      raise ValueError(
+          'S3 API does not accept retention_period argument for create_bucket.')
+    if bucket_resource.storage_class:
+      raise ValueError(
+          'S3 API does not accept storage_class argument for create_bucket.')
+    if bucket_resource.uniform_bucket_level_access:
+      raise ValueError(
+          'S3 API does not accept uniform_bucket_level_access argument for create_bucket.'
+      )
+
+    if bucket_resource.location:
+      # Create client with appropriate endpoint for creating regional bucket.
+      client = boto3.client(
+          storage_url.ProviderPrefix.S3.value,
+          region_name=bucket_resource.location)
+      create_bucket_configuration = {
+          'LocationConstraint': bucket_resource.location
+      }
+    else:
+      client = self.client
+      # Must match client's default regional endpoint.
+      create_bucket_configuration = {
+          'LocationConstraint': boto3.session.Session().region_name
+      }
+
+    metadata = client.create_bucket(
+        Bucket=bucket_resource.storage_url.bucket_name,
+        CreateBucketConfiguration=create_bucket_configuration)
+    backend_location = metadata.get('Location')
+    return s3_resource_reference.S3BucketResource(
+        bucket_resource.storage_url,
+        location=backend_location,
+        metadata=metadata)
+
   def get_bucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
     metadata = {'Name': bucket_name}

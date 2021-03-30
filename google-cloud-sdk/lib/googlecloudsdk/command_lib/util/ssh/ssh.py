@@ -1252,7 +1252,8 @@ class SSHCommand(object):
 
   def Run(self, env=None, force_connect=False,
           explicit_output_file=None,
-          explicit_error_file=None):
+          explicit_error_file=None,
+          explicit_input_file=None):
     """Run the SSH command using the given environment.
 
     Args:
@@ -1262,6 +1263,7 @@ class SSHCommand(object):
         purposes only.
       explicit_output_file: Pipe stdout into this file-like object
       explicit_error_file: Pipe stderr into this file-like object
+      explicit_input_file: Pipe stdin from this file-like object
 
     Raises:
       MissingCommandError: If SSH command(s) not found.
@@ -1283,6 +1285,8 @@ class SSHCommand(object):
       extra_popen_kwargs['stdout'] = explicit_output_file
     if explicit_error_file:
       extra_popen_kwargs['stderr'] = explicit_error_file
+    if explicit_input_file:
+      extra_popen_kwargs['stdin'] = explicit_input_file
 
     status = execution_utils.Exec(args, no_exit=True, in_str=in_str,
                                   **extra_popen_kwargs)

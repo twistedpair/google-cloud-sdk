@@ -388,8 +388,8 @@ class RecognitionConfig(_messages.Message):
     adaptation: Speech adaptation configuration improves the accuracy of
       speech recognition. When speech adaptation is set it supersedes the
       `speech_contexts` field. For more information, see the [speech
-      adaptation](https://cloud.google.com/speech-to-text/docs/context-
-      strength) documentation.
+      adaptation](https://cloud.google.com/speech-to-text/docs/adaptation)
+      documentation.
     alternativeLanguageCodes: A list of up to 3 additional
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tags,
       listing possible alternative languages of the supplied audio. See
@@ -494,8 +494,7 @@ class RecognitionConfig(_messages.Message):
       details, see AudioEncoding.
     speechContexts: Array of SpeechContext. A means to provide context to
       assist the speech recognition. For more information, see [speech
-      adaptation](https://cloud.google.com/speech-to-text/docs/context-
-      strength).
+      adaptation](https://cloud.google.com/speech-to-text/docs/adaptation).
     useEnhanced: Set to true to use an enhanced model for speech recognition.
       If `use_enhanced` is set to true and the `model` field is not set, then
       an appropriate enhanced model is chosen if an enhanced model exists for

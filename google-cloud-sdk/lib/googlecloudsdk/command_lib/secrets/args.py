@@ -253,6 +253,44 @@ def AddUpdateExpirationGroup(parser):
           'If set, removes scheduled expiration from secret (if it had one).'))
 
 
+def AddCreateRotationGroup(parser):
+  """Add flags for specifying rotation on secret creates."""
+
+  group = parser.add_group(mutex=False, help='Rotation.')
+  group.add_argument(
+      _ArgOrFlag('next-rotation-time', False),
+      help=('Timestamp at which to send rotation notification.'))
+  group.add_argument(
+      _ArgOrFlag('rotation-period', False),
+      help=('Duration of time (in seconds) between rotation notifications.'))
+
+
+def AddUpdateRotationGroup(parser):
+  """Add flags for specifying rotation on secret updates.."""
+
+  group = parser.add_group(mutex=False, help='Rotation.')
+  group.add_argument(
+      _ArgOrFlag('next-rotation-time', False),
+      help=('Timestamp at which to send rotation notification.'))
+  group.add_argument(
+      _ArgOrFlag('remove-next-rotation-time', False),
+      action='store_true',
+      help=('Remove timestamp at which to send rotation notification.'))
+  group.add_argument(
+      _ArgOrFlag('rotation-period', False),\
+      help=('Duration of time (in seconds) between rotation notifications.'))
+  group.add_argument(
+      _ArgOrFlag('remove-rotation-period', False),
+      action='store_true',
+      help=(
+          'If set, removes the rotation period, cancelling all rotations except for the next one.'
+      ))
+  group.add_argument(
+      _ArgOrFlag('remove-rotation-schedule', False),
+      action='store_true',
+      help=('If set, removes rotation policy from a secret.'))
+
+
 def _ArgOrFlag(name, positional):
   """Returns the argument name in resource argument format or flag format.
 

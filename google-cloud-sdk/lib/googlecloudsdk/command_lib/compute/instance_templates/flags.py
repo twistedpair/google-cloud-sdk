@@ -170,14 +170,17 @@ def ValidateServiceProxyFlags(args):
 
 def AddPostKeyRevocationActionTypeArgs(parser):
   """Helper to add --post-key-revocation-action-type flag."""
+  help_text = ('Specifies the behavior of the instance when the KMS key of one '
+               'of its attached disks is revoked. The default is noop.')
+  choices_text = {
+      'noop':
+          'No operation is performed.',
+      'shutdown': ('The instance is shut down when the KMS key of one of '
+                   'its attached disks is revoked.')
+  }
   parser.add_argument(
       '--post-key-revocation-action-type',
-      choices=['noop', 'shutdown'],
+      choices=choices_text,
       metavar='POLICY',
       required=False,
-      help="""\
-      The instance will be shut down when the KMS key of one of its disk is
-      revoked, if set to `SHUTDOWN`.
-
-      Default setting is `NOOP`.
-      """)
+      help=help_text)

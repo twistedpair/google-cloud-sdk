@@ -1990,6 +1990,8 @@ class JobStatistics(_messages.Message):
     rowLevelSecurityStatistics: [Output-only] [Preview] Statistics for row-
       level security. Present only for query and extract jobs.
     scriptStatistics: [Output-only] Statistics for a child job of a script.
+    sessionInfoTemplate: [Output-only] [Preview] Information of the session if
+      this job is part of one.
     startTime: [Output-only] Start time of this job, in milliseconds since the
       epoch. This field will be present when the job transitions from the
       PENDING state to either RUNNING or DONE.
@@ -2026,10 +2028,11 @@ class JobStatistics(_messages.Message):
   reservation_id = _messages.StringField(11)
   rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 12)
   scriptStatistics = _messages.MessageField('ScriptStatistics', 13)
-  startTime = _messages.IntegerField(14)
-  totalBytesProcessed = _messages.IntegerField(15)
-  totalSlotMs = _messages.IntegerField(16)
-  transactionInfoTemplate = _messages.MessageField('TransactionInfo', 17)
+  sessionInfoTemplate = _messages.MessageField('SessionInfo', 14)
+  startTime = _messages.IntegerField(15)
+  totalBytesProcessed = _messages.IntegerField(16)
+  totalSlotMs = _messages.IntegerField(17)
+  transactionInfoTemplate = _messages.MessageField('TransactionInfo', 18)
 
 
 class JobStatistics2(_messages.Message):
@@ -2638,6 +2641,8 @@ class QueryResponse(_messages.Message):
       GetQueryResults and specify the jobReference returned above.
     schema: The schema of the results. Present only when the query completes
       successfully.
+    sessionInfoTemplate: [Output-only] [Preview] Information of the session if
+      this job is part of one.
     totalBytesProcessed: The total number of bytes processed for this query.
       If this query was a dry run, this is the number of bytes that would be
       processed if the query were run.
@@ -2655,8 +2660,9 @@ class QueryResponse(_messages.Message):
   pageToken = _messages.StringField(7)
   rows = _messages.MessageField('TableRow', 8, repeated=True)
   schema = _messages.MessageField('TableSchema', 9)
-  totalBytesProcessed = _messages.IntegerField(10)
-  totalRows = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  sessionInfoTemplate = _messages.MessageField('SessionInfo', 10)
+  totalBytesProcessed = _messages.IntegerField(11)
+  totalRows = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
 
 
 class QueryTimelineSample(_messages.Message):
@@ -2795,6 +2801,16 @@ class ScriptStatistics(_messages.Message):
 
   evaluationKind = _messages.StringField(1)
   stackFrames = _messages.MessageField('ScriptStackFrame', 2, repeated=True)
+
+
+class SessionInfo(_messages.Message):
+  r"""A SessionInfo object.
+
+  Fields:
+    sessionId: [Output-only] // [Preview] Id of the session.
+  """
+
+  sessionId = _messages.StringField(1)
 
 
 class SnapshotDefinition(_messages.Message):
@@ -3163,8 +3179,8 @@ class TableFieldSchema(_messages.Message):
     type: [Required] The field data type. Possible values include STRING,
       BYTES, INTEGER, INT64 (same as INTEGER), FLOAT, FLOAT64 (same as FLOAT),
       NUMERIC, BIGNUMERIC, BOOLEAN, BOOL (same as BOOLEAN), TIMESTAMP, DATE,
-      TIME, DATETIME, RECORD (where RECORD indicates that the field contains a
-      nested schema) or STRUCT (same as RECORD).
+      TIME, DATETIME, INTERVAL, RECORD (where RECORD indicates that the field
+      contains a nested schema) or STRUCT (same as RECORD).
   """
 
   class CategoriesValue(_messages.Message):

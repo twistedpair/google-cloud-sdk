@@ -144,6 +144,10 @@ class BitbucketServerConfig(_messages.Message):
     connectedRepositories: Connected Bitbucket Server repositories for this
       config.
     createTime: Time when the config was created.
+    displayName: Optional. The user assigned display name for the config.
+      Display names must meet the following requirements: + They must contain
+      only alphanumeric characters and dashes. + They can be 1-64 characters
+      long. + They must begin and end with an alphanumeric character.
     hostUri: Required. The URI of the Bitbucket Server host.
     name: The resource name for the config.
     peeredNetwork: Optional. The network to be used when reaching out to the
@@ -165,12 +169,13 @@ class BitbucketServerConfig(_messages.Message):
   apiKey = _messages.StringField(1)
   connectedRepositories = _messages.MessageField('BitbucketServerRepositoryId', 2, repeated=True)
   createTime = _messages.StringField(3)
-  hostUri = _messages.StringField(4)
-  name = _messages.StringField(5)
-  peeredNetwork = _messages.StringField(6)
-  secrets = _messages.MessageField('BitbucketServerSecrets', 7)
-  username = _messages.StringField(8)
-  webhookKey = _messages.StringField(9)
+  displayName = _messages.StringField(4)
+  hostUri = _messages.StringField(5)
+  name = _messages.StringField(6)
+  peeredNetwork = _messages.StringField(7)
+  secrets = _messages.MessageField('BitbucketServerSecrets', 8)
+  username = _messages.StringField(9)
+  webhookKey = _messages.StringField(10)
 
 
 class BitbucketServerRepositoryId(_messages.Message):
@@ -2797,11 +2802,14 @@ class Source(_messages.Message):
       Source Repository.
     storageSource: If provided, get the source from this location in Google
       Cloud Storage.
+    storageSourceManifest: If provided, get the source from this manifest in
+      Google Cloud Storage. This feature is in Preview.
   """
 
   gitSource = _messages.MessageField('GitSource', 1)
   repoSource = _messages.MessageField('RepoSource', 2)
   storageSource = _messages.MessageField('StorageSource', 3)
+  storageSourceManifest = _messages.MessageField('StorageSourceManifest', 4)
 
 
 class SourceProvenance(_messages.Message):
@@ -2831,6 +2839,9 @@ class SourceProvenance(_messages.Message):
       with any revisions resolved.
     resolvedStorageSource: A copy of the build's `source.storage_source`, if
       exists, with any generations resolved.
+    resolvedStorageSourceManifest: A copy of the build's
+      `source.storage_source_manifest`, if exists, with any revisions
+      resolved. This feature is in Preview.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2866,6 +2877,7 @@ class SourceProvenance(_messages.Message):
   fileHashes = _messages.MessageField('FileHashesValue', 1)
   resolvedRepoSource = _messages.MessageField('RepoSource', 2)
   resolvedStorageSource = _messages.MessageField('StorageSource', 3)
+  resolvedStorageSourceManifest = _messages.MessageField('StorageSourceManifest', 4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2993,6 +3005,25 @@ class StorageSource(_messages.Message):
       generation is omitted, the latest generation will be used.
     object: Google Cloud Storage object containing the source. This object
       must be a gzipped archive file (`.tar.gz`) containing source to build.
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
+class StorageSourceManifest(_messages.Message):
+  r"""Location of the source manifest in Google Cloud Storage. This feature is
+  in Preview.
+
+  Fields:
+    bucket: Google Cloud Storage bucket containing the source manifest (see
+      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
+      naming#requirements)).
+    generation: Google Cloud Storage generation for the object. If the
+      generation is omitted, the latest generation will be used.
+    object: Google Cloud Storage object containing the source manifest. This
+      object must be a JSON file.
   """
 
   bucket = _messages.StringField(1)

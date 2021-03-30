@@ -2247,16 +2247,16 @@ class GoogleCloudHealthcareV1beta1DicomGcsSource(_messages.Message):
     uri: Points to a Cloud Storage URI containing file(s) with content only.
       The URI must be in the following format: `gs://{bucket_id}/{object_id}`.
       The URI can include wildcards in `object_id` and thus identify multiple
-      files. Supported wildcards: '*' to match 0 or more non-separator
-      characters '**' to match 0 or more characters (including separators).
+      files. Supported wildcards: * '*' to match 0 or more non-separator
+      characters * '**' to match 0 or more characters (including separators).
       Must be used at the end of a path and with no other wildcards in the
       path. Can also be used with a file extension (such as .dcm), which
       imports all files with the extension in the specified directory and its
       sub-directories. For example, `gs://my-bucket/my-directory/**.dcm`
       imports all files with .dcm extensions in `my-directory/` and its sub-
-      directories. '?' to match 1 character All other URI formats are invalid.
-      Files matching the wildcard are expected to contain content only, no
-      metadata.
+      directories. * '?' to match 1 character. All other URI formats are
+      invalid. Files matching the wildcard are expected to contain content
+      only, no metadata.
   """
 
   uri = _messages.StringField(1)
@@ -2286,8 +2286,8 @@ class GoogleCloudHealthcareV1beta1DicomStreamConfig(_messages.Message):
       BigQuery imposes a 1 MB limit on streaming insert row size, therefore
       any instance that generates more than 1 MB of BigQuery data will not be
       streamed. If an instance cannot be streamed to BigQuery, errors will be
-      logged to Cloud Logging (see [Viewing logs](/healthcare/docs/how-
-      [Viewing logs](/healthcare/docs/how-tos/logging)).
+      logged to Cloud Logging (see [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomBigQueryDestination', 1)
@@ -5293,7 +5293,7 @@ class Hl7V2NotificationConfig(_messages.Message):
       permissions causes the calls that send notifications to fail. If a
       notification can't be published to Pub/Sub, errors are logged to Cloud
       Logging. For more information, see [Viewing error logs in Cloud
-      Logging](/healthcare/docs/how-tos/logging).
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging).
   """
 
   filter = _messages.StringField(1)
@@ -6094,8 +6094,9 @@ class NotificationConfig(_messages.Message):
       publisher permissions on the given Pub/Sub topic. Not having adequate
       permissions causes the calls that send notifications to fail. If a
       notification can't be published to Pub/Sub, errors are logged to Cloud
-      Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)). If the
-      number of errors exceeds a certain rate, some aren't submitted. Note
+      Logging (see [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)). If
+      the number of errors exceeds a certain rate, some aren't submitted. Note
       that not all operations trigger notifications, see [Configuring Pub/Sub
       notifications](https://cloud.google.com/healthcare/docs/how-tos/pubsub)
       for specific details.
@@ -6224,8 +6225,9 @@ class OperationMetadata(_messages.Message):
     createTime: The time at which the operation was created by the API.
     endTime: The time at which execution was completed.
     logsUrl: A link to audit and error logs in the log viewer. Error logs are
-      generated only by some operations, listed at [Viewing
-      logs](/healthcare/docs/how-tos/logging).
+      generated only by some operations, listed at [Viewing error logs in
+      Cloud Logging](https://cloud.google.com/healthcare/docs/how-
+      tos/logging).
   """
 
   apiMethodName = _messages.StringField(1)
@@ -6393,9 +6395,9 @@ class QueryAccessibleDataRequest(_messages.Message):
   r"""Queries all data_ids that are consented for a given use in the given
   consent store and writes them to a specified destination. The returned
   Operation includes a progress counter for the number of User data mappings
-  processed. Errors are logged to Cloud Logging (see [Viewing logs]
-  (/healthcare/docs/how-tos/logging) and [QueryAccessibleData] for a sample
-  log entry).
+  processed. Errors are logged to Cloud Logging (see [Viewing error logs in
+  Cloud Logging] (https://cloud.google.com/healthcare/docs/how-tos/logging)
+  and [QueryAccessibleData] for a sample log entry).
 
   Messages:
     RequestAttributesValue: The values of request attributes associated with
@@ -7082,8 +7084,8 @@ class StreamConfig(_messages.Message):
       meta.versionId pair. Alternatively, the server created view mentioned
       above also filters out duplicates. If a resource mutation cannot be
       streamed to BigQuery, errors will be logged to Cloud Logging (see
-      [Viewing error logs in Cloud Logging](/healthcare/docs/how-
-      tos/logging)).
+      [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

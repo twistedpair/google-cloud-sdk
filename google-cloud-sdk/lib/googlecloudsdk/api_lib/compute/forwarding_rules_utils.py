@@ -126,7 +126,7 @@ def _ValidateRegionalArgs(args):
   schemes_allowing_network_fields = ['INTERNAL', 'INTERNAL_MANAGED']
   ip_version = getattr(args, 'ip_version', None)
   if ip_version == 'IPV6' and (
-      getattr(args, 'load_balancing_scheme', None) != 'EXTERNAL' or
+      getattr(args, 'load_balancing_scheme', None) not in [None, 'EXTERNAL'] or
       not getattr(args, 'backend_service', None) or
       not getattr(args, 'subnet', None) or getattr(args, 'network', None)):
     raise calliope_exceptions.ToolException(

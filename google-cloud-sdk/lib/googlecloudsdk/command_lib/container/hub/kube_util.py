@@ -791,7 +791,7 @@ def _ParseGKEURI(gke_uri):
 
   raise exceptions.Error(
       'argument --gke-uri: {} is invalid. '
-      '--gke-uri must be of format: `https://container.googleapis.com/projects/my-project/locations/us-central1-a/clusters/my-cluster`. '
+      '--gke-uri must be of format: `https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster`. '
       'You can use command: `gcloud container clusters list --uri` to view the '
       'current GKE clusters in your project.'
       .format(gke_uri))

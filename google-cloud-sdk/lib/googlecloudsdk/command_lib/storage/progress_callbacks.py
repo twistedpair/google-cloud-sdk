@@ -99,3 +99,21 @@ class FilesAndBytesProgressCallback:
             operation_name=self._operation_name,
             process_id=self._process_id,
             thread_id=self._thread_id))
+
+
+def files_and_bytes_workload_estimator_callback(status_queue, file_count, size):
+  """Tracks expected file count and bytes for large file operations.
+
+  Information is sent to the status_queue, which will aggregate it
+  for printing to the user. Useful for heavy operations like copy. For example,
+  this sets the "100" in "copied 5/100 files."
+  Arguments similar to thread_messages.WorkloadEstimatorMessage.
+
+  Args:
+    status_queue (multiprocessing.Queue): Reference to global queue.
+    file_count (int): Number of files to add to workload estimation.
+    size (int): Number of bytes to add to workload estimation.
+  """
+  status_queue.put(
+      thread_messages.WorkloadEstimatorMessage(
+          file_count=file_count, size=size))

@@ -84,16 +84,27 @@ def AddListResourcesFlags(parser):
                    'resources for.'))
 
 
-def AddResourceTypeFlag(parser):
+def AddResourceTypeFlags(parser):
   """Add resource-type flag to parser."""
-  parser.add_argument(
+  group = parser.add_group(mutex=True, required=False)
+  group.add_argument(
       '--resource-types',
       type=arg_parsers.ArgList(),
       metavar='RESOURCE_TYPE',
       help="""List of Config Connector KRM Kinds to export.
   For a full list of supported resource types for a given parent scope run:
 
-  $ gcloud resource-config list-resources --[project|organization|folder]=<PARENT>
+  $ {parent_command} list-resources --[project|organization|folder]=<PARENT>
+  """)
+  group.add_argument(
+      '--resource-types-file',
+      type=arg_parsers.FileContents(),
+      metavar='RESOURCE_TYPE_FILE',
+      help="""A comma (',') or newline ('\\n') separated file containing the list of
+      Config Connector KRM Kinds to export.
+  For a full list of supported resource types for a given parent scope run:
+
+  $ {parent_command} list-resources --[project|organization|folder]=<PARENT>
   """)
 
 
@@ -102,7 +113,7 @@ def AddBulkExportArgs(parser):
   AddOnErrorFlag(parser)
   AddPathFlag(parser)
   AddFormatFlag(parser)
-  AddResourceTypeFlag(parser)
+  AddResourceTypeFlags(parser)
   _GetBulkExportParentGroup(parser)
 
 

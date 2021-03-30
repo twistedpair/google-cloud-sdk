@@ -203,6 +203,33 @@ class MediaassetV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new asset in a given project and location.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesAssetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets',
+        http_method='POST',
+        method_id='mediaasset.projects.locations.assetTypes.assets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['assetId'],
+        relative_path='v1alpha/{+parent}/assets',
+        request_field='asset',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a single asset.
 
@@ -426,7 +453,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesAssetsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Asset) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -442,7 +469,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}',
         request_field='asset',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsPatchRequest',
-        response_type_name='Asset',
+        response_type_name='Operation',
         supports_download=False,
     )
 

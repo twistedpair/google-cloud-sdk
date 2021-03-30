@@ -201,11 +201,9 @@ def ValidateSettingPath(setting):
   if GetResourceTypeFromString(setting) == 'invalid':
     return False
   setting_list = setting.split('/')
-  if len(setting_list) != 5:
+  if len(setting_list) != 4:
     return False
   elif setting_list[2] != 'settings':
-    return False
-  elif setting_list[4] != 'value':
     return False
 
   return True

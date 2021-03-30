@@ -322,6 +322,24 @@ class ResourcesettingsFoldersSettingsListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
+class ResourcesettingsFoldersSettingsPatchRequest(_messages.Message):
+  r"""A ResourcesettingsFoldersSettingsPatchRequest object.
+
+  Fields:
+    googleCloudResourcesettingsV1Setting: A
+      GoogleCloudResourcesettingsV1Setting resource to be passed as the
+      request body.
+    name: The resource name of the setting. Must be in one of the following
+      forms: * `projects/{project_number}/settings/{setting_name}` *
+      `folders/{folder_id}/settings/{setting_name}` *
+      `organizations/{organization_id}/settings/{setting_name}` For example,
+      "/projects/123/settings/gcp-enableMyFeature"
+  """
+
+  googleCloudResourcesettingsV1Setting = _messages.MessageField('GoogleCloudResourcesettingsV1Setting', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ResourcesettingsFoldersSettingsSearchRequest(_messages.Message):
   r"""A ResourcesettingsFoldersSettingsSearchRequest object.
 
@@ -337,25 +355,6 @@ class ResourcesettingsFoldersSettingsSearchRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class ResourcesettingsFoldersSettingsUpdateValueRequest(_messages.Message):
-  r"""A ResourcesettingsFoldersSettingsUpdateValueRequest object.
-
-  Fields:
-    googleCloudResourcesettingsV1SettingValue: A
-      GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
-      request body.
-    name: The resource name of the setting value. Must be in one of the
-      following forms: *
-      `projects/{project_number}/settings/{setting_name}/value` *
-      `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value` For
-      example, "/projects/123/settings/gcp-enableMyFeature/value"
-  """
-
-  googleCloudResourcesettingsV1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1SettingValue', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class ResourcesettingsFoldersSettingsValueCreateRequest(_messages.Message):
@@ -481,6 +480,24 @@ class ResourcesettingsOrganizationsSettingsListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
+class ResourcesettingsOrganizationsSettingsPatchRequest(_messages.Message):
+  r"""A ResourcesettingsOrganizationsSettingsPatchRequest object.
+
+  Fields:
+    googleCloudResourcesettingsV1Setting: A
+      GoogleCloudResourcesettingsV1Setting resource to be passed as the
+      request body.
+    name: The resource name of the setting. Must be in one of the following
+      forms: * `projects/{project_number}/settings/{setting_name}` *
+      `folders/{folder_id}/settings/{setting_name}` *
+      `organizations/{organization_id}/settings/{setting_name}` For example,
+      "/projects/123/settings/gcp-enableMyFeature"
+  """
+
+  googleCloudResourcesettingsV1Setting = _messages.MessageField('GoogleCloudResourcesettingsV1Setting', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ResourcesettingsOrganizationsSettingsSearchRequest(_messages.Message):
   r"""A ResourcesettingsOrganizationsSettingsSearchRequest object.
 
@@ -496,25 +513,6 @@ class ResourcesettingsOrganizationsSettingsSearchRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class ResourcesettingsOrganizationsSettingsUpdateValueRequest(_messages.Message):
-  r"""A ResourcesettingsOrganizationsSettingsUpdateValueRequest object.
-
-  Fields:
-    googleCloudResourcesettingsV1SettingValue: A
-      GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
-      request body.
-    name: The resource name of the setting value. Must be in one of the
-      following forms: *
-      `projects/{project_number}/settings/{setting_name}/value` *
-      `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value` For
-      example, "/projects/123/settings/gcp-enableMyFeature/value"
-  """
-
-  googleCloudResourcesettingsV1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1SettingValue', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class ResourcesettingsOrganizationsSettingsValueCreateRequest(_messages.Message):
@@ -640,6 +638,24 @@ class ResourcesettingsProjectsSettingsListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
+class ResourcesettingsProjectsSettingsPatchRequest(_messages.Message):
+  r"""A ResourcesettingsProjectsSettingsPatchRequest object.
+
+  Fields:
+    googleCloudResourcesettingsV1Setting: A
+      GoogleCloudResourcesettingsV1Setting resource to be passed as the
+      request body.
+    name: The resource name of the setting. Must be in one of the following
+      forms: * `projects/{project_number}/settings/{setting_name}` *
+      `folders/{folder_id}/settings/{setting_name}` *
+      `organizations/{organization_id}/settings/{setting_name}` For example,
+      "/projects/123/settings/gcp-enableMyFeature"
+  """
+
+  googleCloudResourcesettingsV1Setting = _messages.MessageField('GoogleCloudResourcesettingsV1Setting', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ResourcesettingsProjectsSettingsSearchRequest(_messages.Message):
   r"""A ResourcesettingsProjectsSettingsSearchRequest object.
 
@@ -655,25 +671,6 @@ class ResourcesettingsProjectsSettingsSearchRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class ResourcesettingsProjectsSettingsUpdateValueRequest(_messages.Message):
-  r"""A ResourcesettingsProjectsSettingsUpdateValueRequest object.
-
-  Fields:
-    googleCloudResourcesettingsV1SettingValue: A
-      GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
-      request body.
-    name: The resource name of the setting value. Must be in one of the
-      following forms: *
-      `projects/{project_number}/settings/{setting_name}/value` *
-      `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value` For
-      example, "/projects/123/settings/gcp-enableMyFeature/value"
-  """
-
-  googleCloudResourcesettingsV1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1SettingValue', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class ResourcesettingsProjectsSettingsValueCreateRequest(_messages.Message):

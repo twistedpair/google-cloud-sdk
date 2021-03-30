@@ -312,6 +312,10 @@
           "description": "Configuration for issuance of mTLS keys and certificates to Kubernetes pods.",
           "$ref": "WorkloadCertificates"
         },
+        "workloadAltsConfig": {
+          "description": "Configuration for direct-path (via ALTS) with workload identity.",
+          "$ref": "WorkloadALTSConfig"
+        },
         "costManagementConfig": {
           "description": "Configuration for the fine-grained cost management feature.",
           "$ref": "CostManagementConfig"
@@ -2218,7 +2222,7 @@
           "type": "string"
         },
         "enableAlts": {
-          "description": "enable_alts controls whether the alts handshaker should be enabled or not for direct-path.",
+          "description": "DEPRECATED: Use enable_alts instead enable_alts controls whether the alts handshaker should be enabled or not for direct-path.",
           "type": "boolean"
         }
       }
@@ -2230,6 +2234,17 @@
       "properties": {
         "enableCertificates": {
           "description": "enable_certificates controls issuance of workload mTLS certificates. If set, the GKE Workload Identity Certificates controller and node agent will be deployed in the cluster, which can then be configured by creating a WorkloadCertificateConfig Custom Resource. Requires Workload Identity (workload_pool must be non-empty).",
+          "type": "boolean"
+        }
+      }
+    },
+    "WorkloadALTSConfig": {
+      "id": "WorkloadALTSConfig",
+      "description": "Configuration for direct-path (via ALTS) with workload identity.",
+      "type": "object",
+      "properties": {
+        "enableAlts": {
+          "description": "enable_alts controls whether the alts handshaker should be enabled or not for direct-path. Requires Workload Identity (workload_pool must be non-empty).",
           "type": "boolean"
         }
       }
@@ -2879,6 +2894,10 @@
         "desiredWorkloadCertificates": {
           "description": "Configuration for issuance of mTLS keys and certificates to Kubernetes pods.",
           "$ref": "WorkloadCertificates"
+        },
+        "desiredWorkloadAltsConfig": {
+          "description": "Configuration for direct-path (via ALTS) with workload identity.",
+          "$ref": "WorkloadALTSConfig"
         },
         "desiredShieldedNodes": {
           "description": "Configuration for Shielded Nodes.",

@@ -86,3 +86,28 @@ def LocationAttributeConfig():
       ],
       help_text='The Cloud region for the {resource}. '
       ' Alternatively, set the property [deploy/region].')
+
+
+def AddLocationResourceArg(parser):
+  """Adds a resource argument for a cloud deploy region.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser for the command.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      '--region',
+      GetLocationResourceSpec(),
+      'The Cloud region of {resource}.',
+      required=True).AddToParser(parser)
+
+
+def GetLocationResourceSpec():
+  """Constructs and returns the Resource specification for location."""
+  return concepts.ResourceSpec(
+      'clouddeploy.projects.locations',
+      resource_name='location',
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )

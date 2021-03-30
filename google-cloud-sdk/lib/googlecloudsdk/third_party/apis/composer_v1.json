@@ -652,13 +652,15 @@
             "Unused.",
             "A resource creation operation.",
             "A resource deletion operation.",
-            "A resource update operation."
+            "A resource update operation.",
+            "A resource check operation."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "CREATE",
             "DELETE",
-            "UPDATE"
+            "UPDATE",
+            "CHECK"
           ]
         },
         "resource": {

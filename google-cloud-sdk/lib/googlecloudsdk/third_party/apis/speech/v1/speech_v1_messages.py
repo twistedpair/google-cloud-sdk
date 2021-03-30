@@ -289,8 +289,7 @@ class RecognitionConfig(_messages.Message):
       details, see AudioEncoding.
     speechContexts: Array of SpeechContext. A means to provide context to
       assist the speech recognition. For more information, see [speech
-      adaptation](https://cloud.google.com/speech-to-text/docs/context-
-      strength).
+      adaptation](https://cloud.google.com/speech-to-text/docs/adaptation).
     useEnhanced: Set to true to use an enhanced model for speech recognition.
       If `use_enhanced` is set to true and the `model` field is not set, then
       an appropriate enhanced model is chosen if an enhanced model exists for

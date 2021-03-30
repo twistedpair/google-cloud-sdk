@@ -27,6 +27,19 @@ RECOMMENDER_API_BETA_VERSION = 'v1beta1'
 RECOMMENDER_API_GA_VERSION = 'v1'
 
 
+def GetConfigServiceFromArgs(api_version, is_insight_api):
+  """Returns the config api service from the user-specified arguments.
+
+  Args:
+    api_version: API version string.
+    is_insight_api: boolean value sepcify whether this is a insight api,
+      otherwise will return a recommendation service api.
+  """
+  if is_insight_api:
+    return recommender_service.ProjectsInsightTypeConfigsService(api_version)
+  return recommender_service.ProjectsRecommenderConfigsService(api_version)
+
+
 def GetServiceFromArgs(args, is_insight_api, api_version):
   """Returns the service from the user-specified arguments.
 
@@ -111,6 +124,29 @@ def GetListRequestFromArgs(args, parent_resource, is_insight_api, api_version):
           parent=parent_resource)
 
   return get_request
+
+
+def GetDescribeConfigRequestFromArgs(parent_resource, is_insight_api,
+                                     api_version):
+  """Returns the describe request from the user-specified arguments.
+
+  Args:
+    parent_resource: resource url string, the flags are already defined in
+      argparse namespace.
+    is_insight_api: boolean value specifying whether this is a insight api,
+      otherwise treat as a recommender service api and return related describe
+      request message.
+    api_version: API version string.
+  """
+
+  messages = recommender_service.RecommenderMessages(api_version)
+  if is_insight_api:
+    request = messages.RecommenderProjectsLocationsInsightTypesGetConfigRequest(
+        name=parent_resource)
+  else:
+    request = messages.RecommenderProjectsLocationsRecommendersGetConfigRequest(
+        name=parent_resource)
+  return request
 
 
 def GetDescribeRequestFromArgs(args, parent_resource, is_insight_api,

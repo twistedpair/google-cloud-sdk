@@ -105,7 +105,12 @@ class FileDownloadTask(task.Task):
       )
       log.debug('Launching sliced download with {} components.'.format(
           len(download_component_task_list)))
-      return [download_component_task_list, finalize_sliced_download_task_list]
+      return task.Output(
+          additional_task_iterators=[
+              download_component_task_list,
+              finalize_sliced_download_task_list,
+          ],
+          messages=None)
     else:
       file_part_download_task.FilePartDownloadTask(
           self._source_resource,

@@ -261,8 +261,7 @@ class Certificate(_messages.Message):
       DEFAULT: Certificates with default scope are served from core Google
         data centers. If unsure, choose this option.
       EDGE_CACHE: Certificates with scope EDGE_CACHE are special-purposed
-        certificates, served from non-core Google data centers. Currently
-        allowed only for managed certificates.
+        certificates, served from non-core Google data centers.
     """
     DEFAULT = 0
     EDGE_CACHE = 1

@@ -499,6 +499,8 @@ class Cluster(_messages.Message):
       Domain_Routing) notation (e.g. `1.2.3.4/29`).
     verticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
+    workloadAltsConfig: Configuration for direct-path (via ALTS) with workload
+      identity.
     workloadCertificates: Configuration for issuance of mTLS keys and
       certificates to Kubernetes pods.
     workloadIdentityConfig: Configuration for the use of Kubernetes Service
@@ -626,10 +628,11 @@ class Cluster(_messages.Message):
   tpuConfig = _messages.MessageField('TpuConfig', 61)
   tpuIpv4CidrBlock = _messages.StringField(62)
   verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 63)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 64)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 65)
-  workloadMonitoringEnabledEap = _messages.BooleanField(66)
-  zone = _messages.StringField(67)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 64)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 65)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 66)
+  workloadMonitoringEnabledEap = _messages.BooleanField(67)
+  zone = _messages.StringField(68)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -808,6 +811,8 @@ class ClusterUpdate(_messages.Message):
     desiredTpuConfig: The desired Cloud TPU configuration.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
+    desiredWorkloadAltsConfig: Configuration for direct-path (via ALTS) with
+      workload identity.
     desiredWorkloadCertificates: Configuration for issuance of mTLS keys and
       certificates to Kubernetes pods.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
@@ -885,9 +890,10 @@ class ClusterUpdate(_messages.Message):
   desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 36)
   desiredTpuConfig = _messages.MessageField('TpuConfig', 37)
   desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 38)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 39)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 40)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 41)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 39)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 40)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 41)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 42)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2508,7 +2514,7 @@ class NetworkPolicyConfig(_messages.Message):
 
 class NetworkTags(_messages.Message):
   r"""Collection of Compute Engine network tags that can be applied to a
-  node's underyling VM instance. (See `tags` field in
+  node's underlying VM instance. (See `tags` field in
   [`NodeConfig`](/kubernetes-engine/docs/reference/rest/v1/NodeConfig)).
 
   Fields:
@@ -4630,6 +4636,18 @@ class VerticalPodAutoscaling(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class WorkloadALTSConfig(_messages.Message):
+  r"""Configuration for direct-path (via ALTS) with workload identity.
+
+  Fields:
+    enableAlts: enable_alts controls whether the alts handshaker should be
+      enabled or not for direct-path. Requires Workload Identity
+      (workload_pool must be non-empty).
+  """
+
+  enableAlts = _messages.BooleanField(1)
+
+
 class WorkloadCertificates(_messages.Message):
   r"""Configuration for issuance of mTLS keys and certificates to Kubernetes
   pods.
@@ -4650,8 +4668,8 @@ class WorkloadIdentityConfig(_messages.Message):
   policies.
 
   Fields:
-    enableAlts: enable_alts controls whether the alts handshaker should be
-      enabled or not for direct-path.
+    enableAlts: DEPRECATED: Use enable_alts instead enable_alts controls
+      whether the alts handshaker should be enabled or not for direct-path.
     identityNamespace: IAM Identity Namespace to attach all Kubernetes Service
       Accounts to.
     identityProvider: identity provider is the third party identity provider.

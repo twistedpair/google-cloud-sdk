@@ -91,6 +91,7 @@ SCHEMA = s.Message(
     entrypoint=s.Value(converter=c.ConvertEntrypoint),
     env=s.Value(),
     env_variables=s.Map(),
+    build_env_variables=s.Map(),
     error_handlers=s.RepeatedField(element=s.Message(
         error_code=s.Value(converter=c.EnumConverter('ERROR_CODE')),
         file=s.Value('static_file', converter=c.ToJsonString),

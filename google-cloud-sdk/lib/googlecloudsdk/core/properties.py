@@ -1585,6 +1585,13 @@ class _SectionAuth(_Section):
         'sv2@developer.gserviceaccount.com is target impersonated service '
         'account and sv1@developer.gserviceaccount.com is the delegate.',
     )
+    self.disable_code_verifier = self._AddBool(
+        'disable_code_verifier',
+        default=False,
+        hidden=True,
+        help_text='Disable code verifier in 3LO auth flow. See '
+        'https://tools.ietf.org/html/rfc7636 for more information '
+        'about code verifier.')
     self.disable_load_google_auth = self._AddBool(
         'disable_load_google_auth',
         default=False,
@@ -2545,7 +2552,7 @@ class _SectionAi(_Section):
     super(_SectionAi, self).__init__('ai')
     self.region = self._Add(
         'region',
-        help_text='Default region to use when working with'
+        help_text='Default region to use when working with '
         'AI Platform resources. When a `--region` flag is required '
         'but not provided, the command will fall back to this value, if set.')
 

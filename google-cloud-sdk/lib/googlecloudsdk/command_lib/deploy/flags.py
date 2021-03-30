@@ -94,3 +94,13 @@ def AddSourceFlag(parser, hidden=False):
       default='.',  # By default, the current directory is used.
       help=_SOURCE_HELP_TEXT,
   )
+
+
+def AddConfigFile(parser, hidden=False):
+  """Add config flag."""
+  parser.add_argument(
+      '--file',
+      hidden=hidden,
+      required=True,
+      help='Path to yaml file containing Deliver Pipeline(s), Target(s) declarative definitions.',
+  )

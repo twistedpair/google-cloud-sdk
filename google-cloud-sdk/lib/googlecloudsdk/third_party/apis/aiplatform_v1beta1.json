@@ -585,7 +585,7 @@
           "type": "string"
         },
         "method": {
-          "description": "The method name of the API call. For example, \"\/google.cloud.aiplatform.v1alpha1.DatasetService.CreateDataset\"",
+          "description": "The method name of the API RPC call. For example, \"\/google.cloud.aiplatform.master.DatasetService.CreateDataset\"",
           "type": "string"
         }
       }
@@ -1379,7 +1379,7 @@
           "format": "google-datetime"
         },
         "network": {
-          "description": "Required. Immutable. The full name of the Google Compute Engine [network](https: \/\/cloud.google.com\/compute\/docs\/networks-and-firewalls#networks) to which the IndexEndpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. [Format](https: \/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): projects\/{project}\/global\/networks\/{network}. Where {project} is a project number, as in '12345', and {network} is network name.",
+          "description": "Required. Immutable. The full name of the Google Compute Engine [network](https:\/\/cloud.google.com\/compute\/docs\/networks-and-firewalls#networks) to which the IndexEndpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): projects\/{project}\/global\/networks\/{network}. Where {project} is a project number, as in '12345', and {network} is network name.",
           "type": "string"
         }
       }
@@ -1421,6 +1421,14 @@
         "automaticResources": {
           "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by AI Platform, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 1. If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
+        },
+        "enableAccessLogging": {
+          "description": "Optional. If true, private endpoint's access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each MatchRequest. Note that Stackdriver logs may incur a cost, especially if the deployed index receives a high queries per second rate (QPS). Estimate your costs before enabling this option.",
+          "type": "boolean"
+        },
+        "deployedIndexAuthConfig": {
+          "description": "Optional. If set, the authentication is enabled for the private endpoint.",
+          "$ref": "GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig"
         }
       }
     },
@@ -1433,6 +1441,31 @@
           "description": "Output only. The ip address used to send match gRPC requests.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig": {
+      "id": "GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig",
+      "description": "Used to set up the auth on the DeployedIndex's private endpoint.",
+      "type": "object",
+      "properties": {
+        "authProvider": {
+          "description": "Defines the authentication provider that the DeployedIndex uses.",
+          "$ref": "GoogleCloudAiplatformV1beta1DeployedIndexAuthConfigAuthProvider"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1DeployedIndexAuthConfigAuthProvider": {
+      "id": "GoogleCloudAiplatformV1beta1DeployedIndexAuthConfigAuthProvider",
+      "description": "Configuration for an authentication provider, including support for [JSON Web Token (JWT)](https:\/\/tools.ietf.org\/html\/draft-ietf-oauth-json-web-token-32).",
+      "type": "object",
+      "properties": {
+        "audiences": {
+          "description": "The list of JWT [audiences](https:\/\/tools.ietf.org\/html\/draft-ietf-oauth-json-web-token-32#section-4.1.3). that are allowed to access. A JWT containing any of these audiences will be accepted.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1654,7 +1687,7 @@
       "type": "object",
       "properties": {
         "executorImageUri": {
-          "description": "Required. The URI of a container image in the Container Registry that will run the provided python package. AI Platform provides wide range of executor images with pre-installed packages to meet users' various use cases. Only one of the provided images can be set here.",
+          "description": "Required. The URI of a container image in Artifact Registry that will run the provided Python package. AI Platform provides a wide range of executor images with pre-installed packages to meet users' various use cases. See the list of [pre-built containers for training](https:\/\/cloud.google.com\/ai-platform-unified\/docs\/training\/pre-built-containers). You must use an image from this list.",
           "type": "string"
         },
         "packageUris": {
@@ -3351,7 +3384,7 @@
       "type": "object",
       "properties": {
         "imageUri": {
-          "description": "Required. Immutable. URI of the Docker image to be used as the custom container for serving predictions. This URI must identify an image in Artifact Registry or Container Registry. Learn more about the container publishing requirements, including permissions requirements for the AI Platform Service Agent, [here](https:\/\/tinyurl.com\/cust-cont-reqs#publishing). The container image is ingested upon ModelService.UploadModel, stored internally, and this original path is afterwards not used. To learn about the requirements for the Docker image itself, see [Custom container requirements](https:\/\/tinyurl.com\/cust-cont-reqs).",
+          "description": "Required. Immutable. URI of the Docker image to be used as the custom container for serving predictions. This URI must identify an image in Artifact Registry or Container Registry. Learn more about the container publishing requirements, including permissions requirements for the AI Platform Service Agent, [here](https:\/\/tinyurl.com\/cust-cont-reqs#publishing). The container image is ingested upon ModelService.UploadModel, stored internally, and this original path is afterwards not used. To learn about the requirements for the Docker image itself, see [Custom container requirements](https:\/\/tinyurl.com\/cust-cont-reqs). You can use the URI to one of AI Platform's [pre-built container images for prediction](https:\/\/cloud.google.com\/ai-platform-unified\/docs\/predictions\/pre-built-containers) in this field.",
           "type": "string"
         },
         "command": {
@@ -4557,7 +4590,7 @@
       "type": "object",
       "properties": {
         "value": {
-          "description": "Required. Serialized form of https: \/\/github.com\/tensorflow\/tensorflow\/blob\/ \/\/ master\/tensorflow\/core\/framework\/tensor.proto",
+          "description": "Required. Serialized form of https:\/\/github.com\/tensorflow\/tensorflow\/blob\/master\/tensorflow\/core\/framework\/tensor.proto",
           "type": "string",
           "format": "byte"
         },
@@ -4632,6 +4665,48 @@
       "description": "Response message for TensorboardService.WriteTensorboardRunData.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataRequest": {
+      "id": "GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataRequest",
+      "description": "Request message for TensorboardService.ExportTensorboardTimeSeriesData.",
+      "type": "object",
+      "properties": {
+        "filter": {
+          "description": "Exports the TensorboardTimeSeries' data that match the filter expression.",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "The maximum number of data points to return per page. The default page_size will be 1000. Values must be between 1 and 10000. Values above 10000 will be coerced to 10000.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "A page token, received from a previous TensorboardService.ExportTensorboardTimeSeries call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to TensorboardService.ExportTensorboardTimeSeries must match the call that provided the page token.",
+          "type": "string"
+        },
+        "orderBy": {
+          "description": "Field to use to sort the TensorboardTimeSeries' data. By default, TensorboardTimeSeries' data will be returned in a pseudo random order.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataResponse": {
+      "id": "GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataResponse",
+      "description": "Response message for TensorboardService.ExportTensorboardTimeSeriesData.",
+      "type": "object",
+      "properties": {
+        "timeSeriesDataPoints": {
+          "description": "The returned time series data points.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1TimeSeriesDataPoint"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as ExportTensorboardTimeSeriesRequest.page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
       }
     },
     "GoogleCloudAiplatformV1beta1Study": {
@@ -5754,7 +5829,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoop": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoop",
-      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 23",
+      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 24",
       "type": "object",
       "properties": {
         "documentCriteria": {
@@ -5888,6 +5963,10 @@
         "encryptionSpec": {
           "description": "Customer-managed encryption key spec for the human in the loop configuration. If set, this human in the loop configuration will be secured by this key. Note: Annotations created in the DataLabelingJob from the human in the loop configuration are associated with the EncryptionSpec of the Dataset they are exported to.",
           "$ref": "GoogleCloudAiplatformInternalEncryptionSpec"
+        },
+        "deIdConfig": {
+          "description": "The de-identification config. If set this field, it will run HITL de-id instead of regular HITL pipeline.",
+          "$ref": "GoogleCloudAiplatformInternalDeIdentificationConfig"
         }
       }
     },
@@ -6029,6 +6108,46 @@
         "kmsKeyName": {
           "description": "Required. The Cloud KMS resource identifier of the customer managed encryption key used to protect a resource. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. The key needs to be in the same region as where the compute resource is created.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeIdentificationConfig": {
+      "id": "GoogleCloudAiplatformInternalDeIdentificationConfig",
+      "description": "Configuration describing whether and how to de-identify the documents.",
+      "type": "object",
+      "properties": {
+        "redactionSchemas": {
+          "description": "Redaction schemas. All annotations with these types will be considered being redacted by default, but human labelers can edit them.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformInternalDeIdentificationConfigRedactionSchema"
+          }
+        },
+        "redactionConfig": {
+          "description": "The config to redact the original documents by fake values.",
+          "$ref": "GoogleCloudAiplatformInternalDeIdentificationConfigRedactionConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeIdentificationConfigRedactionSchema": {
+      "id": "GoogleCloudAiplatformInternalDeIdentificationConfigRedactionSchema",
+      "description": "The schema used to redact the documents.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the schema.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalDeIdentificationConfigRedactionConfig": {
+      "id": "GoogleCloudAiplatformInternalDeIdentificationConfigRedactionConfig",
+      "description": "Configuration describing whether and how to redact the original documents.",
+      "type": "object",
+      "properties": {
+        "enableRendering": {
+          "description": "Whether enable rendering the new documents using fake values.",
+          "type": "boolean"
         }
       }
     },
@@ -7627,6 +7746,16 @@
       "description": "Response message for DatasetService.ImportData.",
       "type": "object",
       "properties": {
+        "importedDataItemsCount": {
+          "description": "The count of successfully imported DataItems.",
+          "type": "string",
+          "format": "int64"
+        },
+        "importedAnnotationsCount": {
+          "description": "The count of successfully imported Annotations.",
+          "type": "string",
+          "format": "int64"
+        }
       }
     },
     "GoogleCloudAiplatformUiRemoveAnnotationSpecFromSavedQueryOperationMetadata": {
@@ -8133,7 +8262,7 @@
     },
     "GoogleTypeColor": {
       "id": "GoogleTypeColor",
-      "description": "Represents a color in the RGBA color space. This representation is designed for simplicity of conversion to\/from color representations in various languages over compactness; for example, the fields of this representation can be trivially provided to the constructor of \"java.awt.Color\" in Java; it can also be trivially provided to UIColor's \"+colorWithRed:green:blue:alpha\" method in iOS; and, with just a little work, it can be easily formatted into a CSS \"rgba()\" string in JavaScript, as well. Note: this proto does not carry information about the absolute color space that should be used to interpret the RGB value (e.g. sRGB, Adobe RGB, DCI-P3, BT.2020, etc.). By default, applications SHOULD assume the sRGB color space. Note: when color equality needs to be decided, implementations, unless documented otherwise, will treat two colors to be equal if all their red, green, blue and alpha values each differ by at most 1e-5. Example (Java): import com.google.type.Color; \/\/ ... public static java.awt.Color fromProto(Color protocolor) { float alpha = protocolor.hasAlpha() ? protocolor.getAlpha().getValue() : 1.0; return new java.awt.Color( protocolor.getRed(), protocolor.getGreen(), protocolor.getBlue(), alpha); } public static Color toProto(java.awt.Color color) { float red = (float) color.getRed(); float green = (float) color.getGreen(); float blue = (float) color.getBlue(); float denominator = 255.0; Color.Builder resultBuilder = Color .newBuilder() .setRed(red \/ denominator) .setGreen(green \/ denominator) .setBlue(blue \/ denominator); int alpha = color.getAlpha(); if (alpha != 255) { result.setAlpha( FloatValue .newBuilder() .setValue(((float) alpha) \/ denominator) .build()); } return resultBuilder.build(); } \/\/ ... Example (iOS \/ Obj-C): \/\/ ... static UIColor* fromProto(Color* protocolor) { float red = [protocolor red]; float green = [protocolor green]; float blue = [protocolor blue]; FloatValue* alpha_wrapper = [protocolor alpha]; float alpha = 1.0; if (alpha_wrapper != nil) { alpha = [alpha_wrapper value]; } return [UIColor colorWithRed:red green:green blue:blue alpha:alpha]; } static Color* toProto(UIColor* color) { CGFloat red, green, blue, alpha; if (![color getRed:&red green:&green blue:&blue alpha:&alpha]) { return nil; } Color* result = [[Color alloc] init]; [result setRed:red]; [result setGreen:green]; [result setBlue:blue]; if (alpha <= 0.9999) { [result setAlpha:floatWrapperWithValue(alpha)]; } [result autorelease]; return result; } \/\/ ... Example (JavaScript): \/\/ ... var protoToCssColor = function(rgb_color) { var redFrac = rgb_color.red || 0.0; var greenFrac = rgb_color.green || 0.0; var blueFrac = rgb_color.blue || 0.0; var red = Math.floor(redFrac * 255); var green = Math.floor(greenFrac * 255); var blue = Math.floor(blueFrac * 255); if (!('alpha' in rgb_color)) { return rgbToCssColor_(red, green, blue); } var alphaFrac = rgb_color.alpha.value || 0.0; var rgbParams = [red, green, blue].join(','); return ['rgba(', rgbParams, ',', alphaFrac, ')'].join(''); }; var rgbToCssColor_ = function(red, green, blue) { var rgbNumber = new Number((red << 16) | (green << 8) | blue); var hexString = rgbNumber.toString(16); var missingZeros = 6 - hexString.length; var resultBuilder = ['#']; for (var i = 0; i < missingZeros; i++) { resultBuilder.push('0'); } resultBuilder.push(hexString); return resultBuilder.join(''); }; \/\/ ...",
+      "description": "Represents a color in the RGBA color space. This representation is designed for simplicity of conversion to\/from color representations in various languages over compactness. For example, the fields of this representation can be trivially provided to the constructor of `java.awt.Color` in Java; it can also be trivially provided to UIColor's `+colorWithRed:green:blue:alpha` method in iOS; and, with just a little work, it can be easily formatted into a CSS `rgba()` string in JavaScript. This reference page doesn't carry information about the absolute color space that should be used to interpret the RGB value (e.g. sRGB, Adobe RGB, DCI-P3, BT.2020, etc.). By default, applications should assume the sRGB color space. When color equality needs to be decided, implementations, unless documented otherwise, treat two colors as equal if all their red, green, blue, and alpha values each differ by at most 1e-5. Example (Java): import com.google.type.Color; \/\/ ... public static java.awt.Color fromProto(Color protocolor) { float alpha = protocolor.hasAlpha() ? protocolor.getAlpha().getValue() : 1.0; return new java.awt.Color( protocolor.getRed(), protocolor.getGreen(), protocolor.getBlue(), alpha); } public static Color toProto(java.awt.Color color) { float red = (float) color.getRed(); float green = (float) color.getGreen(); float blue = (float) color.getBlue(); float denominator = 255.0; Color.Builder resultBuilder = Color .newBuilder() .setRed(red \/ denominator) .setGreen(green \/ denominator) .setBlue(blue \/ denominator); int alpha = color.getAlpha(); if (alpha != 255) { result.setAlpha( FloatValue .newBuilder() .setValue(((float) alpha) \/ denominator) .build()); } return resultBuilder.build(); } \/\/ ... Example (iOS \/ Obj-C): \/\/ ... static UIColor* fromProto(Color* protocolor) { float red = [protocolor red]; float green = [protocolor green]; float blue = [protocolor blue]; FloatValue* alpha_wrapper = [protocolor alpha]; float alpha = 1.0; if (alpha_wrapper != nil) { alpha = [alpha_wrapper value]; } return [UIColor colorWithRed:red green:green blue:blue alpha:alpha]; } static Color* toProto(UIColor* color) { CGFloat red, green, blue, alpha; if (![color getRed:&red green:&green blue:&blue alpha:&alpha]) { return nil; } Color* result = [[Color alloc] init]; [result setRed:red]; [result setGreen:green]; [result setBlue:blue]; if (alpha <= 0.9999) { [result setAlpha:floatWrapperWithValue(alpha)]; } [result autorelease]; return result; } \/\/ ... Example (JavaScript): \/\/ ... var protoToCssColor = function(rgb_color) { var redFrac = rgb_color.red || 0.0; var greenFrac = rgb_color.green || 0.0; var blueFrac = rgb_color.blue || 0.0; var red = Math.floor(redFrac * 255); var green = Math.floor(greenFrac * 255); var blue = Math.floor(blueFrac * 255); if (!('alpha' in rgb_color)) { return rgbToCssColor(red, green, blue); } var alphaFrac = rgb_color.alpha.value || 0.0; var rgbParams = [red, green, blue].join(','); return ['rgba(', rgbParams, ',', alphaFrac, ')'].join(''); }; var rgbToCssColor = function(red, green, blue) { var rgbNumber = new Number((red << 16) | (green << 8) | blue); var hexString = rgbNumber.toString(16); var missingZeros = 6 - hexString.length; var resultBuilder = ['#']; for (var i = 0; i < missingZeros; i++) { resultBuilder.push('0'); } resultBuilder.push(hexString); return resultBuilder.join(''); }; \/\/ ...",
       "type": "object",
       "properties": {
         "red": {
@@ -8152,7 +8281,7 @@
           "format": "float"
         },
         "alpha": {
-          "description": "The fraction of this color that should be applied to the pixel. That is, the final pixel color is defined by the equation: pixel color = alpha * (this color) + (1.0 - alpha) * (background color) This means that a value of 1.0 corresponds to a solid color, whereas a value of 0.0 corresponds to a completely transparent color. This uses a wrapper message rather than a simple float scalar so that it is possible to distinguish between a default value and the value being unset. If omitted, this color object is to be rendered as a solid color (as if the alpha value had been explicitly given with a value of 1.0).",
+          "description": "The fraction of this color that should be applied to the pixel. That is, the final pixel color is defined by the equation: `pixel color = alpha * (this color) + (1.0 - alpha) * (background color)` This means that a value of 1.0 corresponds to a solid color, whereas a value of 0.0 corresponds to a completely transparent color. This uses a wrapper message rather than a simple float scalar so that it is possible to distinguish between a default value and the value being unset. If omitted, this color object is rendered as a solid color (as if the alpha value had been explicitly given a value of 1.0).",
           "type": "number",
           "format": "float"
         }
@@ -12543,12 +12672,14 @@
           "enumDescriptions": [
             "Should not be set.",
             "A model best tailored to be used within Google Cloud, and which c annot be exported. Default.",
-            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards."
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) to a Jetson device afterwards."
           ],
           "enum": [
             "MODEL_TYPE_UNSPECIFIED",
             "CLOUD",
-            "MOBILE_VERSATILE_1"
+            "MOBILE_VERSATILE_1",
+            "MOBILE_JETSON_VERSATILE_1"
           ]
         }
       }
@@ -15464,12 +15595,14 @@
           "enumDescriptions": [
             "Should not be set.",
             "A model best tailored to be used within Google Cloud, and which c annot be exported. Default.",
-            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards."
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and used on a mobile or edge device afterwards.",
+            "A model that, in addition to being available within Google Cloud, can also be exported (see ModelService.ExportModel) to a Jetson device afterwards."
           ],
           "enum": [
             "MODEL_TYPE_UNSPECIFIED",
             "CLOUD",
-            "MOBILE_VERSATILE_1"
+            "MOBILE_VERSATILE_1",
+            "MOBILE_JETSON_VERSATILE_1"
           ]
         }
       }
@@ -15670,7 +15803,7 @@
       "type": "object",
       "properties": {
         "executorImageUri": {
-          "description": "Required. The URI of a container image in the Container Registry that will run the provided python package. AI Platform provides wide range of executor images with pre-installed packages to meet users' various use cases. Only one of the provided images can be set here.",
+          "description": "Required. The URI of a container image in Artifact Registry that will run the provided Python package. AI Platform provides a wide range of executor images with pre-installed packages to meet users' various use cases. See the list of [pre-built containers for training](https:\/\/cloud.google.com\/ai-platform-unified\/docs\/training\/pre-built-containers). You must use an image from this list.",
           "type": "string"
         },
         "packageUris": {
@@ -23813,6 +23946,34 @@
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
                               "description": "Gets bytes of TensorboardBlobs. This is to allow reading blob data stored in consumer project's Cloud Storage bucket without users having to obtain Cloud Storage access permission."
+                            },
+                            "exportTensorboardTimeSeries": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.exportTensorboardTimeSeries",
+                              "path": "v1beta1/{+tensorboardTimeSeries}:exportTensorboardTimeSeries",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:exportTensorboardTimeSeries",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "tensorboardTimeSeries": {
+                                  "description": "Required. The resource name of the TensorboardTimeSeries to export data from. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}\/timeSeries\/{time_series}`",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+\/runs\/[^\/]+\/timeSeries\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "tensorboardTimeSeries"
+                              ],
+                              "request": {
+                                "$ref": "GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataRequest"
+                              },
+                              "response": {
+                                "$ref": "GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Exports a TensorboardTimeSeries' data. Data is returned in paginated responses."
                             }
                           }
                           ,

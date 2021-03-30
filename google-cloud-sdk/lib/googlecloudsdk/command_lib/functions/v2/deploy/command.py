@@ -75,6 +75,7 @@ def _GetServiceConfig(args, messages):
   return messages.ServiceConfig(
       availableMemoryMb=utils.BytesToMb(args.memory) if args.memory else None,
       maxInstanceCount=args.max_instances,
+      minInstanceCount=args.min_instances,
       serviceAccountEmail=args.run_service_account or args.service_account,
       timeoutSeconds=args.timeout,
       ingressSettings=_GetIngressSettings(args, messages),

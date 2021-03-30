@@ -48,6 +48,19 @@ import:
     attribute_name: import
     help: The identifier of the metadata import under Dataproc Metastore services.
 
+backup:
+  name: backup
+  collection: metastore.projects.locations.services.backups
+  request_id_field: backupId
+  attributes:
+  - *project
+  - *location
+  - *service
+  - &backup
+    parameter_name: backupsId
+    attribute_name: backup
+    help: The identifier of the backup under Dataproc Metastore services.
+
 operation:
   name: operation
   collection: metastore.projects.locations.operations

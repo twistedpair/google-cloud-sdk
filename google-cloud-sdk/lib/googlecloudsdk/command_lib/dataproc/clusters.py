@@ -381,6 +381,17 @@ If you want to enable all scopes use the 'cloud-platform' scope.
         security operations, such as remote attestation, encryption, and sealing
         of keys.
         """)
+  if not beta:
+    parser.add_argument(
+        '--confidential-compute',
+        hidden=True,
+        action='store_true',
+        help="""\
+        Enables Confidential VM. See https://cloud.google.com/compute/confidential-vm/docs for more information.
+        Note that Confidential VM can only be enabled when the machine types
+        are N2D (https://cloud.google.com/compute/docs/machine-types#n2d_machine_types)
+        and the image is SEV Compatible.
+        """)
   parser.add_argument(
       '--dataproc-metastore',
       help="""\
@@ -848,6 +859,10 @@ def GetClusterConfig(args,
         enableSecureBoot=args.shielded_secure_boot,
         enableVtpm=args.shielded_vtpm,
         enableIntegrityMonitoring=args.shielded_integrity_monitoring)
+
+  if not beta and args.IsSpecified('confidential_compute'):
+    gce_cluster_config.confidentialInstanceConfig = dataproc.messages.ConfidentialInstanceConfig(
+        enableConfidentialCompute=args.confidential_compute)
 
   if args.dataproc_metastore:
     cluster_config.metastoreConfig = dataproc.messages.MetastoreConfig(

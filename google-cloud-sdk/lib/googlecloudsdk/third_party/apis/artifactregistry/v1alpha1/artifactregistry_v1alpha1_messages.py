@@ -31,6 +31,23 @@ class ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest(_me
   parent = _messages.StringField(2, required=True)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest(_messages.Message):
+  r"""A
+  ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest
+  object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest: A
+      GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest
+      resource to be passed as the request body.
+    parent: The name of the parent resource where the artifacts will be
+      imported.
+  """
+
+  googleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesImportRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesImportRequest object.
 
@@ -157,6 +174,20 @@ class GoogleDevtoolsArtifactregistryV1alpha1GcsSource(_messages.Message):
   useWildcards = _messages.BooleanField(2)
 
 
+class GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact(_messages.Message):
+  r"""A detailed representation of a GooGet artifact.
+
+  Fields:
+    architecture: Output only. Operating system architecture of the artifact.
+    name: Output only. The Artifact Registry resource name of the artifact.
+    packageName: Output only. The googet package name of the artifact.
+  """
+
+  architecture = _messages.StringField(1)
+  name = _messages.StringField(2)
+  packageName = _messages.StringField(3)
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo(_messages.Message):
   r"""Error information explaining why a package was not imported.
 
@@ -224,6 +255,53 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse(_messages.Me
 
   errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo', 1, repeated=True)
   packages = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1Package', 2, repeated=True)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo(_messages.Message):
+  r"""Error information explaining why a package was not imported.
+
+  Fields:
+    error: The detailed error status.
+    gcsSource: Google Cloud Storage location requested.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource', 2)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource(_messages.Message):
+  r"""Google Cloud Storage location where the artifacts currently reside.
+
+  Fields:
+    uris: Cloud Storage paths URI (e.g., gs://my_bucket/my_object).
+    useWildcards: Supports URI wildcards for matching multiple objects from a
+      single URI.
+  """
+
+  uris = _messages.StringField(1, repeated=True)
+  useWildcards = _messages.BooleanField(2)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest(_messages.Message):
+  r"""The request to import new googet artifacts.
+
+  Fields:
+    gcsSource: Google Cloud Storage location where input content is located.
+  """
+
+  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsGcsSource', 1)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsResponse(_messages.Message):
+  r"""The response message from importing artifacts.
+
+  Fields:
+    errors: Detailed error info for packages that were not imported.
+    googetArtifacts: The googet artifacts updated.
+  """
+
+  errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo', 1, repeated=True)
+  googetArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact', 2, repeated=True)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo(_messages.Message):

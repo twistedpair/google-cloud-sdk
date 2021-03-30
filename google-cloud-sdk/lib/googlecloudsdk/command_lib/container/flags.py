@@ -2556,6 +2556,17 @@ To disable Workload Certificates in an existing cluster, explicitly set flag
 """)
 
 
+def AddWorkloadAltsFlags(parser):
+  """Adds Workload ALTS flags to the parser."""
+  parser.add_argument(
+      '--enable-alts',
+      hidden=True,
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+Enable Workload ALTS.
+""")
+
+
 def AddGkeOidcFlag(parser):
   parser.add_argument(
       '--enable-gke-oidc',

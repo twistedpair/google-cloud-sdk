@@ -277,14 +277,18 @@ class CreateJava11ProjectCommand(_Command):
         continue
       srcname = os.path.join(project_dir, name)
       dstname = os.path.join(staging_area, name)
-      if os.path.isdir(srcname):
-        if hasattr(os, 'symlink'):
-          os.symlink(srcname, dstname)
-        else:
+      try:
+        os.symlink(srcname, dstname)
+      except (AttributeError, OSError):
+        # AttributeError can occur if this is a Windows machine with an older
+        # version of Python, in which case os.symlink is not defined. If this is
+        # a newer version of Windows, but the user is not allowed to create
+        # symlinks, we'll get an OSError saying "symbolic link privilege not
+        # held." In both cases, we just fall back to copying the files.
+        log.debug('Could not symlink files in staging directory, falling back '
+                  'to copying')
+        if os.path.isdir(srcname):
           files.CopyTree(srcname, dstname)
-      else:
-        if hasattr(os, 'symlink'):
-          os.symlink(srcname, dstname)
         else:
           shutil.copy2(srcname, dstname)
 
@@ -356,9 +360,12 @@ class CreateJava11YamlCommand(_Command):
           if os.path.isfile(dependent_file):
             destination = os.path.join(staging_area, lib)
             files.MakeDir(os.path.abspath(os.path.join(destination, os.pardir)))
-            if hasattr(os, 'symlink'):
+            try:
               os.symlink(dependent_file, destination)
-            else:
+            except (AttributeError, OSError):
+              log.debug(
+                  'Could not symlink files in staging directory, falling back '
+                  'to copying')
               shutil.copy(dependent_file, destination)
     return staging_area
 

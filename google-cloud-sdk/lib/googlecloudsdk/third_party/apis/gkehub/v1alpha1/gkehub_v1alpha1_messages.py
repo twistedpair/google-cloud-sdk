@@ -977,6 +977,8 @@ class GitConfig(_messages.Message):
   r"""Git repo configuration for a single cluster.
 
   Fields:
+    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
+      secret_type is gcpServiceAccount.
     httpsProxy: URL for the HTTPS proxy to be used when communicating with the
       Git repo.
     policyDir: The path within the Git repository that represents the top
@@ -989,13 +991,14 @@ class GitConfig(_messages.Message):
     syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
   """
 
-  httpsProxy = _messages.StringField(1)
-  policyDir = _messages.StringField(2)
-  secretType = _messages.StringField(3)
-  syncBranch = _messages.StringField(4)
-  syncRepo = _messages.StringField(5)
-  syncRev = _messages.StringField(6)
-  syncWaitSecs = _messages.IntegerField(7)
+  gcpServiceAccountEmail = _messages.StringField(1)
+  httpsProxy = _messages.StringField(2)
+  policyDir = _messages.StringField(3)
+  secretType = _messages.StringField(4)
+  syncBranch = _messages.StringField(5)
+  syncRepo = _messages.StringField(6)
+  syncRev = _messages.StringField(7)
+  syncWaitSecs = _messages.IntegerField(8)
 
 
 class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):

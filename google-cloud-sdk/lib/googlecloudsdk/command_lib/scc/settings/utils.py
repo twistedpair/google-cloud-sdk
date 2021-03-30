@@ -456,4 +456,14 @@ class SettingsClient(object):
                           moduleEnablementState=state))
               ]))
 
+    curr_modules = self.DescribeServiceExplicit(args).modules
+    if curr_modules is not None:
+      unmodified_additional_properties = [
+          p for p in curr_modules.additionalProperties if p.key != args.module
+      ]
+      settings.modules.additionalProperties = (
+          settings.modules.additionalProperties +
+          unmodified_additional_properties
+      )
+
     return self._UpdateService(args, settings, MODULE_STATUS_MASK)

@@ -49,7 +49,7 @@ def GetSuccessMessageForSynchronousDeploy(service):
 
 def GetStartDeployMessage(conn_context,
                           resource_ref,
-                          operation='Deploying container',
+                          operation='Deploying container to',
                           resource_kind_lower='service'):
   """Returns a user mesage for starting a deploy.
 
@@ -62,7 +62,7 @@ def GetStartDeployMessage(conn_context,
     operation: str, what deploy action is being done.
     resource_kind_lower: str, resource kind being deployed, e.g. "service"
   """
-  msg = ('{operation} to {operator} {resource_kind} '
+  msg = ('{operation} {operator} {resource_kind} '
          '[{{bold}}{resource}{{reset}}] in {ns_label} [{{bold}}{ns}{{reset}}]')
   msg += conn_context.location_label
 

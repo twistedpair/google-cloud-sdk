@@ -1241,15 +1241,19 @@ class ApigeeOrganizationsEnvironmentsAnalyticsAdminGetSchemav2Request(_messages.
   object.
 
   Fields:
-    name: Required. The parent organization and environment names. Must be of
-      the form
+    disableCache: Flag that specifies whether the schema is be read from the
+      database or cache. Set to `true` to read the schema from the database.
+      Defaults to cache.
+    name: Required. Path to the schema. Use the following structure in your
+      request:
       `organizations/{org}/environments/{env}/analytics/admin/schemav2`.
-    type: Required. Type refers to the dataset name whose schema needs to be
-      retrieved E.g. type=fact or type=agg_cus1
+    type: Required. Name of the dataset for which you want to retrieve the
+      schema. For example: `fact` or `agg_cus1`
   """
 
-  name = _messages.StringField(1, required=True)
-  type = _messages.StringField(2)
+  disableCache = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  type = _messages.StringField(3)
 
 
 class ApigeeOrganizationsEnvironmentsAnalyticsExportsCreateRequest(_messages.Message):
@@ -2557,6 +2561,17 @@ class ApigeeOrganizationsGetRequest(_messages.Message):
   Fields:
     name: Required. Apigee organization name in the following format:
       `organizations/{org}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsGetRuntimeConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsGetRuntimeConfigRequest object.
+
+  Fields:
+    name: Required. Name of the runtime config for the organization in the
+      following format: 'organizations/{org}/runtimeConfig'.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5322,13 +5337,13 @@ class GoogleCloudApigeeV1GraphQLOperation(_messages.Message):
       used to associate quotas with. If no name is specified, the quota will
       be applied to all graphQL operations irrespective of their operation
       names in the payload.
-    operationType: Required. `query`, `mutation` and `subscription` are the
+    operationTypes: Required. `query`, `mutation` and `subscription` are the
       three operation types offered by graphQL. Currently we support only
       `query` and `mutation`.
   """
 
   operation = _messages.StringField(1)
-  operationType = _messages.StringField(2, repeated=True)
+  operationTypes = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudApigeeV1GraphQLOperationConfig(_messages.Message):
@@ -5919,10 +5934,13 @@ class GoogleCloudApigeeV1ListRatePlansResponse(_messages.Message):
   r"""Response for ListRatePlans.
 
   Fields:
+    nextStartKey: A key that can be sent as `start_key` to retrieve the next
+      page. If this field is omitted, there are no subsequent pages.
     ratePlans: List of rate plans in an organization.
   """
 
-  ratePlans = _messages.MessageField('GoogleCloudApigeeV1RatePlan', 1, repeated=True)
+  nextStartKey = _messages.StringField(1)
+  ratePlans = _messages.MessageField('GoogleCloudApigeeV1RatePlan', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1ListSharedFlowsResponse(_messages.Message):
@@ -6274,9 +6292,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   r"""A GoogleCloudApigeeV1Organization object.
 
   Enums:
-    BillingTypeValueValuesEnum: Output only. Billing type of the Apigee
-      organization. See [Apigee
-      pricing](https://cloud.google.com/apigee/pricing).
+    BillingTypeValueValuesEnum: Billing type of the Apigee organization. See
+      [Apigee pricing](https://cloud.google.com/apigee/pricing).
     RuntimeTypeValueValuesEnum: Required. Runtime type of the Apigee
       organization based on the Apigee subscription purchased.
     StateValueValuesEnum: Output only. State of the organization. Values other
@@ -6310,8 +6327,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       id}/{region}/networks/{network-name}`. For example: `projects/my-
       sharedvpc-host/global/networks/mynetwork` **Note:** Not supported for
       Apigee hybrid.
-    billingType: Output only. Billing type of the Apigee organization. See
-      [Apigee pricing](https://cloud.google.com/apigee/pricing).
+    billingType: Billing type of the Apigee organization. See [Apigee
+      pricing](https://cloud.google.com/apigee/pricing).
     caCertificate: Output only. Base64-encoded public certificate for the root
       CA of the Apigee organization. Valid only when
       [RuntimeType](#RuntimeType) is `CLOUD`.
@@ -6351,7 +6368,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   """
 
   class BillingTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. Billing type of the Apigee organization. See [Apigee
+    r"""Billing type of the Apigee organization. See [Apigee
     pricing](https://cloud.google.com/apigee/pricing).
 
     Values:
@@ -7128,6 +7145,20 @@ class GoogleCloudApigeeV1RoutingRule(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
+class GoogleCloudApigeeV1RuntimeConfig(_messages.Message):
+  r"""Runtime configuration for the organization. Response for
+  GetRuntimeConfig.
+
+  Fields:
+    analyticsBucket: Cloud Storage bucket used for uploading Analytics
+      records.
+    traceBucket: Cloud Storage bucket used for uploading Trace records.
+  """
+
+  analyticsBucket = _messages.StringField(1)
+  traceBucket = _messages.StringField(2)
+
+
 class GoogleCloudApigeeV1RuntimeTraceConfig(_messages.Message):
   r"""NEXT ID: 8 RuntimeTraceConfig defines the configurations for distributed
   trace in an environment.
@@ -7244,11 +7275,11 @@ class GoogleCloudApigeeV1Schema(_messages.Message):
   r"""Response for Schema call
 
   Fields:
-    dimensions: List of schema fiels grouped as dimensions.
+    dimensions: List of schema fields grouped as dimensions.
     meta: Additional metadata associated with schema. This is a legacy field
       and usually consists of an empty array of strings.
-    metrics: List of schema fields grouped as dimensions. These are fields
-      that can be used with an aggregate function such as sum, avg, min, max.
+    metrics: List of schema fields grouped as dimensions that can be used with
+      an aggregate function such as `sum`, `avg`, `min`, and `max`.
   """
 
   dimensions = _messages.MessageField('GoogleCloudApigeeV1SchemaSchemaElement', 1, repeated=True)
@@ -7260,8 +7291,8 @@ class GoogleCloudApigeeV1SchemaSchemaElement(_messages.Message):
   r"""Message type for the schema element
 
   Fields:
-    name: Name of the field
-    properties: Property of the schema field E.g. { "createTime":
+    name: Name of the field.
+    properties: Properties for the schema field. For example: { "createTime":
       "2016-02-26T10:23:09.592Z", "custom": "false", "type": "string" }
   """
 
@@ -7270,12 +7301,14 @@ class GoogleCloudApigeeV1SchemaSchemaElement(_messages.Message):
 
 
 class GoogleCloudApigeeV1SchemaSchemaProperty(_messages.Message):
-  r"""Message type for schema property
+  r"""Properties for the schema field.
 
   Fields:
-    createTime: Creation time of the field
-    custom: Custom is a flag signifying if the field was provided as part of
-      the standard dataset or a custom field created by the customer
+    createTime: Time the field was created in RFC3339 string form. For
+      example: `2016-02-26T10:23:09.592Z`.
+    custom: Flag that specifies whether the field is standard in the dataset
+      or a custom field created by the customer. `true` indicates that it is a
+      custom field.
     type: Data type of the field.
   """
 

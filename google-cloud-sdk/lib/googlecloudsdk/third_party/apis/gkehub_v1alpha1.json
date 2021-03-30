@@ -553,6 +553,10 @@
         "httpsProxy": {
           "description": "URL for the HTTPS proxy to be used when communicating with the Git repo.",
           "type": "string"
+        },
+        "gcpServiceAccountEmail": {
+          "description": "The GCP Service Account Email used for auth when secret_type is gcpServiceAccount.",
+          "type": "string"
         }
       }
     },

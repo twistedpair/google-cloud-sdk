@@ -771,9 +771,20 @@ class BuildBazelRemoteExecutionV2RequestMetadata(_messages.Message):
     actionId: An identifier that ties multiple requests to the same action.
       For example, multiple requests to the CAS, Action Cache, and Execution
       API are used in order to compile foo.cc.
+    actionMnemonic: A brief description of the kind of action, for example,
+      CppCompile or GoLink. There is no standard agreed set of values for
+      this, and they are expected to vary between different client tools.
+    configurationId: An identifier for the configuration in which the target
+      was built, e.g. for differentiating building host tools or different
+      target platforms. There is no expectation that this value will have any
+      particular structure, or equality across invocations, though some client
+      tools may offer these guarantees.
     correlatedInvocationsId: An identifier to tie multiple tool invocations
       together. For example, runs of foo_test, bar_test and baz_test on a
       post-submit of a given patch.
+    targetId: An identifier for the target which produced this action. No
+      guarantees are made around how many actions may relate to a single
+      target.
     toolDetails: The details for the tool invoking the requests.
     toolInvocationId: An identifier that ties multiple actions together to a
       final result. For example, multiple actions are required to build and
@@ -781,9 +792,12 @@ class BuildBazelRemoteExecutionV2RequestMetadata(_messages.Message):
   """
 
   actionId = _messages.StringField(1)
-  correlatedInvocationsId = _messages.StringField(2)
-  toolDetails = _messages.MessageField('BuildBazelRemoteExecutionV2ToolDetails', 3)
-  toolInvocationId = _messages.StringField(4)
+  actionMnemonic = _messages.StringField(2)
+  configurationId = _messages.StringField(3)
+  correlatedInvocationsId = _messages.StringField(4)
+  targetId = _messages.StringField(5)
+  toolDetails = _messages.MessageField('BuildBazelRemoteExecutionV2ToolDetails', 6)
+  toolInvocationId = _messages.StringField(7)
 
 
 class BuildBazelRemoteExecutionV2SymlinkNode(_messages.Message):

@@ -63,6 +63,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICES_BACKUPS = (
+      'projects.locations.services.backups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/services/'
+              '{servicesId}/backups/{backupsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SERVICES_METADATAIMPORTS = (
       'projects.locations.services.metadataImports',
       '{+name}',

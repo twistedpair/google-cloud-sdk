@@ -222,68 +222,17 @@ class TaskGraphExecutor:
           # Create workers because current workers are busy.
           self._add_worker_process()
 
-  def _update_graph_state_from_executed_task(self, executed_task_wrapper,
-                                             additional_task_iterators):
-    r"""Updates self._task_graph based on the output of an executed task.
-
-    If some googlecloudsdk.command_lib.storage.task.Task instance `a` returns
-    the following iterables of tasks: [[b, c], [d, e]], we need to update the
-    graph as follows to ensure they are executed appropriately.
-
-           /-- d <-\--/- b
-      a <-/         \/
-          \         /\
-           \-- e <-/--\- c
-
-    After making these updates, `b` and `c` are ready for submission. If a task
-    does not return any new tasks, then it will be removed from the graph,
-    potentially freeing up tasks that depend on it for execution.
-
-    See go/parallel-processing-in-gcloud-storage#heading=h.y4o7a9hcs89r for a
-    more thorough description of the updates this method performs.
-
-    Args:
-      executed_task_wrapper (task_graph.TaskWrapper): Contains information about
-        how a completed task fits into a dependency graph.
-      additional_task_iterators (Optional[Iterable[Iterable[Task]]]): The
-        additional tasks returned by the task in executed_task_wrapper.
-
-    Returns:
-      An Iterable[task_graph.TaskWrapper] containing tasks that are ready to be
-      executed after performing graph updates.
-    """
-    if additional_task_iterators is None:
-      # The executed task did not return new tasks, so the only ones newly ready
-      # for execution will be those freed up after removing the executed task.
-      return self._task_graph.complete(executed_task_wrapper)
-
-    parent_tasks_for_next_layer = [executed_task_wrapper]
-
-    # Tasks return additional tasks in the order they should be executed in,
-    # but adding them to the graph is more easily done in reverse.
-    for task_iterator in reversed(additional_task_iterators):
-      dependent_task_ids = [
-          task_wrapper.id for task_wrapper in parent_tasks_for_next_layer
-      ]
-
-      parent_tasks_for_next_layer = [
-          self._task_graph.add(task, dependent_task_ids=dependent_task_ids)
-          for task in task_iterator
-      ]
-
-    return parent_tasks_for_next_layer
-
   @crash_handling.CrashManager
   def _handle_task_output(self):
     """Updates a dependency graph based on information from executed tasks."""
     while True:
-      task_output = self._task_output_queue.get()
-      if task_output == _SHUTDOWN:
+      output = self._task_output_queue.get()
+      if output == _SHUTDOWN:
         break
 
-      executed_task_wrapper, additional_task_iterators = task_output
-      submittable_tasks = self._update_graph_state_from_executed_task(
-          executed_task_wrapper, additional_task_iterators)
+      executed_task_wrapper, task_output = output
+      submittable_tasks = self._task_graph.update_from_executed_task(
+          executed_task_wrapper, task_output)
 
       for task_wrapper in submittable_tasks:
         task_wrapper.is_submitted = True

@@ -739,11 +739,13 @@ class OperationMetadata(_messages.Message):
       CREATE: A resource creation operation.
       DELETE: A resource deletion operation.
       UPDATE: A resource update operation.
+      CHECK: A resource check operation.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
     DELETE = 2
     UPDATE = 3
+    CHECK = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.

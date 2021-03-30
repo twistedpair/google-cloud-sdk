@@ -35,6 +35,7 @@ import binascii
 import collections
 import datetime
 import json
+import os
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import metadata_utils
@@ -51,6 +52,8 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import times
+from googlecloudsdk.core.util.files import FileReader
+from googlecloudsdk.core.util.files import FileWriter
 import six
 
 # The maximum amount of time to wait for a newly-added SSH key to
@@ -58,7 +61,7 @@ import six
 SSH_KEY_PROPAGATION_TIMEOUT_MS = 60 * 1000
 
 _TROUBLESHOOTING_URL = (
-    'https://cloud.google.com/compute/docs/troubleshooting#ssherrors')
+    'https://cloud.google.com/compute/docs/troubleshooting/troubleshooting-ssh')
 
 GUEST_ATTRIBUTES_METADATA_KEY = 'enable-guest-attributes'
 SUPPORTED_HOSTKEY_TYPES = ['ssh-rsa', 'ssh-ed25519', 'ecdsa-sha2-nistp256']
@@ -955,9 +958,15 @@ class BaseSSHCLIHelper(BaseSSHHelper):
         .format(metadata_id_url, instance_id)]
     cmd = ssh.SSHCommand(remote, identity_file=identity_file,
                          options=options, remote_command=remote_command)
+    # Open the platform-specific null device for stdin and stdout
+    # for the subprocess.
+    null_in = FileReader(os.devnull)
+    null_out = FileWriter(os.devnull)
     return_code = cmd.Run(
         self.env,
-        force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
+        force_connect=properties.VALUES.ssh.putty_force_connect.GetBool(),
+        explicit_output_file=null_out,
+        explicit_input_file=null_in)
     if return_code == 0:
       return
     elif return_code == 23:

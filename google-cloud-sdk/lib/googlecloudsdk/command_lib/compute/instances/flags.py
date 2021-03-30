@@ -1444,7 +1444,9 @@ def AddPrivateNetworkIpArgs(parser):
 
 def AddServiceAccountAndScopeArgs(parser,
                                   instance_exists,
-                                  extra_scopes_help=''):
+                                  extra_scopes_help='',
+                                  operation='Create',
+                                  resource='instance'):
   """Add args for configuring service account and scopes.
 
   This should replace AddScopeArgs (b/30802231).
@@ -1453,31 +1455,38 @@ def AddServiceAccountAndScopeArgs(parser,
     parser: ArgumentParser, parser to which flags will be added.
     instance_exists: bool, If instance already exists and we are modifying it.
     extra_scopes_help: str, Extra help text for the scopes flag.
+    operation: operation being performed, capitalized. E.g. 'Create' or 'Import'
+    resource: resource type on which scopes and service account are being added.
+      E.g. 'instance' or 'machine image'.
   """
   service_account_group = parser.add_mutually_exclusive_group()
+  no_sa_instance_not_exist = \
+    '{operation} {resource} without service account'.format(
+        operation=operation, resource=resource)
   service_account_group.add_argument(
       '--no-service-account',
       action='store_true',
-      help='Remove service account from the instance'
-      if instance_exists else 'Create instance without service account')
+      help='Remove service account from the {0}'.format(resource)
+      if instance_exists else no_sa_instance_not_exist)
 
   sa_exists = """You can explicitly specify the Compute Engine default service
   account using the 'default' alias.
 
-  If not provided, the instance will use the service account it currently has.
-  """
+  If not provided, the {0} will use the service account it currently has.
+  """.format(resource)
 
   sa_not_exists = """
 
-  If not provided, the instance will use the project\'s default service account.
-  """
+  If not provided, the {0} will use the project\'s default service account.
+  """.format(resource)
 
   service_account_help = """\
-  A service account is an identity attached to the instance. Its access tokens
+  A service account is an identity attached to the {resource}. Its access tokens
   can be accessed through the instance metadata server and are used to
   authenticate applications on the instance. The account can be set using an
-  email address corresponding to the required service account. {0}
-  """.format(sa_exists if instance_exists else sa_not_exists)
+  email address corresponding to the required service account. {extra_help}
+  """.format(extra_help=sa_exists if instance_exists else sa_not_exists,
+             resource=resource)
   service_account_group.add_argument(
       '--service-account', help=service_account_help)
 
@@ -1485,18 +1494,20 @@ def AddServiceAccountAndScopeArgs(parser,
   scopes_group.add_argument(
       '--no-scopes',
       action='store_true',
-      help='Remove all scopes from the instance'
-      if instance_exists else 'Create instance without scopes')
+      help='Remove all scopes from the {resource}'.format(resource=resource)
+      if instance_exists else '{operation} {resource} without scopes'.format(
+          operation=operation, resource=resource))
   scopes_exists = 'keep the scopes it currently has'
   scopes_not_exists = 'be assigned the default scopes, described below'
   scopes_help = """\
-If not provided, the instance will {exists}. {extra}
+If not provided, the {resource} will {exists}. {extra}
 
 {scopes_help}
 """.format(
     exists=scopes_exists if instance_exists else scopes_not_exists,
     extra=extra_scopes_help,
-    scopes_help=constants.ScopesHelp())
+    scopes_help=constants.ScopesHelp(),
+    resource=resource)
   scopes_group.add_argument(
       '--scopes', type=arg_parsers.ArgList(), metavar='SCOPE', help=scopes_help)
 
@@ -2714,17 +2725,20 @@ def AddUpdateContainerArgs(parser, container_mount_disk_enabled=False):
 
 def AddPostKeyRevocationActionTypeArgs(parser):
   """Helper to add --post-key-revocation-action-type flag."""
+  help_text = ('Specifies the behavior of the instance when the KMS key of one '
+               'of its attached disks is revoked. The default is noop.')
+  choices_text = {
+      'noop':
+          'No operation is performed.',
+      'shutdown': ('The instance is shut down when the KMS key of one of '
+                   'its attached disks is revoked.')
+  }
   parser.add_argument(
       '--post-key-revocation-action-type',
-      choices=['noop', 'shutdown'],
+      choices=choices_text,
       metavar='POLICY',
       required=False,
-      help="""\
-      The instance will be shut down when the KMS key of one of its disk is
-      revoked, if set to `SHUTDOWN`.
-
-      Default setting is `NOOP`.
-      """)
+      help=help_text)
 
 
 def AddBulkCreateArgs(parser):

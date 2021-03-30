@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210312",
+ "revision": "20210319",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1590,6 +1590,10 @@
      "$ref": "ScriptStatistics",
      "description": "[Output-only] Statistics for a child job of a script."
     },
+    "sessionInfoTemplate": {
+     "$ref": "SessionInfo",
+     "description": "[Output-only] [Preview] Information of the session if this job is part of one."
+    },
     "startTime": {
      "type": "string",
      "description": "[Output-only] Start time of this job, in milliseconds since the epoch. This field will be present when the job transitions from the PENDING state to either RUNNING or DONE.",
@@ -2214,6 +2218,10 @@
      "$ref": "TableSchema",
      "description": "The schema of the results. Present only when the query completes successfully."
     },
+    "sessionInfoTemplate": {
+     "$ref": "SessionInfo",
+     "description": "[Output-only] [Preview] Information of the session if this job is part of one."
+    },
     "totalBytesProcessed": {
      "type": "string",
      "description": "The total number of bytes processed for this query. If this query was a dry run, this is the number of bytes that would be processed if the query were run.",
@@ -2386,6 +2394,16 @@
      "items": {
       "$ref": "ScriptStackFrame"
      }
+    }
+   }
+  },
+  "SessionInfo": {
+   "id": "SessionInfo",
+   "type": "object",
+   "properties": {
+    "sessionId": {
+     "type": "string",
+     "description": "[Output-only] // [Preview] Id of the session."
     }
    }
   },
@@ -2736,7 +2754,7 @@
     },
     "type": {
      "type": "string",
-     "description": "[Required] The field data type. Possible values include STRING, BYTES, INTEGER, INT64 (same as INTEGER), FLOAT, FLOAT64 (same as FLOAT), NUMERIC, BIGNUMERIC, BOOLEAN, BOOL (same as BOOLEAN), TIMESTAMP, DATE, TIME, DATETIME, RECORD (where RECORD indicates that the field contains a nested schema) or STRUCT (same as RECORD)."
+     "description": "[Required] The field data type. Possible values include STRING, BYTES, INTEGER, INT64 (same as INTEGER), FLOAT, FLOAT64 (same as FLOAT), NUMERIC, BIGNUMERIC, BOOLEAN, BOOL (same as BOOLEAN), TIMESTAMP, DATE, TIME, DATETIME, INTERVAL, RECORD (where RECORD indicates that the field contains a nested schema) or STRUCT (same as RECORD)."
     }
    }
   },

@@ -215,7 +215,10 @@ def CreateGoogleAuthFlow(scopes, client_id_file=None):
   """Creates a Google auth oauthlib browser flow."""
   client_config = _CreateGoogleAuthClientConfig(client_id_file)
   return InstalledAppFlow.from_client_config(
-      client_config, scopes, autogenerate_code_verifier=True)
+      client_config,
+      scopes,
+      autogenerate_code_verifier=not properties.VALUES.auth
+      .disable_code_verifier.GetBool())
 
 
 def _CreateGoogleAuthClientConfig(client_id_file=None):

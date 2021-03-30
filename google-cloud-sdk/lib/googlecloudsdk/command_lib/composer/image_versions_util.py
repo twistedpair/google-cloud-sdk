@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.composer import environments_util as environments_ap
 from googlecloudsdk.api_lib.composer import image_versions_util as image_version_api_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.composer import util as command_util
+from googlecloudsdk.core.util import semver
 
 # Names of possible aliases that can be used within image version strings.
 LATEST = 'latest'
@@ -121,14 +122,15 @@ def CompareVersions(v1, v2):
     v2: second semantic version string
 
   Returns:
-    Value >= 1 when v1 is greater; Value <= -1 when v2 is greater; otherwise 0.
+    Value == 1 when v1 is greater; Value == -1 when v2 is greater; otherwise 0.
   """
-  v1, v2 = _VersionStrToList(v1), _VersionStrToList(v2)
-  if v1[0] - v2[0] != 0:
-    return v1[0] - v2[0]
-  if v1[1] - v2[1] != 0:
-    return v1[1] - v2[1]
-  return v1[2] - v2[2]
+  v1, v2 = _VersionStrToSemanticVersion(v1), _VersionStrToSemanticVersion(v2)
+  if v1 == v2:
+    return 0
+  elif v1 > v2:
+    return 1
+  else:
+    return -1
 
 
 def IsVersionInRange(version, range_from, range_to):
@@ -196,9 +198,9 @@ def _ValidateCandidateImageVersionId(current_image_version_id,
   return True
 
 
-def _VersionStrToList(version_str):
-  """Splits version_str into a list of three items (ie MAJOR, MINOR, PATCH)."""
-  return [int(v) for v in version_str.split('.', 3)]
+def _VersionStrToSemanticVersion(version_str):
+  """Parses version_str into semantic version."""
+  return semver.SemVer(version_str)
 
 
 def _IsAirflowVersionUpgradeCompatible(cur_version, candidate_version):
@@ -228,11 +230,8 @@ def _IsComposerVersionUpgradeCompatible(cur_version, candidate_version):
   Returns:
     boolean value whether Composer candidate is valid
   """
-  curr_parts = _VersionStrToList(cur_version)
-  cand_parts = _VersionStrToList(candidate_version)
+  curr_semantic_version = _VersionStrToSemanticVersion(cur_version)
+  cand_semantic_version = _VersionStrToSemanticVersion(candidate_version)
 
-  if (curr_parts[0] == cand_parts[0] and
-      CompareVersions(cur_version, candidate_version) <= 0):
-    return True
-
-  return False
+  return (curr_semantic_version.major == cand_semantic_version.major and
+          curr_semantic_version <= cand_semantic_version)

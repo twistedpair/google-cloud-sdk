@@ -1729,6 +1729,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'privateca': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.privateca.v1',
+                client_classpath='privateca_v1_client.PrivatecaV1',
+                messages_modulepath='privateca_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.privateca.v1beta1',

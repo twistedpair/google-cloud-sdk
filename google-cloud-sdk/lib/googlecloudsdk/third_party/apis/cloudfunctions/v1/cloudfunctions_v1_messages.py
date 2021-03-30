@@ -235,16 +235,8 @@ class CloudFunction(_messages.Message):
       a new function, optional when updating an existing function. For a
       complete list of possible choices, see the [`gcloud` command
       reference](/sdk/gcloud/reference/functions/deploy#--runtime).
-    secretEnvironmentVariables: Secret environment variables config to fetch
-      the secret values from secret manager and expose it as environment
-      variables available during function execution. The values are fetched
-      every time a new container is started, so any secret value changes in
-      between are not reflected.
-    secretVolumes: Secret volume mount config to mount references to secret
-      values at the requested paths within the GCF application container.
-      Every filesystem read performs a lookup in secret manager, so the latest
-      value for a version is always available regardless of when the
-      application container was started.
+    secretEnvironmentVariables: Secret environment variables configuration.
+    secretVolumes: Secret volumes configuration.
     serviceAccountEmail: The email of the function's service account. If
       empty, defaults to `{project_id}@appspot.gserviceaccount.com`.
     sourceArchiveUrl: The Google Cloud Storage URL, starting with gs://,
@@ -1216,13 +1208,20 @@ class Retry(_messages.Message):
 
 
 class SecretEnvVar(_messages.Message):
-  r"""Configuration for a secret environment variable.
+  r"""Configuration for a secret environment variable. It has the information
+  necessary to fetch the secret value from secret manager and expose it as an
+  environment variable. Secret value is not a part of the configuration.
+  Secret values are only fetched when a new clone starts.
 
   Fields:
     key: Name of the environment variable.
-    projectId: Project whose secret manager data is being referenced.
+    projectId: Project whose secret manager data is being referenced. Cross
+      project secrets are not supported.
     secret: Name of the secret in secret manager (not the full resource name).
-    version: Version of the secret (version number or the string 'latest').
+    version: Version of the secret (version number or the string 'latest'). It
+      is recommended to use a numeric version for secret environment variables
+      as any updates to the secret value is not reflected until new clones
+      start.
   """
 
   key = _messages.StringField(1)
@@ -1235,9 +1234,13 @@ class SecretVersion(_messages.Message):
   r"""Configuration for a single version.
 
   Fields:
-    path: Path to the file under mount_path where the secret value for this
-      version has to be mounted.
-    version: Version of the secret (version number or the string 'latest').
+    path: Relative path of the file under the mount path where the secret
+      value for this version will be fetched and made available. For example,
+      setting the mount_path as '/etc/secrets' and path as `/secret_foo` would
+      mount the secret value file at `/etc/secrets/secret_foo`.
+    version: Version of the secret (version number or the string 'latest'). It
+      is preferrable to use `latest` version with secret volumes as secret
+      value changes are reflected immediately.
   """
 
   path = _messages.StringField(1)
@@ -1245,16 +1248,25 @@ class SecretVersion(_messages.Message):
 
 
 class SecretVolume(_messages.Message):
-  r"""Configuration for a secret volume.
+  r"""Configuration for a secret volume. It has the information necessary to
+  fetch the secret value from secret manager and make it available as files
+  mounted at the requested paths within the application container. Secret
+  value is not a part of the configuration. Every filesystem read operation
+  performs a lookup in secret manager to retrieve the secret value.
 
   Fields:
-    mountPath: The path within the container to mount the volume.
-    projectId: Project whose secret manager data is being referenced.
+    mountPath: The path within the container to mount the secret volume. For
+      example, setting the mount_path as `/etc/secrets` would mount the secret
+      value files under the `/etc/secrets` directory. This directory will also
+      be completely shadowed and unavailable to mount any other secrets.
+      Recommended mount paths: /etc/secrets Restricted mount paths: /cloudsql,
+      /dev/log, /pod, /proc, /var/log
+    projectId: Project whose secret manager data is being referenced. Cross
+      project secrets are not supported.
     secret: Name of the secret in secret manager (not the full resource name).
-    versions: List of secret versions to mount for this secret. If the list is
-      empty, then all versions of the secret will be fetched and mounted under
-      the mount_path with the secret files named after their corresponding
-      versions.
+    versions: List of secret versions to mount for this secret. If empty, the
+      `latest` version of the secret will be made available in a file named
+      after the secret under the mount point.
   """
 
   mountPath = _messages.StringField(1)

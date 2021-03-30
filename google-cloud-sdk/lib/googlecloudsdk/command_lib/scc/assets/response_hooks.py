@@ -21,16 +21,17 @@ from __future__ import unicode_literals
 
 from apitools.base.py.extra_types import _JsonValueToPythonValue
 from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
+from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
 
 
 def ExtractSecurityMarksFromResponse(response, args):
   """Returns security marks from asset response."""
   del args
   list_asset_response = list(response)
-  assert list_asset_response, ("Asset or resource does not exist.")
-  assert len(list_asset_response) == 1, (
-      "ListAssetResponse must only return one asset since it is filtered "
-      "by Asset Name.")
+  if len(list_asset_response) > 1:
+    raise InvalidSCCInputError(
+        "ListAssetResponse must only return one asset since it is filtered "
+        "by Asset Name.")
   for asset_result in list_asset_response:
     return asset_result.asset.securityMarks
 

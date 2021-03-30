@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utilities for IAM Simulator API."""
 
 from __future__ import absolute_import
@@ -22,10 +21,9 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 
 _API_NAME = 'policysimulator'
-_API_VERSION = 'v1beta1'
 
 
-def GetClientAndMessages():
-  client = apis.GetClientInstance(_API_NAME, _API_VERSION)
-  messages = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+def GetSimulatorClientAndMessages(api_version):
+  client = apis.GetClientInstance(_API_NAME, api_version)
+  messages = apis.GetMessagesModule(_API_NAME, api_version)
   return client, messages

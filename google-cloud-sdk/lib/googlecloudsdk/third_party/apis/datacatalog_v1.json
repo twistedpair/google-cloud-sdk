@@ -241,7 +241,7 @@
             "Default unknown system.",
             "BigQuery.",
             "Cloud Pub\/Sub.",
-            "Dataproc Metastore - Managed Hive Metastore."
+            "Dataproc Metastore."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
@@ -252,6 +252,10 @@
         },
         "userSpecifiedSystem": {
           "description": "This field indicates the entry's source system that Data Catalog does not integrate with.",
+          "type": "string"
+        },
+        "fullyQualifiedName": {
+          "description": "Fully Qualified Name of the resource. There are two main forms of FQNs: {system}:{project}.{dot-separated path to resource} for non-regionalized resources {system}:{project}.{location id}.{dot-separated path to resource} for regionalized resources Examples: * dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId * bigquery:table.project_id.dataset_id.table_id",
           "type": "string"
         }
       }
@@ -343,7 +347,7 @@
           "type": "string"
         },
         "fullyQualifiedName": {
-          "description": "Fully Qualified Name of the resource. Set automatically for entries representing resources from synced systems. Settable only during creation and read-only afterwards. Can be used for search and lookup of the entries. There are two main forms of FQNs: {system}:{project}.{dot-separated path to resource} for non-regionalized resources {system}:{project}.{location id}.{dot-separated path to resource} for regionalized resources Example for DPMS table: dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId",
+          "description": "Fully qualified name (FQN) of the resource. Set automatically for entries representing resources from synced systems. Settable only during creation and read-only afterwards. Can be used for search and lookup of the entries. FQNs take two forms: * For non-regionalized resources: `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:project_id.location_id.instance_id.database_id.table_id`",
           "type": "string"
         },
         "type": {
@@ -357,7 +361,7 @@
             "An entry type which is a set of files or objects. Example: Cloud Storage fileset.",
             "A group of servers that work together. Example: Kafka cluster.",
             "A database.",
-            "A service (for example Dataproc Metastore service)."
+            "A service, for example, a Dataproc Metastore service."
           ],
           "enum": [
             "ENTRY_TYPE_UNSPECIFIED",
@@ -382,7 +386,7 @@
             "Default unknown system.",
             "BigQuery.",
             "Cloud Pub\/Sub.",
-            "Dataproc Metastore - Managed Hive Metastore."
+            "Dataproc Metastore."
           ],
           "enum": [
             "INTEGRATED_SYSTEM_UNSPECIFIED",
@@ -416,7 +420,7 @@
           "$ref": "GoogleCloudDatacatalogV1ClusterSpec"
         },
         "databaseTableSpec": {
-          "description": "Specification that applies to a table resource. This is only valid on entries of type `TABLE`.",
+          "description": "Specification that applies to a table resource. Only valid for entries of `TABLE` type.",
           "$ref": "GoogleCloudDatacatalogV1DatabaseTableSpec"
         },
         "displayName": {
@@ -619,7 +623,7 @@
     },
     "GoogleCloudDatacatalogV1DatabaseTableSpec": {
       "id": "GoogleCloudDatacatalogV1DatabaseTableSpec",
-      "description": "Specification that applies to a table resource. This is only valid on entries of type `TABLE`.",
+      "description": "Specification that applies to a table resource. Only valid for entries of `TABLE` type.",
       "type": "object",
       "properties": {
         "type": {
@@ -3118,7 +3122,7 @@
               "type": "string"
             },
             "fullyQualifiedName": {
-              "description": "Fully Qualified Name of the resource. There are two main forms of FQNs: {system}:{project}.{dot-separated path to resource} for non-regionalized resources {system}:{project}.{location id}.{dot-separated path to resource} for regionalized resources Examples: * `bigquery:dataset.project_id.dataset_id` * `bigquery:table.project_id.dataset_id.table_id` * `pubsub:project_id.topic_id` * `dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId`",
+              "description": "Fully qualified name (FQN) of the resource. FQNs take two forms: * For non-regionalized resources: `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:project_id.location_id.instance_id.database_id.table_id`",
               "location": "query",
               "type": "string"
             }

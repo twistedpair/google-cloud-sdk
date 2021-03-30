@@ -82,7 +82,7 @@ transformation:
 
 transformer:
   name: transformer
-  collection: mediaasset.projects.locations.transformer
+  collection: mediaasset.projects.locations.transformers
   request_id_field: transformerId
   attributes:
   - *project

@@ -5165,7 +5165,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def RecreateInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be immediately recreated. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
+      r"""Flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group's current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances.
 
 If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
@@ -6155,7 +6155,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Instance resource. For more information, see Stopping or Deleting an Instance.
+      r"""Deletes the specified Instance resource. For more information, see Deleting an instance.
 
       Args:
         request: (ComputeInstancesDeleteRequest) input message
@@ -13431,7 +13431,7 @@ A regional managed instance group can contain up to 2000 instances.
     )
 
     def RecreateInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be immediately recreated. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
+      r"""Flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group's current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances.
 
 If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
@@ -17245,6 +17245,32 @@ For more information, see [Invalidating cached content](/cdn/docs/invalidating-c
         request_field='',
         request_type_name='ComputeServiceAttachmentsListRequest',
         response_type_name='ServiceAttachmentList',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified ServiceAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeServiceAttachmentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.serviceAttachments.patch',
+        ordered_params=['project', 'region', 'serviceAttachment'],
+        path_params=['project', 'region', 'serviceAttachment'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/serviceAttachments/{serviceAttachment}',
+        request_field='serviceAttachmentResource',
+        request_type_name='ComputeServiceAttachmentsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

@@ -19,8 +19,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
+from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
@@ -34,7 +37,8 @@ class CopyTaskIterator:
   def __init__(self,
                source_name_iterator,
                destination_string,
-               custom_md5_digest=None):
+               custom_md5_digest=None,
+               task_status_queue=None):
     """Initializes a CopyTaskIterator instance.
 
     Args:
@@ -42,7 +46,9 @@ class CopyTaskIterator:
         yields resource_reference.Resource objects with expanded source URLs.
       destination_string (str): The copy destination path or url.
       custom_md5_digest (str|None): User-added MD5 hash output to send to server
-          for validating a single resource upload.
+        for validating a single resource upload.
+      task_status_queue (multiprocessing.Queue|None): Used for estimating total
+        workload from this iterator.
     """
     self._source_name_iterator = (
         plurality_checkable_iterator.PluralityCheckableIterator(
@@ -50,10 +56,42 @@ class CopyTaskIterator:
     self._multiple_sources = self._source_name_iterator.is_plural()
     self._destination_string = destination_string
     self._custom_md5_digest = custom_md5_digest
+    self._task_status_queue = task_status_queue
+
+    self._total_file_count = 0
+    self._total_size = 0
 
     if self._multiple_sources and self._custom_md5_digest:
       raise ValueError('Received multiple objects to upload, but only one'
                        'custom MD5 digest is allowed.')
+
+  def _update_workload_estimation(self, resource):
+    """Updates total_file_count and total_size.
+
+    Args:
+      resource (resource_reference.Resource): Any type of resource. Parse to
+        help estimate total workload.
+    """
+    if self._total_file_count == -1 or self._total_size == -1:
+      # -1 is signal that data is corrupt and not worth tracking.
+      return
+    try:
+      if resource.is_container():
+        return
+      if isinstance(resource, resource_reference.FileObjectResource):
+        size = os.path.getsize(resource.storage_url.object_name)
+      elif (isinstance(resource, resource_reference.ObjectResource) and
+            resource.size is not None):
+        size = resource.size
+      else:
+        raise errors.ValueCannotBeDeterminedError
+    except (OSError, errors.ValueCannotBeDeterminedError):
+      log.error('Could not get size of resource {}.'.format(resource))
+      self._total_file_count = -1
+      self._total_size = -1
+    else:
+      self._total_file_count += 1
+      self._total_size += size
 
   def __iter__(self):
     raw_destination = self._get_raw_destination()
@@ -75,14 +113,26 @@ class CopyTaskIterator:
       else:
         source_url_string = source.resource.storage_url.versionless_url_string
 
+      if self._custom_md5_digest:
+        source.resource.md5_hash = self._custom_md5_digest
+
       # \r prevents output from getting mixed with progress_tracker.
       log.status.Print('\rCopying {} to {}'.format(
           source_url_string,
           destination_resource.storage_url.versionless_url_string))
-      if self._custom_md5_digest:
-        source.resource.md5_hash = self._custom_md5_digest
+      if self._task_status_queue:
+        self._update_workload_estimation(source.resource)
+
       yield copy_task_factory.get_copy_task(source.resource,
                                             destination_resource)
+
+    if (self._task_status_queue and
+        (self._total_file_count > 0 or self._total_size > 0)):
+      # Show fraction of total copies completed now that we know totals.
+      progress_callbacks.files_and_bytes_workload_estimator_callback(
+          self._task_status_queue,
+          file_count=self._total_file_count,
+          size=self._total_size)
 
   def _get_raw_destination(self):
     """Converts self._destination_string to a destination resource.

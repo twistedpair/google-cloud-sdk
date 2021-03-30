@@ -6268,6 +6268,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportTensorboardTimeSeries(self, request, global_params=None):
+      r"""Exports a TensorboardTimeSeries' data. Data is returned in paginated responses.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesExportTensorboardTimeSeriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExportTensorboardTimeSeries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportTensorboardTimeSeries.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:exportTensorboardTimeSeries',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.exportTensorboardTimeSeries',
+        ordered_params=['tensorboardTimeSeries'],
+        path_params=['tensorboardTimeSeries'],
+        query_params=[],
+        relative_path='v1beta1/{+tensorboardTimeSeries}:exportTensorboardTimeSeries',
+        request_field='googleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataRequest',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesExportTensorboardTimeSeriesRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a TensorboardTimeSeries.
 

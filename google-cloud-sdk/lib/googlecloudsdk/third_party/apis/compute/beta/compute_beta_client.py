@@ -59,6 +59,7 @@ class ComputeBeta(base_api.BaseApiClient):
     self.healthChecks = self.HealthChecksService(self)
     self.httpHealthChecks = self.HttpHealthChecksService(self)
     self.httpsHealthChecks = self.HttpsHealthChecksService(self)
+    self.imageFamilyViews = self.ImageFamilyViewsService(self)
     self.images = self.ImagesService(self)
     self.instanceGroupManagers = self.InstanceGroupManagersService(self)
     self.instanceGroups = self.InstanceGroupsService(self)
@@ -4309,6 +4310,42 @@ This method is called on a best-effort basis. Specifically:
         supports_download=False,
     )
 
+  class ImageFamilyViewsService(base_api.BaseApiService):
+    """Service class for the imageFamilyViews resource."""
+
+    _NAME = 'imageFamilyViews'
+
+    def __init__(self, client):
+      super(ComputeBeta.ImageFamilyViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the latest image that is part of an image family, is not deprecated and is rolled out in the specified zone.
+
+      Args:
+        request: (ComputeImageFamilyViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ImageFamilyView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.imageFamilyViews.get',
+        ordered_params=['project', 'zone', 'family'],
+        path_params=['family', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/imageFamilyViews/{family}',
+        request_field='',
+        request_type_name='ComputeImageFamilyViewsGetRequest',
+        response_type_name='ImageFamilyView',
+        supports_download=False,
+    )
+
   class ImagesService(base_api.BaseApiService):
     """Service class for the images resource."""
 
@@ -5018,7 +5055,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def RecreateInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be immediately recreated. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
+      r"""Flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group's current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances.
 
 If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
@@ -5876,7 +5913,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Instance resource. For more information, see Stopping or Deleting an Instance.
+      r"""Deletes the specified Instance resource. For more information, see Deleting an instance.
 
       Args:
         request: (ComputeInstancesDeleteRequest) input message
@@ -12194,7 +12231,7 @@ A regional managed instance group can contain up to 2000 instances.
     )
 
     def RecreateInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be immediately recreated. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
+      r"""Flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group's current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances.
 
 If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 

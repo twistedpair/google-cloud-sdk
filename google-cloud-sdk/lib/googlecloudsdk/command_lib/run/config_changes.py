@@ -31,6 +31,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import name_generator
 from googlecloudsdk.command_lib.run import platforms
+from googlecloudsdk.command_lib.run import secrets_mapping
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
 
@@ -403,6 +404,7 @@ class SecretEnvVarChanges(ConfigChanger):
             'Cannot update environment variable [{}] to the given type '
             'because it has already been set with a different type.'.format(
                 name))
+    secrets_mapping.PruneAnnotation(resource)
     return resource
 
 
@@ -725,6 +727,7 @@ class SecretVolumeChanges(ConfigChanger):
       volumes[volume_name] = reachable_secret.AsSecretVolumeSource(resource)
 
     _PruneVolumes(volume_mounts, volumes)
+    secrets_mapping.PruneAnnotation(resource)
     return resource
 
 

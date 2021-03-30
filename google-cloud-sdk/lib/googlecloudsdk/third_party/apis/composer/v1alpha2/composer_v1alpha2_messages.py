@@ -36,6 +36,46 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CheckUpgradeRequest(_messages.Message):
+  r"""Request to check whether image upgrade will succeed.
+
+  Fields:
+    imageVersion: The version of the software running in the environment. This
+      encapsulates both the version of Cloud Composer functionality and the
+      version of Apache Airflow. It must match the regular expression `compose
+      r-([0-9]+\.[0-9]+\.[0-9]+|latest)-airflow-[0-9]+\.[0-9]+(\.[0-9]+.*)?`.
+      When used as input, the server also checks if the provided version is
+      supported and denies the request for an unsupported version. The Cloud
+      Composer portion of the version is a [semantic
+      version](https://semver.org) or `latest`. When the patch version is
+      omitted, the current Cloud Composer patch version is selected. When
+      `latest` is provided instead of an explicit version number, the server
+      replaces `latest` with the current Cloud Composer version and stores
+      that version number in the same field. The portion of the image version
+      that follows `airflow-` is an official Apache Airflow repository
+      [release name](https://github.com/apache/incubator-airflow/releases).
+      See also [Version List] (/composer/docs/concepts/versioning/composer-
+      versions).
+  """
+
+  imageVersion = _messages.StringField(1)
+
+
+class ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest object.
+
+  Fields:
+    checkUpgradeRequest: A CheckUpgradeRequest resource to be passed as the
+      request body.
+    environment: The resource name of the environment to check upgrade for, in
+      the form: "projects/{projectId}/locations/{locationId}/environments/{env
+      ironmentId}"
+  """
+
+  checkUpgradeRequest = _messages.MessageField('CheckUpgradeRequest', 1)
+  environment = _messages.StringField(2, required=True)
+
+
 class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsCreateRequest object.
 
@@ -834,11 +874,13 @@ class OperationMetadata(_messages.Message):
       CREATE: A resource creation operation.
       DELETE: A resource deletion operation.
       UPDATE: A resource update operation.
+      CHECK: A resource check operation.
     """
     TYPE_UNSPECIFIED = 0
     CREATE = 1
     DELETE = 2
     UPDATE = 3
+    CHECK = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current operation state.

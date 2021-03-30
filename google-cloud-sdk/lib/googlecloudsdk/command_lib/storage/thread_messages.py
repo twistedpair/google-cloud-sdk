@@ -22,7 +22,11 @@ import os
 import threading
 
 
-class ProgressMessage(object):
+class ThreadMessage(object):
+  """Message that can be sent from multithreading workers to global status."""
+
+
+class ProgressMessage(ThreadMessage):
   """Message class for sending information about operation progress.
 
   This class contains specific information on the progress of operating on a
@@ -102,3 +106,26 @@ class ProgressMessage(object):
                 operation_name=operation_name_string,
                 process_id=self.process_id,
                 thread_id=self.thread_id)
+
+
+class WorkloadEstimatorMessage(ThreadMessage):
+  """Message class for estimating total workload of operation.
+
+  Attributes:
+    file_count (int): Number of files to add to workload estimation.
+    size (int): Number of bytes to add to workload estimation.
+  """
+
+  def __init__(self, file_count, size):
+    # pylint:disable=g-doc-args
+    """Initializes WorkloadEstimatorMessage. Args in attributes docstring."""
+    # pylint:enable=g-doc-args
+    self.file_count = file_count
+    self.size = size
+
+  def __repr__(self):
+    """Returns a string with a valid constructor for this message."""
+    return '{class_name}(file_count={file_count}, size={size})'.format(
+        class_name=self.__class__.__name__,
+        file_count=self.file_count,
+        size=self.size)

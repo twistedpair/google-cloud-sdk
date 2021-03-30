@@ -40,6 +40,7 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_repositories_aptArtifacts = self.ProjectsLocationsRepositoriesAptArtifactsService(self)
+    self.projects_locations_repositories_gooGetArtifacts = self.ProjectsLocationsRepositoriesGooGetArtifactsService(self)
     self.projects_locations_repositories_yumArtifacts = self.ProjectsLocationsRepositoriesYumArtifactsService(self)
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -78,6 +79,43 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/aptArtifacts:import',
         request_field='googleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesGooGetArtifactsService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_gooGetArtifacts resource."""
+
+    _NAME = 'projects_locations_repositories_gooGetArtifacts'
+
+    def __init__(self, client):
+      super(ArtifactregistryV1alpha1.ProjectsLocationsRepositoriesGooGetArtifactsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Import(self, request, global_params=None):
+      r"""Imports GooGet artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/gooGetArtifacts:import',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.gooGetArtifacts.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/gooGetArtifacts:import',
+        request_field='googleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest',
         response_type_name='Operation',
         supports_download=False,
     )

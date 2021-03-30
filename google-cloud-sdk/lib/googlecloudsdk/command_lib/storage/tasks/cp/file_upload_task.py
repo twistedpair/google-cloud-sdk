@@ -120,8 +120,10 @@ class FileUploadTask(task.Task):
       compose_objects_tasks = [compose_objects_task.ComposeObjectsTask(
           compose_objects_sources, self._destination_resource)]
 
-      return [
-          file_part_upload_tasks,
-          compose_objects_tasks,
-          delete_object_tasks,
-      ]
+      return task.Output(
+          additional_task_iterators=[
+              file_part_upload_tasks,
+              compose_objects_tasks,
+              delete_object_tasks,
+          ],
+          messages=None)

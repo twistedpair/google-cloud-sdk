@@ -32,7 +32,6 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
-# from googlecloudsdk.core import yaml_validator
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.resource import resource_filter
@@ -51,6 +50,7 @@ KrmGroupValueKind = collections.namedtuple('KrmGroupValueKind', [
     'kind', 'service', 'group', 'bulk_export_supported', 'export_supported',
     'resource_name_format'
 ])
+
 
 RESOURCE_LIST_FORMAT = (
     'table[box](GVK.Kind, SupportsBulkExport.yesno("x", ""):label="BULK '
@@ -223,7 +223,8 @@ def _ExecuteBinaryWithStreaming(cmd, in_str=None):
 
 def _BulkExportPostStatus(preexisting_file_count, path):
   if not preexisting_file_count:
-    file_count = len(os.listdir(path))
+    file_count = sum(
+        [len(files_in_dir) for r, d, files_in_dir in os.walk(path)])
     log.status.write('Exported {} resource configuration(s) to [{}].\n'.format(
         file_count, path))
   else:
@@ -353,12 +354,23 @@ class KccClient(client_base.DeclarativeClient):
   def _CallBulkExport(self, cmd, args, asset_list_input=None):
     """Execute actual bulk-export command on config-connector binary."""
     if self._OutputToFileOrDir(args):
-      preexisting_file_count = len(os.listdir(args.path))
+      try:
+        if not files.HasWriteAccessInDir(args.path):
+          raise client_base.ClientException(
+              'Can not export to path [{}]. Ensure that path exists and '
+              'is writeable.'.format(args.path)
+              )
+      except ValueError:
+        raise client_base.ClientException(
+            'Can not export to path [{}]. Path not found.'.format(args.path))
+
+      preexisting_file_count = sum(
+          [len(files_in_dir) for r, d, files_in_dir in os.walk(args.path)])
       with progress_tracker.ProgressTracker(
           message='Exporting resource configurations to [{}]'.format(args.path),
           aborted_message='Aborted Export.'):
-        exit_code, _, error_value = _ExecuteBinary(cmd=cmd,
-                                                   in_str=asset_list_input)
+        exit_code, _, error_value = _ExecuteBinary(
+            cmd=cmd, in_str=asset_list_input)
 
       if exit_code != 0:
         raise client_base.ClientException(
@@ -376,10 +388,18 @@ class KccClient(client_base.DeclarativeClient):
     cmd = self._GetBinaryCommand(args, 'bulk-export')
     return self._CallBulkExport(cmd, args, asset_list_input=None)
 
+  def _ParseKindTypesFileData(self, file_data):
+    """Parse Resource Types data into input string Array."""
+    if not file_data:
+      return None
+    return [x for x in re.split(r'\s+|,+', file_data) if x]
+
   def BulkExportFromAssetList(self, args):
     """BulkExport with support for resource kind/asset type and filtering."""
     args.all = True  # Remove scope (e.g. project, org & folder) from cmd.
-    kind_filters = getattr(args, 'resource_types', None)
+    kind_filters = (getattr(args, 'resource_types', None) or
+                    self._ParseKindTypesFileData(
+                        getattr(args, 'resource_types_file', None)))
     if kind_filters:
       kind_filters = self._GetKrmResourceTypeTable(filter_kinds=kind_filters)
     asset_list_input = _GetAssetInventoryListInput(

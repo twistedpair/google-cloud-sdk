@@ -823,9 +823,12 @@ apis:
           path: simulator
       discovery_doc: policysimulator_v1.json
   privateca:
+    # TODO(b/158338643): Remove beta and set v1 as default when GA is public.
     v1beta1:
       default: true
       discovery_doc: privateca_v1beta1.json
+    v1:
+      discovery_doc: privateca_v1.json
   publicca:
     v1alpha1:
       default: true
@@ -868,12 +871,12 @@ apis:
     v1:
       discovery_doc: resourcesettings_v1.json
       unelidable_request_methods:
-      - resourcesettings.folders.settings.value.create
-      - resourcesettings.folders.settings.updateValue
-      - resourcesettings.organizations.settings.value.create
-      - resourcesettings.organizations.settings.updateValue
-      - resourcesettings.projects.settings.value.create
-      - resourcesettings.projects.settings.updateValue
+      - resourcesettings.folders.settings.get
+      - resourcesettings.folders.settings.patch
+      - resourcesettings.organizations.settings.get
+      - resourcesettings.organizations.settings.patch
+      - resourcesettings.projects.settings.get
+      - resourcesettings.projects.settings.patch
       default: true
   run:
     v1alpha1:

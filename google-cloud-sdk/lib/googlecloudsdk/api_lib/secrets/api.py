@@ -113,6 +113,8 @@ class Secrets(Client):
              expire_time=None,
              ttl=None,
              keys=None,
+             next_rotation_time=None,
+             rotation_period=None,
              topics=None):
     """Create a secret."""
     keys = keys or []
@@ -123,6 +125,11 @@ class Secrets(Client):
       for topic in topics:
         topics_message_list.append(self.messages.Topic(name=topic))
 
+    rotation = None
+    if next_rotation_time or rotation_period:
+      rotation = self.messages.Rotation(
+          nextRotationTime=next_rotation_time, rotationPeriod=rotation_period)
+
     return self.service.Create(
         self.messages.SecretmanagerProjectsSecretsCreateRequest(
             parent=secret_ref.Parent().RelativeName(),
@@ -132,7 +139,8 @@ class Secrets(Client):
                 replication=replication,
                 expireTime=expire_time,
                 ttl=ttl,
-                topics=topics_message_list)))
+                topics=topics_message_list,
+                rotation=rotation)))
 
   def Delete(self, secret_ref):
     """Delete a secret."""
@@ -179,8 +187,16 @@ class Secrets(Client):
              update_mask,
              expire_time=None,
              ttl=None,
-             topics=None):
+             topics=None,
+             next_rotation_time=None,
+             rotation_period=None):
     """Update a secret."""
+
+    rotation = None
+    if next_rotation_time or rotation_period:
+      rotation = self.messages.Rotation(
+          nextRotationTime=next_rotation_time, rotationPeriod=rotation_period)
+
     topics_message_list = []
     if topics:
       for topic in topics:
@@ -192,7 +208,8 @@ class Secrets(Client):
                 labels=labels,
                 expireTime=expire_time,
                 ttl=ttl,
-                topics=topics_message_list),
+                topics=topics_message_list,
+                rotation=rotation),
             updateMask=_FormatUpdateMask(update_mask)))
 
   def SetReplication(self, secret_ref, policy, locations, keys):

@@ -266,8 +266,8 @@ class GcsApi(cloud_api.CloudApi):
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageBucketsInsertRequest)
     if not bucket_resource.metadata:
-      bucket_resource.metadata = gcs_metadata_util.get_apitools_metadata_from_url(
-          bucket_resource.storage_url)
+      bucket_resource.metadata = gcs_metadata_util.get_metadata_from_bucket_resource(
+          bucket_resource)
 
     request = self.messages.StorageBucketsInsertRequest(
         bucket=bucket_resource.metadata,
@@ -611,7 +611,7 @@ class GcsApi(cloud_api.CloudApi):
 
     # TODO(b/161437904): Add decryption handling.
 
-    if start_byte or end_byte:
+    if start_byte or end_byte is not None:
       apitools_download.GetRange(
           additional_headers=additional_headers,
           start=start_byte,

@@ -432,7 +432,7 @@ def AddUpdateArgs(parser,
         required=False,
         #      short_help='Target bundle of Google APIs to expose.',
         help=(
-            'Target bundle of Google APIs that will receive forwarded traffic'
+            'Target bundle of Google APIs that will receive forwarded traffic '
             'via Private Service Connect. '
             'Acceptable values are all-apis, meaning all Google APIs, or '
             'vpc-sc, meaning just the APIs that support VPC Service Controls'),
@@ -484,7 +484,9 @@ def AddLoadBalancingScheme(parser,
       choices=load_balancing_choices,
       type=lambda x: x.replace('-', '_').upper(),
       default=None if include_psc else 'EXTERNAL',
-      help="This defines the forwarding rule's load balancing scheme.")
+      help="This defines the forwarding rule's load balancing scheme. Note that it defaults to EXTERNAL and is not applicable for Private Service Connect forwarding rules."
+      if include_psc else
+      "This defines the forwarding rule's load balancing scheme.")
 
 
 def AddAllowGlobalAccess(parser):
@@ -644,8 +646,8 @@ def AddServiceDirectoryRegistration(parser):
       action='store',
       default=None,
       help="""\
-      The Service Directory service in which to register this forwarding rule.
-      The Service Directory service must be in the same project and
+      The Service Directory service in which to register this forwarding rule as
+      an endpoint. The Service Directory service must be in the same project and
       region as the forwarding rule you are creating.
       """)
 

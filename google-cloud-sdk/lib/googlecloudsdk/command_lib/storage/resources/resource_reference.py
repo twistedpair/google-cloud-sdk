@@ -97,29 +97,48 @@ class BucketResource(CloudResource):
     storage_url (StorageUrl): A StorageUrl object representing the bucket.
     name (str): Name of bucket.
     scheme (storage_url.ProviderPrefix): Prefix indicating what cloud provider
-        hosts the bucket.
-    etag (str): HTTP version identifier.
-    metadata (object | dict): Cloud-provider specific data type for holding
-        bucket metadata.
+      hosts the bucket.
+    etag (str|None): HTTP version identifier.
+    location (str|None): Represents region bucket was created in.
+    metadata (object|dict|None): Cloud-provider specific data type for holding
+      bucket metadata.
+    retention_period (int|None): Default time to hold items in bucket before
+      before deleting in seconds.
+    storage_class (str|None): Default storage class for objects in bucket.
+    uniform_bucket_level_access (bool): True if all objects in the bucket share
+      ACLs rather than the default, fine-grain ACL control.
   """
   TYPE_STRING = 'cloud_bucket'
 
-  def __init__(self, storage_url_object, etag=None, metadata=None):
+  def __init__(self,
+               storage_url_object,
+               etag=None,
+               location=None,
+               metadata=None,
+               retention_period=None,
+               storage_class=None,
+               uniform_bucket_level_access=False):
     """Initializes resource. Args are a subset of attributes."""
     super(BucketResource, self).__init__(storage_url_object)
     self.etag = etag
+    self.location = location
     self.metadata = metadata
+    self.retention_period = retention_period
+    self.storage_class = storage_class
+    self.uniform_bucket_level_access = uniform_bucket_level_access
 
   @property
   def name(self):
     return self.storage_url.bucket_name
 
   def __eq__(self, other):
-    return (
-        super(BucketResource, self).__eq__(other) and
-        self.etag == other.etag and
-        self.metadata == other.metadata
-    )
+    return (super(BucketResource, self).__eq__(other) and
+            self.etag == other.etag and self.location == other.location and
+            self.metadata == other.metadata and
+            self.retention_period == other.retention_period and
+            self.storage_class == other.storage_class and
+            self.uniform_bucket_level_access
+            == other.uniform_bucket_level_access)
 
   def is_container(self):
     return True

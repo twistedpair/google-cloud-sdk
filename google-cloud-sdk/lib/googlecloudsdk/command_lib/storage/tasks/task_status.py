@@ -22,9 +22,15 @@ import enum
 import multiprocessing
 import threading
 
+from googlecloudsdk.command_lib.storage import thread_messages
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import scaled_integer
+
+
+# Recalculate throughput everytime last message time - window_start_time
+# is greater than this time threshold.
+_THROUGHPUT_WINDOW_THRESHOLD_SECONDS = 3
 
 
 class OperationName(enum.Enum):
@@ -39,6 +45,12 @@ class ProgressType(enum.Enum):
   FILES = 'FILES'
 
 
+def _get_formatted_throughput(bytes_processed, time_delta):
+  throughput_bytes = max(bytes_processed / time_delta, 0)
+  return scaled_integer.FormatBinaryNumber(
+      throughput_bytes, decimal_places=1) + '/s'
+
+
 class _StatusTracker:
   """Aggregates and prints information on task statuses.
 
@@ -47,17 +59,76 @@ class _StatusTracker:
   """
 
   def __init__(self):
+    # For displaying progress.
     self._completed_files = 0
     self._processed_bytes = 0
+    self._total_files_estimation = 0
+    self._total_bytes_estimation = 0
+
+    # For calculating average throughput.
+    self._first_operation_time = None
+    self._last_operation_time = None
+    self._total_processed_bytes = 0
+
+    # For calculating window throughput.
+    self._window_start_time = None
+    self._window_processed_bytes = 0
+    # String for on-the-fly display.
+    self._window_throughput = None
+
+    # For keeping track of progress on different files.
     self._tracked_file_progress = {}
+    # Holds reference to gcloud ProgressTracker.
     self._progress_tracker = None
 
   def _get_status_string(self):
+    """Generates string to illustrate progress to the user."""
     # TODO(b/180047352) Avoid having other output print on the same line.
-    return '\rCopied files {} | {}'.format(
-        self._completed_files,
-        scaled_integer.FormatBinaryNumber(
-            self._processed_bytes, decimal_places=1))
+    scaled_processed_bytes = scaled_integer.FormatBinaryNumber(
+        self._processed_bytes, decimal_places=1)
+    if self._total_files_estimation:
+      file_progress_string = '{}/{}'.format(self._completed_files,
+                                            self._total_files_estimation)
+    else:
+      file_progress_string = self._completed_files
+    if self._total_bytes_estimation:
+      scaled_total_bytes_estimation = scaled_integer.FormatBinaryNumber(
+          self._total_bytes_estimation, decimal_places=1)
+      bytes_progress_string = '{}/{}'.format(scaled_processed_bytes,
+                                             scaled_total_bytes_estimation)
+    else:
+      bytes_progress_string = scaled_processed_bytes
+
+    if self._window_throughput:
+      throughput_addendum_string = ' | ' + self._window_throughput
+    else:
+      throughput_addendum_string = ''
+
+    return '\rCopied files {} | {}{}'.format(file_progress_string,
+                                             bytes_progress_string,
+                                             throughput_addendum_string)
+
+  def _update_throughput(self, status_message, processed_bytes):
+    """Updates stats and recalculates throughput if past threshold."""
+    if self._first_operation_time is None:
+      self._first_operation_time = status_message.time
+      self._window_start_time = status_message.time
+    else:
+      self._last_operation_time = status_message.time
+
+    self._window_processed_bytes += processed_bytes
+
+    time_delta = status_message.time - self._window_start_time
+    if time_delta > _THROUGHPUT_WINDOW_THRESHOLD_SECONDS:
+      self._window_throughput = _get_formatted_throughput(
+          self._window_processed_bytes, time_delta)
+      self._window_start_time = status_message.time
+      self._window_processed_bytes = 0
+
+  def _add_to_workload_estimation(self, status_message):
+    """Adds WorloadEstimatorMessage info to total workload estimation."""
+    self._total_files_estimation += status_message.file_count
+    self._total_bytes_estimation += status_message.size
 
   def _add_component_progress(self, status_message):
     """Track progress of a multipart file operation."""
@@ -71,18 +142,21 @@ class _StatusTracker:
     component_tracker = self._tracked_file_progress[file_url_string]
     component_number = status_message.component_number
 
-    processed_bytes = status_message.current_byte - status_message.offset
+    processed_component_bytes = status_message.current_byte - status_message.offset
     # status_message.current_byte includes bytes from past messages.
-    self._processed_bytes += (
-        processed_bytes - component_tracker.get(component_number, 0))
-    if processed_bytes == status_message.length:
+    newly_processed_bytes = (
+        processed_component_bytes - component_tracker.get(component_number, 0))
+    self._processed_bytes += newly_processed_bytes
+    self._update_throughput(status_message, newly_processed_bytes)
+
+    if processed_component_bytes == status_message.length:
       # Operation complete.
       component_tracker.pop(component_number, None)
       if not component_tracker:
         self._tracked_file_progress[file_url_string] = -1
         self._completed_files += 1
     else:
-      component_tracker[component_number] = processed_bytes
+      component_tracker[component_number] = processed_component_bytes
 
   def _add_file_progress(self, status_message):
     """Track progress of a file operation."""
@@ -90,32 +164,37 @@ class _StatusTracker:
     if file_url_string not in self._tracked_file_progress:
       self._tracked_file_progress[file_url_string] = 0
 
-    processed_bytes = status_message.current_byte - status_message.offset
+    processed_file_bytes = status_message.current_byte - status_message.offset
     known_progress = self._tracked_file_progress[file_url_string]
     # status_message.current_byte includes bytes from past messages.
-    self._processed_bytes += processed_bytes - known_progress
+    newly_processed_bytes = processed_file_bytes - known_progress
+    self._processed_bytes += newly_processed_bytes
+    self._update_throughput(status_message, newly_processed_bytes)
 
-    if processed_bytes == status_message.length:
+    if processed_file_bytes == status_message.length:
       # Operation complete.
       self._tracked_file_progress[file_url_string] = -1
       self._completed_files += 1
     else:
-      self._tracked_file_progress[file_url_string] = processed_bytes
+      self._tracked_file_progress[file_url_string] = processed_file_bytes
 
   def add_message(self, status_message):
     """Processes task status message for printing and aggregation.
 
     Args:
-      status_message (thread_messages.ProgressMessage): Message to process.
+      status_message (thread_messages.*): Message to process.
     """
-    if self._tracked_file_progress.get(status_message.source_url.url_string,
-                                       0) == -1:
-      # File has already been downloaded. No processing to do.
-      return
-    if status_message.total_components:
-      self._add_component_progress(status_message)
-    else:
-      self._add_file_progress(status_message)
+    if isinstance(status_message, thread_messages.WorkloadEstimatorMessage):
+      self._add_to_workload_estimation(status_message)
+    elif isinstance(status_message, thread_messages.ProgressMessage):
+      if self._tracked_file_progress.get(status_message.source_url.url_string,
+                                         0) == -1:
+        # File has already been downloaded. No processing to do.
+        return
+      if status_message.total_components:
+        self._add_component_progress(status_message)
+      else:
+        self._add_file_progress(status_message)
 
   def start(self):
     self._progress_tracker = progress_tracker.ProgressTracker(
@@ -126,7 +205,14 @@ class _StatusTracker:
 
   def stop(self, exc_type, exc_val, exc_tb):
     if self._progress_tracker:
-      return self._progress_tracker.__exit__(exc_type, exc_val, exc_tb)
+      self._progress_tracker.__exit__(exc_type, exc_val, exc_tb)
+
+    if (self._first_operation_time is not None and
+        self._last_operation_time is not None and
+        self._first_operation_time != self._last_operation_time):
+      log.status.Print('\rAverage throughput: ' + _get_formatted_throughput(
+          self._processed_bytes, self._last_operation_time -
+          self._first_operation_time))
 
 
 def status_message_handler(task_status_queue, status_tracker):

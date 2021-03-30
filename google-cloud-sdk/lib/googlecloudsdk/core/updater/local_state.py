@@ -130,6 +130,7 @@ class InstallationState(object):
   TRASH_DIR_NAME = '.trash'
   STAGING_ROOT_SUFFIX = '.staging'
   COMPONENT_SNAPSHOT_FILE_SUFFIX = '.snapshot.json'
+  DEPRECATED_DIRS = ('lib/third_party/grpc',)
 
   @staticmethod
   def ForCurrent():
@@ -587,6 +588,14 @@ class InstallationState(object):
         os.rmdir(d)
 
     manifest.MarkUninstalled()
+
+  @_RaisesPermissionsError
+  def ClearDeprecatedDirs(self):
+    """Clear deprecated directories that were not removed correctly."""
+    for d in self.DEPRECATED_DIRS:
+      path = os.path.join(self.sdk_root, d)
+      if os.path.isdir(path):
+        file_utils.RmTree(path)
 
   def CopyMachinePropertiesTo(self, other_state):
     """Copy this state's properties file to another state.

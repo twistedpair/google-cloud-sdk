@@ -70,14 +70,12 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
   r"""A DatacatalogEntriesLookupRequest object.
 
   Fields:
-    fullyQualifiedName: Fully Qualified Name of the resource. There are two
-      main forms of FQNs: {system}:{project}.{dot-separated path to resource}
-      for non-regionalized resources {system}:{project}.{location id}.{dot-
-      separated path to resource} for regionalized resources Examples: *
-      `bigquery:dataset.project_id.dataset_id` *
-      `bigquery:table.project_id.dataset_id.table_id` *
-      `pubsub:project_id.topic_id` *
-      `dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId`
+    fullyQualifiedName: Fully qualified name (FQN) of the resource. FQNs take
+      two forms: * For non-regionalized resources:
+      `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For
+      regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOU
+      RCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:
+      project_id.location_id.instance_id.database_id.table_id`
     linkedResource: The full name of the Google Cloud Platform resource the
       Data Catalog entry represents. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name.
@@ -1213,8 +1211,8 @@ class GoogleCloudDatacatalogV1DataStreamSpec(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
-  r"""Specification that applies to a table resource. This is only valid on
-  entries of type `TABLE`.
+  r"""Specification that applies to a table resource. Only valid for entries
+  of `TABLE` type.
 
   Enums:
     TypeValueValuesEnum: Type of this table.
@@ -1266,8 +1264,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     dataSource: Output only. Physical location of the entry.
     dataStreamSpec: Additional specification of a data stream. Present on
       entries representing non-pubsub data streams.
-    databaseTableSpec: Specification that applies to a table resource. This is
-      only valid on entries of type `TABLE`.
+    databaseTableSpec: Specification that applies to a table resource. Only
+      valid for entries of `TABLE` type.
     description: Entry description that can consist of several sentences or
       paragraphs that describe entry contents. The description must not
       contain Unicode non-characters as well as C0 and C1 control codes except
@@ -1278,14 +1276,15 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and
       can't start or end with spaces. The maximum size is 200 bytes when
       encoded in UTF-8. Default value is an empty string.
-    fullyQualifiedName: Fully Qualified Name of the resource. Set
+    fullyQualifiedName: Fully qualified name (FQN) of the resource. Set
       automatically for entries representing resources from synced systems.
       Settable only during creation and read-only afterwards. Can be used for
-      search and lookup of the entries. There are two main forms of FQNs:
-      {system}:{project}.{dot-separated path to resource} for non-regionalized
-      resources {system}:{project}.{location id}.{dot-separated path to
-      resource} for regionalized resources Example for DPMS table:
-      dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId
+      search and lookup of the entries. FQNs take two forms: * For non-
+      regionalized resources:
+      `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For
+      regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOU
+      RCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:
+      project_id.location_id.instance_id.database_id.table_id`
     gcsFilesetSpec: Specification that applies to a Cloud Storage fileset.
       This is only valid on entries of type FILESET.
     integratedSystem: Output only. This field indicates the entry's source
@@ -1337,7 +1336,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
-      DATAPROC_METASTORE: Dataproc Metastore - Managed Hive Metastore.
+      DATAPROC_METASTORE: Dataproc Metastore.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
@@ -1360,7 +1359,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
         Cloud Storage fileset.
       CLUSTER: A group of servers that work together. Example: Kafka cluster.
       DATABASE: A database.
-      SERVICE: A service (for example Dataproc Metastore service).
+      SERVICE: A service, for example, a Dataproc Metastore service.
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1
@@ -1906,6 +1905,12 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
       resource.
 
   Fields:
+    fullyQualifiedName: Fully Qualified Name of the resource. There are two
+      main forms of FQNs: {system}:{project}.{dot-separated path to resource}
+      for non-regionalized resources {system}:{project}.{location id}.{dot-
+      separated path to resource} for regionalized resources Examples: *
+      dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId *
+      bigquery:table.project_id.dataset_id.table_id
     integratedSystem: Output only. This field indicates the entry's source
       system that Data Catalog integrates with, such as BigQuery or Cloud
       Pub/Sub.
@@ -1937,7 +1942,7 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
       BIGQUERY: BigQuery.
       CLOUD_PUBSUB: Cloud Pub/Sub.
-      DATAPROC_METASTORE: Dataproc Metastore - Managed Hive Metastore.
+      DATAPROC_METASTORE: Dataproc Metastore.
     """
     INTEGRATED_SYSTEM_UNSPECIFIED = 0
     BIGQUERY = 1
@@ -1959,13 +1964,14 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
     TAG_TEMPLATE = 2
     ENTRY_GROUP = 3
 
-  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 1)
-  linkedResource = _messages.StringField(2)
-  modifyTime = _messages.StringField(3)
-  relativeResourceName = _messages.StringField(4)
-  searchResultSubtype = _messages.StringField(5)
-  searchResultType = _messages.EnumField('SearchResultTypeValueValuesEnum', 6)
-  userSpecifiedSystem = _messages.StringField(7)
+  fullyQualifiedName = _messages.StringField(1)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 2)
+  linkedResource = _messages.StringField(3)
+  modifyTime = _messages.StringField(4)
+  relativeResourceName = _messages.StringField(5)
+  searchResultSubtype = _messages.StringField(6)
+  searchResultType = _messages.EnumField('SearchResultTypeValueValuesEnum', 7)
+  userSpecifiedSystem = _messages.StringField(8)
 
 
 class GoogleCloudDatacatalogV1SerializedPolicyTag(_messages.Message):

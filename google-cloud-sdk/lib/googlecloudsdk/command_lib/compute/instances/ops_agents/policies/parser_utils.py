@@ -305,26 +305,7 @@ def AddMutationArgs(parser, required=True):
 
       For Alpha and Beta, exactly one OS type needs to be specified. The support for
       multiple OS types will be added later for more flexibility. Each OS type
-      contains the following fields.
-
-      *short-name*::: Short name of the OS.
-
-      *Required*. Allowed values: ``centos'', ``debian'', ``rhel'', ``sles'',
-      ``sles_sap'', ``ubuntu''. This is typically the ``ID'' value in the
-      ``/etc/os-release'' file in the OS.
-
-      To inspect the exact OS short name of an instance, run:
-
-        $ gcloud beta compute instances os-inventory describe INSTANCE_NAME | grep "^ShortName: "
-
-      *version*::: Version of the OS.
-
-      *Required*. This is typically the ``VERSION_ID'' value in the
-      ``/etc/os-release'' file in the OS.
-
-      To inspect the exact OS version of an instance, run:
-
-        $ gcloud beta compute instances os-inventory describe INSTANCE_NAME | grep "^Version: "
+      is defined by the combination of ``short-name'' and ``version'' fields.
 
       Sample values:
 
@@ -346,9 +327,29 @@ def AddMutationArgs(parser, required=True):
         windows            10.*
         windows            6.*
 
-      ```*``` can be used to match a prefix of the version:
-      ```<VERSION_PREFIX>*``` matches any version that starts with
-      ``<VERSION_PREFIX>''.
+      *short-name*::: Short name of the OS.
+
+      *Required*. Allowed values: ``centos'', ``debian'', ``rhel'', ``sles'',
+      ``sles_sap'', ``ubuntu''.
+
+      To inspect the exact OS short name of an instance, run:
+
+        $ gcloud beta compute instances os-inventory describe INSTANCE_NAME | grep "^ShortName: "
+
+      Under the hood, this value is derived from the ``ID'' field in the
+      ``/etc/os-release'' file for most operating systems.
+
+      *version*::: Version of the OS.
+
+      *Required*. This can be either an exact match or a prefix followed by the
+      ```*``` wildcard.
+
+      To inspect the exact OS version of an instance, run:
+
+        $ gcloud beta compute instances os-inventory describe INSTANCE_NAME | grep "^Version: "
+
+      Under the hood, this value is derived from the ``VERSION_ID'' field in the
+      ``/etc/os-release'' file for most operating systems.
       """,
   )
 

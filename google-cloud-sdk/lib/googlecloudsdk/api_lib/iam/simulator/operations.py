@@ -30,14 +30,15 @@ _MAX_WAIT_TIME_MS = 60 * 60 * 1000  # 60 minutes.
 class Client(object):
   """API client for Cloud IAM Simulator Replay Operations."""
 
-  def __init__(self, client, messages=None):
+  def __init__(self, api_version, client, messages=None):
+    self._api_version = api_version
     self._client = client
     self._service = self._client.operations
     self._messages = messages or client.MESSAGES_MODULE
 
   @classmethod
   def FromApiVersion(cls, version):
-    return cls(apis.GetClientInstance('policysimulator', version))
+    return cls(version, apis.GetClientInstance('policysimulator', version))
 
   def Get(self, operation_ref):
     request = self._messages.PolicysimulatorOperationsGetRequest(
@@ -57,7 +58,7 @@ class Client(object):
 
   def WaitForOperation(self, operation, message):
     registry = resources.REGISTRY.Clone()
-    registry.RegisterApiByName('policysimulator', 'v1beta1')
+    registry.RegisterApiByName('policysimulator', self._api_version)
     operation_ref = registry.Parse(
         operation.name, collection='policysimulator.operations')
     poller = waiter.CloudOperationPollerNoResources(self._service)

@@ -495,6 +495,10 @@
         "gitSource": {
           "description": "If provided, get the source from this Git repository.",
           "$ref": "GitSource"
+        },
+        "storageSourceManifest": {
+          "description": "If provided, get the source from this manifest in Google Cloud Storage. This feature is in Preview.",
+          "$ref": "StorageSourceManifest"
         }
       }
     },
@@ -576,6 +580,26 @@
         "revision": {
           "description": "The revision to fetch from the Git repository such as a branch, a tag, a commit SHA, or any Git ref. Cloud Build uses `git fetch` to fetch the revision from the Git repository; therefore make sure that the string you provide for `revision` is parsable by the command. For information on string values accepted by `git fetch`, see https:\/\/git-scm.com\/docs\/gitrevisions#_specifying_revisions. For information on `git fetch`, see https:\/\/git-scm.com\/docs\/git-fetch.",
           "type": "string"
+        }
+      }
+    },
+    "StorageSourceManifest": {
+      "id": "StorageSourceManifest",
+      "description": "Location of the source manifest in Google Cloud Storage. This feature is in Preview.",
+      "type": "object",
+      "properties": {
+        "bucket": {
+          "description": "Google Cloud Storage bucket containing the source manifest (see [Bucket Name Requirements](https:\/\/cloud.google.com\/storage\/docs\/bucket-naming#requirements)).",
+          "type": "string"
+        },
+        "object": {
+          "description": "Google Cloud Storage object containing the source manifest. This object must be a JSON file.",
+          "type": "string"
+        },
+        "generation": {
+          "description": "Google Cloud Storage generation for the object. If the generation is omitted, the latest generation will be used.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -828,6 +852,10 @@
         "resolvedRepoSource": {
           "description": "A copy of the build's `source.repo_source`, if exists, with any revisions resolved.",
           "$ref": "RepoSource"
+        },
+        "resolvedStorageSourceManifest": {
+          "description": "A copy of the build's `source.storage_source_manifest`, if exists, with any revisions resolved. This feature is in Preview.",
+          "$ref": "StorageSourceManifest"
         },
         "fileHashes": {
           "description": "Output only. Hash(es) of the build source, which can be used to verify that the original source integrity was maintained in the build. Note that `FileHashes` will only be populated if `BuildOptions` has requested a `SourceProvenanceHash`. The keys to this map are file paths used as build source and the values contain the hash values for those files. If the build source came in a single package such as a gzipped tarfile (`.tar.gz`), the `FileHash` will be for the single path to that file.",

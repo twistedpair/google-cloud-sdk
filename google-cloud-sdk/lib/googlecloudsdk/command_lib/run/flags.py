@@ -227,21 +227,18 @@ def AddAsyncFlag(parser, default_async_for_cluster=False):
     base.ASYNC_FLAG.AddToParser(parser)
 
 
-def AddEndpointVisibilityEnum(parser, deprecated=False):
+def AddEndpointVisibilityEnum(parser):
   """Add the --connectivity=[external|internal] flag."""
-  action = None
-  if deprecated:
-    action = actions.DeprecationAction(
-        '--connectivity',
-        warn='The {flag_name} flag is deprecated and will be removed in an '
-        'upcoming release. Please use the --ingress flag instead.')
   parser.add_argument(
       '--connectivity',
       choices=_VISIBILITY_MODES,
       help=('Defaults to \'external\'. If \'external\', the service can be '
             'invoked through the internet, in addition to through the cluster '
             'network.'),
-      action=action)
+      action=actions.DeprecationAction(
+          '--connectivity',
+          warn='The {flag_name} flag is deprecated but will continue to be '
+          'supported. Prefer to use the --ingress flag instead.'))
 
 
 def AddIngressFlag(parser):

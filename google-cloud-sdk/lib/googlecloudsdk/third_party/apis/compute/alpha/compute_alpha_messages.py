@@ -23143,6 +23143,36 @@ class ComputeServiceAttachmentsListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeServiceAttachmentsPatchRequest(_messages.Message):
+  r"""A ComputeServiceAttachmentsPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region scoping this request and should conform to RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    serviceAttachment: The resource id of the ServiceAttachment to patch. It
+      should conform to RFC1035 resource name or be a string form on an
+      unsigned long number.
+    serviceAttachmentResource: A ServiceAttachment resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  serviceAttachment = _messages.StringField(4, required=True)
+  serviceAttachmentResource = _messages.MessageField('ServiceAttachment', 5)
+
+
 class ComputeServiceAttachmentsSetIamPolicyRequest(_messages.Message):
   r"""A ComputeServiceAttachmentsSetIamPolicyRequest object.
 
@@ -38666,7 +38696,8 @@ class InterconnectAttachment(_messages.Message):
       indicates that the attachment carries only traffic encrypted by an IPsec
       device such as an HA VPN gateway. VMs cannot directly send traffic to,
       or receive traffic from, such an attachment. To use IPsec-encrypted
-      Cloud Interconnect, create the attachment using this option.
+      Cloud Interconnect, create the attachment using this option.  Not
+      currently available in all Interconnect locations.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional, which can
       take one of the following values:  - OS_ACTIVE: The attachment has been
@@ -38747,7 +38778,8 @@ class InterconnectAttachment(_messages.Message):
       the attachment carries only traffic encrypted by an IPsec device such as
       an HA VPN gateway. VMs cannot directly send traffic to, or receive
       traffic from, such an attachment. To use IPsec-encrypted Cloud
-      Interconnect, create the attachment using this option.
+      Interconnect, create the attachment using this option.  Not currently
+      available in all Interconnect locations.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues. [Deprecated] This field is not used.
@@ -38768,7 +38800,8 @@ class InterconnectAttachment(_messages.Message):
       specified for interconnect attachment that has encryption option as
       IPSEC, later on when creating HA VPN gateway on this interconnect
       attachment, the HA VPN gateway's IP address will be allocated from
-      regional external IP address pool.
+      regional external IP address pool. Not currently available in all
+      Interconnect locations.
     kind: [Output Only] Type of the resource. Always
       compute#interconnectAttachment for interconnect attachments.
     labelFingerprint: A fingerprint for the labels being applied to this
@@ -38912,7 +38945,8 @@ class InterconnectAttachment(_messages.Message):
     carries only traffic encrypted by an IPsec device such as an HA VPN
     gateway. VMs cannot directly send traffic to, or receive traffic from,
     such an attachment. To use IPsec-encrypted Cloud Interconnect, create the
-    attachment using this option.
+    attachment using this option.  Not currently available in all Interconnect
+    locations.
 
     Values:
       IPSEC: <no description>
@@ -52629,7 +52663,8 @@ class Router(_messages.Message):
       property when you create the resource.
     encryptedInterconnectRouter: Field to indicate if a router is dedicated to
       use with encrypted Interconnect Attachment (IPsec-encrypted Cloud
-      Interconnect feature).
+      Interconnect feature). Not currently available in all Interconnect
+      locations.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: Router interfaces. Each interface requires either one linked
@@ -54697,7 +54732,7 @@ class SecurityPolicyRule(_messages.Message):
       field may only be specified when versioned_expr is set to FIREWALL.
 
   Fields:
-    action: The Action to preform when the client connection triggers the
+    action: The Action to perform when the client connection triggers the
       rule. Can currently be either "allow" or "deny()" where valid values for
       status are 403, 404, and 502.
     description: An optional description of this resource. Provide this
@@ -55108,7 +55143,7 @@ class ServiceAttachment(_messages.Message):
   represents a service that a producer has exposed. It encapsulates the load
   balancer which fronts the service runs and a list of NAT IP ranges that the
   producers uses to represent the consumers connecting to the service. next
-  tag = 17
+  tag = 18
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service
@@ -55121,8 +55156,12 @@ class ServiceAttachment(_messages.Message):
       value can be set to ACCEPT_AUTOMATIC. An ACCEPT_AUTOMATIC service
       attachment is one that always accepts the connection from consumer
       forwarding rules.
+    consumerAcceptLists: Projects that are allowed to connect to this service
+      attachment.
     consumerForwardingRules: [Output Only] An array of forwarding rules for
       all the consumers connected to this service attachment.
+    consumerRejectLists: Projects that are not allowed to connect to this
+      service attachment. The project can be specified using its id or number.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -55130,6 +55169,13 @@ class ServiceAttachment(_messages.Message):
     enableProxyProtocol: If true, enable the proxy protocol which is for
       supplying client TCP/IP address data in TCP connections that traverse
       proxies on their way to destination servers.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a ServiceAttachment. An up-to-date
+      fingerprint must be provided in order to patch/update the
+      ServiceAttachment; otherwise, the request will fail with error 412
+      conditionNotMet. To see the latest fingerprint, make a get() request to
+      retrieve the ServiceAttachment.
     id: [Output Only] The unique identifier for the resource type. The server
       generates this identifier.
     kind: [Output Only] Type of the resource. Always compute#serviceAttachment
@@ -55161,23 +55207,28 @@ class ServiceAttachment(_messages.Message):
 
     Values:
       ACCEPT_AUTOMATIC: <no description>
+      ACCEPT_MANUAL: <no description>
       CONNECTION_PREFERENCE_UNSPECIFIED: <no description>
     """
     ACCEPT_AUTOMATIC = 0
-    CONNECTION_PREFERENCE_UNSPECIFIED = 1
+    ACCEPT_MANUAL = 1
+    CONNECTION_PREFERENCE_UNSPECIFIED = 2
 
   connectionPreference = _messages.EnumField('ConnectionPreferenceValueValuesEnum', 1)
-  consumerForwardingRules = _messages.MessageField('ServiceAttachmentConsumerForwardingRule', 2, repeated=True)
-  creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  enableProxyProtocol = _messages.BooleanField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='compute#serviceAttachment')
-  name = _messages.StringField(8)
-  natSubnets = _messages.StringField(9, repeated=True)
-  producerForwardingRule = _messages.StringField(10)
-  region = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
+  consumerAcceptLists = _messages.MessageField('ServiceAttachmentConsumerProjectLimit', 2, repeated=True)
+  consumerForwardingRules = _messages.MessageField('ServiceAttachmentConsumerForwardingRule', 3, repeated=True)
+  consumerRejectLists = _messages.StringField(4, repeated=True)
+  creationTimestamp = _messages.StringField(5)
+  description = _messages.StringField(6)
+  enableProxyProtocol = _messages.BooleanField(7)
+  fingerprint = _messages.BytesField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default='compute#serviceAttachment')
+  name = _messages.StringField(11)
+  natSubnets = _messages.StringField(12, repeated=True)
+  producerForwardingRule = _messages.StringField(13)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
 
 
 class ServiceAttachmentAggregatedList(_messages.Message):
@@ -55364,6 +55415,19 @@ class ServiceAttachmentConsumerForwardingRule(_messages.Message):
 
   forwardingRule = _messages.StringField(1)
   status = _messages.EnumField('StatusValueValuesEnum', 2)
+
+
+class ServiceAttachmentConsumerProjectLimit(_messages.Message):
+  r"""A ServiceAttachmentConsumerProjectLimit object.
+
+  Fields:
+    connectionLimit: The value of the limit to set.
+    projectIdOrNum: The project id or number for the project to set the limit
+      for.
+  """
+
+  connectionLimit = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  projectIdOrNum = _messages.StringField(2)
 
 
 class ServiceAttachmentList(_messages.Message):
@@ -57409,7 +57473,7 @@ class Subnetwork(_messages.Message):
       this subnetwork is enabled. Configures whether metadata fields should be
       added to the reported VPC flow logs. Options are INCLUDE_ALL_METADATA,
       EXCLUDE_ALL_METADATA, and CUSTOM_METADATA. Default is
-      INCLUDE_ALL_METADATA.
+      EXCLUDE_ALL_METADATA.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for the VMs in this subnet. This is an expanded field of
       enablePrivateV6Access. If both fields are set, privateIpv6GoogleAccess
@@ -57512,7 +57576,7 @@ class Subnetwork(_messages.Message):
       enabled. Configures whether metadata fields should be added to the
       reported VPC flow logs. Options are INCLUDE_ALL_METADATA,
       EXCLUDE_ALL_METADATA, and CUSTOM_METADATA. Default is
-      INCLUDE_ALL_METADATA.
+      EXCLUDE_ALL_METADATA.
     name: The name of the resource, provided by the client when initially
       creating the resource. The name must be 1-63 characters long, and comply
       with RFC1035. Specifically, the name must be 1-63 characters long and
@@ -57622,7 +57686,7 @@ class Subnetwork(_messages.Message):
     enabled. Configures whether metadata fields should be added to the
     reported VPC flow logs. Options are INCLUDE_ALL_METADATA,
     EXCLUDE_ALL_METADATA, and CUSTOM_METADATA. Default is
-    INCLUDE_ALL_METADATA.
+    EXCLUDE_ALL_METADATA.
 
     Values:
       EXCLUDE_ALL_METADATA: <no description>
@@ -58050,7 +58114,7 @@ class SubnetworkLogConfig(_messages.Message):
     MetadataValueValuesEnum: Can only be specified if VPC flow logs for this
       subnetwork is enabled. Configures whether all, none or a subset of
       metadata fields should be added to the reported VPC flow logs. Default
-      is INCLUDE_ALL_METADATA.
+      is EXCLUDE_ALL_METADATA.
 
   Fields:
     aggregationInterval: Can only be specified if VPC flow logging for this
@@ -58072,7 +58136,7 @@ class SubnetworkLogConfig(_messages.Message):
     metadata: Can only be specified if VPC flow logs for this subnetwork is
       enabled. Configures whether all, none or a subset of metadata fields
       should be added to the reported VPC flow logs. Default is
-      INCLUDE_ALL_METADATA.
+      EXCLUDE_ALL_METADATA.
     metadataFields: Can only be specified if VPC flow logs for this subnetwork
       is enabled and "metadata" was set to CUSTOM_METADATA.
   """
@@ -58102,7 +58166,7 @@ class SubnetworkLogConfig(_messages.Message):
   class MetadataValueValuesEnum(_messages.Enum):
     r"""Can only be specified if VPC flow logs for this subnetwork is enabled.
     Configures whether all, none or a subset of metadata fields should be
-    added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+    added to the reported VPC flow logs. Default is EXCLUDE_ALL_METADATA.
 
     Values:
       CUSTOM_METADATA: <no description>
@@ -63477,7 +63541,8 @@ class VpnGatewayVpnGatewayInterface(_messages.Message):
       the value of this field is present, the VPN Gateway will be used for
       IPsec-encrypted Cloud Interconnect; all Egress or Ingress traffic for
       this VPN Gateway interface will go through the specified interconnect
-      attachment resource.
+      attachment resource. Not currently available in all Interconnect
+      locations.
     ipAddress: [Output Only] The external IP address for this VPN gateway
       interface.
   """
@@ -63635,11 +63700,11 @@ class VpnTunnel(_messages.Message):
       the VPN tunnel.  - FAILED: Tunnel creation has failed and the tunnel is
       not ready to be used.  - NO_INCOMING_PACKETS: No incoming packets from
       peer.  - REJECTED: Tunnel configuration was rejected, can be result of
-      being blacklisted.  - ALLOCATING_RESOURCES: Cloud VPN is in the process
-      of allocating all required resources.  - STOPPED: Tunnel is stopped due
-      to its Forwarding Rules being deleted for Classic VPN tunnels or the
-      project is in frozen state.  - PEER_IDENTITY_MISMATCH: Peer identity
-      does not match peer IP, probably behind NAT.  -
+      being denied access.  - ALLOCATING_RESOURCES: Cloud VPN is in the
+      process of allocating all required resources.  - STOPPED: Tunnel is
+      stopped due to its Forwarding Rules being deleted for Classic VPN
+      tunnels or the project is in frozen state.  - PEER_IDENTITY_MISMATCH:
+      Peer identity does not match peer IP, probably behind NAT.  -
       TS_NARROWING_NOT_ALLOWED: Traffic selector narrowing not allowed for an
       HA-VPN tunnel.
 
@@ -63721,7 +63786,7 @@ class VpnTunnel(_messages.Message):
       being deallocated for the VPN tunnel.  - FAILED: Tunnel creation has
       failed and the tunnel is not ready to be used.  - NO_INCOMING_PACKETS:
       No incoming packets from peer.  - REJECTED: Tunnel configuration was
-      rejected, can be result of being blacklisted.  - ALLOCATING_RESOURCES:
+      rejected, can be result of being denied access.  - ALLOCATING_RESOURCES:
       Cloud VPN is in the process of allocating all required resources.  -
       STOPPED: Tunnel is stopped due to its Forwarding Rules being deleted for
       Classic VPN tunnels or the project is in frozen state.  -
@@ -63752,7 +63817,7 @@ class VpnTunnel(_messages.Message):
     being deallocated for the VPN tunnel.  - FAILED: Tunnel creation has
     failed and the tunnel is not ready to be used.  - NO_INCOMING_PACKETS: No
     incoming packets from peer.  - REJECTED: Tunnel configuration was
-    rejected, can be result of being blacklisted.  - ALLOCATING_RESOURCES:
+    rejected, can be result of being denied access.  - ALLOCATING_RESOURCES:
     Cloud VPN is in the process of allocating all required resources.  -
     STOPPED: Tunnel is stopped due to its Forwarding Rules being deleted for
     Classic VPN tunnels or the project is in frozen state.  -

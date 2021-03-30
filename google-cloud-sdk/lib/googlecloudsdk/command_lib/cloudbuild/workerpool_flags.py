@@ -41,6 +41,10 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
     The parser argument with workerpool flags added in.
   """
   verb = 'update' if update else 'create'
+  parser.add_argument(
+      'WORKER_POOL',
+      help='The unique identifier for the custom worker pool to %s. This value should be 1-63 characters, and valid characters are [a-z][0-9]-'
+      % verb)
   if release_track != base.ReleaseTrack.ALPHA:
     parser.add_argument(
         '--region',
@@ -53,11 +57,6 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
   )
   flags = file_or_flags.add_argument_group(
       'Command-line flags to configure the WorkerPool:')
-  flags.add_argument(
-      'WORKER_POOL',
-      help='The unique identifier for the custom worker pool to %s. This value should be 1-63 characters, and valid characters are [a-z][0-9]-'
-      % verb,
-  )
   if release_track == base.ReleaseTrack.ALPHA:
     flags.add_argument(
         '--region', help='The Cloud region where the WorkerPool is.')

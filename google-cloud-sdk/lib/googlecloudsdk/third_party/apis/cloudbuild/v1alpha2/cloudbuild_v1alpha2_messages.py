@@ -1374,11 +1374,14 @@ class Source(_messages.Message):
       Source Repository.
     storageSource: If provided, get the source from this location in Google
       Cloud Storage.
+    storageSourceManifest: If provided, get the source from this manifest in
+      Google Cloud Storage. This feature is in Preview.
   """
 
   gitSource = _messages.MessageField('GitSource', 1)
   repoSource = _messages.MessageField('RepoSource', 2)
   storageSource = _messages.MessageField('StorageSource', 3)
+  storageSourceManifest = _messages.MessageField('StorageSourceManifest', 4)
 
 
 class SourceProvenance(_messages.Message):
@@ -1408,6 +1411,9 @@ class SourceProvenance(_messages.Message):
       with any revisions resolved.
     resolvedStorageSource: A copy of the build's `source.storage_source`, if
       exists, with any generations resolved.
+    resolvedStorageSourceManifest: A copy of the build's
+      `source.storage_source_manifest`, if exists, with any revisions
+      resolved. This feature is in Preview.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1443,6 +1449,7 @@ class SourceProvenance(_messages.Message):
   fileHashes = _messages.MessageField('FileHashesValue', 1)
   resolvedRepoSource = _messages.MessageField('RepoSource', 2)
   resolvedStorageSource = _messages.MessageField('StorageSource', 3)
+  resolvedStorageSourceManifest = _messages.MessageField('StorageSourceManifest', 4)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1570,6 +1577,25 @@ class StorageSource(_messages.Message):
       generation is omitted, the latest generation will be used.
     object: Google Cloud Storage object containing the source. This object
       must be a gzipped archive file (`.tar.gz`) containing source to build.
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
+class StorageSourceManifest(_messages.Message):
+  r"""Location of the source manifest in Google Cloud Storage. This feature is
+  in Preview.
+
+  Fields:
+    bucket: Google Cloud Storage bucket containing the source manifest (see
+      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
+      naming#requirements)).
+    generation: Google Cloud Storage generation for the object. If the
+      generation is omitted, the latest generation will be used.
+    object: Google Cloud Storage object containing the source manifest. This
+      object must be a JSON file.
   """
 
   bucket = _messages.StringField(1)

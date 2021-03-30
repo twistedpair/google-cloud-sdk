@@ -851,7 +851,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
                       description, labels, machine_type, network, network_tier,
                       subnet, private_network_ip, no_restart_on_failure, os,
                       tags, zone, project, output_filter, release_track,
-                      hostname, no_address, byol, compute_service_account):
+                      hostname, no_address, byol, compute_service_account,
+                      service_account, no_service_account, scopes, no_scopes):
   """Run a OVF into VM instance import build on Google Cloud Build.
 
   Args:
@@ -891,6 +892,13 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
     byol: Specifies that you want to import an image with an existing license.
     compute_service_account: Compute service account to be used for worker
       instances.
+    service_account: Service account to be assigned to the VM instance or
+      machine image.
+    no_service_account: No service account is assigned to the VM instance or
+      machine image.
+    scopes: Access scopes to be assigned to the VM instance or machine image
+    no_scopes: No access scopes are assigned to the VM instance or machine
+      image.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -943,6 +951,14 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   if compute_service_account:
     AppendArg(ovf_importer_args, 'compute-service-account',
               compute_service_account)
+  if service_account:
+    AppendArg(ovf_importer_args, 'service-account', service_account)
+  elif no_service_account:
+    AppendArg(ovf_importer_args, 'service-account', '', allow_empty=True)
+  if scopes:
+    AppendArg(ovf_importer_args, 'scopes', ','.join(scopes))
+  elif no_scopes:
+    AppendArg(ovf_importer_args, 'scopes', '', allow_empty=True)
 
   build_tags = ['gce-daisy', 'gce-ovf-import']
 
@@ -959,33 +975,6 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
       output_filter,
       backoff=backoff,
       log_location=args.log_location)
-
-
-def _GetInstanceImportRegion(args):  # pylint:disable=unused-argument
-  """Return region to run instance import in.
-
-  Args:
-    args: command args
-
-  Returns:
-    str: region. Can be empty.
-  """
-  zone = properties.VALUES.compute.zone.Get()
-  if zone:
-    return utils.ZoneNameToRegionName(zone)
-  return ''
-
-
-def _GetBucketLocation(gcs_path):
-  try:
-    bucket = storage_api.StorageClient().GetBucket(
-        storage_util.ObjectReference.FromUrl(
-            MakeGcsUri(gcs_path), allow_empty_object=True).bucket)
-    if bucket and bucket.location:
-      return bucket.location.lower()
-  except storage_api.BucketNotFoundError:
-    return ''
-  return ''
 
 
 def RunMachineImageOVFImportBuild(args, output_filter, release_track):
@@ -1044,7 +1033,6 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
   AppendArg(ovf_importer_args, 'subnet', args.subnet)
   AppendBoolArg(ovf_importer_args, 'no-restart-on-failure',
                 not args.restart_on_failure)
-
   AppendArg(ovf_importer_args, 'os', args.os)
   if 'byol' in args:
     AppendBoolArg(ovf_importer_args, 'byol', args.byol)
@@ -1060,6 +1048,16 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
   if 'compute_service_account' in args:
     AppendArg(ovf_importer_args, 'compute-service-account',
               args.compute_service_account)
+  scopes = getattr(args, 'scopes', None)
+  service_account = getattr(args, 'service_account', None)
+  if service_account:
+    AppendArg(ovf_importer_args, 'service-account', service_account)
+  elif getattr(args, 'no_service_account', False):
+    AppendArg(ovf_importer_args, 'service-account', '', allow_empty=True)
+  if scopes:
+    AppendArg(ovf_importer_args, 'scopes', ','.join(scopes))
+  elif getattr(args, 'no_scopes', False):
+    AppendArg(ovf_importer_args, 'scopes', '', allow_empty=True)
 
   build_tags = ['gce-daisy', 'gce-ovf-machine-image-import']
 
@@ -1072,6 +1070,7 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
       release_track,
       _GetMachineImageImportRegion,
       use_regionalized_builder=lambda rt: rt == 'alpha')
+
   return _RunCloudBuild(
       args,
       builder,
@@ -1080,6 +1079,33 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
       output_filter,
       backoff=backoff,
       log_location=args.log_location)
+
+
+def _GetInstanceImportRegion(args):  # pylint:disable=unused-argument
+  """Return region to run instance import in.
+
+  Args:
+    args: command args
+
+  Returns:
+    str: region. Can be empty.
+  """
+  zone = properties.VALUES.compute.zone.Get()
+  if zone:
+    return utils.ZoneNameToRegionName(zone)
+  return ''
+
+
+def _GetBucketLocation(gcs_path):
+  try:
+    bucket = storage_api.StorageClient().GetBucket(
+        storage_util.ObjectReference.FromUrl(
+            MakeGcsUri(gcs_path), allow_empty_object=True).bucket)
+    if bucket and bucket.location:
+      return bucket.location.lower()
+  except storage_api.BucketNotFoundError:
+    return ''
+  return ''
 
 
 def _GetMachineImageImportRegion(args):  # pylint:disable=unused-argument
@@ -1169,8 +1195,8 @@ def _GetOSUpgradeRegion(args):  # pylint:disable=unused-argument
   return ''
 
 
-def AppendArg(args, name, arg, format_pattern='-{0}={1}'):
-  if arg:
+def AppendArg(args, name, arg, format_pattern='-{0}={1}', allow_empty=False):
+  if arg or allow_empty:
     args.append(format_pattern.format(name, arg))
 
 

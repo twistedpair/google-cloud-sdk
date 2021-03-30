@@ -1305,6 +1305,21 @@ class LogConfig(_messages.Message):
   dataAccess = _messages.MessageField('DataAccessOptions', 3)
 
 
+class MediaassetProjectsLocationsAssetTypesAssetsCreateRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsCreateRequest object.
+
+  Fields:
+    asset: A Asset resource to be passed as the request body.
+    assetId: The ID of the asset resource to be created.
+    parent: The parent resource name, in the following form:
+      `projects/{project}/locations/{location}/assetTypes/{type}`.
+  """
+
+  asset = _messages.MessageField('Asset', 1)
+  assetId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class MediaassetProjectsLocationsAssetTypesAssetsDeleteRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsDeleteRequest object.
 

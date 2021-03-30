@@ -1883,16 +1883,16 @@ class GoogleCloudHealthcareV1alpha2DicomGcsSource(_messages.Message):
     uri: Points to a Cloud Storage URI containing file(s) with content only.
       The URI must be in the following format: `gs://{bucket_id}/{object_id}`.
       The URI can include wildcards in `object_id` and thus identify multiple
-      files. Supported wildcards: '*' to match 0 or more non-separator
-      characters '**' to match 0 or more characters (including separators).
+      files. Supported wildcards: * '*' to match 0 or more non-separator
+      characters * '**' to match 0 or more characters (including separators).
       Must be used at the end of a path and with no other wildcards in the
       path. Can also be used with a file extension (such as .dcm), which
       imports all files with the extension in the specified directory and its
       sub-directories. For example, `gs://my-bucket/my-directory/**.dcm`
       imports all files with .dcm extensions in `my-directory/` and its sub-
-      directories. '?' to match 1 character All other URI formats are invalid.
-      Files matching the wildcard are expected to contain content only, no
-      metadata.
+      directories. * '?' to match 1 character. All other URI formats are
+      invalid. Files matching the wildcard are expected to contain content
+      only, no metadata.
   """
 
   uri = _messages.StringField(1)
@@ -4549,8 +4549,9 @@ class NotificationConfig(_messages.Message):
       publisher permissions on the given Pub/Sub topic. Not having adequate
       permissions causes the calls that send notifications to fail. If a
       notification can't be published to Pub/Sub, errors are logged to Cloud
-      Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)). If the
-      number of errors exceeds a certain rate, some aren't submitted. Note
+      Logging (see [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)). If
+      the number of errors exceeds a certain rate, some aren't submitted. Note
       that not all operations trigger notifications, see [Configuring Pub/Sub
       notifications](https://cloud.google.com/healthcare/docs/how-tos/pubsub)
       for specific details.
@@ -4792,9 +4793,9 @@ class QueryAccessibleDataRequest(_messages.Message):
   r"""Queries all data_ids that are consented for a given use in the given
   consent store and writes them to a specified destination. The returned
   Operation includes a progress counter for the number of User data mappings
-  processed. Errors are logged to Cloud Logging (see [Viewing logs]
-  (/healthcare/docs/how-tos/logging) and [QueryAccessibleData] for a sample
-  log entry).
+  processed. Errors are logged to Cloud Logging (see [Viewing error logs in
+  Cloud Logging] (https://cloud.google.com/healthcare/docs/how-tos/logging)
+  and [QueryAccessibleData] for a sample log entry).
 
   Messages:
     RequestAttributesValue: The values of request attributes associated with
@@ -5274,7 +5275,7 @@ class StreamConfig(_messages.Message):
       account](https://cloud.google.com/iam/docs/service-accounts). If a
       resource mutation cannot be streamed to BigQuery, errors will be logged
       to Cloud Logging (see [Viewing error logs in Cloud
-      Logging](/healthcare/docs/how-tos/logging)).
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
     deidentifiedStoreDestination: The destination FHIR store for de-identified
       resources. After this field is added, all subsequent
       creates/updates/patches to the source store will be de-identified using
@@ -5283,17 +5284,16 @@ class StreamConfig(_messages.Message):
       If the source store already contains resources when this option is
       enabled, those resources will not be copied to the destination store
       unless they are subsequently updated. This may result in invalid
-      references in the destination store. To add this configuration, you must
-      have healthcare.fhirStores.deidentify permission on this store. Before
-      adding this config, you must grant the healthcare.fhirResources.update
-      permission on the destination store to your project's **Cloud Healthcare
-      Service Agent** [service
-      account](https://cloud.google.com/iam/docs/service-accounts). The
-      destination store must set enable_update_create to true. The destination
-      store must have disable_referential_integrity set to true. If a resource
-      cannot be de-identified, errors will be logged to Cloud Logging (see
-      [Viewing error logs in Cloud Logging](/healthcare/docs/how-tos/cloud-
-      logging)).
+      references in the destination store. Before adding this config, you must
+      grant the healthcare.fhirResources.update permission on the destination
+      store to your project's **Cloud Healthcare Service Agent** [service
+      account](https://cloud.google.com/healthcare/docs/how-tos/permissions-
+      healthcare-api-gcp-products#the_cloud_healthcare_service_agent). The
+      destination store must set `enable_update_create` to true. The
+      destination store must have `disable_referential_integrity` set to true.
+      If a resource cannot be de-identified, errors will be logged to Cloud
+      Logging (see [Viewing error logs in Cloud Logging](/healthcare/docs/how-
+      tos/cloud-logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

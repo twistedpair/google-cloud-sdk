@@ -69,8 +69,46 @@ def get_bucket_resource_from_metadata(metadata):
   """
   url = storage_url.CloudUrl(
       scheme=storage_url.ProviderPrefix.GCS, bucket_name=metadata.name)
+  retention_period = getattr(metadata.retentionPolicy, 'retentionPeriod', None)
+  uniform_bucket_level_access = getattr(
+      getattr(metadata.iamConfiguration, 'uniformBucketLevelAccess', False),
+      'enabled', False)
   return gcs_resource_reference.GcsBucketResource(
-      url, etag=metadata.etag, metadata=metadata)
+      url,
+      etag=metadata.etag,
+      location=metadata.location,
+      metadata=metadata,
+      retention_period=retention_period,
+      storage_class=metadata.storageClass,
+      uniform_bucket_level_access=uniform_bucket_level_access)
+
+
+def get_metadata_from_bucket_resource(resource):
+  """Helper method to generate Apitools metadata instance from BucketResource.
+
+  Args:
+    resource (BucketResource): Extract metadata properties from this.
+
+  Returns:
+    messages.Bucket with properties populated by resource.
+  """
+  messages = apis.GetMessagesModule('storage', 'v1')
+  metadata = messages.Bucket(
+      name=resource.name,
+      etag=resource.etag,
+      location=resource.location,
+      storageClass=resource.storage_class)
+
+  if resource.retention_period:
+    metadata.retentionPolicy = messages.Bucket.RetentionPolicyValue(
+        retentionPeriod=resource.retention_period)
+  if resource.uniform_bucket_level_access:
+    metadata.iamConfiguration = messages.Bucket.IamConfigurationValue(
+        uniformBucketLevelAccess=messages.Bucket.IamConfigurationValue
+        .UniformBucketLevelAccessValue(
+            enabled=resource.uniform_bucket_level_access))
+
+  return metadata
 
 
 def get_object_resource_from_metadata(metadata):

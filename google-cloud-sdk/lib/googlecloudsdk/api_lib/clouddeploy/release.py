@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Support library to handle the build submit."""
+"""Support library to handle the release subcommands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -98,7 +98,7 @@ def _SetSource(release_config,
   if source.startswith('gs://'):
     gcs_source = resources.REGISTRY.Parse(source, collection='storage.objects')
     staged_source_obj = gcs_client.Rewrite(gcs_source, gcs_source_staging)
-    release_config.skaffoldConfigPath = 'gs://{bucket}/{object}'.format(
+    release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
         bucket=staged_source_obj.bucket, object=staged_source_obj.name)
   else:
     if not os.path.exists(source):
@@ -118,7 +118,7 @@ def _SetSource(release_config,
           gcs_source_staging,
           ignore_file=ignore_file,
           hide_logs=hide_logs)
-      release_config.skaffoldConfigPath = 'gs://{bucket}/{object}'.format(
+      release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
           bucket=staged_source_obj.bucket, object=staged_source_obj.name)
     elif os.path.isfile(source):
       _, ext = os.path.splitext(source)
@@ -133,7 +133,7 @@ def _SetSource(release_config,
                              object=gcs_source_staging.object,
                          ))
       staged_source_obj = gcs_client.CopyFileToGCS(source, gcs_source_staging)
-      release_config.skaffoldConfigPath = 'gs://{bucket}/{object}'.format(
+      release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
           bucket=staged_source_obj.bucket, object=staged_source_obj.name)
   return release_config
 

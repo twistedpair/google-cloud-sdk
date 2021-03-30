@@ -39,7 +39,7 @@ def AddUnRegisterCommonArgs(parser):
       type=str,
       help=textwrap.dedent("""\
           The URI of the GKE cluster; for example,
-          'https://container.googleapis.com/projects/my-project/locations/us-central1-a/clusters/my-cluster'
+          'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
           The URI can obtain by calling:
               gcloud container clusters list --uri
           This is only valid if the represented cluster is a GKE cluster. The

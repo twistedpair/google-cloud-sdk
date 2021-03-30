@@ -166,11 +166,9 @@ class DatabaseDump(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: The type of the database dump is unknown.
       MYSQL: Database dump is a MySQL dump file.
-      AVRO: Database dump contains Avro files.
     """
     TYPE_UNSPECIFIED = 0
     MYSQL = 1
-    AVRO = 2
 
   databaseType = _messages.EnumField('DatabaseTypeValueValuesEnum', 1)
   gcsUri = _messages.StringField(2)
@@ -197,9 +195,8 @@ class ExportMetadataRequest(_messages.Message):
   Fields:
     databaseDumpType: Optional. The type of the database dump. If unspecified,
       defaults to MYSQL.
-    destinationGcsFolder: Required. A Cloud Storage URI of a folder that
-      metadata are exported to, in the format gs:///. A sub-folder containing
-      exported files will be created below it.
+    destinationGcsFolder: A Cloud Storage URI of a folder, in the format
+      gs:///. A sub-folder containing exported files will be created below it.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at
@@ -218,11 +215,9 @@ class ExportMetadataRequest(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: The type of the database dump is unknown.
       MYSQL: Database dump is a MySQL dump file.
-      AVRO: Database dump contains Avro files.
     """
     TYPE_UNSPECIFIED = 0
     MYSQL = 1
-    AVRO = 2
 
   databaseDumpType = _messages.EnumField('DatabaseDumpTypeValueValuesEnum', 1)
   destinationGcsFolder = _messages.StringField(2)
@@ -281,7 +276,7 @@ class HiveMetastoreConfig(_messages.Message):
     kerberosConfig: Information used to configure the Hive metastore service
       as a service principal in a Kerberos realm. To disable Kerberos, use the
       UpdateService method and specify this field's path
-      ("hive_metastore_config.kerberos_config") in the request's update_mask
+      (hive_metastore_config.kerberos_config) in the request's update_mask
       while omitting this field from the request's service.
     version: Immutable. The Hive metastore schema version.
   """
@@ -342,7 +337,7 @@ class KerberosConfig(_messages.Message):
       although the file does not need to be named krb5.conf explicitly.
     principal: A Kerberos principal that exists in the both the keytab the KDC
       to authenticate as. A typical principal is of the form
-      "primary/instance@REALM", but there is no exact format.
+      primary/instance@REALM, but there is no exact format.
   """
 
   keytab = _messages.MessageField('Secret', 1)
@@ -548,8 +543,8 @@ class MetadataExport(_messages.Message):
   Fields:
     databaseDumpType: Output only. The type of the database dump.
     destinationGcsUri: Output only. A Cloud Storage URI of a folder that
-      metadata are exported to, in the form of gs:////, where ` is
-      automatically generated.
+      metadata are exported to, in the form of gs:////, where is automatically
+      generated.
     endTime: Output only. The time when the export ended.
     startTime: Output only. The time when the export started.
     state: Output only. The current state of the export.
@@ -561,11 +556,9 @@ class MetadataExport(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: The type of the database dump is unknown.
       MYSQL: Database dump is a MySQL dump file.
-      AVRO: Database dump contains Avro files.
     """
     TYPE_UNSPECIFIED = 0
     MYSQL = 1
-    AVRO = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the export.
@@ -603,8 +596,8 @@ class MetadataImport(_messages.Message):
       database.
     description: The description of the metadata import.
     name: Immutable. The relative resource name of the metadata import, of the
-      form:"projects/{project_number}/locations/{location_id}/services/{servic
-      e_id}/metadataImports/{metadata_import_id}".
+      form:projects/{project_number}/locations/{location_id}/services/{service
+      _id}/metadataImports/{metadata_import_id}.
     state: Output only. The current state of the metadata import.
     updateTime: Output only. The time when the metadata import was last
       updated.
@@ -633,13 +626,6 @@ class MetadataImport(_messages.Message):
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updateTime = _messages.StringField(6)
-
-
-class MetadataIntegration(_messages.Message):
-  r"""Specifies how metastore metadata should be integrated with external
-  services.
-  """
-
 
 
 class MetadataManagementActivity(_messages.Message):
@@ -682,10 +668,14 @@ class MetastoreProjectsLocationsListRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in AIP-160 (https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the next_page_token field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -736,7 +726,7 @@ class MetastoreProjectsLocationsServicesCreateRequest(_messages.Message):
   Fields:
     parent: Required. The relative resource name of the location in which to
       create a metastore service, in the following
-      form:"projects/{project_number}/locations/{location_id}".
+      form:projects/{project_number}/locations/{location_id}.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at
@@ -765,8 +755,8 @@ class MetastoreProjectsLocationsServicesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The relative resource name of the metastore service to
-      delete, in the following form:"projects/{project_number}/locations/{loca
-      tion_id}/services/{service_id}".
+      delete, in the following form:projects/{project_number}/locations/{locat
+      ion_id}/services/{service_id}.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at
@@ -789,8 +779,8 @@ class MetastoreProjectsLocationsServicesExportMetadataRequest(_messages.Message)
     exportMetadataRequest: A ExportMetadataRequest resource to be passed as
       the request body.
     service: Required. The relative resource name of the metastore service to
-      run export, in the following form:"projects/{project_id}/locations/{loca
-      tion_id}/services/{service_id}
+      run export, in the following form:projects/{project_id}/locations/{locat
+      ion_id}/services/{service_id}.
   """
 
   exportMetadataRequest = _messages.MessageField('ExportMetadataRequest', 1)
@@ -823,8 +813,8 @@ class MetastoreProjectsLocationsServicesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The relative resource name of the metastore service to
-      retrieve, in the following form:"projects/{project_number}/locations/{lo
-      cation_id}/services/{service_id}".
+      retrieve, in the following form:projects/{project_number}/locations/{loc
+      ation_id}/services/{service_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -836,8 +826,9 @@ class MetastoreProjectsLocationsServicesListRequest(_messages.Message):
   Fields:
     filter: Optional. The filter to apply to list results.
     orderBy: Optional. Specify the ordering of results as described in Sorting
-      Order. If not specified, the results will be sorted in the default
-      order.
+      Order
+      (https://cloud.google.com/apis/design/design_patterns#sorting_order). If
+      not specified, the results will be sorted in the default order.
     pageSize: Optional. The maximum number of services to return. The response
       may contain less than the maximum number. If unspecified, no more than
       500 services are returned. The maximum value is 1000; values above 1000
@@ -850,7 +841,7 @@ class MetastoreProjectsLocationsServicesListRequest(_messages.Message):
       page token.
     parent: Required. The relative resource name of the location of metastore
       services to list, in the following
-      form:"projects/{project_number}/locations/{location_id}".
+      form:projects/{project_number}/locations/{location_id}.
   """
 
   filter = _messages.StringField(1)
@@ -871,8 +862,8 @@ class MetastoreProjectsLocationsServicesMetadataImportsCreateRequest(_messages.M
       between 1 and 64 characters long, begin with a letter, end with a letter
       or number, and consist of alpha-numeric ASCII characters or hyphens.
     parent: Required. The relative resource name of the service in which to
-      create a metastore import, in the following form:"projects/{project_numb
-      er}/locations/{location_id}/services/{service_id}"
+      create a metastore import, in the following form:projects/{project_numbe
+      r}/locations/{location_id}/services/{service_id}.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at
@@ -895,8 +886,8 @@ class MetastoreProjectsLocationsServicesMetadataImportsGetRequest(_messages.Mess
 
   Fields:
     name: Required. The relative resource name of the metadata import to
-      retrieve, in the following form:"projects/{project_number}/locations/{lo
-      cation_id}/services/{service_id}/metadataImports/{import_id}".
+      retrieve, in the following form:projects/{project_number}/locations/{loc
+      ation_id}/services/{service_id}/metadataImports/{import_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -908,8 +899,9 @@ class MetastoreProjectsLocationsServicesMetadataImportsListRequest(_messages.Mes
   Fields:
     filter: Optional. The filter to apply to list results.
     orderBy: Optional. Specify the ordering of results as described in Sorting
-      Order. If not specified, the results will be sorted in the default
-      order.
+      Order
+      (https://cloud.google.com/apis/design/design_patterns#sorting_order). If
+      not specified, the results will be sorted in the default order.
     pageSize: Optional. The maximum number of imports to return. The response
       may contain less than the maximum number. If unspecified, no more than
       500 imports are returned. The maximum value is 1000; values above 1000
@@ -921,8 +913,8 @@ class MetastoreProjectsLocationsServicesMetadataImportsListRequest(_messages.Mes
       DataprocMetastore.ListServices must match the call that provided the
       page token.
     parent: Required. The relative resource name of the service whose metadata
-      imports to list, in the following form:"projects/{project_number}/locati
-      ons/{location_id}/services/{service_id}/metadataImports".
+      imports to list, in the following form:projects/{project_number}/locatio
+      ns/{location_id}/services/{service_id}/metadataImports.
   """
 
   filter = _messages.StringField(1)
@@ -939,8 +931,8 @@ class MetastoreProjectsLocationsServicesMetadataImportsPatchRequest(_messages.Me
     metadataImport: A MetadataImport resource to be passed as the request
       body.
     name: Immutable. The relative resource name of the metadata import, of the
-      form:"projects/{project_number}/locations/{location_id}/services/{servic
-      e_id}/metadataImports/{metadata_import_id}".
+      form:projects/{project_number}/locations/{location_id}/services/{service
+      _id}/metadataImports/{metadata_import_id}.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at
@@ -967,8 +959,8 @@ class MetastoreProjectsLocationsServicesPatchRequest(_messages.Message):
 
   Fields:
     name: Immutable. The relative resource name of the metastore service, of
-      the form:"projects/{project_number}/locations/{location_id}/services/{se
-      rvice_id}".
+      the form:projects/{project_number}/locations/{location_id}/services/{ser
+      vice_id}.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at
@@ -1208,7 +1200,7 @@ class Restore(_messages.Message):
   Fields:
     backup: Output only. The relative resource name of the metastore service
       backup to restore from, in the following form:projects/{project_id}/loca
-      tions/{location_id}/services/{service_id}/backups/{backup_id}
+      tions/{location_id}/services/{service_id}/backups/{backup_id}.
     details: Output only. The restore details containing the revision of the
       service to be restored to, in format of JSON.
     endTime: Output only. The time when the restore ended.
@@ -1258,8 +1250,8 @@ class Secret(_messages.Message):
 
   Fields:
     cloudSecret: The relative resource name of a Secret Manager secret
-      version, in the following form:"projects/{project_number}/secrets/{secre
-      t_id}/versions/{version_id}".
+      version, in the following form:projects/{project_number}/secrets/{secret
+      _id}/versions/{version_id}.
   """
 
   cloudSecret = _messages.StringField(1)
@@ -1269,6 +1261,8 @@ class Service(_messages.Message):
   r"""A managed metastore service that serves metadata queries.
 
   Enums:
+    ReleaseChannelValueValuesEnum: Immutable. The release channel of the
+      service. If unspecified, defaults to STABLE.
     StateValueValuesEnum: Output only. The current state of the metastore
       service.
     TierValueValuesEnum: The tier of the service.
@@ -1289,18 +1283,18 @@ class Service(_messages.Message):
     maintenanceWindow: The one hour maintenance window of the metastore
       service. This specifies when the service can be restarted for
       maintenance purposes in UTC time.
-    metadataIntegration: The setting that defines how metastore metadata
-      should be integrated with external services and systems.
     metadataManagementActivity: Output only. The metadata management
       activities of the metastore service.
     name: Immutable. The relative resource name of the metastore service, of
-      the form:"projects/{project_number}/locations/{location_id}/services/{se
-      rvice_id}".
+      the form:projects/{project_number}/locations/{location_id}/services/{ser
+      vice_id}.
     network: Immutable. The relative resource name of the VPC network on which
       the instance can be accessed. It is specified in the following
-      form:"projects/{project_number}/global/networks/{network_id}".
+      form:projects/{project_number}/global/networks/{network_id}.
     port: The TCP port at which the metastore service is reached. Default:
       9083.
+    releaseChannel: Immutable. The release channel of the service. If
+      unspecified, defaults to STABLE.
     state: Output only. The current state of the metastore service.
     stateMessage: Output only. Additional information about the current state
       of the metastore service, if available.
@@ -1310,6 +1304,23 @@ class Service(_messages.Message):
     updateTime: Output only. The time when the metastore service was last
       updated.
   """
+
+  class ReleaseChannelValueValuesEnum(_messages.Enum):
+    r"""Immutable. The release channel of the service. If unspecified,
+    defaults to STABLE.
+
+    Values:
+      RELEASE_CHANNEL_UNSPECIFIED: Release channel is not specified.
+      CANARY: The CANARY release channel contains the newest features, which
+        may be unstable and subject to unresolved issues with no known
+        workarounds. Services using the CANARY release channel are not subject
+        to any SLAs.
+      STABLE: The STABLE release channel contains features that are considered
+        stable and have been validated for production use.
+    """
+    RELEASE_CHANNEL_UNSPECIFIED = 0
+    CANARY = 1
+    STABLE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the metastore service.
@@ -1383,11 +1394,11 @@ class Service(_messages.Message):
   hiveMetastoreConfig = _messages.MessageField('HiveMetastoreConfig', 4)
   labels = _messages.MessageField('LabelsValue', 5)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
-  metadataIntegration = _messages.MessageField('MetadataIntegration', 7)
-  metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 11)
   state = _messages.EnumField('StateValueValuesEnum', 12)
   stateMessage = _messages.StringField(13)
   tier = _messages.EnumField('TierValueValuesEnum', 14)

@@ -32,6 +32,7 @@ import string
 #
 # Only 3-letter words matching the consonant-vowel-consonant pattern are
 # included.
+# TODO(b/183436507) Sync the list
 _INVALID_THREE_LETTER_WORDS = frozenset({
     'bah',
     'baj',

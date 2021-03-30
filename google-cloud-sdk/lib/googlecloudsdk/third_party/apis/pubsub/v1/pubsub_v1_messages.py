@@ -1656,8 +1656,9 @@ class Subscription(_messages.Message):
       true, then messages are not expunged from the subscription's backlog,
       even if they are acknowledged, until they fall out of the
       `message_retention_duration` window. This must be true if you would like
-      to [Seek to a timestamp] (https://cloud.google.com/pubsub/docs/replay-
-      overview#seek_to_a_time).
+      to [`Seek` to a timestamp] (https://cloud.google.com/pubsub/docs/replay-
+      overview#seek_to_a_time) in the past to replay previously-acknowledged
+      messages.
     retryPolicy: A policy that specifies how Pub/Sub retries message delivery
       for this subscription. If not set, the default retry policy is applied.
       This generally implies that messages will be retried as soon as possible

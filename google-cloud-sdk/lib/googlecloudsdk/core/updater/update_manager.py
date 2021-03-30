@@ -955,6 +955,8 @@ version [{1}].  To clear your fixed version setting, run:
       with update_check.UpdateCheckData() as last_update_check:
         last_update_check.SetFromSnapshot(
             diff.latest, bool(diff.AvailableUpdates()), force=True)
+      # Clear deprecated directories for new state
+      install_state.ClearDeprecatedDirs()
       return True
 
     # Ensure we have the rights to update the SDK now that we know an update is
@@ -1029,6 +1031,9 @@ version [{1}].  To clear your fixed version setting, run:
           label='Creating backup and activating new installation',
           stream=log.status, first=False) as pb:
         install_state.ReplaceWith(staging_state, pb.SetProgress)
+
+    # Clear deprecated directories for new state
+    install_state.ClearDeprecatedDirs()
 
     with update_check.UpdateCheckData() as last_update_check:
       # Need to create a new diff because we just updated the SDK and we need

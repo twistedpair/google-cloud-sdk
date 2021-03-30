@@ -1960,13 +1960,15 @@ class Membership(_messages.Message):
       USER: Represents user type.
       SERVICE_ACCOUNT: Represents service account type.
       GROUP: Represents group type.
+      SHARED_DRIVE: Represents Shared drive.
       OTHER: Represents other type.
     """
     TYPE_UNSPECIFIED = 0
     USER = 1
     SERVICE_ACCOUNT = 2
     GROUP = 3
-    OTHER = 4
+    SHARED_DRIVE = 4
+    OTHER = 5
 
   createTime = _messages.StringField(1)
   name = _messages.StringField(2)

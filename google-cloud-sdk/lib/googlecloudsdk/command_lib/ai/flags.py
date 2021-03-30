@@ -475,34 +475,35 @@ to the resource project.
 """)
 
 
-def RegionAttributeConfig():
+def RegionAttributeConfig(prompt_func=region_util.PromptForRegion):
   return concepts.ResourceParameterAttributeConfig(
       name='region',
       help_text='Cloud region for the {resource}.',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.ai.region),
-          deps.Fallthrough(function=region_util.PromptForRegion, hint='region')
+          deps.Fallthrough(function=prompt_func, hint='region')
       ])
 
 
-def GetRegionResourceSpec():
+def GetRegionResourceSpec(prompt_func=region_util.PromptForRegion):
   return concepts.ResourceSpec(
       'aiplatform.projects.locations',
       resource_name='region',
-      locationsId=RegionAttributeConfig(),
+      locationsId=RegionAttributeConfig(prompt_func=prompt_func),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def GetModelResourceSpec(resource_name='model'):
+def GetModelResourceSpec(
+    resource_name='model', prompt_func=region_util.PromptForRegion):
   return concepts.ResourceSpec(
       'aiplatform.projects.locations.models',
       resource_name=resource_name,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=RegionAttributeConfig(),
+      locationsId=RegionAttributeConfig(prompt_func=prompt_func),
       disable_auto_completers=False)
 
 
-def AddRegionResourceArg(parser, verb):
+def AddRegionResourceArg(parser, verb, prompt_func=region_util.PromptForRegion):
   """Add a resource argument for a cloud AI Platform region.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -510,10 +511,14 @@ def AddRegionResourceArg(parser, verb):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    prompt_func: function, the function to prompt for region from list of
+      available regions which returns a string for the region selected.
+      Default is region_util.PromptForRegion which contains three regions,
+      'us-central1', 'europe-west4', and 'asia-east1'.
   """
   concept_parsers.ConceptParser.ForResource(
       '--region',
-      GetRegionResourceSpec(),
+      GetRegionResourceSpec(prompt_func=prompt_func),
       'Cloud region {}.'.format(verb),
       required=True).AddToParser(parser)
 
@@ -537,7 +542,7 @@ def AddOperationResourceArg(parser):
       required=True).AddToParser(parser)
 
 
-def AddModelResourceArg(parser, verb):
+def AddModelResourceArg(parser, verb, prompt_func=region_util.PromptForRegion):
   """Add a resource argument for a cloud AI Platform model.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -545,16 +550,28 @@ def AddModelResourceArg(parser, verb):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    prompt_func: function, the function to prompt for region from list of
+      available regions which returns a string for the region selected.
+      Default is region_util.PromptForRegion which contains three regions,
+      'us-central1', 'europe-west4', and 'asia-east1'.
   """
   name = 'model'
   concept_parsers.ConceptParser.ForResource(
-      name, GetModelResourceSpec(), 'Model {}.'.format(verb),
-      required=True).AddToParser(parser)
+      name, GetModelResourceSpec(prompt_func=prompt_func),
+      'Model {}.'.format(verb), required=True).AddToParser(parser)
 
 
-def AddUploadModelFlags(parser):
-  """Adds flags for UploadModel."""
-  AddRegionResourceArg(parser, 'to upload model')
+def AddUploadModelFlags(parser, prompt_func=region_util.PromptForRegion):
+  """Adds flags for UploadModel.
+
+  Args:
+    parser: the parser for the command.
+    prompt_func: function, the function to prompt for region from list of
+      available regions which returns a string for the region selected.
+      Default is region_util.PromptForRegion which contains three regions,
+      'us-central1', 'europe-west4', and 'asia-east1'.
+  """
+  AddRegionResourceArg(parser, 'to upload model', prompt_func=prompt_func)
   base.Argument(
       '--display-name', required=True,
       help=('Display name of the model.')).AddToParser(parser)
@@ -699,16 +716,18 @@ def GetEndpointId():
   return base.Argument('name', help='The endpoint\'s id.')
 
 
-def GetEndpointResourceSpec(resource_name='endpoint'):
+def GetEndpointResourceSpec(
+    resource_name='endpoint', prompt_func=region_util.PromptForRegion):
   return concepts.ResourceSpec(
       constants.ENDPOINTS_COLLECTION,
       resource_name=resource_name,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=RegionAttributeConfig(),
+      locationsId=RegionAttributeConfig(prompt_func=prompt_func),
       disable_auto_completers=False)
 
 
-def AddEndpointResourceArg(parser, verb):
+def AddEndpointResourceArg(
+    parser, verb, prompt_func=region_util.PromptForRegion):
   """Add a resource argument for a Cloud AI Platform endpoint.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -716,10 +735,13 @@ def AddEndpointResourceArg(parser, verb):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    prompt_func: function, the function to prompt for region from list of
+      available regions. Default is region_util.PromptForRegion which contains
+      three regions, 'us-central1', 'europe-west4', and 'asia-east1'.
   """
   concept_parsers.ConceptParser.ForResource(
       'endpoint',
-      GetEndpointResourceSpec(),
+      GetEndpointResourceSpec(prompt_func=prompt_func),
       'The endpoint {}.'.format(verb),
       required=True).AddToParser(parser)
 

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import re
 
+from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
 from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
 from googlecloudsdk.command_lib.scc.hooks import GetOrganization
 from googlecloudsdk.command_lib.scc.hooks import GetParent
@@ -67,6 +68,9 @@ def GroupAssetsReqHook(ref, args, req):
   """Hook up filter such that the CSCC filter is used rather than gcloud."""
   del ref
   req.parent = GetParent(args)
+  if not req.groupAssetsRequest:
+    messages = sc_client.GetMessages()
+    req.groupAssetsRequest = messages.GroupAssetsRequest()
   req.groupAssetsRequest.filter = args.filter
   args.filter = ""
   return req

@@ -9550,6 +9550,20 @@ class ComputeHttpsHealthChecksUpdateRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeImageFamilyViewsGetRequest(_messages.Message):
+  r"""A ComputeImageFamilyViewsGetRequest object.
+
+  Fields:
+    family: Name of the image family to search for.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  family = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeImagesDeleteRequest(_messages.Message):
   r"""A ComputeImagesDeleteRequest object.
 
@@ -30648,6 +30662,17 @@ class Image(_messages.Message):
   storageLocations = _messages.StringField(31, repeated=True)
 
 
+class ImageFamilyView(_messages.Message):
+  r"""A ImageFamilyView object.
+
+  Fields:
+    image: The latest image that is part of the specified image family in the
+      requested location, and that is not deprecated.
+  """
+
+  image = _messages.MessageField('Image', 1)
+
+
 class ImageList(_messages.Message):
   r"""Contains a list of images.
 
@@ -34464,7 +34489,8 @@ class InterconnectAttachment(_messages.Message):
       indicates that the attachment carries only traffic encrypted by an IPsec
       device such as an HA VPN gateway. VMs cannot directly send traffic to,
       or receive traffic from, such an attachment. To use IPsec-encrypted
-      Cloud Interconnect, create the attachment using this option.
+      Cloud Interconnect, create the attachment using this option.  Not
+      currently available in all Interconnect locations.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional, which can
       take one of the following values:  - OS_ACTIVE: The attachment has been
@@ -34545,7 +34571,8 @@ class InterconnectAttachment(_messages.Message):
       the attachment carries only traffic encrypted by an IPsec device such as
       an HA VPN gateway. VMs cannot directly send traffic to, or receive
       traffic from, such an attachment. To use IPsec-encrypted Cloud
-      Interconnect, create the attachment using this option.
+      Interconnect, create the attachment using this option.  Not currently
+      available in all Interconnect locations.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues. [Deprecated] This field is not used.
@@ -34566,7 +34593,8 @@ class InterconnectAttachment(_messages.Message):
       specified for interconnect attachment that has encryption option as
       IPSEC, later on when creating HA VPN gateway on this interconnect
       attachment, the HA VPN gateway's IP address will be allocated from
-      regional external IP address pool.
+      regional external IP address pool. Not currently available in all
+      Interconnect locations.
     kind: [Output Only] Type of the resource. Always
       compute#interconnectAttachment for interconnect attachments.
     labelFingerprint: A fingerprint for the labels being applied to this
@@ -34708,7 +34736,8 @@ class InterconnectAttachment(_messages.Message):
     carries only traffic encrypted by an IPsec device such as an HA VPN
     gateway. VMs cannot directly send traffic to, or receive traffic from,
     such an attachment. To use IPsec-encrypted Cloud Interconnect, create the
-    attachment using this option.
+    attachment using this option.  Not currently available in all Interconnect
+    locations.
 
     Values:
       IPSEC: <no description>
@@ -46857,7 +46886,8 @@ class Router(_messages.Message):
       property when you create the resource.
     encryptedInterconnectRouter: Field to indicate if a router is dedicated to
       use with encrypted Interconnect Attachment (IPsec-encrypted Cloud
-      Interconnect feature).
+      Interconnect feature). Not currently available in all Interconnect
+      locations.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: Router interfaces. Each interface requires either one linked
@@ -48714,7 +48744,7 @@ class SecurityPolicyRule(_messages.Message):
       field may only be specified when versioned_expr is set to FIREWALL.
 
   Fields:
-    action: The Action to preform when the client connection triggers the
+    action: The Action to perform when the client connection triggers the
       rule. Can currently be either "allow" or "deny()" where valid values for
       status are 403, 404, and 502.
     description: An optional description of this resource. Provide this
@@ -48952,7 +48982,7 @@ class ServiceAttachment(_messages.Message):
   represents a service that a producer has exposed. It encapsulates the load
   balancer which fronts the service runs and a list of NAT IP ranges that the
   producers uses to represent the consumers connecting to the service. next
-  tag = 17
+  tag = 18
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service
@@ -51627,7 +51657,7 @@ class SubnetworkLogConfig(_messages.Message):
     MetadataValueValuesEnum: Can only be specified if VPC flow logs for this
       subnetwork is enabled. Configures whether all, none or a subset of
       metadata fields should be added to the reported VPC flow logs. Default
-      is INCLUDE_ALL_METADATA.
+      is EXCLUDE_ALL_METADATA.
 
   Fields:
     aggregationInterval: Can only be specified if VPC flow logging for this
@@ -51649,7 +51679,7 @@ class SubnetworkLogConfig(_messages.Message):
     metadata: Can only be specified if VPC flow logs for this subnetwork is
       enabled. Configures whether all, none or a subset of metadata fields
       should be added to the reported VPC flow logs. Default is
-      INCLUDE_ALL_METADATA.
+      EXCLUDE_ALL_METADATA.
     metadataFields: Can only be specified if VPC flow logs for this subnetwork
       is enabled and "metadata" was set to CUSTOM_METADATA.
   """
@@ -51679,7 +51709,7 @@ class SubnetworkLogConfig(_messages.Message):
   class MetadataValueValuesEnum(_messages.Enum):
     r"""Can only be specified if VPC flow logs for this subnetwork is enabled.
     Configures whether all, none or a subset of metadata fields should be
-    added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+    added to the reported VPC flow logs. Default is EXCLUDE_ALL_METADATA.
 
     Values:
       CUSTOM_METADATA: <no description>
@@ -56807,7 +56837,8 @@ class VpnGatewayVpnGatewayInterface(_messages.Message):
       the value of this field is present, the VPN Gateway will be used for
       IPsec-encrypted Cloud Interconnect; all Egress or Ingress traffic for
       this VPN Gateway interface will go through the specified interconnect
-      attachment resource.
+      attachment resource. Not currently available in all Interconnect
+      locations.
     ipAddress: [Output Only] The external IP address for this VPN gateway
       interface.
   """
@@ -56965,11 +56996,11 @@ class VpnTunnel(_messages.Message):
       the VPN tunnel.  - FAILED: Tunnel creation has failed and the tunnel is
       not ready to be used.  - NO_INCOMING_PACKETS: No incoming packets from
       peer.  - REJECTED: Tunnel configuration was rejected, can be result of
-      being blacklisted.  - ALLOCATING_RESOURCES: Cloud VPN is in the process
-      of allocating all required resources.  - STOPPED: Tunnel is stopped due
-      to its Forwarding Rules being deleted for Classic VPN tunnels or the
-      project is in frozen state.  - PEER_IDENTITY_MISMATCH: Peer identity
-      does not match peer IP, probably behind NAT.  -
+      being denied access.  - ALLOCATING_RESOURCES: Cloud VPN is in the
+      process of allocating all required resources.  - STOPPED: Tunnel is
+      stopped due to its Forwarding Rules being deleted for Classic VPN
+      tunnels or the project is in frozen state.  - PEER_IDENTITY_MISMATCH:
+      Peer identity does not match peer IP, probably behind NAT.  -
       TS_NARROWING_NOT_ALLOWED: Traffic selector narrowing not allowed for an
       HA-VPN tunnel.
 
@@ -57051,7 +57082,7 @@ class VpnTunnel(_messages.Message):
       being deallocated for the VPN tunnel.  - FAILED: Tunnel creation has
       failed and the tunnel is not ready to be used.  - NO_INCOMING_PACKETS:
       No incoming packets from peer.  - REJECTED: Tunnel configuration was
-      rejected, can be result of being blacklisted.  - ALLOCATING_RESOURCES:
+      rejected, can be result of being denied access.  - ALLOCATING_RESOURCES:
       Cloud VPN is in the process of allocating all required resources.  -
       STOPPED: Tunnel is stopped due to its Forwarding Rules being deleted for
       Classic VPN tunnels or the project is in frozen state.  -
@@ -57082,7 +57113,7 @@ class VpnTunnel(_messages.Message):
     being deallocated for the VPN tunnel.  - FAILED: Tunnel creation has
     failed and the tunnel is not ready to be used.  - NO_INCOMING_PACKETS: No
     incoming packets from peer.  - REJECTED: Tunnel configuration was
-    rejected, can be result of being blacklisted.  - ALLOCATING_RESOURCES:
+    rejected, can be result of being denied access.  - ALLOCATING_RESOURCES:
     Cloud VPN is in the process of allocating all required resources.  -
     STOPPED: Tunnel is stopped due to its Forwarding Rules being deleted for
     Classic VPN tunnels or the project is in frozen state.  -

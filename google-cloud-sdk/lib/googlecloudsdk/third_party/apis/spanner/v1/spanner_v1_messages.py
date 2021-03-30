@@ -132,9 +132,14 @@ class BeginTransactionRequest(_messages.Message):
 
   Fields:
     options: Required. Options for the new transaction.
+    requestOptions: Common options for this request. Priority is ignored for
+      this request. Setting the priority in this request_options struct will
+      not do anything. To set the priority for a transaction, set it on the
+      reads and writes that are part of this transaction instead.
   """
 
   options = _messages.MessageField('TransactionOptions', 1)
+  requestOptions = _messages.MessageField('RequestOptions', 2)
 
 
 class Binding(_messages.Message):
@@ -219,6 +224,7 @@ class CommitRequest(_messages.Message):
   Fields:
     mutations: The mutations to be executed when this transaction commits. All
       mutations are applied atomically, in the order they appear in this list.
+    requestOptions: Common options for this request.
     returnCommitStats: If `true`, then statistics related to the transaction
       will be included in the CommitResponse. Default value is `false`.
     singleUseTransaction: Execute mutations in a temporary transaction. Note
@@ -232,9 +238,10 @@ class CommitRequest(_messages.Message):
   """
 
   mutations = _messages.MessageField('Mutation', 1, repeated=True)
-  returnCommitStats = _messages.BooleanField(2)
-  singleUseTransaction = _messages.MessageField('TransactionOptions', 3)
-  transactionId = _messages.BytesField(4)
+  requestOptions = _messages.MessageField('RequestOptions', 2)
+  returnCommitStats = _messages.BooleanField(3)
+  singleUseTransaction = _messages.MessageField('TransactionOptions', 4)
+  transactionId = _messages.BytesField(5)
 
 
 class CommitResponse(_messages.Message):
@@ -519,6 +526,7 @@ class ExecuteBatchDmlRequest(_messages.Message):
   r"""The request for ExecuteBatchDml.
 
   Fields:
+    requestOptions: Common options for this request.
     seqno: Required. A per-transaction sequence number used to identify this
       request. This field makes each request idempotent such that if the
       request is received multiple times, at most one will succeed. The
@@ -537,9 +545,10 @@ class ExecuteBatchDmlRequest(_messages.Message):
       begin a new transaction.
   """
 
-  seqno = _messages.IntegerField(1)
-  statements = _messages.MessageField('Statement', 2, repeated=True)
-  transaction = _messages.MessageField('TransactionSelector', 3)
+  requestOptions = _messages.MessageField('RequestOptions', 1)
+  seqno = _messages.IntegerField(2)
+  statements = _messages.MessageField('Statement', 3, repeated=True)
+  transaction = _messages.MessageField('TransactionSelector', 4)
 
 
 class ExecuteBatchDmlResponse(_messages.Message):
@@ -622,6 +631,7 @@ class ExecuteSqlRequest(_messages.Message):
       ResultSetStats. If partition_token is set, query_mode can only be set to
       QueryMode.NORMAL.
     queryOptions: Query optimizer configuration to use for the given query.
+    requestOptions: Common options for this request.
     resumeToken: If this request is resuming a previously interrupted SQL
       statement execution, `resume_token` should be copied from the last
       PartialResultSet yielded before the interruption. Doing this enables the
@@ -728,10 +738,11 @@ class ExecuteSqlRequest(_messages.Message):
   partitionToken = _messages.BytesField(3)
   queryMode = _messages.EnumField('QueryModeValueValuesEnum', 4)
   queryOptions = _messages.MessageField('QueryOptions', 5)
-  resumeToken = _messages.BytesField(6)
-  seqno = _messages.IntegerField(7)
-  sql = _messages.StringField(8)
-  transaction = _messages.MessageField('TransactionSelector', 9)
+  requestOptions = _messages.MessageField('RequestOptions', 6)
+  resumeToken = _messages.BytesField(7)
+  seqno = _messages.IntegerField(8)
+  sql = _messages.StringField(9)
+  transaction = _messages.MessageField('TransactionSelector', 10)
 
 
 class Expr(_messages.Message):
@@ -889,6 +900,10 @@ class Instance(_messages.Message):
       zero in API responses for instances that are not yet in state `READY`.
       See [the documentation](https://cloud.google.com/spanner/docs/instances#
       node_count) for more information about nodes.
+    processingUnits: The number of processing units allocated to this
+      instance. At most one of processing_units or node_count should be
+      present in the message. This may be zeo in API responses for instances
+      that are not yet in state `READY`.
     state: Output only. The current instance state. For CreateInstance, the
       state must be either omitted or set to `CREATING`. For UpdateInstance,
       the state must be either omitted or set to `READY`.
@@ -956,7 +971,8 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   nodeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  processingUnits = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class InstanceConfig(_messages.Message):
@@ -1814,19 +1830,20 @@ class QueryOptions(_messages.Message):
   r"""Query optimizer configuration.
 
   Fields:
-    optimizerStatisticsPackage: Query optimizer statistics package to use.
-      This parameter allows individual queries to use a different query
-      optimizer statistics. Specifying `latest` as a value instructs Cloud
-      Spanner to use the latest generated statistics package. If not
-      specified, Cloud Spanner uses statistics package set at the database
-      level options, or latest if the database option is not set. The
-      statistics package requested by the query has to be exempt from garbage
-      collection. This can be achieved with the following DDL statement: ```
-      ALTER STATISTICS SET OPTIONS (allow_gc=false) ``` The list of available
-      statistics packages can be queried from
-      `SPANNER_SYS.OPTIMIZER_STATISTICS_PACKAGES`. Executing a SQL statement
-      with an invalid optimizer statistics package or with statistics package
-      that allows garbage collection fails with an `INVALID_ARGUMENT` error.
+    optimizerStatisticsPackage: An option to control the selection of
+      optimizer statistics package. This parameter allows individual queries
+      to use a different query optimizer statistics package. Specifying
+      `latest` as a value instructs Cloud Spanner to use the latest generated
+      statistics package. If not specified, Cloud Spanner uses the statistics
+      package set at the database level options, or the latest package if the
+      database option is not set. The statistics package requested by the
+      query has to be exempt from garbage collection. This can be achieved
+      with the following DDL statement: ``` ALTER STATISTICS SET OPTIONS
+      (allow_gc=false) ``` The list of available statistics packages can be
+      queried from `INFORMATION_SCHEMA.SPANNER_STATISTICS`. Executing a SQL
+      statement with an invalid optimizer statistics package or with a
+      statistics package that allows garbage collection fails with an
+      `INVALID_ARGUMENT` error.
     optimizerVersion: An option to control the selection of optimizer version.
       This parameter allows individual queries to pick different query
       optimizer versions. Specifying `latest` as a value instructs Cloud
@@ -1932,6 +1949,7 @@ class ReadRequest(_messages.Message):
       partition previously created using PartitionRead(). There must be an
       exact match for the values of fields common to this message and the
       PartitionReadRequest message used to create this partition_token.
+    requestOptions: Common options for this request.
     resumeToken: If this request is resuming a previously interrupted read,
       `resume_token` should be copied from the last PartialResultSet yielded
       before the interruption. Doing this enables the new read to resume where
@@ -1947,9 +1965,10 @@ class ReadRequest(_messages.Message):
   keySet = _messages.MessageField('KeySet', 3)
   limit = _messages.IntegerField(4)
   partitionToken = _messages.BytesField(5)
-  resumeToken = _messages.BytesField(6)
-  table = _messages.StringField(7)
-  transaction = _messages.MessageField('TransactionSelector', 8)
+  requestOptions = _messages.MessageField('RequestOptions', 6)
+  resumeToken = _messages.BytesField(7)
+  table = _messages.StringField(8)
+  transaction = _messages.MessageField('TransactionSelector', 9)
 
 
 class ReadWrite(_messages.Message):
@@ -2000,6 +2019,34 @@ class ReplicaInfo(_messages.Message):
   defaultLeaderLocation = _messages.BooleanField(1)
   location = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class RequestOptions(_messages.Message):
+  r"""Common request options for various APIs.
+
+  Enums:
+    PriorityValueValuesEnum: Priority for the request.
+
+  Fields:
+    priority: Priority for the request.
+  """
+
+  class PriorityValueValuesEnum(_messages.Enum):
+    r"""Priority for the request.
+
+    Values:
+      PRIORITY_UNSPECIFIED: `PRIORITY_UNSPECIFIED` is equivalent to
+        `PRIORITY_HIGH`.
+      PRIORITY_LOW: This specifies that the request is low priority.
+      PRIORITY_MEDIUM: This specifies that the request is medium priority.
+      PRIORITY_HIGH: This specifies that the request is high priority.
+    """
+    PRIORITY_UNSPECIFIED = 0
+    PRIORITY_LOW = 1
+    PRIORITY_MEDIUM = 2
+    PRIORITY_HIGH = 3
+
+  priority = _messages.EnumField('PriorityValueValuesEnum', 1)
 
 
 class RestoreDatabaseEncryptionConfig(_messages.Message):
@@ -2103,7 +2150,7 @@ class RestoreDatabaseRequest(_messages.Message):
       the database to restore to. If this field is not specified, the restored
       database will use the same encryption configuration as the backup by
       default, namely encryption_type =
-      `USE_CONFIG_DEFAULT_OR_DATABASE_ENCRYPTION`.
+      `USE_CONFIG_DEFAULT_OR_BACKUP_ENCRYPTION`.
   """
 
   backup = _messages.StringField(1)

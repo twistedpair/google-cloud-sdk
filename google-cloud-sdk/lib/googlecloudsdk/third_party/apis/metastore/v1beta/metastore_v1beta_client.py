@@ -40,6 +40,7 @@ class MetastoreV1beta(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_services_backups = self.ProjectsLocationsServicesBackupsService(self)
     self.projects_locations_services_metadataImports = self.ProjectsLocationsServicesMetadataImportsService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -133,6 +134,124 @@ class MetastoreV1beta(base_api.BaseApiClient):
         request_field='',
         request_type_name='MetastoreProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsServicesBackupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_services_backups resource."""
+
+    _NAME = 'projects_locations_services_backups'
+
+    def __init__(self, client):
+      super(MetastoreV1beta.ProjectsLocationsServicesBackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Backup in a given project and location.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesBackupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/backups',
+        http_method='POST',
+        method_id='metastore.projects.locations.services.backups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupId', 'requestId'],
+        relative_path='v1beta/{+parent}/backups',
+        request_field='backup',
+        request_type_name='MetastoreProjectsLocationsServicesBackupsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single backup.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesBackupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='metastore.projects.locations.services.backups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='MetastoreProjectsLocationsServicesBackupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single backup.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesBackupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Backup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='metastore.projects.locations.services.backups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='MetastoreProjectsLocationsServicesBackupsGetRequest',
+        response_type_name='Backup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists backups in a service.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesBackupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/backups',
+        http_method='GET',
+        method_id='metastore.projects.locations.services.backups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/backups',
+        request_field='',
+        request_type_name='MetastoreProjectsLocationsServicesBackupsListRequest',
+        response_type_name='ListBackupsResponse',
         supports_download=False,
     )
 
@@ -449,6 +568,33 @@ class MetastoreV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+name}',
         request_field='service',
         request_type_name='MetastoreProjectsLocationsServicesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Restores a service from a backup.
+
+      Args:
+        request: (MetastoreProjectsLocationsServicesRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:restore',
+        http_method='POST',
+        method_id='metastore.projects.locations.services.restore',
+        ordered_params=['service'],
+        path_params=['service'],
+        query_params=[],
+        relative_path='v1beta/{+service}:restore',
+        request_field='restoreServiceRequest',
+        request_type_name='MetastoreProjectsLocationsServicesRestoreRequest',
         response_type_name='Operation',
         supports_download=False,
     )

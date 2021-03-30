@@ -1281,48 +1281,6 @@ class DialogflowProjectsConversationProfilesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
-class DialogflowProjectsConversationsCallMatchersCreateRequest(_messages.Message):
-  r"""A DialogflowProjectsConversationsCallMatchersCreateRequest object.
-
-  Fields:
-    googleCloudDialogflowV2CallMatcher: A GoogleCloudDialogflowV2CallMatcher
-      resource to be passed as the request body.
-    parent: Required. Resource identifier of the conversation adding the call
-      matcher. Format: `projects//locations//conversations/`.
-  """
-
-  googleCloudDialogflowV2CallMatcher = _messages.MessageField('GoogleCloudDialogflowV2CallMatcher', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class DialogflowProjectsConversationsCallMatchersDeleteRequest(_messages.Message):
-  r"""A DialogflowProjectsConversationsCallMatchersDeleteRequest object.
-
-  Fields:
-    name: Required. The unique identifier of the CallMatcher to delete.
-      Format: `projects//locations//conversations//callMatchers/`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class DialogflowProjectsConversationsCallMatchersListRequest(_messages.Message):
-  r"""A DialogflowProjectsConversationsCallMatchersListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of items to return in a single
-      page. By default 100 and at most 1000.
-    pageToken: Optional. The next_page_token value returned from a previous
-      list request.
-    parent: Required. The conversation to list all call matchers from. Format:
-      `projects//locations//conversations/`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class DialogflowProjectsConversationsCompleteRequest(_messages.Message):
   r"""A DialogflowProjectsConversationsCompleteRequest object.
 
@@ -2784,52 +2742,6 @@ class DialogflowProjectsLocationsConversationProfilesPatchRequest(_messages.Mess
   googleCloudDialogflowV2ConversationProfile = _messages.MessageField('GoogleCloudDialogflowV2ConversationProfile', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class DialogflowProjectsLocationsConversationsCallMatchersCreateRequest(_messages.Message):
-  r"""A DialogflowProjectsLocationsConversationsCallMatchersCreateRequest
-  object.
-
-  Fields:
-    googleCloudDialogflowV2CreateCallMatcherRequest: A
-      GoogleCloudDialogflowV2CreateCallMatcherRequest resource to be passed as
-      the request body.
-    parent: Required. Resource identifier of the conversation adding the call
-      matcher. Format: `projects//locations//conversations/`.
-  """
-
-  googleCloudDialogflowV2CreateCallMatcherRequest = _messages.MessageField('GoogleCloudDialogflowV2CreateCallMatcherRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class DialogflowProjectsLocationsConversationsCallMatchersDeleteRequest(_messages.Message):
-  r"""A DialogflowProjectsLocationsConversationsCallMatchersDeleteRequest
-  object.
-
-  Fields:
-    name: Required. The unique identifier of the CallMatcher to delete.
-      Format: `projects//locations//conversations//callMatchers/`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class DialogflowProjectsLocationsConversationsCallMatchersListRequest(_messages.Message):
-  r"""A DialogflowProjectsLocationsConversationsCallMatchersListRequest
-  object.
-
-  Fields:
-    pageSize: Optional. The maximum number of items to return in a single
-      page. By default 100 and at most 1000.
-    pageToken: Optional. The next_page_token value returned from a previous
-      list request.
-    parent: Required. The conversation to list all call matchers from. Format:
-      `projects//locations//conversations/`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class DialogflowProjectsLocationsConversationsCompleteRequest(_messages.Message):
@@ -4873,7 +4785,8 @@ class GoogleCloudDialogflowCxV3UpdateDocumentOperationMetadata(_messages.Message
 
 
 class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
-  r"""The request message for a webhook call.
+  r"""The request message for a webhook call. The request is sent as a JSON
+  object and the field names will be presented in camel cases.
 
   Messages:
     PayloadValue: Custom data set in QueryParameters.payload.
@@ -6645,7 +6558,8 @@ class GoogleCloudDialogflowCxV3beta1UpdateDocumentOperationMetadata(_messages.Me
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
-  r"""The request message for a webhook call.
+  r"""The request message for a webhook call. The request is sent as a JSON
+  object and the field names will be presented in camel cases.
 
   Messages:
     PayloadValue: Custom data set in QueryParameters.payload.
@@ -7101,7 +7015,6 @@ class GoogleCloudDialogflowV2AnalyzeContentRequest(_messages.Message):
   r"""The request message for Participants.AnalyzeContent.
 
   Fields:
-    audioInput: The natural language speech audio to be processed.
     eventInput: An input event to send to Dialogflow.
     queryParams: Parameters for a Dialogflow virtual-agent query.
     replyAudioConfig: Speech synthesis configuration. The speech synthesis
@@ -7114,12 +7027,11 @@ class GoogleCloudDialogflowV2AnalyzeContentRequest(_messages.Message):
     textInput: The natural language text to be processed.
   """
 
-  audioInput = _messages.MessageField('GoogleCloudDialogflowV2AudioInput', 1)
-  eventInput = _messages.MessageField('GoogleCloudDialogflowV2EventInput', 2)
-  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 3)
-  replyAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 4)
-  requestId = _messages.StringField(5)
-  textInput = _messages.MessageField('GoogleCloudDialogflowV2TextInput', 6)
+  eventInput = _messages.MessageField('GoogleCloudDialogflowV2EventInput', 1)
+  queryParams = _messages.MessageField('GoogleCloudDialogflowV2QueryParameters', 2)
+  replyAudioConfig = _messages.MessageField('GoogleCloudDialogflowV2OutputAudioConfig', 3)
+  requestId = _messages.StringField(4)
+  textInput = _messages.MessageField('GoogleCloudDialogflowV2TextInput', 5)
 
 
 class GoogleCloudDialogflowV2AnalyzeContentResponse(_messages.Message):
@@ -7305,21 +7217,6 @@ class GoogleCloudDialogflowV2ArticleAnswer(_messages.Message):
   uri = _messages.StringField(6)
 
 
-class GoogleCloudDialogflowV2AudioInput(_messages.Message):
-  r"""Represents the natural language speech audio to be processed.
-
-  Fields:
-    audio: Required. The natural language speech audio to be processed. A
-      single request can contain up to 1 minute of speech audio data. The
-      transcribed text cannot contain more than 256 bytes.
-    config: Required. Instructs the speech recognizer how to process the
-      speech audio.
-  """
-
-  audio = _messages.BytesField(1)
-  config = _messages.MessageField('GoogleCloudDialogflowV2InputAudioConfig', 2)
-
-
 class GoogleCloudDialogflowV2AutomatedAgentConfig(_messages.Message):
   r"""Defines the Automated Agent to connect to a conversation.
 
@@ -7503,59 +7400,6 @@ class GoogleCloudDialogflowV2BatchUpdateIntentsResponse(_messages.Message):
   """
 
   intents = _messages.MessageField('GoogleCloudDialogflowV2Intent', 1, repeated=True)
-
-
-class GoogleCloudDialogflowV2CallMatcher(_messages.Message):
-  r"""Represents a call matcher that describes criteria for matching incoming
-  SIP calls to a conversation. When Dialogflow get a SIP call from a third-
-  party carrier, Dialogflow matches the call to an existing conversation by
-  either: * Extracting the conversation id from the [Call-Info
-  header](https://tools.ietf.org/html/rfc3261#section-20.9), e.g. `Call-Info:
-  ;purpose=Goog-ContactCenter-Conversation`. * Or, if that doesn't work,
-  matching incoming [SIP
-  headers](https://tools.ietf.org/html/rfc3261#section-7.3) against any
-  CallMatcher for the conversation. If an incoming SIP call without valid
-  `Call-Info` header matches to zero or multiple conversations with
-  `CallMatcher`, we reject it. A call matcher contains equality conditions for
-  SIP headers that all have to be fulfilled in order for a SIP call to match.
-  The matched SIP headers consist of well-known headers (`To`, `From`, `Call-
-  ID`) and custom headers. A CallMatcher is only valid if it specifies: * At
-  least 1 custom header, * or at least 2 well-known headers.
-
-  Fields:
-    callIdHeader: Value of the [`Call-ID`
-      header](https://tools.ietf.org/html/rfc3261#section-8.1.1.4) to match.
-      If empty or unspecified, we don't match to the [`Call-ID`
-      header](https://tools.ietf.org/html/rfc3261#section-8.1.1.4).
-    customHeaders: Custom SIP headers that must match.
-    fromHeader: Value of the [`From`
-      header](https://tools.ietf.org/html/rfc3261#section-8.1.1.3) to match.
-      If empty or unspecified, we don't match to the [`From`
-      header](https://tools.ietf.org/html/rfc3261#section-8.1.1.3).
-    name: Output only. The unique identifier of this call matcher. Format:
-      `projects//locations//conversations//callMatchers/`.
-    toHeader: Value of the [`To`
-      header](https://tools.ietf.org/html/rfc3261#section-8.1.1.2) to match.
-      If empty or unspecified, we don't match to the [`To`
-      header](https://tools.ietf.org/html/rfc3261#section-8.1.1.2).
-  """
-
-  callIdHeader = _messages.StringField(1)
-  customHeaders = _messages.MessageField('GoogleCloudDialogflowV2CallMatcherCustomHeaders', 2)
-  fromHeader = _messages.StringField(3)
-  name = _messages.StringField(4)
-  toHeader = _messages.StringField(5)
-
-
-class GoogleCloudDialogflowV2CallMatcherCustomHeaders(_messages.Message):
-  r"""Custom SIP headers. See the [description of headers in the
-  RFC](https://tools.ietf.org/html/rfc3261#section-7.3).
-
-  Fields:
-    ciscoGuid: Cisco's proprietary `Cisco-Guid` header.
-  """
-
-  ciscoGuid = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowV2CompleteConversationRequest(_messages.Message):
@@ -7816,7 +7660,6 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
       1024 bytes.
     humanAgentAssistantConfig: Configuration for agent assistance to use with
       this profile.
-    humanAgentHandoffConfig: Configuration for connecting to a live agent.
     languageCode: Language which represents the conversationProfile. If
       unspecified, the default language code en-us applies. Users need to
       create a ConversationProfile for each language they want to support.
@@ -7835,24 +7678,13 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
   humanAgentAssistantConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfig', 4)
-  humanAgentHandoffConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentHandoffConfig', 5)
-  languageCode = _messages.StringField(6)
-  loggingConfig = _messages.MessageField('GoogleCloudDialogflowV2LoggingConfig', 7)
-  name = _messages.StringField(8)
-  newMessageEventNotificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 9)
-  notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 10)
-  sttConfig = _messages.MessageField('GoogleCloudDialogflowV2SpeechToTextConfig', 11)
-  updateTime = _messages.StringField(12)
-
-
-class GoogleCloudDialogflowV2CreateCallMatcherRequest(_messages.Message):
-  r"""The request message for Conversations.CreateCallMatcher.
-
-  Fields:
-    callMatcher: Required. The call matcher to create.
-  """
-
-  callMatcher = _messages.MessageField('GoogleCloudDialogflowV2CallMatcher', 1)
+  languageCode = _messages.StringField(5)
+  loggingConfig = _messages.MessageField('GoogleCloudDialogflowV2LoggingConfig', 6)
+  name = _messages.StringField(7)
+  newMessageEventNotificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 8)
+  notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 9)
+  sttConfig = _messages.MessageField('GoogleCloudDialogflowV2SpeechToTextConfig', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudDialogflowV2DetectIntentRequest(_messages.Message):
@@ -8461,8 +8293,6 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
   r"""Defines the Human Agent Assist to connect to a conversation.
 
   Fields:
-    endUserSuggestionConfig: Configuration for agent assistance of end user
-      participant.
     humanAgentSuggestionConfig: Configuration for agent assistance of human
       agent participant.
     messageAnalysisConfig: Configuration for message analysis.
@@ -8470,10 +8300,9 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
       events.
   """
 
-  endUserSuggestionConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig', 1)
-  humanAgentSuggestionConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig', 2)
-  messageAnalysisConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigMessageAnalysisConfig', 3)
-  notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 4)
+  humanAgentSuggestionConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig', 1)
+  messageAnalysisConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigMessageAnalysisConfig', 2)
+  notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 3)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig(_messages.Message):
@@ -8492,10 +8321,6 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigMessageAnalysisConfig(_mes
   r"""Configuration for analyses to run on each conversation message.
 
   Fields:
-    enableEntityExtraction: Enable entity extraction in conversation messages
-      on [agent assist
-      stage](https://cloud.google.com/dialogflow/priv/docs/contact-
-      center/basics#stages). If unspecified, defaults to false.
     enableSentimentAnalysis: Enable sentiment analysis in conversation
       messages on [agent assist
       stage](https://cloud.google.com/dialogflow/priv/docs/contact-
@@ -8514,8 +8339,7 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigMessageAnalysisConfig(_mes
       ConversationEvent.new_message_payload.SentimentAnalysisResult.
   """
 
-  enableEntityExtraction = _messages.BooleanField(1)
-  enableSentimentAnalysis = _messages.BooleanField(2)
+  enableSentimentAnalysis = _messages.BooleanField(1)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig(_messages.Message):
@@ -8683,50 +8507,6 @@ class GoogleCloudDialogflowV2HumanAgentAssistantEvent(_messages.Message):
   conversation = _messages.StringField(1)
   participant = _messages.StringField(2)
   suggestionResults = _messages.MessageField('GoogleCloudDialogflowV2SuggestionResult', 3, repeated=True)
-
-
-class GoogleCloudDialogflowV2HumanAgentHandoffConfig(_messages.Message):
-  r"""Defines the hand off to a live agent, typically on which external agent
-  service provider to connect to a conversation.
-
-  Fields:
-    livePersonConfig: Uses LivePerson (https://www.liveperson.com).
-    salesforceLiveAgentConfig: Uses Salesforce Live Agent.
-  """
-
-  livePersonConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentHandoffConfigLivePersonConfig', 1)
-  salesforceLiveAgentConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentHandoffConfigSalesforceLiveAgentConfig', 2)
-
-
-class GoogleCloudDialogflowV2HumanAgentHandoffConfigLivePersonConfig(_messages.Message):
-  r"""Configuration specific to LivePerson (https://www.liveperson.com).
-
-  Fields:
-    accountNumber: Required. Account number of the LivePerson account to
-      connect. This is the account number you input at the login page.
-  """
-
-  accountNumber = _messages.StringField(1)
-
-
-class GoogleCloudDialogflowV2HumanAgentHandoffConfigSalesforceLiveAgentConfig(_messages.Message):
-  r"""Configuration specific to Salesforce Live Agent.
-
-  Fields:
-    buttonId: Required. Live Agent chat button ID.
-    deploymentId: Required. Live Agent deployment ID.
-    endpointDomain: Required. Domain of the Live Agent endpoint for this
-      agent. You can find the endpoint URL in the `Live Agent settings` page.
-      For example if URL has the form
-      https://d.la4-c2-phx.salesforceliveagent.com/..., you should fill in
-      d.la4-c2-phx.salesforceliveagent.com.
-    organizationId: Required. The organization ID of the Salesforce account.
-  """
-
-  buttonId = _messages.StringField(1)
-  deploymentId = _messages.StringField(2)
-  endpointDomain = _messages.StringField(3)
-  organizationId = _messages.StringField(4)
 
 
 class GoogleCloudDialogflowV2ImportAgentRequest(_messages.Message):
@@ -9783,20 +9563,6 @@ class GoogleCloudDialogflowV2ListAnswerRecordsResponse(_messages.Message):
   """
 
   answerRecords = _messages.MessageField('GoogleCloudDialogflowV2AnswerRecord', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class GoogleCloudDialogflowV2ListCallMatchersResponse(_messages.Message):
-  r"""The response message for Conversations.ListCallMatchers.
-
-  Fields:
-    callMatchers: The list of call matchers. There is a maximum number of
-      items returned based on the page_size field in the request.
-    nextPageToken: Token to retrieve the next page of results or empty if
-      there are no more results in the list.
-  """
-
-  callMatchers = _messages.MessageField('GoogleCloudDialogflowV2CallMatcher', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

@@ -56,7 +56,6 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_agent = self.ProjectsAgentService(self)
     self.projects_answerRecords = self.ProjectsAnswerRecordsService(self)
     self.projects_conversationProfiles = self.ProjectsConversationProfilesService(self)
-    self.projects_conversations_callMatchers = self.ProjectsConversationsCallMatchersService(self)
     self.projects_conversations_messages = self.ProjectsConversationsMessagesService(self)
     self.projects_conversations_participants_suggestions = self.ProjectsConversationsParticipantsSuggestionsService(self)
     self.projects_conversations_participants = self.ProjectsConversationsParticipantsService(self)
@@ -77,7 +76,6 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_locations_agent = self.ProjectsLocationsAgentService(self)
     self.projects_locations_answerRecords = self.ProjectsLocationsAnswerRecordsService(self)
     self.projects_locations_conversationProfiles = self.ProjectsLocationsConversationProfilesService(self)
-    self.projects_locations_conversations_callMatchers = self.ProjectsLocationsConversationsCallMatchersService(self)
     self.projects_locations_conversations_messages = self.ProjectsLocationsConversationsMessagesService(self)
     self.projects_locations_conversations_participants_suggestions = self.ProjectsLocationsConversationsParticipantsSuggestionsService(self)
     self.projects_locations_conversations_participants = self.ProjectsLocationsConversationsParticipantsService(self)
@@ -2122,97 +2120,6 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsConversationsCallMatchersService(base_api.BaseApiService):
-    """Service class for the projects_conversations_callMatchers resource."""
-
-    _NAME = 'projects_conversations_callMatchers'
-
-    def __init__(self, client):
-      super(DialogflowV2.ProjectsConversationsCallMatchersService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a call matcher that links incoming SIP calls to the specified conversation if they fulfill specified criteria.
-
-      Args:
-        request: (DialogflowProjectsConversationsCallMatchersCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2CallMatcher) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/callMatchers',
-        http_method='POST',
-        method_id='dialogflow.projects.conversations.callMatchers.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v2/{+parent}/callMatchers',
-        request_field='googleCloudDialogflowV2CallMatcher',
-        request_type_name='DialogflowProjectsConversationsCallMatchersCreateRequest',
-        response_type_name='GoogleCloudDialogflowV2CallMatcher',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Requests deletion of a call matcher.
-
-      Args:
-        request: (DialogflowProjectsConversationsCallMatchersDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/callMatchers/{callMatchersId}',
-        http_method='DELETE',
-        method_id='dialogflow.projects.conversations.callMatchers.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}',
-        request_field='',
-        request_type_name='DialogflowProjectsConversationsCallMatchersDeleteRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Returns the list of all call matchers in the specified conversation.
-
-      Args:
-        request: (DialogflowProjectsConversationsCallMatchersListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2ListCallMatchersResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/callMatchers',
-        http_method='GET',
-        method_id='dialogflow.projects.conversations.callMatchers.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/callMatchers',
-        request_field='',
-        request_type_name='DialogflowProjectsConversationsCallMatchersListRequest',
-        response_type_name='GoogleCloudDialogflowV2ListCallMatchersResponse',
-        supports_download=False,
-    )
-
   class ProjectsConversationsMessagesService(base_api.BaseApiService):
     """Service class for the projects_conversations_messages resource."""
 
@@ -2325,7 +2232,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def AnalyzeContent(self, request, global_params=None):
-      r"""Adds a text (chat, for example), or audio (phone recording, for example) message from a participant into the conversation. Note: Always use agent versions for production traffic sent to virtual agents. See [Versions and environments(https://cloud.google.com/dialogflow/es/docs/agents-versions).
+      r"""Adds a text (chat, for example), or audio (phone recording, for example) message from a participant into the conversation. Note: Always use agent versions for production traffic sent to virtual agents. See [Versions and environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
 
       Args:
         request: (DialogflowProjectsConversationsParticipantsAnalyzeContentRequest) input message
@@ -4573,97 +4480,6 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsConversationsCallMatchersService(base_api.BaseApiService):
-    """Service class for the projects_locations_conversations_callMatchers resource."""
-
-    _NAME = 'projects_locations_conversations_callMatchers'
-
-    def __init__(self, client):
-      super(DialogflowV2.ProjectsLocationsConversationsCallMatchersService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a call matcher that links incoming SIP calls to the specified conversation if they fulfill specified criteria.
-
-      Args:
-        request: (DialogflowProjectsLocationsConversationsCallMatchersCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2CallMatcher) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/callMatchers',
-        http_method='POST',
-        method_id='dialogflow.projects.locations.conversations.callMatchers.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v2/{+parent}/callMatchers',
-        request_field='googleCloudDialogflowV2CreateCallMatcherRequest',
-        request_type_name='DialogflowProjectsLocationsConversationsCallMatchersCreateRequest',
-        response_type_name='GoogleCloudDialogflowV2CallMatcher',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Requests deletion of a call matcher.
-
-      Args:
-        request: (DialogflowProjectsLocationsConversationsCallMatchersDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleProtobufEmpty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/callMatchers/{callMatchersId}',
-        http_method='DELETE',
-        method_id='dialogflow.projects.locations.conversations.callMatchers.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}',
-        request_field='',
-        request_type_name='DialogflowProjectsLocationsConversationsCallMatchersDeleteRequest',
-        response_type_name='GoogleProtobufEmpty',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Returns the list of all call matchers in the specified conversation.
-
-      Args:
-        request: (DialogflowProjectsLocationsConversationsCallMatchersListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDialogflowV2ListCallMatchersResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/callMatchers',
-        http_method='GET',
-        method_id='dialogflow.projects.locations.conversations.callMatchers.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/callMatchers',
-        request_field='',
-        request_type_name='DialogflowProjectsLocationsConversationsCallMatchersListRequest',
-        response_type_name='GoogleCloudDialogflowV2ListCallMatchersResponse',
-        supports_download=False,
-    )
-
   class ProjectsLocationsConversationsMessagesService(base_api.BaseApiService):
     """Service class for the projects_locations_conversations_messages resource."""
 
@@ -4776,7 +4592,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def AnalyzeContent(self, request, global_params=None):
-      r"""Adds a text (chat, for example), or audio (phone recording, for example) message from a participant into the conversation. Note: Always use agent versions for production traffic sent to virtual agents. See [Versions and environments(https://cloud.google.com/dialogflow/es/docs/agents-versions).
+      r"""Adds a text (chat, for example), or audio (phone recording, for example) message from a participant into the conversation. Note: Always use agent versions for production traffic sent to virtual agents. See [Versions and environments](https://cloud.google.com/dialogflow/es/docs/agents-versions).
 
       Args:
         request: (DialogflowProjectsLocationsConversationsParticipantsAnalyzeContentRequest) input message

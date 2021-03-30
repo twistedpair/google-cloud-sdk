@@ -1030,6 +1030,7 @@
             "Represents user type.",
             "Represents service account type.",
             "Represents group type.",
+            "Represents Shared drive.",
             "Represents other type."
           ],
           "enum": [
@@ -1037,6 +1038,7 @@
             "USER",
             "SERVICE_ACCOUNT",
             "GROUP",
+            "SHARED_DRIVE",
             "OTHER"
           ]
         }

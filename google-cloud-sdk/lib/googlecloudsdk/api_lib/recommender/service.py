@@ -44,6 +44,18 @@ def ProjectsRecommenderRecommendationsService(api_version):
   return client.projects_locations_recommenders_recommendations
 
 
+def ProjectsRecommenderConfigsService(api_version):
+  """Returns the service class for the Project recommender configs."""
+  client = RecommenderClient(api_version)
+  return client.projects_locations_recommenders
+
+
+def ProjectsInsightTypeConfigsService(api_version):
+  """Returns the service class for the Project insight type configs."""
+  client = RecommenderClient(api_version)
+  return client.projects_locations_insightTypes
+
+
 def FoldersRecommenderRecommendationsService(api_version):
   """Returns the service class for the Folders recommendations."""
   client = RecommenderClient(api_version)

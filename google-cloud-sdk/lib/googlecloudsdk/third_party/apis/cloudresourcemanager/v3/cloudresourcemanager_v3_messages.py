@@ -630,17 +630,17 @@ class CloudresourcemanagerProjectsSearchRequest(_messages.Message):
       included in the query, the it will return results that match any of the
       fields. Some eligible fields are: | Field | Description | |-------------
       ------------|----------------------------------------------| |
-      displayName, name | Filters by displayName. | | parent.type | Parent's
-      type: `folder` or `organization`. | | parent.id | Parent's id number
-      (e.g. 123) | | parent | Project's parent. (e.g. folders/123,
-      organizations/*) Prefer parent field over parent.id and parent.type. | |
-      id, projectId | Filters by projectId. | | state, lifecycleState |
-      Filters by state. | | labels | Filters by label name or value. | |
-      labels. (where *key* is the name of a label) | Filters by label name. |
-      Search expressions are case insensitive. Some examples queries: | Query
-      | Description | |------------------|------------------------------------
-      -----------------| | name:how* | The project's name starts with "how". |
-      | name:Howl | The project's name is `Howl` or `howl`. | | name:HOWL |
+      displayName, name | Filters by displayName. | | parent | Project's
+      parent. (e.g. folders/123, organizations/*) Prefer parent field over
+      parent.type and parent.id. | | parent.type | Parent's type: `folder` or
+      `organization`. | | parent.id | Parent's id number (e.g. 123) | | id,
+      projectId | Filters by projectId. | | state, lifecycleState | Filters by
+      state. | | labels | Filters by label name or value. | | labels. (where
+      *key* is the name of a label) | Filters by label name. | Search
+      expressions are case insensitive. Some examples queries: | Query |
+      Description | |------------------|--------------------------------------
+      ---------------| | name:how* | The project's name starts with "how". | |
+      name:Howl | The project's name is `Howl` or `howl`. | | name:HOWL |
       Equivalent to above. | | NAME:howl | Equivalent to above. | |
       labels.color:* | The project has the label `color`. | | labels.color:red
       | The project's label `color` has the value `red`. | | labels.color:red
@@ -1354,8 +1354,13 @@ class ListTagBindingsResponse(_messages.Message):
   r"""The ListTagBindings response.
 
   Fields:
-    nextPageToken: A pagination token returned from a previous call to
-      `ListTagBindings` that indicates from where listing should continue.
+    nextPageToken: Pagination token. If the result set is too large to fit in
+      a single response, this token is returned. It encodes the position of
+      the current result cursor. Feeding this value into a new list request
+      with the `page_token` parameter gives the next page of the results. When
+      `next_page_token` is not filled in, there is no next page and the list
+      returned is the last page in the result set. Pagination tokens have a
+      limited lifetime.
     tagBindings: A possibly paginated list of TagBindings for the specified
       TagValue or resource.
   """

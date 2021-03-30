@@ -235,7 +235,7 @@ class ResourcesettingsV1(base_api.BaseApiClient):
       r"""Updates a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field.
 
       Args:
-        request: (GoogleCloudResourcesettingsV1Setting) input message
+        request: (ResourcesettingsFoldersSettingsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudResourcesettingsV1Setting) The response message.
@@ -252,8 +252,8 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
-        request_field='<request>',
-        request_type_name='GoogleCloudResourcesettingsV1Setting',
+        request_field='googleCloudResourcesettingsV1Setting',
+        request_type_name='ResourcesettingsFoldersSettingsPatchRequest',
         response_type_name='GoogleCloudResourcesettingsV1Setting',
         supports_download=False,
     )
@@ -289,7 +289,7 @@ class ResourcesettingsV1(base_api.BaseApiClient):
       r"""Updates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. Note: the supplied setting value will perform a full overwrite of all fields.
 
       Args:
-        request: (ResourcesettingsFoldersSettingsUpdateValueRequest) input message
+        request: (GoogleCloudResourcesettingsV1SettingValue) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudResourcesettingsV1SettingValue) The response message.
@@ -306,8 +306,8 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
-        request_field='googleCloudResourcesettingsV1SettingValue',
-        request_type_name='ResourcesettingsFoldersSettingsUpdateValueRequest',
+        request_field='<request>',
+        request_type_name='GoogleCloudResourcesettingsV1SettingValue',
         response_type_name='GoogleCloudResourcesettingsV1SettingValue',
         supports_download=False,
     )
@@ -508,7 +508,7 @@ class ResourcesettingsV1(base_api.BaseApiClient):
       r"""Updates a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field.
 
       Args:
-        request: (GoogleCloudResourcesettingsV1Setting) input message
+        request: (ResourcesettingsOrganizationsSettingsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudResourcesettingsV1Setting) The response message.
@@ -525,8 +525,8 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
-        request_field='<request>',
-        request_type_name='GoogleCloudResourcesettingsV1Setting',
+        request_field='googleCloudResourcesettingsV1Setting',
+        request_type_name='ResourcesettingsOrganizationsSettingsPatchRequest',
         response_type_name='GoogleCloudResourcesettingsV1Setting',
         supports_download=False,
     )
@@ -562,7 +562,7 @@ class ResourcesettingsV1(base_api.BaseApiClient):
       r"""Updates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. Note: the supplied setting value will perform a full overwrite of all fields.
 
       Args:
-        request: (ResourcesettingsOrganizationsSettingsUpdateValueRequest) input message
+        request: (GoogleCloudResourcesettingsV1SettingValue) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudResourcesettingsV1SettingValue) The response message.
@@ -579,8 +579,8 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
-        request_field='googleCloudResourcesettingsV1SettingValue',
-        request_type_name='ResourcesettingsOrganizationsSettingsUpdateValueRequest',
+        request_field='<request>',
+        request_type_name='GoogleCloudResourcesettingsV1SettingValue',
         response_type_name='GoogleCloudResourcesettingsV1SettingValue',
         supports_download=False,
     )
@@ -781,7 +781,7 @@ class ResourcesettingsV1(base_api.BaseApiClient):
       r"""Updates a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field.
 
       Args:
-        request: (GoogleCloudResourcesettingsV1Setting) input message
+        request: (ResourcesettingsProjectsSettingsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudResourcesettingsV1Setting) The response message.
@@ -798,8 +798,8 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
-        request_field='<request>',
-        request_type_name='GoogleCloudResourcesettingsV1Setting',
+        request_field='googleCloudResourcesettingsV1Setting',
+        request_type_name='ResourcesettingsProjectsSettingsPatchRequest',
         response_type_name='GoogleCloudResourcesettingsV1Setting',
         supports_download=False,
     )
@@ -835,7 +835,7 @@ class ResourcesettingsV1(base_api.BaseApiClient):
       r"""Updates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. Note: the supplied setting value will perform a full overwrite of all fields.
 
       Args:
-        request: (ResourcesettingsProjectsSettingsUpdateValueRequest) input message
+        request: (GoogleCloudResourcesettingsV1SettingValue) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudResourcesettingsV1SettingValue) The response message.
@@ -852,8 +852,8 @@ class ResourcesettingsV1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
-        request_field='googleCloudResourcesettingsV1SettingValue',
-        request_type_name='ResourcesettingsProjectsSettingsUpdateValueRequest',
+        request_field='<request>',
+        request_type_name='GoogleCloudResourcesettingsV1SettingValue',
         response_type_name='GoogleCloudResourcesettingsV1SettingValue',
         supports_download=False,
     )

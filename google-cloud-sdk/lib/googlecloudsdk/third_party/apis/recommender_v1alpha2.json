@@ -680,6 +680,11 @@
           "description": "Last time when the config was updated.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "revisionId": {
+          "description": "Output only. Immutable. The revision ID of the config. A new revision is committed whenever the config is changed in any way. The format is an 8-character hexadecimal string.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
