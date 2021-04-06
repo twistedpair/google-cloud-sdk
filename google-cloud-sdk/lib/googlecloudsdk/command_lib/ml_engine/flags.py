@@ -237,6 +237,14 @@ Learn more about regional endpoints and see a list of available regions:
  https://cloud.google.com/ai-platform/prediction/docs/regional-endpoints
 """
 
+_REGION_FLAG_WITH_GLOBAL_HELPTEXT = """\
+Google Cloud region of the regional endpoint to use for this command.
+For the global endpoint, the region needs to be specified as `global`.
+
+Learn more about regional endpoints and see a list of available regions:
+ https://cloud.google.com/ai-platform/prediction/docs/regional-endpoints
+"""
+
 
 def GetRegionArg(include_global=False):
   """Adds --region flag to determine endpoint for models and versions."""
@@ -244,7 +252,7 @@ def GetRegionArg(include_global=False):
     return base.Argument(
         '--region',
         choices=constants.SUPPORTED_REGIONS_WITH_GLOBAL,
-        help=_REGION_FLAG_HELPTEXT)
+        help=_REGION_FLAG_WITH_GLOBAL_HELPTEXT)
   return base.Argument(
       '--region',
       choices=constants.SUPPORTED_REGIONS,

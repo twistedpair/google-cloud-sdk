@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         },
         "https://www.googleapis.com/auth/cloud-platform.read-only": {
           "description": "View your data across Google Cloud Platform services"
@@ -2354,7 +2354,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1GcsDestination"
         },
         "bigqueryDestination": {
-          "description": "The BigQuery project location where the output is to be written to. In the given project a new dataset is created with name `prediction__` where is made BigQuery-dataset-name compatible (for example, most special characters become underscores), and timestamp is in YYYY_MM_DDThh_mm_ss_sssZ \"based on ISO-8601\" format. In the dataset two tables will be created, `predictions`, and `errors`. If the Model has both instance and prediction schemata defined then the tables have columns as follows: The `predictions` table contains instances for which the prediction succeeded, it has columns as per a concatenation of the Model's instance and prediction schemata. The `errors` table contains rows for which the prediction has failed, it has instance columns, as per the instance schema, followed by a single \"errors\" column, which as values has [`google.rpc.Status`](Status) represented as a STRUCT, and containing only `code` and `message`.",
+          "description": "The BigQuery project or dataset location where the output is to be written to. If project is provided, a new dataset is created with name `prediction__` where is made BigQuery-dataset-name compatible (for example, most special characters become underscores), and timestamp is in YYYY_MM_DDThh_mm_ss_sssZ \"based on ISO-8601\" format. In the dataset two tables will be created, `predictions`, and `errors`. If the Model has both instance and prediction schemata defined then the tables have columns as follows: The `predictions` table contains instances for which the prediction succeeded, it has columns as per a concatenation of the Model's instance and prediction schemata. The `errors` table contains rows for which the prediction has failed, it has instance columns, as per the instance schema, followed by a single \"errors\" column, which as values has [`google.rpc.Status`](Status) represented as a STRUCT, and containing only `code` and `message`.",
           "$ref": "GoogleCloudAiplatformV1alpha1BigQueryDestination"
         },
         "predictionsFormat": {
@@ -11711,43 +11711,38 @@
           "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
           "type": "string"
         },
-        "staticColumns": {
-          "description": "Column names that should be used as static columns. The value of these columns are static per time series.",
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "timeVariantPastOnlyColumns": {
-          "description": "Column names that should be used as time variant past only columns. This column contains information for the given entity (identified by the time_series_identifier_column) that is known for the past but not the future (e.g. population of a city in a given year, or weather on a given day).",
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "timeVariantPastAndFutureColumns": {
-          "description": "Column names that should be used as time variant past and future columns. This column contains information for the given entity (identified by the key column) that is known for the past and the future",
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "period": {
-          "description": "Expected difference in time granularity between rows in the data. If it is not set, the period is inferred from data.",
-          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod"
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity"
         },
-        "forecastWindowStart": {
-          "description": "The number of periods offset into the future as the start of the forecast window (the window of future values to predict, relative to the present.), where each period is one unit of granularity as defined by the `period` field above. Default to 0. Inclusive.",
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
           "type": "string",
           "format": "int64"
         },
-        "forecastWindowEnd": {
-          "description": "The number of periods offset into the future as the end of the forecast window (the window of future values to predict, relative to the present.), where each period is one unit of granularity as defined by the `period` field above. Inclusive.",
-          "type": "string",
-          "format": "int64"
-        },
-        "pastHorizon": {
-          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that the model does not take any history into account. Inclusive. Deprecated. Use historical_window_length instead.",
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
           "type": "string",
           "format": "int64"
         },
@@ -11766,11 +11761,6 @@
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. \"ignore-validation\" - ignore the results of the validation and continue",
           "type": "string"
-        },
-        "historicalWindowLength": {
-          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that the model does not take any history into account. Inclusive.",
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -11900,17 +11890,17 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod": {
-      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod",
+    "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity",
       "description": "A duration of time expressed in time granularity units.",
       "type": "object",
       "properties": {
         "unit": {
-          "description": "The time granularity unit of this time period. The supported unit are: \"minute\" \"hour\" \"day\" \"week\" \"month\" \"year\"",
+          "description": "The time granularity unit of this time period. The supported units are: \"minute\" \"hour\" \"day\" \"week\" \"month\" \"year\"",
           "type": "string"
         },
         "quantity": {
-          "description": "The number of units per period, e.g. 3 weeks or 2 months.",
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
           "type": "string",
           "format": "int64"
         }
@@ -15160,43 +15150,38 @@
           "description": "Column name that should be used as the weight column. Higher values in this column give more importance to the row during model training. The column must have numeric values between 0 and 10000 inclusively; 0 means the row is ignored for training. If weight column field is not set, then all rows are assumed to have equal weight of 1.",
           "type": "string"
         },
-        "staticColumns": {
-          "description": "Column names that should be used as static columns. The value of these columns are static per time series.",
+        "timeSeriesAttributeColumns": {
+          "description": "Column names that should be used as attribute columns. The value of these columns does not vary as a function of time. For example, store ID or item color.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "timeVariantPastOnlyColumns": {
-          "description": "Column names that should be used as time variant past only columns. This column contains information for the given entity (identified by the time_series_identifier_column) that is known for the past but not the future (e.g. population of a city in a given year, or weather on a given day).",
+        "unavailableAtForecastColumns": {
+          "description": "Names of columns that are unavailable when a forecast is requested. This column contains information for the given entity (identified by the time_series_identifier_column) that is unknown before the forecast For example, actual weather on a given day.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "timeVariantPastAndFutureColumns": {
-          "description": "Column names that should be used as time variant past and future columns. This column contains information for the given entity (identified by the key column) that is known for the past and the future",
+        "availableAtForecastColumns": {
+          "description": "Names of columns that are available and provided when a forecast is requested. These columns contain information for the given entity (identified by the time_series_identifier_column column) that is known at forecast. For example, predicted weather for a specific day.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "period": {
-          "description": "Expected difference in time granularity between rows in the data. If it is not set, the period is inferred from data.",
-          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod"
+        "dataGranularity": {
+          "description": "Expected difference in time granularity between rows in the data.",
+          "$ref": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity"
         },
-        "forecastWindowStart": {
-          "description": "The number of periods offset into the future as the start of the forecast window (the window of future values to predict, relative to the present.), where each period is one unit of granularity as defined by the `period` field above. Default to 0. Inclusive.",
+        "forecastHorizon": {
+          "description": "The amount of time into the future for which forecasted values for the target are returned. Expressed in number of units defined by the `data_granularity` field.",
           "type": "string",
           "format": "int64"
         },
-        "forecastWindowEnd": {
-          "description": "The number of periods offset into the future as the end of the forecast window (the window of future values to predict, relative to the present.), where each period is one unit of granularity as defined by the `period` field above. Inclusive.",
-          "type": "string",
-          "format": "int64"
-        },
-        "pastHorizon": {
-          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that the model does not take any history into account. Inclusive. Deprecated. Use historical_window_length instead.",
+        "contextWindow": {
+          "description": "The amount of time into the past training and prediction data is used for model training and prediction respectively. Expressed in number of units defined by the `data_granularity` field.",
           "type": "string",
           "format": "int64"
         },
@@ -15215,11 +15200,6 @@
         "validationOptions": {
           "description": "Validation options for the data validation component. The available options are: \"fail-pipeline\" - default, will validate against the validation and fail the pipeline if it fails. \"ignore-validation\" - ignore the results of the validation and continue",
           "type": "string"
-        },
-        "historicalWindowLength": {
-          "description": "The number of periods offset into the past to restrict past sequence, where each period is one unit of granularity as defined by the `period`. Default value 0 means that the model does not take any history into account. Inclusive.",
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -15349,17 +15329,17 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod": {
-      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod",
+    "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity": {
+      "id": "GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity",
       "description": "A duration of time expressed in time granularity units.",
       "type": "object",
       "properties": {
         "unit": {
-          "description": "The time granularity unit of this time period. The supported unit are: \"minute\" \"hour\" \"day\" \"week\" \"month\" \"year\"",
+          "description": "The time granularity unit of this time period. The supported units are: \"minute\" \"hour\" \"day\" \"week\" \"month\" \"year\"",
           "type": "string"
         },
         "quantity": {
-          "description": "The number of units per period, e.g. 3 weeks or 2 months.",
+          "description": "The number of granularity_units between data points in the training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15, or 30. For all other values of `granularity_unit`, must be 1.",
           "type": "string",
           "format": "int64"
         }
@@ -24573,6 +24553,157 @@
               }
               ,
               "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "aiplatform.projects.locations.studies.operations.list",
+                      "path": "v1alpha1/{+name}/operations",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.studies.operations.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.studies.operations.delete",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "aiplatform.projects.locations.studies.operations.cancel",
+                      "path": "v1alpha1/{+name}:cancel",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    },
+                    "wait": {
+                      "id": "aiplatform.projects.locations.studies.operations.wait",
+                      "path": "v1alpha1/{+name}:wait",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/studies/{studiesId}/operations/{operationsId}:wait",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to wait on.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/studies\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "timeout": {
+                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-duration"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                    }
+                  }
+                },
                 "trials": {
                   "methods": {
                     "suggest": {

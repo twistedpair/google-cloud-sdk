@@ -1633,11 +1633,11 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
-        'v1alpha1':
+        'v1alpha':
             APIDef(
-                class_path='googlecloudsdk.third_party.apis.osconfig.v1alpha1',
-                client_classpath='osconfig_v1alpha1_client.OsconfigV1alpha1',
-                messages_modulepath='osconfig_v1alpha1_messages',
+                class_path='googlecloudsdk.third_party.apis.osconfig.v1alpha',
+                client_classpath='osconfig_v1alpha_client.OsconfigV1alpha',
+                messages_modulepath='osconfig_v1alpha_messages',
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

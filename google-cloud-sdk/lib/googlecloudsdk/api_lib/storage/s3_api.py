@@ -161,6 +161,7 @@ class S3Api(cloud_api.CloudApi):
     with BOTO3_CLIENT_LOCK:
       self.client = boto3.client(storage_url.ProviderPrefix.S3.value)
 
+  @_catch_client_error_raise_s3_api_error()
   def create_bucket(self, bucket_resource, fields_scope=None):
     """See super class."""
     del fields_scope  # Unused in S3 client.
@@ -199,6 +200,11 @@ class S3Api(cloud_api.CloudApi):
         bucket_resource.storage_url,
         location=backend_location,
         metadata=metadata)
+
+  @_catch_client_error_raise_s3_api_error()
+  def delete_bucket(self, bucket_name, request_config=None):
+    """See super class."""
+    return self.client.delete_bucket(Bucket=bucket_name)
 
   def get_bucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
@@ -405,6 +411,17 @@ class S3Api(cloud_api.CloudApi):
     # TODO(b/161437901): Handle resumed download.
     # TODO(b/161460749): Handle download retries.
     # pylint:enable=unused-argument
+
+  @_catch_client_error_raise_s3_api_error()
+  def delete_object(self, object_url, request_config=None):
+    """See super class."""
+    delete_object_kwargs = {
+        'Bucket': object_url.bucket_name,
+        'Key': object_url.object_name,
+    }
+    if object_url.generation:
+      delete_object_kwargs['VersionId'] = object_url.generation
+    return self.client.delete_object(**delete_object_kwargs)
 
   @_catch_client_error_raise_s3_api_error()
   def get_object_metadata(self,

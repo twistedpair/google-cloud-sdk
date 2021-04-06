@@ -140,11 +140,23 @@ class UpdateCommand(base.UpdateCommand):
       raise exceptions.Error('Failed to retrieve the project ID.')
 
 
-def CreateMultiClusterIngressFeatureSpec(config_membership):
+def CreateMultiClusterIngressFeatureSpec(config_membership, billing=None):
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   messages = client.MESSAGES_MODULE
-  return messages.MultiClusterIngressFeatureSpec(
+  spec = messages.MultiClusterIngressFeatureSpec(
       configMembership=config_membership)
+  if billing:
+    spec.billing = ConvertMultiClusterIngressBilling(billing, spec)
+  return spec
+
+
+def ConvertMultiClusterIngressBilling(billing, spec):
+  if billing == 'anthos':
+    return spec.BillingValueValuesEnum.ANTHOS_LICENSE
+  # Validation is done in the Enable handler, we assume only two values
+  # are possible here
+  else:
+    return spec.BillingValueValuesEnum.PAY_AS_YOU_GO
 
 
 def CreateMultiClusterServiceDiscoveryFeatureSpec():
@@ -188,6 +200,17 @@ def CreateServiceMeshFeatureSpec():
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   messages = client.MESSAGES_MODULE
   return messages.ServiceMeshFeatureSpec()
+
+
+def CreateAppDevExperienceFeatureSpec():
+  """Creates an empty Hub Feature Spec for the CloudRun Service.
+
+  Returns:
+    The empty CloudRun Hub Feature Spec.
+  """
+  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
+  messages = client.MESSAGES_MODULE
+  return messages.AppDevExperienceFeatureSpec()
 
 
 def CreateFeature(project, feature_id, feature_display_name, **kwargs):

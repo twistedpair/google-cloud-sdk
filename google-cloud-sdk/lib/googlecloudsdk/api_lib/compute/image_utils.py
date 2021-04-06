@@ -371,7 +371,7 @@ def AddImageFamilyScopeFlag(parser):
       help="""\
       Sets the scope for the `--image-family` flag. By default, when
       specifying an image family in a public image project, the zonal image
-      family view is used. All other projects default to the global
+      family scope is used. All other projects default to the global
       image. Use this flag to override this behavior.""")
 
 

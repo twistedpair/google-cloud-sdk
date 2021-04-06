@@ -21,8 +21,8 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 
 
-def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
-  """Adds cache mode, max ttl, default ttl, client ttl and custom response header args to the argparse."""
+def AddFlexibleCacheArgs(parser, resource_name, update_command=False):
+  """Adds cache mode, max ttl, default ttl, client ttl, custom response header, negative caching, negative caching policy, serve-while-stale, and bypass-cache-on-request-headers args to the argparse."""
   # TODO (b/165456063) document enums as lowercase-with-dash. Accept both forms.
   parser.add_argument(
       '--cache-mode',
@@ -166,9 +166,6 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
         action='store_true',
         help='Remove all custom response headers for the %s.' % resource_name)
 
-
-def AddNegativeCache(parser, resource_name, update_command=False):
-  """Adds negative caching and negative caching policy args to the argparse."""
   negative_caching_help = """\
     Negative caching allows per-status code cache TTLs to be set, in order to
     apply fine-grained caching for common errors or redirects. This can reduce
@@ -241,9 +238,6 @@ def AddNegativeCache(parser, resource_name, update_command=False):
         action='store_true',
         help='Remove all negative caching policies for the %s.' % resource_name)
 
-
-def AddFlexibleCacheStepTwo(parser, resource_name, update_command=False):
-  """Adds serve-while-stale and bypass-cache-on-request-headers args to the argparse."""
   serve_while_stale_help = """\
   Serve existing content from the cache (if available) when revalidating
   content with the origin; this allows content to be served more quickly, and

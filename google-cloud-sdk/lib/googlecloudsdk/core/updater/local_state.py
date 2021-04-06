@@ -627,7 +627,13 @@ class InstallationState(object):
     # However, this is an ok short-term solution until we have bundled python.
     if six.PY2:
       regex_exclusion = re.compile('(httplib2/python3|typing/python3'
-                                   '|platform/bq/third_party/yaml/lib3)')
+                                   '|platform/bq/third_party/yaml/lib3'
+                                   '|third_party/google/api_core'
+                                   '|third_party/google/auth'
+                                   '|third_party/google/oauth2'
+                                   '|third_party/overrides'
+                                   '|third_party/proto'
+                                   '|pubsub_v1/services)')
     else:
       # Do not compile anything on python 3.4.x
       if sys.version_info[1] == 4:

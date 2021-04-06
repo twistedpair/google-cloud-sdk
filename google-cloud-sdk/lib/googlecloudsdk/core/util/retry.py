@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import collections
 import functools
 import itertools
+import math
 import random
 import sys
 import time
@@ -126,7 +127,20 @@ class Retryer(object):
     wait_time_ms = sleep_ms
     if wait_time_ms:
       if self._exponential_sleep_multiplier:
-        wait_time_ms *= self._exponential_sleep_multiplier ** last_retrial
+        # For exponential backoff, the amount to sleep is given by:
+        #   wait_time_ms * (self._exponential_sleep_multiplier ** last_retrial)
+        # If a small wait ceiling is provided, the number of retrials will
+        # increase pretty quickly, and thus this quantity will eventually get
+        # way too large, to the point of overflowing when converting to a float.
+        # Thus, we cap it at a "reasonable" value of 100 years just to avoid
+        # computing it if the number would be greater than that.
+        hundred_years_ms = 100*365*86400*1000
+        if self._exponential_sleep_multiplier > 1.0 and last_retrial > math.log(
+            hundred_years_ms / wait_time_ms,
+            self._exponential_sleep_multiplier):
+          wait_time_ms = hundred_years_ms
+        else:
+          wait_time_ms *= self._exponential_sleep_multiplier ** last_retrial
       if self._jitter_ms:
         wait_time_ms += random.random() * self._jitter_ms
       if self._wait_ceiling_ms:

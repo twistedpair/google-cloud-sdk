@@ -279,6 +279,7 @@ class S3ObjectResource(resource_reference.ObjectResource):
                storage_url_object,
                creation_time=None,
                etag=None,
+               crc32c_hash=None,
                md5_hash=None,
                metadata=None,
                metageneration=None,
@@ -287,9 +288,15 @@ class S3ObjectResource(resource_reference.ObjectResource):
     # The S3 API returns etag wrapped in quotes in some cases.
     if etag and etag.startswith('"') and etag.endswith('"'):
       etag = etag[1:-1]
-    super(S3ObjectResource,
-          self).__init__(storage_url_object, creation_time, etag, md5_hash,
-                         metadata, metageneration, size)
+    super(S3ObjectResource, self).__init__(
+        storage_url_object,
+        creation_time=creation_time,
+        etag=etag,
+        crc32c_hash=None,
+        md5_hash=md5_hash,
+        metadata=metadata,
+        metageneration=metageneration,
+        size=size)
 
   def get_full_metadata_string(self):
     return _get_full_object_metadata_string(self)

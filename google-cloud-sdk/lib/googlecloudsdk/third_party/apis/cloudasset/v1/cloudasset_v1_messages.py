@@ -363,6 +363,10 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       appear in result.
     analysisQuery_accessSelector_roles: Optional. The roles to appear in
       result.
+    analysisQuery_conditionContext_accessTime: The hypothetical access
+      timestamp to evaluate IAM conditions. Note that this value must not be
+      earlier than the current time; otherwise, an INVALID_ARGUMENT error will
+      be returned.
     analysisQuery_identitySelector_identity: Required. The identity appear in
       the form of members in [IAM policy
       binding](https://cloud.google.com/iam/reference/rest/v1/Binding). The
@@ -450,16 +454,17 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
 
   analysisQuery_accessSelector_permissions = _messages.StringField(1, repeated=True)
   analysisQuery_accessSelector_roles = _messages.StringField(2, repeated=True)
-  analysisQuery_identitySelector_identity = _messages.StringField(3)
-  analysisQuery_options_analyzeServiceAccountImpersonation = _messages.BooleanField(4)
-  analysisQuery_options_expandGroups = _messages.BooleanField(5)
-  analysisQuery_options_expandResources = _messages.BooleanField(6)
-  analysisQuery_options_expandRoles = _messages.BooleanField(7)
-  analysisQuery_options_outputGroupEdges = _messages.BooleanField(8)
-  analysisQuery_options_outputResourceEdges = _messages.BooleanField(9)
-  analysisQuery_resourceSelector_fullResourceName = _messages.StringField(10)
-  executionTimeout = _messages.StringField(11)
-  scope = _messages.StringField(12, required=True)
+  analysisQuery_conditionContext_accessTime = _messages.StringField(3)
+  analysisQuery_identitySelector_identity = _messages.StringField(4)
+  analysisQuery_options_analyzeServiceAccountImpersonation = _messages.BooleanField(5)
+  analysisQuery_options_expandGroups = _messages.BooleanField(6)
+  analysisQuery_options_expandResources = _messages.BooleanField(7)
+  analysisQuery_options_expandRoles = _messages.BooleanField(8)
+  analysisQuery_options_outputGroupEdges = _messages.BooleanField(9)
+  analysisQuery_options_outputResourceEdges = _messages.BooleanField(10)
+  analysisQuery_resourceSelector_fullResourceName = _messages.StringField(11)
+  executionTimeout = _messages.StringField(12)
+  scope = _messages.StringField(13, required=True)
 
 
 class CloudassetAnalyzeMoveRequest(_messages.Message):
@@ -793,6 +798,47 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
   scope = _messages.StringField(6, required=True)
 
 
+class ConditionContext(_messages.Message):
+  r"""The IAM conditions context.
+
+  Fields:
+    accessTime: The hypothetical access timestamp to evaluate IAM conditions.
+      Note that this value must not be earlier than the current time;
+      otherwise, an INVALID_ARGUMENT error will be returned.
+  """
+
+  accessTime = _messages.StringField(1)
+
+
+class ConditionEvaluation(_messages.Message):
+  r"""The Condition evaluation.
+
+  Enums:
+    EvaluationValueValueValuesEnum: The evaluation result.
+
+  Fields:
+    evaluationValue: The evaluation result.
+  """
+
+  class EvaluationValueValueValuesEnum(_messages.Enum):
+    r"""The evaluation result.
+
+    Values:
+      EVALUATION_VALUE_UNSPECIFIED: Reserved for future use.
+      TRUE: The evaluation result is `true`.
+      FALSE: The evaluation result is `false`.
+      CONDITIONAL: The evaluation result is `conditional` when the condition
+        expression contains variables that are either missing input values or
+        have not been supported by Analyzer yet.
+    """
+    EVALUATION_VALUE_UNSPECIFIED = 0
+    TRUE = 1
+    FALSE = 2
+    CONDITIONAL = 3
+
+  evaluationValue = _messages.EnumField('EvaluationValueValueValuesEnum', 1)
+
+
 class CreateFeedRequest(_messages.Message):
   r"""Create asset feed request.
 
@@ -1109,6 +1155,8 @@ class GoogleCloudAssetV1AccessControlList(_messages.Message):
     accesses: The accesses that match one of the following conditions: - The
       access_selector, if it is specified in request; - Otherwise, access
       specifiers reachable from the policy binding's role.
+    conditionEvaluation: Condition evaluation for this AccessControlList, if
+      there is a condition defined in the above IAM policy binding.
     resourceEdges: Resource edges of the graph starting from the policy
       attached resource to any descendant resources. The Edge.source_node
       contains the full resource name of a parent resource and
@@ -1121,8 +1169,9 @@ class GoogleCloudAssetV1AccessControlList(_messages.Message):
   """
 
   accesses = _messages.MessageField('GoogleCloudAssetV1Access', 1, repeated=True)
-  resourceEdges = _messages.MessageField('GoogleCloudAssetV1Edge', 2, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssetV1Resource', 3, repeated=True)
+  conditionEvaluation = _messages.MessageField('ConditionEvaluation', 2)
+  resourceEdges = _messages.MessageField('GoogleCloudAssetV1Edge', 3, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssetV1Resource', 4, repeated=True)
 
 
 class GoogleCloudAssetV1BigQueryDestination(_messages.Message):
@@ -2326,6 +2375,8 @@ class IamPolicyAnalysisQuery(_messages.Message):
   Fields:
     accessSelector: Optional. Specifies roles or permissions for analysis.
       This is optional.
+    conditionContext: Optional. The hypothetical context for IAM conditions
+      evaluation.
     identitySelector: Optional. Specifies an identity for analysis.
     options: Optional. The query options.
     resourceSelector: Optional. Specifies a resource for analysis.
@@ -2343,10 +2394,11 @@ class IamPolicyAnalysisQuery(_messages.Message):
   """
 
   accessSelector = _messages.MessageField('AccessSelector', 1)
-  identitySelector = _messages.MessageField('IdentitySelector', 2)
-  options = _messages.MessageField('Options', 3)
-  resourceSelector = _messages.MessageField('ResourceSelector', 4)
-  scope = _messages.StringField(5)
+  conditionContext = _messages.MessageField('ConditionContext', 2)
+  identitySelector = _messages.MessageField('IdentitySelector', 3)
+  options = _messages.MessageField('Options', 4)
+  resourceSelector = _messages.MessageField('ResourceSelector', 5)
+  scope = _messages.StringField(6)
 
 
 class IamPolicyAnalysisResult(_messages.Message):
@@ -3242,7 +3294,9 @@ class ResourceSearchResult(_messages.Message):
       * use a free text query. Example:
       `cloudresourcemanager.googleapis.com/Project`
     parentFullResourceName: The full resource name of this resource's parent,
-      if it has one.
+      if it has one. To search against the `parent_full_resource_name`: * use
+      a field query. Example: `parentFullResourceName:"project-name"` * use a
+      free text query. Example: `project-name`
     project: The project that this resource belongs to, in the form of
       projects/{PROJECT_NUMBER}. This field is available when the resource
       belongs to a project. To search against `project`: * use a field query.

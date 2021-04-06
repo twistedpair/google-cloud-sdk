@@ -488,11 +488,12 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
   """Proxy server helper listens on a port for new local connections."""
 
   def __init__(self, args, project, zone, instance, interface, port, local_host,
-               local_port):
+               local_port, should_test_connection):
     super(IapTunnelProxyServerHelper, self).__init__(
         args, project, zone, instance, interface, port)
     self._local_host = local_host
     self._local_port = local_port
+    self._should_test_connection = should_test_connection
     self._server_sockets = []
     self._connections = []
 
@@ -501,11 +502,12 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
 
   def StartProxyServer(self):
     """Start accepting connections."""
-    try:
-      self._TestConnection()
-    except iap_tunnel_websocket.ConnectionCreationError as e:
-      raise iap_tunnel_websocket.ConnectionCreationError(
-          'While checking if a connection can be made: %s' % six.text_type(e))
+    if self._should_test_connection:
+      try:
+        self._TestConnection()
+      except iap_tunnel_websocket.ConnectionCreationError as e:
+        raise iap_tunnel_websocket.ConnectionCreationError(
+            'While checking if a connection can be made: %s' % six.text_type(e))
     self._server_sockets = _OpenLocalTcpSockets(self._local_host,
                                                 self._local_port)
     log.out.Print('Listening on port [%d].' % self._local_port)

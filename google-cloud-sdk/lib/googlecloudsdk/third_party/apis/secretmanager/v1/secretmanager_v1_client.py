@@ -363,7 +363,7 @@ class SecretmanagerV1(base_api.BaseApiClient):
         method_id='secretmanager.projects.secrets.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['etag'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='SecretmanagerProjectsSecretsDeleteRequest',

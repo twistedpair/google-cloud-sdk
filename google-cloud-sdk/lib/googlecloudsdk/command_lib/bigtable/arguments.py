@@ -296,9 +296,10 @@ class ArgAdder(object):
     """Add deprecated instance type argument."""
     choices = {
         'PRODUCTION':
-            'Production instances provide high availability, and are suitable '
-            'for applications in production. For backward compatibility, '
-            'default have 3 nodes if --cluster-num-nodes is not specified.',
+            'Production instances provide high availability and are '
+            'suitable for applications in production. Production instances '
+            'created with the --instance-type argument have 3 nodes if a value '
+            'is not provided for --cluster-num-nodes.',
         'DEVELOPMENT': 'Development instances are low-cost instances meant '
                        'for development and testing only. They do not '
                        'provide high availability and no service level '
@@ -333,8 +334,7 @@ class ArgAdder(object):
             },
             required_keys=['id', 'zone'],
             max_length=4),
-        # TODO(b/153734534) Add kms-key=KMS_KEY to metavar and help doc below.
-        metavar='id=ID,zone=ZONE,nodes=NODES',
+        metavar='id=ID,zone=ZONE,nodes=NODES,kms-key=KMS_KEY',
         help=textwrap.dedent("""\
         *Repeatable*. Specify cluster config as a key-value dictionary.
 
@@ -346,7 +346,9 @@ class ArgAdder(object):
 
           *zone*: Required. ID of the zone where the cluster is located. Supported zones are listed at https://cloud.google.com/bigtable/docs/locations.
 
-          *nodes*: The number of nodes of the cluster. Default=1.
+          *nodes*: The number of nodes in the cluster. Default=1.
+
+          *kms-key*: The Cloud KMS (Key Management Service) cryptokey that will be used to protect the cluster.
 
         If this argument is specified, the deprecated arguments for configuring a single cluster will be ignored, including *--cluster*, *--cluster-zone*, *--cluster-num-nodes*.
 
@@ -554,18 +556,13 @@ def AddKmsKeyResourceArg(parser, resource, flag_overrides=None, required=False):
       override names.
     required: bool, optional. True if the flag must be parsable by the parser.
   """
-  # TODO(b/153734534): Adding this resource arg to its own group is currently
-  # the only way to hide a resource arg. When ready to publish this arg to
-  # public, remove this group and add this resource arg directly (and generate
-  # the help text).
-  group_parser = parser.add_argument_group(hidden=True)
   concept_parsers.ConceptParser.ForResource(
       '--kms-key',
       GetKmsKeyResourceSpec(),
       'The Cloud KMS (Key Management Service) cryptokey that will be used to '
       'protect the {}.'.format(resource),
       flag_name_overrides=flag_overrides,
-      required=required).AddToParser(group_parser)
+      required=required).AddToParser(parser)
 
 
 def GetAndValidateKmsKeyName(args):

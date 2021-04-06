@@ -54,6 +54,7 @@ _IAM_POLICY_ANALYZER_VERSION_DICT_JSON = {
         'resource_selector': 'analysisQuery_resourceSelector',
         'identity_selector': 'analysisQuery_identitySelector',
         'access_selector': 'analysisQuery_accessSelector',
+        'condition_context': 'analysisQuery_conditionContext',
         'options': 'analysisQuery_options',
     },
 }
@@ -155,7 +156,8 @@ def MakeGetAssetsHistoryHttpRequests(args,
     yield asset
 
 
-def _RenderAnalysisforAnalyzeIamPolicy(analysis):
+def _RenderAnalysisforAnalyzeIamPolicy(analysis,
+                                       api_version=DEFAULT_API_VERSION):
   """Renders the analysis query and results of the AnalyzeIamPolicy request."""
 
   for analysis_result in analysis.analysisResults:
@@ -173,13 +175,17 @@ def _RenderAnalysisforAnalyzeIamPolicy(analysis):
       acls['identities'] = analysis_result.identityList.identities
       acls['accesses'] = acl.accesses
       acls['resources'] = acl.resources
+      if api_version == DEFAULT_API_VERSION and acl.conditionEvaluation:
+        acls[
+            'conditionEvaluationValue'] = acl.conditionEvaluation.evaluationValue
       entry['ACLs'].append(acls)
 
     yield entry
 
 
 def _RenderResponseforAnalyzeIamPolicy(response,
-                                       analyze_service_account_impersonation):
+                                       analyze_service_account_impersonation,
+                                       api_version=DEFAULT_API_VERSION):
   """Renders the response of the AnalyzeIamPolicy request."""
 
   if response.fullyExplored:
@@ -203,7 +209,8 @@ def _RenderResponseforAnalyzeIamPolicy(response,
     msg += ('The ACLs matching your requests are listed per IAM policy binding'
             ', so there could be duplications.')
 
-  for entry in _RenderAnalysisforAnalyzeIamPolicy(response.mainAnalysis):
+  for entry in _RenderAnalysisforAnalyzeIamPolicy(response.mainAnalysis,
+                                                  api_version):
     yield entry
 
   if analyze_service_account_impersonation:
@@ -212,7 +219,7 @@ def _RenderResponseforAnalyzeIamPolicy(response,
           'Service Account Impersonation Analysis Query': analysis.analysisQuery
       }
       yield title
-      for entry in _RenderAnalysisforAnalyzeIamPolicy(analysis):
+      for entry in _RenderAnalysisforAnalyzeIamPolicy(analysis, api_version):
         yield entry
 
   log.status.Print(msg)
@@ -281,6 +288,10 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
             parent=parent,
         ))
   else:
+    access_time = None
+    if args.IsSpecified('access_time'):
+      access_time = times.FormatDateTime(args.access_time)
+
     response = service.AnalyzeIamPolicy(
         messages.CloudassetAnalyzeIamPolicyRequest(
             analysisQuery_accessSelector_permissions=permissions,
@@ -293,12 +304,13 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
             analysisQuery_options_outputGroupEdges=output_group_edges,
             analysisQuery_options_outputResourceEdges=output_resource_edges,
             analysisQuery_resourceSelector_fullResourceName=full_resource_name,
+            analysisQuery_conditionContext_accessTime=access_time,
             executionTimeout=execution_timeout,
             scope=parent,
         ))
   if not args.show_response:
     return _RenderResponseforAnalyzeIamPolicy(
-        response, analyze_service_account_impersonation)
+        response, analyze_service_account_impersonation, api_version)
   return response
 
 
@@ -347,6 +359,10 @@ class AnalyzeIamPolicyClient(object):
     if self.api_version == V1P4BETA1_API_VERSION and args.IsSpecified(
         'execution_timeout'):
       AddCustomJsonFieldMapping('options', '_executionTimeout')
+
+    if self.api_version == DEFAULT_API_VERSION and args.IsSpecified(
+        'access_time'):
+      AddCustomJsonFieldMapping('condition_context', '_accessTime')
 
     return messages
 
@@ -715,6 +731,9 @@ class IamPolicyAnalysisLongrunningClient(object):
       operation = self.service.ExportIamPolicyAnalysis(request_message)
     else:
       analysis_query.options = options
+      if args.IsSpecified('access_time'):
+        analysis_query.conditionContext = self.message_module.ConditionContext(
+            accessTime=times.FormatDateTime(args.access_time))
       request = self.message_module.AnalyzeIamPolicyLongrunningRequest(
           analysisQuery=analysis_query, outputConfig=output_config)
       request_message = self.message_module.CloudassetAnalyzeIamPolicyLongrunningRequest(

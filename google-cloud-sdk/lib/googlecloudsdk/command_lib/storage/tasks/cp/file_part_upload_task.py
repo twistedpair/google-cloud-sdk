@@ -77,7 +77,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         self._source_resource.storage_url.object_name)
     provider = self._destination_resource.storage_url.scheme
 
-    digesters = {hash_util.HashAlgorithm.MD5: hash_util.get_md5_hash()}
+    digesters = {hash_util.HashAlgorithm.MD5: hash_util.get_md5()}
     with file_part.FilePart(source_stream, self._offset,
                             self._length, digesters=digesters) as upload_stream:
       destination_resource = api_factory.get_api(provider).upload_object(
@@ -95,6 +95,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
                                              calculated_digest,
                                              destination_resource.md5_hash)
     except errors.HashMismatchError:
-      delete_object_task.DeleteObjectTask(destination_resource).execute(
-          task_status_queue=task_status_queue)
+      delete_object_task.DeleteObjectTask(
+          destination_resource.storage_url).execute(
+              task_status_queue=task_status_queue)
       raise

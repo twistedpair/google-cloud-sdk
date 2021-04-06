@@ -297,7 +297,7 @@ def hash_gcs_rewrite_parameters_for_tracker_file(
   all_parameters = mandatory_parameters + optional_parameters
   parameters_bytes = ''.join([str(parameter) for parameter in all_parameters
                              ]).encode('UTF8')
-  parameters_hash = hash_util.get_md5_hash(parameters_bytes)
+  parameters_hash = hash_util.get_md5(parameters_bytes)
   return parameters_hash.hexdigest()
 
 

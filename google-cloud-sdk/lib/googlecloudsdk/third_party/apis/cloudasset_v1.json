@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -1721,7 +1721,7 @@
           }
         },
         "parentFullResourceName": {
-          "description": "The full resource name of this resource's parent, if it has one.",
+          "description": "The full resource name of this resource's parent, if it has one. To search against the `parent_full_resource_name`: * use a field query. Example: `parentFullResourceName:\"project-name\"` * use a free text query. Example: `project-name`",
           "type": "string"
         },
         "parentAssetType": {
@@ -1874,6 +1874,10 @@
         "options": {
           "description": "Optional. The query options.",
           "$ref": "Options"
+        },
+        "conditionContext": {
+          "description": "Optional. The hypothetical context for IAM conditions evaluation.",
+          "$ref": "ConditionContext"
         }
       }
     },
@@ -1951,6 +1955,18 @@
         }
       }
     },
+    "ConditionContext": {
+      "id": "ConditionContext",
+      "description": "The IAM conditions context.",
+      "type": "object",
+      "properties": {
+        "accessTime": {
+          "description": "The hypothetical access timestamp to evaluate IAM conditions. Note that this value must not be earlier than the current time; otherwise, an INVALID_ARGUMENT error will be returned.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "IamPolicyAnalysisResult": {
       "id": "IamPolicyAnalysisResult",
       "description": "IAM Policy analysis result, consisting of one IAM policy binding and derived access control lists.",
@@ -2006,6 +2022,10 @@
           "items": {
             "$ref": "GoogleCloudAssetV1Edge"
           }
+        },
+        "conditionEvaluation": {
+          "description": "Condition evaluation for this AccessControlList, if there is a condition defined in the above IAM policy binding.",
+          "$ref": "ConditionEvaluation"
         }
       }
     },
@@ -2108,6 +2128,29 @@
         "targetNode": {
           "description": "The target node of the edge. For example, it could be a full resource name for a resource node or an email of an identity.",
           "type": "string"
+        }
+      }
+    },
+    "ConditionEvaluation": {
+      "id": "ConditionEvaluation",
+      "description": "The Condition evaluation.",
+      "type": "object",
+      "properties": {
+        "evaluationValue": {
+          "description": "The evaluation result.",
+          "type": "string",
+          "enumDescriptions": [
+            "Reserved for future use.",
+            "The evaluation result is `true`.",
+            "The evaluation result is `false`.",
+            "The evaluation result is `conditional` when the condition expression contains variables that are either missing input values or have not been supported by Analyzer yet."
+          ],
+          "enum": [
+            "EVALUATION_VALUE_UNSPECIFIED",
+            "TRUE",
+            "FALSE",
+            "CONDITIONAL"
+          ]
         }
       }
     },
@@ -2733,6 +2776,12 @@
               "description": "Optional. If true, the response will include access analysis from identities to resources via service account impersonation. This is a very expensive operation, because many derived queries will be executed. We highly recommend you use AssetService.AnalyzeIamPolicyLongrunning rpc instead. For example, if the request analyzes for which resources user A has permission P, and there's an IAM policy states user A has iam.serviceAccounts.getAccessToken permission to a service account SA, and there's another IAM policy states service account SA has permission P to a GCP folder F, then user A potentially has access to the GCP folder F. And those advanced analysis results will be included in AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Another example, if the request analyzes for who has permission P to a GCP folder F, and there's an IAM policy states user A has iam.serviceAccounts.actAs permission to a service account SA, and there's another IAM policy states service account SA has permission P to the GCP folder F, then user A potentially has access to the GCP folder F. And those advanced analysis results will be included in AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Default is false.",
               "location": "query",
               "type": "boolean"
+            },
+            "analysisQuery.conditionContext.accessTime": {
+              "description": "The hypothetical access timestamp to evaluate IAM conditions. Note that this value must not be earlier than the current time; otherwise, an INVALID_ARGUMENT error will be returned.",
+              "location": "query",
+              "type": "string",
+              "format": "google-datetime"
             },
             "executionTimeout": {
               "description": "Optional. Amount of time executable has to complete. See JSON representation of [Duration](https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json). If this field is set with a value less than the RPC deadline, and the execution of your query hasn't finished in the specified execution timeout, you will get a response with partial result. Otherwise, your query's execution will continue until the RPC deadline. If it's not finished until then, you will get a DEADLINE_EXCEEDED error. Default is empty.",

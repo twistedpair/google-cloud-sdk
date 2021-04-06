@@ -314,6 +314,7 @@ class ConfigInfo(object):
         'global_config_dir':
             anonymizer.ProcessPath(cfg_paths.global_config_dir),
         'active_config_path': anonymizer.ProcessPath(active_config.file_path),
+        'sdk_root': anonymizer.ProcessPath(cfg_paths.sdk_root)
     }
     self.account = anonymizer.ProcessAccount(
         properties.VALUES.core.account.Get(validate=False))

@@ -508,6 +508,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_STUDIES_OPERATIONS = (
+      'projects.locations.studies.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/studies/'
+              '{studiesId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_STUDIES_TRIALS = (
       'projects.locations.studies.trials',
       '{+name}',

@@ -241,7 +241,8 @@ def DumpADC(credentials, quota_project_disabled=False):
   Args:
      credentials: a credentials from oauth2client or google-auth libraries, the
        credentials to dump.
-     quota_project_disabled: bool, If quota project is explicitly disabled.
+     quota_project_disabled: bool, If quota project is explicitly disabled by
+       users using flags.
   """
   adc_path = c_creds.ADC(credentials).DumpADCToFile()
   LogADCIsWritten(adc_path)
@@ -305,3 +306,10 @@ def AddQuotaProjectToADC(quota_project):
       quota_project=quota_project)
   LogADCIsWritten(adc_path)
   LogQuotaProjectAdded(quota_project)
+
+
+def DumpImpersonatedServiceAccountToADC(credentials, target_principal,
+                                        delegates):
+  adc_path = c_creds.ADC(credentials, target_principal,
+                         delegates).DumpADCToFile()
+  LogADCIsWritten(adc_path)

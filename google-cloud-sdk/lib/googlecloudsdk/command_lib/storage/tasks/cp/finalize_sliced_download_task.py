@@ -30,6 +30,8 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks.cp import file_part_download_task
+from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
@@ -80,26 +82,41 @@ class FinalizeSlicedDownloadTask(task.Task):
         self._destination_resource.storage_url,
         tracker_file_util.TrackerFileType.SLICED_DOWNLOAD)
 
-    if (properties.VALUES.storage.check_hashes.Get() != 'never' and
-        self._source_resource.md5_hash):
-      # Validate final product of sliced download.
-      # TODO(b/181340192): See if sharing and concating task hashes is faster.
-      with files.BinaryFileReader(self._destination_resource.storage_url
-                                  .object_name) as downloaded_file:
-        # TODO(b/172048376): Test other hash algorithms.
-        downloaded_file_hash_object = hash_util.get_hash_from_file_stream(
-            downloaded_file, hash_util.HashAlgorithm.MD5)
+    if (properties.VALUES.storage.check_hashes.Get() !=
+        properties.CheckHashes.NEVER.value and
+        self._source_resource.crc32c_hash):
 
-      downloaded_file_hash_digest = hash_util.get_base64_hash_digest_string(
-          downloaded_file_hash_object)
+      component_payloads = [
+          message.payload
+          for message in self.received_messages
+          if message.topic == file_part_download_task.COMPONENT_CRC32C_TOPIC
+      ]
+      if component_payloads:
+        # Returns list of payload values sorted by component number.
+        sorted_component_payloads = sorted(
+            component_payloads, key=lambda d: d['component_number'])
 
-      try:
-        hash_util.validate_object_hashes_match(
-            self._destination_resource.storage_url,
-            self._source_resource.md5_hash, downloaded_file_hash_digest)
-      except errors.HashMismatchError:
-        os.remove(self._destination_resource.storage_url.object_name)
-        raise
+        downloaded_file_checksum = sorted_component_payloads[0][
+            'crc32c_checksum']
+        for i in range(1, len(sorted_component_payloads)):
+          payload = sorted_component_payloads[i]
+          downloaded_file_checksum = crc32c.concat_checksums(
+              downloaded_file_checksum,
+              payload['crc32c_checksum'],
+              b_byte_count=payload['length'])
+
+        downloaded_file_hash_object = crc32c.get_crc32c_from_checksum(
+            downloaded_file_checksum)
+        downloaded_file_hash_digest = crc32c.get_hash(
+            downloaded_file_hash_object)
+
+        try:
+          hash_util.validate_object_hashes_match(
+              self._destination_resource.storage_url,
+              self._source_resource.crc32c_hash, downloaded_file_hash_digest)
+        except errors.HashMismatchError:
+          os.remove(self._destination_resource.storage_url.object_name)
+          raise
 
     if _should_decompress_gzip(self._source_resource,
                                self._destination_resource):

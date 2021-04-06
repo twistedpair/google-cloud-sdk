@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Task for deleting an object."""
+"""Task for deleting bucket."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -20,25 +20,33 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.core import log
 
 
-class DeleteObjectTask(task.Task):
-  """Deletes an object."""
+class DeleteBucketTask(task.Task):
+  """Deletes cloud storage bucket."""
 
-  def __init__(self, object_url):
+  def __init__(self, url, ignore_error=False):
     """Initializes task.
 
     Args:
-      object_url (storage_url.CloudUrl): URL of the object to delete.
+      url (storage_url.StorageUrl): Should only contain bucket. Objects will be
+        ignored.
+      ignore_error (bool): Do not raise errors if there is an issue deleting the
+        bucket.
     """
     super().__init__()
-    self._object_url = object_url
+    self._url = url
+    self._ignore_error = ignore_error
 
   def execute(self, task_status_queue=None):
-    provider = self._object_url.scheme
-    api_factory.get_api(provider).delete_object(self._object_url)
+    log.status.Print('Removing {}...'.format(self._url))
+    api_client = api_factory.get_api(self._url.scheme)
 
-  def __eq__(self, other):
-    if not isinstance(other, DeleteObjectTask):
-      return NotImplemented
-    return self._object_url == other._object_url
+    try:
+      api_client.delete_bucket(self._url.bucket_name)
+    # pylint:disable=broad-except
+    except Exception:
+      # pylint:enable=broad-except
+      if not self._ignore_error:
+        raise

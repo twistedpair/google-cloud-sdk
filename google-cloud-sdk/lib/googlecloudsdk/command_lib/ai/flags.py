@@ -939,6 +939,20 @@ def GetPluginDataArg(noun):
       help='Plugin data of the {noun}.'.format(noun=noun))
 
 
+def AddTensorboardTimeSeriesMaxDataPointsArg():
+  return base.Argument(
+      '--max-data-points',
+      type=int,
+      help='Max data points to read from the Tensorboard time series')
+
+
+def AddFilterArg(noun):
+  return base.Argument(
+      '--filter',
+      default=None,
+      help='Filter for the {noun}.'.format(noun=noun))
+
+
 def ParseAcceleratorFlag(accelerator, version):
   """Validates and returns a accelerator config message object."""
   if accelerator is None:

@@ -75,9 +75,6 @@ def ApplyCdnPolicyArgs(client,
                        backend_bucket,
                        is_update=False,
                        cleared_fields=None,
-                       support_flexible_cache_step_one=False,
-                       support_flexible_cache_step_two=False,
-                       support_negative_cache=False,
                        support_request_coalescing=False):
   """Applies the CdnPolicy arguments to the specified backend bucket.
 
@@ -92,13 +89,6 @@ def ApplyCdnPolicyArgs(client,
       a create command, False otherwise.
     cleared_fields: Reference to list with fields that should be cleared. Valid
       only for update command.
-    support_flexible_cache_step_one: If True then maps Flexible Cache Control
-      properties from milestone 1: cache mode, max ttl, default ttl, client ttl
-    support_flexible_cache_step_two: If True then maps Flexible Cache Control
-      properties from milestone 2: serve while stale and bypass cache on request
-        headers
-    support_negative_cache: If True then maps negative caching and negative
-      caching policy arguments
     support_request_coalescing: If True then maps request coalescing argument
   """
   if backend_bucket.cdnPolicy is not None:
@@ -112,68 +102,66 @@ def ApplyCdnPolicyArgs(client,
   if support_request_coalescing and args.request_coalescing is not None:
     cdn_policy.requestCoalescing = args.request_coalescing
 
-  if support_flexible_cache_step_one:
-    if args.cache_mode:
-      cdn_policy.cacheMode = client.messages.BackendBucketCdnPolicy.\
-        CacheModeValueValuesEnum(args.cache_mode)
-    if args.client_ttl is not None:
-      cdn_policy.clientTtl = args.client_ttl
-    if args.default_ttl is not None:
-      cdn_policy.defaultTtl = args.default_ttl
-    if args.max_ttl is not None:
-      cdn_policy.maxTtl = args.max_ttl
+  if args.cache_mode:
+    cdn_policy.cacheMode = client.messages.BackendBucketCdnPolicy.\
+      CacheModeValueValuesEnum(args.cache_mode)
+  if args.client_ttl is not None:
+    cdn_policy.clientTtl = args.client_ttl
+  if args.default_ttl is not None:
+    cdn_policy.defaultTtl = args.default_ttl
+  if args.max_ttl is not None:
+    cdn_policy.maxTtl = args.max_ttl
 
-    if is_update:
-      # Takes care of resetting fields that are invalid for given cache modes
-      should_clean_client_ttl = (
-          args.cache_mode == 'USE_ORIGIN_HEADERS' and args.client_ttl is None)
-      if args.no_client_ttl or should_clean_client_ttl:
-        cleared_fields.append('cdnPolicy.clientTtl')
-        cdn_policy.clientTtl = None
+  if is_update:
+    # Takes care of resetting fields that are invalid for given cache modes
+    should_clean_client_ttl = (
+        args.cache_mode == 'USE_ORIGIN_HEADERS' and args.client_ttl is None)
+    if args.no_client_ttl or should_clean_client_ttl:
+      cleared_fields.append('cdnPolicy.clientTtl')
+      cdn_policy.clientTtl = None
 
-      should_clean_default_ttl = (
-          args.cache_mode == 'USE_ORIGIN_HEADERS' and args.default_ttl is None)
-      if args.no_default_ttl or should_clean_default_ttl:
-        cleared_fields.append('cdnPolicy.defaultTtl')
-        cdn_policy.defaultTtl = None
+    should_clean_default_ttl = (
+        args.cache_mode == 'USE_ORIGIN_HEADERS' and args.default_ttl is None)
+    if args.no_default_ttl or should_clean_default_ttl:
+      cleared_fields.append('cdnPolicy.defaultTtl')
+      cdn_policy.defaultTtl = None
 
-      should_clean_max_ttl = (
-          args.cache_mode == 'USE_ORIGIN_HEADERS' or
-          args.cache_mode == 'FORCE_CACHE_ALL') and args.max_ttl is None
-      if args.no_max_ttl or should_clean_max_ttl:
-        cleared_fields.append('cdnPolicy.maxTtl')
-        cdn_policy.maxTtl = None
+    should_clean_max_ttl = (args.cache_mode == 'USE_ORIGIN_HEADERS' or
+                            args.cache_mode
+                            == 'FORCE_CACHE_ALL') and args.max_ttl is None
+    if args.no_max_ttl or should_clean_max_ttl:
+      cleared_fields.append('cdnPolicy.maxTtl')
+      cdn_policy.maxTtl = None
 
-  if support_negative_cache:
-    if args.negative_caching is not None:
-      cdn_policy.negativeCaching = args.negative_caching
-    negative_caching_policy = GetNegativeCachingPolicy(client, args,
-                                                       backend_bucket)
-    if negative_caching_policy is not None:
-      cdn_policy.negativeCachingPolicy = negative_caching_policy
-    if args.negative_caching_policy:
-      cdn_policy.negativeCaching = True
+  if args.negative_caching is not None:
+    cdn_policy.negativeCaching = args.negative_caching
+  negative_caching_policy = GetNegativeCachingPolicy(client, args,
+                                                     backend_bucket)
+  if negative_caching_policy is not None:
+    cdn_policy.negativeCachingPolicy = negative_caching_policy
+  if args.negative_caching_policy:
+    cdn_policy.negativeCaching = True
 
-    if is_update:
-      if (args.no_negative_caching_policies or
-          (args.negative_caching is not None and not args.negative_caching)):
-        cleared_fields.append('cdnPolicy.negativeCachingPolicy')
-        cdn_policy.negativeCachingPolicy = []
+  if is_update:
+    if (args.no_negative_caching_policies or
+        (args.negative_caching is not None and not args.negative_caching)):
+      cleared_fields.append('cdnPolicy.negativeCachingPolicy')
+      cdn_policy.negativeCachingPolicy = []
 
-  if support_flexible_cache_step_two:
-    if args.serve_while_stale is not None:
-      cdn_policy.serveWhileStale = args.serve_while_stale
+  if args.serve_while_stale is not None:
+    cdn_policy.serveWhileStale = args.serve_while_stale
 
-    bypass_cache_on_request_headers = GetBypassCacheOnRequestHeaders(
-        client, args)
-    if bypass_cache_on_request_headers is not None:
-      cdn_policy.bypassCacheOnRequestHeaders = bypass_cache_on_request_headers
+  bypass_cache_on_request_headers = GetBypassCacheOnRequestHeaders(client, args)
+  if bypass_cache_on_request_headers is not None:
+    cdn_policy.bypassCacheOnRequestHeaders = bypass_cache_on_request_headers
 
-    if is_update:
-      if args.no_serve_while_stale:
-        cdn_policy.serveWhileStale = None
-      if args.no_bypass_cache_on_request_headers:
-        cdn_policy.bypassCacheOnRequestHeaders = []
+  if is_update:
+    if args.no_serve_while_stale:
+      cleared_fields.append('cdnPolicy.serveWhileStale')
+      cdn_policy.serveWhileStale = None
+    if args.no_bypass_cache_on_request_headers:
+      cleared_fields.append('cdnPolicy.bypassCacheOnRequestHeaders')
+      cdn_policy.bypassCacheOnRequestHeaders = []
 
   if cdn_policy != client.messages.BackendBucketCdnPolicy():
     backend_bucket.cdnPolicy = cdn_policy

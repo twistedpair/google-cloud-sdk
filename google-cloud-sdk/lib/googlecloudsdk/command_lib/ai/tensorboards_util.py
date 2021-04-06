@@ -32,31 +32,20 @@ def ParseTensorboardOperation(operation_name):
   Returns:
     The operation reference object
   """
-  if '/tensorboards/' in operation_name and '/experiments/' in operation_name and '/runs/' in operation_name:
-    try:
-      return resources.REGISTRY.ParseRelativeName(
-          operation_name,
-          collection=
-          'aiplatform.projects.locations.tensorboards.experiments.runs.operations')
-    except resources.WrongResourceCollectionException:
-      pass
-  elif '/tensorboards/' in operation_name and '/experiments/' in operation_name:
-    try:
-      return resources.REGISTRY.ParseRelativeName(
-          operation_name,
-          collection=
-          'aiplatform.projects.locations.tensorboards.experiments.operations')
-    except resources.WrongResourceCollectionException:
-      pass
-  elif '/tensorboards/' in operation_name:
-    try:
-      return resources.REGISTRY.ParseRelativeName(
-          operation_name,
-          collection='aiplatform.projects.locations.tensorboards.operations')
-    except resources.WrongResourceCollectionException:
-      pass
-  return resources.REGISTRY.ParseRelativeName(
-      operation_name, collection='aiplatform.projects.locations.operations')
+  collection = 'aiplatform.projects.locations'
+  if '/tensorboards/' in operation_name:
+    collection += '.tensorboards'
+  if '/experiments/' in operation_name:
+    collection += '.experiments'
+  if '/runs/' in operation_name:
+    collection += '.runs'
+  collection += '.operations'
+  try:
+    return resources.REGISTRY.ParseRelativeName(
+        operation_name, collection=collection)
+  except resources.WrongResourceCollectionException:
+    return resources.REGISTRY.ParseRelativeName(
+        operation_name, collection='aiplatform.projects.locations.operations')
 
 
 _TYPE_CHOICES = {

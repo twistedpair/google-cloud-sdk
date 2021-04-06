@@ -72,6 +72,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  BILLINGACCOUNTS_OPERATIONS = (
+      'billingAccounts.operations',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   BILLINGACCOUNTS_SINKS = (
       'billingAccounts.sinks',
       '{+sinkName}',
@@ -141,6 +151,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_LOCATIONS_OPERATIONS = (
+      'folders.locations.operations',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_SINKS = (
       'folders.sinks',
       '{+sinkName}',
@@ -204,6 +225,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  LOCATIONS_OPERATIONS = (
+      'locations.operations',
+      '{+name}',
+      {
+          '':
+              '{v2Id}/{v2Id1}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
@@ -249,6 +281,17 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/locations/{locationsId}/'
               'buckets/{bucketsId}/views/{viewsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_OPERATIONS = (
+      'organizations.locations.operations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'operations/{operationsId}',
       },
       ['name'],
       True
@@ -308,6 +351,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/buckets/'
               '{bucketsId}/views/{viewsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
       },
       ['name'],
       True

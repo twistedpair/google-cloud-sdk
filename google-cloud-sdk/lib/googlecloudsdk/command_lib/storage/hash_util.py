@@ -30,14 +30,14 @@ class HashAlgorithm(enum.Enum):
   """Algorithms available for hashing data."""
 
   MD5 = 'md5'
-  # TODO(b/172048376): Add crc32c.
+  CRC32C = 'crc32c'
 
 
-def get_md5_hash(byte_string=b''):
-  """Returns md5 hash, avoiding incorrect FIPS error on Red Hat systems.
+def get_md5(byte_string=b''):
+  """Returns md5 object, avoiding incorrect FIPS error on Red Hat systems.
 
-  Examples: get_md5_hash(b'abc')
-            get_md5_hash(bytes('abc', encoding='utf-8'))
+  Examples: get_md5(b'abc')
+            get_md5(bytes('abc', encoding='utf-8'))
 
   Args:
     byte_string (bytes): String in bytes form to hash. Don't include for empty
@@ -83,7 +83,7 @@ def get_hash_from_file_stream(file_stream,
     String of base64-encoded hash digest for file.
   """
   if hash_algorithm == HashAlgorithm.MD5:
-    hash_object = get_md5_hash()
+    hash_object = get_md5()
   else:
     # TODO(b/172048376): Add crc32c.
     return

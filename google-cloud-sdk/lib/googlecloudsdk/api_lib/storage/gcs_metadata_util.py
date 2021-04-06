@@ -40,6 +40,7 @@ def copy_select_object_metadata(source_metadata, destination_metadata):
   destination_metadata.contentEncoding = source_metadata.contentEncoding
   destination_metadata.contentLanguage = source_metadata.contentLanguage
   destination_metadata.contentType = source_metadata.contentType
+  destination_metadata.crc32c = source_metadata.crc32c
   destination_metadata.customTime = source_metadata.customTime
   destination_metadata.md5Hash = source_metadata.md5Hash
   destination_metadata.metadata = copy.deepcopy(source_metadata.metadata)
@@ -134,6 +135,7 @@ def get_object_resource_from_metadata(metadata):
       url,
       creation_time=metadata.timeCreated,
       etag=metadata.etag,
+      crc32c_hash=metadata.crc32c,
       md5_hash=metadata.md5Hash,
       metadata=metadata,
       metageneration=metadata.metageneration,

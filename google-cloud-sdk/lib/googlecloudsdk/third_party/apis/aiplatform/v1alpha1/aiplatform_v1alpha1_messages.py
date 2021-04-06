@@ -2589,6 +2589,67 @@ class AiplatformProjectsLocationsStudiesLookupRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class AiplatformProjectsLocationsStudiesOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsStudiesOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsStudiesOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsStudiesOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsStudiesOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsStudiesOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsStudiesOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsStudiesOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsStudiesOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsStudiesOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsStudiesTrialsAddTrialMeasurementRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsStudiesTrialsAddTrialMeasurementRequest
   object.
@@ -9612,21 +9673,22 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
   object.
 
   Fields:
+    availableAtForecastColumns: Names of columns that are available and
+      provided when a forecast is requested. These columns contain information
+      for the given entity (identified by the time_series_identifier_column
+      column) that is known at forecast. For example, predicted weather for a
+      specific day.
+    contextWindow: The amount of time into the past training and prediction
+      data is used for model training and prediction respectively. Expressed
+      in number of units defined by the `data_granularity` field.
+    dataGranularity: Expected difference in time granularity between rows in
+      the data.
     exportEvaluatedDataItemsConfig: Configuration for exporting test set
       predictions to a BigQuery table. If this configuration is absent, then
       the export is not performed.
-    forecastWindowEnd: The number of periods offset into the future as the end
-      of the forecast window (the window of future values to predict, relative
-      to the present.), where each period is one unit of granularity as
-      defined by the `period` field above. Inclusive.
-    forecastWindowStart: The number of periods offset into the future as the
-      start of the forecast window (the window of future values to predict,
-      relative to the present.), where each period is one unit of granularity
-      as defined by the `period` field above. Default to 0. Inclusive.
-    historicalWindowLength: The number of periods offset into the past to
-      restrict past sequence, where each period is one unit of granularity as
-      defined by the `period`. Default value 0 means that the model does not
-      take any history into account. Inclusive.
+    forecastHorizon: The amount of time into the future for which forecasted
+      values for the target are returned. Expressed in number of units defined
+      by the `data_granularity` field.
     optimizationObjective: Objective function the model is optimizing towards.
       The training process creates a model that optimizes the value of the
       objective function over the validation set. The supported optimization
@@ -9637,34 +9699,19 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       mae" - Minimize the combination of weighted absolute percentage error
       (WAPE) and mean-absolute-error (MAE). "minimize-quantile-loss" -
       Minimize the quantile loss at the quantiles defined in `quantiles`.
-    pastHorizon: The number of periods offset into the past to restrict past
-      sequence, where each period is one unit of granularity as defined by the
-      `period`. Default value 0 means that the model does not take any history
-      into account. Inclusive. Deprecated. Use historical_window_length
-      instead.
-    period: Expected difference in time granularity between rows in the data.
-      If it is not set, the period is inferred from data.
     quantiles: Quantiles to use for minimize-quantile-loss
       `optimization_objective`. Up to 5 quantiles are allowed of values
       between 0 and 1, exclusive. Required if the value of
       optimization_objective is minimize-quantile-loss. Represents the percent
       quantiles to use for that objective. Quantiles must be unique.
-    staticColumns: Column names that should be used as static columns. The
-      value of these columns are static per time series.
     targetColumn: The name of the column that the model is to predict.
     timeColumn: The name of the column that identifies time order in the time
       series.
+    timeSeriesAttributeColumns: Column names that should be used as attribute
+      columns. The value of these columns does not vary as a function of time.
+      For example, store ID or item color.
     timeSeriesIdentifierColumn: The name of the column that identifies the
       time series.
-    timeVariantPastAndFutureColumns: Column names that should be used as time
-      variant past and future columns. This column contains information for
-      the given entity (identified by the key column) that is known for the
-      past and the future
-    timeVariantPastOnlyColumns: Column names that should be used as time
-      variant past only columns. This column contains information for the
-      given entity (identified by the time_series_identifier_column) that is
-      known for the past but not the future (e.g. population of a city in a
-      given year, or weather on a given day).
     trainBudgetMilliNodeHours: Required. The train budget of creating this
       model, expressed in milli node hours i.e. 1,000 value in this field
       means 1 node hour. The training cost of the model will not exceed this
@@ -9679,6 +9726,10 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       given input column. And the result will be used for training. When
       creating transformation for BigQuery Struct column, the column should be
       flattened using "." as the delimiter.
+    unavailableAtForecastColumns: Names of columns that are unavailable when a
+      forecast is requested. This column contains information for the given
+      entity (identified by the time_series_identifier_column) that is unknown
+      before the forecast For example, actual weather on a given day.
     validationOptions: Validation options for the data validation component.
       The available options are: "fail-pipeline" - default, will validate
       against the validation and fail the pipeline if it fails. "ignore-
@@ -9690,32 +9741,32 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       field is not set, then all rows are assumed to have equal weight of 1.
   """
 
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 1)
-  forecastWindowEnd = _messages.IntegerField(2)
-  forecastWindowStart = _messages.IntegerField(3)
-  historicalWindowLength = _messages.IntegerField(4)
-  optimizationObjective = _messages.StringField(5)
-  pastHorizon = _messages.IntegerField(6)
-  period = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod', 7)
-  quantiles = _messages.FloatField(8, repeated=True)
-  staticColumns = _messages.StringField(9, repeated=True)
-  targetColumn = _messages.StringField(10)
-  timeColumn = _messages.StringField(11)
-  timeSeriesIdentifierColumn = _messages.StringField(12)
-  timeVariantPastAndFutureColumns = _messages.StringField(13, repeated=True)
-  timeVariantPastOnlyColumns = _messages.StringField(14, repeated=True)
-  trainBudgetMilliNodeHours = _messages.IntegerField(15)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 16, repeated=True)
-  validationOptions = _messages.StringField(17)
-  weightColumn = _messages.StringField(18)
+  availableAtForecastColumns = _messages.StringField(1, repeated=True)
+  contextWindow = _messages.IntegerField(2)
+  dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 3)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 4)
+  forecastHorizon = _messages.IntegerField(5)
+  optimizationObjective = _messages.StringField(6)
+  quantiles = _messages.FloatField(7, repeated=True)
+  targetColumn = _messages.StringField(8)
+  timeColumn = _messages.StringField(9)
+  timeSeriesAttributeColumns = _messages.StringField(10, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(11)
+  trainBudgetMilliNodeHours = _messages.IntegerField(12)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 13, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(14, repeated=True)
+  validationOptions = _messages.StringField(15)
+  weightColumn = _messages.StringField(16)
 
 
-class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod(_messages.Message):
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
   r"""A duration of time expressed in time granularity units.
 
   Fields:
-    quantity: The number of units per period, e.g. 3 weeks or 2 months.
-    unit: The time granularity unit of this time period. The supported unit
+    quantity: The number of granularity_units between data points in the
+      training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15,
+      or 30. For all other values of `granularity_unit`, must be 1.
+    unit: The time granularity unit of this time period. The supported units
       are: "minute" "hour" "day" "week" "month" "year"
   """
 
@@ -11795,20 +11846,20 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig(_messages.Mess
   predictions are expressed via any of them.
 
   Fields:
-    bigqueryDestination: The BigQuery project location where the output is to
-      be written to. In the given project a new dataset is created with name
-      `prediction__` where is made BigQuery-dataset-name compatible (for
-      example, most special characters become underscores), and timestamp is
-      in YYYY_MM_DDThh_mm_ss_sssZ "based on ISO-8601" format. In the dataset
-      two tables will be created, `predictions`, and `errors`. If the Model
-      has both instance and prediction schemata defined then the tables have
-      columns as follows: The `predictions` table contains instances for which
-      the prediction succeeded, it has columns as per a concatenation of the
-      Model's instance and prediction schemata. The `errors` table contains
-      rows for which the prediction has failed, it has instance columns, as
-      per the instance schema, followed by a single "errors" column, which as
-      values has [`google.rpc.Status`](Status) represented as a STRUCT, and
-      containing only `code` and `message`.
+    bigqueryDestination: The BigQuery project or dataset location where the
+      output is to be written to. If project is provided, a new dataset is
+      created with name `prediction__` where is made BigQuery-dataset-name
+      compatible (for example, most special characters become underscores),
+      and timestamp is in YYYY_MM_DDThh_mm_ss_sssZ "based on ISO-8601" format.
+      In the dataset two tables will be created, `predictions`, and `errors`.
+      If the Model has both instance and prediction schemata defined then the
+      tables have columns as follows: The `predictions` table contains
+      instances for which the prediction succeeded, it has columns as per a
+      concatenation of the Model's instance and prediction schemata. The
+      `errors` table contains rows for which the prediction has failed, it has
+      instance columns, as per the instance schema, followed by a single
+      "errors" column, which as values has [`google.rpc.Status`](Status)
+      represented as a STRUCT, and containing only `code` and `message`.
     gcsDestination: The Cloud Storage location of the directory where the
       output is to be written to. In the given directory a new directory is
       created. Its name is `prediction--`, where timestamp is in YYYY-MM-
@@ -19867,21 +19918,22 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   ngInputs object.
 
   Fields:
+    availableAtForecastColumns: Names of columns that are available and
+      provided when a forecast is requested. These columns contain information
+      for the given entity (identified by the time_series_identifier_column
+      column) that is known at forecast. For example, predicted weather for a
+      specific day.
+    contextWindow: The amount of time into the past training and prediction
+      data is used for model training and prediction respectively. Expressed
+      in number of units defined by the `data_granularity` field.
+    dataGranularity: Expected difference in time granularity between rows in
+      the data.
     exportEvaluatedDataItemsConfig: Configuration for exporting test set
       predictions to a BigQuery table. If this configuration is absent, then
       the export is not performed.
-    forecastWindowEnd: The number of periods offset into the future as the end
-      of the forecast window (the window of future values to predict, relative
-      to the present.), where each period is one unit of granularity as
-      defined by the `period` field above. Inclusive.
-    forecastWindowStart: The number of periods offset into the future as the
-      start of the forecast window (the window of future values to predict,
-      relative to the present.), where each period is one unit of granularity
-      as defined by the `period` field above. Default to 0. Inclusive.
-    historicalWindowLength: The number of periods offset into the past to
-      restrict past sequence, where each period is one unit of granularity as
-      defined by the `period`. Default value 0 means that the model does not
-      take any history into account. Inclusive.
+    forecastHorizon: The amount of time into the future for which forecasted
+      values for the target are returned. Expressed in number of units defined
+      by the `data_granularity` field.
     optimizationObjective: Objective function the model is optimizing towards.
       The training process creates a model that optimizes the value of the
       objective function over the validation set. The supported optimization
@@ -19892,34 +19944,19 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       mae" - Minimize the combination of weighted absolute percentage error
       (WAPE) and mean-absolute-error (MAE). "minimize-quantile-loss" -
       Minimize the quantile loss at the quantiles defined in `quantiles`.
-    pastHorizon: The number of periods offset into the past to restrict past
-      sequence, where each period is one unit of granularity as defined by the
-      `period`. Default value 0 means that the model does not take any history
-      into account. Inclusive. Deprecated. Use historical_window_length
-      instead.
-    period: Expected difference in time granularity between rows in the data.
-      If it is not set, the period is inferred from data.
     quantiles: Quantiles to use for minimize-quantile-loss
       `optimization_objective`. Up to 5 quantiles are allowed of values
       between 0 and 1, exclusive. Required if the value of
       optimization_objective is minimize-quantile-loss. Represents the percent
       quantiles to use for that objective. Quantiles must be unique.
-    staticColumns: Column names that should be used as static columns. The
-      value of these columns are static per time series.
     targetColumn: The name of the column that the model is to predict.
     timeColumn: The name of the column that identifies time order in the time
       series.
+    timeSeriesAttributeColumns: Column names that should be used as attribute
+      columns. The value of these columns does not vary as a function of time.
+      For example, store ID or item color.
     timeSeriesIdentifierColumn: The name of the column that identifies the
       time series.
-    timeVariantPastAndFutureColumns: Column names that should be used as time
-      variant past and future columns. This column contains information for
-      the given entity (identified by the key column) that is known for the
-      past and the future
-    timeVariantPastOnlyColumns: Column names that should be used as time
-      variant past only columns. This column contains information for the
-      given entity (identified by the time_series_identifier_column) that is
-      known for the past but not the future (e.g. population of a city in a
-      given year, or weather on a given day).
     trainBudgetMilliNodeHours: Required. The train budget of creating this
       model, expressed in milli node hours i.e. 1,000 value in this field
       means 1 node hour. The training cost of the model will not exceed this
@@ -19934,6 +19971,10 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       given input column. And the result will be used for training. When
       creating transformation for BigQuery Struct column, the column should be
       flattened using "." as the delimiter.
+    unavailableAtForecastColumns: Names of columns that are unavailable when a
+      forecast is requested. This column contains information for the given
+      entity (identified by the time_series_identifier_column) that is unknown
+      before the forecast For example, actual weather on a given day.
     validationOptions: Validation options for the data validation component.
       The available options are: "fail-pipeline" - default, will validate
       against the validation and fail the pipeline if it fails. "ignore-
@@ -19945,32 +19986,32 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       field is not set, then all rows are assumed to have equal weight of 1.
   """
 
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 1)
-  forecastWindowEnd = _messages.IntegerField(2)
-  forecastWindowStart = _messages.IntegerField(3)
-  historicalWindowLength = _messages.IntegerField(4)
-  optimizationObjective = _messages.StringField(5)
-  pastHorizon = _messages.IntegerField(6)
-  period = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod', 7)
-  quantiles = _messages.FloatField(8, repeated=True)
-  staticColumns = _messages.StringField(9, repeated=True)
-  targetColumn = _messages.StringField(10)
-  timeColumn = _messages.StringField(11)
-  timeSeriesIdentifierColumn = _messages.StringField(12)
-  timeVariantPastAndFutureColumns = _messages.StringField(13, repeated=True)
-  timeVariantPastOnlyColumns = _messages.StringField(14, repeated=True)
-  trainBudgetMilliNodeHours = _messages.IntegerField(15)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 16, repeated=True)
-  validationOptions = _messages.StringField(17)
-  weightColumn = _messages.StringField(18)
+  availableAtForecastColumns = _messages.StringField(1, repeated=True)
+  contextWindow = _messages.IntegerField(2)
+  dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 3)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 4)
+  forecastHorizon = _messages.IntegerField(5)
+  optimizationObjective = _messages.StringField(6)
+  quantiles = _messages.FloatField(7, repeated=True)
+  targetColumn = _messages.StringField(8)
+  timeColumn = _messages.StringField(9)
+  timeSeriesAttributeColumns = _messages.StringField(10, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(11)
+  trainBudgetMilliNodeHours = _messages.IntegerField(12)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 13, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(14, repeated=True)
+  validationOptions = _messages.StringField(15)
+  weightColumn = _messages.StringField(16)
 
 
-class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod(_messages.Message):
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
   r"""A duration of time expressed in time granularity units.
 
   Fields:
-    quantity: The number of units per period, e.g. 3 weeks or 2 months.
-    unit: The time granularity unit of this time period. The supported unit
+    quantity: The number of granularity_units between data points in the
+      training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15,
+      or 30. For all other values of `granularity_unit`, must be 1.
+    unit: The time granularity unit of this time period. The supported units
       are: "minute" "hour" "day" "week" "month" "year"
   """
 

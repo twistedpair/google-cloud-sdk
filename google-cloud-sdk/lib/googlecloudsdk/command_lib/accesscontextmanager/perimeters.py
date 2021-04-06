@@ -231,10 +231,6 @@ def _GetResourceSpec():
       servicePerimetersId=_GetAttributeConfig())
 
 
-def _TrackSupportsDirectionalPolicies(track=None):
-  return track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA)
-
-
 def AddResourceArg(parser, verb):
   """Add a resource argument for a service perimeter.
 
@@ -294,7 +290,7 @@ def GetPerimeterTypeEnumForShortName(perimeter_type_short_name, api_version):
       version=api_version).GetEnumForChoice(perimeter_type_short_name)
 
 
-def AddPerimeterUpdateArgs(parser, version=None, track=None):
+def AddPerimeterUpdateArgs(parser, version=None):
   """Add args for perimeters update command."""
   args = [
       common.GetDescriptionArg('service perimeter'),
@@ -307,13 +303,12 @@ def AddPerimeterUpdateArgs(parser, version=None, track=None):
   _AddRestrictedServices(parser)
   _AddLevelsUpdate(parser)
   _AddVpcRestrictionArgs(parser)
-  AddUpdateDirectionalPoliciesGroupArgs(parser, version, track)
+  AddUpdateDirectionalPoliciesGroupArgs(parser, version)
 
 
-def AddUpdateDirectionalPoliciesGroupArgs(parser, version=None, track=None):
-  if _TrackSupportsDirectionalPolicies(track):
-    _AddUpdateIngressPoliciesGroupArgs(parser, version)
-    _AddUpdateEgressPoliciesGroupArgs(parser, version)
+def AddUpdateDirectionalPoliciesGroupArgs(parser, version=None):
+  _AddUpdateIngressPoliciesGroupArgs(parser, version)
+  _AddUpdateEgressPoliciesGroupArgs(parser, version)
 
 
 def AddPerimeterUpdateDryRunConfigArgs(parser):
@@ -462,20 +457,18 @@ def _AddUpdateEgressPoliciesGroupArgs(parser, api_version):
   clear_egress_policies_arg.AddToParser(group)
 
 
-def ParseUpdateDirectionalPoliciesArgs(args, track, arg_name):
+def ParseUpdateDirectionalPoliciesArgs(args, arg_name):
   """Return values for clear_/set_ ingress/egress-policies command line args."""
-  if _TrackSupportsDirectionalPolicies(track):
-    underscored_name = arg_name.replace('-', '_')
-    clear = getattr(args, 'clear_' + underscored_name)
-    set_ = getattr(args, 'set_' + underscored_name, None)
+  underscored_name = arg_name.replace('-', '_')
+  clear = getattr(args, 'clear_' + underscored_name)
+  set_ = getattr(args, 'set_' + underscored_name, None)
 
-    if clear:
-      return []
-    elif set_ is not None:
-      return set_
-    else:
-      return None
-  return None
+  if clear:
+    return []
+  elif set_ is not None:
+    return set_
+  else:
+    return None
 
 
 def ParseVpcRestriction(args, perimeter_result, version, dry_run=False):
@@ -762,10 +755,8 @@ def GenerateDryRunConfigDiff(perimeter, api_version):
   return '\n'.join(output)
 
 
-def PrintDirectionalPoliciesDryRunConfigDiff(perimeter, track):
+def PrintDirectionalPoliciesDryRunConfigDiff(perimeter):
   """Generates the diff of enforced and dry-run directional policies strings."""
-  if not _TrackSupportsDirectionalPolicies(track):
-    return
   if perimeter.spec is None and perimeter.useExplicitDryRunSpec:
     return
   if perimeter.status is None and perimeter.spec is None:

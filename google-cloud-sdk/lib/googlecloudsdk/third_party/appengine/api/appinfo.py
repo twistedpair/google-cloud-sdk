@@ -284,6 +284,7 @@ DATASTORE_AUTO_ID_POLICY = 'auto_id_policy'
 API_CONFIG = 'api_config'
 CODE_LOCK = 'code_lock'
 ENV_VARIABLES = 'env_variables'
+BUILD_ENV_VARIABLES = 'build_env_variables'
 STANDARD_WEBSOCKET = 'standard_websocket'
 APP_ENGINE_APIS = 'app_engine_apis'
 
@@ -2060,6 +2061,7 @@ class AppInclude(validation.Validated):
       VM_SETTINGS: validation.Optional(VmSettings),
       BETA_SETTINGS: validation.Optional(BetaSettings),
       ENV_VARIABLES: validation.Optional(EnvironmentVariables),
+      BUILD_ENV_VARIABLES: validation.Optional(EnvironmentVariables),
       SKIP_FILES: validation.RegexStr(default=SKIP_NO_FILES),
       # TODO(user): add `LIBRARIES` here when we have a good story for
       # handling contradictory library requests.
@@ -2342,6 +2344,7 @@ class AppInfoExternal(validation.Validated):
       API_CONFIG: validation.Optional(ApiConfigHandler),
       CODE_LOCK: validation.Optional(bool),
       ENV_VARIABLES: validation.Optional(EnvironmentVariables),
+      BUILD_ENV_VARIABLES: validation.Optional(EnvironmentVariables),
       STANDARD_WEBSOCKET: validation.Optional(bool),
       APP_ENGINE_APIS: validation.Optional(bool),
   }

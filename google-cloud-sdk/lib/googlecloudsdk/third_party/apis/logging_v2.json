@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         },
         "https://www.googleapis.com/auth/cloud-platform.read-only": {
           "description": "View your data across Google Cloud Platform services"
@@ -122,6 +122,100 @@
     }
   },
   "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the name should be a resource name ending with operations\/{unique_id}.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is false, it means the operation is still in progress. If true, the operation is completed, and either error or response is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as Delete, the response is google.protobuf.Empty. If the original method is standard Get\/Create\/Update, the response should be the resource. For other methods, the response should have the type XxxResponse, where Xxx is the original method name. For example, if the original method name is TakeSnapshot(), the inferred response type is TakeSnapshotResponse.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The Status type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by gRPC (https:\/\/github.com\/grpc). Each Status message contains three pieces of data: error code, error message, and error details.You can find out more about this error model and how to work with it in the API Design Guide (https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for Empty is empty JSON object {}.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -278,13 +372,6 @@
           "readOnly": true,
           "type": "string"
         }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for Empty is empty JSON object {}.",
-      "type": "object",
-      "properties": {
       }
     },
     "UndeleteBucketRequest": {
@@ -546,6 +633,25 @@
         "serviceAccountId": {
           "description": "Output only. The service account that will be used by the Logs Router to access your Cloud KMS key.Before enabling CMEK for Logs Router, you must first assign the role roles\/cloudkms.cryptoKeyEncrypterDecrypter to the service account that the Logs Router will use to access your Cloud KMS key. Use GetCmekSettings to obtain the service account ID.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "CopyLogEntriesRequest": {
+      "id": "CopyLogEntriesRequest",
+      "description": "The parameters to CopyLogEntries.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Bucket from which to copy logs. e.g. \"projects\/my-project\/locations\/my-location\/buckets\/my-source-bucket",
+          "type": "string"
+        },
+        "filter": {
+          "description": "Required. A filter specifying which log entries to copy. The filter must include a latest time for the logs to be copied. The filter must be no more than 20k characters.",
+          "type": "string"
+        },
+        "destination": {
+          "description": "Required. Destination to which to copy logs.",
           "type": "string"
         }
       }
@@ -1914,551 +2020,6 @@
     }
   },
   "resources": {
-    "locations": {
-      "methods": {
-        "list": {
-          "id": "logging.locations.list",
-          "path": "v2/{+name}/locations",
-          "flatPath": "v2/{v2Id}/{v2Id1}/locations",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "The resource that owns the locations collection, if applicable.",
-              "pattern": "^[^\/]+\/[^\/]+$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "filter": {
-              "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in AIP-160 (https:\/\/google.aip.dev\/160).",
-              "location": "query",
-              "type": "string"
-            },
-            "pageSize": {
-              "description": "The maximum number of results to return. If not set, the service will select a default.",
-              "location": "query",
-              "type": "integer",
-              "format": "int32"
-            },
-            "pageToken": {
-              "description": "A page token received from the next_page_token field in the response. Send that page token to receive the subsequent page.",
-              "location": "query",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "ListLocationsResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only",
-            "https://www.googleapis.com/auth/logging.admin",
-            "https://www.googleapis.com/auth/logging.read"
-          ],
-          "description": "Lists information about the supported locations for this service."
-        },
-        "get": {
-          "id": "logging.locations.get",
-          "path": "v2/{+name}",
-          "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "Resource name for the location.",
-              "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Location"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only",
-            "https://www.googleapis.com/auth/logging.admin",
-            "https://www.googleapis.com/auth/logging.read"
-          ],
-          "description": "Gets information about a location."
-        }
-      }
-      ,
-      "resources": {
-        "buckets": {
-          "methods": {
-            "list": {
-              "id": "logging.locations.buckets.list",
-              "path": "v2/{+parent}/buckets",
-              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The parent resource whose buckets are to be listed: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\" Note: The locations portion of the resource must be specified, but supplying the character - in place of LOCATION_ID will return all buckets.",
-                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "pageToken": {
-                  "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListBucketsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only",
-                "https://www.googleapis.com/auth/logging.admin",
-                "https://www.googleapis.com/auth/logging.read"
-              ],
-              "description": "Lists buckets."
-            },
-            "get": {
-              "id": "logging.locations.buckets.get",
-              "path": "v2/{+name}",
-              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
-                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "LogBucket"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/cloud-platform.read-only",
-                "https://www.googleapis.com/auth/logging.admin",
-                "https://www.googleapis.com/auth/logging.read"
-              ],
-              "description": "Gets a bucket."
-            },
-            "create": {
-              "id": "logging.locations.buckets.create",
-              "path": "v2/{+parent}/buckets",
-              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets",
-              "httpMethod": "POST",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The resource in which to create the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" Example: \"projects\/my-logging-project\/locations\/global\"",
-                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "bucketId": {
-                  "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "request": {
-                "$ref": "LogBucket"
-              },
-              "response": {
-                "$ref": "LogBucket"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/logging.admin"
-              ],
-              "description": "Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed."
-            },
-            "patch": {
-              "id": "logging.locations.buckets.patch",
-              "path": "v2/{+name}",
-              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
-                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=retention_days.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "LogBucket"
-              },
-              "response": {
-                "$ref": "LogBucket"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/logging.admin"
-              ],
-              "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
-            },
-            "delete": {
-              "id": "logging.locations.buckets.delete",
-              "path": "v2/{+name}",
-              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "name": {
-                  "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
-                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/logging.admin"
-              ],
-              "description": "Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted."
-            },
-            "undelete": {
-              "id": "logging.locations.buckets.undelete",
-              "path": "v2/{+name}:undelete",
-              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}:undelete",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
-                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "UndeleteBucketRequest"
-              },
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/logging.admin"
-              ],
-              "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
-            }
-          }
-          ,
-          "resources": {
-            "views": {
-              "methods": {
-                "list": {
-                  "id": "logging.locations.buckets.views.list",
-                  "path": "v2/{+parent}/views",
-                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The bucket whose views are to be listed: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" ",
-                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageToken": {
-                      "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListViewsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/cloud-platform.read-only",
-                    "https://www.googleapis.com/auth/logging.admin",
-                    "https://www.googleapis.com/auth/logging.read"
-                  ],
-                  "description": "Lists views on a bucket."
-                },
-                "get": {
-                  "id": "logging.locations.buckets.views.get",
-                  "path": "v2/{+name}",
-                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
-                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "LogView"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/cloud-platform.read-only",
-                    "https://www.googleapis.com/auth/logging.admin",
-                    "https://www.googleapis.com/auth/logging.read"
-                  ],
-                  "description": "Gets a view."
-                },
-                "create": {
-                  "id": "logging.locations.buckets.views.create",
-                  "path": "v2/{+parent}/views",
-                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The bucket in which to create the view \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
-                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "viewId": {
-                      "description": "Required. The id to use for this view.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "LogView"
-                  },
-                  "response": {
-                    "$ref": "LogView"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/logging.admin"
-                  ],
-                  "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
-                },
-                "patch": {
-                  "id": "logging.locations.buckets.views.patch",
-                  "path": "v2/{+name}",
-                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
-                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "LogView"
-                  },
-                  "response": {
-                    "$ref": "LogView"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/logging.admin"
-                  ],
-                  "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
-                },
-                "delete": {
-                  "id": "logging.locations.buckets.views.delete",
-                  "path": "v2/{+name}",
-                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
-                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Empty"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/logging.admin"
-                  ],
-                  "description": "Deletes a view from a bucket."
-                }
-              }
-            },
-            "tables": {
-              "methods": {
-                "list": {
-                  "id": "logging.locations.buckets.tables.list",
-                  "path": "v2/{+parent}/tables",
-                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
-                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageToken": {
-                      "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListTablesResponse"
-                  },
-                  "description": "Lists all tables in the specified log bucket."
-                },
-                "get": {
-                  "id": "logging.locations.buckets.tables.get",
-                  "path": "v2/{+name}",
-                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables/{tablesId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the table. Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/tables\/TABLE_ID\"",
-                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/tables\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Table"
-                  },
-                  "description": "Gets the specified table resource by table ID. This method does not return the data in the table, it only returns the table resource, which describes the structure of this table."
-                }
-              }
-            },
-            "jobs": {
-              "methods": {
-                "get": {
-                  "id": "logging.locations.buckets.jobs.get",
-                  "path": "v2/{+jobName}",
-                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/jobs/{jobsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "jobName": {
-                      "description": "Required. Fully qualified Job ID of the query job. Example: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/jobs\/JOB_ID",
-                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/jobs\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "startIndex": {
-                      "description": "Zero-based index of the starting row.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "int64"
-                    },
-                    "pageToken": {
-                      "description": "Page token, returned by a previous call, to request the next page of results.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Maximum number of results to read.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "jobName"
-                  ],
-                  "response": {
-                    "$ref": "GetQueryResultsResponse"
-                  },
-                  "description": "Get the results of a query job."
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "projects": {
       "resources": {
         "locations": {
@@ -2538,6 +2099,111 @@
           }
           ,
           "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "logging.projects.locations.operations.list",
+                  "path": "v2/{+name}/operations",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "logging.projects.locations.operations.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "cancel": {
+                  "id": "logging.projects.locations.operations.cancel",
+                  "path": "v2/{+name}:cancel",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED."
+                }
+              }
+            },
             "buckets": {
               "methods": {
                 "list": {
@@ -3627,6 +3293,111 @@
           }
           ,
           "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "logging.folders.locations.operations.list",
+                  "path": "v2/{+name}/operations",
+                  "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^folders\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "logging.folders.locations.operations.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "cancel": {
+                  "id": "logging.folders.locations.operations.cancel",
+                  "path": "v2/{+name}:cancel",
+                  "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED."
+                }
+              }
+            },
             "buckets": {
               "methods": {
                 "list": {
@@ -4481,6 +4252,38 @@
     },
     "billingAccounts": {
       "resources": {
+        "operations": {
+          "methods": {
+            "get": {
+              "id": "logging.billingAccounts.operations.get",
+              "path": "v2/{+name}",
+              "flatPath": "v2/billingAccounts/{billingAccountsId}/operations/{operationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource.",
+                  "pattern": "^billingAccounts\/[^\/]+\/operations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ],
+              "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+            }
+          }
+        },
         "locations": {
           "methods": {
             "list": {
@@ -4558,6 +4361,83 @@
           }
           ,
           "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "logging.billingAccounts.locations.operations.list",
+                  "path": "v2/{+name}/operations",
+                  "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "cancel": {
+                  "id": "logging.billingAccounts.locations.operations.cancel",
+                  "path": "v2/{+name}:cancel",
+                  "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED."
+                }
+              }
+            },
             "buckets": {
               "methods": {
                 "list": {
@@ -5421,6 +5301,656 @@
         }
       }
     },
+    "locations": {
+      "methods": {
+        "list": {
+          "id": "logging.locations.list",
+          "path": "v2/{+name}/locations",
+          "flatPath": "v2/{v2Id}/{v2Id1}/locations",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "The resource that owns the locations collection, if applicable.",
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "filter": {
+              "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in AIP-160 (https:\/\/google.aip.dev\/160).",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of results to return. If not set, the service will select a default.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "A page token received from the next_page_token field in the response. Send that page token to receive the subsequent page.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "ListLocationsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ],
+          "description": "Lists information about the supported locations for this service."
+        },
+        "get": {
+          "id": "logging.locations.get",
+          "path": "v2/{+name}",
+          "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Resource name for the location.",
+              "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Location"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ],
+          "description": "Gets information about a location."
+        }
+      }
+      ,
+      "resources": {
+        "operations": {
+          "methods": {
+            "list": {
+              "id": "logging.locations.operations.list",
+              "path": "v2/{+name}/operations",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/operations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation's parent resource.",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The standard list filter.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The standard list page size.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The standard list page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListOperationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ],
+              "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+            },
+            "get": {
+              "id": "logging.locations.operations.get",
+              "path": "v2/{+name}",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/operations/{operationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource.",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ],
+              "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+            },
+            "cancel": {
+              "id": "logging.locations.operations.cancel",
+              "path": "v2/{+name}:cancel",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/operations/{operationsId}:cancel",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource to be cancelled.",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "CancelOperationRequest"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ],
+              "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED."
+            }
+          }
+        },
+        "buckets": {
+          "methods": {
+            "list": {
+              "id": "logging.locations.buckets.list",
+              "path": "v2/{+parent}/buckets",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The parent resource whose buckets are to be listed: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\" Note: The locations portion of the resource must be specified, but supplying the character - in place of LOCATION_ID will return all buckets.",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageToken": {
+                  "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListBucketsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ],
+              "description": "Lists buckets."
+            },
+            "get": {
+              "id": "logging.locations.buckets.get",
+              "path": "v2/{+name}",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "LogBucket"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloud-platform.read-only",
+                "https://www.googleapis.com/auth/logging.admin",
+                "https://www.googleapis.com/auth/logging.read"
+              ],
+              "description": "Gets a bucket."
+            },
+            "create": {
+              "id": "logging.locations.buckets.create",
+              "path": "v2/{+parent}/buckets",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The resource in which to create the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" Example: \"projects\/my-logging-project\/locations\/global\"",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "bucketId": {
+                  "description": "Required. A client-assigned identifier such as \"my-bucket\". Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "LogBucket"
+              },
+              "response": {
+                "$ref": "LogBucket"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ],
+              "description": "Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed."
+            },
+            "patch": {
+              "id": "logging.locations.buckets.patch",
+              "path": "v2/{+name}",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=retention_days.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "LogBucket"
+              },
+              "response": {
+                "$ref": "LogBucket"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ],
+              "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+            },
+            "delete": {
+              "id": "logging.locations.buckets.delete",
+              "path": "v2/{+name}",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ],
+              "description": "Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted."
+            },
+            "undelete": {
+              "id": "logging.locations.buckets.undelete",
+              "path": "v2/{+name}:undelete",
+              "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}:undelete",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                  "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "UndeleteBucketRequest"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/logging.admin"
+              ],
+              "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+            }
+          }
+          ,
+          "resources": {
+            "views": {
+              "methods": {
+                "list": {
+                  "id": "logging.locations.buckets.views.list",
+                  "path": "v2/{+parent}/views",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The bucket whose views are to be listed: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" ",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageToken": {
+                      "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListViewsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Lists views on a bucket."
+                },
+                "get": {
+                  "id": "logging.locations.buckets.views.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "LogView"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Gets a view."
+                },
+                "create": {
+                  "id": "logging.locations.buckets.views.create",
+                  "path": "v2/{+parent}/views",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The bucket in which to create the view \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "viewId": {
+                      "description": "Required. The id to use for this view.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "LogView"
+                  },
+                  "response": {
+                    "$ref": "LogView"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                },
+                "patch": {
+                  "id": "logging.locations.buckets.views.patch",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "LogView"
+                  },
+                  "response": {
+                    "$ref": "LogView"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                },
+                "delete": {
+                  "id": "logging.locations.buckets.views.delete",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Deletes a view from a bucket."
+                }
+              }
+            },
+            "tables": {
+              "methods": {
+                "list": {
+                  "id": "logging.locations.buckets.tables.list",
+                  "path": "v2/{+parent}/tables",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageToken": {
+                      "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListTablesResponse"
+                  },
+                  "description": "Lists all tables in the specified log bucket."
+                },
+                "get": {
+                  "id": "logging.locations.buckets.tables.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables/{tablesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the table. Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/tables\/TABLE_ID\"",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/tables\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Table"
+                  },
+                  "description": "Gets the specified table resource by table ID. This method does not return the data in the table, it only returns the table resource, which describes the structure of this table."
+                }
+              }
+            },
+            "jobs": {
+              "methods": {
+                "get": {
+                  "id": "logging.locations.buckets.jobs.get",
+                  "path": "v2/{+jobName}",
+                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/jobs/{jobsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "jobName": {
+                      "description": "Required. Fully qualified Job ID of the query job. Example: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/jobs\/JOB_ID",
+                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/jobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "startIndex": {
+                      "description": "Zero-based index of the starting row.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "int64"
+                    },
+                    "pageToken": {
+                      "description": "Page token, returned by a previous call, to request the next page of results.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of results to read.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "jobName"
+                  ],
+                  "response": {
+                    "$ref": "GetQueryResultsResponse"
+                  },
+                  "description": "Get the results of a query job."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "sinks": {
       "methods": {
         "list": {
@@ -5982,6 +6512,111 @@
           }
           ,
           "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "logging.organizations.locations.operations.list",
+                  "path": "v2/{+name}/operations",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "logging.organizations.locations.operations.get",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/cloud-platform.read-only",
+                    "https://www.googleapis.com/auth/logging.admin",
+                    "https://www.googleapis.com/auth/logging.read"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "cancel": {
+                  "id": "logging.organizations.locations.operations.cancel",
+                  "path": "v2/{+name}:cancel",
+                  "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/logging.admin"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED."
+                }
+              }
+            },
             "buckets": {
               "methods": {
                 "list": {
@@ -6834,6 +7469,99 @@
         }
       }
     },
+    "entries": {
+      "methods": {
+        "copy": {
+          "id": "logging.entries.copy",
+          "path": "v2/entries:copy",
+          "flatPath": "v2/entries:copy",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "CopyLogEntriesRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin"
+          ],
+          "description": "Copies a set of log entries from a bucket. The destination can be a Cloud Storage bucket, a Pub\/Sub topic, a BigQuery dataset or a LogBucket."
+        },
+        "write": {
+          "id": "logging.entries.write",
+          "path": "v2/entries:write",
+          "flatPath": "v2/entries:write",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "WriteLogEntriesRequest"
+          },
+          "response": {
+            "$ref": "WriteLogEntriesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.write"
+          ],
+          "description": "Writes log entries to Logging. This API method is the only way to send log entries to Logging. This method is used, directly or indirectly, by the Logging agent (fluentd) and all logging libraries configured to use Logging. A single request may contain log entries for a maximum of 1000 different resources (projects, organizations, billing accounts or folders)"
+        },
+        "list": {
+          "id": "logging.entries.list",
+          "path": "v2/entries:list",
+          "flatPath": "v2/entries:list",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "ListLogEntriesRequest"
+          },
+          "response": {
+            "$ref": "ListLogEntriesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ],
+          "description": "Lists log entries. Use this method to retrieve log entries that originated from a project\/folder\/organization\/billing account. For ways to export log entries, see Exporting Logs (https:\/\/cloud.google.com\/logging\/docs\/export)."
+        },
+        "tail": {
+          "id": "logging.entries.tail",
+          "path": "v2/entries:tail",
+          "flatPath": "v2/entries:tail",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "TailLogEntriesRequest"
+          },
+          "response": {
+            "$ref": "TailLogEntriesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ],
+          "description": "Streaming read of log entries as they are ingested. Until the stream is terminated, it will continue reading logs."
+        }
+      }
+    },
     "logs": {
       "methods": {
         "delete": {
@@ -6906,78 +7634,6 @@
             "https://www.googleapis.com/auth/logging.read"
           ],
           "description": "Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed."
-        }
-      }
-    },
-    "entries": {
-      "methods": {
-        "write": {
-          "id": "logging.entries.write",
-          "path": "v2/entries:write",
-          "flatPath": "v2/entries:write",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "WriteLogEntriesRequest"
-          },
-          "response": {
-            "$ref": "WriteLogEntriesResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/logging.admin",
-            "https://www.googleapis.com/auth/logging.write"
-          ],
-          "description": "Writes log entries to Logging. This API method is the only way to send log entries to Logging. This method is used, directly or indirectly, by the Logging agent (fluentd) and all logging libraries configured to use Logging. A single request may contain log entries for a maximum of 1000 different resources (projects, organizations, billing accounts or folders)"
-        },
-        "list": {
-          "id": "logging.entries.list",
-          "path": "v2/entries:list",
-          "flatPath": "v2/entries:list",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "ListLogEntriesRequest"
-          },
-          "response": {
-            "$ref": "ListLogEntriesResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only",
-            "https://www.googleapis.com/auth/logging.admin",
-            "https://www.googleapis.com/auth/logging.read"
-          ],
-          "description": "Lists log entries. Use this method to retrieve log entries that originated from a project\/folder\/organization\/billing account. For ways to export log entries, see Exporting Logs (https:\/\/cloud.google.com\/logging\/docs\/export)."
-        },
-        "tail": {
-          "id": "logging.entries.tail",
-          "path": "v2/entries:tail",
-          "flatPath": "v2/entries:tail",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "TailLogEntriesRequest"
-          },
-          "response": {
-            "$ref": "TailLogEntriesResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/cloud-platform.read-only",
-            "https://www.googleapis.com/auth/logging.admin",
-            "https://www.googleapis.com/auth/logging.read"
-          ],
-          "description": "Streaming read of log entries as they are ingested. Until the stream is terminated, it will continue reading logs."
         }
       }
     },

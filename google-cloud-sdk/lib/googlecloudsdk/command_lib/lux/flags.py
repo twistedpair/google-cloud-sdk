@@ -45,12 +45,3 @@ CLUSTER_FORMAT = """
 def GetClusterListFormat():
   """Returns the table format for listing clusters."""
   return CLUSTER_FORMAT
-
-
-def AddRegion(parser):
-  parser.add_argument(
-      'region',
-      default='us-central',
-      help=('Regional location (e.g. asia-east1, us-east1). See the full '
-            'list of regions at '
-            'https://cloud.google.com/sql/docs/instance-locations.'))

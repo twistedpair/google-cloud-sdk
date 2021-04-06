@@ -25,6 +25,16 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  authorizationPolicy:
+    description: |-
+      A URL referring to a networksecurity.AuthorizationPolicy resource that
+      describes how the proxy should authorize inbound traffic. If left blank,
+      access will not be restricted by an authorization policy. Refer to the
+      AuthorizationPolicy resource for additional details. authorizationPolicy
+      only applies to a global TargetHttpsProxy attached to
+      globalForwardingRules with the loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
+    type: string
   creationTimestamp:
     description: '[Output Only] Creation timestamp in RFC3339 text format.'
     type: string
@@ -80,6 +90,14 @@ properties:
     type: string
   selfLink:
     description: '[Output Only] Server-defined URL for the resource.'
+    type: string
+  serverTlsPolicy:
+    description: |-
+      A URL referring to a networksecurity.ServerTlsPolicy resource that
+      describes how the proxy should authenticate inbound traffic.
+      serverTlsPolicy only applies to a global TargetHttpsProxy attached to
+      globalForwardingRules with the loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED. If left blank, communications are not encrypted.
     type: string
   sslCertificates:
     description: |-

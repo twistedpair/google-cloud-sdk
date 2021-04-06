@@ -35,7 +35,10 @@ def _PromptForRegion():
     return None
   all_regions = constants.SUPPORTED_REGIONS_WITH_GLOBAL
   idx = console_io.PromptChoice(
-      all_regions, message='Please specify a region:\n', cancel_option=True)
+      all_regions, message=('Please specify a region:\n'
+                            '(For the global endpoint the region needs to be '
+                            'specified as \'global\'.)\n'),
+      cancel_option=True)
   region = all_regions[idx]
   log.status.Print(
       'To make this the default region, run '

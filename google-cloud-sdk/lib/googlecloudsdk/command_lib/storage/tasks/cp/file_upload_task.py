@@ -114,7 +114,7 @@ class FileUploadTask(task.Task):
         file_part_upload_tasks.append(upload_task)
 
         delete_task = delete_object_task.DeleteObjectTask(
-            temporary_component_resource)
+            temporary_component_resource.storage_url)
         delete_object_tasks.append(delete_task)
 
       compose_objects_tasks = [compose_objects_task.ComposeObjectsTask(

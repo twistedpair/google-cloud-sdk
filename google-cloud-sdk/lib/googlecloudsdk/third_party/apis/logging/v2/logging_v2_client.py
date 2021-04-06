@@ -45,8 +45,10 @@ class LoggingV2(base_api.BaseApiClient):
     self.billingAccounts_locations_buckets_tables = self.BillingAccountsLocationsBucketsTablesService(self)
     self.billingAccounts_locations_buckets_views = self.BillingAccountsLocationsBucketsViewsService(self)
     self.billingAccounts_locations_buckets = self.BillingAccountsLocationsBucketsService(self)
+    self.billingAccounts_locations_operations = self.BillingAccountsLocationsOperationsService(self)
     self.billingAccounts_locations = self.BillingAccountsLocationsService(self)
     self.billingAccounts_logs = self.BillingAccountsLogsService(self)
+    self.billingAccounts_operations = self.BillingAccountsOperationsService(self)
     self.billingAccounts_sinks = self.BillingAccountsSinksService(self)
     self.billingAccounts = self.BillingAccountsService(self)
     self.entries = self.EntriesService(self)
@@ -55,6 +57,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.folders_locations_buckets_tables = self.FoldersLocationsBucketsTablesService(self)
     self.folders_locations_buckets_views = self.FoldersLocationsBucketsViewsService(self)
     self.folders_locations_buckets = self.FoldersLocationsBucketsService(self)
+    self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders_logs = self.FoldersLogsService(self)
     self.folders_sinks = self.FoldersSinksService(self)
@@ -63,6 +66,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.locations_buckets_tables = self.LocationsBucketsTablesService(self)
     self.locations_buckets_views = self.LocationsBucketsViewsService(self)
     self.locations_buckets = self.LocationsBucketsService(self)
+    self.locations_operations = self.LocationsOperationsService(self)
     self.locations = self.LocationsService(self)
     self.logs = self.LogsService(self)
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
@@ -70,6 +74,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.organizations_locations_buckets_tables = self.OrganizationsLocationsBucketsTablesService(self)
     self.organizations_locations_buckets_views = self.OrganizationsLocationsBucketsViewsService(self)
     self.organizations_locations_buckets = self.OrganizationsLocationsBucketsService(self)
+    self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations_logs = self.OrganizationsLogsService(self)
     self.organizations_sinks = self.OrganizationsSinksService(self)
@@ -78,6 +83,7 @@ class LoggingV2(base_api.BaseApiClient):
     self.projects_locations_buckets_tables = self.ProjectsLocationsBucketsTablesService(self)
     self.projects_locations_buckets_views = self.ProjectsLocationsBucketsViewsService(self)
     self.projects_locations_buckets = self.ProjectsLocationsBucketsService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_logs = self.ProjectsLogsService(self)
     self.projects_metrics = self.ProjectsMetricsService(self)
@@ -605,6 +611,70 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class BillingAccountsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_operations resource."""
+
+    _NAME = 'billingAccounts_locations_operations'
+
+    def __init__(self, client):
+      super(LoggingV2.BillingAccountsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='logging.billingAccounts.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='LoggingBillingAccountsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+name}/operations',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
   class BillingAccountsLocationsService(base_api.BaseApiService):
     """Service class for the billingAccounts_locations resource."""
 
@@ -730,6 +800,43 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='LoggingBillingAccountsLogsListRequest',
         response_type_name='ListLogsResponse',
+        supports_download=False,
+    )
+
+  class BillingAccountsOperationsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_operations resource."""
+
+    _NAME = 'billingAccounts_operations'
+
+    def __init__(self, client):
+      super(LoggingV2.BillingAccountsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (LoggingBillingAccountsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingBillingAccountsOperationsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -924,6 +1031,32 @@ class LoggingV2(base_api.BaseApiClient):
       super(LoggingV2.EntriesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Copy(self, request, global_params=None):
+      r"""Copies a set of log entries from a bucket. The destination can be a Cloud Storage bucket, a Pub/Sub topic, a BigQuery dataset or a LogBucket.
+
+      Args:
+        request: (CopyLogEntriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Copy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Copy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.entries.copy',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/entries:copy',
+        request_field='<request>',
+        request_type_name='CopyLogEntriesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       r"""Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account. For ways to export log entries, see Exporting Logs (https://cloud.google.com/logging/docs/export).
@@ -1644,6 +1777,97 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='undeleteBucketRequest',
         request_type_name='LoggingFoldersLocationsBucketsUndeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+  class FoldersLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the folders_locations_operations resource."""
+
+    _NAME = 'folders_locations_operations'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+
+      Args:
+        request: (LoggingFoldersLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='logging.folders.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='LoggingFoldersLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (LoggingFoldersLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='logging.folders.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+
+      Args:
+        request: (LoggingFoldersLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='logging.folders.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+name}/operations',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
@@ -2375,6 +2599,97 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class LocationsOperationsService(base_api.BaseApiService):
+    """Service class for the locations_operations resource."""
+
+    _NAME = 'locations_operations'
+
+    def __init__(self, client):
+      super(LoggingV2.LocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+
+      Args:
+        request: (LoggingLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='logging.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='LoggingLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (LoggingLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='logging.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+
+      Args:
+        request: (LoggingLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='logging.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+name}/operations',
+        request_field='',
+        request_type_name='LoggingLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
   class LocationsService(base_api.BaseApiService):
     """Service class for the locations resource."""
 
@@ -3035,6 +3350,97 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='undeleteBucketRequest',
         request_type_name='LoggingOrganizationsLocationsBucketsUndeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_operations resource."""
+
+    _NAME = 'organizations_locations_operations'
+
+    def __init__(self, client):
+      super(LoggingV2.OrganizationsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+
+      Args:
+        request: (LoggingOrganizationsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='logging.organizations.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='LoggingOrganizationsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (LoggingOrganizationsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='logging.organizations.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+
+      Args:
+        request: (LoggingOrganizationsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='logging.organizations.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+name}/operations',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 
@@ -3898,6 +4304,97 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='undeleteBucketRequest',
         request_type_name='LoggingProjectsLocationsBucketsUndeleteRequest',
         response_type_name='Empty',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = 'projects_locations_operations'
+
+    def __init__(self, client):
+      super(LoggingV2.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+
+      Args:
+        request: (LoggingProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='logging.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='LoggingProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (LoggingProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='logging.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+
+      Args:
+        request: (LoggingProjectsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='logging.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+name}/operations',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 

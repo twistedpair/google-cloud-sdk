@@ -77,9 +77,10 @@ def GetModelRegion(args):
     return region, [region]
   log.warning(
       'To specify a region where the model will deployed on the global '
-      'endpoint, please use `--regions`. Using [us-central1] by default on '
-      'https://ml.googleapis.com. Please note that your model will be '
-      'inaccessible from https://us-central1-ml.googelapis.com\n'
+      'endpoint, please use `--regions` and do not specify `--region`. '
+      'Using [us-central1] by default on https://ml.googleapis.com. '
+      'Please note that your model will be inaccessible from '
+      'https://us-central1-ml.googelapis.com\n'
       '\n'
       'Learn more about regional endpoints and see a list of available '
       'regions: https://cloud.google.com/ai-platform/prediction/docs/'

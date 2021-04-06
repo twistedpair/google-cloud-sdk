@@ -13,99 +13,6 @@ from apitools.base.py import extra_types
 package = 'krmapihosting'
 
 
-class AnthosApiEndpoint(_messages.Message):
-  r"""An AnthosApiEndpoint represents a GKE cluster which is pre-installed
-  with KRM resources of services currently supported by the KRM API Hosting
-  API.
-
-  Messages:
-    LabelsValue: Labels are used for additional label information for a
-      AnthosApiEndpoint.
-
-  Fields:
-    clusterCidrBlock: The IP address range for the cluster pod IPs. Set to
-      blank to have a range chosen with the default size. Set to /netmask
-      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
-      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
-      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
-      use.
-    clusterNamedRange: The name of the existing secondary range in the
-      cluster's subnetwork to use for pod IP addresses. Alternatively,
-      cluster_cidr_block can be used to automatically create a GKE-managed
-      one.
-    gitBranch: The branch of the repository to sync from.
-    gitEndpoint: The URL of the Git repository to use as the source of truth.
-    gitPolicyDir: The path within the Git repository that represents the top
-      level of the repo to sync. Default: the root directory of the
-      repository.
-    gitSecretType: The type of secret configured for access to the Git
-      repository. One of ssh, cookiefile, token, gcenode, or none.
-    gkeResourceLink: Output only. AnthosApiEndpoint GCP self link used for
-      identifying the underlying endpoint (GKE cluster currently)
-    labels: Labels are used for additional label information for a
-      AnthosApiEndpoint.
-    manBlock: Master Authorized Network. Allows access to the k8s master from
-      this block.
-    masterIpv4CidrBlock: The /28 network that the masters will use.
-    name: Output only. The name of this AnthosApiEndpoint resource in the
-      format: 'projects/{project_id}/locations/{location}/anthosApiEndpoints/{
-      anthos_api_endpoint_id}'.
-    network: Existing VPC Network to put the GKE cluster and nodes in.
-    servicesCidrBlock: The IP address range of the services IPs in this
-      cluster. Set to blank to have a range chosen with the default size. Set
-      to /netmask (e.g. /14) to have a range chosen with a specific netmask.
-      Set to a CIDR notation (e.g. 10.96.0.0/14) from the RFC-1918 private
-      networks (e.g. 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a
-      specific range to use.
-    servicesNamedRange: The name of the existing secondary range in the
-      cluster's subnetwork to use for service ClusterIPs. Alternatively,
-      services_cidr_block can be used to automatically create a GKE-managed
-      one.
-    usePrivateEndpoint: Only allow access to the master's private endpoint IP
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels are used for additional label information for a
-    AnthosApiEndpoint.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  clusterCidrBlock = _messages.StringField(1)
-  clusterNamedRange = _messages.StringField(2)
-  gitBranch = _messages.StringField(3)
-  gitEndpoint = _messages.StringField(4)
-  gitPolicyDir = _messages.StringField(5)
-  gitSecretType = _messages.StringField(6)
-  gkeResourceLink = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  manBlock = _messages.StringField(9)
-  masterIpv4CidrBlock = _messages.StringField(10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  servicesCidrBlock = _messages.StringField(13)
-  servicesNamedRange = _messages.StringField(14)
-  usePrivateEndpoint = _messages.BooleanField(15)
-
-
 class AnthosSseConfig(_messages.Message):
   r"""Configuration options for the Anthos SSE bundle.
 
@@ -233,18 +140,34 @@ class Binding(_messages.Message):
 
 class BundlesConfig(_messages.Message):
   r"""Configuration for the bundles that can be enabled on the KrmApiHost.
+  Bundles not ready for public consumption must have a visibility label. e.g:
+  YakimaConfig yakima_config = 2 [(google.api.field_visibility).restriction =
+  "GOOGLE_INTERNAL, YAKIMA_TRUSTED_TESTER, GCLOUD_TESTER"];
 
   Fields:
     anthosSseConfig: Configuration for the Anthos SSE bundle.
+    configControllerConfig: Configuration for the Config Controller bundle.
     yakimaConfig: Configuration for the Yakima bundle.
   """
 
   anthosSseConfig = _messages.MessageField('AnthosSseConfig', 1)
-  yakimaConfig = _messages.MessageField('YakimaConfig', 2)
+  configControllerConfig = _messages.MessageField('ConfigControllerConfig', 2)
+  yakimaConfig = _messages.MessageField('YakimaConfig', 3)
 
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class ConfigControllerConfig(_messages.Message):
+  r"""Configuration options for the Config Controller bundle.
+
+  Fields:
+    enabled: Whether the Config Controller bundle is enabled on the
+      KrmApiHost.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class Empty(_messages.Message):
@@ -409,123 +332,6 @@ class KrmApiHost(_messages.Message):
   servicesNamedRange = _messages.StringField(15)
   state = _messages.EnumField('StateValueValuesEnum', 16)
   usePrivateEndpoint = _messages.BooleanField(17)
-
-
-class KrmapihostingProjectsLocationsAnthosApiEndpointsCreateRequest(_messages.Message):
-  r"""A KrmapihostingProjectsLocationsAnthosApiEndpointsCreateRequest object.
-
-  Fields:
-    anthosApiEndpoint: A AnthosApiEndpoint resource to be passed as the
-      request body.
-    anthosApiEndpointId: Required. Client chosen ID for the AnthosApiEndpoint.
-    parent: Required. The parent in whose context the AnthosApiEndpoint is
-      created. The parent value is in the format:
-      'projects/{project_id}/locations/{location}'.
-    requestId: Optional. A unique ID to identify requests. This is unique such
-      that if the request is re-tried, the server will know to ignore the
-      request if it has already been completed. The server will guarantee that
-      for at least 60 minutes after the first request. The request ID must be
-      a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  anthosApiEndpoint = _messages.MessageField('AnthosApiEndpoint', 1)
-  anthosApiEndpointId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class KrmapihostingProjectsLocationsAnthosApiEndpointsDeleteRequest(_messages.Message):
-  r"""A KrmapihostingProjectsLocationsAnthosApiEndpointsDeleteRequest object.
-
-  Fields:
-    name: Required. The name of this service resource in the format: 'projects
-      /{project_id}/locations/{location}/anthosApiEndpoints/{anthos_api_endpoi
-      nt_id}'.
-    requestId: Optional. A unique ID to identify requests. This is unique such
-      that if the request is re-tried, the server will know to ignore the
-      request if it has already been completed. The server will guarantee that
-      for at least 60 minutes after the first request. The request ID must be
-      a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class KrmapihostingProjectsLocationsAnthosApiEndpointsGetRequest(_messages.Message):
-  r"""A KrmapihostingProjectsLocationsAnthosApiEndpointsGetRequest object.
-
-  Fields:
-    name: Required. The name of this service resource in the format: 'projects
-      /{project_id}/locations/{location}/anthosApiEndpoints/{anthos_api_endpoi
-      nt_id}'.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class KrmapihostingProjectsLocationsAnthosApiEndpointsListRequest(_messages.Message):
-  r"""A KrmapihostingProjectsLocationsAnthosApiEndpointsListRequest object.
-
-  Fields:
-    filter: Lists the AnthosApiEndpoints that match the filter expression. A
-      filter expression filters the resources listed in the response. The
-      expression must be of the form '{field} {operator} {value}' where
-      operators: '<', '>', '<=', '>=', '!=', '=', ':' are supported (colon ':'
-      represents a HAS operator which is roughly synonymous with equality).
-      {field} can refer to a proto or JSON field, or a synthetic field. Field
-      names can be camelCase or snake_case. Examples: - Filter by name: name =
-      "projects/foo-proj/locations/us-central1/anthosApiEndpoints/bar - Filter
-      by labels: - Resources that have a key called 'foo' labels.foo:* -
-      Resources that have a key called 'foo' whose value is 'bar' labels.foo =
-      bar - Filter by state: - Members in CREATING state. state = CREATING
-    orderBy: Field to use to sort the list.
-    pageSize: When requesting a 'page' of resources, 'page_size' specifies
-      number of resources to return. If unspecified or set to 0, all resources
-      will be returned.
-    pageToken: Token returned by previous call to 'ListAnthosApiEndpoints'
-      which specifies the position in the list from where to continue listing
-      the resources.
-    parent: Required. The parent in whose context the AnthosApiEndpoints are
-      listed. The parent value is in the format:
-      'projects/{project_id}/locations/{location}'.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class KrmapihostingProjectsLocationsAnthosApiEndpointsPatchRequest(_messages.Message):
-  r"""A KrmapihostingProjectsLocationsAnthosApiEndpointsPatchRequest object.
-
-  Fields:
-    anthosApiEndpoint: A AnthosApiEndpoint resource to be passed as the
-      request body.
-    name: Output only. The name of this AnthosApiEndpoint resource in the
-      format: 'projects/{project_id}/locations/{location}/anthosApiEndpoints/{
-      anthos_api_endpoint_id}'.
-    requestId: Optional. A unique ID to identify requests. This is unique such
-      that if the request is re-tried, the server will know to ignore the
-      request if it has already been completed. The server will guarantee that
-      for at least 60 minutes after the first request. The request ID must be
-      a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the AnthosApiEndpoint resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-  """
-
-  anthosApiEndpoint = _messages.MessageField('AnthosApiEndpoint', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
 
 
 class KrmapihostingProjectsLocationsGetRequest(_messages.Message):
@@ -706,10 +512,14 @@ class KrmapihostingProjectsLocationsListRequest(_messages.Message):
   r"""A KrmapihostingProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      will select a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -765,24 +575,6 @@ class KrmapihostingProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class ListAnthosApiEndpointsResponse(_messages.Message):
-  r"""A ListAnthosApiEndpointsResponse represents a list response for a set of
-  AnthosApiEndpoints in the service
-
-  Fields:
-    anthosApiEndpoints: The list of AnthosApiEndpoints contained within the
-      parent.
-    nextPageToken: A token to request the next page of resources from the
-      'ListApiEndpoints' method. The value of an empty string means that there
-      are no more resources to return.
-    unreachable: Locations that could not be reached.
-  """
-
-  anthosApiEndpoints = _messages.MessageField('AnthosApiEndpoint', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListKrmApiHostsResponse(_messages.Message):

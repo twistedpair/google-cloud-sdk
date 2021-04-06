@@ -3,7 +3,7 @@
   "discoveryVersion": "v1",
   "id": "krmapihosting:v1alpha1",
   "name": "krmapihosting",
-  "canonicalName": "krmapihosting",
+  "canonicalName": "KRM API Hosting",
   "version": "v1alpha1",
   "revision": "0",
   "title": "KRM API Hosting API",
@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -202,103 +202,6 @@
       "description": "The request message for Operations.CancelOperation.",
       "type": "object",
       "properties": {
-      }
-    },
-    "ListAnthosApiEndpointsResponse": {
-      "id": "ListAnthosApiEndpointsResponse",
-      "description": "A ListAnthosApiEndpointsResponse represents a list response for a set of AnthosApiEndpoints in the service",
-      "type": "object",
-      "properties": {
-        "anthosApiEndpoints": {
-          "description": "The list of AnthosApiEndpoints contained within the parent.",
-          "type": "array",
-          "items": {
-            "$ref": "AnthosApiEndpoint"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token to request the next page of resources from the 'ListApiEndpoints' method. The value of an empty string means that there are no more resources to return.",
-          "type": "string"
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "AnthosApiEndpoint": {
-      "id": "AnthosApiEndpoint",
-      "description": "An AnthosApiEndpoint represents a GKE cluster which is pre-installed with KRM resources of services currently supported by the KRM API Hosting API.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The name of this AnthosApiEndpoint resource in the format: 'projects\/{project_id}\/locations\/{location}\/anthosApiEndpoints\/{anthos_api_endpoint_id}'.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "labels": {
-          "description": "Labels are used for additional label information for a AnthosApiEndpoint.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "manBlock": {
-          "description": "Master Authorized Network. Allows access to the k8s master from this block.",
-          "type": "string"
-        },
-        "network": {
-          "description": "Existing VPC Network to put the GKE cluster and nodes in.",
-          "type": "string"
-        },
-        "usePrivateEndpoint": {
-          "description": "Only allow access to the master's private endpoint IP",
-          "type": "boolean"
-        },
-        "masterIpv4CidrBlock": {
-          "description": "The \/28 network that the masters will use.",
-          "type": "string"
-        },
-        "gitEndpoint": {
-          "description": "The URL of the Git repository to use as the source of truth.",
-          "type": "string"
-        },
-        "gitBranch": {
-          "description": "The branch of the repository to sync from.",
-          "type": "string"
-        },
-        "gitSecretType": {
-          "description": "The type of secret configured for access to the Git repository. One of ssh, cookiefile, token, gcenode, or none.",
-          "type": "string"
-        },
-        "gitPolicyDir": {
-          "description": "The path within the Git repository that represents the top level of the repo to sync. Default: the root directory of the repository.",
-          "type": "string"
-        },
-        "clusterCidrBlock": {
-          "description": "The IP address range for the cluster pod IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
-          "type": "string"
-        },
-        "servicesCidrBlock": {
-          "description": "The IP address range of the services IPs in this cluster. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
-          "type": "string"
-        },
-        "clusterNamedRange": {
-          "description": "The name of the existing secondary range in the cluster's subnetwork to use for pod IP addresses. Alternatively, cluster_cidr_block can be used to automatically create a GKE-managed one.",
-          "type": "string"
-        },
-        "servicesNamedRange": {
-          "description": "The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_cidr_block can be used to automatically create a GKE-managed one.",
-          "type": "string"
-        },
-        "gkeResourceLink": {
-          "description": "Output only. AnthosApiEndpoint GCP self link used for identifying the underlying endpoint (GKE cluster currently)",
-          "readOnly": true,
-          "type": "string"
-        }
       }
     },
     "ListKrmApiHostsResponse": {
@@ -425,7 +328,7 @@
     },
     "BundlesConfig": {
       "id": "BundlesConfig",
-      "description": "Configuration for the bundles that can be enabled on the KrmApiHost.",
+      "description": "Configuration for the bundles that can be enabled on the KrmApiHost. Bundles not ready for public consumption must have a visibility label. e.g: YakimaConfig yakima_config = 2 [(google.api.field_visibility).restriction = \"GOOGLE_INTERNAL, YAKIMA_TRUSTED_TESTER, GCLOUD_TESTER\"];",
       "type": "object",
       "properties": {
         "anthosSseConfig": {
@@ -435,6 +338,10 @@
         "yakimaConfig": {
           "description": "Configuration for the Yakima bundle.",
           "$ref": "YakimaConfig"
+        },
+        "configControllerConfig": {
+          "description": "Configuration for the Config Controller bundle.",
+          "$ref": "ConfigControllerConfig"
         }
       }
     },
@@ -456,6 +363,17 @@
       "properties": {
         "enabled": {
           "description": "Whether the Yakima bundle is enabled on the KrmApiHost.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ConfigControllerConfig": {
+      "id": "ConfigControllerConfig",
+      "description": "Configuration options for the Config Controller bundle.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the Config Controller bundle is enabled on the KrmApiHost.",
           "type": "boolean"
         }
       }
@@ -734,18 +652,18 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The standard list filter.",
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
                   "location": "query",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The standard list page size.",
+                  "description": "The maximum number of results to return. If not set, the service will select a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
                 },
                 "pageToken": {
-                  "description": "The standard list page token.",
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
                   "location": "query",
                   "type": "string"
                 }
@@ -909,188 +827,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                }
-              }
-            },
-            "anthosApiEndpoints": {
-              "methods": {
-                "list": {
-                  "id": "krmapihosting.projects.locations.anthosApiEndpoints.list",
-                  "path": "v1alpha1/{+parent}/anthosApiEndpoints",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/anthosApiEndpoints",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent in whose context the AnthosApiEndpoints are listed. The parent value is in the format: 'projects\/{project_id}\/locations\/{location}'.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "When requesting a 'page' of resources, 'page_size' specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "Token returned by previous call to 'ListAnthosApiEndpoints' which specifies the position in the list from where to continue listing the resources.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "Lists the AnthosApiEndpoints that match the filter expression. A filter expression filters the resources listed in the response. The expression must be of the form '{field} {operator} {value}' where operators: '<', '>', '<=', '>=', '!=', '=', ':' are supported (colon ':' represents a HAS operator which is roughly synonymous with equality). {field} can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects\/foo-proj\/locations\/us-central1\/anthosApiEndpoints\/bar - Filter by labels: - Resources that have a key called 'foo' labels.foo:* - Resources that have a key called 'foo' whose value is 'bar' labels.foo = bar - Filter by state: - Members in CREATING state. state = CREATING",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "orderBy": {
-                      "description": "Field to use to sort the list.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListAnthosApiEndpointsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists AnthosApiEndpoints in a given project and location."
-                },
-                "get": {
-                  "id": "krmapihosting.projects.locations.anthosApiEndpoints.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/anthosApiEndpoints/{anthosApiEndpointsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of this service resource in the format: 'projects\/{project_id}\/locations\/{location}\/anthosApiEndpoints\/{anthos_api_endpoint_id}'.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/anthosApiEndpoints\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "AnthosApiEndpoint"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets details of a single AnthosApiEndpoint."
-                },
-                "create": {
-                  "id": "krmapihosting.projects.locations.anthosApiEndpoints.create",
-                  "path": "v1alpha1/{+parent}/anthosApiEndpoints",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/anthosApiEndpoints",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent in whose context the AnthosApiEndpoint is created. The parent value is in the format: 'projects\/{project_id}\/locations\/{location}'.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "anthosApiEndpointId": {
-                      "description": "Required. Client chosen ID for the AnthosApiEndpoint.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. A unique ID to identify requests. This is unique such that if the request is re-tried, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "AnthosApiEndpoint"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new AnthosApiEndpoint in a given project and location."
-                },
-                "patch": {
-                  "id": "krmapihosting.projects.locations.anthosApiEndpoints.patch",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/anthosApiEndpoints/{anthosApiEndpointsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Output only. The name of this AnthosApiEndpoint resource in the format: 'projects\/{project_id}\/locations\/{location}\/anthosApiEndpoints\/{anthos_api_endpoint_id}'.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/anthosApiEndpoints\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the AnthosApiEndpoint resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    },
-                    "requestId": {
-                      "description": "Optional. A unique ID to identify requests. This is unique such that if the request is re-tried, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "AnthosApiEndpoint"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates the parameters of a single AnthosApiEndpoint."
-                },
-                "delete": {
-                  "id": "krmapihosting.projects.locations.anthosApiEndpoints.delete",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/anthosApiEndpoints/{anthosApiEndpointsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of this service resource in the format: 'projects\/{project_id}\/locations\/{location}\/anthosApiEndpoints\/{anthos_api_endpoint_id}'.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/anthosApiEndpoints\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. A unique ID to identify requests. This is unique such that if the request is re-tried, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Deletes a single AnthosApiEndpoint."
                 }
               }
             },

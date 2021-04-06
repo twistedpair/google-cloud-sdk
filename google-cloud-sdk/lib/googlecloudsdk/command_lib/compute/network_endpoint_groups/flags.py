@@ -235,7 +235,7 @@ def _AddDefaultPort(parser, support_global_scope, support_hybrid_neg,
   parser.add_argument('--default-port', type=int, help=help_text)
 
 
-def _AddServerlessRoutingInfo(parser):
+def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
   """Adds serverless routing info arguments for network endpoint groups."""
   serverless_group_help = """\
       The serverless routing configurations are only valid when endpoint type
@@ -316,6 +316,75 @@ def _AddServerlessRoutingInfo(parser):
   cloud_function_group.add_argument(
       '--cloud-function-url-mask', help=cloud_function_url_mask_help)
 
+  if support_serverless_deployment:
+    serverless_deployment_group_help = """\
+        Configuration for a Serverless network endpoint group.
+        Serverless NEGs support all serverless backends and are the only way to
+        setup a network endpoint group for Cloud API Gateways.
+
+        To create a serverless NEG with a Cloud Run, Cloud Functions or App
+        Engine endpoint, you can either use the previously-listed Cloud Run,
+        Cloud Functions or App Engine-specific properties, OR, you can use the
+        following generic properties that are compatible with all serverless
+        platforms, including API Gateway: serverless-deployment-platform,
+        serverless-deployment-resource, serverless-deployment-url-mask, and
+        serverless-deployment-version.
+    """
+    serverless_deployment_group = serverless_group.add_group(
+        help=serverless_deployment_group_help)
+    serverless_deployment_platform_help = """\
+        The platform of the NEG backend target(s). Possible values:
+
+          * API Gateway: apigateway.googleapis.com
+          * App Engine: appengine.googleapis.com
+          * Cloud Functions: cloudfunctions.googleapis.com
+          * Cloud Run: run.googleapis.com
+    """
+    serverless_deployment_group.add_argument(
+        '--serverless-deployment-platform',
+        help=serverless_deployment_platform_help)
+    serverless_deployment_resource_help = """\
+        The user-defined name of the workload/instance. This value must be
+        provided explicitly or using the --serverless-deployment-url-mask
+        option. The resource identified by this value is platform-specific and
+        is as follows:
+
+          * API Gateway: The gateway ID
+          * App Engine: The service name
+          * Cloud Functions: The function name
+          * Cloud Run: The service name
+    """
+    serverless_deployment_group.add_argument(
+        '--serverless-deployment-resource',
+        help=serverless_deployment_resource_help)
+    serverless_deployment_version_help = """\
+        The optional resource version. The version identified by this value is
+        platform-specific and is as follows:
+
+          * API Gateway: Unused
+          * App Engine: The service version
+          * Cloud Functions: Unused
+          * Cloud Run: The service tag
+    """
+    serverless_deployment_group.add_argument(
+        '--serverless-deployment-version',
+        help=serverless_deployment_version_help)
+    serverless_deployment_url_mask_help = """\
+        A template to parse platform-specific fields from a request URL. URL
+        mask allows for routing to multiple resources on the same serverless
+        platform without having to create multiple network endpoint groups and
+        backend resources. The fields parsed by this template are
+        platform-specific and are as follows:
+
+          * API Gateway: The 'gateway' ID
+          * App Engine: The 'service' and 'version'
+          * Cloud Functions: The 'function' name
+          * Cloud Run: The 'service' and 'tag'
+    """
+    serverless_deployment_group.add_argument(
+        '--serverless-deployment-url-mask',
+        help=serverless_deployment_url_mask_help)
+
 
 def AddCreateNegArgsToParser(parser,
                              support_neg_type=False,
@@ -323,7 +392,8 @@ def AddCreateNegArgsToParser(parser,
                              support_hybrid_neg=False,
                              support_l4ilb_neg=False,
                              support_regional_scope=False,
-                             support_vm_ip_neg=False):
+                             support_vm_ip_neg=False,
+                             support_serverless_deployment=False):
   """Adds flags for creating a network endpoint group to the parser."""
   _AddNetworkEndpointGroupType(parser, support_neg_type)
   _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
@@ -336,7 +406,7 @@ def AddCreateNegArgsToParser(parser,
   _AddDefaultPort(parser, support_global_scope, support_hybrid_neg,
                   support_regional_scope)
   if support_regional_scope:
-    _AddServerlessRoutingInfo(parser)
+    _AddServerlessRoutingInfo(parser, support_serverless_deployment)
 
 
 def _AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,

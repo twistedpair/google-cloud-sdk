@@ -5,6 +5,224 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 335.0.0 (2021-04-06)
+
+### Breaking Changes
+
+*   **(Cloud Bigtable)** Deprecated `--cluster`, `--cluster-num-nodes` and `--cluster-zone` flags of
+*   **(Cloud Bigtable)** `gcloud bigtable instances create`. Use `--cluster-config` instead.
+*   **(Cloud Bigtable)** Deprecated `--instance-type` flag of `gcloud bigtable instances create`. All
+*   **(Cloud Bigtable)** instances are now of type PRODUCTION.
+
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.88.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Cloud Access Context Manager
+
+* Promoted `ingress-policies` and `egress-policies` flags of `gcloud access-context-manager perimeters` to GA.
+* Support displaying Ingress and EgressPolicies for:
+    * `gcloud access-context-manager perimeters describe`.
+    * `gcloud access-context-manager perimeters dry-run describe`.
+
+### Cloud Asset Inventory
+
+* Added `--access-time` flag to `gcloud asset analyze-iam-policy` and `gcloud asset analyze-iam-policy-longrunning`.
+
+### Cloud Bigtable
+
+*  Added `--kms-key`, `--kms-keyring`, `--kms-location` and `--kms-project`
+flags to `gcloud bigtable clusters create` for alpha, beta and GA for creating
+CMEK-protected clusters.
+*  Added key `kms-key` to `--cluster-config` flag of `gcloud bigtable instances
+ create`, for creating CMEK-protected clusters.
+*  Promoted `--cluster-config` flag of `gcloud bigtable instances create` to
+ beta and GA.
+*  Promoted `gcloud bigtable instances tables describe` to beta and GA.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.11.13
+  * Reset document create time when a document is deleted and re-created in a
+    single transaction.
+
+### Compute Engine
+
+* Promoted the following flags in `gcloud compute backend-services create`, `gcloud compute backend-services update`,
+  `gcloud compute backend-buckets create` and `gcloud compute backend-buckets update` to GA:
+  * `--[no-]negative-caching`
+  * `--[no-]negative-caching-policy`
+  * `--[no-]serve-while-stale`
+  * `--[no-]bypass-cache-on-request-headers`
+* Added the following fields to `gcloud compute backend-services import` and `gcloud compute backend-services export`:
+  * cdnPolicy:
+    * negativeCaching
+    * negativeCachingPolicy
+    * bypassCacheOnRequestHeaders
+    * serveWhileStale
+* Added support for `authorizationPolicy` and `serverTlsPolicy` for `gcloud compute target-https-proxies import` command.
+* Added `--iap-tunnel-disable-connection-check` flag to
+  `gcloud compute start-iap-tunnel` to disable the initial connection check in
+  alpha and beta.
+* Promoted `gcloud compute public-delegated-prefixes` to GA.
+* Added `--network-interface=nic-type` flag to
+  `gcloud compute instance-templates create` for beta and GA.
+* Promoted `--image-family-scope` flag to `gcloud beta compute instances
+  create` and `gcloud beta compute disks create`.
+
+### Policy Simulator
+
+*   Added `gcloud iam simulator replay-recent-access` which simulates policy changes by replaying policy overlay on recent access.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 334.0.0 (2021-03-30)
+
+### Breaking Changes
+
+*   **(Cloud Build)** Modified the positional argument `WORKER_POOL` to be required for commands
+    in the command group `gcloud builds worker-pools` (except for `gcloud builds
+    worker-pools list`).
+*   **(Cloud Run)** Deprecated `--connectivity` flag of `gcloud run deploy` and
+  `gcloud run services update`. `--connectivity` will continue to be supported.
+  `--connectivity` only applies to `--platform=gke` and `--platform=kubernetes`.
+  The new `--ingress` flag applies to all platforms and provides equivalent
+  functionality. Prefer to use `--ingress`. Use `--ingress=all` in place of
+  `--connectivity=external`. Use `--ingress=internal` in place of
+  `--connectivity=internal`.
+*   **(Dataproc Metastore)** Deprecated `gcloud beta metastore services imports` command group. Use
+    `gcloud beta metastore services import` command group instead.
+
+
+### Cloud SDK
+
+* Cloud SDK supports Apple Silicon. Some native components currently rely on
+Rosetta 2.
+
+### AI
+
+* Modified `--region` flag of `gcloud beta ai endpoints` to include new online
+  prediction regions.
+* Modified `--region` flag of `gcloud beta ai models` to include new online
+  prediction regions.
+
+### BigQuery
+
+* Added `--max_concurrency` flag to mk and update reservation commands.
+* Added `--parquet_enum_as_string` and `--parquet_enable_list_inference` flags
+  to load and `mk --table` commands for Parquet format. Run `bq load --help` or
+  `bq mk --help` for details.
+* Removed old oauth2client_4_0 compatibility shim.
+
+### Cloud On Demand Scanning
+
+* Promoted the On-Demand Scanning API commands to GA.
+  * `gcloud artifacts docker images scan` to scan a container image.
+  * `gcloud artifacts docker images get-operation` to retrieve an operation.
+  * `gcloud artifacts docker images list-vulnerabilities` to retrieve scan
+     results.
+* Improved error messages for `local-extract`.
+
+### Cloud Run
+
+* Promoted `--ingress` flag of `gcloud run deploy` and
+  `gcloud run services update` to GA.
+
+### Cloud SQL
+
+*   Promoted Active Directory integration to beta.
+
+### Cloud Security Command Center
+
+* Updated the following commands to support project/folder parent types:
+  * `gcloud scc findings create`
+  * `gcloud scc findings group`
+  * `gcloud scc findings list`
+  * `gcloud scc findings list-marks`
+  * `gcloud scc findings update`
+  * `gcloud scc findings update-marks`
+  * `gcloud scc assets describe`
+  * `gcloud scc assets group`
+  * `gcloud scc assets list`
+  * `gcloud scc assets list-marks`
+  * `gcloud scc assets update-marks`
+* Assets and findings will now have `canonicalName` field in their response.
+
+### Compute Engine
+
+* Added `--service-account`, `--no-service-account`, `--scopes` and
+  `--no-scopes` flags to `gcloud beta compute instances import`.
+* Added `--service-directory-registration` flag to `gcloud compute
+  forwarding-rules create --global --target-google-apis-bundle=<bundle>` in
+  beta and GA.
+* Added `--target-google-apis-bundle` to `gcloud compute forwarding-rules
+  create`.
+* Added `PRIVATE_SERVICE_CONNECT` as a global address purpose to `gcloud compute addresses create`.
+* Promoted `--post-key-reservation-action-type` flag to beta for `gcloud compute
+  instances create`.
+* Promoted `--post-key-reservation-action-type` flag to beta for `gcloud compute
+  instance-templates create`.
+* Added `--resource-policies` flag for `gcloud compute instance-templates create`
+  command in alpha, beta, and GA.
+* Added `--service-account`, `--no-service-account`, `--scopes` and
+  `--no-scopes` flags for `gcloud compute machine-images import` in beta.
+* Fixed failure to pipe into ssh when `--internal-ip` flag is specified.
+* Added `gcloud compute target-https-proxies import` method which creates or
+  updates a target HTTPS proxy resource in Compute Engine
+* Promoted `gcloud compute public-advertised-prefixes` to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.44.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Database Migration
+
+* Launched Database Migration.
+
+### Dataproc Metastore
+
+*   Added `--dump-type` flag to `gcloud beta metastore services export gcs` to
+    allow specification of the database dump type to export.
+*   Added `--release-channel` flag to `gcloud beta metastore services create`.
+* Added the following commands to work with Dataproc Metastore services:
+  * `gcloud beta metastore services import`
+  * `gcloud beta metastore services restore`
+  * `gcloud beta metastore services backups describe`
+  * `gcloud beta metastore services backups list`
+  * `gcloud beta metastore services backups create`
+  * `gcloud beta metastore services backups delete`
+*   Promoted `gcloud metastore` to GA.
+
+### Secret Manager
+
+* Added `--next-rotation-time` flag to `gcloud beta secrets create`, `gcloud secrets create`
+  `gcloud beta secrets update` and `gcloud secrets update` commands to specify the timestamp at which to send `SECRET_ROTATE` notification.
+* Added `--rotation-period` flag to `gcloud beta secrets create`, `gcloud secrets create`
+  `gcloud beta secrets update` and `gcloud secrets update` commands to specify a duration between secret rotation notifications.
+* Added `--remove-next-rotation-time` flag to `gcloud beta secrets update` and `gcloud secrets update` command to
+  remove scheduled rotation time from a secret if it has one.
+* Added `--remove-rotation-period` flag to `gcloud beta secrets update` and `gcloud secrets update` command to
+  remove a set rotation period if it has one.
+* Added `--remove-rotation-schedule` flag to `gcloud beta secrets update` and `gcloud secrets update` command to remove the rotation policy from a secret if it has one.
+* Promoted `--expire-time` flag of `gcloud secrets create` and `gcloud secrets update` to GA.
+* Promoted `--ttl` flag of `gcloud secrets create` and `gcloud secrets update` to GA.
+* Promoted `--remove-expiration` flag of `gcloud secrets update` to GA.
+* Promoted `--topics` flag of `gcloud secrets create` to GA.
+* Promoted the following flags to GA for `gcloud secrets update`:
+  * `--add-topics`
+  * `--remove-topics`
+  * `--clear-topics`
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 333.0.0 (2021-03-23)
 
 ### Cloud SDK

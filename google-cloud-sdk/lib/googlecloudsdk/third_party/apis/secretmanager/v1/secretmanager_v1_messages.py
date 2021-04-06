@@ -210,11 +210,27 @@ class CustomerManagedEncryptionStatus(_messages.Message):
 
 
 class DestroySecretVersionRequest(_messages.Message):
-  r"""Request message for SecretManagerService.DestroySecretVersion."""
+  r"""Request message for SecretManagerService.DestroySecretVersion.
+
+  Fields:
+    etag: Optional. Etag of the SecretVersion. The request succeeds if it
+      matches the etag of the currently stored secret version object. If the
+      etag is omitted, the request succeeds.
+  """
+
+  etag = _messages.StringField(1)
 
 
 class DisableSecretVersionRequest(_messages.Message):
-  r"""Request message for SecretManagerService.DisableSecretVersion."""
+  r"""Request message for SecretManagerService.DisableSecretVersion.
+
+  Fields:
+    etag: Optional. Etag of the SecretVersion. The request succeeds if it
+      matches the etag of the currently stored secret version object. If the
+      etag is omitted, the request succeeds.
+  """
+
+  etag = _messages.StringField(1)
 
 
 class Empty(_messages.Message):
@@ -228,7 +244,15 @@ class Empty(_messages.Message):
 
 
 class EnableSecretVersionRequest(_messages.Message):
-  r"""Request message for SecretManagerService.EnableSecretVersion."""
+  r"""Request message for SecretManagerService.EnableSecretVersion.
+
+  Fields:
+    etag: Optional. Etag of the SecretVersion. The request succeeds if it
+      matches the etag of the currently stored secret version object. If the
+      etag is omitted, the request succeeds.
+  """
+
+  etag = _messages.StringField(1)
 
 
 class Expr(_messages.Message):
@@ -563,6 +587,7 @@ class Secret(_messages.Message):
 
   Fields:
     createTime: Output only. The time at which the Secret was created.
+    etag: Etag of the currently stored Secret.
     expireTime: Optional. Timestamp in UTC when the Secret is scheduled to
       expire. This is always provided on output, regardless of what was sent
       on input.
@@ -617,13 +642,14 @@ class Secret(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  expireTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  replication = _messages.MessageField('Replication', 5)
-  rotation = _messages.MessageField('Rotation', 6)
-  topics = _messages.MessageField('Topic', 7, repeated=True)
-  ttl = _messages.StringField(8)
+  etag = _messages.StringField(2)
+  expireTime = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  replication = _messages.MessageField('Replication', 6)
+  rotation = _messages.MessageField('Rotation', 7)
+  topics = _messages.MessageField('Topic', 8, repeated=True)
+  ttl = _messages.StringField(9)
 
 
 class SecretPayload(_messages.Message):
@@ -647,6 +673,7 @@ class SecretVersion(_messages.Message):
     createTime: Output only. The time at which the SecretVersion was created.
     destroyTime: Output only. The time this SecretVersion was destroyed. Only
       present if state is DESTROYED.
+    etag: Etag of the currently stored SecretVersion.
     name: Output only. The resource name of the SecretVersion in the format
       `projects/*/secrets/*/versions/*`. SecretVersion IDs in a Secret start
       at 1 and are incremented for each subsequent version of the secret.
@@ -672,9 +699,10 @@ class SecretVersion(_messages.Message):
 
   createTime = _messages.StringField(1)
   destroyTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  replicationStatus = _messages.MessageField('ReplicationStatus', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  replicationStatus = _messages.MessageField('ReplicationStatus', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class SecretmanagerProjectsLocationsGetRequest(_messages.Message):
@@ -743,11 +771,15 @@ class SecretmanagerProjectsSecretsDeleteRequest(_messages.Message):
   r"""A SecretmanagerProjectsSecretsDeleteRequest object.
 
   Fields:
+    etag: Optional. Etag of the Secret. The request succeeds if it matches the
+      etag of the currently stored secret object. If the etag is omitted, the
+      request succeeds.
     name: Required. The resource name of the Secret to delete in the format
       `projects/*/secrets/*`.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class SecretmanagerProjectsSecretsGetIamPolicyRequest(_messages.Message):

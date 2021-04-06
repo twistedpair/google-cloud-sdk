@@ -182,10 +182,10 @@ def AddAndroidTestArgs(parser):
       '--network-profile',
       metavar='PROFILE_ID',
       help='The name of the network traffic profile, for example '
-      '--network-profile=LTE, which consists of a set of parameters to emulate '
-      'network conditions when running the test (default: no network shaping; '
-      'see available profiles listed by the '
-      '$ {grandparent_command} network-profiles list` command). '
+      '`--network-profile=LTE`, which consists of a set of parameters to '
+      'emulate network conditions when running the test (default: no network '
+      'shaping; see available profiles listed by the '
+      '$ {grandparent_command} network-profiles list command). '
       'This feature only works on physical devices.')
   parser.add_argument(
       '--obb-files',

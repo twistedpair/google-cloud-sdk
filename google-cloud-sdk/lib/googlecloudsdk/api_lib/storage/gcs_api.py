@@ -379,20 +379,20 @@ class GcsApi(cloud_api.CloudApi):
         break
 
   @_catch_http_error_raise_gcs_api_error()
-  def delete_object(self, object_resource, request_config=None):
+  def delete_object(self, object_url, request_config=None):
     """See super class."""
     if not request_config:
       request_config = GcsRequestConfig()
 
     # S3 requires a string, but GCS uses an int for generation.
-    if object_resource.storage_url.generation is not None:
-      generation = int(object_resource.storage_url.generation)
+    if object_url.generation is not None:
+      generation = int(object_url.generation)
     else:
       generation = None
 
     request = self.messages.StorageObjectsDeleteRequest(
-        bucket=object_resource.storage_url.bucket_name,
-        object=object_resource.storage_url.object_name,
+        bucket=object_url.bucket_name,
+        object=object_url.object_name,
         generation=generation,
         ifGenerationMatch=request_config.precondition_generation_match,
         ifMetagenerationMatch=request_config.precondition_metageneration_match)

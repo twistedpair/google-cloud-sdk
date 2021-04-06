@@ -2347,6 +2347,18 @@ class _SectionRedis(_Section):
         'provided by a flag, the command will fall back to this value, if set.')
 
 
+class CheckHashes(enum.Enum):
+  """Different settings for hashing throughout gcloud storage.
+
+  More details in _CHECK_HASHES_HELP_TEXT.
+  """
+
+  IF_FAST_ELSE_FAIL = 'if_fast_else_fail'
+  IF_FAST_ELSE_SKIP = 'if_fast_else_skip'
+  ALWAYS = 'always'
+  NEVER = 'never'
+
+
 class _SectionStorage(_Section):
   """Contains the properties for the 'storage' section."""
 
@@ -2387,9 +2399,11 @@ class _SectionStorage(_Section):
     super(_SectionStorage, self).__init__('storage', hidden=True)
     self.check_hashes = self._Add(
         'check_hashes',
-        default='if_fast_else_fail',
+        # TODO(b/175725675) Change default to IF_FAST_ELSE_FAIL
+        # after adding google-crc32c.
+        default=CheckHashes.IF_FAST_ELSE_SKIP.value,
         help_text=self._CHECK_HASHES_HELP_TEXT,
-        choices=('if_fast_else_fail', 'if_fast_else_skip', 'always', 'never'))
+        choices=([setting.value for setting in CheckHashes]))
 
     self.copy_chunk_size = self._Add(
         'copy_chunk_size',

@@ -155,7 +155,8 @@ class ObjectResource(CloudResource):
     storage_url (StorageUrl): A StorageUrl object representing the object.
     creation_time (datetime|None): Time the object was created.
     etag (str|None): HTTP version identifier.
-    md5_hash (bytes): Base64-encoded digest of md5 hash.
+    crc32c_hash (str|None): Base64-encoded digest of crc32c hash.
+    md5_hash (str|None): Base64-encoded digest of md5 hash.
     metageneration (int|None): Generation object's metadata.
     metadata (object|dict|None): Cloud-specific metadata type.
     size (int|None): Size of object in bytes.
@@ -171,6 +172,7 @@ class ObjectResource(CloudResource):
                storage_url_object,
                creation_time=None,
                etag=None,
+               crc32c_hash=None,
                md5_hash=None,
                metadata=None,
                metageneration=None,
@@ -179,6 +181,7 @@ class ObjectResource(CloudResource):
     super(ObjectResource, self).__init__(storage_url_object)
     self.creation_time = creation_time
     self.etag = etag
+    self.crc32c_hash = crc32c_hash
     self.md5_hash = md5_hash
     self.metageneration = metageneration
     self.metadata = metadata
@@ -199,6 +202,7 @@ class ObjectResource(CloudResource):
   def __eq__(self, other):
     return (super(ObjectResource, self).__eq__(other) and
             self.etag == other.etag and self.generation == other.generation and
+            self.crc32c_hash == other.crc32c_hash and
             self.md5_hash == other.md5_hash and self.metadata == other.metadata)
 
   def is_container(self):

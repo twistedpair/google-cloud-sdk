@@ -127,3 +127,10 @@ class TensorboardTimeSeriesClient(object):
         googleCloudAiplatformV1alpha1TensorboardTimeSeries=tensorboard_time_series,
         updateMask=','.join(update_mask))
     return self._service.Patch(request)
+
+  def Read(self, tensorboard_time_series_ref, max_data_points, data_filter):
+    request = self.messages.AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest(
+        tensorboardTimeSeries=tensorboard_time_series_ref.RelativeName(),
+        maxDataPoints=max_data_points,
+        filter=data_filter)
+    return self._service.Read(request)

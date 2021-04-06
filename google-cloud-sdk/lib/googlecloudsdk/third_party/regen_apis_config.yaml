@@ -632,8 +632,8 @@ apis:
         users.projects:
           path: users/{user}/projects/{project}
   osconfig:
-    v1alpha1:
-      discovery_doc: osconfig_v1alpha1.json
+    v1alpha:
+      discovery_doc: osconfig_v1alpha.json
     v1alpha2:
       discovery_doc: osconfig_v1alpha2.json
     v1beta:

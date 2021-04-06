@@ -638,3 +638,19 @@ def AddAnalyzerOptionsGroup(parser, is_sync):
   if is_sync:
     AddAnalyzerExecutionTimeout(options_group)
     AddAnalyzerShowAccessControlEntries(options_group)
+
+
+def AddAnalyzerAccessTimeArgs(parser):
+  parser.add_argument(
+      '--access-time',
+      type=arg_parsers.Datetime.Parse,
+      help=('The hypothetical access timestamp to evaluate IAM conditions.'))
+
+
+def AddAnalyzerConditionContextGroup(parser):
+  """Adds a group of options."""
+  condition_context_group = parser.add_group(
+      mutex=False,
+      required=False,
+      help='The hypothetical context to evaluate IAM conditions.')
+  AddAnalyzerAccessTimeArgs(condition_context_group)

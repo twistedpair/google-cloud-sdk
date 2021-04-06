@@ -1028,24 +1028,25 @@ def GetQuotaProject(credentials, force_resource_quota):
 class ADC(object):
   """Application default credential object."""
 
-  def __init__(self, credentials):
+  def __init__(self,
+               credentials,
+               impersonated_service_account=None,
+               delegates=None):
     self._credentials = credentials
-
-  @property
-  def _is_oauth2client(self):
-    return IsOauth2ClientCredentials(self._credentials)
+    self._impersonated_service_account = impersonated_service_account
+    self._delegates = delegates
 
   @property
   def is_user(self):
-    return IsUserAccountCredentials(self._credentials)
+    return (IsUserAccountCredentials(self._credentials) and
+            self._impersonated_service_account is None)
 
   @property
   def adc(self):
     """Json representation of the credentials for ADC."""
-    if self._is_oauth2client:
-      return _ConvertOauth2ClientCredentialsToADC(self._credentials)
-    else:
-      return _ConvertGoogleAuthCredentialsToADC(self._credentials)
+    return _ConvertCredentialsToADC(self._credentials,
+                                    self._impersonated_service_account,
+                                    self._delegates)
 
   def DumpADCToFile(self, file_path=None):
     """Dumps the credentials to the ADC json file."""
@@ -1105,6 +1106,32 @@ def _ConvertOauth2ClientCredentialsToADC(credentials):
         credentials.token_expiry, credentials.token_uri, credentials.user_agent,
         credentials.revoke_uri)
   return credentials.serialization_data
+
+
+IMPERSONATION_TOKEN_URL = 'https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/{}:generateAccessToken'
+
+
+def _ConvertCredentialsToADC(credentials, impersonated_service_account,
+                             delegates):
+  """Convert credentials with impersonation to a json dictionary."""
+  if IsOauth2ClientCredentials(credentials):
+    creds_dict = _ConvertOauth2ClientCredentialsToADC(credentials)
+  else:
+    creds_dict = _ConvertGoogleAuthCredentialsToADC(credentials)
+
+  if not impersonated_service_account:
+    return creds_dict
+  impersonated_creds_dict = {
+      'source_credentials':
+          creds_dict,
+      'service_account_impersonation_url':
+          IMPERSONATION_TOKEN_URL.format(impersonated_service_account),
+      'delegates':
+          delegates,
+      'type':
+          'impersonated_service_account'
+  }
+  return impersonated_creds_dict
 
 
 def _ConvertGoogleAuthCredentialsToADC(credentials):

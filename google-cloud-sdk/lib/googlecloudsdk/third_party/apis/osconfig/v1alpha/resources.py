@@ -17,8 +17,8 @@
 import enum
 
 
-BASE_URL = 'https://krmapihosting.googleapis.com/v1alpha1/'
-DOCS_URL = 'https://cloud.google.com/'
+BASE_URL = 'https://osconfig.googleapis.com/v1alpha/'
+DOCS_URL = 'https://cloud.google.com/compute/docs/manage-os'
 
 
 class Collections(enum.Enum):
@@ -33,31 +33,41 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_INSTANCEOSPOLICIESCOMPLIANCES = (
+      'projects.locations.instanceOSPoliciesCompliances',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}',
+              'projects/{projectsId}/locations/{locationsId}/'
+              'instanceOSPoliciesCompliances/'
+              '{instanceOSPoliciesCompliancesId}',
       },
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_KRMAPIHOSTS = (
-      'projects.locations.krmApiHosts',
+  PROJECTS_LOCATIONS_OSPOLICYASSIGNMENTS = (
+      'projects.locations.osPolicyAssignments',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/krmApiHosts/'
-              '{krmApiHostsId}',
+              'projects/{projectsId}/locations/{locationsId}/'
+              'osPolicyAssignments/{osPolicyAssignmentsId}',
       },
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_OPERATIONS = (
-      'projects.locations.operations',
+  PROJECTS_LOCATIONS_OSPOLICYASSIGNMENTS_OPERATIONS = (
+      'projects.locations.osPolicyAssignments.operations',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/operations/'
+              'projects/{projectsId}/locations/{locationsId}/'
+              'osPolicyAssignments/{osPolicyAssignmentsId}/operations/'
               '{operationsId}',
       },
       ['name'],

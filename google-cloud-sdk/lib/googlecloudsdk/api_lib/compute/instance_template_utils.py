@@ -42,7 +42,8 @@ def CreateNetworkInterfaceMessage(resources,
                                   alias_ip_ranges_string=None,
                                   network_tier=None,
                                   stack_type=None,
-                                  ipv6_network_tier=None):
+                                  ipv6_network_tier=None,
+                                  nic_type=None):
   """Creates and returns a new NetworkInterface message.
 
   Args:
@@ -70,6 +71,9 @@ def CreateNetworkInterfaceMessage(resources,
     ipv6_network_tier: specify network tier for IPv6 access config
                * PREMIUM - network tier being PREMIUM
                * STANDARD - network tier being STANDARD
+    nic_type: specify the type of NetworkInterface Controller
+               * GVNIC
+               * VIRTIO_NET
   Returns:
     network_interface: a NetworkInterface message object
   """
@@ -131,6 +135,10 @@ def CreateNetworkInterfaceMessage(resources,
         alias_ip_range_utils.CreateAliasIpRangeMessagesFromString(
             messages, False, alias_ip_ranges_string))
 
+  if nic_type is not None:
+    network_interface.nicType = (
+        messages.NetworkInterface.NicTypeValueValuesEnum(nic_type))
+
   return network_interface
 
 
@@ -156,13 +164,14 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
         address = EPHEMERAL_ADDRESS
 
       network_tier = interface.get('network-tier', None)
+      nic_type = interface.get('nic-type', None)
 
       result.append(
           CreateNetworkInterfaceMessage(
               resources, scope_lister, messages, interface.get('network', None),
               interface.get('private-network-ip', None), region,
               interface.get('subnet', None), address,
-              interface.get('aliases', None), network_tier))
+              interface.get('aliases', None), network_tier, nic_type=nic_type))
   return result
 
 

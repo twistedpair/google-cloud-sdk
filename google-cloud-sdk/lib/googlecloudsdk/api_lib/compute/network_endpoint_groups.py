@@ -51,7 +51,11 @@ class NetworkEndpointGroupsClient(object):
              app_engine_version=None,
              app_engine_url_mask=None,
              cloud_function_name=None,
-             cloud_function_url_mask=None):
+             cloud_function_url_mask=None,
+             serverless_deployment_platform=None,
+             serverless_deployment_resource=None,
+             serverless_deployment_version=None,
+             serverless_deployment_url_mask=None):
     """Creates a network endpoint group."""
     is_zonal = hasattr(neg_ref, 'zone')
     is_regional = hasattr(neg_ref, 'region')
@@ -87,23 +91,45 @@ class NetworkEndpointGroupsClient(object):
     if cloud_function_name or cloud_function_url_mask:
       cloud_function = self.messages.NetworkEndpointGroupCloudFunction(
           function=cloud_function_name, urlMask=cloud_function_url_mask)
-
+    serverless_deployment = None
+    if (serverless_deployment_platform or serverless_deployment_resource or
+        serverless_deployment_version or serverless_deployment_url_mask):
+      serverless_deployment = self.messages.NetworkEndpointGroupServerlessDeployment(
+          platform=serverless_deployment_platform,
+          resource=serverless_deployment_resource,
+          version=serverless_deployment_version,
+          urlMask=serverless_deployment_url_mask)
     endpoint_type_enum = (self.messages.NetworkEndpointGroup
                           .NetworkEndpointTypeValueValuesEnum)
 
     # TODO(b/137663401): remove the check below after all Serverless flags go
     # to GA.
     if is_regional:
-      network_endpoint_group = self.messages.NetworkEndpointGroup(
-          name=neg_ref.Name(),
-          networkEndpointType=arg_utils.ChoiceToEnum(network_endpoint_type,
-                                                     endpoint_type_enum),
-          defaultPort=default_port,
-          network=network_uri,
-          subnetwork=subnet_uri,
-          cloudRun=cloud_run,
-          appEngine=app_engine,
-          cloudFunction=cloud_function)
+      # TODO(b/169847412): remove the check below after all Serverless flags go
+      # to GA.
+      if serverless_deployment:
+        network_endpoint_group = self.messages.NetworkEndpointGroup(
+            name=neg_ref.Name(),
+            networkEndpointType=arg_utils.ChoiceToEnum(network_endpoint_type,
+                                                       endpoint_type_enum),
+            defaultPort=default_port,
+            network=network_uri,
+            subnetwork=subnet_uri,
+            cloudRun=cloud_run,
+            appEngine=app_engine,
+            cloudFunction=cloud_function,
+            serverlessDeployment=serverless_deployment)
+      else:
+        network_endpoint_group = self.messages.NetworkEndpointGroup(
+            name=neg_ref.Name(),
+            networkEndpointType=arg_utils.ChoiceToEnum(network_endpoint_type,
+                                                       endpoint_type_enum),
+            defaultPort=default_port,
+            network=network_uri,
+            subnetwork=subnet_uri,
+            cloudRun=cloud_run,
+            appEngine=app_engine,
+            cloudFunction=cloud_function)
     else:
       network_endpoint_group = self.messages.NetworkEndpointGroup(
           name=neg_ref.Name(),
