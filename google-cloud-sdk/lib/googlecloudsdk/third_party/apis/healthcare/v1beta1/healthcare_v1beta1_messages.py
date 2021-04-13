@@ -2029,9 +2029,10 @@ class GoogleCloudHealthcareV1beta1AnnotationBigQueryDestination(_messages.Messag
 
   Enums:
     SchemaTypeValueValuesEnum: Specifies the schema format to export.
-    WriteDispositionValueValuesEnum: Determines whether existing tables in the
-      destination dataset are overwritten or appended to. If a
-      write_disposition is specified, the `force` parameter is ignored.
+    WriteDispositionValueValuesEnum: Determines if existing data in the
+      destination dataset is overwritten, appended to, or not written if the
+      tables contain data. If a write_disposition is specified, the `force`
+      parameter is ignored.
 
   Fields:
     force: Use `write_disposition` instead. If `write_disposition` is
@@ -2041,9 +2042,9 @@ class GoogleCloudHealthcareV1beta1AnnotationBigQueryDestination(_messages.Messag
     schemaType: Specifies the schema format to export.
     tableUri: BigQuery URI to a table, up to 2000 characters long, must be of
       the form bq://projectId.bqDatasetId.tableId.
-    writeDisposition: Determines whether existing tables in the destination
-      dataset are overwritten or appended to. If a write_disposition is
-      specified, the `force` parameter is ignored.
+    writeDisposition: Determines if existing data in the destination dataset
+      is overwritten, appended to, or not written if the tables contain data.
+      If a write_disposition is specified, the `force` parameter is ignored.
   """
 
   class SchemaTypeValueValuesEnum(_messages.Enum):
@@ -2057,9 +2058,9 @@ class GoogleCloudHealthcareV1beta1AnnotationBigQueryDestination(_messages.Messag
     SIMPLE = 1
 
   class WriteDispositionValueValuesEnum(_messages.Enum):
-    r"""Determines whether existing tables in the destination dataset are
-    overwritten or appended to. If a write_disposition is specified, the
-    `force` parameter is ignored.
+    r"""Determines if existing data in the destination dataset is overwritten,
+    appended to, or not written if the tables contain data. If a
+    write_disposition is specified, the `force` parameter is ignored.
 
     Values:
       WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
@@ -2297,9 +2298,10 @@ class GoogleCloudHealthcareV1beta1FhirBigQueryDestination(_messages.Message):
   r"""The configuration for exporting to BigQuery.
 
   Enums:
-    WriteDispositionValueValuesEnum: Determines whether existing tables in the
-      destination dataset are overwritten or appended to. If a
-      write_disposition is specified, the `force` parameter is ignored.
+    WriteDispositionValueValuesEnum: Determines if existing data in the
+      destination dataset is overwritten, appended to, or not written if the
+      tables contain data. If a write_disposition is specified, the `force`
+      parameter is ignored.
 
   Fields:
     datasetUri: BigQuery URI to an existing dataset, up to 2000 characters
@@ -2309,15 +2311,15 @@ class GoogleCloudHealthcareV1beta1FhirBigQueryDestination(_messages.Message):
       write_disposition=WRITE_EMPTY and force=true is equivalent to
       write_disposition=WRITE_TRUNCATE.
     schemaConfig: The configuration for the exported BigQuery schema.
-    writeDisposition: Determines whether existing tables in the destination
-      dataset are overwritten or appended to. If a write_disposition is
-      specified, the `force` parameter is ignored.
+    writeDisposition: Determines if existing data in the destination dataset
+      is overwritten, appended to, or not written if the tables contain data.
+      If a write_disposition is specified, the `force` parameter is ignored.
   """
 
   class WriteDispositionValueValuesEnum(_messages.Enum):
-    r"""Determines whether existing tables in the destination dataset are
-    overwritten or appended to. If a write_disposition is specified, the
-    `force` parameter is ignored.
+    r"""Determines if existing data in the destination dataset is overwritten,
+    appended to, or not written if the tables contain data. If a
+    write_disposition is specified, the `force` parameter is ignored.
 
     Values:
       WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as

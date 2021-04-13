@@ -37,40 +37,6 @@ class AccessConfig(_messages.Message):
   externalIp = _messages.StringField(1)
 
 
-class AttachedDisk(_messages.Message):
-  r"""A node-attached disk resource. Next ID: 8;
-
-  Enums:
-    ModeValueValuesEnum: The mode in which to attach this disk. If not
-      specified, the default is READ_WRITE mode. Only applicable to
-      data_disks.
-
-  Fields:
-    mode: The mode in which to attach this disk. If not specified, the default
-      is READ_WRITE mode. Only applicable to data_disks.
-    sourceDisk: Specifies the full path to an existing disk. For example:
-      "projects/my-project/zones/us-central1-c/disks/my-disk".
-  """
-
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""The mode in which to attach this disk. If not specified, the default
-    is READ_WRITE mode. Only applicable to data_disks.
-
-    Values:
-      DISK_MODE_UNSPECIFIED: The disk mode is not known/set.
-      READ_WRITE: Attaches the disk in read-write mode. Only one TPU node can
-        attach a disk in read-write mode at a time.
-      READ_ONLY: Attaches the disk in read-only mode. Multiple TPU nodes can
-        attach a disk in read-only mode at a time.
-    """
-    DISK_MODE_UNSPECIFIED = 0
-    READ_WRITE = 1
-    READ_ONLY = 2
-
-  mode = _messages.EnumField('ModeValueValuesEnum', 1)
-  sourceDisk = _messages.StringField(2)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -79,20 +45,6 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
-
-
-class GenerateServiceIdentityRequest(_messages.Message):
-  r"""Request for GenerateServiceIdentity."""
-
-
-class GenerateServiceIdentityResponse(_messages.Message):
-  r"""Response for GenerateServiceIdentity.
-
-  Fields:
-    identity: ServiceIdentity that was created or retrieved.
-  """
-
-  identity = _messages.MessageField('ServiceIdentity', 1)
 
 
 class ListAcceleratorTypesResponse(_messages.Message):
@@ -304,7 +256,6 @@ class Node(_messages.Message):
       network, or the provided network is peered with another network that is
       using that CIDR block.
     createTime: Output only. The time when the node was created.
-    dataDisks: The additional data disks for the Node.
     description: The user-supplied description of the TPU. Maximum of 512
       characters.
     health: The health status of the TPU node.
@@ -328,6 +279,7 @@ class Node(_messages.Message):
     symptoms: Output only. The Symptoms that have occurred to the TPU Node.
     tags: Tags to apply to the TPU Node. Tags are used to identify valid
       sources or targets for network firewalls.
+    useTpuVm: Output only.
   """
 
   class ApiVersionValueValuesEnum(_messages.Enum):
@@ -454,22 +406,22 @@ class Node(_messages.Message):
   apiVersion = _messages.EnumField('ApiVersionValueValuesEnum', 2)
   cidrBlock = _messages.StringField(3)
   createTime = _messages.StringField(4)
-  dataDisks = _messages.MessageField('AttachedDisk', 5, repeated=True)
-  description = _messages.StringField(6)
-  health = _messages.EnumField('HealthValueValuesEnum', 7)
-  healthDescription = _messages.StringField(8)
-  id = _messages.IntegerField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  metadata = _messages.MessageField('MetadataValue', 11)
-  name = _messages.StringField(12)
-  networkConfig = _messages.MessageField('NetworkConfig', 13)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 14, repeated=True)
-  runtimeVersion = _messages.StringField(15)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 16)
-  serviceAccount = _messages.MessageField('ServiceAccount', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  symptoms = _messages.MessageField('Symptom', 19, repeated=True)
-  tags = _messages.StringField(20, repeated=True)
+  description = _messages.StringField(5)
+  health = _messages.EnumField('HealthValueValuesEnum', 6)
+  healthDescription = _messages.StringField(7)
+  id = _messages.IntegerField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  metadata = _messages.MessageField('MetadataValue', 10)
+  name = _messages.StringField(11)
+  networkConfig = _messages.MessageField('NetworkConfig', 12)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 13, repeated=True)
+  runtimeVersion = _messages.StringField(14)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 15)
+  serviceAccount = _messages.MessageField('ServiceAccount', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  symptoms = _messages.MessageField('Symptom', 18, repeated=True)
+  tags = _messages.StringField(19, repeated=True)
+  useTpuVm = _messages.BooleanField(20)
 
 
 class Operation(_messages.Message):
@@ -643,16 +595,6 @@ class ServiceAccount(_messages.Message):
 
   email = _messages.StringField(1)
   scope = _messages.StringField(2, repeated=True)
-
-
-class ServiceIdentity(_messages.Message):
-  r"""The per-product per-project service identity for Cloud TPU service.
-
-  Fields:
-    email: The email address of the service identity.
-  """
-
-  email = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -846,19 +788,6 @@ class TpuProjectsLocationsAcceleratorTypesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class TpuProjectsLocationsGenerateServiceIdentityRequest(_messages.Message):
-  r"""A TpuProjectsLocationsGenerateServiceIdentityRequest object.
-
-  Fields:
-    generateServiceIdentityRequest: A GenerateServiceIdentityRequest resource
-      to be passed as the request body.
-    parent: Required. The parent resource name.
-  """
-
-  generateServiceIdentityRequest = _messages.MessageField('GenerateServiceIdentityRequest', 1)
-  parent = _messages.StringField(2, required=True)
 
 
 class TpuProjectsLocationsGetRequest(_messages.Message):

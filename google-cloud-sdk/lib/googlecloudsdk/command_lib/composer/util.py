@@ -104,7 +104,7 @@ SUBCOMMAND_ALLOWLIST_BETA.update({
     'roles': ('2.0.0', '3.0.0'),
     'sync-perm': ('2.0.0', '3.0.0'),
     'tasks': ('2.0.0', '3.0.0'),
-    'upgrade_check': ('1.10.14', '2.0.0'),
+    'upgrade_check': ('1.10.15', '2.0.0'),
     'users': ('2.0.0', '3.0.0'),
     'variables': (None, '3.0.0'),
     'version': (None, '3.0.0'),

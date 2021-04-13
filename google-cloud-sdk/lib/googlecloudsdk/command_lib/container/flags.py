@@ -3695,3 +3695,15 @@ Enables use of services with externalIPs field.
       default=None,
       help=help_text,
       hidden=True)
+
+
+def AddNodePoolEnablePrivateNodes(parser, for_update=False, hidden=True):  # pylint: disable=unused-argument
+  """Adds a --enable-private-nodes to the given node-pool parser."""
+  help_text = ' '
+  # TODO(b/179052417) - make different help text for update & create operations.
+  parser.add_argument(
+      '--enable-private-nodes',
+      hidden=hidden,
+      default=None,
+      action='store_true',
+      help=help_text)

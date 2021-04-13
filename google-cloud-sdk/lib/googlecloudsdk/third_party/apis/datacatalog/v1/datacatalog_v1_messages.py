@@ -2129,8 +2129,7 @@ class GoogleCloudDatacatalogV1TagField(_messages.Message):
   r"""Contains the value and supporting information for a field within a Tag.
 
   Fields:
-    boolValue: Holds the value for a tag field with boolean type. The maximum
-      length is 2000 UTF-8 characters.
+    boolValue: Holds the value for a tag field with boolean type.
     displayName: Output only. The display name of this field.
     doubleValue: Holds the value for a tag field with double type.
     enumValue: Holds the value for a tag field with enum type. This value must
@@ -2140,7 +2139,8 @@ class GoogleCloudDatacatalogV1TagField(_messages.Message):
       indicate a more important field. The value can be negative. Multiple
       fields can have the same order, and field orders within a tag do not
       have to be sequential.
-    stringValue: Holds the value for a tag field with string type.
+    stringValue: Holds the value for a tag field with string type. The maximum
+      length is 2000 UTF-8 characters.
     timestampValue: Holds the value for a tag field with timestamp type.
   """
 

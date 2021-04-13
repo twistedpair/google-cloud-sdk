@@ -15186,6 +15186,32 @@ For more information, see [Invalidating cached content](/cdn/docs/invalidating-c
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified ServiceAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeServiceAttachmentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.serviceAttachments.patch',
+        ordered_params=['project', 'region', 'serviceAttachment'],
+        path_params=['project', 'region', 'serviceAttachment'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/serviceAttachments/{serviceAttachment}',
+        request_field='serviceAttachmentResource',
+        request_type_name='ComputeServiceAttachmentsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 

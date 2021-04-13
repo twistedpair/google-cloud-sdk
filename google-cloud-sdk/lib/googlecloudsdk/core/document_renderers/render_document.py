@@ -105,12 +105,14 @@ class _ListElementState(object):
     bullet: True if the current element is a bullet.
     ignore_line: The number of blank line requests to ignore.
     level: List element nesting level counting from 0.
+    line_break_seen: True if line break has been seen for bulleted lists.
   """
 
   def __init__(self):
     self.bullet = False
     self.ignore_line = 0
     self.level = 0
+    self.line_break_seen = False
 
 
 class MarkdownRenderer(object):
@@ -162,6 +164,7 @@ class MarkdownRenderer(object):
     self.command_metadata = command_metadata
     self._example_regex = '$ gcloud'
     self._last_list_level = None
+    self._in_example_section = False
 
   def _AnchorStyle1(self, buf, i):
     """Checks for link:target[text] hyperlink anchor markdown.
@@ -407,14 +410,17 @@ class MarkdownRenderer(object):
       return i
     self._Fill()
     if self._lists[self._depth].bullet:
-      self._renderer.List(0)
+      self._renderer.List(self._depth - 1, end=True)
       if self._depth:
         self._depth -= 1
       else:
         self._lists[self._depth].bullet = False
     if self._lists[self._depth].ignore_line:
       self._lists[self._depth].ignore_line -= 1
-    if not self._depth or not self._lists[self._depth].ignore_line:
+    if not self._lists[self._depth].line_break_seen:
+      self._lists[self._depth].line_break_seen = True
+    if not self._depth or not self._lists[
+        self._depth].ignore_line or self._lists[self._depth].line_break_seen:
       self._renderer.Line()
     return -1
 
@@ -432,6 +438,13 @@ class MarkdownRenderer(object):
     if len(self._line) != 1 or self._line[0] != '+':
       return i
     self._Fill()
+    self._lists[self._depth].line_break_seen = True
+    if self._lists[self._depth].bullet:
+      self._renderer.List(self._depth - 1, end=True)
+      if self._depth:
+        self._depth -= 1
+      else:
+        self._lists[self._depth].bullet = False
     self._renderer.Line()
     self._next_paragraph = True
     return -1
@@ -489,6 +502,7 @@ class MarkdownRenderer(object):
     elif self._notes and heading == 'NOTES':
       self._buf = self._notes
       self._notes = None
+    self._in_example_section = (heading == 'EXAMPLES')
     return -1
 
   def _ConvertOldTable(self, i):
@@ -786,6 +800,7 @@ class MarkdownRenderer(object):
         self._lists.append(_ListElementState())
     self._lists[self._depth].bullet = True
     self._lists[self._depth].ignore_line = 0
+    self._lists[self._depth].line_break_seen = False
     self._lists[self._depth].level = level
     self._Fill()
     self._renderer.List(self._depth)
@@ -805,7 +820,10 @@ class MarkdownRenderer(object):
     Returns:
       -1 if the input line is is an example line markdown, i otherwise.
     """
-    if not i or self._depth and not (self._example or self._paragraph):
+    example_allowed = False if self._lists[self._depth].bullet else True
+    if not self._in_example_section:
+      example_allowed = example_allowed and (not self._buf.strip())
+    if not i or not example_allowed and not (self._example or self._paragraph):
       return i
     self._Example(i)
     return -1
@@ -821,12 +839,13 @@ class MarkdownRenderer(object):
     """
     if i or not self._depth:
       return i
+    if not self._lists[self._depth].line_break_seen:
+      return i
     if self._lists[self._depth].ignore_line > 1:
       self._lists[self._depth].ignore_line -= 1
     if not self._lists[self._depth].ignore_line:
       self._Fill()
-      self._renderer.List(0)
-      self._depth = 0
+      self._renderer.List(self._depth - 1, end=True)
     return i  # More conversion possible.
 
   def _ConvertRemainder(self, i):
@@ -841,6 +860,7 @@ class MarkdownRenderer(object):
     Returns:
       -1
     """
+    self._lists[self._depth].line_break_seen = False
     self._buf += ' ' + self._line[i:]
     return -1
 

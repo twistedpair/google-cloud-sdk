@@ -108,10 +108,17 @@ def GetPlatform(prompt_if_unset=True):
       # Set platform so we don't re-prompt on future calls to this method
       # and so it's available to anyone who wants to know the platform.
       properties.VALUES.run.platform.Set(platform)
-      log.status.Print(
-          'To specify the platform yourself, pass `--platform {0}`. '
-          'Or, to make this the default target platform, run '
-          '`gcloud config set run/platform {0}`.\n'.format(platform))
+      if platform != PLATFORM_MANAGED:
+        log.warning('gcloud will soon use --platform {0} as the default. '
+                    'To continue to use this platform, pass `--platform {1}`. '
+                    'Or, to make this the default target platform, run '
+                    '`gcloud config set run/platform {1}`.\n'.format(
+                        PLATFORM_MANAGED, platform))
+      else:
+        log.status.Print(
+            'To specify the platform yourself, pass `--platform {0}`. '
+            'Or, to make this the default target platform, run '
+            '`gcloud config set run/platform {0}`.\n'.format(platform))
     else:
       raise exceptions.ArgumentError(
           'No platform specified. Pass the `--platform` flag or set '

@@ -2083,6 +2083,14 @@
           "readOnly": true,
           "$ref": "GoogleCloudAiplatformV1alpha1Measurement"
         },
+        "measurements": {
+          "description": "Output only. A list of measurements that are strictly lexicographically ordered by their induced tuples (steps, elapsed_duration). These are used for early stopping computations.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1Measurement"
+          }
+        },
         "startTime": {
           "description": "Output only. Time when the Trial was started.",
           "readOnly": true,
@@ -2094,6 +2102,16 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "clientId": {
+          "description": "Output only. The identifier of the client that originally requested this Trial. Each client is identified by a unique client_id. When a client asks for a suggestion, Vizier will assign it a Trial. The client should evaluate the Trial, complete it, and report back to Vizier. If suggestion is asked again by same client_id before the Trial is completed, the same Trial will be returned. Multiple clients with different client_ids can ask for suggestions simultaneously, each of them will get their own Trial.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "infeasibleReason": {
+          "description": "Output only. A human readable string describing why the Trial is infeasible. This is set only if Trial state is `INFEASIBLE`.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -2119,6 +2137,12 @@
       "description": "A message representing a Measurement of a Trial. A Measurement contains the Metrics got by executing a Trial using suggested hyperparameter values.",
       "type": "object",
       "properties": {
+        "elapsedDuration": {
+          "description": "Output only. Time that the Trial has been running at the point of this Measurement.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-duration"
+        },
         "stepCount": {
           "description": "Output only. The number of steps the machine learning model has been trained for. Must be non-negative.",
           "readOnly": true,
@@ -3709,8 +3733,12 @@
           "type": "string"
         },
         "kmsKeyName": {
-          "description": "By default Tensorboard is encrypted with Google provided keys. Users can optionally supply a KMS key to encrypt their data Format: `projects\/{project_id}\/locations\/{location}\/keyRings\/{key_ring_id}\/cryptoKeys\/{key_id}`",
+          "description": "By default Tensorboard is encrypted with Google provided keys. Users can optionally supply a KMS key to encrypt their data Format: `projects\/{project_id}\/locations\/{location}\/keyRings\/{key_ring_id}\/cryptoKeys\/{key_id}` Will be removed and reserved soon for encryption_spec uCAIP replacement.",
           "type": "string"
+        },
+        "encryptionSpec": {
+          "description": "Customer-managed encryption key spec for a Tensorboard. If set, this Tensorboard and all sub-resources of this Tensorboard will be secured by this key.",
+          "$ref": "GoogleCloudAiplatformV1alpha1EncryptionSpec"
         },
         "blobStoragePathPrefix": {
           "description": "Output only. Consumer project Cloud Storage path prefix used to store blob data, which can either be a bucket or directory. Does not end with a '\/'.",
@@ -7447,6 +7475,14 @@
           "readOnly": true,
           "$ref": "GoogleCloudAiplatformUiMeasurement"
         },
+        "measurements": {
+          "description": "Output only. A list of measurements that are strictly lexicographically ordered by their induced tuples (steps, elapsed_duration). These are used for early stopping computations.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiMeasurement"
+          }
+        },
         "startTime": {
           "description": "Output only. Time when the Trial was started.",
           "readOnly": true,
@@ -7458,6 +7494,16 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "clientId": {
+          "description": "Output only. The identifier of the client that originally requested this Trial. Each client is identified by a unique client_id. When a client asks for a suggestion, Vizier will assign it a Trial. The client should evaluate the Trial, complete it, and report back to Vizier. If suggestion is asked again by same client_id before the Trial is completed, the same Trial will be returned. Multiple clients with different client_ids can ask for suggestions simultaneously, each of them will get their own Trial.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "infeasibleReason": {
+          "description": "Output only. A human readable string describing why the Trial is infeasible. This is set only if Trial state is `INFEASIBLE`.",
+          "readOnly": true,
+          "type": "string"
         },
         "customJob": {
           "description": "Output only. The CustomJob name linked to the Trial. It's set for a HyperparameterTuningJob's Trial.",
@@ -7488,6 +7534,12 @@
       "description": "A message representing a Measurement of a Trial. A Measurement contains the Metrics got by executing a Trial using suggested hyperparameter values.",
       "type": "object",
       "properties": {
+        "elapsedDuration": {
+          "description": "Output only. Time that the Trial has been running at the point of this Measurement.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-duration"
+        },
         "stepCount": {
           "description": "Output only. The number of steps the machine learning model has been trained for. Must be non-negative.",
           "readOnly": true,
@@ -10876,6 +10928,14 @@
           "readOnly": true,
           "$ref": "GoogleCloudAiplatformV1beta1Measurement"
         },
+        "measurements": {
+          "description": "Output only. A list of measurements that are strictly lexicographically ordered by their induced tuples (steps, elapsed_duration). These are used for early stopping computations.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1Measurement"
+          }
+        },
         "startTime": {
           "description": "Output only. Time when the Trial was started.",
           "readOnly": true,
@@ -10887,6 +10947,16 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "clientId": {
+          "description": "Output only. The identifier of the client that originally requested this Trial. Each client is identified by a unique client_id. When a client asks for a suggestion, Vizier will assign it a Trial. The client should evaluate the Trial, complete it, and report back to Vizier. If suggestion is asked again by same client_id before the Trial is completed, the same Trial will be returned. Multiple clients with different client_ids can ask for suggestions simultaneously, each of them will get their own Trial.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "infeasibleReason": {
+          "description": "Output only. A human readable string describing why the Trial is infeasible. This is set only if Trial state is `INFEASIBLE`.",
+          "readOnly": true,
+          "type": "string"
         },
         "customJob": {
           "description": "Output only. The CustomJob name linked to the Trial. It's set for a HyperparameterTuningJob's Trial.",
@@ -10917,6 +10987,12 @@
       "description": "A message representing a Measurement of a Trial. A Measurement contains the Metrics got by executing a Trial using suggested hyperparameter values.",
       "type": "object",
       "properties": {
+        "elapsedDuration": {
+          "description": "Output only. Time that the Trial has been running at the point of this Measurement.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-duration"
+        },
         "stepCount": {
           "description": "Output only. The number of steps the machine learning model has been trained for. Must be non-negative.",
           "readOnly": true,

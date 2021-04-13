@@ -501,33 +501,6 @@ class TpuV2alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def GenerateServiceIdentity(self, request, global_params=None):
-      r"""Generates the Cloud TPU service identity for the project.
-
-      Args:
-        request: (TpuProjectsLocationsGenerateServiceIdentityRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GenerateServiceIdentityResponse) The response message.
-      """
-      config = self.GetMethodConfig('GenerateServiceIdentity')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GenerateServiceIdentity.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}:generateServiceIdentity',
-        http_method='POST',
-        method_id='tpu.projects.locations.generateServiceIdentity',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v2alpha1/{+parent}:generateServiceIdentity',
-        request_field='generateServiceIdentityRequest',
-        request_type_name='TpuProjectsLocationsGenerateServiceIdentityRequest',
-        response_type_name='GenerateServiceIdentityResponse',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets information about a location.
 

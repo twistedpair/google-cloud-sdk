@@ -40,7 +40,7 @@ asset_type:
   - &asset_type
     parameter_name: assetTypesId
     attribute_name: asset_type
-    help: Google Cloud Media Asset asset type
+    help: Google Cloud Media Asset asset type.
 
 asset:
   name: asset
@@ -53,7 +53,7 @@ asset:
   - &asset
     parameter_name: assetsId
     attribute_name: asset
-    help: Google Cloud Media Asset asset
+    help: Google Cloud Media Asset asset.
 
 complex_type:
   name: complex_type
@@ -65,7 +65,7 @@ complex_type:
   - &complex_type
     parameter_name: complexTypesId
     attribute_name: complex_type
-    help: Google Cloud Media Asset complex type
+    help: Google Cloud Media Asset complex type.
 
 transformation:
   name: transformation
@@ -78,7 +78,7 @@ transformation:
   - &transformation
     parameter_name: transformationsId
     attribute_name: transformation
-    help: Google Cloud Media Asset asset transformation
+    help: Google Cloud Media Asset asset transformation.
 
 transformer:
   name: transformer
@@ -90,4 +90,4 @@ transformer:
   - &transformer
     parameter_name: transformersId
     attribute_name: transformer
-    help: Google Cloud Media Asset transformer
+    help: Google Cloud Media Asset transformer.

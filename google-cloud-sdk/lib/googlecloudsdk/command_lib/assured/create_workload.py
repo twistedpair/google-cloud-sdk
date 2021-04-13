@@ -22,7 +22,6 @@ from googlecloudsdk.api_lib.assured import endpoint_util
 from googlecloudsdk.api_lib.assured import message_util
 from googlecloudsdk.api_lib.assured import workloads as apis
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope.base import ReleaseTrack
 from googlecloudsdk.core import log
 
 _DETAILED_HELP = {
@@ -57,8 +56,6 @@ class CreateWorkload(base.CreateCommand):
 
   def Run(self, args):
     """Run the create command."""
-    resource_settings = args.resource_settings if self.ReleaseTrack(
-    ) != ReleaseTrack.GA else None
     with endpoint_util.AssuredWorkloadsEndpointOverridesFromRegion(
         release_track=self.ReleaseTrack(), region=args.location):
       parent = message_util.CreateAssuredParent(
@@ -71,7 +68,7 @@ class CreateWorkload(base.CreateCommand):
           rotation_period=args.rotation_period,
           labels=args.labels,
           provisioned_resources_parent=args.provisioned_resources_parent,
-          resource_settings=resource_settings,
+          resource_settings=args.resource_settings,
           release_track=self.ReleaseTrack())
       client = apis.WorkloadsClient(release_track=self.ReleaseTrack())
       self.created_resource = client.Create(

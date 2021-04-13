@@ -245,6 +245,33 @@ class EssentialcontactsV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SendTestMessage(self, request, global_params=None):
+      r"""Allows a contact admin to send a test message to contact to verify that it has been configured correctly.
+
+      Args:
+        request: (EssentialcontactsFoldersContactsSendTestMessageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('SendTestMessage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SendTestMessage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/folders/{foldersId}/contacts:sendTestMessage',
+        http_method='POST',
+        method_id='essentialcontacts.folders.contacts.sendTestMessage',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}/contacts:sendTestMessage',
+        request_field='googleCloudEssentialcontactsV1alpha1SendTestMessageRequest',
+        request_type_name='EssentialcontactsFoldersContactsSendTestMessageRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
     def Verify(self, request, global_params=None):
       r"""Verifies the email of a contact. This method does not require any authorization; authorization is based solely on the validity of the verification_token.
 
@@ -481,6 +508,33 @@ class EssentialcontactsV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SendTestMessage(self, request, global_params=None):
+      r"""Allows a contact admin to send a test message to contact to verify that it has been configured correctly.
+
+      Args:
+        request: (EssentialcontactsOrganizationsContactsSendTestMessageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('SendTestMessage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SendTestMessage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/organizations/{organizationsId}/contacts:sendTestMessage',
+        http_method='POST',
+        method_id='essentialcontacts.organizations.contacts.sendTestMessage',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}/contacts:sendTestMessage',
+        request_field='googleCloudEssentialcontactsV1alpha1SendTestMessageRequest',
+        request_type_name='EssentialcontactsOrganizationsContactsSendTestMessageRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
     def Verify(self, request, global_params=None):
       r"""Verifies the email of a contact. This method does not require any authorization; authorization is based solely on the validity of the verification_token.
 
@@ -714,6 +768,33 @@ class EssentialcontactsV1alpha1(base_api.BaseApiClient):
         request_field='googleCloudEssentialcontactsV1alpha1ResendVerificationRequest',
         request_type_name='EssentialcontactsProjectsContactsResendRequest',
         response_type_name='GoogleCloudEssentialcontactsV1alpha1Contact',
+        supports_download=False,
+    )
+
+    def SendTestMessage(self, request, global_params=None):
+      r"""Allows a contact admin to send a test message to contact to verify that it has been configured correctly.
+
+      Args:
+        request: (EssentialcontactsProjectsContactsSendTestMessageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('SendTestMessage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SendTestMessage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/contacts:sendTestMessage',
+        http_method='POST',
+        method_id='essentialcontacts.projects.contacts.sendTestMessage',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}/contacts:sendTestMessage',
+        request_field='googleCloudEssentialcontactsV1alpha1SendTestMessageRequest',
+        request_type_name='EssentialcontactsProjectsContactsSendTestMessageRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 

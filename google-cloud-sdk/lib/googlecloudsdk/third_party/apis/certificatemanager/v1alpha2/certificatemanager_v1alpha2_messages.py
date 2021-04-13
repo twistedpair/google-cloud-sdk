@@ -1877,7 +1877,9 @@ class Reference(_messages.Message):
   Fields:
     createTime: Output only. The creation time.
     details: Details of the reference type with no implied semantics.
-      Cumulative size of the field must not be more than 1KiB.
+      Cumulative size of the field must not be more than 1KiB. Note: For the
+      Arcus Reference API, you must add the proto you store in this field to
+      http://cs/symbol:cloud.cluster.reference.ReferencePayload
     name: Output only. Resource name of the reference. Includes target
       resource as a parent and reference uid
       `{target_resource}/references/{reference_id}`. For example,

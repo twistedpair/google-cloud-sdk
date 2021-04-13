@@ -183,12 +183,22 @@ def Instance(positional=True, text='Cloud Spanner instance ID.'):
         help=text)
 
 
+# Set required=False for alpha.
 def Nodes(required=True):
   return base.Argument(
       '--nodes',
       required=required,
       type=int,
       help='Number of nodes for the instance.')
+
+
+def ProcessingUnits(required=False):
+  return base.Argument(
+      '--processing-units',
+      required=required,
+      hidden=True,
+      type=int,
+      help='Number of processing units for the instance.')
 
 
 def OperationId(database=False):

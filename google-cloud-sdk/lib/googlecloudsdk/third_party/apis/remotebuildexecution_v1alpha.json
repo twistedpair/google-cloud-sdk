@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -1258,14 +1258,18 @@
             "No output files or directories were found neither relative to the execution root directory nor relative to the working directory.",
             "Output files or directories were found relative to the execution root directory but not relative to the working directory.",
             "Output files or directories were found relative to the working directory but not relative to the execution root directory.",
-            "Output files or directories were found both relative to the execution root directory and relative to the working directory."
+            "Output files or directories were found both relative to the execution root directory and relative to the working directory.",
+            "Output files or directories were found relative to the execution root directory but not relative to the working directory. In addition at least one output file or directory was found outside of the working directory such that a working-directory-relative-path would have needed to start with a `..`.",
+            "Output files or directories were found both relative to the execution root directory and relative to the working directory. In addition at least one exec-root-relative output file or directory was found outside of the working directory such that a working-directory-relative-path would have needed to start with a `..`."
           ],
           "enum": [
             "LOCATION_UNDEFINED",
             "LOCATION_NONE",
             "LOCATION_EXEC_ROOT_RELATIVE",
             "LOCATION_WORKING_DIR_RELATIVE",
-            "LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE"
+            "LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE",
+            "LOCATION_EXEC_ROOT_RELATIVE_OUTPUT_OUTSIDE_WORKING_DIR",
+            "LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE_OUTPUT_OUTSIDE_WORKING_DIR"
           ]
         }
       }

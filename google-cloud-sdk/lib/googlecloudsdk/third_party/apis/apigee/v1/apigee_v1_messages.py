@@ -280,9 +280,9 @@ class ApigeeOrganizationsApiproductsRateplansListRequest(_messages.Message):
       `organizations/{org}/apiproducts/-` to return rate plans for all API
       products within the organization.
     startKey: Name of the rate plan from which to start displaying the list of
-      rate plans. If omitted, list starts from the first item. For example, to
-      view the rate plans from 51-150, set the value of `start_key` to the
-      name of the 51st rate plan and set the value of `count` to 100.
+      rate plans. If omitted, the list starts from the first item. For
+      example, to view the rate plans from 51-150, set the value of `startKey`
+      to the name of the 51st rate plan and set the value of `count` to 100.
     state: State of the rate plans (`DRAFT`, `PUBLISHED`) that you want to
       display.
   """
@@ -1031,9 +1031,9 @@ class ApigeeOrganizationsDevelopersSubscriptionsCreateRequest(_messages.Message)
     googleCloudApigeeV1DeveloperSubscription: A
       GoogleCloudApigeeV1DeveloperSubscription resource to be passed as the
       request body.
-    parent: Required. Resource name of the Developer which is subscribing to
-      some API Product. Use the following structure in your request:
-      `organizations/{org}/developers/{developer_email}`
+    parent: Required. Email address of the developer that is purchasing a
+      subscription to the API product. Use the following structure in your
+      request: `organizations/{org}/developers/{developer_email}`
   """
 
   googleCloudApigeeV1DeveloperSubscription = _messages.MessageField('GoogleCloudApigeeV1DeveloperSubscription', 1)
@@ -1047,9 +1047,9 @@ class ApigeeOrganizationsDevelopersSubscriptionsExpireRequest(_messages.Message)
     googleCloudApigeeV1ExpireDeveloperSubscriptionRequest: A
       GoogleCloudApigeeV1ExpireDeveloperSubscriptionRequest resource to be
       passed as the request body.
-    name: Required. Resource name of the Developer Subscription. Use the
-      following structure in your request: `organizations/{org}/developers/{de
-      veloper_email}/subscriptions/{subscription}`
+    name: Required. Name of the API product subscription. Use the following
+      structure in your request: `organizations/{org}/developers/{developer_em
+      ail}/subscriptions/{subscription}`
   """
 
   googleCloudApigeeV1ExpireDeveloperSubscriptionRequest = _messages.MessageField('GoogleCloudApigeeV1ExpireDeveloperSubscriptionRequest', 1)
@@ -1060,9 +1060,9 @@ class ApigeeOrganizationsDevelopersSubscriptionsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsDevelopersSubscriptionsGetRequest object.
 
   Fields:
-    name: Required. Resource name of the Developer Subscription. Use the
-      following structure in your request: `organizations/{org}/developers/{de
-      veloper_email}/subscriptions/{subscription}`
+    name: Required. Name of the API product subscription. Use the following
+      structure in your request: `organizations/{org}/developers/{developer_em
+      ail}/subscriptions/{subscription}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1072,19 +1072,17 @@ class ApigeeOrganizationsDevelopersSubscriptionsListRequest(_messages.Message):
   r"""A ApigeeOrganizationsDevelopersSubscriptionsListRequest object.
 
   Fields:
-    count: The number of Subscriptions you want to retrieve from the API.
-      Leaving `count` empty will return 50 subscriptions. The maximum limit is
-      1000.
-    parent: Required. Resource name of the developer. Use the following
+    count: Number of API product subscriptions to return in the API call. Use
+      with `startKey` to provide more targeted filtering. Defaults to 100. The
+      maximum limit is 1000.
+    parent: Required. Email address of the developer. Use the following
       structure in your request:
       `organizations/{org}/developers/{developer_email}`
-    startKey: Used for pagination. `start_key` specifies the first
-      Subscription which will be included in the returned list of
-      Subscriptions. For example, to view the 100 Subscriptions from from
-      51-150, you will set the value of `start_key` to the `subscription_id`
-      of the 51st subscription and set the value of `count` to 100. If no
-      value is specified for this field, then it will return the first `count`
-      subscriptions.
+    startKey: Name of the API product subscription from which to start
+      displaying the list of subscriptions. If omitted, the list starts from
+      the first item. For example, to view the API product subscriptions from
+      51-150, set the value of `startKey` to the name of the 51st subscription
+      and set the value of `count` to 100.
   """
 
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3330,6 +3328,37 @@ class ApigeeOrganizationsSitesApicategoriesListRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
 
 
+class ApigeeProjectsMigrateConfigDataRequest(_messages.Message):
+  r"""A ApigeeProjectsMigrateConfigDataRequest object.
+
+  Fields:
+    googleCloudApigeeV1MigrateConfigDataRequest: A
+      GoogleCloudApigeeV1MigrateConfigDataRequest resource to be passed as the
+      request body.
+    project: Required. Name of the GCP project in which to migrate the
+      organization's config data in the following format:
+      `projects/{project}`.
+  """
+
+  googleCloudApigeeV1MigrateConfigDataRequest = _messages.MessageField('GoogleCloudApigeeV1MigrateConfigDataRequest', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class ApigeeProjectsMigrateDeveloperPortalsRequest(_messages.Message):
+  r"""A ApigeeProjectsMigrateDeveloperPortalsRequest object.
+
+  Fields:
+    googleCloudApigeeV1MigrateDeveloperPortalsRequest: A
+      GoogleCloudApigeeV1MigrateDeveloperPortalsRequest resource to be passed
+      as the request body.
+    project: Required. Name of the GCP project in which to migrate the
+      organization's developer portals `projects/{project}`.
+  """
+
+  googleCloudApigeeV1MigrateDeveloperPortalsRequest = _messages.MessageField('GoogleCloudApigeeV1MigrateDeveloperPortalsRequest', 1)
+  project = _messages.StringField(2, required=True)
+
+
 class ApigeeProjectsProvisionOrganizationRequest(_messages.Message):
   r"""A ApigeeProjectsProvisionOrganizationRequest object.
 
@@ -4872,17 +4901,17 @@ class GoogleCloudApigeeV1DeveloperSubscription(_messages.Message):
   r"""Structure of a DeveloperSubscription.
 
   Fields:
-    apiproduct: The name of the API Product to which the developer is
-      subscribing.
-    createdAt: Output only. Creation time of this subscription in milliseconds
+    apiproduct: Name of the API product for which the developer is purchasing
+      a subscription.
+    createdAt: Output only. Time when the API product subscription was created
+      in milliseconds since epoch.
+    endTime: Time when the API product subscription ends in milliseconds since
+      epoch.
+    lastModifiedAt: Output only. Time when the API product subscription was
+      last modified in milliseconds since epoch.
+    name: Output only. Name of the API product subscription.
+    startTime: Time when the API product subscription starts in milliseconds
       since epoch.
-    endTime: The time when the subscription will end. Specified as
-      milliseconds since epoch.
-    lastModifiedAt: Output only. Modified time of this subscription in
-      milliseconds since epoch.
-    name: Output only. The ID of the DeveloperSubscription.
-    startTime: The time when the subscription should be enabled. Specified as
-      milliseconds since epoch.
   """
 
   apiproduct = _messages.StringField(1)
@@ -5801,8 +5830,9 @@ class GoogleCloudApigeeV1ListDeveloperSubscriptionsResponse(_messages.Message):
 
   Fields:
     developerSubscriptions: List of all subscriptions.
-    nextStartKey: A key that can be sent as `start_key` to retrieve the next
-      page. If this field is omitted, there are no subsequent pages.
+    nextStartKey: Value that can be sent as `startKey` to retrieve the next
+      page of content. If this field is omitted, there are no subsequent
+      pages.
   """
 
   developerSubscriptions = _messages.MessageField('GoogleCloudApigeeV1DeveloperSubscription', 1, repeated=True)
@@ -5934,8 +5964,9 @@ class GoogleCloudApigeeV1ListRatePlansResponse(_messages.Message):
   r"""Response for ListRatePlans.
 
   Fields:
-    nextStartKey: A key that can be sent as `start_key` to retrieve the next
-      page. If this field is omitted, there are no subsequent pages.
+    nextStartKey: Value that can be sent as `startKey` to retrieve the next
+      page of content. If this field is omitted, there are no subsequent
+      pages.
     ratePlans: List of rate plans in an organization.
   """
 
@@ -5998,6 +6029,20 @@ class GoogleCloudApigeeV1Metric(_messages.Message):
 
   name = _messages.StringField(1)
   values = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1MigrateConfigDataRequest(_messages.Message):
+  r"""Request for MigrateConfigData.
+
+  Fields:
+    organizationId: Required. The id of the Apigee organization to migrate.
+  """
+
+  organizationId = _messages.StringField(1)
+
+
+class GoogleCloudApigeeV1MigrateDeveloperPortalsRequest(_messages.Message):
+  r"""Request for MigrateDeveloperPortals."""
 
 
 class GoogleCloudApigeeV1MonetizationConfig(_messages.Message):
@@ -7557,6 +7602,10 @@ class GoogleCloudApigeeV1TargetServer(_messages.Message):
   TargetEndpoint HTTPTargetConnections from concrete URLs for backend
   services.
 
+  Enums:
+    ProtocolValueValuesEnum: Immutable. The protocol used by this
+      TargetServer.
+
   Fields:
     description: Optional. A human-readable description of this TargetServer.
     host: Required. The host name this target connects to. Value must be a
@@ -7569,35 +7618,68 @@ class GoogleCloudApigeeV1TargetServer(_messages.Message):
       the regular expression
     port: Required. The port number this target connects to on the given host.
       Value must be between 1 and 65535, inclusive.
+    protocol: Immutable. The protocol used by this TargetServer.
     sSLInfo: Optional. Specifies TLS configuration info for this TargetServer.
       The JSON name is `sSLInfo` for legacy/backwards compatibility reasons --
       Edge originally supported SSL, and the name is still used for TLS
       configuration.
   """
 
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""Immutable. The protocol used by this TargetServer.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: UNSPECIFIED defaults to HTTP for backwards
+        compatibility.
+      HTTP: The TargetServer uses HTTP.
+      GRPC: The TargetServer uses GRPC.
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    HTTP = 1
+    GRPC = 2
+
   description = _messages.StringField(1)
   host = _messages.StringField(2)
   isEnabled = _messages.BooleanField(3)
   name = _messages.StringField(4)
   port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  sSLInfo = _messages.MessageField('GoogleCloudApigeeV1TlsInfo', 6)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 6)
+  sSLInfo = _messages.MessageField('GoogleCloudApigeeV1TlsInfo', 7)
 
 
 class GoogleCloudApigeeV1TargetServerConfig(_messages.Message):
   r"""A GoogleCloudApigeeV1TargetServerConfig object.
+
+  Enums:
+    ProtocolValueValuesEnum: The protocol used by this target server.
 
   Fields:
     host: Host name of the target server.
     name: Target server revision name in the following format: `organizations/
       {org}/environments/{env}/targetservers/{targetserver}/revisions/{rev}`
     port: Port number for the target server.
+    protocol: The protocol used by this target server.
     tlsInfo: TLS settings for the target server.
   """
+
+  class ProtocolValueValuesEnum(_messages.Enum):
+    r"""The protocol used by this target server.
+
+    Values:
+      PROTOCOL_UNSPECIFIED: UNSPECIFIED defaults to HTTP for backwards
+        compatibility.
+      HTTP: The TargetServer uses HTTP.
+      GRPC: The TargetServer uses GRPC.
+    """
+    PROTOCOL_UNSPECIFIED = 0
+    HTTP = 1
+    GRPC = 2
 
   host = _messages.StringField(1)
   name = _messages.StringField(2)
   port = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  tlsInfo = _messages.MessageField('GoogleCloudApigeeV1TlsInfoConfig', 4)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 4)
+  tlsInfo = _messages.MessageField('GoogleCloudApigeeV1TlsInfoConfig', 5)
 
 
 class GoogleCloudApigeeV1TestDatastoreResponse(_messages.Message):

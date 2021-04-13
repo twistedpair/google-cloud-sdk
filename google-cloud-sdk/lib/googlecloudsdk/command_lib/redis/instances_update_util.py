@@ -44,6 +44,7 @@ def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
   additional_update_args = [
       'maintenance_window_day',
       'maintenance_window_hour',
+      'maintenance_window_any',
   ]
   return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
 
@@ -168,6 +169,15 @@ def UpdateMaintenanceWindowDay(unused_instance_ref, args, patch_request):
 def UpdateMaintenanceWindowHour(unused_instance_ref, args, patch_request):
   """Hook to update maintenance window hour to the update mask of the request."""
   if args.IsSpecified('maintenance_window_hour'):
+    patch_request = AddFieldToUpdateMask('maintenance_policy',
+                                         patch_request)
+  return patch_request
+
+
+def UpdateMaintenanceWindowAny(unused_instance_ref, args, patch_request):
+  """Hook to remove maintenance window."""
+  if args.IsSpecified('maintenance_window_any'):
+    patch_request.instance.maintenancePolicy = None
     patch_request = AddFieldToUpdateMask('maintenance_policy',
                                          patch_request)
   return patch_request

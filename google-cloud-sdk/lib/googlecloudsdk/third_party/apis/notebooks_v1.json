@@ -256,6 +256,556 @@
       "properties": {
       }
     },
+    "ListRuntimesResponse": {
+      "id": "ListRuntimesResponse",
+      "description": "Response for listing Managed Notebook Runtimes.",
+      "type": "object",
+      "properties": {
+        "runtimes": {
+          "description": "A list of returned Runtimes.",
+          "type": "array",
+          "items": {
+            "$ref": "Runtime"
+          }
+        },
+        "nextPageToken": {
+          "description": "Page token that can be used to continue listing from the last result in the next list call.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached. For example, ['us-west1', 'us-central1']. A ListRuntimesResponse will only contain either runtimes or unreachables,",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Runtime": {
+      "id": "Runtime",
+      "description": "The definition of a Runtime for a managed notebook instance.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the runtime. Format: `projects\/{project}\/locations\/{location}\/runtimes\/{runtime}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "virtualMachine": {
+          "description": "Use a Compute Engine VM image to start the managed notebook instance.",
+          "$ref": "VirtualMachine"
+        },
+        "state": {
+          "description": "Output only. Runtime state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State is not specified.",
+            "The compute layer is starting the runtime. It is not ready for use.",
+            "The compute layer is installing required frameworks and registering the runtime with notebook proxy. It cannot be used.",
+            "The runtime is currently running. It is ready for use.",
+            "The control logic is stopping the runtime. It cannot be used.",
+            "The runtime is stopped. It cannot be used.",
+            "The runtime is being deleted. It cannot be used.",
+            "The runtime is upgrading. It cannot be used.",
+            "The runtime is being created and set up. It is not ready for use."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "STARTING",
+            "PROVISIONING",
+            "ACTIVE",
+            "STOPPING",
+            "STOPPED",
+            "DELETING",
+            "UPGRADING",
+            "INITIALIZING"
+          ]
+        },
+        "healthState": {
+          "description": "Output only. Runtime health_state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The runtime substate is unknown.",
+            "The runtime is known to be in an healthy state (for example, critical daemons are running) Applies to ACTIVE state.",
+            "The runtime is known to be in an unhealthy state (for example, critical daemons are not running) Applies to ACTIVE state."
+          ],
+          "enum": [
+            "HEALTH_STATE_UNSPECIFIED",
+            "HEALTHY",
+            "UNHEALTHY"
+          ]
+        },
+        "accessConfig": {
+          "description": "The config settings for accessing runtime.",
+          "$ref": "RuntimeAccessConfig"
+        },
+        "softwareConfig": {
+          "description": "The config settings for software inside the runtime.",
+          "$ref": "RuntimeSoftwareConfig"
+        },
+        "metrics": {
+          "description": "Output only. Contains Runtime daemon metrics such as Service status and JupyterLab stats.",
+          "readOnly": true,
+          "$ref": "RuntimeMetrics"
+        },
+        "createTime": {
+          "description": "Output only. Runtime creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Runtime update time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "VirtualMachine": {
+      "id": "VirtualMachine",
+      "description": "Runtime using Virtual Machine for computing.",
+      "type": "object",
+      "properties": {
+        "instanceName": {
+          "description": "Output only. The user-friendly name of the Managed Compute Engine instance.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "instanceId": {
+          "description": "Output only. The unique identifier of the Managed Compute Engine instance.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "virtualMachineConfig": {
+          "description": "Virtual Machine configuration settings.",
+          "$ref": "VirtualMachineConfig"
+        }
+      }
+    },
+    "VirtualMachineConfig": {
+      "id": "VirtualMachineConfig",
+      "description": "The config settings for virtual machine.",
+      "type": "object",
+      "properties": {
+        "zone": {
+          "description": "Output only. The zone where the virtual machine is located. If using regional request, the notebooks service will pick a location in the corresponding runtime region. On a get request, zone will always be present. Example: * `us-central1-b`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "machineType": {
+          "description": "Required. The Compute Engine machine type used for runtimes. Short name is valid. Examples: * `n1-standard-2` * `e2-standard-8`",
+          "type": "string"
+        },
+        "containerImages": {
+          "description": "Optional. Use a list of container images to start the notebook instance.",
+          "type": "array",
+          "items": {
+            "$ref": "ContainerImage"
+          }
+        },
+        "dataDisk": {
+          "description": "Required. Data disk option configuration settings.",
+          "$ref": "LocalDisk"
+        },
+        "encryptionConfig": {
+          "description": "Optional. Encryption settings for virtual machine data disk.",
+          "$ref": "EncryptionConfig"
+        },
+        "shieldedInstanceConfig": {
+          "description": "Optional. Shielded VM Instance configuration settings.",
+          "$ref": "RuntimeShieldedInstanceConfig"
+        },
+        "acceleratorConfig": {
+          "description": "Optional. The Compute Engine accelerator configuration for this runtime.",
+          "$ref": "RuntimeAcceleratorConfig"
+        },
+        "network": {
+          "description": "Optional. The Compute Engine network to be used for machine communications. Cannot be specified with subnetwork. If neither `network` nor `subnet` is specified, the \"default\" network of the project is used, if it exists. A full URL or partial URI. Examples: * `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/global\/default` * `projects\/[project_id]\/regions\/global\/default` Runtimes are managed resources inside Google Infrastructure. Runtimes support the following network configurations: * Google Managed Network (Network & subnet are empty) * Consumer Project VPC (network & subnet are required). Requires configuring Private Service Access. * Shared VPC (network & subnet are required). Requires configuring Private Service Access.",
+          "type": "string"
+        },
+        "subnet": {
+          "description": "Optional. The Compute Engine subnetwork to be used for machine communications. Cannot be specified with network. A full URL or partial URI are valid. Examples: * `https:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/regions\/us-east1\/subnetworks\/sub0` * `projects\/[project_id]\/regions\/us-east1\/subnetworks\/sub0`",
+          "type": "string"
+        },
+        "internalIpOnly": {
+          "description": "Optional. If true, runtime will only have internal IP addresses. By default, runtimes are not restricted to internal IP addresses, and will have ephemeral external IP addresses assigned to each vm. This `internal_ip_only` restriction can only be enabled for subnetwork enabled networks, and all dependencies must be configured to be accessible without external IP addresses.",
+          "type": "boolean"
+        },
+        "tags": {
+          "description": "Optional. The Compute Engine tags to add to runtime (see [Tagging instances](https:\/\/cloud.google.com\/compute\/docs\/label-or-tag-resources#tags)).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "guestAttributes": {
+          "description": "Output only. The Compute Engine guest attributes. (see [Project and instance guest attributes](https:\/\/cloud.google.com\/compute\/docs\/storing-retrieving-metadata#guest_attributes)).",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Optional. The Compute Engine metadata entries to add to virtual machine. (see [Project and instance metadata](https:\/\/cloud.google.com\/compute\/docs\/storing-retrieving-metadata#project_and_instance_metadata)).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "description": "Optional. The labels to associate with this runtime. Label **keys** must contain 1 to 63 characters, and must conform to [RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Label **values** may be empty, but, if present, must contain 1 to 63 characters, and must conform to [RFC 1035](https:\/\/www.ietf.org\/rfc\/rfc1035.txt). No more than 32 labels can be associated with a cluster.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "nicType": {
+          "description": "Optional. The type of vNIC to be used on this interface. This may be gVNIC or VirtioNet.",
+          "type": "string",
+          "enumDescriptions": [
+            "No type specified.",
+            "VIRTIO",
+            "GVNIC"
+          ],
+          "enum": [
+            "UNSPECIFIED_NIC_TYPE",
+            "VIRTIO_NET",
+            "GVNIC"
+          ]
+        }
+      }
+    },
+    "ContainerImage": {
+      "id": "ContainerImage",
+      "description": "Definition of a container image for starting a notebook instance with the environment installed in a container.",
+      "type": "object",
+      "properties": {
+        "repository": {
+          "description": "Required. The path to the container image repository. For example: `gcr.io\/{project_id}\/{image_name}`",
+          "type": "string"
+        },
+        "tag": {
+          "description": "The tag of the container image. If not specified, this defaults to the latest tag.",
+          "type": "string"
+        }
+      }
+    },
+    "LocalDisk": {
+      "id": "LocalDisk",
+      "description": "An Local attached disk resource.",
+      "type": "object",
+      "properties": {
+        "autoDelete": {
+          "description": "Output only. Specifies whether the disk will be auto-deleted when the instance is deleted (but not when the disk is detached from the instance).",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "boot": {
+          "description": "Output only. Indicates that this is a boot disk. The virtual machine will use the first partition of the disk for its root filesystem.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "deviceName": {
+          "description": "Output only. Specifies a unique device name of your choice that is reflected into the \/dev\/disk\/by-id\/google-* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance. If not specified, the server chooses a default device name to apply to this disk, in the form persistent-disk-x, where x is a number assigned by Google Compute Engine. This field is only applicable for persistent disks.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "guestOsFeatures": {
+          "description": "Output only. Indicates a list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "RuntimeGuestOsFeature"
+          }
+        },
+        "index": {
+          "description": "Output only. [Output Only] A zero-based index to this disk, where 0 is reserved for the boot disk. If you have many disks attached to an instance, each disk would have a unique index number.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "initializeParams": {
+          "description": "Input only. [Input Only] Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance. This property is mutually exclusive with the source property; you can only define one or the other, but not both.",
+          "$ref": "LocalDiskInitializeParams"
+        },
+        "interface": {
+          "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. Valid values: NVME SCSI",
+          "type": "string"
+        },
+        "kind": {
+          "description": "Output only. Type of the resource. Always compute#attachedDisk for attached disks.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "licenses": {
+          "description": "Output only. [Output Only] Any valid publicly visible licenses.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mode": {
+          "description": "The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode. Valid values: READ_ONLY READ_WRITE",
+          "type": "string"
+        },
+        "source": {
+          "description": "Specifies a valid partial or full URL to an existing Persistent Disk resource.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Specifies the type of the disk, either SCRATCH or PERSISTENT. If not specified, the default is PERSISTENT. Valid values: PERSISTENT SCRATCH",
+          "type": "string"
+        }
+      }
+    },
+    "RuntimeGuestOsFeature": {
+      "id": "RuntimeGuestOsFeature",
+      "description": "A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. Guest OS features for boot disk.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. Valid values: FEATURE_TYPE_UNSPECIFIED MULTI_IP_SUBNET SECURE_BOOT UEFI_COMPATIBLE VIRTIO_SCSI_MULTIQUEUE WINDOWS",
+          "type": "string"
+        }
+      }
+    },
+    "LocalDiskInitializeParams": {
+      "id": "LocalDiskInitializeParams",
+      "description": "[Input Only] Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new runtime. This property is mutually exclusive with the source property; you can only define one or the other, but not both.",
+      "type": "object",
+      "properties": {
+        "description": {
+          "description": "Optional. Provide this property when creating the disk.",
+          "type": "string"
+        },
+        "diskName": {
+          "description": "Optional. Specifies the disk name. If not specified, the default is to use the name of the instance. If the disk with the instance name exists already in the given zone\/region, a new name will be automatically generated.",
+          "type": "string"
+        },
+        "diskSizeGb": {
+          "description": "Optional. Specifies the size of the disk in base-2 GB. If not specified, the disk will be the same size as the image (usually 10GB). If specified, the size must be equal to or larger than 10GB. Default 100 GB.",
+          "type": "string",
+          "format": "int64"
+        },
+        "diskType": {
+          "description": "Input only. The type of the boot disk attached to this instance, defaults to standard persistent disk (`PD_STANDARD`).",
+          "type": "string",
+          "enumDescriptions": [
+            "Disk type not set.",
+            "Standard persistent disk type.",
+            "SSD persistent disk type.",
+            "Balanced persistent disk type."
+          ],
+          "enum": [
+            "DISK_TYPE_UNSPECIFIED",
+            "PD_STANDARD",
+            "PD_SSD",
+            "PD_BALANCED"
+          ]
+        },
+        "labels": {
+          "description": "Optional. Labels to apply to this disk. These can be later modified by the disks.setLabels method. This field is only applicable for persistent disks.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "EncryptionConfig": {
+      "id": "EncryptionConfig",
+      "description": "Represents a custom encryption key configuration that can be applied to a resource. This will encrypt all disks in Virtual Machine.",
+      "type": "object",
+      "properties": {
+        "kmsKey": {
+          "description": "The Cloud KMS resource identifier of the customer-managed encryption key used to protect a resource, such as a disks. It has the following format: `projects\/{PROJECT_ID}\/locations\/{REGION}\/keyRings\/{KEY_RING_NAME}\/cryptoKeys\/{KEY_NAME}`",
+          "type": "string"
+        }
+      }
+    },
+    "RuntimeShieldedInstanceConfig": {
+      "id": "RuntimeShieldedInstanceConfig",
+      "description": "A set of Shielded Instance options. Check [Images using supported Shielded VM features] Not all combinations are valid.",
+      "type": "object",
+      "properties": {
+        "enableSecureBoot": {
+          "description": "Defines whether the instance has Secure Boot enabled. Secure Boot helps ensure that the system only runs authentic software by verifying the digital signature of all boot components, and halting the boot process if signature verification fails. Disabled by default.",
+          "type": "boolean"
+        },
+        "enableVtpm": {
+          "description": "Defines whether the instance has the vTPM enabled. Enabled by default.",
+          "type": "boolean"
+        },
+        "enableIntegrityMonitoring": {
+          "description": "Defines whether the instance has integrity monitoring enabled. Enables monitoring and attestation of the boot integrity of the instance. The attestation is performed against the integrity policy baseline. This baseline is initially derived from the implicitly trusted boot image when the instance is created. Enabled by default.",
+          "type": "boolean"
+        }
+      }
+    },
+    "RuntimeAcceleratorConfig": {
+      "id": "RuntimeAcceleratorConfig",
+      "description": "Definition of the types of hardware accelerators that can be used. Definition of the types of hardware accelerators that can be used. See [Compute Engine AcceleratorTypes](https:\/\/cloud.google.com\/compute\/docs\/reference\/beta\/acceleratorTypes). Examples: * `nvidia-tesla-k80` * `nvidia-tesla-p100` * `nvidia-tesla-v100` * `nvidia-tesla-p4` * `nvidia-tesla-t4` * `nvidia-tesla-a100`",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Accelerator model.",
+          "type": "string",
+          "enumDescriptions": [
+            "Accelerator type is not specified.",
+            "Accelerator type is Nvidia Tesla K80.",
+            "Accelerator type is Nvidia Tesla P100.",
+            "Accelerator type is Nvidia Tesla V100.",
+            "Accelerator type is Nvidia Tesla P4.",
+            "Accelerator type is Nvidia Tesla T4.",
+            "Accelerator type is Nvidia Tesla A100.",
+            "(Coming soon) Accelerator type is TPU V2.",
+            "(Coming soon) Accelerator type is TPU V3.",
+            "Accelerator type is NVIDIA Tesla T4 Virtual Workstations.",
+            "Accelerator type is NVIDIA Tesla P100 Virtual Workstations.",
+            "Accelerator type is NVIDIA Tesla P4 Virtual Workstations."
+          ],
+          "enum": [
+            "ACCELERATOR_TYPE_UNSPECIFIED",
+            "NVIDIA_TESLA_K80",
+            "NVIDIA_TESLA_P100",
+            "NVIDIA_TESLA_V100",
+            "NVIDIA_TESLA_P4",
+            "NVIDIA_TESLA_T4",
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3",
+            "NVIDIA_TESLA_T4_VWS",
+            "NVIDIA_TESLA_P100_VWS",
+            "NVIDIA_TESLA_P4_VWS"
+          ]
+        },
+        "coreCount": {
+          "description": "Count of cores of this accelerator.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "RuntimeAccessConfig": {
+      "id": "RuntimeAccessConfig",
+      "description": "Specifies the login configuration for Runtime",
+      "type": "object",
+      "properties": {
+        "accessType": {
+          "description": "The type of access mode this instance.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified access.",
+            "Single user login."
+          ],
+          "enum": [
+            "RUNTIME_ACCESS_TYPE_UNSPECIFIED",
+            "SINGLE_USER"
+          ]
+        },
+        "runtimeOwner": {
+          "description": "The owner of this runtime after creation. Format: `alias@example.com` Currently supports one owner only.",
+          "type": "string"
+        },
+        "proxyUri": {
+          "description": "Output only. The proxy endpoint that is used to access the runtime.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "RuntimeSoftwareConfig": {
+      "id": "RuntimeSoftwareConfig",
+      "description": "Specifies the selection and config of software inside the runtime. \/ The properties to set on runtime. Properties keys are specified in `key:value` format, for example: * idle_shutdown: idle_shutdown=true * idle_shutdown_timeout: idle_shutdown_timeout=180 * report-system-health: report-system-health=true",
+      "type": "object",
+      "properties": {
+        "notebookUpgradeSchedule": {
+          "description": "Cron expression in UTC timezone, used to schedule instance auto upgrade. Please follow the [cron format](https:\/\/en.wikipedia.org\/wiki\/Cron).",
+          "type": "string"
+        },
+        "enableHealthMonitoring": {
+          "description": "Verifies core internal services are running. Default: True",
+          "type": "boolean"
+        },
+        "idleShutdown": {
+          "description": "Runtime will automatically shutdown after idle_shutdown_time. Default: False",
+          "type": "boolean"
+        },
+        "idleShutdownTimeout": {
+          "description": "Time in minutes to wait before shuting down runtime. Default: 90 minutes",
+          "type": "integer",
+          "format": "int32"
+        },
+        "installGpuDriver": {
+          "description": "Install Nvidia Driver automatically.",
+          "type": "boolean"
+        },
+        "customGpuDriverPath": {
+          "description": "Specify a custom Cloud Storage path where the GPU driver is stored. If not specified, we'll automatically choose from official GPU drivers.",
+          "type": "string"
+        },
+        "postStartupScript": {
+          "description": "Path to a Bash script that automatically runs after a notebook instance fully boots up. The path must be a URL or Cloud Storage path (gs:\/\/path-to-file\/file-name).",
+          "type": "string"
+        }
+      }
+    },
+    "RuntimeMetrics": {
+      "id": "RuntimeMetrics",
+      "description": "Contains runtime daemon metrics, such as OS and kernels and sessions stats.",
+      "type": "object",
+      "properties": {
+        "systemMetrics": {
+          "description": "Output only. The system metrics.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "StartRuntimeRequest": {
+      "id": "StartRuntimeRequest",
+      "description": "Request for starting a Managed Notebook Runtime.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "StopRuntimeRequest": {
+      "id": "StopRuntimeRequest",
+      "description": "Request for stopping a Managed Notebook Runtime.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "SwitchRuntimeRequest": {
+      "id": "SwitchRuntimeRequest",
+      "description": "Request for switching a Managed Notebook Runtime.",
+      "type": "object",
+      "properties": {
+        "machineType": {
+          "description": "machine type.",
+          "type": "string"
+        },
+        "acceleratorConfig": {
+          "description": "accelerator config.",
+          "$ref": "RuntimeAcceleratorConfig"
+        }
+      }
+    },
+    "ResetRuntimeRequest": {
+      "id": "ResetRuntimeRequest",
+      "description": "Request for reseting a Managed Notebook Runtime.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListInstancesResponse": {
       "id": "ListInstancesResponse",
       "description": "Response for listing notebook instances.",
@@ -491,6 +1041,20 @@
             "$ref": "UpgradeHistoryEntry"
           }
         },
+        "nicType": {
+          "description": "Optional. The type of vNIC to be used on this interface. This may be gVNIC or VirtioNet.",
+          "type": "string",
+          "enumDescriptions": [
+            "No type specified.",
+            "VIRTIO",
+            "GVNIC"
+          ],
+          "enum": [
+            "UNSPECIFIED_NIC_TYPE",
+            "VIRTIO_NET",
+            "GVNIC"
+          ]
+        },
         "createTime": {
           "description": "Output only. Instance creation time.",
           "readOnly": true,
@@ -520,21 +1084,6 @@
         },
         "imageFamily": {
           "description": "Use this VM image family to find the image; the newest image in this family will be used.",
-          "type": "string"
-        }
-      }
-    },
-    "ContainerImage": {
-      "id": "ContainerImage",
-      "description": "Definition of a container image for starting a notebook instance with the environment installed in a container.",
-      "type": "object",
-      "properties": {
-        "repository": {
-          "description": "Required. The path to the container image repository. For example: `gcr.io\/{project_id}\/{image_name}`",
-          "type": "string"
-        },
-        "tag": {
-          "description": "The tag of the container image. If not specified, this defaults to the latest tag.",
           "type": "string"
         }
       }
@@ -940,6 +1489,17 @@
       "properties": {
       }
     },
+    "RollbackInstanceRequest": {
+      "id": "RollbackInstanceRequest",
+      "description": "Request for rollbacking a notebook instance",
+      "type": "object",
+      "properties": {
+        "targetSnapshot": {
+          "description": "Required. The snapshot for rollback. Example: \"projects\/test-project\/global\/snapshots\/krwlzipynril\".",
+          "type": "string"
+        }
+      }
+    },
     "UpgradeInstanceInternalRequest": {
       "id": "UpgradeInstanceInternalRequest",
       "description": "Request for upgrading a notebook instance from within the VM",
@@ -1169,6 +1729,10 @@
         },
         "parameters": {
           "description": "Parameters used within the 'input_notebook_file' notebook.",
+          "type": "string"
+        },
+        "serviceAccount": {
+          "description": "The email address of a service account to use when running the execution. You must have the `iam.serviceAccounts.actAs` permission for the specified service account.",
           "type": "string"
         }
       }
@@ -1654,6 +2218,241 @@
                 }
               }
             },
+            "runtimes": {
+              "methods": {
+                "list": {
+                  "id": "notebooks.projects.locations.runtimes.list",
+                  "path": "v1/{+parent}/runtimes",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum return size of the list call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A previous returned page token that can be used to continue listing from the last result.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListRuntimesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Runtimes in a given project and location."
+                },
+                "get": {
+                  "id": "notebooks.projects.locations.runtimes.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/runtimes\/{runtime_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Runtime"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single Runtime. The location must be a regional endpoint rather than zonal."
+                },
+                "create": {
+                  "id": "notebooks.projects.locations.runtimes.create",
+                  "path": "v1/{+parent}/runtimes",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "runtimeId": {
+                      "description": "Required. User-defined unique ID of this Runtime.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Runtime"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Runtime in a given project and location."
+                },
+                "delete": {
+                  "id": "notebooks.projects.locations.runtimes.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/runtimes\/{runtime_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single Runtime."
+                },
+                "start": {
+                  "id": "notebooks.projects.locations.runtimes.start",
+                  "path": "v1/{+name}:start",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:start",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/runtimes\/{runtime_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "StartRuntimeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts a Managed Notebook Runtime. Perform \"Start\" on GPU instances; \"Resume\" on CPU instances See: https:\/\/cloud.google.com\/compute\/docs\/instances\/stop-start-instance https:\/\/cloud.google.com\/compute\/docs\/instances\/suspend-resume-instance"
+                },
+                "stop": {
+                  "id": "notebooks.projects.locations.runtimes.stop",
+                  "path": "v1/{+name}:stop",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:stop",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/runtimes\/{runtime_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "StopRuntimeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Stops a Managed Notebook Runtime. Perform \"Stop\" on GPU instances; \"Suspend\" on CPU instances See: https:\/\/cloud.google.com\/compute\/docs\/instances\/stop-start-instance https:\/\/cloud.google.com\/compute\/docs\/instances\/suspend-resume-instance"
+                },
+                "switch": {
+                  "id": "notebooks.projects.locations.runtimes.switch",
+                  "path": "v1/{+name}:switch",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:switch",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/runtimes\/{runtime_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "SwitchRuntimeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Switch a Managed Notebook Runtime."
+                },
+                "reset": {
+                  "id": "notebooks.projects.locations.runtimes.reset",
+                  "path": "v1/{+name}:reset",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:reset",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/runtimes\/{runtime_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ResetRuntimeRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Resets a Managed Notebook Runtime."
+                }
+              }
+            },
             "instances": {
               "methods": {
                 "list": {
@@ -2104,6 +2903,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Upgrades a notebook instance to the latest version."
+                },
+                "rollback": {
+                  "id": "notebooks.projects.locations.instances.rollback",
+                  "path": "v1/{+name}:rollback",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:rollback",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RollbackInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rollbacks a notebook instance to the previous version."
                 },
                 "upgradeInternal": {
                   "id": "notebooks.projects.locations.instances.upgradeInternal",

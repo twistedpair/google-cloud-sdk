@@ -1033,7 +1033,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Copy(self, request, global_params=None):
-      r"""Copies a set of log entries from a bucket. The destination can be a Cloud Storage bucket, a Pub/Sub topic, a BigQuery dataset or a LogBucket.
+      r"""Copies a set of log entries from a logging bucket to a Cloud Storage bucket.
 
       Args:
         request: (CopyLogEntriesRequest) input message

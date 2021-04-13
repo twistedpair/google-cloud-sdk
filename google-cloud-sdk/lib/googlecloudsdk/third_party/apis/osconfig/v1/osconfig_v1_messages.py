@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'osconfig'
@@ -58,9 +59,9 @@ class CancelPatchJobRequest(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -186,6 +187,280 @@ class GooSettings(_messages.Message):
   r"""Googet patching is performed by running `googet update`."""
 
 
+class Inventory(_messages.Message):
+  r"""The inventory details of a VM.
+
+  Messages:
+    ItemsValue: Inventory items related to the VM keyed by an opaque unique
+      identifier for each inventory item. The identifier is unique to each
+      distinct and addressable inventory item and will change, when there is a
+      new package version.
+
+  Fields:
+    items: Inventory items related to the VM keyed by an opaque unique
+      identifier for each inventory item. The identifier is unique to each
+      distinct and addressable inventory item and will change, when there is a
+      new package version.
+    osInfo: Base level operating system information for the VM.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""Inventory items related to the VM keyed by an opaque unique identifier
+    for each inventory item. The identifier is unique to each distinct and
+    addressable inventory item and will change, when there is a new package
+    version.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ItemsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A InventoryItem attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('InventoryItem', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  items = _messages.MessageField('ItemsValue', 1)
+  osInfo = _messages.MessageField('InventoryOsInfo', 2)
+
+
+class InventoryItem(_messages.Message):
+  r"""A single piece of inventory on a VM.
+
+  Enums:
+    OriginTypeValueValuesEnum: The origin of this inventory item.
+    TypeValueValuesEnum: The specific type of inventory, correlating to its
+      specific details.
+
+  Fields:
+    availablePackage: Software package available to be installed on the VM
+      instance.
+    createTime: When this inventory item was first detected.
+    id: Identifier for this item, unique across items for this VM.
+    installedPackage: Software package present on the VM instance.
+    originType: The origin of this inventory item.
+    type: The specific type of inventory, correlating to its specific details.
+    updateTime: When this inventory item was last modified.
+  """
+
+  class OriginTypeValueValuesEnum(_messages.Enum):
+    r"""The origin of this inventory item.
+
+    Values:
+      ORIGIN_TYPE_UNSPECIFIED: Invalid. An origin type must be specified.
+      INVENTORY_REPORT: This inventory item was discovered as the result of
+        the agent reporting inventory via the reporting API.
+    """
+    ORIGIN_TYPE_UNSPECIFIED = 0
+    INVENTORY_REPORT = 1
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The specific type of inventory, correlating to its specific details.
+
+    Values:
+      TYPE_UNSPECIFIED: Invalid. An type must be specified.
+      INSTALLED_PACKAGE: This represents a package that is installed on the
+        VM.
+      AVAILABLE_PACKAGE: This represents an update that is available for a
+        package.
+    """
+    TYPE_UNSPECIFIED = 0
+    INSTALLED_PACKAGE = 1
+    AVAILABLE_PACKAGE = 2
+
+  availablePackage = _messages.MessageField('InventorySoftwarePackage', 1)
+  createTime = _messages.StringField(2)
+  id = _messages.StringField(3)
+  installedPackage = _messages.MessageField('InventorySoftwarePackage', 4)
+  originType = _messages.EnumField('OriginTypeValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
+class InventoryOsInfo(_messages.Message):
+  r"""Operating system information for the VM.
+
+  Fields:
+    architecture: The system architecture of the operating system.
+    hostname: The VM hostname.
+    kernelRelease: The kernel release of the operating system.
+    kernelVersion: The kernel version of the operating system.
+    longName: The operating system long name. For example 'Debian GNU/Linux 9'
+      or 'Microsoft Window Server 2019 Datacenter'.
+    osconfigAgentVersion: The current version of the OS Config agent running
+      on the VM.
+    shortName: The operating system short name. For example, 'windows' or
+      'debian'.
+    version: The version of the operating system.
+  """
+
+  architecture = _messages.StringField(1)
+  hostname = _messages.StringField(2)
+  kernelRelease = _messages.StringField(3)
+  kernelVersion = _messages.StringField(4)
+  longName = _messages.StringField(5)
+  osconfigAgentVersion = _messages.StringField(6)
+  shortName = _messages.StringField(7)
+  version = _messages.StringField(8)
+
+
+class InventorySoftwarePackage(_messages.Message):
+  r"""Software package information of the operating system.
+
+  Fields:
+    aptPackage: Details of an APT package. For details about the apt package
+      manager, see https://wiki.debian.org/Apt.
+    cosPackage: Details of a COS package.
+    googetPackage: Details of a Googet package. For details about the googet
+      package manager, see https://github.com/google/googet.
+    qfePackage: Details of a Windows Quick Fix engineering package. See
+      https://docs.microsoft.com/en-
+      us/windows/win32/cimwin32prov/win32-quickfixengineering for info in
+      Windows Quick Fix Engineering.
+    wuaPackage: Details of a Windows Update package. See
+      https://docs.microsoft.com/en-us/windows/win32/api/_wua/ for information
+      about Windows Update.
+    yumPackage: Yum package info. For details about the yum package manager,
+      see https://access.redhat.com/documentation/en-
+      us/red_hat_enterprise_linux/6/html/deployment_guide/ch-yum.
+    zypperPackage: Details of a Zypper package. For details about the Zypper
+      package manager, see https://en.opensuse.org/SDB:Zypper_manual.
+    zypperPatch: Details of a Zypper patch. For details about the Zypper
+      package manager, see https://en.opensuse.org/SDB:Zypper_manual.
+  """
+
+  aptPackage = _messages.MessageField('InventoryVersionedPackage', 1)
+  cosPackage = _messages.MessageField('InventoryVersionedPackage', 2)
+  googetPackage = _messages.MessageField('InventoryVersionedPackage', 3)
+  qfePackage = _messages.MessageField('InventoryWindowsQuickFixEngineeringPackage', 4)
+  wuaPackage = _messages.MessageField('InventoryWindowsUpdatePackage', 5)
+  yumPackage = _messages.MessageField('InventoryVersionedPackage', 6)
+  zypperPackage = _messages.MessageField('InventoryVersionedPackage', 7)
+  zypperPatch = _messages.MessageField('InventoryZypperPatch', 8)
+
+
+class InventoryVersionedPackage(_messages.Message):
+  r"""Information related to the a standard versioned package. This includes
+  package info for APT, Yum, Zypper, and Googet package managers.
+
+  Fields:
+    architecture: The system architecture this package is intended for.
+    packageName: The name of the package.
+    version: The version of the package.
+  """
+
+  architecture = _messages.StringField(1)
+  packageName = _messages.StringField(2)
+  version = _messages.StringField(3)
+
+
+class InventoryWindowsQuickFixEngineeringPackage(_messages.Message):
+  r"""Information related to a Quick Fix Engineering package. Fields are taken
+  from Windows QuickFixEngineering Interface and match the source names:
+  https://docs.microsoft.com/en-
+  us/windows/win32/cimwin32prov/win32-quickfixengineering
+
+  Fields:
+    caption: A short textual description of the QFE update.
+    description: A textual description of the QFE update.
+    hotFixId: Unique identifier associated with a particular QFE update.
+    installTime: Date that the QFE update was installed. Mapped from
+      installed_on field.
+  """
+
+  caption = _messages.StringField(1)
+  description = _messages.StringField(2)
+  hotFixId = _messages.StringField(3)
+  installTime = _messages.StringField(4)
+
+
+class InventoryWindowsUpdatePackage(_messages.Message):
+  r"""Details related to a Windows Update package. Field data and names are
+  taken from Windows Update API IUpdate Interface:
+  https://docs.microsoft.com/en-us/windows/win32/api/_wua/ Descriptive fields
+  like title, and description are localized based on the locale of the VM
+  being updated.
+
+  Fields:
+    categories: The categories that are associated with this update package.
+    description: The localized description of the update package.
+    kbArticleIds: A collection of Microsoft Knowledge Base article IDs that
+      are associated with the update package.
+    lastDeploymentChangeTime: The last published date of the update, in (UTC)
+      date and time.
+    moreInfoUrls: A collection of URLs that provide more information about the
+      update package.
+    revisionNumber: The revision number of this update package.
+    supportUrl: A hyperlink to the language-specific support information for
+      the update.
+    title: The localized title of the update package.
+    updateId: Gets the identifier of an update package. Stays the same across
+      revisions.
+  """
+
+  categories = _messages.MessageField('InventoryWindowsUpdatePackageWindowsUpdateCategory', 1, repeated=True)
+  description = _messages.StringField(2)
+  kbArticleIds = _messages.StringField(3, repeated=True)
+  lastDeploymentChangeTime = _messages.StringField(4)
+  moreInfoUrls = _messages.StringField(5, repeated=True)
+  revisionNumber = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  supportUrl = _messages.StringField(7)
+  title = _messages.StringField(8)
+  updateId = _messages.StringField(9)
+
+
+class InventoryWindowsUpdatePackageWindowsUpdateCategory(_messages.Message):
+  r"""Categories specified by the Windows Update.
+
+  Fields:
+    id: The identifier of the windows update category.
+    name: The name of the windows update category.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class InventoryZypperPatch(_messages.Message):
+  r"""Details related to a Zypper Patch.
+
+  Fields:
+    category: The category of the patch.
+    patchName: The name of the patch.
+    severity: The severity specified for this patch
+    summary: Any summary information provided about this patch.
+  """
+
+  category = _messages.StringField(1)
+  patchName = _messages.StringField(2)
+  severity = _messages.StringField(3)
+  summary = _messages.StringField(4)
+
+
+class ListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
 class ListPatchDeploymentsResponse(_messages.Message):
   r"""A response message for listing patch deployments.
 
@@ -250,6 +525,140 @@ class OneTimeSchedule(_messages.Message):
   """
 
   executeTime = _messages.StringField(1)
+
+
+class Operation(_messages.Message):
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
+    response: The normal response of the operation in case of success. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata associated with the operation. It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata. Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    r"""The normal response of the operation in case of success. If the
+    original method returns no data on success, such as `Delete`, the response
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name. For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
+
+
+class OsconfigOperationsDeleteRequest(_messages.Message):
+  r"""A OsconfigOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigOperationsListRequest(_messages.Message):
+  r"""A OsconfigOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class OsconfigProjectsPatchDeploymentsCreateRequest(_messages.Message):
@@ -518,7 +927,7 @@ class PatchInstanceFilterGroupLabel(_messages.Message):
   r"""Targets a group of VM instances by using their [assigned
   labels](https://cloud.google.com/compute/docs/labeling-resources). Labels
   are key-value pairs. A `GroupLabel` is a combination of labels that is used
-  to target VMs for a patch job.  For example, a patch job can target VMs that
+  to target VMs for a patch job. For example, a patch job can target VMs that
   have the following `GroupLabel`: `{"env":"test", "app":"web"}`. This means
   that the patch job is applied to VMs that have both the labels `env=test`
   and `app=web`.
@@ -562,8 +971,8 @@ class PatchInstanceFilterGroupLabel(_messages.Message):
 
 class PatchJob(_messages.Message):
   r"""A high level representation of a patch job that is either in progress or
-  has completed.  Instance details are not included in the job. To paginate
-  through instance details, use ListPatchJobInstanceDetails.  For more
+  has completed. Instance details are not included in the job. To paginate
+  through instance details, use ListPatchJobInstanceDetails. For more
   information about patch jobs, see [Creating patch
   jobs](https://cloud.google.com/compute/docs/os-patch-management/create-
   patch-job).
@@ -766,17 +1175,17 @@ class PatchRollout(_messages.Message):
     disruptionBudget: The maximum number (or percentage) of VMs per zone to
       disrupt at any given moment. The number of VMs calculated from
       multiplying the percentage by the total number of VMs in a zone is
-      rounded up.  During patching, a VM is considered disrupted from the time
+      rounded up. During patching, a VM is considered disrupted from the time
       the agent is notified to begin until patching has completed. This
       disruption time includes the time to complete reboot and any post-patch
-      steps.  A VM contributes to the disruption budget if its patching
+      steps. A VM contributes to the disruption budget if its patching
       operation fails either when applying the patches, running pre or post
       patch steps, or if it fails to respond with a success notification
       before timing out. VMs that are not running or do not have an active
-      agent do not count toward this disruption budget.  For zone-by-zone
+      agent do not count toward this disruption budget. For zone-by-zone
       rollouts, if the disruption budget in a zone is exceeded, the patch job
       stops, because continuing to the next zone requires completion of the
-      patch process in the previous zone.  For example, if the disruption
+      patch process in the previous zone. For example, if the disruption
       budget has a fixed value of `10`, and 8 VMs fail to patch in the current
       zone, the patch job continues to patch 2 VMs at a time until the zone is
       completed. When that zone is completed successfully, patching begins
@@ -920,6 +1329,57 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class TimeOfDay(_messages.Message):
   r"""Represents a time of day. The date and time zone are either not
   significant or are specified elsewhere. An API may choose to allow leap
@@ -1046,16 +1506,37 @@ class WindowsUpdateSettings(_messages.Message):
     r"""ClassificationsValueListEntryValuesEnum enum type.
 
     Values:
-      CLASSIFICATION_UNSPECIFIED: <no description>
-      CRITICAL: <no description>
-      SECURITY: <no description>
-      DEFINITION: <no description>
-      DRIVER: <no description>
-      FEATURE_PACK: <no description>
-      SERVICE_PACK: <no description>
-      TOOL: <no description>
-      UPDATE_ROLLUP: <no description>
-      UPDATE: <no description>
+      CLASSIFICATION_UNSPECIFIED: Invalid. If classifications are included,
+        they must be specified.
+      CRITICAL: "A widely released fix for a specific problem that addresses a
+        critical, non-security-related bug." [1]
+      SECURITY: "A widely released fix for a product-specific, security-
+        related vulnerability. Security vulnerabilities are rated by their
+        severity. The severity rating is indicated in the Microsoft security
+        bulletin as critical, important, moderate, or low." [1]
+      DEFINITION: "A widely released and frequent software update that
+        contains additions to a product's definition database. Definition
+        databases are often used to detect objects that have specific
+        attributes, such as malicious code, phishing websites, or junk mail."
+        [1]
+      DRIVER: "Software that controls the input and output of a device." [1]
+      FEATURE_PACK: "New product functionality that is first distributed
+        outside the context of a product release and that is typically
+        included in the next full product release." [1]
+      SERVICE_PACK: "A tested, cumulative set of all hotfixes, security
+        updates, critical updates, and updates. Additionally, service packs
+        may contain additional fixes for problems that are found internally
+        since the release of the product. Service packs my also contain a
+        limited number of customer-requested design changes or features." [1]
+      TOOL: "A utility or feature that helps complete a task or set of tasks."
+        [1]
+      UPDATE_ROLLUP: "A tested, cumulative set of hotfixes, security updates,
+        critical updates, and updates that are packaged together for easy
+        deployment. A rollup generally targets a specific area, such as
+        security, or a component of a product, such as Internet Information
+        Services (IIS)." [1]
+      UPDATE: "A widely released fix for a specific problem. An update
+        addresses a noncritical, non-security-related bug." [1]
     """
     CLASSIFICATION_UNSPECIFIED = 0
     CRITICAL = 1
@@ -1075,7 +1556,7 @@ class WindowsUpdateSettings(_messages.Message):
 
 class YumSettings(_messages.Message):
   r"""Yum patching is performed by executing `yum update`. Additional options
-  can be set to control how this is executed.  Note that not all settings are
+  can be set to control how this is executed. Note that not all settings are
   supported on all platforms.
 
   Fields:
@@ -1105,9 +1586,9 @@ class ZypperSettings(_messages.Message):
       include security, recommended, and feature.
     excludes: List of patches to exclude from update.
     exclusivePatches: An exclusive list of patches to be updated. These are
-      the only patches that will be installed using 'zypper patch
-      patch:<patch_name>' command. This field must not be used with any other
-      patch configuration fields.
+      the only patches that will be installed using 'zypper patch patch:'
+      command. This field must not be used with any other patch configuration
+      fields.
     severities: Install only patches with these severities. Common severities
       include critical, important, moderate, and low.
     withOptional: Adds the `--with-optional` flag to `zypper patch`.

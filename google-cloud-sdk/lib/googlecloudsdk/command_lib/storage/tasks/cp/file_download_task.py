@@ -23,18 +23,85 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_sliced_download_task
+from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
 
 
+_NO_HASH_CHECK_ERROR = """
+google-crc32c not installed, so hashing will be slow. Install google-crc32c or
+change the "storage/check_hashes" config setting.
+"""
+_HASH_CHECK_WARNING_BASE = """
+WARNING: This download {} since the google-crc32c
+binary is not installed, and Python hash computation will likely
+throttle performance. You can change this by installing the binary or
+modifying the "storage/check_hashes" config setting.
+"""
+_NO_HASH_CHECK_WARNING = _HASH_CHECK_WARNING_BASE.format(
+    'will not be validated')
+_SLOW_HASH_CHECK_WARNING = _HASH_CHECK_WARNING_BASE.format('may be slow')
+
+
+def _get_digester(algorithm, resource, should_log_warning=True):
+  """Returns digesters dictionary for download hash validation.
+
+  Args:
+    algorithm (hash_util.HashAlgorithm): Type of hash digester to create.
+    resource (resource_reference.ObjectResource): For checking if object has
+      known hash to validate against.
+    should_log_warning (bool): Log a warning about potential digesters issues.
+
+  Returns:
+    Digesters dict.
+
+  Raises:
+    errors.Error: gcloud storage set to fail if performance-optimized digesters
+      could not be created.
+  """
+  check_hashes = properties.VALUES.storage.check_hashes.Get()
+  if check_hashes == properties.CheckHashes.NEVER.value:
+    return {}
+
+  digesters = {}
+  if algorithm == hash_util.HashAlgorithm.MD5 and resource.md5_hash:
+    digesters[hash_util.HashAlgorithm.MD5] = hash_util.get_md5()
+
+  elif algorithm == hash_util.HashAlgorithm.CRC32C and resource.crc32c_hash:
+    if (crc32c.IS_GOOGLE_CRC32C_AVAILABLE or
+        check_hashes == properties.CheckHashes.ALWAYS.value):
+      if should_log_warning and not crc32c.IS_GOOGLE_CRC32C_AVAILABLE:
+        log.warning(_SLOW_HASH_CHECK_WARNING)
+
+      digesters[hash_util.HashAlgorithm.CRC32C] = crc32c.get_crc32c()
+
+    elif check_hashes == properties.CheckHashes.IF_FAST_ELSE_FAIL.value:
+      raise errors.Error(_NO_HASH_CHECK_ERROR)
+
+    elif (should_log_warning and
+          check_hashes == properties.CheckHashes.IF_FAST_ELSE_SKIP.value):
+      log.warning(_NO_HASH_CHECK_WARNING)
+
+  return digesters
+
+
 def _should_perform_sliced_download(resource):
+  """Returns True if conditions are right for a sliced download."""
+  if (not resource.crc32c_hash and properties.VALUES.storage.check_hashes.Get()
+      != properties.CheckHashes.NEVER.value):
+    # Do not perform sliced download if hash validation is not possible.
+    return False
+
   threshold = scaled_integer.ParseInteger(
       properties.VALUES.storage.sliced_object_download_threshold.Get())
   component_size = scaled_integer.ParseInteger(
@@ -74,6 +141,10 @@ class FileDownloadTask(task.Task):
 
     download_component_task_list = []
     for i, (offset, length) in enumerate(component_offsets_and_lengths):
+      digesters = _get_digester(
+          hash_util.HashAlgorithm.CRC32C,
+          self._source_resource,
+          should_log_warning=i == 0)
       download_component_task_list.append(
           file_part_download_task.FilePartDownloadTask(
               self._source_resource,
@@ -81,7 +152,8 @@ class FileDownloadTask(task.Task):
               offset=offset,
               length=length,
               component_number=i,
-              total_components=len(component_offsets_and_lengths)))
+              total_components=len(component_offsets_and_lengths),
+              digesters=digesters))
 
     finalize_sliced_download_task_list = [
         finalize_sliced_download_task.FinalizeSlicedDownloadTask(
@@ -112,9 +184,20 @@ class FileDownloadTask(task.Task):
           ],
           messages=None)
     else:
+      if (self._source_resource.size and
+          self._source_resource.size >= scaled_integer.ParseInteger(
+              properties.VALUES.storage.resumable_threshold.Get())):
+        strategy = cloud_api.DownloadStrategy.RESUMABLE
+      else:
+        strategy = cloud_api.DownloadStrategy.ONE_SHOT
+
+      digesters = _get_digester(hash_util.HashAlgorithm.MD5,
+                                self._source_resource)
+
       file_part_download_task.FilePartDownloadTask(
           self._source_resource,
           self._destination_resource,
           offset=0,
-          length=self._source_resource.size).execute(
-              task_status_queue=task_status_queue)
+          length=self._source_resource.size,
+          strategy=strategy,
+          digesters=digesters).execute(task_status_queue=task_status_queue)

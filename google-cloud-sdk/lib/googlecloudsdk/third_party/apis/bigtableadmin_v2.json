@@ -125,7 +125,7 @@
           "description": "Administer your Cloud Bigtable tables"
         },
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         },
         "https://www.googleapis.com/auth/cloud-platform.read-only": {
           "description": "View your data across Google Cloud Platform services"
@@ -2088,7 +2088,46 @@
                     "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates a cluster within an instance."
+                  "description": "Updates a cluster within an instance. UpdateCluster is deprecated. Please use PartialUpdateCluster instead."
+                },
+                "partialUpdateCluster": {
+                  "id": "bigtableadmin.projects.instances.clusters.partialUpdateCluster",
+                  "path": "v2/{+name}",
+                  "flatPath": "v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The unique name of the cluster. Values are of the form `projects\/{project}\/instances\/{instance}\/clusters\/a-z*`.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The subset of Cluster fields which should be replaced. Must be explicitly set.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Cluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/bigtable.admin",
+                    "https://www.googleapis.com/auth/bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/bigtable.admin.instance",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin",
+                    "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Partially updates a cluster within a project. This method is the preferred way to update a Cluster. "
                 },
                 "delete": {
                   "id": "bigtableadmin.projects.instances.clusters.delete",

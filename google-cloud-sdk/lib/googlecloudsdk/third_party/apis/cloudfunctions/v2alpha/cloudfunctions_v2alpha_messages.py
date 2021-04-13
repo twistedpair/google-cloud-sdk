@@ -403,12 +403,18 @@ class GenerateUploadUrlResponse(_messages.Message):
   r"""Response of `GenerateSourceUploadUrl` method.
 
   Fields:
+    storageSource: The location of the source code in the upload bucket. Once
+      the archive is uploaded using the `upload_url` use this field to set the
+      `function.build_config.source.storage_source` during CreateFunction and
+      UpdateFunction. Generation defaults to 0, as Cloud Storage provides a
+      new generation only upon uploading a new object or version of an object.
     uploadUrl: The generated Google Cloud Storage signed URL that should be
       used for a function source code upload. The uploaded file should be a
       zip archive which contains a function.
   """
 
-  uploadUrl = _messages.StringField(1)
+  storageSource = _messages.MessageField('StorageSource', 1)
+  uploadUrl = _messages.StringField(2)
 
 
 class ListFunctionsResponse(_messages.Message):
@@ -737,6 +743,37 @@ class OperationMetadataV1(_messages.Message):
   versionId = _messages.IntegerField(7)
 
 
+class RepoSource(_messages.Message):
+  r"""Location of the source in a Google Cloud Source Repository.
+
+  Fields:
+    branchName: Regex matching branches to build. The syntax of the regular
+      expressions accepted is the syntax accepted by RE2 and described at
+      https://github.com/google/re2/wiki/Syntax
+    commitSha: Explicit commit SHA to build.
+    dir: Directory, relative to the source root, in which to run the build.
+      This must be a relative path. If a step's `dir` is specified and is an
+      absolute path, this value is ignored for that step's execution. eg.
+      helloworld (no leading slash allowed)
+    invertRegex: Only trigger a build if the revision regex does NOT match the
+      revision regex.
+    projectId: ID of the project that owns the Cloud Source Repository. If
+      omitted, the project ID requesting the build is assumed.
+    repoName: Name of the Cloud Source Repository.
+    tagName: Regex matching tags to build. The syntax of the regular
+      expressions accepted is the syntax accepted by RE2 and described at
+      https://github.com/google/re2/wiki/Syntax
+  """
+
+  branchName = _messages.StringField(1)
+  commitSha = _messages.StringField(2)
+  dir = _messages.StringField(3)
+  invertRegex = _messages.BooleanField(4)
+  projectId = _messages.StringField(5)
+  repoName = _messages.StringField(6)
+  tagName = _messages.StringField(7)
+
+
 class ServiceConfig(_messages.Message):
   r"""Describes the Service being deployed. Currently Supported : Cloud Run
   (fully managed).
@@ -866,11 +903,14 @@ class Source(_messages.Message):
   r"""The location of the function source code.
 
   Fields:
+    repoSource: If provided, get the source from this location in a Cloud
+      Source Repository.
     storageSource: If provided, get the source from this location in Google
       Cloud Storage.
   """
 
-  storageSource = _messages.MessageField('StorageSource', 1)
+  repoSource = _messages.MessageField('RepoSource', 1)
+  storageSource = _messages.MessageField('StorageSource', 2)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import abc
 import enum
 import multiprocessing
 import threading
@@ -26,6 +27,8 @@ from googlecloudsdk.command_lib.storage import thread_messages
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import scaled_integer
+
+import six
 
 
 # Recalculate throughput everytime last message time - window_start_time
@@ -42,7 +45,7 @@ class OperationName(enum.Enum):
 
 class ProgressType(enum.Enum):
   FILES_AND_BYTES = 'FILES AND BYTES'
-  FILES = 'FILES'
+  COUNT = 'COUNT'
 
 
 def _get_formatted_throughput(bytes_processed, time_delta):
@@ -51,14 +54,67 @@ def _get_formatted_throughput(bytes_processed, time_delta):
       throughput_bytes, decimal_places=1) + '/s'
 
 
-class _StatusTracker:
-  """Aggregates and prints information on task statuses.
+class _StatusTracker(six.with_metaclass(abc.ABCMeta, object)):
+  """Abstract class for tracking and displaying operation progress."""
 
-  We use "start" and "stop" instead of "__enter__" and "__exit__" because
-  this class should only be used by ProgressManager as a non-context-manager.
-  """
+  @abc.abstractmethod
+  def _get_status_string(self):
+    """Generates string to illustrate progress to the user."""
+    pass
+
+  @abc.abstractmethod
+  def add_message(self, status_message):
+    """Processes task status message for printing and aggregation.
+
+    Args:
+      status_message (thread_messages.*): Message to process.
+    """
+    pass
+
+  def start(self):
+    self._progress_tracker = progress_tracker.ProgressTracker(
+        message='Starting operation',
+        detail_message_callback=self._get_status_string)
+    self._progress_tracker.__enter__()
+    return self
+
+  def stop(self, exc_type, exc_val, exc_tb):
+    if self._progress_tracker:
+      self._progress_tracker.__exit__(exc_type, exc_val, exc_tb)
+
+
+class _CountStatusTracker(_StatusTracker):
+  """See super class. Tracks both file count and byte amount."""
 
   def __init__(self):
+    super(_CountStatusTracker, self).__init__()
+    self._completed = 0
+    self._total_estimation = 0
+
+  def _get_status_string(self):
+    """See super class."""
+    # TODO(b/180047352) Avoid having other output print on the same line.
+    if self._total_estimation:
+      file_progress_string = '{}/{}'.format(self._completed,
+                                            self._total_estimation)
+    else:
+      file_progress_string = self._completed
+
+    return '\rCompleted {}'.format(file_progress_string)
+
+  def add_message(self, status_message):
+    """See super class."""
+    if isinstance(status_message, thread_messages.WorkloadEstimatorMessage):
+      self._total_estimation += status_message.item_count
+    elif isinstance(status_message, thread_messages.IncrementProgressMessage):
+      self._completed += 1
+
+
+class _FilesAndBytesStatusTracker(_StatusTracker):
+  """See super class. Tracks both file count and byte amount."""
+
+  def __init__(self):
+    super(_FilesAndBytesStatusTracker, self).__init__()
     # For displaying progress.
     self._completed_files = 0
     self._processed_bytes = 0
@@ -78,11 +134,9 @@ class _StatusTracker:
 
     # For keeping track of progress on different files.
     self._tracked_file_progress = {}
-    # Holds reference to gcloud ProgressTracker.
-    self._progress_tracker = None
 
   def _get_status_string(self):
-    """Generates string to illustrate progress to the user."""
+    """See super class."""
     # TODO(b/180047352) Avoid having other output print on the same line.
     scaled_processed_bytes = scaled_integer.FormatBinaryNumber(
         self._processed_bytes, decimal_places=1)
@@ -104,9 +158,9 @@ class _StatusTracker:
     else:
       throughput_addendum_string = ''
 
-    return '\rCopied files {} | {}{}'.format(file_progress_string,
-                                             bytes_progress_string,
-                                             throughput_addendum_string)
+    return '\rCompleted files {} | {}{}'.format(file_progress_string,
+                                                bytes_progress_string,
+                                                throughput_addendum_string)
 
   def _update_throughput(self, status_message, processed_bytes):
     """Updates stats and recalculates throughput if past threshold."""
@@ -127,7 +181,7 @@ class _StatusTracker:
 
   def _add_to_workload_estimation(self, status_message):
     """Adds WorloadEstimatorMessage info to total workload estimation."""
-    self._total_files_estimation += status_message.file_count
+    self._total_files_estimation += status_message.item_count
     self._total_bytes_estimation += status_message.size
 
   def _add_component_progress(self, status_message):
@@ -179,14 +233,10 @@ class _StatusTracker:
       self._tracked_file_progress[file_url_string] = processed_file_bytes
 
   def add_message(self, status_message):
-    """Processes task status message for printing and aggregation.
-
-    Args:
-      status_message (thread_messages.*): Message to process.
-    """
+    """See super class."""
     if isinstance(status_message, thread_messages.WorkloadEstimatorMessage):
       self._add_to_workload_estimation(status_message)
-    elif isinstance(status_message, thread_messages.ProgressMessage):
+    elif isinstance(status_message, thread_messages.DetailedProgressMessage):
       if self._tracked_file_progress.get(status_message.source_url.url_string,
                                          0) == -1:
         # File has already been downloaded. No processing to do.
@@ -196,16 +246,8 @@ class _StatusTracker:
       else:
         self._add_file_progress(status_message)
 
-  def start(self):
-    self._progress_tracker = progress_tracker.ProgressTracker(
-        message='Starting operation',
-        detail_message_callback=self._get_status_string)
-    self._progress_tracker.__enter__()
-    return self
-
   def stop(self, exc_type, exc_val, exc_tb):
-    if self._progress_tracker:
-      self._progress_tracker.__exit__(exc_type, exc_val, exc_tb)
+    super(_FilesAndBytesStatusTracker, self).stop(exc_type, exc_val, exc_tb)
 
     if (self._first_operation_time is not None and
         self._last_operation_time is not None and
@@ -256,8 +298,10 @@ class ProgressManager:
     self.task_status_queue = multiprocessing.Queue()
 
   def __enter__(self):
-    if self._progress_type is ProgressType.FILES_AND_BYTES:
-      self._status_tracker = _StatusTracker()
+    if self._progress_type is ProgressType.COUNT:
+      self._status_tracker = _CountStatusTracker()
+    elif self._progress_type is ProgressType.FILES_AND_BYTES:
+      self._status_tracker = _FilesAndBytesStatusTracker()
 
     self._status_message_handler_thread = threading.Thread(
         target=status_message_handler,
@@ -272,5 +316,5 @@ class ProgressManager:
     self.task_status_queue.put('_SHUTDOWN')
     self._status_message_handler_thread.join()
 
-    if self._progress_type is ProgressType.FILES_AND_BYTES:
+    if self._status_tracker:
       self._status_tracker.stop(exc_type, exc_val, exc_tb)

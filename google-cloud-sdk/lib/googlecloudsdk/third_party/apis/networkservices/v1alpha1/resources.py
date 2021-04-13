@@ -85,6 +85,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GRPCROUTES = (
+      'projects.locations.grpcRoutes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/grpcRoutes/'
+              '{grpcRoutesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_HTTPFILTERS = (
       'projects.locations.httpFilters',
       '{+name}',
@@ -92,6 +103,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/httpFilters/'
               '{httpFiltersId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_OBSERVABILITYPOLICIES = (
+      'projects.locations.observabilityPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'observabilityPolicies/{observabilityPoliciesId}',
       },
       ['name'],
       True

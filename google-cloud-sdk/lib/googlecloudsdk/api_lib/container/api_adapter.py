@@ -926,7 +926,8 @@ class CreateNodePoolOptions(object):
                node_group=None,
                enable_gcfs=None,
                pod_ipv4_range=None,
-               create_pod_ipv4_range=None):
+               create_pod_ipv4_range=None,
+               enable_private_nodes=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -972,6 +973,7 @@ class CreateNodePoolOptions(object):
     self.enable_gcfs = enable_gcfs
     self.pod_ipv4_range = pod_ipv4_range
     self.create_pod_ipv4_range = create_pod_ipv4_range
+    self.enable_private_nodes = enable_private_nodes
 
 
 class UpdateNodePoolOptions(object):
@@ -992,7 +994,8 @@ class UpdateNodePoolOptions(object):
                system_config_from_file=None,
                node_labels=None,
                node_taints=None,
-               tags=None):
+               tags=None,
+               enable_private_nodes=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1008,6 +1011,7 @@ class UpdateNodePoolOptions(object):
     self.node_labels = node_labels
     self.node_taints = node_taints
     self.tags = tags
+    self.enable_private_nodes = enable_private_nodes
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1026,7 +1030,8 @@ class UpdateNodePoolOptions(object):
             self.max_unavailable_upgrade is not None or
             self.system_config_from_file is not None or
             self.node_labels is not None or self.node_taints is not None or
-            self.tags is not None)
+            self.tags is not None or
+            self.enable_private_nodes is not None)
 
 
 class APIAdapter(object):
@@ -2841,6 +2846,10 @@ class APIAdapter(object):
       node_tags = self.messages.NetworkTags()
       node_tags.tags = options.tags
       update_request.tags = node_tags
+    elif options.enable_private_nodes is not None:
+      network_config = self.messages.NodeNetworkConfig()
+      network_config.enablePrivateNodes = options.enable_private_nodes
+      update_request.nodeNetworkConfig = network_config
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):
@@ -2971,12 +2980,14 @@ class APIAdapter(object):
       A NetworkConfig object that contains the options for how the network
       for the nodepool needs to be configured.
     """
-    if (options.pod_ipv4_range is None and
-        options.create_pod_ipv4_range is None):
+    if (options.pod_ipv4_range is None
+        and options.create_pod_ipv4_range is None
+        and options.enable_private_nodes is None):
       return None
 
     network_config = self.messages.NodeNetworkConfig()
-    network_config.podRange = options.pod_ipv4_range
+    if options.pod_ipv4_range is not None:
+      network_config.podRange = options.pod_ipv4_range
     if options.create_pod_ipv4_range is not None:
       for key in options.create_pod_ipv4_range:
         if key not in ['name', 'range']:
@@ -2986,6 +2997,8 @@ class APIAdapter(object):
       network_config.podRange = options.create_pod_ipv4_range.get('name', None)
       network_config.podIpv4CidrBlock = options.create_pod_ipv4_range.get(
           'range', None)
+    if options.enable_private_nodes is not None:
+      network_config.enablePrivateNodes = options.enable_private_nodes
     return network_config
 
   def UpdateLabelsCommon(self, cluster_ref, update_labels):

@@ -129,9 +129,9 @@ class CopyTaskIterator:
     if (self._task_status_queue and
         (self._total_file_count > 0 or self._total_size > 0)):
       # Show fraction of total copies completed now that we know totals.
-      progress_callbacks.files_and_bytes_workload_estimator_callback(
+      progress_callbacks.workload_estimator_callback(
           self._task_status_queue,
-          file_count=self._total_file_count,
+          item_count=self._total_file_count,
           size=self._total_size)
 
   def _get_raw_destination(self):

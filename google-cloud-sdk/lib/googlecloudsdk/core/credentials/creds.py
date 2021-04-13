@@ -1127,7 +1127,7 @@ def _ConvertCredentialsToADC(credentials, impersonated_service_account,
       'service_account_impersonation_url':
           IMPERSONATION_TOKEN_URL.format(impersonated_service_account),
       'delegates':
-          delegates,
+          delegates or [],
       'type':
           'impersonated_service_account'
   }

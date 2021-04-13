@@ -453,6 +453,8 @@ class Endpoint(_messages.Message):
       Project existence is not checked. Example: `projects/project-
       number/locations/global/networks/my-network`
     port: Optional. Service Directory rejects values outside of `[0, 65535]`.
+    uid: Output only. A globally unique identifier (in UUID4 format) for this
+      endpoint.
     updateTime: Output only. The timestamp when the endpoint was last updated.
   """
 
@@ -502,7 +504,8 @@ class Endpoint(_messages.Message):
   name = _messages.StringField(4)
   network = _messages.StringField(5)
   port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(7)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class Expr(_messages.Message):
@@ -731,6 +734,8 @@ class Namespace(_messages.Message):
       and values can be no longer than 63 characters.
     name: Immutable. The resource name for the namespace in the format
       `projects/*/locations/*/namespaces/*`.
+    uid: Output only. A globally unique identifier (in UUID4 format) for this
+      namespace.
     updateTime: Output only. The timestamp when the namespace was last
       updated.
   """
@@ -764,7 +769,8 @@ class Namespace(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  uid = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class Policy(_messages.Message):
@@ -1006,6 +1012,8 @@ class Service(_messages.Message):
       provider is authorized. Examples: `spiffe_id:spiffe://example.org/my-
       service` `service_account:my-service@iam.gserviceaccount.com` Limits:
       service_identities list is limited to 10 items.
+    uid: Output only. A globally unique identifier (in UUID4 format) for this
+      service.
     updateTime: Output only. The timestamp when the service was last updated.
   """
 
@@ -1055,7 +1063,8 @@ class Service(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
   serviceIdentities = _messages.MessageField('ServiceIdentity', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class ServiceIdentity(_messages.Message):

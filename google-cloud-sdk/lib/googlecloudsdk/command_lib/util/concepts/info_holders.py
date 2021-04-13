@@ -220,14 +220,15 @@ class ResourceInfo(ConceptInfo):
       description.append('(NOTE) Some attributes are not given arguments in '
                          'this group but can be set in other ways.')
       for attr_name in skip_flags:
-        hints = self.GetHints(attr_name)
+        hints = [
+            '\n* {}'.format(hint) for hint in self.GetHints(attr_name)]
         if not hints:
           # This may be an error, but existence of fallthroughs should not be
           # enforced here.
           continue
-        hint = 'To set the `{}` attribute: {}.'.format(
+        hint = '\nTo set the `{}` attribute:{}.'.format(
             attr_name,
-            '; '.join(hints))
+            ';'.join(hints))
         description.append(hint)
     return ' '.join(description)
 
@@ -261,10 +262,11 @@ class ResourceInfo(ConceptInfo):
         2 if self.plural else 1,
         self.resource_spec.name,
         plural=getattr(self.resource_spec, 'plural_name', None))
-    hints = self.GetHints(attribute.name)
+    hints = [
+        '\n* {}'.format(hint) for hint in self.GetHints(attribute.name)]
     if hints:
-      hint = ' To set the `{}` attribute: {}.'.format(attribute.name,
-                                                      '; '.join(hints))
+      hint = '\nTo set the `{}` attribute:{}.'.format(attribute.name,
+                                                      ';'.join(hints))
       help_text += hint
     return help_text.format(resource=expansion_name)
 

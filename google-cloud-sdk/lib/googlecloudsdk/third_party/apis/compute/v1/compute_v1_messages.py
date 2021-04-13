@@ -1177,9 +1177,14 @@ class AdvancedMachineFeatures(_messages.Message):
   Fields:
     enableNestedVirtualization: Whether to enable nested virtualization or not
       (default is false).
+    threadsPerCore: The number of threads per physical core. To disable
+      simultaneous multithreading (SMT) set this to 1. If unset, the maximum
+      number of threads supported per core by the underlying processor is
+      assumed.
   """
 
   enableNestedVirtualization = _messages.BooleanField(1)
+  threadsPerCore = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class AliasIpRange(_messages.Message):
@@ -4268,22 +4273,23 @@ class BulkInsertInstanceResource(_messages.Message):
     count: The maximum number of instances to create.
     instanceProperties: The instance properties defining the VM instances to
       be created. Required if sourceInstanceTemplate is not provided.
-    locationPolicy: A LocationPolicy attribute.
+    locationPolicy: Policy for chosing target zone.
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
-      instances cannot be created, then no instances will be created.
+      instances cannot be created, then no instances will be created and
+      instances already created will be deleted.
     namePattern: The string pattern used for the names of the VMs. Either
-      name_pattern or predefined_names must be set. The pattern should contain
-      one consecutive sequence of placeholder hash characters (#) with each
-      character corresponding to one digit of the generated instance name.
-      Example: name_pattern of inst-#### will generate instance names like
-      inst-0001, inst-0002, ... . If there already exist instance(s) whose
-      names match the name pattern in the same project and zone, then the
-      generated instance numbers will start after the biggest existing number.
-      For example, if there exists an instance with name inst-0050, then
-      instance names generated using the pattern inst-#### will be inst-0051,
-      inst-0052, etc. The name pattern placeholder #...# can contain up to 18
-      characters.
+      name_pattern or per_instance_properties must be set. The pattern should
+      contain one continuous sequence of placeholder hash characters (#) with
+      each character corresponding to one digit of the generated instance
+      name. Example: name_pattern of inst-#### will generate instance names
+      such as inst-0001, inst-0002, ... . If there already exist instance(s)
+      whose names match the name pattern in the same project and zone, then
+      the generated instance numbers will start after the biggest existing
+      number. For example, if there exists an instance with name inst-0050,
+      then instance names generated using the pattern inst-#### will be
+      inst-0051, inst-0052, etc. The name pattern placeholder #...# can
+      contain up to 18 characters.
     perInstanceProperties: Per-instance properties to be set on individual
       instances. Keys of this map specify requested instance names. Can be
       empty if name_pattern is used.
@@ -28223,8 +28229,6 @@ class Instance(_messages.Message):
   Machine Instances. (== resource_for {$api_version}.instances ==)
 
   Enums:
-    PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
-      the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
       default.
@@ -28315,7 +28319,6 @@ class Instance(_messages.Message):
       These specify how interfaces are configured to interact with other
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
-    postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
       If not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that this instance can
@@ -28349,18 +28352,6 @@ class Instance(_messages.Message):
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
   """
-
-  class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""PostKeyRevocationActionType of the instance.
-
-    Values:
-      NOOP: <no description>
-      POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: <no description>
-      SHUTDOWN: <no description>
-    """
-    NOOP = 0
-    POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 1
-    SHUTDOWN = 2
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for the VM. If not specified, use
@@ -28453,21 +28444,20 @@ class Instance(_messages.Message):
   minCpuPlatform = _messages.StringField(22)
   name = _messages.StringField(23)
   networkInterfaces = _messages.MessageField('NetworkInterface', 24, repeated=True)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 25)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 26)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 27)
-  resourcePolicies = _messages.StringField(28, repeated=True)
-  satisfiesPzs = _messages.BooleanField(29)
-  scheduling = _messages.MessageField('Scheduling', 30)
-  selfLink = _messages.StringField(31)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 32, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 33)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 34)
-  startRestricted = _messages.BooleanField(35)
-  status = _messages.EnumField('StatusValueValuesEnum', 36)
-  statusMessage = _messages.StringField(37)
-  tags = _messages.MessageField('Tags', 38)
-  zone = _messages.StringField(39)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 25)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 26)
+  resourcePolicies = _messages.StringField(27, repeated=True)
+  satisfiesPzs = _messages.BooleanField(28)
+  scheduling = _messages.MessageField('Scheduling', 29)
+  selfLink = _messages.StringField(30)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 31, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 32)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 33)
+  startRestricted = _messages.BooleanField(34)
+  status = _messages.EnumField('StatusValueValuesEnum', 35)
+  statusMessage = _messages.StringField(36)
+  tags = _messages.MessageField('Tags', 37)
+  zone = _messages.StringField(38)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -30810,8 +30800,6 @@ class InstanceProperties(_messages.Message):
   r"""InstanceProperties message type.
 
   Enums:
-    PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
-      the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for VMs. If not specified, use  INHERIT_FROM_SUBNETWORK as default.
 
@@ -30850,7 +30838,6 @@ class InstanceProperties(_messages.Message):
       information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
-    postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
       not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that instances can consume
@@ -30869,18 +30856,6 @@ class InstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
-
-  class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""PostKeyRevocationActionType of the instance.
-
-    Values:
-      NOOP: <no description>
-      POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: <no description>
-      SHUTDOWN: <no description>
-    """
-    NOOP = 0
-    POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 1
-    SHUTDOWN = 2
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for VMs. If not specified, use
@@ -30930,14 +30905,13 @@ class InstanceProperties(_messages.Message):
   metadata = _messages.MessageField('Metadata', 9)
   minCpuPlatform = _messages.StringField(10)
   networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 12)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 13)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 14)
-  resourcePolicies = _messages.StringField(15, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 16)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 17, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 18)
-  tags = _messages.MessageField('Tags', 19)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 12)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 13)
+  resourcePolicies = _messages.StringField(14, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 15)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 16, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 17)
+  tags = _messages.MessageField('Tags', 18)
 
 
 class InstanceReference(_messages.Message):
@@ -31787,8 +31761,8 @@ class InterconnectAttachment(_messages.Message):
       the encryption option as IPSEC. The addresses must be RFC 1918 IP
       address ranges. When creating HA VPN gateway over the interconnect
       attachment, if the attachment is configured to use an RFC 1918 IP
-      address, then the VPN gateway?s IP address will be allocated from the IP
-      address range specified here. For example, if the HA VPN gateway?s
+      address, then the VPN gateway's IP address will be allocated from the IP
+      address range specified here. For example, if the HA VPN gateway's
       interface 0 is paired to this interconnect attachment, then an RFC 1918
       IP address for the VPN gateway interface 0 will be allocated from the IP
       address specified for this interconnect attachment. If this field is not
@@ -33454,19 +33428,19 @@ class LocationPolicy(_messages.Message):
   Messages:
     LocationsValue: Location configurations mapped by location name. Currently
       only zone names are supported and must be represented as valid internal
-      URLs, like: zones/us-central1-a.
+      URLs, such as zones/us-central1-a.
 
   Fields:
     locations: Location configurations mapped by location name. Currently only
       zone names are supported and must be represented as valid internal URLs,
-      like: zones/us-central1-a.
+      such as zones/us-central1-a.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LocationsValue(_messages.Message):
     r"""Location configurations mapped by location name. Currently only zone
-    names are supported and must be represented as valid internal URLs, like:
-    zones/us-central1-a.
+    names are supported and must be represented as valid internal URLs, such
+    as zones/us-central1-a.
 
     Messages:
       AdditionalProperty: An additional property for a LocationsValue object.
@@ -33495,14 +33469,15 @@ class LocationPolicyLocation(_messages.Message):
   r"""A LocationPolicyLocation object.
 
   Enums:
-    PreferenceValueValuesEnum:
+    PreferenceValueValuesEnum: Preference for a given locaction: ALLOW or
+      DENY.
 
   Fields:
-    preference: A PreferenceValueValuesEnum attribute.
+    preference: Preference for a given locaction: ALLOW or DENY.
   """
 
   class PreferenceValueValuesEnum(_messages.Enum):
-    r"""PreferenceValueValuesEnum enum type.
+    r"""Preference for a given locaction: ALLOW or DENY.
 
     Values:
       ALLOW: <no description>
@@ -40405,6 +40380,7 @@ class Quota(_messages.Message):
       COMMITTED_LICENSES: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
       COMMITTED_MEMORY_OPTIMIZED_CPUS: <no description>
+      COMMITTED_N2A_CPUS: <no description>
       COMMITTED_N2D_CPUS: <no description>
       COMMITTED_N2_CPUS: <no description>
       COMMITTED_NVIDIA_A100_GPUS: <no description>
@@ -40444,6 +40420,7 @@ class Quota(_messages.Message):
       M1_CPUS: <no description>
       M2_CPUS: <no description>
       MACHINE_IMAGES: <no description>
+      N2A_CPUS: <no description>
       N2D_CPUS: <no description>
       N2_CPUS: <no description>
       NETWORKS: <no description>
@@ -40519,103 +40496,105 @@ class Quota(_messages.Message):
     COMMITTED_LICENSES = 13
     COMMITTED_LOCAL_SSD_TOTAL_GB = 14
     COMMITTED_MEMORY_OPTIMIZED_CPUS = 15
-    COMMITTED_N2D_CPUS = 16
-    COMMITTED_N2_CPUS = 17
-    COMMITTED_NVIDIA_A100_GPUS = 18
-    COMMITTED_NVIDIA_K80_GPUS = 19
-    COMMITTED_NVIDIA_P100_GPUS = 20
-    COMMITTED_NVIDIA_P4_GPUS = 21
-    COMMITTED_NVIDIA_T4_GPUS = 22
-    COMMITTED_NVIDIA_V100_GPUS = 23
-    CPUS = 24
-    CPUS_ALL_REGIONS = 25
-    DISKS_TOTAL_GB = 26
-    E2_CPUS = 27
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 28
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 29
-    EXTERNAL_VPN_GATEWAYS = 30
-    FIREWALLS = 31
-    FORWARDING_RULES = 32
-    GLOBAL_INTERNAL_ADDRESSES = 33
-    GPUS_ALL_REGIONS = 34
-    HEALTH_CHECKS = 35
-    IMAGES = 36
-    INSTANCES = 37
-    INSTANCE_GROUPS = 38
-    INSTANCE_GROUP_MANAGERS = 39
-    INSTANCE_TEMPLATES = 40
-    INTERCONNECTS = 41
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 42
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 43
-    INTERCONNECT_TOTAL_GBPS = 44
-    INTERNAL_ADDRESSES = 45
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 46
-    IN_PLACE_SNAPSHOTS = 47
-    IN_USE_ADDRESSES = 48
-    IN_USE_BACKUP_SCHEDULES = 49
-    IN_USE_SNAPSHOT_SCHEDULES = 50
-    LOCAL_SSD_TOTAL_GB = 51
-    M1_CPUS = 52
-    M2_CPUS = 53
-    MACHINE_IMAGES = 54
-    N2D_CPUS = 55
-    N2_CPUS = 56
-    NETWORKS = 57
-    NETWORK_ENDPOINT_GROUPS = 58
-    NETWORK_FIREWALL_POLICIES = 59
-    NODE_GROUPS = 60
-    NODE_TEMPLATES = 61
-    NVIDIA_A100_GPUS = 62
-    NVIDIA_K80_GPUS = 63
-    NVIDIA_P100_GPUS = 64
-    NVIDIA_P100_VWS_GPUS = 65
-    NVIDIA_P4_GPUS = 66
-    NVIDIA_P4_VWS_GPUS = 67
-    NVIDIA_T4_GPUS = 68
-    NVIDIA_T4_VWS_GPUS = 69
-    NVIDIA_V100_GPUS = 70
-    PACKET_MIRRORINGS = 71
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 72
-    PREEMPTIBLE_CPUS = 73
-    PREEMPTIBLE_LOCAL_SSD_GB = 74
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 75
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 76
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 77
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 78
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 79
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 80
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 81
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 82
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 83
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 84
-    PUBLIC_ADVERTISED_PREFIXES = 85
-    PUBLIC_DELEGATED_PREFIXES = 86
-    REGIONAL_AUTOSCALERS = 87
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 88
-    RESERVATIONS = 89
-    RESOURCE_POLICIES = 90
-    ROUTERS = 91
-    ROUTES = 92
-    SECURITY_POLICIES = 93
-    SECURITY_POLICY_CEVAL_RULES = 94
-    SECURITY_POLICY_RULES = 95
-    SNAPSHOTS = 96
-    SSD_TOTAL_GB = 97
-    SSL_CERTIFICATES = 98
-    STATIC_ADDRESSES = 99
-    STATIC_BYOIP_ADDRESSES = 100
-    SUBNETWORKS = 101
-    TARGET_HTTPS_PROXIES = 102
-    TARGET_HTTP_PROXIES = 103
-    TARGET_INSTANCES = 104
-    TARGET_POOLS = 105
-    TARGET_SSL_PROXIES = 106
-    TARGET_TCP_PROXIES = 107
-    TARGET_VPN_GATEWAYS = 108
-    URL_MAPS = 109
-    VPN_GATEWAYS = 110
-    VPN_TUNNELS = 111
-    XPN_SERVICE_PROJECTS = 112
+    COMMITTED_N2A_CPUS = 16
+    COMMITTED_N2D_CPUS = 17
+    COMMITTED_N2_CPUS = 18
+    COMMITTED_NVIDIA_A100_GPUS = 19
+    COMMITTED_NVIDIA_K80_GPUS = 20
+    COMMITTED_NVIDIA_P100_GPUS = 21
+    COMMITTED_NVIDIA_P4_GPUS = 22
+    COMMITTED_NVIDIA_T4_GPUS = 23
+    COMMITTED_NVIDIA_V100_GPUS = 24
+    CPUS = 25
+    CPUS_ALL_REGIONS = 26
+    DISKS_TOTAL_GB = 27
+    E2_CPUS = 28
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 29
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 30
+    EXTERNAL_VPN_GATEWAYS = 31
+    FIREWALLS = 32
+    FORWARDING_RULES = 33
+    GLOBAL_INTERNAL_ADDRESSES = 34
+    GPUS_ALL_REGIONS = 35
+    HEALTH_CHECKS = 36
+    IMAGES = 37
+    INSTANCES = 38
+    INSTANCE_GROUPS = 39
+    INSTANCE_GROUP_MANAGERS = 40
+    INSTANCE_TEMPLATES = 41
+    INTERCONNECTS = 42
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 43
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 44
+    INTERCONNECT_TOTAL_GBPS = 45
+    INTERNAL_ADDRESSES = 46
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 47
+    IN_PLACE_SNAPSHOTS = 48
+    IN_USE_ADDRESSES = 49
+    IN_USE_BACKUP_SCHEDULES = 50
+    IN_USE_SNAPSHOT_SCHEDULES = 51
+    LOCAL_SSD_TOTAL_GB = 52
+    M1_CPUS = 53
+    M2_CPUS = 54
+    MACHINE_IMAGES = 55
+    N2A_CPUS = 56
+    N2D_CPUS = 57
+    N2_CPUS = 58
+    NETWORKS = 59
+    NETWORK_ENDPOINT_GROUPS = 60
+    NETWORK_FIREWALL_POLICIES = 61
+    NODE_GROUPS = 62
+    NODE_TEMPLATES = 63
+    NVIDIA_A100_GPUS = 64
+    NVIDIA_K80_GPUS = 65
+    NVIDIA_P100_GPUS = 66
+    NVIDIA_P100_VWS_GPUS = 67
+    NVIDIA_P4_GPUS = 68
+    NVIDIA_P4_VWS_GPUS = 69
+    NVIDIA_T4_GPUS = 70
+    NVIDIA_T4_VWS_GPUS = 71
+    NVIDIA_V100_GPUS = 72
+    PACKET_MIRRORINGS = 73
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 74
+    PREEMPTIBLE_CPUS = 75
+    PREEMPTIBLE_LOCAL_SSD_GB = 76
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 77
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 78
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 79
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 80
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 81
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 82
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 83
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 84
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 85
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 86
+    PUBLIC_ADVERTISED_PREFIXES = 87
+    PUBLIC_DELEGATED_PREFIXES = 88
+    REGIONAL_AUTOSCALERS = 89
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 90
+    RESERVATIONS = 91
+    RESOURCE_POLICIES = 92
+    ROUTERS = 93
+    ROUTES = 94
+    SECURITY_POLICIES = 95
+    SECURITY_POLICY_CEVAL_RULES = 96
+    SECURITY_POLICY_RULES = 97
+    SNAPSHOTS = 98
+    SSD_TOTAL_GB = 99
+    SSL_CERTIFICATES = 100
+    STATIC_ADDRESSES = 101
+    STATIC_BYOIP_ADDRESSES = 102
+    SUBNETWORKS = 103
+    TARGET_HTTPS_PROXIES = 104
+    TARGET_HTTP_PROXIES = 105
+    TARGET_INSTANCES = 106
+    TARGET_POOLS = 107
+    TARGET_SSL_PROXIES = 108
+    TARGET_TCP_PROXIES = 109
+    TARGET_VPN_GATEWAYS = 110
+    URL_MAPS = 111
+    VPN_GATEWAYS = 112
+    VPN_TUNNELS = 113
+    XPN_SERVICE_PROJECTS = 114
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -46794,9 +46773,7 @@ class Subnetwork(_messages.Message):
       to use DRAINING: only applicable to subnetworks that have the purpose
       set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to
       the load balancer are being drained. A subnetwork that is draining
-      cannot be used or modified until it reaches a status of READY CREATING:
-      Subnetwork is provisioning DELETING: Subnetwork is being deleted
-      UPDATING: Subnetwork is being updated
+      cannot be used or modified until it reaches a status of READY
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -46876,9 +46853,7 @@ class Subnetwork(_messages.Message):
       DRAINING: only applicable to subnetworks that have the purpose set to
       INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load
       balancer are being drained. A subnetwork that is draining cannot be used
-      or modified until it reaches a status of READY CREATING: Subnetwork is
-      provisioning DELETING: Subnetwork is being deleted UPDATING: Subnetwork
-      is being updated
+      or modified until it reaches a status of READY
   """
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
@@ -46934,9 +46909,7 @@ class Subnetwork(_messages.Message):
     only applicable to subnetworks that have the purpose set to
     INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load
     balancer are being drained. A subnetwork that is draining cannot be used
-    or modified until it reaches a status of READY CREATING: Subnetwork is
-    provisioning DELETING: Subnetwork is being deleted UPDATING: Subnetwork is
-    being updated
+    or modified until it reaches a status of READY
 
     Values:
       DRAINING: <no description>

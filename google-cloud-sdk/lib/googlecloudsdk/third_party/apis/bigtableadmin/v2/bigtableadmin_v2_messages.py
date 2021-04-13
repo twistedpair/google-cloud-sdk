@@ -544,6 +544,23 @@ class BigtableadminProjectsInstancesClustersListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class BigtableadminProjectsInstancesClustersPartialUpdateClusterRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersPartialUpdateClusterRequest
+  object.
+
+  Fields:
+    cluster: A Cluster resource to be passed as the request body.
+    name: The unique name of the cluster. Values are of the form
+      `projects/{project}/instances/{instance}/clusters/a-z*`.
+    updateMask: Required. The subset of Cluster fields which should be
+      replaced. Must be explicitly set.
+  """
+
+  cluster = _messages.MessageField('Cluster', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class BigtableadminProjectsInstancesDeleteRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesDeleteRequest object.
 

@@ -30,6 +30,7 @@ import six
 MEDIA_ASSET_API = 'mediaasset'
 OPERATIONS_COLLECTION = 'mediaasset.projects.locations.operations'
 PARENT_TEMPLATE = 'projects/{}/locations/{}'
+ASSET_PARENT_TEMPLATE = 'projects/{}/locations/{}/assetTypes/{}/assets/{}'
 
 
 def GetApiMessage(api_version):
@@ -51,6 +52,10 @@ def GetLocation(args):
 
 def GetParentTemplate(project, location):
   return PARENT_TEMPLATE.format(project, location)
+
+
+def GetAssetParentTemplate(project, location, asset_type, asset):
+  return ASSET_PARENT_TEMPLATE.format(project, location, asset_type, asset)
 
 
 class UnsupportedReleaseTrackError(Exception):

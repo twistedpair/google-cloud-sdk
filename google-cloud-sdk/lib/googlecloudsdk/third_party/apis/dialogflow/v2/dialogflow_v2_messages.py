@@ -3909,20 +3909,20 @@ class GoogleCloudDialogflowCxV3Intent(_messages.Message):
   input) to your intent.
 
   Messages:
-    LabelsValue: Optional. The key/value metadata to label an intent. Labels
-      can contain lowercase letters, digits and the symbols '-' and '_'.
-      International characters are allowed, including letters from unicase
-      alphabets. Keys must start with a letter. Keys and values can be no
-      longer than 63 characters and no more than 128 bytes. Prefix "sys." is
-      reserved for Dialogflow defined labels. Currently allowed Dialogflow
-      defined labels include: * sys.head * sys.contextual The above labels do
-      not require value. "sys.head" means the intent is a head intent.
-      "sys.contextual" means the intent is a contextual intent.
+    LabelsValue: The key/value metadata to label an intent. Labels can contain
+      lowercase letters, digits and the symbols '-' and '_'. International
+      characters are allowed, including letters from unicase alphabets. Keys
+      must start with a letter. Keys and values can be no longer than 63
+      characters and no more than 128 bytes. Prefix "sys." is reserved for
+      Dialogflow defined labels. Currently allowed Dialogflow defined labels
+      include: * sys.head * sys.contextual The above labels do not require
+      value. "sys.head" means the intent is a head intent. "sys.contextual"
+      means the intent is a contextual intent.
 
   Fields:
-    description: Optional. Human readable description for better understanding
-      an intent like its scope, content, result etc. Maximum character limit:
-      140 characters.
+    description: Human readable description for better understanding an intent
+      like its scope, content, result etc. Maximum character limit: 140
+      characters.
     displayName: Required. The human-readable name of the intent, unique
       within the agent.
     isFallback: Indicates whether this is a fallback intent. Currently only
@@ -3931,15 +3931,15 @@ class GoogleCloudDialogflowCxV3Intent(_messages.Message):
       the case of requests that are mistakenly matched, since training phrases
       assigned to fallback intents act as negative examples that triggers no-
       match event.
-    labels: Optional. The key/value metadata to label an intent. Labels can
-      contain lowercase letters, digits and the symbols '-' and '_'.
-      International characters are allowed, including letters from unicase
-      alphabets. Keys must start with a letter. Keys and values can be no
-      longer than 63 characters and no more than 128 bytes. Prefix "sys." is
-      reserved for Dialogflow defined labels. Currently allowed Dialogflow
-      defined labels include: * sys.head * sys.contextual The above labels do
-      not require value. "sys.head" means the intent is a head intent.
-      "sys.contextual" means the intent is a contextual intent.
+    labels: The key/value metadata to label an intent. Labels can contain
+      lowercase letters, digits and the symbols '-' and '_'. International
+      characters are allowed, including letters from unicase alphabets. Keys
+      must start with a letter. Keys and values can be no longer than 63
+      characters and no more than 128 bytes. Prefix "sys." is reserved for
+      Dialogflow defined labels. Currently allowed Dialogflow defined labels
+      include: * sys.head * sys.contextual The above labels do not require
+      value. "sys.head" means the intent is a head intent. "sys.contextual"
+      means the intent is a contextual intent.
     name: The unique identifier of the intent. Required for the
       Intents.UpdateIntent method. Intents.CreateIntent populates the name
       automatically. Format: `projects//locations//agents//intents/`.
@@ -3955,12 +3955,12 @@ class GoogleCloudDialogflowCxV3Intent(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. The key/value metadata to label an intent. Labels can
-    contain lowercase letters, digits and the symbols '-' and '_'.
-    International characters are allowed, including letters from unicase
-    alphabets. Keys must start with a letter. Keys and values can be no longer
-    than 63 characters and no more than 128 bytes. Prefix "sys." is reserved
-    for Dialogflow defined labels. Currently allowed Dialogflow defined labels
+    r"""The key/value metadata to label an intent. Labels can contain
+    lowercase letters, digits and the symbols '-' and '_'. International
+    characters are allowed, including letters from unicase alphabets. Keys
+    must start with a letter. Keys and values can be no longer than 63
+    characters and no more than 128 bytes. Prefix "sys." is reserved for
+    Dialogflow defined labels. Currently allowed Dialogflow defined labels
     include: * sys.head * sys.contextual The above labels do not require
     value. "sys.head" means the intent is a head intent. "sys.contextual"
     means the intent is a contextual intent.
@@ -4797,6 +4797,7 @@ class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
     fulfillmentInfo: Always present. Information about the fulfillment that
       triggered this webhook call.
     intentInfo: Information about the last matched intent.
+    languageCode: The language code specified in the original request.
     messages: The list of rich message responses to present to the user.
       Webhook can choose to append or replace this list in
       WebhookResponse.fulfillment_response;
@@ -4806,6 +4807,15 @@ class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
       request. The field is filled when sentiment analysis is configured to be
       enabled for the request.
     sessionInfo: Information about session status.
+    text: If natural language text was provided as input, this field will
+      contain a copy of the text.
+    transcript: If natural language speech audio was provided as input, this
+      field will contain the transcript for the audio.
+    triggerEvent: If an event was provided as input, this field will contain
+      the name of the event.
+    triggerIntent: If an intent was provided as input, this field will contain
+      a copy of the intent identifier. Format:
+      `projects//locations//agents//intents/`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4835,11 +4845,16 @@ class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
   detectIntentResponseId = _messages.StringField(1)
   fulfillmentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestFulfillmentInfo', 2)
   intentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestIntentInfo', 3)
-  messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 4, repeated=True)
-  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3PageInfo', 5)
-  payload = _messages.MessageField('PayloadValue', 6)
-  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult', 7)
-  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3SessionInfo', 8)
+  languageCode = _messages.StringField(4)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 5, repeated=True)
+  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3PageInfo', 6)
+  payload = _messages.MessageField('PayloadValue', 7)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult', 8)
+  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3SessionInfo', 9)
+  text = _messages.StringField(10)
+  transcript = _messages.StringField(11)
+  triggerEvent = _messages.StringField(12)
+  triggerIntent = _messages.StringField(13)
 
 
 class GoogleCloudDialogflowCxV3WebhookRequestFulfillmentInfo(_messages.Message):
@@ -5682,20 +5697,20 @@ class GoogleCloudDialogflowCxV3beta1Intent(_messages.Message):
   input) to your intent.
 
   Messages:
-    LabelsValue: Optional. The key/value metadata to label an intent. Labels
-      can contain lowercase letters, digits and the symbols '-' and '_'.
-      International characters are allowed, including letters from unicase
-      alphabets. Keys must start with a letter. Keys and values can be no
-      longer than 63 characters and no more than 128 bytes. Prefix "sys-" is
-      reserved for Dialogflow defined labels. Currently allowed Dialogflow
-      defined labels include: * sys-head * sys-contextual The above labels do
-      not require value. "sys-head" means the intent is a head intent. "sys-
-      contextual" means the intent is a contextual intent.
+    LabelsValue: The key/value metadata to label an intent. Labels can contain
+      lowercase letters, digits and the symbols '-' and '_'. International
+      characters are allowed, including letters from unicase alphabets. Keys
+      must start with a letter. Keys and values can be no longer than 63
+      characters and no more than 128 bytes. Prefix "sys-" is reserved for
+      Dialogflow defined labels. Currently allowed Dialogflow defined labels
+      include: * sys-head * sys-contextual The above labels do not require
+      value. "sys-head" means the intent is a head intent. "sys-contextual"
+      means the intent is a contextual intent.
 
   Fields:
-    description: Optional. Human readable description for better understanding
-      an intent like its scope, content, result etc. Maximum character limit:
-      140 characters.
+    description: Human readable description for better understanding an intent
+      like its scope, content, result etc. Maximum character limit: 140
+      characters.
     displayName: Required. The human-readable name of the intent, unique
       within the agent.
     isFallback: Indicates whether this is a fallback intent. Currently only
@@ -5704,15 +5719,15 @@ class GoogleCloudDialogflowCxV3beta1Intent(_messages.Message):
       the case of requests that are mistakenly matched, since training phrases
       assigned to fallback intents act as negative examples that triggers no-
       match event.
-    labels: Optional. The key/value metadata to label an intent. Labels can
-      contain lowercase letters, digits and the symbols '-' and '_'.
-      International characters are allowed, including letters from unicase
-      alphabets. Keys must start with a letter. Keys and values can be no
-      longer than 63 characters and no more than 128 bytes. Prefix "sys-" is
-      reserved for Dialogflow defined labels. Currently allowed Dialogflow
-      defined labels include: * sys-head * sys-contextual The above labels do
-      not require value. "sys-head" means the intent is a head intent. "sys-
-      contextual" means the intent is a contextual intent.
+    labels: The key/value metadata to label an intent. Labels can contain
+      lowercase letters, digits and the symbols '-' and '_'. International
+      characters are allowed, including letters from unicase alphabets. Keys
+      must start with a letter. Keys and values can be no longer than 63
+      characters and no more than 128 bytes. Prefix "sys-" is reserved for
+      Dialogflow defined labels. Currently allowed Dialogflow defined labels
+      include: * sys-head * sys-contextual The above labels do not require
+      value. "sys-head" means the intent is a head intent. "sys-contextual"
+      means the intent is a contextual intent.
     name: The unique identifier of the intent. Required for the
       Intents.UpdateIntent method. Intents.CreateIntent populates the name
       automatically. Format: `projects//locations//agents//intents/`.
@@ -5728,12 +5743,12 @@ class GoogleCloudDialogflowCxV3beta1Intent(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. The key/value metadata to label an intent. Labels can
-    contain lowercase letters, digits and the symbols '-' and '_'.
-    International characters are allowed, including letters from unicase
-    alphabets. Keys must start with a letter. Keys and values can be no longer
-    than 63 characters and no more than 128 bytes. Prefix "sys-" is reserved
-    for Dialogflow defined labels. Currently allowed Dialogflow defined labels
+    r"""The key/value metadata to label an intent. Labels can contain
+    lowercase letters, digits and the symbols '-' and '_'. International
+    characters are allowed, including letters from unicase alphabets. Keys
+    must start with a letter. Keys and values can be no longer than 63
+    characters and no more than 128 bytes. Prefix "sys-" is reserved for
+    Dialogflow defined labels. Currently allowed Dialogflow defined labels
     include: * sys-head * sys-contextual The above labels do not require
     value. "sys-head" means the intent is a head intent. "sys-contextual"
     means the intent is a contextual intent.
@@ -6570,6 +6585,7 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
     fulfillmentInfo: Always present. Information about the fulfillment that
       triggered this webhook call.
     intentInfo: Information about the last matched intent.
+    languageCode: The language code specified in the original request.
     messages: The list of rich message responses to present to the user.
       Webhook can choose to append or replace this list in
       WebhookResponse.fulfillment_response;
@@ -6579,6 +6595,15 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
       request. The field is filled when sentiment analysis is configured to be
       enabled for the request.
     sessionInfo: Information about session status.
+    text: If natural language text was provided as input, this field will
+      contain a copy of the text.
+    transcript: If natural language speech audio was provided as input, this
+      field will contain the transcript for the audio.
+    triggerEvent: If an event was provided as input, this field will contain
+      the name of the event.
+    triggerIntent: If an intent was provided as input, this field will contain
+      a copy of the intent identifier. Format:
+      `projects//locations//agents//intents/`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -6608,11 +6633,16 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
   detectIntentResponseId = _messages.StringField(1)
   fulfillmentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo', 2)
   intentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfo', 3)
-  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 4, repeated=True)
-  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfo', 5)
-  payload = _messages.MessageField('PayloadValue', 6)
-  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult', 7)
-  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1SessionInfo', 8)
+  languageCode = _messages.StringField(4)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 5, repeated=True)
+  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfo', 6)
+  payload = _messages.MessageField('PayloadValue', 7)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult', 8)
+  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1SessionInfo', 9)
+  text = _messages.StringField(10)
+  transcript = _messages.StringField(11)
+  triggerEvent = _messages.StringField(12)
+  triggerIntent = _messages.StringField(13)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo(_messages.Message):
@@ -7660,6 +7690,9 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
       1024 bytes.
     humanAgentAssistantConfig: Configuration for agent assistance to use with
       this profile.
+    humanAgentHandoffConfig: Configuration for connecting to a live agent.
+      Currently, this feature is not general available, please contact Google
+      to get access.
     languageCode: Language which represents the conversationProfile. If
       unspecified, the default language code en-us applies. Users need to
       create a ConversationProfile for each language they want to support.
@@ -7678,13 +7711,14 @@ class GoogleCloudDialogflowV2ConversationProfile(_messages.Message):
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
   humanAgentAssistantConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfig', 4)
-  languageCode = _messages.StringField(5)
-  loggingConfig = _messages.MessageField('GoogleCloudDialogflowV2LoggingConfig', 6)
-  name = _messages.StringField(7)
-  newMessageEventNotificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 8)
-  notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 9)
-  sttConfig = _messages.MessageField('GoogleCloudDialogflowV2SpeechToTextConfig', 10)
-  updateTime = _messages.StringField(11)
+  humanAgentHandoffConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentHandoffConfig', 5)
+  languageCode = _messages.StringField(6)
+  loggingConfig = _messages.MessageField('GoogleCloudDialogflowV2LoggingConfig', 7)
+  name = _messages.StringField(8)
+  newMessageEventNotificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 9)
+  notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 10)
+  sttConfig = _messages.MessageField('GoogleCloudDialogflowV2SpeechToTextConfig', 11)
+  updateTime = _messages.StringField(12)
 
 
 class GoogleCloudDialogflowV2DetectIntentRequest(_messages.Message):
@@ -8293,6 +8327,9 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
   r"""Defines the Human Agent Assist to connect to a conversation.
 
   Fields:
+    endUserSuggestionConfig: Configuration for agent assistance of end user
+      participant. Currently, this feature is not general available, please
+      contact Google to get access.
     humanAgentSuggestionConfig: Configuration for agent assistance of human
       agent participant.
     messageAnalysisConfig: Configuration for message analysis.
@@ -8300,9 +8337,10 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
       events.
   """
 
-  humanAgentSuggestionConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig', 1)
-  messageAnalysisConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigMessageAnalysisConfig', 2)
-  notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 3)
+  endUserSuggestionConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig', 1)
+  humanAgentSuggestionConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig', 2)
+  messageAnalysisConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigMessageAnalysisConfig', 3)
+  notificationConfig = _messages.MessageField('GoogleCloudDialogflowV2NotificationConfig', 4)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig(_messages.Message):
@@ -8321,6 +8359,12 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigMessageAnalysisConfig(_mes
   r"""Configuration for analyses to run on each conversation message.
 
   Fields:
+    enableEntityExtraction: Enable entity extraction in conversation messages
+      on [agent assist
+      stage](https://cloud.google.com/dialogflow/priv/docs/contact-
+      center/basics#stages). If unspecified, defaults to false. Currently,
+      this feature is not general available, please contact Google to get
+      access.
     enableSentimentAnalysis: Enable sentiment analysis in conversation
       messages on [agent assist
       stage](https://cloud.google.com/dialogflow/priv/docs/contact-
@@ -8339,7 +8383,8 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigMessageAnalysisConfig(_mes
       ConversationEvent.new_message_payload.SentimentAnalysisResult.
   """
 
-  enableSentimentAnalysis = _messages.BooleanField(1)
+  enableEntityExtraction = _messages.BooleanField(1)
+  enableSentimentAnalysis = _messages.BooleanField(2)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig(_messages.Message):
@@ -8507,6 +8552,51 @@ class GoogleCloudDialogflowV2HumanAgentAssistantEvent(_messages.Message):
   conversation = _messages.StringField(1)
   participant = _messages.StringField(2)
   suggestionResults = _messages.MessageField('GoogleCloudDialogflowV2SuggestionResult', 3, repeated=True)
+
+
+class GoogleCloudDialogflowV2HumanAgentHandoffConfig(_messages.Message):
+  r"""Defines the hand off to a live agent, typically on which external agent
+  service provider to connect to a conversation. Currently, this feature is
+  not general available, please contact Google to get access.
+
+  Fields:
+    livePersonConfig: Uses LivePerson (https://www.liveperson.com).
+    salesforceLiveAgentConfig: Uses Salesforce Live Agent.
+  """
+
+  livePersonConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentHandoffConfigLivePersonConfig', 1)
+  salesforceLiveAgentConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentHandoffConfigSalesforceLiveAgentConfig', 2)
+
+
+class GoogleCloudDialogflowV2HumanAgentHandoffConfigLivePersonConfig(_messages.Message):
+  r"""Configuration specific to LivePerson (https://www.liveperson.com).
+
+  Fields:
+    accountNumber: Required. Account number of the LivePerson account to
+      connect. This is the account number you input at the login page.
+  """
+
+  accountNumber = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2HumanAgentHandoffConfigSalesforceLiveAgentConfig(_messages.Message):
+  r"""Configuration specific to Salesforce Live Agent.
+
+  Fields:
+    buttonId: Required. Live Agent chat button ID.
+    deploymentId: Required. Live Agent deployment ID.
+    endpointDomain: Required. Domain of the Live Agent endpoint for this
+      agent. You can find the endpoint URL in the `Live Agent settings` page.
+      For example if URL has the form
+      https://d.la4-c2-phx.salesforceliveagent.com/..., you should fill in
+      d.la4-c2-phx.salesforceliveagent.com.
+    organizationId: Required. The organization ID of the Salesforce account.
+  """
+
+  buttonId = _messages.StringField(1)
+  deploymentId = _messages.StringField(2)
+  endpointDomain = _messages.StringField(3)
+  organizationId = _messages.StringField(4)
 
 
 class GoogleCloudDialogflowV2ImportAgentRequest(_messages.Message):
@@ -9933,16 +10023,21 @@ class GoogleCloudDialogflowV2OutputAudioConfig(_messages.Message):
         endian samples (Linear PCM). Audio content returned as LINEAR16 also
         contains a WAV header.
       OUTPUT_AUDIO_ENCODING_MP3: MP3 audio at 32kbps.
+      OUTPUT_AUDIO_ENCODING_MP3_64_KBPS: MP3 audio at 64kbps.
       OUTPUT_AUDIO_ENCODING_OGG_OPUS: Opus encoded audio wrapped in an ogg
         container. The result will be a file which can be played natively on
         Android, and in browsers (at least Chrome and Firefox). The quality of
         the encoding is considerably higher than MP3 while using approximately
         the same bitrate.
+      OUTPUT_AUDIO_ENCODING_MULAW: 8-bit samples that compand 14-bit audio
+        samples using G.711 PCMU/mu-law.
     """
     OUTPUT_AUDIO_ENCODING_UNSPECIFIED = 0
     OUTPUT_AUDIO_ENCODING_LINEAR_16 = 1
     OUTPUT_AUDIO_ENCODING_MP3 = 2
-    OUTPUT_AUDIO_ENCODING_OGG_OPUS = 3
+    OUTPUT_AUDIO_ENCODING_MP3_64_KBPS = 3
+    OUTPUT_AUDIO_ENCODING_OGG_OPUS = 4
+    OUTPUT_AUDIO_ENCODING_MULAW = 5
 
   audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
   sampleRateHertz = _messages.IntegerField(2, variant=_messages.Variant.INT32)

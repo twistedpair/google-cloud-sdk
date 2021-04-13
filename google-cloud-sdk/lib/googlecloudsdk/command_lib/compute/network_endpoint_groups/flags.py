@@ -62,7 +62,7 @@ def _AddNetworkEndpointGroupType(parser, support_neg_type):
 
 def _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
                             support_l4ilb_neg, support_regional_scope,
-                            support_vm_ip_neg):
+                            support_vm_ip_neg, support_l7psc_neg):
   """Adds endpoint type argument for creating network endpoint groups."""
   endpoint_type_choices = ['gce-vm-ip-port']
   endpoint_type_hidden = True
@@ -81,6 +81,9 @@ def _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
     endpoint_type_hidden = False
   if support_vm_ip_neg:
     endpoint_type_choices.append('gce-vm-ip')
+    endpoint_type_hidden = False
+  if support_l7psc_neg:
+    endpoint_type_choices.append('private-service-connect')
     endpoint_type_hidden = False
 
   help_text = 'The network endpoint type.'
@@ -148,6 +151,14 @@ def _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
       optional, primary NIC address will be used if no IP specified.
       Port must not be specified.
     """
+  if support_l7psc_neg:
+    help_text += """\
+
+      *private-service-connect*:::
+      The network endpoint corresponds to a service outside the VPC, accessed
+      via Private Service Connect. The network, subnet, and default port must
+      not be set.
+    """
 
   base.ChoiceArgument(
       '--network-endpoint-type',
@@ -158,7 +169,8 @@ def _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
 
 
 def _AddNetwork(parser, support_global_scope, support_hybrid_neg,
-                support_l4ilb_neg, support_regional_scope, support_vm_ip_neg):
+                support_l4ilb_neg, support_regional_scope, support_vm_ip_neg,
+                support_l7psc_neg):
   """Adds network argument for creating network endpoint groups."""
   help_text = """\
       Name of the network in which the NEG is created. `default` project
@@ -171,7 +183,7 @@ def _AddNetwork(parser, support_global_scope, support_hybrid_neg,
     network_applicable_ne_types.append('`gce-vm-primary-ip`')
   if support_vm_ip_neg:
     network_applicable_ne_types.append('`gce-vm-ip`')
-  if support_global_scope or support_regional_scope:
+  if support_global_scope or support_regional_scope or support_l7psc_neg:
     help_text += """\
 
       This is only supported for NEGs with endpoint type {0}.
@@ -180,7 +192,8 @@ def _AddNetwork(parser, support_global_scope, support_hybrid_neg,
 
 
 def _AddSubnet(parser, support_global_scope, support_hybrid_neg,
-               support_l4ilb_neg, support_regional_scope, support_vm_ip_neg):
+               support_l4ilb_neg, support_regional_scope, support_vm_ip_neg,
+               support_l7psc_neg):
   """Adds subnet argument for creating network endpoint groups."""
   help_text = """\
       Name of the subnet to which all network endpoints belong.
@@ -188,7 +201,7 @@ def _AddSubnet(parser, support_global_scope, support_hybrid_neg,
       If not specified, network endpoints may belong to any subnetwork in the
       region where the network endpoint group is created.
   """
-  if support_global_scope or support_hybrid_neg or support_regional_scope:
+  if support_global_scope or support_hybrid_neg or support_regional_scope or support_l7psc_neg:
     subnet_applicable_types = ['`gce-vm-ip-port`']
     if support_l4ilb_neg:
       subnet_applicable_types.append('`gce-vm-primary-ip`')
@@ -202,7 +215,7 @@ def _AddSubnet(parser, support_global_scope, support_hybrid_neg,
 
 
 def _AddDefaultPort(parser, support_global_scope, support_hybrid_neg,
-                    support_regional_scope):
+                    support_regional_scope, support_l7psc_neg):
   """Adds default port argument for creating network endpoint groups."""
   help_text = """\
     The default port to use if the port number is not specified in the network
@@ -231,6 +244,12 @@ def _AddDefaultPort(parser, support_global_scope, support_hybrid_neg,
       help_text += """\
 
       This flag is not supported for NEGs with endpoint type `serverless`.
+      """
+    if support_l7psc_neg:
+      help_text += """\
+
+      This flag is not supported for NEGs with endpoint type
+      `private-service-connect`.
       """
   parser.add_argument('--default-port', type=int, help=help_text)
 
@@ -386,6 +405,16 @@ def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
         help=serverless_deployment_url_mask_help)
 
 
+def _AddL7pscRoutingInfo(parser):
+  """Adds l7psc routing info arguments for PSC network endpoint groups."""
+
+  psc_target_service_help = """\
+      PSC target service name to add to the private service connect network
+      endpoint groups (NEG).
+  """
+  parser.add_argument('--psc-target-service', help=psc_target_service_help)
+
+
 def AddCreateNegArgsToParser(parser,
                              support_neg_type=False,
                              support_global_scope=False,
@@ -393,20 +422,26 @@ def AddCreateNegArgsToParser(parser,
                              support_l4ilb_neg=False,
                              support_regional_scope=False,
                              support_vm_ip_neg=False,
-                             support_serverless_deployment=False):
+                             support_serverless_deployment=False,
+                             support_l7psc_neg=False):
   """Adds flags for creating a network endpoint group to the parser."""
+
   _AddNetworkEndpointGroupType(parser, support_neg_type)
   _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
                           support_l4ilb_neg, support_regional_scope,
-                          support_vm_ip_neg)
+                          support_vm_ip_neg, support_l7psc_neg)
   _AddNetwork(parser, support_global_scope, support_hybrid_neg,
-              support_l4ilb_neg, support_regional_scope, support_vm_ip_neg)
+              support_l4ilb_neg, support_regional_scope, support_vm_ip_neg,
+              support_l7psc_neg)
   _AddSubnet(parser, support_global_scope, support_hybrid_neg,
-             support_l4ilb_neg, support_regional_scope, support_vm_ip_neg)
+             support_l4ilb_neg, support_regional_scope, support_vm_ip_neg,
+             support_l7psc_neg)
   _AddDefaultPort(parser, support_global_scope, support_hybrid_neg,
-                  support_regional_scope)
+                  support_regional_scope, support_l7psc_neg)
   if support_regional_scope:
     _AddServerlessRoutingInfo(parser, support_serverless_deployment)
+  if support_regional_scope and support_l7psc_neg:
+    _AddL7pscRoutingInfo(parser)
 
 
 def _AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,

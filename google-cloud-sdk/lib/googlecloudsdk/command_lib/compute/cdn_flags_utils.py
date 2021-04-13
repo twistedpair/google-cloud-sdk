@@ -21,8 +21,8 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 
 
-def AddFlexibleCacheArgs(parser, resource_name, update_command=False):
-  """Adds cache mode, max ttl, default ttl, client ttl, custom response header, negative caching, negative caching policy, serve-while-stale, and bypass-cache-on-request-headers args to the argparse."""
+def AddCdnPolicyArgs(parser, resource_name, update_command=False):
+  """Adds cache mode, max ttl, default ttl, client ttl, custom response header, negative caching, negative caching policy, request coalescing, serve while stale, and bypass cache on request headers args to the argparse."""
   # TODO (b/165456063) document enums as lowercase-with-dash. Accept both forms.
   parser.add_argument(
       '--cache-mode',
@@ -297,10 +297,6 @@ def AddFlexibleCacheArgs(parser, resource_name, update_command=False):
         action='store_true',
         help='Remove all bypass cache on request headers for the %s.' %
         resource_name)
-
-
-def AddRequestCoalescing(parser):
-  """Adds request coalescing arg to the parser."""
   request_coalescing_help = """\
   Enables request coalescing to the backend (recommended).
 

@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -237,6 +237,10 @@
         },
         "cpeUri": {
           "description": "The cpe_uri in [cpe format] (https:\/\/cpe.mitre.org\/specification\/) in which the vulnerability may manifest. Examples include distro or storage location for vulnerable jar.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "The projectId of the package to which this data belongs. Most of Drydock's code does not set or use this field. This is added specifically so we can group packages by projects and decide whether or not to apply NVD data to the packages belonging to a specific project.",
           "type": "string"
         }
       }
@@ -1250,6 +1254,33 @@
         },
         "name": {
           "description": "The localized name of the category.",
+          "type": "string"
+        }
+      }
+    },
+    "AnalyzePackagesMetadataV1": {
+      "id": "AnalyzePackagesMetadataV1",
+      "description": "AnalyzePackagesMetadata contains metadata for an active scan of a container image.",
+      "type": "object",
+      "properties": {
+        "resourceUri": {
+          "description": "The resource URI of the container image being scanned.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "When the scan was created.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "AnalyzePackagesResponseV1": {
+      "id": "AnalyzePackagesResponseV1",
+      "description": "AnalyzePackagesResponse contains the information necessary to find results for the given scan.",
+      "type": "object",
+      "properties": {
+        "scan": {
+          "description": "The name of the scan resource created by this successful scan.",
           "type": "string"
         }
       }

@@ -23,14 +23,15 @@ from googlecloudsdk.calliope import base
 
 API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
+    base.ReleaseTrack.BETA: 'v1beta1',
 }
 
 
-def Client(api_version):
-  """Creates a networksecurity client."""
-  return apis.GetClientInstance('networksecurity', api_version)
-
-
-def Messages(api_version):
-  """Messages for the networksecurity API."""
+def GetMessagesModule(release_track=base.ReleaseTrack.BETA):
+  api_version = API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetMessagesModule('networksecurity', api_version)
+
+
+def GetClientInstance(release_track=base.ReleaseTrack.BETA):
+  api_version = API_VERSION_FOR_TRACK.get(release_track)
+  return apis.GetClientInstance('networksecurity', api_version)

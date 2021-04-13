@@ -1291,8 +1291,9 @@ class DeviceUser(_messages.Message):
     managementState: Output only. Management state of the user on the device.
     name: Output only. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the
-      DeviceUser in format: `devices/{device_id}/deviceUsers/{user_id}`, where
-      user_id is the ID of the user associated with the user session.
+      DeviceUser in format:
+      `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      `device_user_id` uniquely identifies a user's use of a device.
     passwordState: Password state of the DeviceUser object
     userAgent: Output only. User agent on the device for this specific user
     userEmail: Email address of the user registered on the device.
@@ -1935,8 +1936,9 @@ class GoogleAppsCloudidentityDevicesV1DeviceUser(_messages.Message):
     managementState: Output only. Management state of the user on the device.
     name: Output only. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the
-      DeviceUser in format: `devices/{device_id}/deviceUsers/{user_id}`, where
-      user_id is the ID of the user associated with the user session.
+      DeviceUser in format:
+      `devices/{device_id}/deviceUsers/{device_user_id}`, where
+      `device_user_id` uniquely identifies a user's use of a device.
     passwordState: Password state of the DeviceUser object
     userAgent: Output only. User agent on the device for this specific user
     userEmail: Email address of the user registered on the device.
@@ -2332,8 +2334,7 @@ class MemberRelation(_messages.Message):
       transitive member.
 
   Fields:
-    member: Resource name for this member if member is a GROUP, otherwise it
-      is empty.
+    member: Resource name for this member.
     preferredMemberKey: Entity key has an id and a namespace. In case of
       discussion forums, the id will be an email address without a namespace.
     relationType: The relation between the group and the transitive member.
@@ -2768,7 +2769,7 @@ class UpdateMembershipRolesParams(_messages.Message):
 
   Fields:
     fieldMask: The fully-qualified names of fields to update. May only contain
-      the field `expiry_detail`.
+      the field `expiry_detail.expire_time`.
     membershipRole: The `MembershipRole`s to be updated. Only `MEMBER`
       `MembershipRoles` can currently be updated. May only contain a
       `MembershipRole` with `name` `MEMBER`.

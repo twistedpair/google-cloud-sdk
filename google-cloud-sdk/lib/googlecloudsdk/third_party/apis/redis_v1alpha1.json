@@ -590,8 +590,7 @@
           "format": "google-datetime"
         },
         "canReschedule": {
-          "description": "Output only. If the scheduled maintenance can be rescheduled, default is true.",
-          "readOnly": true,
+          "description": "If the scheduled maintenance can be rescheduled, default is true.",
           "type": "boolean"
         }
       }

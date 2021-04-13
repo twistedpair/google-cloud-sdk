@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         },
         "https://www.googleapis.com/auth/cloud-platform.read-only": {
           "description": "View your data across Google Cloud Platform services"
@@ -298,6 +298,21 @@
                 "LINUX",
                 "WINDOWS"
               ]
+            },
+            "view": {
+              "description": "The view configures whether to retrieve security keys information.",
+              "location": "query",
+              "type": "string",
+              "enumDescriptions": [
+                "The default login profile view. The API defaults to the BASIC view.",
+                "Includes POSIX and SSH key information.",
+                "Include security key information for the user."
+              ],
+              "enum": [
+                "LOGIN_PROFILE_VIEW_UNSPECIFIED",
+                "BASIC",
+                "SECURITY_KEY"
+              ]
             }
           },
           "parameterOrder": [
@@ -331,6 +346,21 @@
               "description": "The project ID of the Google Cloud Platform project.",
               "location": "query",
               "type": "string"
+            },
+            "view": {
+              "description": "The view configures whether to retrieve security keys information.",
+              "location": "query",
+              "type": "string",
+              "enumDescriptions": [
+                "The default login profile view. The API defaults to the BASIC view.",
+                "Includes POSIX and SSH key information.",
+                "Include security key information for the user."
+              ],
+              "enum": [
+                "LOGIN_PROFILE_VIEW_UNSPECIFIED",
+                "BASIC",
+                "SECURITY_KEY"
+              ]
             }
           },
           "parameterOrder": [

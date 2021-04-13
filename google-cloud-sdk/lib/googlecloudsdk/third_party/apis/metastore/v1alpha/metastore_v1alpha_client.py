@@ -148,7 +148,7 @@ class MetastoreV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Backup in a given project and location.
+      r"""Creates a new backup in a given project and location.
 
       Args:
         request: (MetastoreProjectsLocationsServicesBackupsCreateRequest) input message

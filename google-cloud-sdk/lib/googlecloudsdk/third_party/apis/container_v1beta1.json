@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -2065,10 +2065,6 @@
         "issuingCertificateAuthority": {
           "description": "DEPRECATED: Use enable_certificates instead issuing_certificate_authority controls issuance of workload mTLS certificates. If non-empty, it must be a Private CA resource URL of the form \"\/\/privateca.googleapis.com\/projects\/{project}\/locations\/{location}\/certificateAuthorities\/{name}\". If non-empty, Workload Identity (standard or Hub) must be active (workload_pool must be non-empty).",
           "type": "string"
-        },
-        "enableAlts": {
-          "description": "DEPRECATED: Use enable_alts instead enable_alts controls whether the alts handshaker should be enabled or not for direct-path.",
-          "type": "boolean"
         }
       }
     },

@@ -68,10 +68,14 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
         assessment is suspected of being fraudulent based on the payment
         method, billing details, shipping address or other transaction
         information.
+      TWO_FACTOR_PASSED: Indicates that the user passed a 2FA challenge.
+      TWO_FACTOR_FAILED: Indicates that the user failed a 2FA challenge.
     """
     REASON_UNSPECIFIED = 0
     CHARGEBACK = 1
     PAYMENT_HEURISTICS = 2
+    TWO_FACTOR_PASSED = 3
+    TWO_FACTOR_FAILED = 4
 
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 1)
   reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 2, repeated=True)

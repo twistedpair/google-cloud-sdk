@@ -1577,8 +1577,8 @@ class Release(_messages.Message):
       and size limitations.
     buildArtifacts: List of artifacts to pass through to Skaffold command.
     createTime: Output only. Time at which the `Release` was created.
-    deliveryPipelineSnapshot: Releases take a snapshot of the world at
-      creation time.
+    deliveryPipelineSnapshot: Output only. Snapshot of the parent pipelint
+      taken at release creation time.
     description: Description of the `Release`. Max length is 255 characters.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
@@ -1606,7 +1606,8 @@ class Release(_messages.Message):
       URI.
     skaffoldConfigUri: GCS URI of tar.gz archive containing Skaffold
       configuration.
-    targetSnapshot: A Target attribute.
+    targetSnapshots: Output only. Snapshot of the parent pipeline's targets
+      taken at release creation time.
     uid: Output only. Unique identifier of the `Release`.
   """
 
@@ -1722,7 +1723,7 @@ class Release(_messages.Message):
   renderedManifests = _messages.MessageField('RenderedManifestsValue', 14)
   skaffoldConfigPath = _messages.StringField(15)
   skaffoldConfigUri = _messages.StringField(16)
-  targetSnapshot = _messages.MessageField('Target', 17, repeated=True)
+  targetSnapshots = _messages.MessageField('Target', 17, repeated=True)
   uid = _messages.StringField(18)
 
 

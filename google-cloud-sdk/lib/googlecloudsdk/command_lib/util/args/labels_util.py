@@ -26,12 +26,23 @@ Typical usage (update command):
 
   # When defining arguments
   labels_util.AddUpdateLabelsFlags(parser)
+
   # When running the command
   labels_diff = labels_util.Diff.FromUpdateArgs(args)
   if labels_diff.MayHaveUpdates():
     orig_resource = Get(...)  # to prevent unnecessary Get calls
-    new_resource.labels = labels_diff.Apply(
-        labels_cls, orig_resource.labels).GetOrNone()
+    labels_update = labels_diff.Apply(labels_cls, orig_resource.labels)
+    if labels_update.needs_update:
+      new_resource.labels = labels_update.labels
+      field_mask.append('labels')
+  Update(..., new_resource)
+
+  # Or alternatively, when running the command
+  labels_update = labels_util.ProcessUpdateArgsLazy(
+    args, labels_cls, lambda: Get(...).labels)
+  if labels_update.needs_update:
+    new_resource.labels = labels_update.labels
+    field_mask.append('labels')
   Update(..., new_resource)
 """
 
@@ -321,7 +332,12 @@ class UpdateResult(object):
     return self._labels
 
   def GetOrNone(self):
-    """Returns the new labels if an update is needed or None otherwise."""
+    """Returns the new labels if an update is needed or None otherwise.
+
+    NOTE: If this function returns None, make sure not to include the labels
+    field in the field mask of the update command. Otherwise, it's possible to
+    inadvertently clear the labels on the resource.
+    """
     try:
       return self.labels
     except ValueError:

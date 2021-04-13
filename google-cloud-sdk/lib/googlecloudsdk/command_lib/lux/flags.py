@@ -45,3 +45,31 @@ CLUSTER_FORMAT = """
 def GetClusterListFormat():
   """Returns the table format for listing clusters."""
   return CLUSTER_FORMAT
+
+
+def AddCluster(parser):
+  """Adds a positional cluster argument to parser.
+
+  Args:
+    parser: argparse parser.
+  """
+  parser.add_argument(
+      'cluster',
+      type=str,
+      help='Lux cluster ID')
+
+
+def AddRegion(parser, required=True):
+  """Adds --region flag to parser.
+
+  Args:
+    parser: argparse parser.
+    required: whether or not --region is required
+  """
+  parser.add_argument(
+      '--region',
+      required=required,
+      type=str,
+      help='Regional location (e.g. asia-east1, us-east1). See the full '
+            'list of regions at '
+            'https://cloud.google.com/sql/docs/instance-locations.')

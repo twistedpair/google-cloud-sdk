@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.bigtable import util
+from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.iam import iam_util
 
 
 def Upgrade(instance):
@@ -43,19 +45,28 @@ def Upgrade(instance):
           updateMask='type'))
 
 
-def GetIamPolicy(instance_ref):
+def GetIamPolicy(instance_ref, release_track):
   """Get IAM policy for a given instance."""
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
-  req = msgs.BigtableadminProjectsInstancesGetIamPolicyRequest(
-      resource=instance_ref.RelativeName())
+  if release_track == base.ReleaseTrack.ALPHA:
+    req = msgs.BigtableadminProjectsInstancesGetIamPolicyRequest(
+        resource=instance_ref.RelativeName(),
+        getIamPolicyRequest=msgs.GetIamPolicyRequest(
+            options=msgs.GetPolicyOptions(requestedPolicyVersion=iam_util
+                                          .MAX_LIBRARY_IAM_SUPPORTED_VERSION)))
+  else:
+    req = msgs.BigtableadminProjectsInstancesGetIamPolicyRequest(
+        resource=instance_ref.RelativeName())
   return client.projects_instances.GetIamPolicy(req)
 
 
-def SetPolicy(instance_ref, policy):
+def SetIamPolicy(instance_ref, release_track, policy):
   """Sets the given policy on the instance, overwriting what exists."""
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
+  if release_track == base.ReleaseTrack.ALPHA:
+    policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
   req = msgs.BigtableadminProjectsInstancesSetIamPolicyRequest(
       resource=instance_ref.RelativeName(),
       setIamPolicyRequest=msgs.SetIamPolicyRequest(policy=policy))

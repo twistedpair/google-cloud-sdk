@@ -23,23 +23,23 @@ from googlecloudsdk.api_lib.bigtable import util
 from googlecloudsdk.command_lib.iam import iam_util
 
 
-def AddInstanceIamPolicyBinding(instance_ref, member, role):
+def AddInstanceIamPolicyBinding(instance_ref, release_track, member, role):
   """Adds a policy binding to an instance IAM policy."""
   msgs = util.GetAdminMessages()
-  policy = instances.GetIamPolicy(instance_ref)
+  policy = instances.GetIamPolicy(instance_ref, release_track)
   iam_util.AddBindingToIamPolicy(msgs.Binding, policy, member, role)
-  return instances.SetPolicy(instance_ref, policy)
+  return instances.SetIamPolicy(instance_ref, release_track, policy)
 
 
-def SetInstanceIamPolicy(instance_ref, policy):
+def SetInstanceIamPolicy(instance_ref, release_track, policy):
   """Sets the IAM policy on an instance."""
   msgs = util.GetAdminMessages()
   policy = iam_util.ParsePolicyFile(policy, msgs.Policy)
-  return instances.SetPolicy(instance_ref, policy)
+  return instances.SetIamPolicy(instance_ref, release_track, policy)
 
 
-def RemoveInstanceIamPolicyBinding(instance_ref, member, role):
+def RemoveInstanceIamPolicyBinding(instance_ref, release_track, member, role):
   """Removes a policy binding from an instance IAM policy."""
-  policy = instances.GetIamPolicy(instance_ref)
+  policy = instances.GetIamPolicy(instance_ref, release_track)
   iam_util.RemoveBindingFromIamPolicy(policy, member, role)
-  return instances.SetPolicy(instance_ref, policy)
+  return instances.SetIamPolicy(instance_ref, release_track, policy)

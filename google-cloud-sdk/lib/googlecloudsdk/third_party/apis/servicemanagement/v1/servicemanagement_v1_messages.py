@@ -3365,8 +3365,8 @@ class Service(_messages.Message):
     authentication: Auth configuration.
     backend: API backend configuration.
     billing: Billing configuration.
-    configVersion: Deprecated. The service config compiler always sets this
-      field to `3`.
+    configVersion: Obsolete. Do not use. This field has no semantic meaning.
+      The service config compiler always sets this field to `3`.
     context: Context configuration.
     control: Configuration for the service control plane.
     customError: Custom error configuration.

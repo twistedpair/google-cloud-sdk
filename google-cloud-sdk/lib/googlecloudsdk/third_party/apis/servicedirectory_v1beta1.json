@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -234,6 +234,11 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "uid": {
+          "description": "Output only. A globally unique identifier (in UUID4 format) for this service.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -277,6 +282,11 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "uid": {
+          "description": "Output only. A globally unique identifier (in UUID4 format) for this endpoint.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -322,6 +332,11 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "uid": {
+          "description": "Output only. A globally unique identifier (in UUID4 format) for this namespace.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

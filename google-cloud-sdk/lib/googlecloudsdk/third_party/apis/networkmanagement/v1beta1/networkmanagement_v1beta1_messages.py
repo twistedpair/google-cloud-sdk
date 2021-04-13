@@ -57,6 +57,14 @@ class AbortInfo(_messages.Message):
       TRACE_TOO_LONG: Aborted because the number of steps in the trace
         exceeding a certain limit which may be caused by routing loop.
       INTERNAL_ERROR: Aborted due to internal server error.
+      SOURCE_ENDPOINT_NOT_FOUND: Aborted because the source endpoint could not
+        be found.
+      MISMATCHED_SOURCE_NETWORK: Aborted because the source network does not
+        match the source endpoint.
+      DESTINATION_ENDPOINT_NOT_FOUND: Aborted because the destination endpoint
+        could not be found.
+      MISMATCHED_DESTINATION_NETWORK: Aborted because the destination network
+        does not match the destination endpoint.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -69,6 +77,10 @@ class AbortInfo(_messages.Message):
     UNINTENDED_DESTINATION = 8
     TRACE_TOO_LONG = 9
     INTERNAL_ERROR = 10
+    SOURCE_ENDPOINT_NOT_FOUND = 11
+    MISMATCHED_SOURCE_NETWORK = 12
+    DESTINATION_ENDPOINT_NOT_FOUND = 13
+    MISMATCHED_DESTINATION_NETWORK = 14
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -412,6 +424,11 @@ class DropInfo(_messages.Message):
         Engine Service.
       DROPPED_INSIDE_CLOUD_SQL_SERVICE: Packet was dropped inside Cloud SQL
         Service.
+      GOOGLE_MANAGED_SERVICE_NO_PEERING: Packet was dropped as there is no
+        peering between the originating network and the Google Managed
+        Services Network.
+      CLOUD_SQL_INSTANCE_NO_IP_ADDRESS: Packet was dropped because Cloud SQL
+        instance has neither private nor public IP address.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -433,6 +450,8 @@ class DropInfo(_messages.Message):
     CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 17
     DROPPED_INSIDE_GKE_SERVICE = 18
     DROPPED_INSIDE_CLOUD_SQL_SERVICE = 19
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 20
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 21
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -603,8 +622,8 @@ class FirewallInfo(_messages.Message):
     Values:
       FIREWALL_RULE_TYPE_UNSPECIFIED: Unspecified type.
       HIERARCHICAL_FIREWALL_POLICY_RULE: Hierarchical firewall policy rule.
-        For details, see [Hierarchical firewall policy
-        rules](https://cloud.google.com/vpc/docs/firewall-policies).
+        For details, see [Hierarchical firewall policies
+        overview](https://cloud.google.com/vpc/docs/firewall-policies).
       VPC_FIREWALL_RULE: VPC firewall rule. For details, see [VPC firewall
         rules overview](https://cloud.google.com/vpc/docs/firewalls).
       IMPLIED_VPC_FIREWALL_RULE: Implied VPC firewall rule. For details, see

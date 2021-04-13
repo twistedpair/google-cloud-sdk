@@ -110,7 +110,7 @@
           "description": "See any Cloud Identity Groups that you can access, including group members and their emails"
         },
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -547,7 +547,7 @@
       "type": "object",
       "properties": {
         "fieldMask": {
-          "description": "The fully-qualified names of fields to update. May only contain the field `expiry_detail`.",
+          "description": "The fully-qualified names of fields to update. May only contain the field `expiry_detail.expire_time`.",
           "type": "string",
           "format": "google-fieldmask"
         },
@@ -599,7 +599,7 @@
           }
         },
         "member": {
-          "description": "Resource name for this member if member is a GROUP, otherwise it is empty.",
+          "description": "Resource name for this member.",
           "type": "string"
         },
         "roles": {
@@ -1644,7 +1644,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the DeviceUser in format: `devices\/{device_id}\/deviceUsers\/{user_id}`, where user_id is the ID of the user associated with the user session.",
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the DeviceUser in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`, where `device_user_id` uniquely identifies a user's use of a device.",
           "readOnly": true,
           "type": "string"
         },

@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210319",
+ "revision": "20210402",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -73,9 +73,6 @@
     },
     "https://www.googleapis.com/auth/bigquery.insertdata": {
      "description": "Insert data into Google BigQuery"
-    },
-    "https://www.googleapis.com/auth/bigquery.readonly": {
-     "description": "View your data in Google BigQuery"
     },
     "https://www.googleapis.com/auth/cloud-platform": {
      "description": "See, edit, configure, and delete your Google Cloud Platform data"
@@ -3043,7 +3040,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]
@@ -3117,7 +3113,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]
@@ -3263,7 +3258,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]
@@ -3324,7 +3318,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]
@@ -3458,7 +3451,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]
@@ -3487,7 +3479,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]
@@ -3517,7 +3508,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]
@@ -3545,7 +3535,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]
@@ -3653,7 +3642,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]
@@ -3737,7 +3725,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]
@@ -3815,7 +3802,6 @@
      },
      "scopes": [
       "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/bigquery.readonly",
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/cloud-platform.read-only"
      ]

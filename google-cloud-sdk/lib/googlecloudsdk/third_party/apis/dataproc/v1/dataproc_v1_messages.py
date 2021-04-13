@@ -3876,7 +3876,7 @@ class SoftwareConfig(_messages.Message):
         not supported in the Dataproc 2.0 image. The 2.0 image is pre-
         installed with Miniconda.
       DOCKER: Docker
-      DRUID: The Druid query engine. (beta)
+      DRUID: The Druid query engine. (alpha)
       FLINK: Flink
       HBASE: HBase. (beta)
       HIVE_WEBHCAT: The Hive Web HCatalog (the REST service for accessing
@@ -3888,6 +3888,7 @@ class SoftwareConfig(_messages.Message):
       SOLR: The Solr service.
       ZEPPELIN: The Zeppelin notebook.
       ZOOKEEPER: The Zookeeper service.
+      DASK: Dask
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
@@ -3903,6 +3904,7 @@ class SoftwareConfig(_messages.Message):
     SOLR = 11
     ZEPPELIN = 12
     ZOOKEEPER = 13
+    DASK = 14
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

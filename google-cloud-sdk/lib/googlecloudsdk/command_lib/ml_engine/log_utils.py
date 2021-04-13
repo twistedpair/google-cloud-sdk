@@ -119,7 +119,8 @@ def SplitMultiline(log_generator, allow_multiline=False):
 def _EntryToDict(log_entry):
   """Converts a log entry to a dictionary."""
   output = {}
-  output['severity'] = log_entry.severity.name
+  output[
+      'severity'] = log_entry.severity.name if log_entry.severity else 'DEFAULT'
   output['timestamp'] = log_entry.timestamp
   label_attributes = _GetLabelAttributes(log_entry)
   output['task_name'] = label_attributes['task_name']

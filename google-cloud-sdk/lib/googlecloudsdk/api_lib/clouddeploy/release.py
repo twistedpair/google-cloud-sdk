@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.deploy import release_util as util
 from googlecloudsdk.command_lib.deploy import staging_bucket_util
+from googlecloudsdk.command_lib.projects import util as p_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_transform
@@ -35,6 +36,10 @@ from googlecloudsdk.core.util import times
 _ALLOWED_SOURCE_EXT = ['.zip', '.tgz', '.gz']
 _SKAFFOLD_CONFIG_PATH = 'gs://{}/source'
 _MANIFEST_BUCKET = 'gs://{}/render'
+
+TARGET_FILTER_TEMPLATE = (
+    'targetSnapshots.name:"projects/{}/locations/{}/deliveryPipelines/{}/targets/{}"'
+    ' AND renderState="SUCCESS"')
 
 
 def _SetSource(release_config,
@@ -206,3 +211,35 @@ class ReleaseClient(object):
         self.messages
         .ClouddeployProjectsLocationsDeliveryPipelinesReleasesPromoteRequest(
             toTarget=to_target, name=release_ref.RelativeName()))
+
+  def Get(self, name):
+    """Gets a release resource.
+
+    Args:
+      name: release resource name.
+
+    Returns:
+      release message.
+    """
+    request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetRequest(
+        name=name)
+    return self._service.Get(request)
+
+  def ListReleasesByTarget(self, target_ref):
+    """Lists the releases in a target.
+
+    Args:
+      target_ref: target object.
+
+    Returns:
+      a list of release messages.
+    """
+    target_dict = target_ref.AsDict()
+    project_number = p_util.GetProjectNumber(target_dict['projectsId'])
+    request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesListRequest(
+        parent=target_ref.Parent().RelativeName(),
+        filter=TARGET_FILTER_TEMPLATE.format(project_number,
+                                             target_dict['locationsId'],
+                                             target_dict['deliveryPipelinesId'],
+                                             target_dict['targetsId']))
+    return self._service.List(request).releases

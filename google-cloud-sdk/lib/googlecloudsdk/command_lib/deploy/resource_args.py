@@ -111,3 +111,76 @@ def GetLocationResourceSpec():
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
   )
+
+
+def TargetAttributeConfig():
+  """Creates the target resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='target', help_text='The target associated with the {resource}.')
+
+
+def GetTargetResourceSpec():
+  """Constructs and returns the target specification for Delivery Pipeline."""
+  return concepts.ResourceSpec(
+      'clouddeploy.projects.locations.deliveryPipelines.targets',
+      resource_name='release',
+      deliveryPipelinesId=DeliveryPipelineAttributeConfig(),
+      targetsId=TargetAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      disable_auto_completers=False)
+
+
+def AddTargetResourceArg(parser,
+                         help_text=None,
+                         positional=False,
+                         required=True):
+  """Add target resource argument to the parser.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser for the command.
+    help_text: help text for this flag.
+    positional: if it is a positional flag.
+    required: if it is required.
+  """
+  help_text = help_text or 'The name of the Target.'
+
+  concept_parsers.ConceptParser.ForResource(
+      'target' if positional else '--target',
+      GetTargetResourceSpec(),
+      help_text,
+      required=required,
+      plural=False).AddToParser(parser)
+
+
+def AddDeliveryPipelineResourceArg(parser,
+                                   help_text=None,
+                                   positional=False,
+                                   required=True):
+  """Adds --delivery-pipeline resource argument to the parser.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser for the command.
+    help_text: help text for this flag.
+    positional: if it is a positional flag.
+    required: if it is required.
+  """
+  help_text = help_text or 'The name of the Delivery Pipeline.'
+
+  concept_parsers.ConceptParser.ForResource(
+      'delivery_pipeline' if positional else '--delivery-pipeline',
+      GetDeliveryPipelineResourceSpec(),
+      help_text,
+      required=required,
+      plural=False).AddToParser(parser)
+
+
+def GetDeliveryPipelineResourceSpec():
+  """Constructs and returns the Resource specification for Delivery Pipeline."""
+  return concepts.ResourceSpec(
+      'clouddeploy.projects.locations.deliveryPipelines',
+      resource_name='delivery_pipeline',
+      deliveryPipelinesId=DeliveryPipelineAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      disable_auto_completers=False)

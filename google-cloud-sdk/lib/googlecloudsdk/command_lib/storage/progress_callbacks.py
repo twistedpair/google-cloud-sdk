@@ -87,7 +87,7 @@ class FilesAndBytesProgressCallback:
     # Time progress callback is triggered in seconds since epoch (float).
     current_time = time.time()
     self._status_queue.put(
-        thread_messages.ProgressMessage(
+        thread_messages.DetailedProgressMessage(
             offset=self._offset,
             length=self._length,
             current_byte=current_byte,
@@ -101,8 +101,12 @@ class FilesAndBytesProgressCallback:
             thread_id=self._thread_id))
 
 
-def files_and_bytes_workload_estimator_callback(status_queue, file_count, size):
-  """Tracks expected file count and bytes for large file operations.
+def increment_count_callback(status_queue):
+  status_queue.put(thread_messages.IncrementProgressMessage())
+
+
+def workload_estimator_callback(status_queue, item_count, size=None):
+  """Tracks expected item count and bytes for large operations.
 
   Information is sent to the status_queue, which will aggregate it
   for printing to the user. Useful for heavy operations like copy. For example,
@@ -111,9 +115,9 @@ def files_and_bytes_workload_estimator_callback(status_queue, file_count, size):
 
   Args:
     status_queue (multiprocessing.Queue): Reference to global queue.
-    file_count (int): Number of files to add to workload estimation.
-    size (int): Number of bytes to add to workload estimation.
+    item_count (int): Number of items to add to workload estimation.
+    size (int|None): Number of bytes to add to workload estimation.
   """
   status_queue.put(
       thread_messages.WorkloadEstimatorMessage(
-          file_count=file_count, size=size))
+          item_count=item_count, size=size))

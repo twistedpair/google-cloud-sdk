@@ -723,7 +723,7 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified type.",
-            "Hierarchical firewall policy rule. For details, see [Hierarchical firewall policy rules](https:\/\/cloud.google.com\/vpc\/docs\/firewall-policies).",
+            "Hierarchical firewall policy rule. For details, see [Hierarchical firewall policies overview](https:\/\/cloud.google.com\/vpc\/docs\/firewall-policies).",
             "VPC firewall rule. For details, see [VPC firewall rules overview](https:\/\/cloud.google.com\/vpc\/docs\/firewalls).",
             "Implied VPC firewall rule. For details, see [Implied rules](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#default_firewall_rules)."
           ],
@@ -1031,7 +1031,11 @@
             "Aborted because traffic is sent from a public IP to an instance without an external IP.",
             "Aborted because none of the traces matches destination information specified in the input test request.",
             "Aborted because the number of steps in the trace exceeding a certain limit which may be caused by routing loop.",
-            "Aborted due to internal server error."
+            "Aborted due to internal server error.",
+            "Aborted because the source endpoint could not be found.",
+            "Aborted because the source network does not match the source endpoint.",
+            "Aborted because the destination endpoint could not be found.",
+            "Aborted because the destination network does not match the destination endpoint."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1044,7 +1048,11 @@
             "NO_EXTERNAL_IP",
             "UNINTENDED_DESTINATION",
             "TRACE_TOO_LONG",
-            "INTERNAL_ERROR"
+            "INTERNAL_ERROR",
+            "SOURCE_ENDPOINT_NOT_FOUND",
+            "MISMATCHED_SOURCE_NETWORK",
+            "DESTINATION_ENDPOINT_NOT_FOUND",
+            "MISMATCHED_DESTINATION_NETWORK"
           ]
         },
         "resourceUri": {
@@ -1081,7 +1089,9 @@
             "Access to Google Kubernetes Engine cluster master's endpoint is not authorized. See [Access to the cluster endpoints](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/private-clusters#access_to_the_cluster_endpoints) for more details.",
             "Access to the Cloud SQL instance endpoint is not authorized. See [Authorizing with authorized networks](https:\/\/cloud.google.com\/sql\/docs\/mysql\/authorize-networks) for more details.",
             "Packet was dropped inside Google Kubernetes Engine Service.",
-            "Packet was dropped inside Cloud SQL Service."
+            "Packet was dropped inside Cloud SQL Service.",
+            "Packet was dropped as there is no peering between the originating network and the Google Managed Services Network.",
+            "Packet was dropped because Cloud SQL instance has neither private nor public IP address."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1103,7 +1113,9 @@
             "GKE_MASTER_UNAUTHORIZED_ACCESS",
             "CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS",
             "DROPPED_INSIDE_GKE_SERVICE",
-            "DROPPED_INSIDE_CLOUD_SQL_SERVICE"
+            "DROPPED_INSIDE_CLOUD_SQL_SERVICE",
+            "GOOGLE_MANAGED_SERVICE_NO_PEERING",
+            "CLOUD_SQL_INSTANCE_NO_IP_ADDRESS"
           ]
         },
         "resourceUri": {

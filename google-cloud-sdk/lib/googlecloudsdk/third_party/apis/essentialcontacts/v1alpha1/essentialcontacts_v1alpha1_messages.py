@@ -227,6 +227,24 @@ class EssentialcontactsFoldersContactsResendRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class EssentialcontactsFoldersContactsSendTestMessageRequest(_messages.Message):
+  r"""A EssentialcontactsFoldersContactsSendTestMessageRequest object.
+
+  Fields:
+    googleCloudEssentialcontactsV1alpha1SendTestMessageRequest: A
+      GoogleCloudEssentialcontactsV1alpha1SendTestMessageRequest resource to
+      be passed as the request body.
+    resource: Required. The name of the resource to send the test message for.
+      All contacts must either be set directly on this resource or inherited
+      from another resource that is an ancestor of this one. Format:
+      organizations/{organization_id}, folders/{folder_id} or
+      projects/{project_id}
+  """
+
+  googleCloudEssentialcontactsV1alpha1SendTestMessageRequest = _messages.MessageField('GoogleCloudEssentialcontactsV1alpha1SendTestMessageRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class EssentialcontactsFoldersContactsVerifyRequest(_messages.Message):
   r"""A EssentialcontactsFoldersContactsVerifyRequest object.
 
@@ -457,6 +475,24 @@ class EssentialcontactsOrganizationsContactsResendRequest(_messages.Message):
 
   googleCloudEssentialcontactsV1alpha1ResendVerificationRequest = _messages.MessageField('GoogleCloudEssentialcontactsV1alpha1ResendVerificationRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class EssentialcontactsOrganizationsContactsSendTestMessageRequest(_messages.Message):
+  r"""A EssentialcontactsOrganizationsContactsSendTestMessageRequest object.
+
+  Fields:
+    googleCloudEssentialcontactsV1alpha1SendTestMessageRequest: A
+      GoogleCloudEssentialcontactsV1alpha1SendTestMessageRequest resource to
+      be passed as the request body.
+    resource: Required. The name of the resource to send the test message for.
+      All contacts must either be set directly on this resource or inherited
+      from another resource that is an ancestor of this one. Format:
+      organizations/{organization_id}, folders/{folder_id} or
+      projects/{project_id}
+  """
+
+  googleCloudEssentialcontactsV1alpha1SendTestMessageRequest = _messages.MessageField('GoogleCloudEssentialcontactsV1alpha1SendTestMessageRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class EssentialcontactsOrganizationsContactsVerifyRequest(_messages.Message):
@@ -691,6 +727,24 @@ class EssentialcontactsProjectsContactsResendRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class EssentialcontactsProjectsContactsSendTestMessageRequest(_messages.Message):
+  r"""A EssentialcontactsProjectsContactsSendTestMessageRequest object.
+
+  Fields:
+    googleCloudEssentialcontactsV1alpha1SendTestMessageRequest: A
+      GoogleCloudEssentialcontactsV1alpha1SendTestMessageRequest resource to
+      be passed as the request body.
+    resource: Required. The name of the resource to send the test message for.
+      All contacts must either be set directly on this resource or inherited
+      from another resource that is an ancestor of this one. Format:
+      organizations/{organization_id}, folders/{folder_id} or
+      projects/{project_id}
+  """
+
+  googleCloudEssentialcontactsV1alpha1SendTestMessageRequest = _messages.MessageField('GoogleCloudEssentialcontactsV1alpha1SendTestMessageRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class EssentialcontactsProjectsContactsVerifyRequest(_messages.Message):
   r"""A EssentialcontactsProjectsContactsVerifyRequest object.
 
@@ -832,6 +886,65 @@ class GoogleCloudEssentialcontactsV1alpha1ListContactsResponse(_messages.Message
 
 class GoogleCloudEssentialcontactsV1alpha1ResendVerificationRequest(_messages.Message):
   r"""Request message for the ResendVerification method."""
+
+
+class GoogleCloudEssentialcontactsV1alpha1SendTestMessageRequest(_messages.Message):
+  r"""Request message for the SendTestMessage method.
+
+  Enums:
+    NotificationCategoryValueValuesEnum: Required. The notification category
+      to send the test message for. All contacts must be subscribed to this
+      category.
+
+  Fields:
+    contacts: Required. The list of names of the contacts to send a test
+      message to. Format:
+      organizations/{organization_id}/contacts/{contact_id},
+      folders/{folder_id}/contacts/{contact_id} or
+      projects/{project_id}/contacts/{contact_id}
+    notificationCategory: Required. The notification category to send the test
+      message for. All contacts must be subscribed to this category.
+  """
+
+  class NotificationCategoryValueValuesEnum(_messages.Enum):
+    r"""Required. The notification category to send the test message for. All
+    contacts must be subscribed to this category.
+
+    Values:
+      NOTIFICATION_CATEGORY_UNSPECIFIED: Notification category is unrecognized
+        or unspecified.
+      OTHER: Deprecated. Please use a more specific category.
+      ALL: All notifications related to the resource, including notifications
+        pertaining to categories added in the future.
+      SUSPENSION: Notifications related to imminent account suspension.
+      PRIVACY: Deprecated. Please use security instead.
+      SECURITY: Notifications related to security/privacy incidents,
+        notifications, and vulnerabilities.
+      TECHNICAL: Notifications related to technical events and issues such as
+        outages, errors, or bugs.
+      BILLING: Notifications related to billing and payments notifications,
+        price updates, errors, or credits.
+      LEGAL: Notifications related to enforcement actions, regulatory
+        compliance, or government notices.
+      PRODUCT_UPDATES: Notifications related to new versions, product terms
+        updates, or deprecations.
+      TECHNICAL_INCIDENTS: Child category of TECHNICAL. If assigned, technical
+        incident notifications will go to these contacts instead of TECHNICAL.
+    """
+    NOTIFICATION_CATEGORY_UNSPECIFIED = 0
+    OTHER = 1
+    ALL = 2
+    SUSPENSION = 3
+    PRIVACY = 4
+    SECURITY = 5
+    TECHNICAL = 6
+    BILLING = 7
+    LEGAL = 8
+    PRODUCT_UPDATES = 9
+    TECHNICAL_INCIDENTS = 10
+
+  contacts = _messages.StringField(1, repeated=True)
+  notificationCategory = _messages.EnumField('NotificationCategoryValueValuesEnum', 2)
 
 
 class GoogleCloudEssentialcontactsV1alpha1VerifyContactRequest(_messages.Message):

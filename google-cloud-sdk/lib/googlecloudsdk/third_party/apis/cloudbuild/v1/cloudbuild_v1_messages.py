@@ -140,7 +140,9 @@ class BitbucketServerConfig(_messages.Message):
   Server.
 
   Fields:
-    apiKey: API Key that will be attached to webhook.
+    apiKey: Required. Immutable. API Key that will be attached to webhook.
+      Once this field has been set, it cannot be changed. If you need to
+      change it, please create another BitbucketServerConfig.
     connectedRepositories: Connected Bitbucket Server repositories for this
       config.
     createTime: Time when the config was created.
@@ -148,7 +150,9 @@ class BitbucketServerConfig(_messages.Message):
       Display names must meet the following requirements: + They must contain
       only alphanumeric characters and dashes. + They can be 1-64 characters
       long. + They must begin and end with an alphanumeric character.
-    hostUri: Required. The URI of the Bitbucket Server host.
+    hostUri: Required. Immutable. The URI of the Bitbucket Server host. Once
+      this field has been set, it cannot be changed. If you need to change it,
+      please create another BitbucketServerConfig.
     name: The resource name for the config.
     peeredNetwork: Optional. The network to be used when reaching out to the
       Bitbucket Server instance. The VPC network must be enabled for private
@@ -162,8 +166,10 @@ class BitbucketServerConfig(_messages.Message):
     secrets: Required. Secret Manager secrets needed by the config.
     username: Username of the account Cloud Build will use on Bitbucket
       Server.
-    webhookKey: UUID included in webhook requests. The UUID is used to look up
-      the corresponding config.
+    webhookKey: Immutable. UUID included in webhook requests. The UUID is used
+      to look up the corresponding config. Once this field has been set, it
+      cannot be changed. If you need to change it, please create another
+      BitbucketServerConfig.
   """
 
   apiKey = _messages.StringField(1)
@@ -200,8 +206,10 @@ class BitbucketServerSecrets(_messages.Message):
       access token's secret version.
     readAccessTokenVersionName: Required. The resource name for the read
       access token's secret version.
-    webhookSecretVersionName: Required. The resource name for the webhook
-      secret's secret version.
+    webhookSecretVersionName: Required. Immutable. The resource name for the
+      webhook secret's secret version. Once this field has been set, it cannot
+      be changed. If you need to change it, please create another
+      BitbucketServerConfig.
   """
 
   adminAccessTokenVersionName = _messages.StringField(1)
@@ -304,7 +312,7 @@ class Build(_messages.Message):
     serviceAccount: IAM service account whose credentials will be used at
       build runtime. Must be of the format
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. ACCOUNT can be email
-      address or uniqueId of the service account. This field is in beta.
+      address or uniqueId of the service account.
     source: The location of the source files to build.
     sourceProvenance: Output only. A permanent fixed identifier for source.
     startTime: Output only. Time at which execution of the build was started.
@@ -1656,7 +1664,7 @@ class ClusterOptions(_messages.Message):
 
   Fields:
     name: Identifier of the GKE Cluster this build should execute on. Example:
-      projects/{project_id}/locations/{location}/cluster/{cluster_name} The
+      projects/{project_id}/locations/{location}/clusters/{cluster_name} The
       cluster's project ID must be the same project ID that is running the
       build. The cluster must exist and have the CloudBuild add-on enabled.
   """

@@ -13,6 +13,61 @@ from apitools.base.py import extra_types
 package = 'mediaasset'
 
 
+class Action(_messages.Message):
+  r"""An action resource. Action is a read-only resource and is nested under
+  an asset. It contains the status of the actions associated with an Asset.
+
+  Messages:
+    LabelsValue: The labels associated with this resource. Each label is a
+      key-value pair.
+
+  Fields:
+    assetTransformation: Status of asset transformation, if this action is for
+      asset transformation.
+    createTime: The creation time.
+    labels: The labels associated with this resource. Each label is a key-
+      value pair.
+    name: Required. The resource name of the action, in the following form: `p
+      rojects/{project}/locations/{location}/assetTypes/{type}/assets/{asset}/
+      actions/{action}`.
+    rule: The resource name of the rule, in the following form:
+      `projects/{project}/locations/{location}/assetTypes/{type}/rule/{rule}`.
+    updateTime: The last-modified time.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels associated with this resource. Each label is a key-value
+    pair.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  assetTransformation = _messages.MessageField('TransformationStatus', 1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  rule = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
 class Asset(_messages.Message):
   r"""An asset resource. An asset is a core resource that represents a media
   entity. An Asset has an asset type associated with it which specifies the
@@ -476,73 +531,6 @@ class AssetType(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
-class AuditConfig(_messages.Message):
-  r"""Specifies the audit configuration for a service. The configuration
-  determines which permission types are logged, and what identities, if any,
-  are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
-  specific service, the union of the two AuditConfigs is used for that
-  service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted. Example Policy with
-  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
-  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
-  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
-  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
-  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
-  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
-  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
-  logging. It also exempts jose@example.com from DATA_READ logging, and
-  aliya@example.com from DATA_WRITE logging.
-
-  Fields:
-    auditLogConfigs: The configuration for logging of each type of permission.
-    exemptedMembers: A string attribute.
-    service: Specifies a service that will be enabled for audit logging. For
-      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
-      `allServices` is a special value that covers all services.
-  """
-
-  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
-  exemptedMembers = _messages.StringField(2, repeated=True)
-  service = _messages.StringField(3)
-
-
-class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example: {
-  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
-  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
-  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
-  DATA_READ logging.
-
-  Enums:
-    LogTypeValueValuesEnum: The log type that this config enables.
-
-  Fields:
-    exemptedMembers: Specifies the identities that do not cause logging for
-      this type of permission. Follows the same format of Binding.members.
-    ignoreChildExemptions: A boolean attribute.
-    logType: The log type that this config enables.
-  """
-
-  class LogTypeValueValuesEnum(_messages.Enum):
-    r"""The log type that this config enables.
-
-    Values:
-      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
-      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
-      DATA_WRITE: Data writes. Example: CloudSQL Users create
-      DATA_READ: Data reads. Example: CloudSQL Users list
-    """
-    LOG_TYPE_UNSPECIFIED = 0
-    ADMIN_READ = 1
-    DATA_WRITE = 2
-    DATA_READ = 3
-
-  exemptedMembers = _messages.StringField(1, repeated=True)
-  ignoreChildExemptions = _messages.BooleanField(2)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
-
-
 class AuthorizationLoggingOptions(_messages.Message):
   r"""Authorization-related information used by Cloud Audit Logging.
 
@@ -573,91 +561,20 @@ class AuthorizationLoggingOptions(_messages.Message):
   permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
-class Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
-
-  Fields:
-    bindingId: A string attribute.
-    condition: The condition that is associated with this binding. If the
-      condition evaluates to `true`, then this binding applies to the current
-      request. If the condition evaluates to `false`, then this binding does
-      not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values: * `allUsers`: A
-      special identifier that represents anyone who is on the internet; with
-      or without a Google account. * `allAuthenticatedUsers`: A special
-      identifier that represents anyone who is authenticated with a Google
-      account or a service account. * `user:{emailid}`: An email address that
-      represents a specific Google account. For example, `alice@example.com` .
-      * `serviceAccount:{emailid}`: An email address that represents a service
-      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
-      `group:{emailid}`: An email address that represents a Google group. For
-      example, `admins@example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
-      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus unique identifier) representing a service account that has been
-      recently deleted. For example, `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
-      service account is undeleted, this value reverts to
-      `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique identifier) representing a Google group that
-      has been recently deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If the group is
-      recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding. * `domain:{domain}`: The G Suite
-      domain (primary) that represents all the users of that domain. For
-      example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
-  """
-
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
-
-
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class CloudAuditOptions(_messages.Message):
-  r"""Write a Cloud Audit log
-
-  Enums:
-    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
-      Record.
+class CloudPubSubNotificationConfig(_messages.Message):
+  r"""A CloudPubSubNotificationConfig configure Pub/Sub support for an
+  AssetType that this Rule attached to.
 
   Fields:
-    authorizationLoggingOptions: Information used by the Cloud Audit Logging
-      pipeline.
-    logName: The log_name to populate in the Cloud Audit Record.
+    pubsubTopic: Required. A Pub/Sub topic to which messages are sent by GCMA.
+      https://cloud.google.com/pubsub/docs/overview
   """
 
-  class LogNameValueValuesEnum(_messages.Enum):
-    r"""The log_name to populate in the Cloud Audit Record.
-
-    Values:
-      UNSPECIFIED_LOG_NAME: Default. Should not be used.
-      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
-      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
-    """
-    UNSPECIFIED_LOG_NAME = 0
-    ADMIN_ACTIVITY = 1
-    DATA_ACCESS = 2
-
-  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
-  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+  pubsubTopic = _messages.StringField(1)
 
 
 class ComplexFieldAllowedValues(_messages.Message):
@@ -764,7 +681,174 @@ class ComplexType(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
-class Condition(_messages.Message):
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
+  """
+
+
+
+class Expr(_messages.Message):
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
+
+  Fields:
+    description: Optional. Description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
+class GoogleIamV1AuditConfig(_messages.Message):
+  r"""Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConfig must have one or more
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+    exemptedMembers: A string attribute.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('GoogleIamV1AuditLogConfig', 1, repeated=True)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
+
+
+class GoogleIamV1AuditLogConfig(_messages.Message):
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
+    ignoreChildExemptions: A boolean attribute.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    r"""The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  ignoreChildExemptions = _messages.BooleanField(2)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+
+
+class GoogleIamV1Binding(_messages.Message):
+  r"""Associates `members` with a `role`.
+
+  Fields:
+    bindingId: A string attribute.
+    condition: The condition that is associated with this binding. If the
+      condition evaluates to `true`, then this binding applies to the current
+      request. If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
+      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
+      identifier) representing a user that has been recently deleted. For
+      example, `alice@example.com?uid=123456789012345678901`. If the user is
+      recovered, this value reverts to `user:{emailid}` and the recovered user
+      retains the role in the binding. *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`.
+  """
+
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
+
+
+class GoogleIamV1Condition(_messages.Message):
   r"""A condition to be met.
 
   Enums:
@@ -882,7 +966,50 @@ class Condition(_messages.Message):
   values = _messages.StringField(5, repeated=True)
 
 
-class CounterOptions(_messages.Message):
+class GoogleIamV1LogConfig(_messages.Message):
+  r"""Specifies what kind of log the caller must write
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('GoogleIamV1LogConfigCloudAuditOptions', 1)
+  counter = _messages.MessageField('GoogleIamV1LogConfigCounterOptions', 2)
+  dataAccess = _messages.MessageField('GoogleIamV1LogConfigDataAccessOptions', 3)
+
+
+class GoogleIamV1LogConfigCloudAuditOptions(_messages.Message):
+  r"""Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    r"""The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      UNSPECIFIED_LOG_NAME: Default. Should not be used.
+      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
+      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
+    """
+    UNSPECIFIED_LOG_NAME = 0
+    ADMIN_ACTIVITY = 1
+    DATA_ACCESS = 2
+
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+
+
+class GoogleIamV1LogConfigCounterOptions(_messages.Message):
   r"""Increment a streamz counter with the specified metric and field names.
   Metric names should start with a '/', generally be lowercase-only, and end
   in "_count". Field names should not contain an initial slash. The actual
@@ -904,12 +1031,12 @@ class CounterOptions(_messages.Message):
     metric: The metric to update.
   """
 
-  customFields = _messages.MessageField('CustomField', 1, repeated=True)
+  customFields = _messages.MessageField('GoogleIamV1LogConfigCounterOptionsCustomField', 1, repeated=True)
   field = _messages.StringField(2)
   metric = _messages.StringField(3)
 
 
-class CustomField(_messages.Message):
+class GoogleIamV1LogConfigCounterOptionsCustomField(_messages.Message):
   r"""Custom fields. These can be used to create a counter with arbitrary
   field/value pairs. See: go/rpcsp-custom-fields.
 
@@ -924,7 +1051,7 @@ class CustomField(_messages.Message):
   value = _messages.StringField(2)
 
 
-class DataAccessOptions(_messages.Message):
+class GoogleIamV1LogConfigDataAccessOptions(_messages.Message):
   r"""Write a Data Access (Gin) log
 
   Enums:
@@ -958,50 +1085,180 @@ class DataAccessOptions(_messages.Message):
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
-class Empty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
-  """
-
-
-
-class Expr(_messages.Message):
-  r"""Represents a textual expression in the Common Expression Language (CEL)
-  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec. Example (Comparison):
-  title: "Summary size limit" description: "Determines if a summary is less
-  than 100 chars" expression: "document.summary.size() < 100" Example
-  (Equality): title: "Requestor is owner" description: "Determines if
-  requestor is the document owner" expression: "document.owner ==
-  request.auth.claims.email" Example (Logic): title: "Public documents"
-  description: "Determine whether the document should be publicly visible"
-  expression: "document.type != 'private' && document.type != 'internal'"
-  Example (Data Manipulation): title: "Notification string" description:
-  "Create a notification string with a timestamp." expression: "'New message
-  received at ' + string(document.create_time)" The exact variables and
-  functions that may be referenced within an expression are determined by the
-  service that evaluates it. See the service documentation for additional
-  information.
+class GoogleIamV1Policy(_messages.Message):
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources. A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members` to a single `role`.
+  Members can be user accounts, service accounts, Google groups, and domains
+  (such as G Suite). A `role` is a named list of permissions; each `role` can
+  be an IAM predefined role or a user-created custom role. For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
+  documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
-    description: Optional. Description of the expression. This is a longer
-      text which describes the expression, e.g. when hovered over it in a UI.
-    expression: Textual representation of an expression in Common Expression
-      Language syntax.
-    location: Optional. String indicating the location of the expression for
-      error reporting, e.g. a file name and a position in the file.
-    title: Optional. Title for the expression, i.e. a short string describing
-      its purpose. This can be used e.g. in UIs which allow to enter the
-      expression.
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
+    bindings: Associates a list of `members` to a `role`. Optionally, may
+      specify a `condition` that determines how and when the `bindings` are
+      applied. Each of the `bindings` must contain at least one member.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy. **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    iamOwned: A boolean attribute.
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations: * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy that includes conditions **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost. If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset. To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
-  description = _messages.StringField(1)
-  expression = _messages.StringField(2)
-  location = _messages.StringField(3)
-  title = _messages.StringField(4)
+  auditConfigs = _messages.MessageField('GoogleIamV1AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('GoogleIamV1Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class GoogleIamV1Rule(_messages.Message):
+  r"""A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met. All conditions must
+      pass for the rule to match.
+    description: Human-readable description of the rule.
+    in_: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
+      any entries that match the LOG action.
+    notIn: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
+      for in and not_in entries can be found at in the Local IAM documentation
+      (see go/local-iam#features).
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required
+
+    Values:
+      NO_ACTION: Default no action.
+      ALLOW: Matching 'Entries' grant access.
+      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
+        to log the request per the returned log_configs.
+      DENY: Matching 'Entries' deny access.
+      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
+        log the request per the returned log_configs.
+      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    """
+    NO_ACTION = 0
+    ALLOW = 1
+    ALLOW_WITH_LOG = 2
+    DENY = 3
+    DENY_WITH_LOG = 4
+    LOG = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('GoogleIamV1Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  in_ = _messages.StringField(4, repeated=True)
+  logConfig = _messages.MessageField('GoogleIamV1LogConfig', 5, repeated=True)
+  notIn = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
+
+
+class GoogleIamV1SetIamPolicyRequest(_messages.Message):
+  r"""Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, the following default mask is used: `paths: "bindings, etag"`
+  """
+
+  policy = _messages.MessageField('GoogleIamV1Policy', 1)
+  updateMask = _messages.StringField(2)
+
+
+class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
+  r"""Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
+  r"""Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class IndexedFieldConfig(_messages.Message):
@@ -1024,14 +1281,11 @@ class LinkConfig(_messages.Message):
     assetType: Reference to the asset type name of the linked asset, in the
       following form:
       `projects/{project}/locations/{location}/assetTypes/{name}`.
-    cascadeOnDelete: If true, the linked assets should be deleted upon
-      deletion of this asset.
     required: If true, this asset link is required during asset creation.
   """
 
   assetType = _messages.StringField(1)
-  cascadeOnDelete = _messages.BooleanField(2)
-  required = _messages.BooleanField(3)
+  required = _messages.BooleanField(2)
 
 
 class LinkSet(_messages.Message):
@@ -1081,12 +1335,22 @@ class LinkSetConfig(_messages.Message):
     assetType: Reference to the asset type name for the type of the assets in
       this set, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{name}`.
-    cascadeOnDelete: If true, all the linked assets should be deleted upon
-      deletion of this asset.
   """
 
   assetType = _messages.StringField(1)
-  cascadeOnDelete = _messages.BooleanField(2)
+
+
+class ListActionsResponse(_messages.Message):
+  r"""Response message for ActionsService.ListActions.
+
+  Fields:
+    actions: The list of actions.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  actions = _messages.MessageField('Action', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListAssetTransformationsResponse(_messages.Message):
@@ -1116,28 +1380,6 @@ class ListAssetTypesResponse(_messages.Message):
   assetTypes = _messages.MessageField('AssetType', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListAssetsRequest(_messages.Message):
-  r"""Request message for AssetsService.ListAssets.
-
-  Fields:
-    filter: The filter to apply to list results.
-    pageSize: The maximum number of items to return. If unspecified, server
-      will pick an appropriate default. Server may return fewer items than
-      requested. A caller should only rely on response's next_page_token to
-      determine if there are more realms left to be queried.
-    pageToken: The next_page_token value returned from a previous List
-      request, if any.
-    readMask: Extra fields to be poplulated as part of the asset resource in
-      the response. Currently, this only supports populating asset metadata
-      (no wildcards and no contents of the entire asset).
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  readMask = _messages.StringField(4)
 
 
 class ListAssetsResponse(_messages.Message):
@@ -1194,6 +1436,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListRulesResponse(_messages.Message):
+  r"""Response message for RulesService.ListRules.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    rules: The rules from the specified assetType.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rules = _messages.MessageField('Rule', 2, repeated=True)
 
 
 class ListTransformersResponse(_messages.Message):
@@ -1291,18 +1546,40 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
-class LogConfig(_messages.Message):
-  r"""Specifies what kind of log the caller must write
+class MediaassetProjectsLocationsAssetTypesAssetsActionsGetRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsActionsGetRequest object.
 
   Fields:
-    cloudAudit: Cloud audit options.
-    counter: Counter options.
-    dataAccess: Data access options.
+    name: Required. The name of the action to retrieve, in the following form:
+      `projects/{project}/locations/{location}/assetTypes/{type}/assets/{asset
+      }/actions/{action}`.
   """
 
-  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
-  counter = _messages.MessageField('CounterOptions', 2)
-  dataAccess = _messages.MessageField('DataAccessOptions', 3)
+  name = _messages.StringField(1, required=True)
+
+
+class MediaassetProjectsLocationsAssetTypesAssetsActionsListRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsActionsListRequest object.
+
+  Fields:
+    filter: The filter to apply to list results.
+    orderBy: Specifies the ordering of results following syntax at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more realms left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name, in the following form: `projec
+      ts/{project}/locations/{location}/assetTypes/{type}/assets/{asset}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsCreateRequest(_messages.Message):
@@ -1450,20 +1727,6 @@ class MediaassetProjectsLocationsAssetTypesAssetsLroDeleteRequest(_messages.Mess
   requestId = _messages.StringField(3)
 
 
-class MediaassetProjectsLocationsAssetTypesAssetsLroListRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsLroListRequest object.
-
-  Fields:
-    listAssetsRequest: A ListAssetsRequest resource to be passed as the
-      request body.
-    parent: The parent resource name, in the following form:
-      `projects/{project}/locations/{location}/assetTypes/{type}`.
-  """
-
-  listAssetsRequest = _messages.MessageField('ListAssetsRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
 class MediaassetProjectsLocationsAssetTypesAssetsLroUpdateRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsLroUpdateRequest object.
 
@@ -1530,15 +1793,15 @@ class MediaassetProjectsLocationsAssetTypesAssetsSetIamPolicyRequest(_messages.M
   r"""A MediaassetProjectsLocationsAssetTypesAssetsSetIamPolicyRequest object.
 
   Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
       See the operation documentation for the appropriate value for this
       field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsTestIamPermissionsRequest(_messages.Message):
@@ -1546,15 +1809,16 @@ class MediaassetProjectsLocationsAssetTypesAssetsTestIamPermissionsRequest(_mess
   object.
 
   Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
     resource: REQUIRED: The resource for which the policy detail is being
       requested. See the operation documentation for the appropriate value for
       this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetIamPolicyRequest(_messages.Message):
@@ -1622,15 +1886,15 @@ class MediaassetProjectsLocationsAssetTypesAssetsTransformationsSetIamPolicyRequ
   Request object.
 
   Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
       See the operation documentation for the appropriate value for this
       field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsTransformationsTestIamPermissionsRequest(_messages.Message):
@@ -1638,15 +1902,16 @@ class MediaassetProjectsLocationsAssetTypesAssetsTransformationsTestIamPermissio
   ssionsRequest object.
 
   Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
     resource: REQUIRED: The resource for which the policy detail is being
       requested. See the operation documentation for the appropriate value for
       this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesCreateRequest(_messages.Message):
@@ -1786,34 +2051,115 @@ class MediaassetProjectsLocationsAssetTypesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class MediaassetProjectsLocationsAssetTypesRulesCreateRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesRulesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this Rule will be created.
+      Format: `projects/{project}/locations/{location}/assetTypes/{type}`
+    rule: A Rule resource to be passed as the request body.
+    ruleId: Required. The ID to use for the Rule, which will become the final
+      component of the rule's resource name. This value should be 4-63
+      characters, and valid characters are /a-z-/.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rule = _messages.MessageField('Rule', 2)
+  ruleId = _messages.StringField(3)
+
+
+class MediaassetProjectsLocationsAssetTypesRulesDeleteRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesRulesDeleteRequest object.
+
+  Fields:
+    etag: The current etag of the rule. If an etag is provided and does not
+      match the current etag of the rule, deletion will be blocked and a
+      FAILED_PRECONDITION error will be returned.
+    name: Required. The name of the rule to delete. Format:
+      `projects/{project}/locations/{location}/assetTypes/{type}/rules/{rule}`
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class MediaassetProjectsLocationsAssetTypesRulesGetRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesRulesGetRequest object.
+
+  Fields:
+    name: Required. The name of the Rule to retrieve. Format:
+      `projects/{project}/locations/{location}/assetTypes/{type}/rules/{rule}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MediaassetProjectsLocationsAssetTypesRulesListRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesRulesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of rules to return. The service may return
+      fewer than this value. If unspecified, at most 50 books will be
+      returned. The maximum value is 100; values above 100 will be coerced to
+      100.
+    pageToken: A page token, received from a previous `ListRules` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListRules` must match the call that provided the
+      page token.
+    parent: Required. The parent, which owns this collection of rules. Format:
+      `projects/{project}/locations/{location}/assetTypes/{type}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class MediaassetProjectsLocationsAssetTypesRulesPatchRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesRulesPatchRequest object.
+
+  Fields:
+    name: A user-specified resource name of the rule
+      `projects/{project}/locations/{location}/assetTypes/{type}/rules/{rule}`
+      .
+    rule: A Rule resource to be passed as the request body.
+    updateMask: Required. The list of fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rule = _messages.MessageField('Rule', 2)
+  updateMask = _messages.StringField(3)
+
+
 class MediaassetProjectsLocationsAssetTypesSetIamPolicyRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesSetIamPolicyRequest object.
 
   Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
       See the operation documentation for the appropriate value for this
       field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesTestIamPermissionsRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesTestIamPermissionsRequest object.
 
   Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
     resource: REQUIRED: The resource for which the policy detail is being
       requested. See the operation documentation for the appropriate value for
       this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsComplexTypesCreateRequest(_messages.Message):
@@ -1957,15 +2303,15 @@ class MediaassetProjectsLocationsComplexTypesSetIamPolicyRequest(_messages.Messa
   r"""A MediaassetProjectsLocationsComplexTypesSetIamPolicyRequest object.
 
   Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
       See the operation documentation for the appropriate value for this
       field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsComplexTypesTestIamPermissionsRequest(_messages.Message):
@@ -1973,15 +2319,16 @@ class MediaassetProjectsLocationsComplexTypesTestIamPermissionsRequest(_messages
   object.
 
   Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
     resource: REQUIRED: The resource for which the policy detail is being
       requested. See the operation documentation for the appropriate value for
       this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsGetRequest(_messages.Message):
@@ -2207,15 +2554,15 @@ class MediaassetProjectsLocationsTransformersSetIamPolicyRequest(_messages.Messa
   r"""A MediaassetProjectsLocationsTransformersSetIamPolicyRequest object.
 
   Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
     resource: REQUIRED: The resource for which the policy is being specified.
       See the operation documentation for the appropriate value for this
       field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsTransformersTestIamPermissionsRequest(_messages.Message):
@@ -2223,15 +2570,16 @@ class MediaassetProjectsLocationsTransformersTestIamPermissionsRequest(_messages
   object.
 
   Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
     resource: REQUIRED: The resource for which the policy detail is being
       requested. See the operation documentation for the appropriate value for
       this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
   """
 
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MetadataConfig(_messages.Message):
@@ -2393,156 +2741,57 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
-class Policy(_messages.Message):
-  r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
-  documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
-  "roles/resourcemanager.organizationAdmin", "members": [
-  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
-  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
-  "roles/resourcemanager.organizationViewer", "members": [
-  "user:eve@example.com" ], "condition": { "title": "expirable access",
-  "description": "Does not grant access after Sep 2020", "expression":
-  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
-
-  Fields:
-    auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
-    etag: `etag` is used for optimistic concurrency control as a way to help
-      prevent simultaneous updates of a policy from overwriting each other. It
-      is strongly suggested that systems make use of the `etag` in the read-
-      modify-write cycle to perform policy updates in order to avoid race
-      conditions: An `etag` is returned in the response to `getIamPolicy`, and
-      systems are expected to put that etag in the request to `setIamPolicy`
-      to ensure that their change will be applied to the same version of the
-      policy. **Important:** If you use IAM Conditions, you must include the
-      `etag` field whenever you call `setIamPolicy`. If you omit this field,
-      then IAM allows you to overwrite a version `3` policy with a version `1`
-      policy, and all of the conditions in the version `3` policy are lost.
-    iamOwned: A boolean attribute.
-    rules: If more than one rule is specified, the rules are applied in the
-      following manner: - All matching LOG rules are always applied. - If any
-      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
-      applied if one or more matching rule requires logging. - Otherwise, if
-      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
-      will be applied if one or more matching rule requires logging. -
-      Otherwise, if no rule applies, permission is denied.
-    version: Specifies the format of the policy. Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected. Any
-      operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations: * Getting a
-      policy that includes a conditional role binding * Adding a conditional
-      role binding to a policy * Changing a conditional role binding in a
-      policy * Removing any role binding, with or without a condition, from a
-      policy that includes conditions **Important:** If you use IAM
-      Conditions, you must include the `etag` field whenever you call
-      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
-      a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost. If a policy does not
-      include any conditions, operations on that policy may specify any valid
-      version or leave the field unset. To learn which resources support
-      conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-  """
-
-  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
-  bindings = _messages.MessageField('Binding', 2, repeated=True)
-  etag = _messages.BytesField(3)
-  iamOwned = _messages.BooleanField(4)
-  rules = _messages.MessageField('Rule', 5, repeated=True)
-  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-
-
 class Rule(_messages.Message):
-  r"""A rule to be applied in a Policy.
+  r"""A rule resource is associated with an AssetType and manages the workflow
+  pipelines of a collection of Assets under that AssetType.
 
-  Enums:
-    ActionValueValuesEnum: Required
+  Messages:
+    LabelsValue: The labels associated with this resource. Each label is a
+      key-value pair.
 
   Fields:
-    action: Required
-    conditions: Additional restrictions that must be met. All conditions must
-      pass for the rule to match.
-    description: Human-readable description of the rule.
-    in_: If one or more 'in' clauses are specified, the rule matches if the
-      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
-    notIn: If one or more 'not_in' clauses are specified, the rule matches if
-      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
-      for in and not_in entries can be found at in the Local IAM documentation
-      (see go/local-iam#features).
-    permissions: A permission is a string of form '..' (e.g.,
-      'storage.buckets.list'). A value of '*' matches all permissions, and a
-      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+    createTime: Output only. The creation time of the rule.
+    labels: The labels associated with this resource. Each label is a key-
+      value pair.
+    name: A user-specified resource name of the rule
+      `projects/{project}/locations/{location}/assetTypes/{type}/rules/{rule}`
+      .
+    pubsubNotification: https://cloud.google.com/pubsub/docs/overview
+      Configure the associated AssetType to publish event messages using
+      Pub/Sub.
+    updateTime: Output only. The latest update time of the rule.
   """
 
-  class ActionValueValuesEnum(_messages.Enum):
-    r"""Required
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels associated with this resource. Each label is a key-value
+    pair.
 
-    Values:
-      NO_ACTION: Default no action.
-      ALLOW: Matching 'Entries' grant access.
-      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
-        to log the request per the returned log_configs.
-      DENY: Matching 'Entries' deny access.
-      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
-        log the request per the returned log_configs.
-      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
     """
-    NO_ACTION = 0
-    ALLOW = 1
-    ALLOW_WITH_LOG = 2
-    DENY = 3
-    DENY_WITH_LOG = 4
-    LOG = 5
 
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('Condition', 2, repeated=True)
-  description = _messages.StringField(3)
-  in_ = _messages.StringField(4, repeated=True)
-  logConfig = _messages.MessageField('LogConfig', 5, repeated=True)
-  notIn = _messages.StringField(6, repeated=True)
-  permissions = _messages.StringField(7, repeated=True)
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
 
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
 
-class SetIamPolicyRequest(_messages.Message):
-  r"""Request message for `SetIamPolicy` method.
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
 
-  Fields:
-    policy: REQUIRED: The complete policy to be applied to the `resource`. The
-      size of the policy is limited to a few 10s of KB. An empty policy is a
-      valid policy but certain Cloud Platform services (such as Projects)
-      might reject them.
-    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
-      modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used: `paths: "bindings, etag"`
-  """
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  policy = _messages.MessageField('Policy', 1)
-  updateMask = _messages.StringField(2)
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  pubsubNotification = _messages.MessageField('CloudPubSubNotificationConfig', 4)
+  updateTime = _messages.StringField(5)
 
 
 class SortOrderConfig(_messages.Message):
@@ -2672,30 +2921,6 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
-class TestIamPermissionsRequest(_messages.Message):
-  r"""Request message for `TestIamPermissions` method.
-
-  Fields:
-    permissions: The set of permissions to check for the `resource`.
-      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
-      For more information see [IAM
-      Overview](https://cloud.google.com/iam/docs/overview#permissions).
-  """
-
-  permissions = _messages.StringField(1, repeated=True)
-
-
-class TestIamPermissionsResponse(_messages.Message):
-  r"""Response message for `TestIamPermissions` method.
-
-  Fields:
-    permissions: A subset of `TestPermissionsRequest.permissions` that the
-      caller is allowed.
-  """
-
-  permissions = _messages.StringField(1, repeated=True)
-
-
 class TransformationConfig(_messages.Message):
   r"""A TransformationConfig object.
 
@@ -2779,6 +3004,39 @@ class TransformationConfig(_messages.Message):
   inputs = _messages.MessageField('InputsValue', 1)
   outputs = _messages.MessageField('OutputsValue', 2)
   transformer = _messages.StringField(3)
+
+
+class TransformationStatus(_messages.Message):
+  r"""Status of Asset transformation.
+
+  Enums:
+    StateValueValuesEnum: State of the asset transformation.
+
+  Fields:
+    lastInvocationStatus: Status of the last invocation of the asset
+      transformation.
+    lastInvocationTime: Time at which the last invocation of the asset
+      transformation occurred.
+    state: State of the asset transformation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the asset transformation.
+
+    Values:
+      STATE_UNSPECIFIED: Transformation state is unspecified.
+      QUEUED: Transformation is queued.
+      RUNNING: Transformation is in running state.
+      COMPLETED: Transformation has been completed.
+    """
+    STATE_UNSPECIFIED = 0
+    QUEUED = 1
+    RUNNING = 2
+    COMPLETED = 3
+
+  lastInvocationStatus = _messages.MessageField('Status', 1)
+  lastInvocationTime = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class Transformer(_messages.Message):
@@ -2906,7 +3164,7 @@ class Transformer(_messages.Message):
 
 
 encoding.AddCustomJsonFieldMapping(
-    Rule, 'in_', 'in')
+    GoogleIamV1Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

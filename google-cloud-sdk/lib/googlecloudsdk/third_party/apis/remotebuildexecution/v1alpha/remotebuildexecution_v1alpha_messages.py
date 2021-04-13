@@ -953,12 +953,26 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
       LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE: Output files or directories
         were found both relative to the execution root directory and relative
         to the working directory.
+      LOCATION_EXEC_ROOT_RELATIVE_OUTPUT_OUTSIDE_WORKING_DIR: Output files or
+        directories were found relative to the execution root directory but
+        not relative to the working directory. In addition at least one output
+        file or directory was found outside of the working directory such that
+        a working-directory-relative-path would have needed to start with a
+        `..`.
+      LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE_OUTPUT_OUTSIDE_WORKING_DIR:
+        Output files or directories were found both relative to the execution
+        root directory and relative to the working directory. In addition at
+        least one exec-root-relative output file or directory was found
+        outside of the working directory such that a working-directory-
+        relative-path would have needed to start with a `..`.
     """
     LOCATION_UNDEFINED = 0
     LOCATION_NONE = 1
     LOCATION_EXEC_ROOT_RELATIVE = 2
     LOCATION_WORKING_DIR_RELATIVE = 3
     LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE = 4
+    LOCATION_EXEC_ROOT_RELATIVE_OUTPUT_OUTSIDE_WORKING_DIR = 5
+    LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE_OUTPUT_OUTSIDE_WORKING_DIR = 6
 
   cmUsage = _messages.EnumField('CmUsageValueValuesEnum', 1)
   dockerCacheHit = _messages.BooleanField(2)

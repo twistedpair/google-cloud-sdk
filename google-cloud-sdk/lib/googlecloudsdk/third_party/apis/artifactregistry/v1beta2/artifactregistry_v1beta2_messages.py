@@ -1263,10 +1263,19 @@ class Version(_messages.Message):
   collection of components, such as files and other data. This may correspond
   to a version in many package management schemes.
 
+  Messages:
+    MetadataValue: Output only. Repository-specific Metadata stored against
+      this version. The fields returned are defined by the underlying
+      repository-specific resource. Currently, the only resource in use is
+      DockerImage
+
   Fields:
     createTime: The time when the version was created.
     description: Optional. Description of the version, as specified in its
       metadata.
+    metadata: Output only. Repository-specific Metadata stored against this
+      version. The fields returned are defined by the underlying repository-
+      specific resource. Currently, the only resource in use is DockerImage
     name: The name of the version, for example: "projects/p1/locations/us-
       central1/repositories/repo1/packages/pkg1/versions/art1".
     relatedTags: Output only. A list of related tags. Will contain up to 100
@@ -1274,11 +1283,38 @@ class Version(_messages.Message):
     updateTime: The time when the version was last updated.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Output only. Repository-specific Metadata stored against this version.
+    The fields returned are defined by the underlying repository-specific
+    resource. Currently, the only resource in use is DockerImage
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  relatedTags = _messages.MessageField('Tag', 4, repeated=True)
-  updateTime = _messages.StringField(5)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  relatedTags = _messages.MessageField('Tag', 5, repeated=True)
+  updateTime = _messages.StringField(6)
 
 
 encoding.AddCustomJsonFieldMapping(

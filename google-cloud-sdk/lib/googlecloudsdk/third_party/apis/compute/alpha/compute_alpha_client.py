@@ -6146,7 +6146,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id='compute.instances.bulkInsert',
         ordered_params=['project', 'zone'],
         path_params=['project', 'zone'],
-        query_params=['requestId'],
+        query_params=['requestId', 'secureTags'],
         relative_path='projects/{project}/zones/{zone}/instances/bulkInsert',
         request_field='bulkInsertInstanceResource',
         request_type_name='ComputeInstancesBulkInsertRequest',
@@ -6458,7 +6458,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id='compute.instances.insert',
         ordered_params=['project', 'zone'],
         path_params=['project', 'zone'],
-        query_params=['requestId', 'sourceInstanceTemplate', 'sourceMachineImage'],
+        query_params=['requestId', 'secureTags', 'sourceInstanceTemplate', 'sourceMachineImage'],
         relative_path='projects/{project}/zones/{zone}/instances',
         request_field='instance',
         request_type_name='ComputeInstancesInsertRequest',
@@ -7160,7 +7160,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id='compute.instances.update',
         ordered_params=['project', 'zone', 'instance'],
         path_params=['instance', 'project', 'zone'],
-        query_params=['minimalAction', 'mostDisruptiveAllowedAction', 'requestId'],
+        query_params=['clearSecureTag', 'minimalAction', 'mostDisruptiveAllowedAction', 'requestId', 'secureTags'],
         relative_path='projects/{project}/zones/{zone}/instances/{instance}',
         request_field='instanceResource',
         request_type_name='ComputeInstancesUpdateRequest',
@@ -13978,7 +13978,7 @@ You can specify a maximum of 1000 instances with this method per request.
         method_id='compute.regionInstances.bulkInsert',
         ordered_params=['project', 'region'],
         path_params=['project', 'region'],
-        query_params=['requestId'],
+        query_params=['requestId', 'secureTags'],
         relative_path='projects/{project}/regions/{region}/instances/bulkInsert',
         request_field='bulkInsertInstanceResource',
         request_type_name='ComputeRegionInstancesBulkInsertRequest',
@@ -14025,7 +14025,7 @@ For more information, see Deleting instantSnapshots.
     )
 
     def Export(self, request, global_params=None):
-      r"""Export the changed blocks between two instant snapshots to a customer?s bucket in the user specified format.
+      r"""Export the changed blocks between two instant snapshots to a customer's bucket in the user specified format.
 
       Args:
         request: (ComputeRegionInstantSnapshotsExportRequest) input message
@@ -21015,7 +21015,7 @@ For more information, see Deleting instantSnapshots.
     )
 
     def Export(self, request, global_params=None):
-      r"""Export the changed blocks between two instant snapshots to a customer?s bucket in the user specified format.
+      r"""Export the changed blocks between two instant snapshots to a customer's bucket in the user specified format.
 
       Args:
         request: (ComputeZoneInstantSnapshotsExportRequest) input message

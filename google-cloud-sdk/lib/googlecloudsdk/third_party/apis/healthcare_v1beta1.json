@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -723,7 +723,7 @@
           ]
         },
         "writeDisposition": {
-          "description": "Determines whether existing tables in the destination dataset are overwritten or appended to. If a write_disposition is specified, the `force` parameter is ignored.",
+          "description": "Determines if existing data in the destination dataset is overwritten, appended to, or not written if the tables contain data. If a write_disposition is specified, the `force` parameter is ignored.",
           "type": "string",
           "enumDescriptions": [
             "Default behavior is the same as WRITE_EMPTY.",
@@ -2788,7 +2788,7 @@
           "type": "boolean"
         },
         "writeDisposition": {
-          "description": "Determines whether existing tables in the destination dataset are overwritten or appended to. If a write_disposition is specified, the `force` parameter is ignored.",
+          "description": "Determines if existing data in the destination dataset is overwritten, appended to, or not written if the tables contain data. If a write_disposition is specified, the `force` parameter is ignored.",
           "type": "string",
           "enumDescriptions": [
             "Default behavior is the same as WRITE_EMPTY.",
@@ -4220,7 +4220,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "DeleteStudy deletes all instances within the given study using a long running operation. The method returns an Operation which will be marked successful when the deletion is complete. Warning: If you insert instances into a study while a delete operation is running for that study, the instances you insert might not appear in search results until after the deletion operation finishes. For samples that show how to call DeleteStudy, see [Deleting a study, series, or instance](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#deleting_a_study_series_or_instance)."
+                          "description": "DeleteStudy deletes all instances within the given study using a long running operation. The method returns an Operation which will be marked successful when the deletion is complete. Warning: Instances cannot be inserted into a study that is being deleted by an operation until the operation completes. For samples that show how to call DeleteStudy, see [Deleting a study, series, or instance](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#deleting_a_study_series_or_instance)."
                         },
                         "storeInstances": {
                           "id": "healthcare.projects.locations.datasets.dicomStores.studies.storeInstances",
@@ -4393,7 +4393,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "DeleteSeries deletes all instances within the given study and series using a long running operation. The method returns an Operation which will be marked successful when the deletion is complete. Warning: If you insert instances into a series while a delete operation is running for that series, the instances you insert might not appear in search results until after the deletion operation finishes. For samples that show how to call DeleteSeries, see [Deleting a study, series, or instance](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#deleting_a_study_series_or_instance)."
+                              "description": "DeleteSeries deletes all instances within the given study and series using a long running operation. The method returns an Operation which will be marked successful when the deletion is complete. Warning: Instances cannot be inserted into a series that is being deleted by an operation until the operation completes. For samples that show how to call DeleteSeries, see [Deleting a study, series, or instance](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#deleting_a_study_series_or_instance)."
                             }
                           }
                           ,

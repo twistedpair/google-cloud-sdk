@@ -2029,6 +2029,22 @@ class RequestOptions(_messages.Message):
 
   Fields:
     priority: Priority for the request.
+    requestTag: A per-request tag which can be applied to queries or reads,
+      used for statistics collection. Both request_tag and transaction_tag can
+      be specified for a read or query that belongs to a transaction. This
+      field is ignored for requests where it's not applicable (e.g.
+      CommitRequest). Legal characters for `request_tag` values are all
+      printable characters (ASCII 32 - 126) and the length of a request_tag is
+      limited to 50 characters. Values that exceed this limit are truncated.
+    transactionTag: A tag used for statistics collection about this
+      transaction. Both request_tag and transaction_tag can be specified for a
+      read or query that belongs to a transaction. The value of
+      transaction_tag should be the same for all requests belonging to the
+      same transaction. If this request doesn't belong to any transaction,
+      transaction_tag will be ignored. Legal characters for `transaction_tag`
+      values are all printable characters (ASCII 32 - 126) and the length of a
+      transaction_tag is limited to 50 characters. Values that exceed this
+      limit are truncated.
   """
 
   class PriorityValueValuesEnum(_messages.Enum):
@@ -2047,6 +2063,8 @@ class RequestOptions(_messages.Message):
     PRIORITY_HIGH = 3
 
   priority = _messages.EnumField('PriorityValueValuesEnum', 1)
+  requestTag = _messages.StringField(2)
+  transactionTag = _messages.StringField(3)
 
 
 class RestoreDatabaseEncryptionConfig(_messages.Message):
@@ -3889,6 +3907,12 @@ class UpdateDatabaseDdlMetadata(_messages.Message):
       have succeeded so far, where `commit_timestamps[i]` is the commit
       timestamp for the statement `statements[i]`.
     database: The database being modified.
+    progress: The progress of the UpdateDatabaseDdl operations. Currently,
+      only index creation statements will have a continuously updating
+      progress. For non-index creation statements, `progress[i]` will have
+      start time and end time populated with commit timestamp of operation, as
+      well as a progress of 100% once the operation has completed.
+      `progress[i]` is the operation progress for `statements[i]`.
     statements: For an update this list contains all the statements. For an
       individual statement, this list contains only that statement.
     throttled: Output only. When true, indicates that the operation is
@@ -3898,8 +3922,9 @@ class UpdateDatabaseDdlMetadata(_messages.Message):
 
   commitTimestamps = _messages.StringField(1, repeated=True)
   database = _messages.StringField(2)
-  statements = _messages.StringField(3, repeated=True)
-  throttled = _messages.BooleanField(4)
+  progress = _messages.MessageField('OperationProgress', 3, repeated=True)
+  statements = _messages.StringField(4, repeated=True)
+  throttled = _messages.BooleanField(5)
 
 
 class UpdateDatabaseDdlRequest(_messages.Message):

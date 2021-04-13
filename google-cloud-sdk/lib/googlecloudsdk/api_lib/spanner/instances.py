@@ -24,6 +24,7 @@ from apitools.base.py import list_pager
 from google.protobuf import timestamp_pb2
 from googlecloudsdk.api_lib.spanner import response_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -40,7 +41,7 @@ KNOWN_ROLES = [
 UNREACHABLE_INSTANCE_TIMEOUT = datetime.timedelta(seconds=20)
 
 
-def Create(instance, config, description, nodes):
+def Create(instance, config, description, nodes, processing_units=None):
   """Create a new instance."""
   client = apis.GetClientInstance('spanner', 'v1')
   # Module containing the definitions of messages for the specified API.
@@ -51,14 +52,16 @@ def Create(instance, config, description, nodes):
       collection='spanner.projects.instanceConfigs')
   project_ref = resources.REGISTRY.Create(
       'spanner.projects', projectsId=properties.VALUES.core.project.GetOrFail)
+  instance_obj = msgs.Instance(
+      config=config_ref.RelativeName(), displayName=description)
+  if nodes:
+    instance_obj.nodeCount = nodes
+  elif processing_units:
+    instance_obj.processingUnits = processing_units
   req = msgs.SpannerProjectsInstancesCreateRequest(
       parent=project_ref.RelativeName(),
       createInstanceRequest=msgs.CreateInstanceRequest(
-          instanceId=instance,
-          instance=msgs.Instance(
-              config=config_ref.RelativeName(),
-              displayName=description,
-              nodeCount=nodes)))
+          instanceId=instance, instance=instance_obj))
   return client.projects_instances.Create(req)
 
 
@@ -131,15 +134,23 @@ def List():
       get_field_func=response_util.GetFieldAndLogUnreachable)
 
 
-def Patch(instance, description=None, nodes=None):
+def Patch(instance, description=None, nodes=None, processing_units=None):
   """Update an instance."""
   fields = []
   if description is not None:
     fields.append('displayName')
   if nodes is not None:
     fields.append('nodeCount')
+  if processing_units is not None:
+    fields.append('processingUnits')
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
+
+  if processing_units:
+    instance_obj = msgs.Instance(
+        displayName=description, processingUnits=processing_units)
+  else:
+    instance_obj = msgs.Instance(displayName=description, nodeCount=nodes)
   ref = resources.REGISTRY.Parse(
       instance,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
@@ -147,6 +158,5 @@ def Patch(instance, description=None, nodes=None):
   req = msgs.SpannerProjectsInstancesPatchRequest(
       name=ref.RelativeName(),
       updateInstanceRequest=msgs.UpdateInstanceRequest(
-          fieldMask=','.join(fields),
-          instance=msgs.Instance(displayName=description, nodeCount=nodes)))
+          fieldMask=','.join(fields), instance=instance_obj))
   return client.projects_instances.Patch(req)

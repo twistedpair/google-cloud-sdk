@@ -399,8 +399,8 @@ class CreateProjectMetadata(_messages.Message):
 
   Fields:
     createTime: Creation time of the project creation workflow.
-    gettable: True if the project can be retrieved using GetProject. No other
-      operations on the project are guaranteed to work until the project
+    gettable: True if the project can be retrieved using `GetProject`. No
+      other operations on the project are guaranteed to work until the project
       creation is complete.
     ready: True if the project creation process is complete.
   """
@@ -408,6 +408,10 @@ class CreateProjectMetadata(_messages.Message):
   createTime = _messages.StringField(1)
   gettable = _messages.BooleanField(2)
   ready = _messages.BooleanField(3)
+
+
+class CreateTagBindingMetadata(_messages.Message):
+  r"""Runtime operation information for creating a TagValue."""
 
 
 class CreateTagKeyMetadata(_messages.Message):
@@ -419,14 +423,14 @@ class CreateTagValueMetadata(_messages.Message):
 
 
 class DeleteFolderMetadata(_messages.Message):
-  r"""A status object which is used as the `metadata` field for the Operation
-  returned by DeleteFolder.
+  r"""A status object which is used as the `metadata` field for the
+  `Operation` returned by `DeleteFolder`.
   """
 
 
 
 class DeleteOrganizationMetadata(_messages.Message):
-  r"""A status object which is used as the `metadata` field for the Operation
+  r"""A status object which is used as the `metadata` field for the operation
   returned by DeleteOrganization.
   """
 
@@ -434,9 +438,13 @@ class DeleteOrganizationMetadata(_messages.Message):
 
 class DeleteProjectMetadata(_messages.Message):
   r"""A status object which is used as the `metadata` field for the Operation
-  returned by DeleteProject.
+  returned by `DeleteProject`.
   """
 
+
+
+class DeleteTagBindingMetadata(_messages.Message):
+  r"""Runtime operation information for deleting a TagBinding."""
 
 
 class DeleteTagKeyMetadata(_messages.Message):
@@ -614,7 +622,7 @@ class ListProjectsResponse(_messages.Message):
 
 
 class MoveFolderMetadata(_messages.Message):
-  r"""Metadata pertaining to the Folder move process.
+  r"""Metadata pertaining to the folder move process.
 
   Fields:
     destinationParent: The resource name of the folder or organization to move
@@ -1015,8 +1023,8 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class UndeleteFolderMetadata(_messages.Message):
-  r"""A status object which is used as the `metadata` field for the Operation
-  returned by UndeleteFolder.
+  r"""A status object which is used as the `metadata` field for the
+  `Operation` returned by `UndeleteFolder`.
   """
 
 
@@ -1030,7 +1038,7 @@ class UndeleteOrganizationMetadata(_messages.Message):
 
 class UndeleteProjectMetadata(_messages.Message):
   r"""A status object which is used as the `metadata` field for the Operation
-  returned by UndeleteProject.
+  returned by `UndeleteProject`.
   """
 
 

@@ -547,13 +547,13 @@ class EdgeCacheOrigin(_messages.Message):
     originAddress: Required. A fully qualified domain name (FQDN) or IP
       address reachable over the public Internet, or the address of a Google
       Cloud Storage bucket. This address will be used as the origin for cache
-      requests - e.g. FQDN: media-backend.example.com IPv4:35.218.1.1
-      IPv6:[2607:f8b0:4012:809::200e] Cloud Storage: gs://bucketname or
-      bucketname.storage.googleapis.com When providing an FQDN (hostname), it
-      must be publicly resolvable (e.g. via Google public DNS). It must not
-      contain a protocol (e.g. https://) and it must not contain any slashes.
-      When providing an IP address, it must be publicly routable. IPv6
-      addresses may be optionally enclosed in square brackets.
+      requests. For example: - FQDN: media-backend.example.com - IPv4:
+      35.218.1.1 - IPv6: 2607:f8b0:4012:809::200e - Google Cloud Storage:
+      gs://bucketname or bucketname.storage.googleapis.com When providing an
+      FQDN (hostname), it must be publicly resolvable (e.g. via Google public
+      DNS). It must not contain a protocol (e.g. https://) and it must not
+      contain any slashes. When providing an IP address, it must be publicly
+      routable. IPv6 addresses should not be enclosed in square brackets.
     port: Optional. The port to connect to the origin on. Defaults to port 443
       for HTTP2 and HTTPS protocols, and port 80 for HTTP.
     protocol: Optional. The protocol to use to connect to the configured
@@ -918,6 +918,222 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GrpcRoute(_messages.Message):
+  r"""GrpcRoute is the resource defining how gRPC traffic routed by a Router
+  resource is routed.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the GrpcRoute
+      resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    hostnames: Required. Service hostnames with an optional port for which
+      this route describes traffic. Format: [:] These strings may be literals
+      or patterns. In the case of a pattern string, '*' (asterisk) matches any
+      string conforming to the regex ([a-z0-9-.]*). In that case, '*' must be
+      the first character and must be followed in the pattern by either the
+      character '-' (dash) or the character '.' (dot). A single route object
+      may not have multiple GrpcRoute objects associated with it that have the
+      same hostname pattern. If an attempt is made to associate a GrpcRoute
+      with a duplicated hostname, that configuration will be rejected. For
+      example, while it is acceptable for GrpcRoutes for the hostnames
+      "*.foo.bar.com" and "*.bar.com" to be associated with the same
+      GrpcRoute, it is not possible to associate two GrpcRoutes both with
+      "*.bar.com" or both with "bar.com". In the case that multiple GrpcRoutes
+      match the hostname, the most specific match will be selected. For
+      example, "foo.bar.baz.com" will take precedence over "*.bar.baz.com" and
+      "*.bar.baz.com" will take precedence over "*.baz.com". If a port is
+      specified, then gRPC clients must use the channel URI with the port to
+      match this rule (i.e. "xds://service:123"), otherwise they must supply
+      the URI without a port (i.e. "xds://service"). At the moment, only exact
+      match of hostnames is supported.
+    labels: Optional. Set of label tags associated with the GrpcRoute
+      resource.
+    name: Required. Name of the GrpcRoute resource. It matches pattern
+      `projects/*/locations/global/grpcRoutes/`
+    rules: Required. A list of detailed rules defining how to route traffic.
+      Within a single GrpcRoute, the GrpcRoute.RouteAction associated with the
+      first matching GrpcRoute.RouteRule will be executed. At least one rule
+      must be supplied.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the GrpcRoute resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  hostnames = _messages.StringField(3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  rules = _messages.MessageField('GrpcRouteRouteRule', 6, repeated=True)
+  updateTime = _messages.StringField(7)
+
+
+class GrpcRouteDestination(_messages.Message):
+  r"""The destination to which traffic will be routed.
+
+  Fields:
+    serviceName: Required. The URL of a destination service to which to route
+      traffic. Must refer to either a BackendService or
+      ServiceDirectoryService.
+    weight: Optional. Specifies the proportion of requests forwarded to the
+      backend referenced by the service_name field. This is computed as
+      weight/(sum of all weights in this destination list). For non-zero
+      values, there may be some epsilon from the exact proportion defined here
+      depending on the precision an implementation supports. Weight is not a
+      percentage and the sum of weights does not need to equal 100. If only
+      one serviceName is specified and it has a weight greater than 0, 100% of
+      the traffic is forwarded to that backend. If weight is set to 0, no
+      traffic should be forwarded for this entry. If unspecified, weight
+      defaults to 1.
+  """
+
+  serviceName = _messages.StringField(1)
+  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GrpcRouteHeaderMatch(_messages.Message):
+  r"""A match against a collection of headers.
+
+  Enums:
+    TypeValueValuesEnum: Optional. Specifies how to match against the value of
+      the header. If not specified, a default value of EXACT is used.
+
+  Fields:
+    key: Required. The key of the header.
+    type: Optional. Specifies how to match against the value of the header. If
+      not specified, a default value of EXACT is used.
+    value: Required. The value of the header.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies how to match against the value of the header. If
+    not specified, a default value of EXACT is used.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified.
+      EXACT: Will only match the exact value provided.
+      REGULAR_EXPRESSION: Will match paths conforming to the prefix specified
+        by value. RE2 syntax is supported.
+    """
+    TYPE_UNSPECIFIED = 0
+    EXACT = 1
+    REGULAR_EXPRESSION = 2
+
+  key = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  value = _messages.StringField(3)
+
+
+class GrpcRouteMethodMatch(_messages.Message):
+  r"""Specifies a match against a method.
+
+  Enums:
+    TypeValueValuesEnum: Optional. Specifies how to match against the name. If
+      not specified, a default value of "EXACT" is used.
+
+  Fields:
+    caseSensitive: Optional. Specifies that matches are case sensitive. The
+      default value is true. case_sensitive must not be used with a type of
+      REGULAR_EXPRESSION.
+    grpcMethod: Required. Name of the method to match against. If unspecified,
+      will match all methods.
+    grpcService: Required. Name of the service to match against. If
+      unspecified, will match all services.
+    type: Optional. Specifies how to match against the name. If not specified,
+      a default value of "EXACT" is used.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies how to match against the name. If not specified, a
+    default value of "EXACT" is used.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified.
+      EXACT: Will only match the exact name provided.
+      REGULAR_EXPRESSION: Will interpret grpc_method and grpc_service as
+        regexes. RE2 syntax is supported.
+    """
+    TYPE_UNSPECIFIED = 0
+    EXACT = 1
+    REGULAR_EXPRESSION = 2
+
+  caseSensitive = _messages.BooleanField(1)
+  grpcMethod = _messages.StringField(2)
+  grpcService = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class GrpcRouteRouteAction(_messages.Message):
+  r"""Specifies how to route matched traffic.
+
+  Fields:
+    destination: Optional. The destination service to which traffic should be
+      forwarded. One of destination or drop must be specified.
+    drop: Optional. If set, the traffic will be dropped and the client will
+      fail with the status code number specified in this field. One of
+      destination or drop must be specified. If this field is specified, no
+      other field must be specified.
+  """
+
+  destination = _messages.MessageField('GrpcRouteDestination', 1)
+  drop = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GrpcRouteRouteMatch(_messages.Message):
+  r"""Criteria for matching traffic. A RouteMatch will be considered to match
+  when all supplied fields match.
+
+  Fields:
+    headers: Optional. Specifies a collection of headers to match.
+    method: Optional. A gRPC method to match against. If this field is empty
+      or omitted, will match all methods.
+  """
+
+  headers = _messages.MessageField('GrpcRouteHeaderMatch', 1, repeated=True)
+  method = _messages.MessageField('GrpcRouteMethodMatch', 2)
+
+
+class GrpcRouteRouteRule(_messages.Message):
+  r"""Describes how to route traffic.
+
+  Fields:
+    action: Required. A detailed rule defining how to route traffic. This
+      field is required.
+    match: Optional. A set of conditions that must match for this rule to be
+      activated. If no routeMatch field is specified, this rule will
+      unconditionally match traffic.
+  """
+
+  action = _messages.MessageField('GrpcRouteRouteAction', 1)
+  match = _messages.MessageField('GrpcRouteRouteMatch', 2)
+
+
 class HeaderAction(_messages.Message):
   r"""HeaderAction defines the addition and removal of HTTP headers for
   requests/responses.
@@ -984,9 +1200,18 @@ class HostRule(_messages.Message):
   Fields:
     description: Optional. A human-readable description of the hostRule.
     hosts: Required. The list of host patterns to match. Host patterns must be
-      valid hostnames with optional port numbers in the format host:port. *
-      matches any string of ([a-z0-9-.]*). The only accepted ports are :80 and
-      :443. Hosts are matched against the HTTP Host header, or for HTTP/2 and
+      valid hostnames. Ports are not allowed. Wildcard hosts are supported in
+      the suffix or prefix form. * matches any string of ([a-z0-9-.]*). It
+      does not match the empty string. When multiple hosts are specified,
+      hosts are matched in the following priority: 1. Exact domain names:
+      ``www.foo.com``. 2. Suffix domain wildcards: ``*.foo.com`` or
+      ``*-bar.foo.com``. 3. Prefix domain wildcards: ``foo.*`` or ``foo-*``.
+      4. Special wildcard ``*`` matching any domain. Notes: The wildcard will
+      not match the empty string. e.g. ``*-bar.foo.com`` will match ``baz-
+      bar.foo.com`` but not ``-bar.foo.com``. The longest wildcards match
+      first. Only a single host in the entire service can match on ``*``. A
+      domain must be unique across all configured hosts within a service.
+      Hosts are matched against the HTTP Host header, or for HTTP/2 and
       HTTP/3, the ":authority" header, from the incoming request. You may
       specify up to 10 hosts.
     pathMatcher: Required. The name of the pathMatcher associated with this
@@ -1140,6 +1365,21 @@ class ListEndpointConfigSelectorsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListGrpcRoutesResponse(_messages.Message):
+  r"""Response returned by the ListGrpcRoutes method.
+
+  Fields:
+    grpcRoutes: List of GrpcRoute resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  grpcRoutes = _messages.MessageField('GrpcRoute', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListHttpFiltersResponse(_messages.Message):
   r"""Response returned by the ListHttpFilters method.
 
@@ -1166,6 +1406,21 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListObservabilityPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListObservabilityPolicies method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    observabilityPolicies: List of ObservabilityPolicy resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  observabilityPolicies = _messages.MessageField('ObservabilityPolicy', 2, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):
@@ -1335,14 +1590,13 @@ class MetadataLabelMatcher(_messages.Message):
       client. MATCH_ALL: The metadata presented by the xDS client should
       contain all of the labels specified here. The selection is determined
       based on the best match. For example, suppose there are three
-      EndpointConfigSelector resources P1, P2 and P3 and if P1 has a the
-      matcher as MATCH_ANY , P2 has MATCH_ALL , and P3 has MATCH_ALL . If a
-      client with label connects, the config from P1 will be selected. If a
-      client with label connects, the config from P2 will be selected. If a
-      client with label connects, the config from P3 will be selected. If
-      there is more than one best match, (for example, if a config P4 with
-      selector exists and if a client with label connects), an error will be
-      thrown.
+      EndpointPolicy resources P1, P2 and P3 and if P1 has a the matcher as
+      MATCH_ANY , P2 has MATCH_ALL , and P3 has MATCH_ALL . If a client with
+      label connects, the config from P1 will be selected. If a client with
+      label connects, the config from P2 will be selected. If a client with
+      label connects, the config from P3 will be selected. If there is more
+      than one best match, (for example, if a config P4 with selector exists
+      and if a client with label connects), an error will be thrown.
 
   Fields:
     metadataLabelMatchCriteria: Specifies how matching should be done.
@@ -1350,7 +1604,7 @@ class MetadataLabelMatcher(_messages.Message):
       the matcher should match the metadata presented by xDS client.
       MATCH_ALL: The metadata presented by the xDS client should contain all
       of the labels specified here. The selection is determined based on the
-      best match. For example, suppose there are three EndpointConfigSelector
+      best match. For example, suppose there are three EndpointPolicy
       resources P1, P2 and P3 and if P1 has a the matcher as MATCH_ANY , P2
       has MATCH_ALL , and P3 has MATCH_ALL . If a client with label connects,
       the config from P1 will be selected. If a client with label connects,
@@ -1370,19 +1624,21 @@ class MetadataLabelMatcher(_messages.Message):
     match the metadata presented by xDS client. MATCH_ALL: The metadata
     presented by the xDS client should contain all of the labels specified
     here. The selection is determined based on the best match. For example,
-    suppose there are three EndpointConfigSelector resources P1, P2 and P3 and
-    if P1 has a the matcher as MATCH_ANY , P2 has MATCH_ALL , and P3 has
-    MATCH_ALL . If a client with label connects, the config from P1 will be
-    selected. If a client with label connects, the config from P2 will be
-    selected. If a client with label connects, the config from P3 will be
-    selected. If there is more than one best match, (for example, if a config
-    P4 with selector exists and if a client with label connects), an error
-    will be thrown.
+    suppose there are three EndpointPolicy resources P1, P2 and P3 and if P1
+    has a the matcher as MATCH_ANY , P2 has MATCH_ALL , and P3 has MATCH_ALL .
+    If a client with label connects, the config from P1 will be selected. If a
+    client with label connects, the config from P2 will be selected. If a
+    client with label connects, the config from P3 will be selected. If there
+    is more than one best match, (for example, if a config P4 with selector
+    exists and if a client with label connects), an error will be thrown.
 
     Values:
-      METADATA_LABEL_MATCH_CRITERIA_UNSPECIFIED: <no description>
-      MATCH_ANY: <no description>
-      MATCH_ALL: <no description>
+      METADATA_LABEL_MATCH_CRITERIA_UNSPECIFIED: Default value. Should not be
+        used.
+      MATCH_ANY: At least one of the Labels specified in the matcher should
+        match the metadata presented by xDS client.
+      MATCH_ALL: The metadata presented by the xDS client should contain all
+        of the labels specified here.
     """
     METADATA_LABEL_MATCH_CRITERIA_UNSPECIFIED = 0
     MATCH_ANY = 1
@@ -1957,6 +2213,131 @@ class NetworkservicesProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class NetworkservicesProjectsLocationsGrpcRoutesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesCreateRequest object.
+
+  Fields:
+    grpcRoute: A GrpcRoute resource to be passed as the request body.
+    grpcRouteId: Required. Short name of the GrpcRoute resource to be created.
+    parent: Required. The parent resource of the GrpcRoute. Must be in the
+      format `projects/*/locations/global`.
+  """
+
+  grpcRoute = _messages.MessageField('GrpcRoute', 1)
+  grpcRouteId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the GrpcRoute to delete. Must be in the format
+      `projects/*/locations/global/grpcRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesGetRequest object.
+
+  Fields:
+    name: Required. A name of the GrpcRoute to get. Must be in the format
+      `projects/*/locations/global/grpcRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of GrpcRoutes to return per call.
+    pageToken: The value returned by the last `ListGrpcRoutesResponse`
+      Indicates that this is a continuation of a prior `ListGrpcRoutes` call,
+      and that the system should return the next page of data.
+    parent: Required. The project and location from which the GrpcRoutes
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesPatchRequest object.
+
+  Fields:
+    grpcRoute: A GrpcRoute resource to be passed as the request body.
+    name: Required. Name of the GrpcRoute resource. It matches pattern
+      `projects/*/locations/global/grpcRoutes/`
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the GrpcRoute resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  grpcRoute = _messages.MessageField('GrpcRoute', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsGrpcRoutesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGrpcRoutesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkservicesProjectsLocationsHttpFiltersCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsHttpFiltersCreateRequest object.
 
@@ -2101,6 +2482,145 @@ class NetworkservicesProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsObservabilityPoliciesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsObservabilityPoliciesCreateRequest
+  object.
+
+  Fields:
+    observabilityPolicy: A ObservabilityPolicy resource to be passed as the
+      request body.
+    observabilityPolicyId: Required. Short name of the ObservabilityPolicy
+      resource to be created. E.g. TODO(Add an example).
+    parent: Required. The parent resource of the ObservabilityPolicy. Must be
+      in the format `projects/*/locations/global`.
+  """
+
+  observabilityPolicy = _messages.MessageField('ObservabilityPolicy', 1)
+  observabilityPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsObservabilityPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsObservabilityPoliciesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. A name of the ObservabilityPolicy to delete. Must be in
+      the format `projects/*/locations/global/observabilityPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsObservabilityPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsObservabilityPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsObservabilityPoliciesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsObservabilityPoliciesGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the ObservabilityPolicy to get. Must be in the
+      format `projects/*/locations/global/observabilityPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsObservabilityPoliciesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsObservabilityPoliciesListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of ObservabilityPolicies to return per call.
+    pageToken: The value returned by the last
+      `ListObservabilityPoliciesResponse` Indicates that this is a
+      continuation of a prior `ListObservabilityPolicies` call, and that the
+      system should return the next page of data.
+    parent: Required. The project and location from which the
+      ObservabilityPolicies should be listed, specified in the format
+      `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsObservabilityPoliciesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsObservabilityPoliciesPatchRequest
+  object.
+
+  Fields:
+    name: Required. Name of the ObservabilityPolicy resource. It matches
+      pattern `projects/*/locations/global/observabilityPolicies/`.
+    observabilityPolicy: A ObservabilityPolicy resource to be passed as the
+      request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ObservabilityPolicy resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  observabilityPolicy = _messages.MessageField('ObservabilityPolicy', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsObservabilityPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsObservabilityPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsObservabilityPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsObservabilityPoliciesTestIamPermission
+  sRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class NetworkservicesProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -2275,6 +2795,80 @@ class NetworkservicesProjectsLocationsRoutersTestIamPermissionsRequest(_messages
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class ObservabilityPolicy(_messages.Message):
+  r"""ObservabilityPolicy is a resource for defining observability parameters.
+
+  Enums:
+    ScopeValueValuesEnum: Optional. Scope of the observability policy resource
+      indicates its granularity. If not specified, the policy will have no
+      effect, unless linked to another resource.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      ObservabilityPolicy resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    labels: Optional. Set of label tags associated with the
+      ObservabilityPolicy resource.
+    name: Required. Name of the ObservabilityPolicy resource. It matches
+      pattern `projects/*/locations/global/observabilityPolicies/`.
+    scope: Optional. Scope of the observability policy resource indicates its
+      granularity. If not specified, the policy will have no effect, unless
+      linked to another resource.
+    serviceGraph: Optional. Service graph represents a graph visualization of
+      services defined by the user in a scope (e.g in the project).
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""Optional. Scope of the observability policy resource indicates its
+    granularity. If not specified, the policy will have no effect, unless
+    linked to another resource.
+
+    Values:
+      SCOPE_UNSPECIFIED: Default
+      PROJECT: The observability policy will be applied at a project level.
+    """
+    SCOPE_UNSPECIFIED = 0
+    PROJECT = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the ObservabilityPolicy
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 5)
+  serviceGraph = _messages.MessageField('ServiceGraph', 6)
+  updateTime = _messages.StringField(7)
 
 
 class Operation(_messages.Message):
@@ -2679,6 +3273,20 @@ class Routing(_messages.Message):
 
   hostRules = _messages.MessageField('HostRule', 1, repeated=True)
   pathMatchers = _messages.MessageField('PathMatcher', 2, repeated=True)
+
+
+class ServiceGraph(_messages.Message):
+  r"""Service Graph is one of the observability types, it stands for
+  visualizing users service in a graph, in which services are the nodes and
+  the edges are between nodes that communicate with each other.
+
+  Fields:
+    enabled: Defines whether the observability for service graph is enabled.
+      If enabled, samples from user defined services will be collected and a
+      graph visualization of those services will be built.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class SetIamPolicyRequest(_messages.Message):

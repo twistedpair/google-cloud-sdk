@@ -92,6 +92,10 @@ class Authority(_messages.Message):
       `issuer` disables Workload Identity. `issuer` cannot be directly
       modified; it must be cleared (and Workload Identity disabled) before
       using a new issuer (and re-enabling Workload Identity).
+    oidcJwks: Optional. OIDC verification keys for this Membership in JWKS
+      format (RFC 7517). When this field is set, OIDC discovery will NOT be
+      performed on `issuer`, and instead OIDC tokens will be validated using
+      this field.
     workloadIdentityPool: Output only. The name of the workload identity pool
       in which `issuer` will be recognized. There is a single Workload
       Identity Pool per Hub that is shared between all Memberships that belong
@@ -102,7 +106,8 @@ class Authority(_messages.Message):
 
   identityProvider = _messages.StringField(1)
   issuer = _messages.StringField(2)
-  workloadIdentityPool = _messages.StringField(3)
+  oidcJwks = _messages.BytesField(3)
+  workloadIdentityPool = _messages.StringField(4)
 
 
 class Binding(_messages.Message):
@@ -288,11 +293,23 @@ class GkehubProjectsLocationsMembershipsCreateRequest(_messages.Message):
       `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
     parent: Required. The parent (project and location) where the Memberships
       will be created. Specified in the format `projects/*/locations/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   membership = _messages.MessageField('Membership', 1)
   membershipId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
@@ -301,9 +318,21 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
   Fields:
     name: Required. The Membership resource name in the format
       `projects/*/locations/*/memberships/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages.Message):
@@ -411,12 +440,24 @@ class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
     membership: A Membership resource to be passed as the request body.
     name: Required. The Membership resource name in the format
       `projects/*/locations/*/memberships/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Mask of fields to update.
   """
 
   membership = _messages.MessageField('Membership', 1)
   name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class GkehubProjectsLocationsMembershipsSetIamPolicyRequest(_messages.Message):

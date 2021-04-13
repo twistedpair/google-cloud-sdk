@@ -100,7 +100,8 @@ class GoogleCloudBillingBudgetsV1Budget(_messages.Message):
   Fields:
     amount: Required. Budgeted amount.
     budgetFilter: Optional. Filters that define which resources are used to
-      compute the actual spend against the budget.
+      compute the actual spend against the budget amount, such as projects,
+      services, and the budget's time period, as well as other filters.
     displayName: User data for display name in UI. The name must be less than
       or equal to 60 characters.
     etag: Optional. Etag to validate that the object is unchanged for a read-
@@ -130,7 +131,9 @@ class GoogleCloudBillingBudgetsV1BudgetAmount(_messages.Message):
 
   Fields:
     lastPeriodAmount: Use the last period's actual spend as the budget for the
-      present period. Cannot be set in combination with Filter.custom_period.
+      present period. LastPeriodAmount can only be set when the budget's time
+      period is a Filter.calendar_period. It cannot be set in combination with
+      Filter.custom_period.
     specifiedAmount: A specified amount to use as the budget. `currency_code`
       is optional. If specified when creating a budget, it must match the
       currency of the billing account. If specified when updating a budget, it
@@ -294,10 +297,12 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
 
 
 class GoogleCloudBillingBudgetsV1LastPeriodAmount(_messages.Message):
-  r"""Describes a budget amount targeted to last period's spend. At this time,
-  the amount is automatically 100% of last period's spend; that is, there are
-  no other options yet. Future configuration will be described here (for
-  example, configuring a percentage of last period's spend).
+  r"""Describes a budget amount targeted to the last Filter.calendar_period
+  spend. At this time, the amount is automatically 100% of the last calendar
+  period's spend; that is, there are no other options yet. Future
+  configuration options will be described here (for example, configuring a
+  percentage of last period's spend). LastPeriodAmount cannot be set for a
+  budget configured with a Filter.custom_period.
   """
 
 
@@ -385,8 +390,9 @@ class GoogleCloudBillingBudgetsV1ThresholdRule(_messages.Message):
       CURRENT_SPEND: Use current spend as the basis for comparison against the
         threshold.
       FORECASTED_SPEND: Use forecasted spend for the period as the basis for
-        comparison against the threshold. Cannot be set in combination with
-        Filter.custom_period.
+        comparison against the threshold. FORECASTED_SPEND can only be set
+        when the budget's time period is a Filter.calendar_period. It cannot
+        be set in combination with Filter.custom_period.
     """
     BASIS_UNSPECIFIED = 0
     CURRENT_SPEND = 1

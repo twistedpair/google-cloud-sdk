@@ -86,6 +86,8 @@ class OsloginUsersGetLoginProfileRequest(_messages.Message):
   Enums:
     OperatingSystemTypeValueValuesEnum: The type of operating system
       associated with the account.
+    ViewValueValuesEnum: The view configures whether to retrieve security keys
+      information.
 
   Fields:
     name: Required. The unique ID for the user in format `users/{user}`.
@@ -93,6 +95,7 @@ class OsloginUsersGetLoginProfileRequest(_messages.Message):
       account.
     projectId: The project ID of the Google Cloud Platform project.
     systemId: A system ID for filtering the results of the request.
+    view: The view configures whether to retrieve security keys information.
   """
 
   class OperatingSystemTypeValueValuesEnum(_messages.Enum):
@@ -108,24 +111,57 @@ class OsloginUsersGetLoginProfileRequest(_messages.Message):
     LINUX = 1
     WINDOWS = 2
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The view configures whether to retrieve security keys information.
+
+    Values:
+      LOGIN_PROFILE_VIEW_UNSPECIFIED: The default login profile view. The API
+        defaults to the BASIC view.
+      BASIC: Includes POSIX and SSH key information.
+      SECURITY_KEY: Include security key information for the user.
+    """
+    LOGIN_PROFILE_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    SECURITY_KEY = 2
+
   name = _messages.StringField(1, required=True)
   operatingSystemType = _messages.EnumField('OperatingSystemTypeValueValuesEnum', 2)
   projectId = _messages.StringField(3)
   systemId = _messages.StringField(4)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class OsloginUsersImportSshPublicKeyRequest(_messages.Message):
   r"""A OsloginUsersImportSshPublicKeyRequest object.
 
+  Enums:
+    ViewValueValuesEnum: The view configures whether to retrieve security keys
+      information.
+
   Fields:
     parent: The unique ID for the user in format `users/{user}`.
     projectId: The project ID of the Google Cloud Platform project.
     sshPublicKey: A SshPublicKey resource to be passed as the request body.
+    view: The view configures whether to retrieve security keys information.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The view configures whether to retrieve security keys information.
+
+    Values:
+      LOGIN_PROFILE_VIEW_UNSPECIFIED: The default login profile view. The API
+        defaults to the BASIC view.
+      BASIC: Includes POSIX and SSH key information.
+      SECURITY_KEY: Include security key information for the user.
+    """
+    LOGIN_PROFILE_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    SECURITY_KEY = 2
 
   parent = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2)
   sshPublicKey = _messages.MessageField('SshPublicKey', 3)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class OsloginUsersProjectsDeleteRequest(_messages.Message):

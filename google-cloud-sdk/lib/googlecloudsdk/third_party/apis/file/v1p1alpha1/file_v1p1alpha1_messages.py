@@ -847,8 +847,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
   user, indicating published upcoming future maintenance schedule
 
   Fields:
-    canReschedule: This field will be deprecated, and will be always set to
-      true since reschedule can happen multiple times now.
+    canReschedule: This field is deprecated, and will be always set to true
+      since reschedule can happen multiple times now. This field should not be
+      removed until all service producers remove this for their customers.
     endTime: The scheduled end time for the maintenance.
     rolloutManagementPolicy: The rollout management policy this maintenance
       schedule is associated with. When doing reschedule update request, the
@@ -1520,6 +1521,8 @@ class NetworkConfig(_messages.Message):
       example, 10.0.0.0/29 or 192.168.0.0/23. The range you specify can't
       overlap with either existing subnets or assigned IP address ranges for
       other Cloud Filestore instances in the selected VPC network.
+      reserved_ip_range can only be specified when using DIRECT_PEERING
+      ConnectMode.
   """
 
   class ModesValueListEntryValuesEnum(_messages.Enum):

@@ -415,13 +415,6 @@
           "type": "string",
           "format": "int64"
         },
-        "dataDisks": {
-          "description": "The additional data disks for the Node.",
-          "type": "array",
-          "items": {
-            "$ref": "AttachedDisk"
-          }
-        },
         "apiVersion": {
           "description": "Output only. The API version that created this Node.",
           "readOnly": true,
@@ -446,6 +439,11 @@
           "items": {
             "$ref": "Symptom"
           }
+        },
+        "useTpuVm": {
+          "description": "Output only.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },
@@ -533,31 +531,6 @@
         }
       }
     },
-    "AttachedDisk": {
-      "id": "AttachedDisk",
-      "description": "A node-attached disk resource. Next ID: 8;",
-      "type": "object",
-      "properties": {
-        "sourceDisk": {
-          "description": "Specifies the full path to an existing disk. For example: \"projects\/my-project\/zones\/us-central1-c\/disks\/my-disk\".",
-          "type": "string"
-        },
-        "mode": {
-          "description": "The mode in which to attach this disk. If not specified, the default is READ_WRITE mode. Only applicable to data_disks.",
-          "type": "string",
-          "enumDescriptions": [
-            "The disk mode is not known\/set.",
-            "Attaches the disk in read-write mode. Only one TPU node can attach a disk in read-write mode at a time.",
-            "Attaches the disk in read-only mode. Multiple TPU nodes can attach a disk in read-only mode at a time."
-          ],
-          "enum": [
-            "DISK_MODE_UNSPECIFIED",
-            "READ_WRITE",
-            "READ_ONLY"
-          ]
-        }
-      }
-    },
     "Symptom": {
       "id": "Symptom",
       "description": "A Symptom instance.",
@@ -612,35 +585,6 @@
       "description": "Request for StartNode.",
       "type": "object",
       "properties": {
-      }
-    },
-    "GenerateServiceIdentityRequest": {
-      "id": "GenerateServiceIdentityRequest",
-      "description": "Request for GenerateServiceIdentity.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GenerateServiceIdentityResponse": {
-      "id": "GenerateServiceIdentityResponse",
-      "description": "Response for GenerateServiceIdentity.",
-      "type": "object",
-      "properties": {
-        "identity": {
-          "description": "ServiceIdentity that was created or retrieved.",
-          "$ref": "ServiceIdentity"
-        }
-      }
-    },
-    "ServiceIdentity": {
-      "id": "ServiceIdentity",
-      "description": "The per-product per-project service identity for Cloud TPU service.",
-      "type": "object",
-      "properties": {
-        "email": {
-          "description": "The email address of the service identity.",
-          "type": "string"
-        }
       }
     },
     "ListAcceleratorTypesResponse": {
@@ -831,34 +775,6 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Gets information about a location."
-            },
-            "generateServiceIdentity": {
-              "id": "tpu.projects.locations.generateServiceIdentity",
-              "path": "v2alpha1/{+parent}:generateServiceIdentity",
-              "flatPath": "v2alpha1/projects/{projectsId}/locations/{locationsId}:generateServiceIdentity",
-              "httpMethod": "POST",
-              "parameters": {
-                "parent": {
-                  "description": "Required. The parent resource name.",
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "request": {
-                "$ref": "GenerateServiceIdentityRequest"
-              },
-              "response": {
-                "$ref": "GenerateServiceIdentityResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Generates the Cloud TPU service identity for the project."
             }
           }
           ,

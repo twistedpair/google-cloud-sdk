@@ -323,7 +323,8 @@ class Finding(_messages.Message):
       firewall it would capture the time the detector believes the firewall
       became open. The accuracy is determined by the detector. If the finding
       were to be resolved afterward, this time would reflect when the finding
-      was resolved.
+      was resolved. Must not be set to a value greater than the current
+      timestamp.
     externalUri: The URI that, if available, points to a web page outside of
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well
@@ -640,7 +641,8 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
       firewall it would capture the time the detector believes the firewall
       became open. The accuracy is determined by the detector. If the finding
       were to be resolved afterward, this time would reflect when the finding
-      was resolved.
+      was resolved. Must not be set to a value greater than the current
+      timestamp.
     externalUri: The URI that, if available, points to a web page outside of
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well

@@ -1141,7 +1141,7 @@ class CryptoKeyVersion(_messages.Message):
       DISABLED: This version may not be used, but the key material is still
         available, and the version can be placed back into the ENABLED state.
       DESTROYED: This version is destroyed, and the key material is no longer
-        stored. A version may not leave this state once entered.
+        stored.
       DESTROY_SCHEDULED: This version is scheduled for destruction, and will
         be destroyed soon. Call RestoreCryptoKeyVersion to put it back into
         the DISABLED state.

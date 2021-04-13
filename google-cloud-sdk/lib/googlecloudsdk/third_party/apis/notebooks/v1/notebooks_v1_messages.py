@@ -205,6 +205,20 @@ class Empty(_messages.Message):
 
 
 
+class EncryptionConfig(_messages.Message):
+  r"""Represents a custom encryption key configuration that can be applied to
+  a resource. This will encrypt all disks in Virtual Machine.
+
+  Fields:
+    kmsKey: The Cloud KMS resource identifier of the customer-managed
+      encryption key used to protect a resource, such as a disks. It has the
+      following format: `projects/{PROJECT_ID}/locations/{REGION}/keyRings/{KE
+      Y_RING_NAME}/cryptoKeys/{KEY_NAME}`
+  """
+
+  kmsKey = _messages.StringField(1)
+
+
 class Environment(_messages.Message):
   r"""Definition of a software environment that is used to start a notebook
   instance.
@@ -343,6 +357,9 @@ class ExecutionTemplate(_messages.Message):
       gs://notebook_user/scheduled_notebooks/sentiment_notebook_params.yaml
     scaleTier: Required. Scale tier of the hardware used for notebook
       execution.
+    serviceAccount: The email address of a service account to use when running
+      the execution. You must have the `iam.serviceAccounts.actAs` permission
+      for the specified service account.
   """
 
   class ScaleTierValueValuesEnum(_messages.Enum):
@@ -419,6 +436,7 @@ class ExecutionTemplate(_messages.Message):
   parameters = _messages.StringField(7)
   paramsYamlFile = _messages.StringField(8)
   scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 9)
+  serviceAccount = _messages.StringField(10)
 
 
 class Expr(_messages.Message):
@@ -553,6 +571,8 @@ class Instance(_messages.Message):
       (`PD_STANDARD`).
     DiskEncryptionValueValuesEnum: Input only. Disk encryption method used on
       the boot and data disks, defaults to GMEK.
+    NicTypeValueValuesEnum: Optional. The type of vNIC to be used on this
+      interface. This may be gVNIC or VirtioNet.
     StateValueValuesEnum: Output only. The state of this instance.
 
   Messages:
@@ -604,6 +624,8 @@ class Instance(_messages.Message):
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
     network: The name of the VPC that this instance is in. Format:
       `projects/{project_id}/global/networks/{network_id}`
+    nicType: Optional. The type of vNIC to be used on this interface. This may
+      be gVNIC or VirtioNet.
     noProxyAccess: If true, the notebook instance will not register with the
       proxy.
     noPublicIp: If true, no public IP will be assigned to this instance.
@@ -683,6 +705,19 @@ class Instance(_messages.Message):
     DISK_ENCRYPTION_UNSPECIFIED = 0
     GMEK = 1
     CMEK = 2
+
+  class NicTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of vNIC to be used on this interface. This may be
+    gVNIC or VirtioNet.
+
+    Values:
+      UNSPECIFIED_NIC_TYPE: No type specified.
+      VIRTIO_NET: VIRTIO
+      GVNIC: GVNIC
+    """
+    UNSPECIFIED_NIC_TYPE = 0
+    VIRTIO_NET = 1
+    GVNIC = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of this instance.
@@ -778,20 +813,21 @@ class Instance(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 16)
   name = _messages.StringField(17)
   network = _messages.StringField(18)
-  noProxyAccess = _messages.BooleanField(19)
-  noPublicIp = _messages.BooleanField(20)
-  noRemoveDataDisk = _messages.BooleanField(21)
-  postStartupScript = _messages.StringField(22)
-  proxyUri = _messages.StringField(23)
-  serviceAccount = _messages.StringField(24)
-  serviceAccountScopes = _messages.StringField(25, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  subnet = _messages.StringField(28)
-  tags = _messages.StringField(29, repeated=True)
-  updateTime = _messages.StringField(30)
-  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 31, repeated=True)
-  vmImage = _messages.MessageField('VmImage', 32)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 19)
+  noProxyAccess = _messages.BooleanField(20)
+  noPublicIp = _messages.BooleanField(21)
+  noRemoveDataDisk = _messages.BooleanField(22)
+  postStartupScript = _messages.StringField(23)
+  proxyUri = _messages.StringField(24)
+  serviceAccount = _messages.StringField(25)
+  serviceAccountScopes = _messages.StringField(26, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  subnet = _messages.StringField(29)
+  tags = _messages.StringField(30, repeated=True)
+  updateTime = _messages.StringField(31)
+  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 32, repeated=True)
+  vmImage = _messages.MessageField('VmImage', 33)
 
 
 class IsInstanceUpgradeableResponse(_messages.Message):
@@ -890,6 +926,23 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListRuntimesResponse(_messages.Message):
+  r"""Response for listing Managed Notebook Runtimes.
+
+  Fields:
+    nextPageToken: Page token that can be used to continue listing from the
+      last result in the next list call.
+    runtimes: A list of returned Runtimes.
+    unreachable: Locations that could not be reached. For example, ['us-
+      west1', 'us-central1']. A ListRuntimesResponse will only contain either
+      runtimes or unreachables,
+  """
+
+  nextPageToken = _messages.StringField(1)
+  runtimes = _messages.MessageField('Runtime', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListSchedulesResponse(_messages.Message):
   r"""Response for listing scheduled notebook job.
 
@@ -905,6 +958,148 @@ class ListSchedulesResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   schedules = _messages.MessageField('Schedule', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class LocalDisk(_messages.Message):
+  r"""An Local attached disk resource.
+
+  Fields:
+    autoDelete: Output only. Specifies whether the disk will be auto-deleted
+      when the instance is deleted (but not when the disk is detached from the
+      instance).
+    boot: Output only. Indicates that this is a boot disk. The virtual machine
+      will use the first partition of the disk for its root filesystem.
+    deviceName: Output only. Specifies a unique device name of your choice
+      that is reflected into the /dev/disk/by-id/google-* tree of a Linux
+      operating system running within the instance. This name can be used to
+      reference the device for mounting, resizing, and so on, from within the
+      instance. If not specified, the server chooses a default device name to
+      apply to this disk, in the form persistent-disk-x, where x is a number
+      assigned by Google Compute Engine. This field is only applicable for
+      persistent disks.
+    guestOsFeatures: Output only. Indicates a list of features to enable on
+      the guest operating system. Applicable only for bootable images. Read
+      Enabling guest operating system features to see a list of available
+      options.
+    index: Output only. [Output Only] A zero-based index to this disk, where 0
+      is reserved for the boot disk. If you have many disks attached to an
+      instance, each disk would have a unique index number.
+    initializeParams: Input only. [Input Only] Specifies the parameters for a
+      new disk that will be created alongside the new instance. Use
+      initialization parameters to create boot disks or local SSDs attached to
+      the new instance. This property is mutually exclusive with the source
+      property; you can only define one or the other, but not both.
+    interface: Specifies the disk interface to use for attaching this disk,
+      which is either SCSI or NVME. The default is SCSI. Persistent disks must
+      always use SCSI and the request will fail if you attempt to attach a
+      persistent disk in any other format than SCSI. Local SSDs can use either
+      NVME or SCSI. For performance characteristics of SCSI over NVMe, see
+      Local SSD performance. Valid values: NVME SCSI
+    kind: Output only. Type of the resource. Always compute#attachedDisk for
+      attached disks.
+    licenses: Output only. [Output Only] Any valid publicly visible licenses.
+    mode: The mode in which to attach this disk, either READ_WRITE or
+      READ_ONLY. If not specified, the default is to attach the disk in
+      READ_WRITE mode. Valid values: READ_ONLY READ_WRITE
+    source: Specifies a valid partial or full URL to an existing Persistent
+      Disk resource.
+    type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
+      specified, the default is PERSISTENT. Valid values: PERSISTENT SCRATCH
+  """
+
+  autoDelete = _messages.BooleanField(1)
+  boot = _messages.BooleanField(2)
+  deviceName = _messages.StringField(3)
+  guestOsFeatures = _messages.MessageField('RuntimeGuestOsFeature', 4, repeated=True)
+  index = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('LocalDiskInitializeParams', 6)
+  interface = _messages.StringField(7)
+  kind = _messages.StringField(8)
+  licenses = _messages.StringField(9, repeated=True)
+  mode = _messages.StringField(10)
+  source = _messages.StringField(11)
+  type = _messages.StringField(12)
+
+
+class LocalDiskInitializeParams(_messages.Message):
+  r"""[Input Only] Specifies the parameters for a new disk that will be
+  created alongside the new instance. Use initialization parameters to create
+  boot disks or local SSDs attached to the new runtime. This property is
+  mutually exclusive with the source property; you can only define one or the
+  other, but not both.
+
+  Enums:
+    DiskTypeValueValuesEnum: Input only. The type of the boot disk attached to
+      this instance, defaults to standard persistent disk (`PD_STANDARD`).
+
+  Messages:
+    LabelsValue: Optional. Labels to apply to this disk. These can be later
+      modified by the disks.setLabels method. This field is only applicable
+      for persistent disks.
+
+  Fields:
+    description: Optional. Provide this property when creating the disk.
+    diskName: Optional. Specifies the disk name. If not specified, the default
+      is to use the name of the instance. If the disk with the instance name
+      exists already in the given zone/region, a new name will be
+      automatically generated.
+    diskSizeGb: Optional. Specifies the size of the disk in base-2 GB. If not
+      specified, the disk will be the same size as the image (usually 10GB).
+      If specified, the size must be equal to or larger than 10GB. Default 100
+      GB.
+    diskType: Input only. The type of the boot disk attached to this instance,
+      defaults to standard persistent disk (`PD_STANDARD`).
+    labels: Optional. Labels to apply to this disk. These can be later
+      modified by the disks.setLabels method. This field is only applicable
+      for persistent disks.
+  """
+
+  class DiskTypeValueValuesEnum(_messages.Enum):
+    r"""Input only. The type of the boot disk attached to this instance,
+    defaults to standard persistent disk (`PD_STANDARD`).
+
+    Values:
+      DISK_TYPE_UNSPECIFIED: Disk type not set.
+      PD_STANDARD: Standard persistent disk type.
+      PD_SSD: SSD persistent disk type.
+      PD_BALANCED: Balanced persistent disk type.
+    """
+    DISK_TYPE_UNSPECIFIED = 0
+    PD_STANDARD = 1
+    PD_SSD = 2
+    PD_BALANCED = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels to apply to this disk. These can be later modified by
+    the disks.setLabels method. This field is only applicable for persistent
+    disks.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  description = _messages.StringField(1)
+  diskName = _messages.StringField(2)
+  diskSizeGb = _messages.IntegerField(3)
+  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
 
 
 class Location(_messages.Message):
@@ -1248,6 +1443,20 @@ class NotebooksProjectsLocationsInstancesResetRequest(_messages.Message):
   resetInstanceRequest = _messages.MessageField('ResetInstanceRequest', 2)
 
 
+class NotebooksProjectsLocationsInstancesRollbackRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesRollbackRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    rollbackInstanceRequest: A RollbackInstanceRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackInstanceRequest = _messages.MessageField('RollbackInstanceRequest', 2)
+
+
 class NotebooksProjectsLocationsInstancesSetAcceleratorRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsInstancesSetAcceleratorRequest object.
 
@@ -1458,6 +1667,115 @@ class NotebooksProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class NotebooksProjectsLocationsRuntimesCreateRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesCreateRequest object.
+
+  Fields:
+    parent: Required. Format:
+      `parent=projects/{project_id}/locations/{location}`
+    runtime: A Runtime resource to be passed as the request body.
+    runtimeId: Required. User-defined unique ID of this Runtime.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  runtime = _messages.MessageField('Runtime', 2)
+  runtimeId = _messages.StringField(3)
+
+
+class NotebooksProjectsLocationsRuntimesDeleteRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesDeleteRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/runtimes/{runtime_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NotebooksProjectsLocationsRuntimesGetRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesGetRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/runtimes/{runtime_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NotebooksProjectsLocationsRuntimesListRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesListRequest object.
+
+  Fields:
+    pageSize: Maximum return size of the list call.
+    pageToken: A previous returned page token that can be used to continue
+      listing from the last result.
+    parent: Required. Format:
+      `parent=projects/{project_id}/locations/{location}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NotebooksProjectsLocationsRuntimesResetRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesResetRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/runtimes/{runtime_id}`
+    resetRuntimeRequest: A ResetRuntimeRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resetRuntimeRequest = _messages.MessageField('ResetRuntimeRequest', 2)
+
+
+class NotebooksProjectsLocationsRuntimesStartRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesStartRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/runtimes/{runtime_id}`
+    startRuntimeRequest: A StartRuntimeRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  startRuntimeRequest = _messages.MessageField('StartRuntimeRequest', 2)
+
+
+class NotebooksProjectsLocationsRuntimesStopRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesStopRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/runtimes/{runtime_id}`
+    stopRuntimeRequest: A StopRuntimeRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  stopRuntimeRequest = _messages.MessageField('StopRuntimeRequest', 2)
+
+
+class NotebooksProjectsLocationsRuntimesSwitchRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesSwitchRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/runtimes/{runtime_id}`
+    switchRuntimeRequest: A SwitchRuntimeRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  switchRuntimeRequest = _messages.MessageField('SwitchRuntimeRequest', 2)
 
 
 class NotebooksProjectsLocationsSchedulesCreateRequest(_messages.Message):
@@ -1797,6 +2115,290 @@ class ResetInstanceRequest(_messages.Message):
   r"""Request for reseting a notebook instance"""
 
 
+class ResetRuntimeRequest(_messages.Message):
+  r"""Request for reseting a Managed Notebook Runtime."""
+
+
+class RollbackInstanceRequest(_messages.Message):
+  r"""Request for rollbacking a notebook instance
+
+  Fields:
+    targetSnapshot: Required. The snapshot for rollback. Example:
+      "projects/test-project/global/snapshots/krwlzipynril".
+  """
+
+  targetSnapshot = _messages.StringField(1)
+
+
+class Runtime(_messages.Message):
+  r"""The definition of a Runtime for a managed notebook instance.
+
+  Enums:
+    HealthStateValueValuesEnum: Output only. Runtime health_state.
+    StateValueValuesEnum: Output only. Runtime state.
+
+  Fields:
+    accessConfig: The config settings for accessing runtime.
+    createTime: Output only. Runtime creation time.
+    healthState: Output only. Runtime health_state.
+    metrics: Output only. Contains Runtime daemon metrics such as Service
+      status and JupyterLab stats.
+    name: Output only. The resource name of the runtime. Format:
+      `projects/{project}/locations/{location}/runtimes/{runtime}`
+    softwareConfig: The config settings for software inside the runtime.
+    state: Output only. Runtime state.
+    updateTime: Output only. Runtime update time.
+    virtualMachine: Use a Compute Engine VM image to start the managed
+      notebook instance.
+  """
+
+  class HealthStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Runtime health_state.
+
+    Values:
+      HEALTH_STATE_UNSPECIFIED: The runtime substate is unknown.
+      HEALTHY: The runtime is known to be in an healthy state (for example,
+        critical daemons are running) Applies to ACTIVE state.
+      UNHEALTHY: The runtime is known to be in an unhealthy state (for
+        example, critical daemons are not running) Applies to ACTIVE state.
+    """
+    HEALTH_STATE_UNSPECIFIED = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Runtime state.
+
+    Values:
+      STATE_UNSPECIFIED: State is not specified.
+      STARTING: The compute layer is starting the runtime. It is not ready for
+        use.
+      PROVISIONING: The compute layer is installing required frameworks and
+        registering the runtime with notebook proxy. It cannot be used.
+      ACTIVE: The runtime is currently running. It is ready for use.
+      STOPPING: The control logic is stopping the runtime. It cannot be used.
+      STOPPED: The runtime is stopped. It cannot be used.
+      DELETING: The runtime is being deleted. It cannot be used.
+      UPGRADING: The runtime is upgrading. It cannot be used.
+      INITIALIZING: The runtime is being created and set up. It is not ready
+        for use.
+    """
+    STATE_UNSPECIFIED = 0
+    STARTING = 1
+    PROVISIONING = 2
+    ACTIVE = 3
+    STOPPING = 4
+    STOPPED = 5
+    DELETING = 6
+    UPGRADING = 7
+    INITIALIZING = 8
+
+  accessConfig = _messages.MessageField('RuntimeAccessConfig', 1)
+  createTime = _messages.StringField(2)
+  healthState = _messages.EnumField('HealthStateValueValuesEnum', 3)
+  metrics = _messages.MessageField('RuntimeMetrics', 4)
+  name = _messages.StringField(5)
+  softwareConfig = _messages.MessageField('RuntimeSoftwareConfig', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+  virtualMachine = _messages.MessageField('VirtualMachine', 9)
+
+
+class RuntimeAcceleratorConfig(_messages.Message):
+  r"""Definition of the types of hardware accelerators that can be used.
+  Definition of the types of hardware accelerators that can be used. See
+  [Compute Engine AcceleratorTypes](https://cloud.google.com/compute/docs/refe
+  rence/beta/acceleratorTypes). Examples: * `nvidia-tesla-k80` * `nvidia-
+  tesla-p100` * `nvidia-tesla-v100` * `nvidia-tesla-p4` * `nvidia-tesla-t4` *
+  `nvidia-tesla-a100`
+
+  Enums:
+    TypeValueValuesEnum: Accelerator model.
+
+  Fields:
+    coreCount: Count of cores of this accelerator.
+    type: Accelerator model.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Accelerator model.
+
+    Values:
+      ACCELERATOR_TYPE_UNSPECIFIED: Accelerator type is not specified.
+      NVIDIA_TESLA_K80: Accelerator type is Nvidia Tesla K80.
+      NVIDIA_TESLA_P100: Accelerator type is Nvidia Tesla P100.
+      NVIDIA_TESLA_V100: Accelerator type is Nvidia Tesla V100.
+      NVIDIA_TESLA_P4: Accelerator type is Nvidia Tesla P4.
+      NVIDIA_TESLA_T4: Accelerator type is Nvidia Tesla T4.
+      NVIDIA_TESLA_A100: Accelerator type is Nvidia Tesla A100.
+      TPU_V2: (Coming soon) Accelerator type is TPU V2.
+      TPU_V3: (Coming soon) Accelerator type is TPU V3.
+      NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual
+        Workstations.
+      NVIDIA_TESLA_P100_VWS: Accelerator type is NVIDIA Tesla P100 Virtual
+        Workstations.
+      NVIDIA_TESLA_P4_VWS: Accelerator type is NVIDIA Tesla P4 Virtual
+        Workstations.
+    """
+    ACCELERATOR_TYPE_UNSPECIFIED = 0
+    NVIDIA_TESLA_K80 = 1
+    NVIDIA_TESLA_P100 = 2
+    NVIDIA_TESLA_V100 = 3
+    NVIDIA_TESLA_P4 = 4
+    NVIDIA_TESLA_T4 = 5
+    NVIDIA_TESLA_A100 = 6
+    TPU_V2 = 7
+    TPU_V3 = 8
+    NVIDIA_TESLA_T4_VWS = 9
+    NVIDIA_TESLA_P100_VWS = 10
+    NVIDIA_TESLA_P4_VWS = 11
+
+  coreCount = _messages.IntegerField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class RuntimeAccessConfig(_messages.Message):
+  r"""Specifies the login configuration for Runtime
+
+  Enums:
+    AccessTypeValueValuesEnum: The type of access mode this instance.
+
+  Fields:
+    accessType: The type of access mode this instance.
+    proxyUri: Output only. The proxy endpoint that is used to access the
+      runtime.
+    runtimeOwner: The owner of this runtime after creation. Format:
+      `alias@example.com` Currently supports one owner only.
+  """
+
+  class AccessTypeValueValuesEnum(_messages.Enum):
+    r"""The type of access mode this instance.
+
+    Values:
+      RUNTIME_ACCESS_TYPE_UNSPECIFIED: Unspecified access.
+      SINGLE_USER: Single user login.
+    """
+    RUNTIME_ACCESS_TYPE_UNSPECIFIED = 0
+    SINGLE_USER = 1
+
+  accessType = _messages.EnumField('AccessTypeValueValuesEnum', 1)
+  proxyUri = _messages.StringField(2)
+  runtimeOwner = _messages.StringField(3)
+
+
+class RuntimeGuestOsFeature(_messages.Message):
+  r"""A list of features to enable on the guest operating system. Applicable
+  only for bootable images. Read Enabling guest operating system features to
+  see a list of available options. Guest OS features for boot disk.
+
+  Fields:
+    type: The ID of a supported feature. Read Enabling guest operating system
+      features to see a list of available options. Valid values:
+      FEATURE_TYPE_UNSPECIFIED MULTI_IP_SUBNET SECURE_BOOT UEFI_COMPATIBLE
+      VIRTIO_SCSI_MULTIQUEUE WINDOWS
+  """
+
+  type = _messages.StringField(1)
+
+
+class RuntimeMetrics(_messages.Message):
+  r"""Contains runtime daemon metrics, such as OS and kernels and sessions
+  stats.
+
+  Messages:
+    SystemMetricsValue: Output only. The system metrics.
+
+  Fields:
+    systemMetrics: Output only. The system metrics.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SystemMetricsValue(_messages.Message):
+    r"""Output only. The system metrics.
+
+    Messages:
+      AdditionalProperty: An additional property for a SystemMetricsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SystemMetricsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SystemMetricsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  systemMetrics = _messages.MessageField('SystemMetricsValue', 1)
+
+
+class RuntimeShieldedInstanceConfig(_messages.Message):
+  r"""A set of Shielded Instance options. Check [Images using supported
+  Shielded VM features] Not all combinations are valid.
+
+  Fields:
+    enableIntegrityMonitoring: Defines whether the instance has integrity
+      monitoring enabled. Enables monitoring and attestation of the boot
+      integrity of the instance. The attestation is performed against the
+      integrity policy baseline. This baseline is initially derived from the
+      implicitly trusted boot image when the instance is created. Enabled by
+      default.
+    enableSecureBoot: Defines whether the instance has Secure Boot enabled.
+      Secure Boot helps ensure that the system only runs authentic software by
+      verifying the digital signature of all boot components, and halting the
+      boot process if signature verification fails. Disabled by default.
+    enableVtpm: Defines whether the instance has the vTPM enabled. Enabled by
+      default.
+  """
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
+  enableVtpm = _messages.BooleanField(3)
+
+
+class RuntimeSoftwareConfig(_messages.Message):
+  r"""Specifies the selection and config of software inside the runtime. / The
+  properties to set on runtime. Properties keys are specified in `key:value`
+  format, for example: * idle_shutdown: idle_shutdown=true *
+  idle_shutdown_timeout: idle_shutdown_timeout=180 * report-system-health:
+  report-system-health=true
+
+  Fields:
+    customGpuDriverPath: Specify a custom Cloud Storage path where the GPU
+      driver is stored. If not specified, we'll automatically choose from
+      official GPU drivers.
+    enableHealthMonitoring: Verifies core internal services are running.
+      Default: True
+    idleShutdown: Runtime will automatically shutdown after
+      idle_shutdown_time. Default: False
+    idleShutdownTimeout: Time in minutes to wait before shuting down runtime.
+      Default: 90 minutes
+    installGpuDriver: Install Nvidia Driver automatically.
+    notebookUpgradeSchedule: Cron expression in UTC timezone, used to schedule
+      instance auto upgrade. Please follow the [cron
+      format](https://en.wikipedia.org/wiki/Cron).
+    postStartupScript: Path to a Bash script that automatically runs after a
+      notebook instance fully boots up. The path must be a URL or Cloud
+      Storage path (gs://path-to-file/file-name).
+  """
+
+  customGpuDriverPath = _messages.StringField(1)
+  enableHealthMonitoring = _messages.BooleanField(2)
+  idleShutdown = _messages.BooleanField(3)
+  idleShutdownTimeout = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  installGpuDriver = _messages.BooleanField(5)
+  notebookUpgradeSchedule = _messages.StringField(6)
+  postStartupScript = _messages.StringField(7)
+
+
 class Schedule(_messages.Message):
   r"""The definition of a schedule.
 
@@ -2107,6 +2709,10 @@ class StartInstanceRequest(_messages.Message):
   r"""Request for starting a notebook instance"""
 
 
+class StartRuntimeRequest(_messages.Message):
+  r"""Request for starting a Managed Notebook Runtime."""
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -2160,6 +2766,22 @@ class Status(_messages.Message):
 
 class StopInstanceRequest(_messages.Message):
   r"""Request for stopping a notebook instance"""
+
+
+class StopRuntimeRequest(_messages.Message):
+  r"""Request for stopping a Managed Notebook Runtime."""
+
+
+class SwitchRuntimeRequest(_messages.Message):
+  r"""Request for switching a Managed Notebook Runtime.
+
+  Fields:
+    acceleratorConfig: accelerator config.
+    machineType: machine type.
+  """
+
+  acceleratorConfig = _messages.MessageField('RuntimeAcceleratorConfig', 1)
+  machineType = _messages.StringField(2)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -2275,6 +2897,219 @@ class UpgradeInstanceInternalRequest(_messages.Message):
 
 class UpgradeInstanceRequest(_messages.Message):
   r"""Request for upgrading a notebook instance"""
+
+
+class VirtualMachine(_messages.Message):
+  r"""Runtime using Virtual Machine for computing.
+
+  Fields:
+    instanceId: Output only. The unique identifier of the Managed Compute
+      Engine instance.
+    instanceName: Output only. The user-friendly name of the Managed Compute
+      Engine instance.
+    virtualMachineConfig: Virtual Machine configuration settings.
+  """
+
+  instanceId = _messages.StringField(1)
+  instanceName = _messages.StringField(2)
+  virtualMachineConfig = _messages.MessageField('VirtualMachineConfig', 3)
+
+
+class VirtualMachineConfig(_messages.Message):
+  r"""The config settings for virtual machine.
+
+  Enums:
+    NicTypeValueValuesEnum: Optional. The type of vNIC to be used on this
+      interface. This may be gVNIC or VirtioNet.
+
+  Messages:
+    GuestAttributesValue: Output only. The Compute Engine guest attributes.
+      (see [Project and instance guest
+      attributes](https://cloud.google.com/compute/docs/storing-retrieving-
+      metadata#guest_attributes)).
+    LabelsValue: Optional. The labels to associate with this runtime. Label
+      **keys** must contain 1 to 63 characters, and must conform to [RFC
+      1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
+      empty, but, if present, must contain 1 to 63 characters, and must
+      conform to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more
+      than 32 labels can be associated with a cluster.
+    MetadataValue: Optional. The Compute Engine metadata entries to add to
+      virtual machine. (see [Project and instance
+      metadata](https://cloud.google.com/compute/docs/storing-retrieving-
+      metadata#project_and_instance_metadata)).
+
+  Fields:
+    acceleratorConfig: Optional. The Compute Engine accelerator configuration
+      for this runtime.
+    containerImages: Optional. Use a list of container images to start the
+      notebook instance.
+    dataDisk: Required. Data disk option configuration settings.
+    encryptionConfig: Optional. Encryption settings for virtual machine data
+      disk.
+    guestAttributes: Output only. The Compute Engine guest attributes. (see
+      [Project and instance guest
+      attributes](https://cloud.google.com/compute/docs/storing-retrieving-
+      metadata#guest_attributes)).
+    internalIpOnly: Optional. If true, runtime will only have internal IP
+      addresses. By default, runtimes are not restricted to internal IP
+      addresses, and will have ephemeral external IP addresses assigned to
+      each vm. This `internal_ip_only` restriction can only be enabled for
+      subnetwork enabled networks, and all dependencies must be configured to
+      be accessible without external IP addresses.
+    labels: Optional. The labels to associate with this runtime. Label
+      **keys** must contain 1 to 63 characters, and must conform to [RFC
+      1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
+      empty, but, if present, must contain 1 to 63 characters, and must
+      conform to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more
+      than 32 labels can be associated with a cluster.
+    machineType: Required. The Compute Engine machine type used for runtimes.
+      Short name is valid. Examples: * `n1-standard-2` * `e2-standard-8`
+    metadata: Optional. The Compute Engine metadata entries to add to virtual
+      machine. (see [Project and instance
+      metadata](https://cloud.google.com/compute/docs/storing-retrieving-
+      metadata#project_and_instance_metadata)).
+    network: Optional. The Compute Engine network to be used for machine
+      communications. Cannot be specified with subnetwork. If neither
+      `network` nor `subnet` is specified, the "default" network of the
+      project is used, if it exists. A full URL or partial URI. Examples: * `h
+      ttps://www.googleapis.com/compute/v1/projects/[project_id]/regions/globa
+      l/default` * `projects/[project_id]/regions/global/default` Runtimes are
+      managed resources inside Google Infrastructure. Runtimes support the
+      following network configurations: * Google Managed Network (Network &
+      subnet are empty) * Consumer Project VPC (network & subnet are
+      required). Requires configuring Private Service Access. * Shared VPC
+      (network & subnet are required). Requires configuring Private Service
+      Access.
+    nicType: Optional. The type of vNIC to be used on this interface. This may
+      be gVNIC or VirtioNet.
+    shieldedInstanceConfig: Optional. Shielded VM Instance configuration
+      settings.
+    subnet: Optional. The Compute Engine subnetwork to be used for machine
+      communications. Cannot be specified with network. A full URL or partial
+      URI are valid. Examples: *
+      `https://www.googleapis.com/compute/v1/projects/[project_id]/regions/us-
+      east1/subnetworks/sub0` * `projects/[project_id]/regions/us-
+      east1/subnetworks/sub0`
+    tags: Optional. The Compute Engine tags to add to runtime (see [Tagging
+      instances](https://cloud.google.com/compute/docs/label-or-tag-
+      resources#tags)).
+    zone: Output only. The zone where the virtual machine is located. If using
+      regional request, the notebooks service will pick a location in the
+      corresponding runtime region. On a get request, zone will always be
+      present. Example: * `us-central1-b`
+  """
+
+  class NicTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of vNIC to be used on this interface. This may be
+    gVNIC or VirtioNet.
+
+    Values:
+      UNSPECIFIED_NIC_TYPE: No type specified.
+      VIRTIO_NET: VIRTIO
+      GVNIC: GVNIC
+    """
+    UNSPECIFIED_NIC_TYPE = 0
+    VIRTIO_NET = 1
+    GVNIC = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class GuestAttributesValue(_messages.Message):
+    r"""Output only. The Compute Engine guest attributes. (see [Project and
+    instance guest attributes](https://cloud.google.com/compute/docs/storing-
+    retrieving-metadata#guest_attributes)).
+
+    Messages:
+      AdditionalProperty: An additional property for a GuestAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type GuestAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a GuestAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels to associate with this runtime. Label **keys**
+    must contain 1 to 63 characters, and must conform to [RFC
+    1035](https://www.ietf.org/rfc/rfc1035.txt). Label **values** may be
+    empty, but, if present, must contain 1 to 63 characters, and must conform
+    to [RFC 1035](https://www.ietf.org/rfc/rfc1035.txt). No more than 32
+    labels can be associated with a cluster.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. The Compute Engine metadata entries to add to virtual
+    machine. (see [Project and instance
+    metadata](https://cloud.google.com/compute/docs/storing-retrieving-
+    metadata#project_and_instance_metadata)).
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  acceleratorConfig = _messages.MessageField('RuntimeAcceleratorConfig', 1)
+  containerImages = _messages.MessageField('ContainerImage', 2, repeated=True)
+  dataDisk = _messages.MessageField('LocalDisk', 3)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
+  guestAttributes = _messages.MessageField('GuestAttributesValue', 5)
+  internalIpOnly = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  machineType = _messages.StringField(8)
+  metadata = _messages.MessageField('MetadataValue', 9)
+  network = _messages.StringField(10)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 11)
+  shieldedInstanceConfig = _messages.MessageField('RuntimeShieldedInstanceConfig', 12)
+  subnet = _messages.StringField(13)
+  tags = _messages.StringField(14, repeated=True)
+  zone = _messages.StringField(15)
 
 
 class VmImage(_messages.Message):

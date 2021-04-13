@@ -677,8 +677,35 @@ class BigtableadminV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PartialUpdateCluster(self, request, global_params=None):
+      r"""Partially updates a cluster within a project. This method is the preferred way to update a Cluster. .
+
+      Args:
+        request: (BigtableadminProjectsInstancesClustersPartialUpdateClusterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PartialUpdateCluster')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PartialUpdateCluster.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}',
+        http_method='PATCH',
+        method_id='bigtableadmin.projects.instances.clusters.partialUpdateCluster',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='cluster',
+        request_type_name='BigtableadminProjectsInstancesClustersPartialUpdateClusterRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
-      r"""Updates a cluster within an instance.
+      r"""Updates a cluster within an instance. UpdateCluster is deprecated. Please use PartialUpdateCluster instead.
 
       Args:
         request: (Cluster) input message

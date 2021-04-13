@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20210319",
+ "revision": "20210402",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1041,6 +1041,11 @@
     "enableNestedVirtualization": {
      "type": "boolean",
      "description": "Whether to enable nested virtualization or not (default is false)."
+    },
+    "threadsPerCore": {
+     "type": "integer",
+     "description": "The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.",
+     "format": "int32"
     }
    }
   },
@@ -2234,6 +2239,10 @@
       "$ref": "BackendBucketCdnPolicyBypassCacheOnRequestHeader"
      }
     },
+    "cacheKeyPolicy": {
+     "$ref": "BackendBucketCdnPolicyCacheKeyPolicy",
+     "description": "The CacheKeyPolicy for this CdnPolicy."
+    },
     "cacheMode": {
      "type": "string",
      "description": "Specifies the cache setting for all responses from this backend. The possible values are:\n\nUSE_ORIGIN_HEADERS Requires the origin to set valid caching headers to cache content. Responses without these headers will not be cached at Google's edge, and will require a full trip to the origin on every request, potentially impacting performance and increasing load on the origin server.\n\nFORCE_CACHE_ALL Cache all content, ignoring any \"private\", \"no-store\" or \"no-cache\" directives in Cache-Control response headers. Warning: this may result in Cloud CDN caching private, per-user (user identifiable) content.\n\nCACHE_ALL_STATIC Automatically cache static content, including common image formats, media (video and audio), and web assets (JavaScript and CSS). Requests and responses that are marked as uncacheable, as well as dynamic content (including HTML), will not be cached.",
@@ -2307,6 +2316,27 @@
     "headerName": {
      "type": "string",
      "description": "The header field name to match on when bypassing cache. Values are case-insensitive."
+    }
+   }
+  },
+  "BackendBucketCdnPolicyCacheKeyPolicy": {
+   "id": "BackendBucketCdnPolicyCacheKeyPolicy",
+   "type": "object",
+   "description": "Message containing what to include in the cache key for a request for Cloud CDN.",
+   "properties": {
+    "includeHttpHeaders": {
+     "type": "array",
+     "description": "Allows HTTP request headers (by name) to be used in the cache key.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "queryStringWhitelist": {
+     "type": "array",
+     "description": "Names of query string parameters to include in cache keys. All other parameters will be excluded. '&' and '=' will be percent encoded and not treated as delimiters.",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -3540,16 +3570,17 @@
      "description": "The instance properties defining the VM instances to be created. Required if sourceInstanceTemplate is not provided."
     },
     "locationPolicy": {
-     "$ref": "LocationPolicy"
+     "$ref": "LocationPolicy",
+     "description": "Policy for chosing target zone."
     },
     "minCount": {
      "type": "string",
-     "description": "The minimum number of instances to create. If no min_count is specified then count is used as the default value. If min_count instances cannot be created, then no instances will be created.",
+     "description": "The minimum number of instances to create. If no min_count is specified then count is used as the default value. If min_count instances cannot be created, then no instances will be created and instances already created will be deleted.",
      "format": "int64"
     },
     "namePattern": {
      "type": "string",
-     "description": "The string pattern used for the names of the VMs. Either name_pattern or predefined_names must be set. The pattern should contain one consecutive sequence of placeholder hash characters (#) with each character corresponding to one digit of the generated instance name. Example: name_pattern of inst-#### will generate instance names like inst-0001, inst-0002, ... . If there already exist instance(s) whose names match the name pattern in the same project and zone, then the generated instance numbers will start after the biggest existing number. For example, if there exists an instance with name inst-0050, then instance names generated using the pattern inst-#### will be inst-0051, inst-0052, etc. The name pattern placeholder #...# can contain up to 18 characters."
+     "description": "The string pattern used for the names of the VMs. Either name_pattern or per_instance_properties must be set. The pattern should contain one continuous sequence of placeholder hash characters (#) with each character corresponding to one digit of the generated instance name. Example: name_pattern of inst-#### will generate instance names such as inst-0001, inst-0002, ... . If there already exist instance(s) whose names match the name pattern in the same project and zone, then the generated instance numbers will start after the biggest existing number. For example, if there exists an instance with name inst-0050, then instance names generated using the pattern inst-#### will be inst-0051, inst-0052, etc. The name pattern placeholder #...# can contain up to 18 characters."
     },
     "perInstanceProperties": {
      "type": "object",
@@ -3596,6 +3627,20 @@
     "includeHost": {
      "type": "boolean",
      "description": "If true, requests to different hosts will be cached separately."
+    },
+    "includeHttpHeaders": {
+     "type": "array",
+     "description": "Allows HTTP request headers (by name) to be used in the cache key.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "includeNamedCookies": {
+     "type": "array",
+     "description": "Allows HTTP cookies (by name) to be used in the cache key. The name=value pair will be used in the cache key Cloud CDN generates.",
+     "items": {
+      "type": "string"
+     }
     },
     "includeProtocol": {
      "type": "boolean",
@@ -10704,6 +10749,22 @@
       ""
      ]
     },
+    "mostDisruptiveAllowedAction": {
+     "type": "string",
+     "description": "Most disruptive action that is allowed to be taken on an instance. You can specify either NONE to forbid any actions, REFRESH to allow actions that do not need instance restart, RESTART to allow actions that can be applied without instance replacing or REPLACE to allow all possible actions. If the Updater determines that the minimal update action needed is more disruptive than most disruptive allowed action you specify it will not perform the update at all.",
+     "enum": [
+      "NONE",
+      "REFRESH",
+      "REPLACE",
+      "RESTART"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
     "replacementMethod": {
      "type": "string",
      "description": "What action should be used to replace instances. See minimal_action.REPLACE",
@@ -12738,7 +12799,7 @@
     },
     "ipsecInternalAddresses": {
      "type": "array",
-     "description": "URL of addresses that have been reserved for the interconnect attachment, Used only for interconnect attachment that has the encryption option as IPSEC. The addresses must be RFC 1918 IP address ranges. When creating HA VPN gateway over the interconnect attachment, if the attachment is configured to use an RFC 1918 IP address, then the VPN gateway?s IP address will be allocated from the IP address range specified here. For example, if the HA VPN gateway?s interface 0 is paired to this interconnect attachment, then an RFC 1918 IP address for the VPN gateway interface 0 will be allocated from the IP address specified for this interconnect attachment. If this field is not specified for interconnect attachment that has encryption option as IPSEC, later on when creating HA VPN gateway on this interconnect attachment, the HA VPN gateway's IP address will be allocated from regional external IP address pool.\nNot currently available in all Interconnect locations.",
+     "description": "URL of addresses that have been reserved for the interconnect attachment, Used only for interconnect attachment that has the encryption option as IPSEC. The addresses must be RFC 1918 IP address ranges. When creating HA VPN gateway over the interconnect attachment, if the attachment is configured to use an RFC 1918 IP address, then the VPN gateway's IP address will be allocated from the IP address range specified here. For example, if the HA VPN gateway's interface 0 is paired to this interconnect attachment, then an RFC 1918 IP address for the VPN gateway interface 0 will be allocated from the IP address specified for this interconnect attachment. If this field is not specified for interconnect attachment that has encryption option as IPSEC, later on when creating HA VPN gateway on this interconnect attachment, the HA VPN gateway's IP address will be allocated from regional external IP address pool.\nNot currently available in all Interconnect locations.",
      "items": {
       "type": "string"
      }
@@ -14134,7 +14195,7 @@
    "properties": {
     "locations": {
      "type": "object",
-     "description": "Location configurations mapped by location name. Currently only zone names are supported and must be represented as valid internal URLs, like: zones/us-central1-a.",
+     "description": "Location configurations mapped by location name. Currently only zone names are supported and must be represented as valid internal URLs, such as zones/us-central1-a.",
      "additionalProperties": {
       "$ref": "LocationPolicyLocation"
      }
@@ -14147,6 +14208,7 @@
    "properties": {
     "preference": {
      "type": "string",
+     "description": "Preference for a given locaction: ALLOW or DENY.",
      "enum": [
       "ALLOW",
       "DENY",
@@ -20450,6 +20512,7 @@
       "COMMITTED_LICENSES",
       "COMMITTED_LOCAL_SSD_TOTAL_GB",
       "COMMITTED_MEMORY_OPTIMIZED_CPUS",
+      "COMMITTED_N2A_CPUS",
       "COMMITTED_N2D_CPUS",
       "COMMITTED_N2_CPUS",
       "COMMITTED_NVIDIA_A100_GPUS",
@@ -20489,6 +20552,7 @@
       "M1_CPUS",
       "M2_CPUS",
       "MACHINE_IMAGES",
+      "N2A_CPUS",
       "N2D_CPUS",
       "N2_CPUS",
       "NETWORKS",
@@ -20550,6 +20614,8 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -25349,25 +25415,48 @@
   "ServiceAttachment": {
    "id": "ServiceAttachment",
    "type": "object",
-   "description": "Represents a ServiceAttachment resource.\n\nA service attachment represents a service that a producer has exposed. It encapsulates the load balancer which fronts the service runs and a list of NAT IP ranges that the producers uses to represent the consumers connecting to the service. next tag = 18",
+   "description": "Represents a ServiceAttachment resource.\n\nA service attachment represents a service that a producer has exposed. It encapsulates the load balancer which fronts the service runs and a list of NAT IP ranges that the producers uses to represent the consumers connecting to the service. next tag = 19",
    "properties": {
+    "connectedEndpoints": {
+     "type": "array",
+     "description": "[Output Only] An array of connections for all the consumers connected to this service attachment.",
+     "items": {
+      "$ref": "ServiceAttachmentConnectedEndpoint"
+     }
+    },
     "connectionPreference": {
      "type": "string",
      "description": "The connection preference of service attachment. The value can be set to ACCEPT_AUTOMATIC. An ACCEPT_AUTOMATIC service attachment is one that always accepts the connection from consumer forwarding rules.",
      "enum": [
       "ACCEPT_AUTOMATIC",
+      "ACCEPT_MANUAL",
       "CONNECTION_PREFERENCE_UNSPECIFIED"
      ],
      "enumDescriptions": [
       "",
+      "",
       ""
      ]
+    },
+    "consumerAcceptLists": {
+     "type": "array",
+     "description": "Projects that are allowed to connect to this service attachment.",
+     "items": {
+      "$ref": "ServiceAttachmentConsumerProjectLimit"
+     }
     },
     "consumerForwardingRules": {
      "type": "array",
      "description": "[Output Only] An array of forwarding rules for all the consumers connected to this service attachment.",
      "items": {
       "$ref": "ServiceAttachmentConsumerForwardingRule"
+     }
+    },
+    "consumerRejectLists": {
+     "type": "array",
+     "description": "Projects that are not allowed to connect to this service attachment. The project can be specified using its id or number.",
+     "items": {
+      "type": "string"
      }
     },
     "creationTimestamp": {
@@ -25381,6 +25470,11 @@
     "enableProxyProtocol": {
      "type": "boolean",
      "description": "If true, enable the proxy protocol which is for supplying client TCP/IP address data in TCP connections that traverse proxies on their way to destination servers."
+    },
+    "fingerprint": {
+     "type": "string",
+     "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a ServiceAttachment. An up-to-date fingerprint must be provided in order to patch/update the ServiceAttachment; otherwise, the request will fail with error 412 conditionNotMet. To see the latest fingerprint, make a get() request to retrieve the ServiceAttachment.",
+     "format": "byte"
     },
     "id": {
      "type": "string",
@@ -25413,6 +25507,10 @@
      "type": "string",
      "description": "The URL of a forwarding rule with loadBalancingScheme INTERNAL* that is serving the endpoint identified by this service attachment."
     },
+    "pscServiceAttachmentId": {
+     "$ref": "Uint128",
+     "description": "[Output Only] An 128-bit global unique ID of the PSC service attachment."
+    },
     "region": {
      "type": "string",
      "description": "[Output Only] URL of the region where the service attachment resides. This field applies only to the region resource. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
@@ -25420,6 +25518,10 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "targetService": {
+     "type": "string",
+     "description": "The URL of a service serving the endpoint identified by this service attachment."
     }
    }
   },
@@ -25547,20 +25649,30 @@
     }
    }
   },
-  "ServiceAttachmentConsumerForwardingRule": {
-   "id": "ServiceAttachmentConsumerForwardingRule",
+  "ServiceAttachmentConnectedEndpoint": {
+   "id": "ServiceAttachmentConnectedEndpoint",
    "type": "object",
-   "description": "[Output Only] A consumer forwarding rule connected to this service attachment.",
+   "description": "[Output Only] A connection connected to this service attachment.",
    "properties": {
+    "endpoint": {
+     "type": "string",
+     "description": "The url of a connected endpoint."
+    },
     "forwardingRule": {
      "type": "string",
-     "description": "The url of a consumer forwarding rule."
+     "description": "The url of a consumer forwarding rule. [Deprecated] Do not use."
+    },
+    "pscConnectionId": {
+     "type": "string",
+     "description": "The PSC connection id of the connected endpoint.",
+     "format": "uint64"
     },
     "status": {
      "type": "string",
-     "description": "The status of the forwarding rule.",
+     "description": "The status of a connected endpoint to this service attachment.",
      "enum": [
       "ACCEPTED",
+      "CLOSED",
       "PENDING",
       "REJECTED",
       "STATUS_UNSPECIFIED"
@@ -25569,8 +25681,58 @@
       "",
       "",
       "",
+      "",
       ""
      ]
+    }
+   }
+  },
+  "ServiceAttachmentConsumerForwardingRule": {
+   "id": "ServiceAttachmentConsumerForwardingRule",
+   "type": "object",
+   "description": "[Output Only] A consumer forwarding rule connected to this service attachment. [Deprecated] Do not use.",
+   "properties": {
+    "forwardingRule": {
+     "type": "string",
+     "description": "The url of a consumer forwarding rule."
+    },
+    "pscConnectionId": {
+     "type": "string",
+     "description": "The PSC connection id of the PSC Forwarding Rule.",
+     "format": "uint64"
+    },
+    "status": {
+     "type": "string",
+     "description": "The status of the forwarding rule.",
+     "enum": [
+      "ACCEPTED",
+      "CLOSED",
+      "PENDING",
+      "REJECTED",
+      "STATUS_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "ServiceAttachmentConsumerProjectLimit": {
+   "id": "ServiceAttachmentConsumerProjectLimit",
+   "type": "object",
+   "properties": {
+    "connectionLimit": {
+     "type": "integer",
+     "description": "The value of the limit to set.",
+     "format": "uint32"
+    },
+    "projectIdOrNum": {
+     "type": "string",
+     "description": "The project id or number for the project to set the limit for."
     }
    }
   },
@@ -27282,7 +27444,7 @@
     },
     "state": {
      "type": "string",
-     "description": "[Output Only] The state of the subnetwork, which can be one of the following values: READY: Subnetwork is created and ready to use DRAINING: only applicable to subnetworks that have the purpose set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load balancer are being drained. A subnetwork that is draining cannot be used or modified until it reaches a status of READY CREATING: Subnetwork is provisioning DELETING: Subnetwork is being deleted UPDATING: Subnetwork is being updated",
+     "description": "[Output Only] The state of the subnetwork, which can be one of the following values: READY: Subnetwork is created and ready to use DRAINING: only applicable to subnetworks that have the purpose set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load balancer are being drained. A subnetwork that is draining cannot be used or modified until it reaches a status of READY",
      "enum": [
       "DRAINING",
       "READY"
@@ -27729,7 +27891,7 @@
   "Subsetting": {
    "id": "Subsetting",
    "type": "object",
-   "description": "Subsetting options to make L4 ILB support any number of backend instances",
+   "description": "Subsetting configuration for this BackendService. Currently this is applicable only for Internal TCP/UDP load balancing and Internal HTTP(S) load balancing.",
    "properties": {
     "policy": {
      "type": "string",
@@ -30657,6 +30819,20 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "Uint128": {
+   "id": "Uint128",
+   "type": "object",
+   "properties": {
+    "high": {
+     "type": "string",
+     "format": "uint64"
+    },
+    "low": {
+     "type": "string",
+     "format": "uint64"
     }
    }
   },
@@ -58144,6 +58320,53 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "patch": {
+     "id": "compute.serviceAttachments.patch",
+     "path": "projects/{project}/regions/{region}/serviceAttachments/{serviceAttachment}",
+     "httpMethod": "PATCH",
+     "description": "Patches the specified ServiceAttachment resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The region scoping this request and should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "serviceAttachment": {
+       "type": "string",
+       "description": "The resource id of the ServiceAttachment to patch. It should conform to RFC1035 resource name or be a string form on an unsigned long number.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "serviceAttachment"
+     ],
+     "request": {
+      "$ref": "ServiceAttachment"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "setIamPolicy": {

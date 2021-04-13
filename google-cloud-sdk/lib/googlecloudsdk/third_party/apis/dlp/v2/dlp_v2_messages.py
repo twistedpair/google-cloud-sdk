@@ -3099,7 +3099,9 @@ class GooglePrivacyDlpV2CryptoDeterministicConfig(_messages.Message):
       encryption. Note that case (1) is expected when an
       `InfoTypeTransformation` is applied to both structured and non-
       structured `ContentItem`s.
-    cryptoKey: The key used by the encryption function.
+    cryptoKey: The key used by the encryption function. For deterministic
+      encryption using AES-SIV, the provided key is internally expanded to 64
+      bytes prior to use.
     surrogateInfoType: The custom info type to annotate the surrogate with.
       This annotation will be applied to the surrogate by prefixing it with
       the name of the custom info type followed by the number of characters

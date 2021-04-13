@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20210319",
+ "revision": "20210402",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1029,6 +1029,11 @@
     "enableNestedVirtualization": {
      "type": "boolean",
      "description": "Whether to enable nested virtualization or not (default is false)."
+    },
+    "threadsPerCore": {
+     "type": "integer",
+     "description": "The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.",
+     "format": "int32"
     }
    }
   },
@@ -3206,16 +3211,17 @@
      "description": "The instance properties defining the VM instances to be created. Required if sourceInstanceTemplate is not provided."
     },
     "locationPolicy": {
-     "$ref": "LocationPolicy"
+     "$ref": "LocationPolicy",
+     "description": "Policy for chosing target zone."
     },
     "minCount": {
      "type": "string",
-     "description": "The minimum number of instances to create. If no min_count is specified then count is used as the default value. If min_count instances cannot be created, then no instances will be created.",
+     "description": "The minimum number of instances to create. If no min_count is specified then count is used as the default value. If min_count instances cannot be created, then no instances will be created and instances already created will be deleted.",
      "format": "int64"
     },
     "namePattern": {
      "type": "string",
-     "description": "The string pattern used for the names of the VMs. Either name_pattern or predefined_names must be set. The pattern should contain one consecutive sequence of placeholder hash characters (#) with each character corresponding to one digit of the generated instance name. Example: name_pattern of inst-#### will generate instance names like inst-0001, inst-0002, ... . If there already exist instance(s) whose names match the name pattern in the same project and zone, then the generated instance numbers will start after the biggest existing number. For example, if there exists an instance with name inst-0050, then instance names generated using the pattern inst-#### will be inst-0051, inst-0052, etc. The name pattern placeholder #...# can contain up to 18 characters."
+     "description": "The string pattern used for the names of the VMs. Either name_pattern or per_instance_properties must be set. The pattern should contain one continuous sequence of placeholder hash characters (#) with each character corresponding to one digit of the generated instance name. Example: name_pattern of inst-#### will generate instance names such as inst-0001, inst-0002, ... . If there already exist instance(s) whose names match the name pattern in the same project and zone, then the generated instance numbers will start after the biggest existing number. For example, if there exists an instance with name inst-0050, then instance names generated using the pattern inst-#### will be inst-0051, inst-0052, etc. The name pattern placeholder #...# can contain up to 18 characters."
     },
     "perInstanceProperties": {
      "type": "object",
@@ -9120,20 +9126,6 @@
       "$ref": "NetworkInterface"
      }
     },
-    "postKeyRevocationActionType": {
-     "type": "string",
-     "description": "PostKeyRevocationActionType of the instance.",
-     "enum": [
-      "NOOP",
-      "POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED",
-      "SHUTDOWN"
-     ],
-     "enumDescriptions": [
-      "",
-      "",
-      ""
-     ]
-    },
     "privateIpv6GoogleAccess": {
      "type": "string",
      "description": "The private IPv6 google access type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as default.",
@@ -11306,20 +11298,6 @@
       "$ref": "NetworkInterface"
      }
     },
-    "postKeyRevocationActionType": {
-     "type": "string",
-     "description": "PostKeyRevocationActionType of the instance.",
-     "enum": [
-      "NOOP",
-      "POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED",
-      "SHUTDOWN"
-     ],
-     "enumDescriptions": [
-      "",
-      "",
-      ""
-     ]
-    },
     "privateIpv6GoogleAccess": {
      "type": "string",
      "description": "The private IPv6 google access type for VMs. If not specified, use  INHERIT_FROM_SUBNETWORK as default.",
@@ -12123,7 +12101,7 @@
     },
     "ipsecInternalAddresses": {
      "type": "array",
-     "description": "URL of addresses that have been reserved for the interconnect attachment, Used only for interconnect attachment that has the encryption option as IPSEC. The addresses must be RFC 1918 IP address ranges. When creating HA VPN gateway over the interconnect attachment, if the attachment is configured to use an RFC 1918 IP address, then the VPN gateway?s IP address will be allocated from the IP address range specified here. For example, if the HA VPN gateway?s interface 0 is paired to this interconnect attachment, then an RFC 1918 IP address for the VPN gateway interface 0 will be allocated from the IP address specified for this interconnect attachment. If this field is not specified for interconnect attachment that has encryption option as IPSEC, later on when creating HA VPN gateway on this interconnect attachment, the HA VPN gateway's IP address will be allocated from regional external IP address pool.\nNot currently available in all Interconnect locations.",
+     "description": "URL of addresses that have been reserved for the interconnect attachment, Used only for interconnect attachment that has the encryption option as IPSEC. The addresses must be RFC 1918 IP address ranges. When creating HA VPN gateway over the interconnect attachment, if the attachment is configured to use an RFC 1918 IP address, then the VPN gateway's IP address will be allocated from the IP address range specified here. For example, if the HA VPN gateway's interface 0 is paired to this interconnect attachment, then an RFC 1918 IP address for the VPN gateway interface 0 will be allocated from the IP address specified for this interconnect attachment. If this field is not specified for interconnect attachment that has encryption option as IPSEC, later on when creating HA VPN gateway on this interconnect attachment, the HA VPN gateway's IP address will be allocated from regional external IP address pool.\nNot currently available in all Interconnect locations.",
      "items": {
       "type": "string"
      }
@@ -13507,7 +13485,7 @@
    "properties": {
     "locations": {
      "type": "object",
-     "description": "Location configurations mapped by location name. Currently only zone names are supported and must be represented as valid internal URLs, like: zones/us-central1-a.",
+     "description": "Location configurations mapped by location name. Currently only zone names are supported and must be represented as valid internal URLs, such as zones/us-central1-a.",
      "additionalProperties": {
       "$ref": "LocationPolicyLocation"
      }
@@ -13520,6 +13498,7 @@
    "properties": {
     "preference": {
      "type": "string",
+     "description": "Preference for a given locaction: ALLOW or DENY.",
      "enum": [
       "ALLOW",
       "DENY",
@@ -19466,6 +19445,7 @@
       "COMMITTED_LICENSES",
       "COMMITTED_LOCAL_SSD_TOTAL_GB",
       "COMMITTED_MEMORY_OPTIMIZED_CPUS",
+      "COMMITTED_N2A_CPUS",
       "COMMITTED_N2D_CPUS",
       "COMMITTED_N2_CPUS",
       "COMMITTED_NVIDIA_A100_GPUS",
@@ -19505,6 +19485,7 @@
       "M1_CPUS",
       "M2_CPUS",
       "MACHINE_IMAGES",
+      "N2A_CPUS",
       "N2D_CPUS",
       "N2_CPUS",
       "NETWORKS",
@@ -19565,6 +19546,8 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -25264,7 +25247,7 @@
     },
     "state": {
      "type": "string",
-     "description": "[Output Only] The state of the subnetwork, which can be one of the following values: READY: Subnetwork is created and ready to use DRAINING: only applicable to subnetworks that have the purpose set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load balancer are being drained. A subnetwork that is draining cannot be used or modified until it reaches a status of READY CREATING: Subnetwork is provisioning DELETING: Subnetwork is being deleted UPDATING: Subnetwork is being updated",
+     "description": "[Output Only] The state of the subnetwork, which can be one of the following values: READY: Subnetwork is created and ready to use DRAINING: only applicable to subnetworks that have the purpose set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load balancer are being drained. A subnetwork that is draining cannot be used or modified until it reaches a status of READY",
      "enum": [
       "DRAINING",
       "READY"

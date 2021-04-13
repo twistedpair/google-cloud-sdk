@@ -874,6 +874,10 @@ class PackageData(_messages.Message):
     osVersion: The version of the OS This field is deprecated and the
       information is in cpe_uri
     package: The package being analysed for vulnerabilities
+    projectId: The projectId of the package to which this data belongs. Most
+      of Drydock's code does not set or use this field. This is added
+      specifically so we can group packages by projects and decide whether or
+      not to apply NVD data to the packages belonging to a specific project.
     version: The version of the package being analysed
   """
 
@@ -881,7 +885,8 @@ class PackageData(_messages.Message):
   os = _messages.StringField(2)
   osVersion = _messages.StringField(3)
   package = _messages.StringField(4)
-  version = _messages.StringField(5)
+  projectId = _messages.StringField(5)
+  version = _messages.StringField(6)
 
 
 class PackageIssue(_messages.Message):

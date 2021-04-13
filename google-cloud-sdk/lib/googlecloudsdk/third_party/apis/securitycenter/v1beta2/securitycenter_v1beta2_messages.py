@@ -285,6 +285,12 @@ class Finding(_messages.Message):
       only.
 
   Fields:
+    canonicalName: The canonical name of the finding. It's either "organizatio
+      ns/{organization_id}/sources/{source_id}/findings/{finding_id}",
+      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}" or
+      "projects/{project_number}/sources/{source_id}/findings/{finding_id}",
+      depending on the closest CRM ancestor of the resource associated with
+      the finding.
     category: The additional taxonomy group within findings from a given
       source. This field is immutable after creation time. Example:
       "XSS_FLASH_INJECTION"
@@ -295,7 +301,8 @@ class Finding(_messages.Message):
       firewall it would capture the time the detector believes the firewall
       became open. The accuracy is determined by the detector. If the finding
       were to be resolved afterward, this time would reflect when the finding
-      was resolved.
+      was resolved. Must not be set to a value greater than the current
+      timestamp.
     externalUri: The URI that, if available, points to a web page outside of
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well
@@ -418,17 +425,18 @@ class Finding(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  category = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  eventTime = _messages.StringField(3)
-  externalUri = _messages.StringField(4)
-  name = _messages.StringField(5)
-  parent = _messages.StringField(6)
-  resourceName = _messages.StringField(7)
-  securityMarks = _messages.MessageField('SecurityMarks', 8)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 9)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  canonicalName = _messages.StringField(1)
+  category = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  eventTime = _messages.StringField(4)
+  externalUri = _messages.StringField(5)
+  name = _messages.StringField(6)
+  parent = _messages.StringField(7)
+  resourceName = _messages.StringField(8)
+  securityMarks = _messages.MessageField('SecurityMarks', 9)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
 class Folder(_messages.Message):
@@ -567,6 +575,12 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
       only.
 
   Fields:
+    canonicalName: The canonical name of the finding. It's either "organizatio
+      ns/{organization_id}/sources/{source_id}/findings/{finding_id}",
+      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}" or
+      "projects/{project_number}/sources/{source_id}/findings/{finding_id}",
+      depending on the closest CRM ancestor of the resource associated with
+      the finding.
     category: The additional taxonomy group within findings from a given
       source. This field is immutable after creation time. Example:
       "XSS_FLASH_INJECTION"
@@ -577,7 +591,8 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
       firewall it would capture the time the detector believes the firewall
       became open. The accuracy is determined by the detector. If the finding
       were to be resolved afterward, this time would reflect when the finding
-      was resolved.
+      was resolved. Must not be set to a value greater than the current
+      timestamp.
     externalUri: The URI that, if available, points to a web page outside of
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well
@@ -668,17 +683,18 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  category = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  eventTime = _messages.StringField(3)
-  externalUri = _messages.StringField(4)
-  name = _messages.StringField(5)
-  parent = _messages.StringField(6)
-  resourceName = _messages.StringField(7)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1SecurityMarks', 8)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 9)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  canonicalName = _messages.StringField(1)
+  category = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  eventTime = _messages.StringField(4)
+  externalUri = _messages.StringField(5)
+  name = _messages.StringField(6)
+  parent = _messages.StringField(7)
+  resourceName = _messages.StringField(8)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1SecurityMarks', 9)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
 class GoogleCloudSecuritycenterV1p1beta1Folder(_messages.Message):
@@ -781,6 +797,14 @@ class GoogleCloudSecuritycenterV1p1beta1SecurityMarks(_messages.Message):
       between 1 - 4096 characters (inclusive)
 
   Fields:
+    canonicalName: The canonical name of the marks. Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks"
+      "folders/{folder_id}/assets/{asset_id}/securityMarks"
+      "projects/{project_number}/assets/{asset_id}/securityMarks" "organizatio
+      ns/{organization_id}/sources/{source_id}/findings/{finding_id}/securityM
+      arks" "folders/{folder_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks" "projects/{project_number}/sources/{source_id}/findings/{fin
+      ding_id}/securityMarks"
     marks: Mutable user specified security marks belonging to the parent
       resource. Constraints are as follows: * Keys and values are treated as
       case insensitive * Keys must be between 1 - 256 characters (inclusive) *
@@ -824,8 +848,9 @@ class GoogleCloudSecuritycenterV1p1beta1SecurityMarks(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  marks = _messages.MessageField('MarksValue', 1)
-  name = _messages.StringField(2)
+  canonicalName = _messages.StringField(1)
+  marks = _messages.MessageField('MarksValue', 2)
+  name = _messages.StringField(3)
 
 
 class SecurityCenterSettings(_messages.Message):
@@ -942,6 +967,14 @@ class SecurityMarks(_messages.Message):
       between 1 - 4096 characters (inclusive)
 
   Fields:
+    canonicalName: The canonical name of the marks. Examples:
+      "organizations/{organization_id}/assets/{asset_id}/securityMarks"
+      "folders/{folder_id}/assets/{asset_id}/securityMarks"
+      "projects/{project_number}/assets/{asset_id}/securityMarks" "organizatio
+      ns/{organization_id}/sources/{source_id}/findings/{finding_id}/securityM
+      arks" "folders/{folder_id}/sources/{source_id}/findings/{finding_id}/sec
+      urityMarks" "projects/{project_number}/sources/{source_id}/findings/{fin
+      ding_id}/securityMarks"
     marks: Mutable user specified security marks belonging to the parent
       resource. Constraints are as follows: * Keys and values are treated as
       case insensitive * Keys must be between 1 - 256 characters (inclusive) *
@@ -985,8 +1018,9 @@ class SecurityMarks(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  marks = _messages.MessageField('MarksValue', 1)
-  name = _messages.StringField(2)
+  canonicalName = _messages.StringField(1)
+  marks = _messages.MessageField('MarksValue', 2)
+  name = _messages.StringField(3)
 
 
 class SecuritycenterFoldersContainerThreatDetectionSettingsCalculateRequest(_messages.Message):

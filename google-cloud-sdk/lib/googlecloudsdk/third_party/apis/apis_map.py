@@ -1556,6 +1556,14 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.networksecurity.v1alpha1',
                 client_classpath='networksecurity_v1alpha1_client.NetworksecurityV1alpha1',
                 messages_modulepath='networksecurity_v1alpha1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.networksecurity.v1beta1',
+                client_classpath='networksecurity_v1beta1_client.NetworksecurityV1beta1',
+                messages_modulepath='networksecurity_v1beta1_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

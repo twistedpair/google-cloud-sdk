@@ -605,8 +605,8 @@ class MaintenanceSchedule(_messages.Message):
   r"""Upcoming maitenance schedule.
 
   Fields:
-    canReschedule: Output only. If the scheduled maintenance can be
-      rescheduled, default is true.
+    canReschedule: If the scheduled maintenance can be rescheduled, default is
+      true.
     endTime: Output only. The end time of any upcoming scheduled maintenance
       for this instance.
     startTime: Output only. The start time of any upcoming scheduled

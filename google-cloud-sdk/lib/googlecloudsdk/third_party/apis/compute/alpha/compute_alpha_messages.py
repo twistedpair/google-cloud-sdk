@@ -1419,63 +1419,6 @@ class AllocationSpecificSKUReservation(_messages.Message):
   instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 3)
 
 
-class Any(_messages.Message):
-  r"""`Any` contains an arbitrary serialized protocol buffer message along
-  with a URL that describes the type of the serialized message.  Protobuf
-  library provides support to pack/unpack Any values in the form of utility
-  functions or additional generated methods of the Any type.  Example 1: Pack
-  and unpack a message in C++.  Foo foo = ...; Any any; any.PackFrom(foo); ...
-  if (any.UnpackTo(&foo)) { ... }  Example 2: Pack and unpack a message in
-  Java.  Foo foo = ...; Any any = Any.pack(foo); ... if (any.is(Foo.class)) {
-  foo = any.unpack(Foo.class); }  Example 3: Pack and unpack a message in
-  Python.  foo = Foo(...) any = Any() any.Pack(foo) ... if
-  any.Is(Foo.DESCRIPTOR): any.Unpack(foo) ...  Example 4: Pack and unpack a
-  message in Go  foo := &pb.Foo{...} any, err := anypb.New(foo) if err != nil
-  { ... } ... foo := &pb.Foo{} if err := any.UnmarshalTo(foo); err != nil {
-  ... }  The pack methods provided by protobuf library will by default use
-  'type.googleapis.com/full.type.name' as the type URL and the unpack methods
-  only use the fully qualified type name after the last '/' in the type URL,
-  for example "foo.bar.com/x/y.z" will yield type name "y.z".    JSON ==== The
-  JSON representation of an `Any` value uses the regular representation of the
-  deserialized, embedded message, with an additional field `@type` which
-  contains the type URL. Example:  package google.profile; message Person {
-  string first_name = 1; string last_name = 2; }  { "@type":
-  "type.googleapis.com/google.profile.Person", "firstName": , "lastName":  }
-  If the embedded message type is well-known and has a custom JSON
-  representation, that representation will be embedded adding a field `value`
-  which holds the custom JSON in addition to the `@type` field. Example (for
-  message [google.protobuf.Duration][]):  { "@type":
-  "type.googleapis.com/google.protobuf.Duration", "value": "1.212s" }
-
-  Fields:
-    typeUrl: A URL/resource name that uniquely identifies the type of the
-      serialized protocol buffer message. This string must contain at least
-      one "/" character. The last segment of the URL's path must represent the
-      fully qualified name of the type (as in
-      `path/google.protobuf.Duration`). The name should be in a canonical form
-      (e.g., leading "." is not accepted).  In practice, teams usually
-      precompile into the binary all types that they expect it to use in the
-      context of Any. However, for URLs which use the scheme `http`, `https`,
-      or no scheme, one can optionally set up a type server that maps type
-      URLs to message definitions as follows:  * If no scheme is provided,
-      `https` is assumed. * An HTTP GET on the URL must yield a
-      [google.protobuf.Type][] value in binary format, or produce an error. *
-      Applications are allowed to cache lookup results based on the URL, or
-      have them precompiled into a binary to avoid any lookup. Therefore,
-      binary compatibility needs to be preserved on changes to types. (Use
-      versioned type names to manage breaking changes.)  Note: this
-      functionality is not currently available in the official protobuf
-      release, and it is not used for type URLs beginning with
-      type.googleapis.com.  Schemes other than `http`, `https` (or the empty
-      scheme) might be used with implementation specific semantics.
-    value: Must be a valid serialized protocol buffer of the above specified
-      type.
-  """
-
-  typeUrl = _messages.StringField(1)
-  value = _messages.BytesField(2)
-
-
 class AttachedDisk(_messages.Message):
   r"""An instance-attached disk resource.
 
@@ -3152,6 +3095,7 @@ class BackendBucketCdnPolicy(_messages.Message):
       headers are matched - e.g. Pragma or Authorization headers. Up to 5
       headers can be specified. The cache is bypassed for all
       cdnPolicy.cacheMode settings.
+    cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
     cacheMode: Specifies the cache setting for all responses from this
       backend. The possible values are:  USE_ORIGIN_HEADERS Requires the
       origin to set valid caching headers to cache content. Responses without
@@ -3264,16 +3208,17 @@ class BackendBucketCdnPolicy(_messages.Message):
     USE_ORIGIN_HEADERS = 3
 
   bypassCacheOnRequestHeaders = _messages.MessageField('BackendBucketCdnPolicyBypassCacheOnRequestHeader', 1, repeated=True)
-  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 2)
-  clientTtl = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  defaultTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  negativeCaching = _messages.BooleanField(6)
-  negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 7, repeated=True)
-  requestCoalescing = _messages.BooleanField(8)
-  serveWhileStale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  signedUrlCacheMaxAgeSec = _messages.IntegerField(10)
-  signedUrlKeyNames = _messages.StringField(11, repeated=True)
+  cacheKeyPolicy = _messages.MessageField('BackendBucketCdnPolicyCacheKeyPolicy', 2)
+  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 3)
+  clientTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  defaultTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxTtl = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  negativeCaching = _messages.BooleanField(7)
+  negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 8, repeated=True)
+  requestCoalescing = _messages.BooleanField(9)
+  serveWhileStale = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(11)
+  signedUrlKeyNames = _messages.StringField(12, repeated=True)
 
 
 class BackendBucketCdnPolicyBypassCacheOnRequestHeader(_messages.Message):
@@ -3287,6 +3232,22 @@ class BackendBucketCdnPolicyBypassCacheOnRequestHeader(_messages.Message):
   """
 
   headerName = _messages.StringField(1)
+
+
+class BackendBucketCdnPolicyCacheKeyPolicy(_messages.Message):
+  r"""Message containing what to include in the cache key for a request for
+  Cloud CDN.
+
+  Fields:
+    includeHttpHeaders: Allows HTTP request headers (by name) to be used in
+      the cache key.
+    queryStringWhitelist: Names of query string parameters to include in cache
+      keys. All other parameters will be excluded. '&' and '=' will be percent
+      encoded and not treated as delimiters.
+  """
+
+  includeHttpHeaders = _messages.StringField(1, repeated=True)
+  queryStringWhitelist = _messages.StringField(2, repeated=True)
 
 
 class BackendBucketCdnPolicyNegativeCachingPolicy(_messages.Message):
@@ -5017,30 +4978,30 @@ class BulkInsertInstanceResource(_messages.Message):
 
   Fields:
     count: The maximum number of instances to create.
-    instance: The instance defining the VM instances to be created.
+    instance: DEPRECATED: Please use instance_properties instead.
     instanceProperties: The instance properties defining the VM instances to
       be created. Required if sourceInstanceTemplate is not provided.
-    locationPolicy: A LocationPolicy attribute.
+    locationPolicy: Policy for chosing target zone.
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
-      instances cannot be created, then no instances will be created.
+      instances cannot be created, then no instances will be created and
+      instances already created will be deleted.
     namePattern: The string pattern used for the names of the VMs. Either
-      name_pattern or predefined_names must be set. The pattern should contain
-      one consecutive sequence of placeholder hash characters (#) with each
-      character corresponding to one digit of the generated instance name.
-      Example: name_pattern of inst-#### will generate instance names like
-      inst-0001, inst-0002, ... . If there already exist instance(s) whose
-      names match the name pattern in the same project and zone, then the
-      generated instance numbers will start after the biggest existing number.
-      For example, if there exists an instance with name inst-0050, then
-      instance names generated using the pattern inst-#### will be inst-0051,
-      inst-0052, etc. The name pattern placeholder #...# can contain up to 18
-      characters.
+      name_pattern or per_instance_properties must be set. The pattern should
+      contain one continuous sequence of placeholder hash characters (#) with
+      each character corresponding to one digit of the generated instance
+      name. Example: name_pattern of inst-#### will generate instance names
+      such as inst-0001, inst-0002, ... . If there already exist instance(s)
+      whose names match the name pattern in the same project and zone, then
+      the generated instance numbers will start after the biggest existing
+      number. For example, if there exists an instance with name inst-0050,
+      then instance names generated using the pattern inst-#### will be
+      inst-0051, inst-0052, etc. The name pattern placeholder #...# can
+      contain up to 18 characters.
     perInstanceProperties: Per-instance properties to be set on individual
       instances. Keys of this map specify requested instance names. Can be
       empty if name_pattern is used.
-    predefinedNames: List of predefined names. The number of names provided
-      must be equal to count.
+    predefinedNames: DEPRECATED: Please use per_instance_properties instead.
     sourceInstanceTemplate: Specifies the instance template from which to
       create instances. You may combine sourceInstanceTemplate with
       instanceProperties to override specific values from an existing instance
@@ -5122,6 +5083,11 @@ class CacheKeyPolicy(_messages.Message):
   Fields:
     includeHost: If true, requests to different hosts will be cached
       separately.
+    includeHttpHeaders: Allows HTTP request headers (by name) to be used in
+      the cache key.
+    includeNamedCookies: Allows HTTP cookies (by name) to be used in the cache
+      key. The name=value pair will be used in the cache key Cloud CDN
+      generates.
     includeProtocol: If true, http and https requests will be cached
       separately.
     includeQueryString: If true, include query string parameters in the cache
@@ -5139,10 +5105,12 @@ class CacheKeyPolicy(_messages.Message):
   """
 
   includeHost = _messages.BooleanField(1)
-  includeProtocol = _messages.BooleanField(2)
-  includeQueryString = _messages.BooleanField(3)
-  queryStringBlacklist = _messages.StringField(4, repeated=True)
-  queryStringWhitelist = _messages.StringField(5, repeated=True)
+  includeHttpHeaders = _messages.StringField(2, repeated=True)
+  includeNamedCookies = _messages.StringField(3, repeated=True)
+  includeProtocol = _messages.BooleanField(4)
+  includeQueryString = _messages.BooleanField(5)
+  queryStringBlacklist = _messages.StringField(6, repeated=True)
+  queryStringWhitelist = _messages.StringField(7, repeated=True)
 
 
 class CallCredentials(_messages.Message):
@@ -11915,13 +11883,17 @@ class ComputeInstancesBulkInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
+    secureTags: Secure tags to apply to this instance. These can be later
+      modified by the update method. Maximum number of secure tags allowed is
+      300.
     zone: The name of the zone for this request.
   """
 
   bulkInsertInstanceResource = _messages.MessageField('BulkInsertInstanceResource', 1)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
+  secureTags = _messages.StringField(4, repeated=True)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
@@ -12158,6 +12130,9 @@ class ComputeInstancesInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
+    secureTags: Secure tags to apply to this instance. These can be later
+      modified by the update method. Maximum number of secure tags allowed is
+      300.
     sourceInstanceTemplate: Specifies instance template to create the
       instance.  This field is optional. It can be a full or partial URL. For
       example, the following are all valid URLs to an instance template:   - h
@@ -12178,9 +12153,10 @@ class ComputeInstancesInsertRequest(_messages.Message):
   instance = _messages.MessageField('Instance', 1)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
-  sourceInstanceTemplate = _messages.StringField(4)
-  sourceMachineImage = _messages.StringField(5)
-  zone = _messages.StringField(6, required=True)
+  secureTags = _messages.StringField(4, repeated=True)
+  sourceInstanceTemplate = _messages.StringField(5)
+  sourceMachineImage = _messages.StringField(6)
+  zone = _messages.StringField(7, required=True)
 
 
 class ComputeInstancesListReferrersRequest(_messages.Message):
@@ -13013,6 +12989,9 @@ class ComputeInstancesUpdateRequest(_messages.Message):
       lowest to highest are NO_EFFECT, REFRESH, and RESTART.
 
   Fields:
+    clearSecureTag: Whether to clear secure tags from the instance.  This
+      property is mutually exclusive with the secure_tag property; you can
+      only specify one or the other, but not both.
     instance: Name of the instance resource to update.
     instanceResource: A Instance resource to be passed as the request body.
     minimalAction: Specifies the action to take when updating an instance even
@@ -13035,6 +13014,8 @@ class ComputeInstancesUpdateRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
+    secureTags: Secure tags to apply to this instance. Maximum number of
+      secure tags allowed is 300.
     zone: The name of the zone for this request.
   """
 
@@ -13073,13 +13054,15 @@ class ComputeInstancesUpdateRequest(_messages.Message):
     REFRESH = 2
     RESTART = 3
 
-  instance = _messages.StringField(1, required=True)
-  instanceResource = _messages.MessageField('Instance', 2)
-  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
-  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 4)
-  project = _messages.StringField(5, required=True)
-  requestId = _messages.StringField(6)
-  zone = _messages.StringField(7, required=True)
+  clearSecureTag = _messages.BooleanField(1)
+  instance = _messages.StringField(2, required=True)
+  instanceResource = _messages.MessageField('Instance', 3)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 4)
+  mostDisruptiveAllowedAction = _messages.EnumField('MostDisruptiveAllowedActionValueValuesEnum', 5)
+  project = _messages.StringField(6, required=True)
+  requestId = _messages.StringField(7)
+  secureTags = _messages.StringField(8, repeated=True)
+  zone = _messages.StringField(9, required=True)
 
 
 class ComputeInstancesUpdateShieldedInstanceConfigRequest(_messages.Message):
@@ -19950,12 +19933,16 @@ class ComputeRegionInstancesBulkInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
+    secureTags: Secure tags to apply to this instance. These can be later
+      modified by the update method. Maximum number of secure tags allowed is
+      300.
   """
 
   bulkInsertInstanceResource = _messages.MessageField('BulkInsertInstanceResource', 1)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+  secureTags = _messages.StringField(5, repeated=True)
 
 
 class ComputeRegionInstantSnapshotsDeleteRequest(_messages.Message):
@@ -30336,6 +30323,7 @@ class ForwardingRule(_messages.Message):
       PREMIUM.  If this field is not specified, it is assumed to be PREMIUM.
       If IPAddress is specified, this value must be equal to the networkTier
       of the Address.
+    PscConnectionStatusValueValuesEnum:
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified
@@ -30491,6 +30479,7 @@ class ForwardingRule(_messages.Message):
       balancing/docs/forwarding-rule-concepts#port_specifications).
     pscConnectionId: [Output Only] The PSC connection id of the PSC Forwarding
       Rule.
+    pscConnectionStatus: A PscConnectionStatusValueValuesEnum attribute.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules. You
       must specify this field as part of the HTTP request URL. It is not
@@ -30613,6 +30602,22 @@ class ForwardingRule(_messages.Message):
     STANDARD = 3
     STANDARD_OVERRIDES_FIXED_STANDARD = 4
 
+  class PscConnectionStatusValueValuesEnum(_messages.Enum):
+    r"""PscConnectionStatusValueValuesEnum enum type.
+
+    Values:
+      ACCEPTED: <no description>
+      CLOSED: <no description>
+      PENDING: <no description>
+      REJECTED: <no description>
+      STATUS_UNSPECIFIED: <no description>
+    """
+    ACCEPTED = 0
+    CLOSED = 1
+    PENDING = 2
+    REJECTED = 3
+    STATUS_UNSPECIFIED = 4
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels for this resource. These can only be added or modified by the
@@ -30661,14 +30666,15 @@ class ForwardingRule(_messages.Message):
   portRange = _messages.StringField(20)
   ports = _messages.StringField(21, repeated=True)
   pscConnectionId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
-  region = _messages.StringField(23)
-  selfLink = _messages.StringField(24)
-  selfLinkWithId = _messages.StringField(25)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 26, repeated=True)
-  serviceLabel = _messages.StringField(27)
-  serviceName = _messages.StringField(28)
-  subnetwork = _messages.StringField(29)
-  target = _messages.StringField(30)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 23)
+  region = _messages.StringField(24)
+  selfLink = _messages.StringField(25)
+  selfLinkWithId = _messages.StringField(26)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 27, repeated=True)
+  serviceLabel = _messages.StringField(28)
+  serviceName = _messages.StringField(29)
+  subnetwork = _messages.StringField(30)
+  target = _messages.StringField(31)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -38792,8 +38798,8 @@ class InterconnectAttachment(_messages.Message):
       the encryption option as IPSEC. The addresses must be RFC 1918 IP
       address ranges. When creating HA VPN gateway over the interconnect
       attachment, if the attachment is configured to use an RFC 1918 IP
-      address, then the VPN gateway?s IP address will be allocated from the IP
-      address range specified here. For example, if the HA VPN gateway?s
+      address, then the VPN gateway's IP address will be allocated from the IP
+      address range specified here. For example, if the HA VPN gateway's
       interface 0 is paired to this interconnect attachment, then an RFC 1918
       IP address for the VPN gateway interface 0 will be allocated from the IP
       address specified for this interconnect attachment. If this field is not
@@ -40871,19 +40877,19 @@ class LocationPolicy(_messages.Message):
   Messages:
     LocationsValue: Location configurations mapped by location name. Currently
       only zone names are supported and must be represented as valid internal
-      URLs, like: zones/us-central1-a.
+      URLs, such as zones/us-central1-a.
 
   Fields:
     locations: Location configurations mapped by location name. Currently only
       zone names are supported and must be represented as valid internal URLs,
-      like: zones/us-central1-a.
+      such as zones/us-central1-a.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LocationsValue(_messages.Message):
     r"""Location configurations mapped by location name. Currently only zone
-    names are supported and must be represented as valid internal URLs, like:
-    zones/us-central1-a.
+    names are supported and must be represented as valid internal URLs, such
+    as zones/us-central1-a.
 
     Messages:
       AdditionalProperty: An additional property for a LocationsValue object.
@@ -40912,14 +40918,15 @@ class LocationPolicyLocation(_messages.Message):
   r"""A LocationPolicyLocation object.
 
   Enums:
-    PreferenceValueValuesEnum:
+    PreferenceValueValuesEnum: Preference for a given locaction: ALLOW or
+      DENY.
 
   Fields:
-    preference: A PreferenceValueValuesEnum attribute.
+    preference: Preference for a given locaction: ALLOW or DENY.
   """
 
   class PreferenceValueValuesEnum(_messages.Enum):
-    r"""PreferenceValueValuesEnum enum type.
+    r"""Preference for a given locaction: ALLOW or DENY.
 
     Values:
       ALLOW: <no description>
@@ -41768,6 +41775,9 @@ class ManagedInstance(_messages.Message):
       created the instance and it is in the process of being verified.
     InstanceStatusValueValuesEnum: [Output Only] The status of the instance.
       This field is empty when the instance does not exist.
+    TargetStatusValueValuesEnum: [Output Only] The eventual status of the
+      instance. The instance group manager will not be identified as stable
+      till each managed instance reaches its targetStatus.
 
   Fields:
     currentAction: [Output Only] The current action that the managed instance
@@ -41808,6 +41818,9 @@ class ManagedInstance(_messages.Message):
     preservedStateFromPolicy: [Output Only] Preserved state generated based on
       stateful policy for this instance.
     tag: [Output Only] Tag describing the version.
+    targetStatus: [Output Only] The eventual status of the instance. The
+      instance group manager will not be identified as stable till each
+      managed instance reaches its targetStatus.
     version: [Output Only] Intended version of this instance.
   """
 
@@ -41888,6 +41901,24 @@ class ManagedInstance(_messages.Message):
     SUSPENDING = 8
     TERMINATED = 9
 
+  class TargetStatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The eventual status of the instance. The instance group
+    manager will not be identified as stable till each managed instance
+    reaches its targetStatus.
+
+    Values:
+      ABANDONED: <no description>
+      DELETED: <no description>
+      RUNNING: <no description>
+      STOPPED: <no description>
+      SUSPENDED: <no description>
+    """
+    ABANDONED = 0
+    DELETED = 1
+    RUNNING = 2
+    STOPPED = 3
+    SUSPENDED = 4
+
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   instance = _messages.StringField(3)
@@ -41898,7 +41929,8 @@ class ManagedInstance(_messages.Message):
   preservedStateFromConfig = _messages.MessageField('PreservedState', 8)
   preservedStateFromPolicy = _messages.MessageField('PreservedState', 9)
   tag = _messages.StringField(10)
-  version = _messages.MessageField('ManagedInstanceVersion', 11)
+  targetStatus = _messages.EnumField('TargetStatusValueValuesEnum', 11)
+  version = _messages.MessageField('ManagedInstanceVersion', 12)
 
 
 class ManagedInstanceInstanceHealth(_messages.Message):
@@ -42378,7 +42410,7 @@ class NetworkEndpointGroup(_messages.Message):
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
     serverlessDeployment: Only valid when networkEndpointType is "SERVERLESS".
-      Only one of cloudRun, appEngine cloudFunction or serverlessDeployment
+      Only one of cloudRun, appEngine, cloudFunction or serverlessDeployment
       may be set.
     size: [Output only] Number of network endpoints in the network endpoint
       group.
@@ -42860,31 +42892,31 @@ class NetworkEndpointGroupList(_messages.Message):
 
 
 class NetworkEndpointGroupServerlessDeployment(_messages.Message):
-  r"""Configuration for a Serverless Deployment network endpoint group (NEG).
-  The platform must be provided.  Note: The target backend service must be in
-  the same project and located in the same region as the Serverless NEG.
+  r"""Configuration for a serverless network endpoint group (NEG). The
+  platform must be provided.  Note: The target backend service must be in the
+  same project and located in the same region as the Serverless NEG.
 
   Fields:
     platform: The platform of the backend target(s) of this NEG. Possible
-      values include:    - apigateway.googleapis.com  -
-      appengine.googleapies.com  - cloudfunctions.googleapis.com  -
-      run.googleapis.com
+      values include:    - API Gateway: apigateway.googleapis.com  - App
+      Engine: appengine.googleapis.com  - Cloud Functions:
+      cloudfunctions.googleapis.com  - Cloud Run: run.googleapis.com
     resource: The user-defined name of the workload/instance. This value must
       be provided explicitly or in the urlMask. The resource identified by
       this value is platform-specific and is as follows:    - API Gateway: The
-      gateway id  - AppEngine: The service name  - Cloud Functions: The
+      gateway ID  - App Engine: The service name  - Cloud Functions: The
       function name  - Cloud Run: The service name
     urlMask: A template to parse platform-specific fields from a request URL.
-      URL mask allows for routing to multiple services on the same serverless
+      URL mask allows for routing to multiple resources on the same serverless
       platform without having to create multiple Network Endpoint Groups and
-      backend services. The fields parsed by this template is platform-
-      specific and are as follows:    - API Gateway: The gateway id  -
-      AppEngine: The service and version  - Cloud Functions: The function  -
+      backend resources. The fields parsed by this template are platform-
+      specific and are as follows:    - API Gateway: The gateway ID  - App
+      Engine: The service and version  - Cloud Functions: The function name  -
       Cloud Run: The service and tag
     version: The optional resource version. The version identified by this
-      value is as platform-specific and is follows:    - API Gateway: Unused
-      - AppEngine: The service version  - Cloud Functions: Unused  - Cloud
-      Run: The service tag
+      value is platform-specific and is follows:    - API Gateway: Unused  -
+      App Engine: The service version  - Cloud Functions: Unused  - Cloud Run:
+      The service tag
   """
 
   platform = _messages.StringField(1)
@@ -46083,8 +46115,6 @@ class Operation(_messages.Message):
       value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always `compute#operation` for
       Operation resources.
-    metadata: [Output Only] Service-specific metadata attached to this
-      operation.
     name: [Output Only] Name of the operation.
     operationGroupId: [Output Only] An ID that represents a group of
       operations, such as when a group of operations results from a
@@ -46271,22 +46301,21 @@ class Operation(_messages.Message):
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(9)
   kind = _messages.StringField(10, default='compute#operation')
-  metadata = _messages.MessageField('Any', 11)
-  name = _messages.StringField(12)
-  operationGroupId = _messages.StringField(13)
-  operationType = _messages.StringField(14)
-  progress = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  selfLinkWithId = _messages.StringField(18)
-  startTime = _messages.StringField(19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  statusMessage = _messages.StringField(21)
-  targetId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(23)
-  user = _messages.StringField(24)
-  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
-  zone = _messages.StringField(26)
+  name = _messages.StringField(11)
+  operationGroupId = _messages.StringField(12)
+  operationType = _messages.StringField(13)
+  progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  startTime = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  targetId = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(22)
+  user = _messages.StringField(23)
+  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
+  zone = _messages.StringField(25)
 
 
 class OperationAggregatedList(_messages.Message):
@@ -49012,6 +49041,7 @@ class Quota(_messages.Message):
       COMMITTED_LICENSES: <no description>
       COMMITTED_LOCAL_SSD_TOTAL_GB: <no description>
       COMMITTED_MEMORY_OPTIMIZED_CPUS: <no description>
+      COMMITTED_N2A_CPUS: <no description>
       COMMITTED_N2D_CPUS: <no description>
       COMMITTED_N2_CPUS: <no description>
       COMMITTED_NVIDIA_A100_GPUS: <no description>
@@ -49060,6 +49090,7 @@ class Quota(_messages.Message):
       M1_CPUS: <no description>
       M2_CPUS: <no description>
       MACHINE_IMAGES: <no description>
+      N2A_CPUS: <no description>
       N2D_CPUS: <no description>
       N2_CPUS: <no description>
       NETWORKS: <no description>
@@ -49140,112 +49171,114 @@ class Quota(_messages.Message):
     COMMITTED_LICENSES = 15
     COMMITTED_LOCAL_SSD_TOTAL_GB = 16
     COMMITTED_MEMORY_OPTIMIZED_CPUS = 17
-    COMMITTED_N2D_CPUS = 18
-    COMMITTED_N2_CPUS = 19
-    COMMITTED_NVIDIA_A100_GPUS = 20
-    COMMITTED_NVIDIA_K80_GPUS = 21
-    COMMITTED_NVIDIA_P100_GPUS = 22
-    COMMITTED_NVIDIA_P4_GPUS = 23
-    COMMITTED_NVIDIA_T4_GPUS = 24
-    COMMITTED_NVIDIA_V100_GPUS = 25
-    CPUS = 26
-    CPUS_ALL_REGIONS = 27
-    DISKS_TOTAL_GB = 28
-    E2_CPUS = 29
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 30
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 31
-    EXTERNAL_VPN_GATEWAYS = 32
-    FIREWALLS = 33
-    FORWARDING_RULES = 34
-    GLOBAL_INTERNAL_ADDRESSES = 35
-    GPUS_ALL_REGIONS = 36
-    HEALTH_CHECKS = 37
-    IMAGES = 38
-    INSTANCES = 39
-    INSTANCES_PER_NETWORK_GLOBAL = 40
-    INSTANCE_GROUPS = 41
-    INSTANCE_GROUP_MANAGERS = 42
-    INSTANCE_TEMPLATES = 43
-    INTERCONNECTS = 44
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 45
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 46
-    INTERCONNECT_TOTAL_GBPS = 47
-    INTERNAL_ADDRESSES = 48
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 49
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 50
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 51
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 52
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 53
-    IN_PLACE_SNAPSHOTS = 54
-    IN_USE_ADDRESSES = 55
-    IN_USE_BACKUP_SCHEDULES = 56
-    IN_USE_MAINTENANCE_WINDOWS = 57
-    IN_USE_SNAPSHOT_SCHEDULES = 58
-    LOCAL_SSD_TOTAL_GB = 59
-    M1_CPUS = 60
-    M2_CPUS = 61
-    MACHINE_IMAGES = 62
-    N2D_CPUS = 63
-    N2_CPUS = 64
-    NETWORKS = 65
-    NETWORK_ENDPOINT_GROUPS = 66
-    NETWORK_FIREWALL_POLICIES = 67
-    NODE_GROUPS = 68
-    NODE_TEMPLATES = 69
-    NVIDIA_A100_GPUS = 70
-    NVIDIA_K80_GPUS = 71
-    NVIDIA_P100_GPUS = 72
-    NVIDIA_P100_VWS_GPUS = 73
-    NVIDIA_P4_GPUS = 74
-    NVIDIA_P4_VWS_GPUS = 75
-    NVIDIA_T4_GPUS = 76
-    NVIDIA_T4_VWS_GPUS = 77
-    NVIDIA_V100_GPUS = 78
-    PACKET_MIRRORINGS = 79
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 80
-    PREEMPTIBLE_CPUS = 81
-    PREEMPTIBLE_LOCAL_SSD_GB = 82
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 83
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 84
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 85
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 86
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 87
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 88
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 89
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 90
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 91
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 92
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 93
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 94
-    PUBLIC_ADVERTISED_PREFIXES = 95
-    PUBLIC_DELEGATED_PREFIXES = 96
-    REGIONAL_AUTOSCALERS = 97
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 98
-    RESERVATIONS = 99
-    RESOURCE_POLICIES = 100
-    ROUTERS = 101
-    ROUTES = 102
-    SECURITY_POLICIES = 103
-    SECURITY_POLICY_CEVAL_RULES = 104
-    SECURITY_POLICY_RULES = 105
-    SNAPSHOTS = 106
-    SSD_TOTAL_GB = 107
-    SSL_CERTIFICATES = 108
-    STATIC_ADDRESSES = 109
-    STATIC_BYOIP_ADDRESSES = 110
-    SUBNETWORKS = 111
-    SUBNET_RANGES_PER_NETWORK = 112
-    TARGET_HTTPS_PROXIES = 113
-    TARGET_HTTP_PROXIES = 114
-    TARGET_INSTANCES = 115
-    TARGET_POOLS = 116
-    TARGET_SSL_PROXIES = 117
-    TARGET_TCP_PROXIES = 118
-    TARGET_VPN_GATEWAYS = 119
-    URL_MAPS = 120
-    VPN_GATEWAYS = 121
-    VPN_TUNNELS = 122
-    XPN_SERVICE_PROJECTS = 123
+    COMMITTED_N2A_CPUS = 18
+    COMMITTED_N2D_CPUS = 19
+    COMMITTED_N2_CPUS = 20
+    COMMITTED_NVIDIA_A100_GPUS = 21
+    COMMITTED_NVIDIA_K80_GPUS = 22
+    COMMITTED_NVIDIA_P100_GPUS = 23
+    COMMITTED_NVIDIA_P4_GPUS = 24
+    COMMITTED_NVIDIA_T4_GPUS = 25
+    COMMITTED_NVIDIA_V100_GPUS = 26
+    CPUS = 27
+    CPUS_ALL_REGIONS = 28
+    DISKS_TOTAL_GB = 29
+    E2_CPUS = 30
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 31
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 32
+    EXTERNAL_VPN_GATEWAYS = 33
+    FIREWALLS = 34
+    FORWARDING_RULES = 35
+    GLOBAL_INTERNAL_ADDRESSES = 36
+    GPUS_ALL_REGIONS = 37
+    HEALTH_CHECKS = 38
+    IMAGES = 39
+    INSTANCES = 40
+    INSTANCES_PER_NETWORK_GLOBAL = 41
+    INSTANCE_GROUPS = 42
+    INSTANCE_GROUP_MANAGERS = 43
+    INSTANCE_TEMPLATES = 44
+    INTERCONNECTS = 45
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 46
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 47
+    INTERCONNECT_TOTAL_GBPS = 48
+    INTERNAL_ADDRESSES = 49
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 50
+    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 51
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 52
+    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 53
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 54
+    IN_PLACE_SNAPSHOTS = 55
+    IN_USE_ADDRESSES = 56
+    IN_USE_BACKUP_SCHEDULES = 57
+    IN_USE_MAINTENANCE_WINDOWS = 58
+    IN_USE_SNAPSHOT_SCHEDULES = 59
+    LOCAL_SSD_TOTAL_GB = 60
+    M1_CPUS = 61
+    M2_CPUS = 62
+    MACHINE_IMAGES = 63
+    N2A_CPUS = 64
+    N2D_CPUS = 65
+    N2_CPUS = 66
+    NETWORKS = 67
+    NETWORK_ENDPOINT_GROUPS = 68
+    NETWORK_FIREWALL_POLICIES = 69
+    NODE_GROUPS = 70
+    NODE_TEMPLATES = 71
+    NVIDIA_A100_GPUS = 72
+    NVIDIA_K80_GPUS = 73
+    NVIDIA_P100_GPUS = 74
+    NVIDIA_P100_VWS_GPUS = 75
+    NVIDIA_P4_GPUS = 76
+    NVIDIA_P4_VWS_GPUS = 77
+    NVIDIA_T4_GPUS = 78
+    NVIDIA_T4_VWS_GPUS = 79
+    NVIDIA_V100_GPUS = 80
+    PACKET_MIRRORINGS = 81
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 82
+    PREEMPTIBLE_CPUS = 83
+    PREEMPTIBLE_LOCAL_SSD_GB = 84
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 85
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 86
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 87
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 88
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 89
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 90
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 91
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 92
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 93
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 94
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 95
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 96
+    PUBLIC_ADVERTISED_PREFIXES = 97
+    PUBLIC_DELEGATED_PREFIXES = 98
+    REGIONAL_AUTOSCALERS = 99
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 100
+    RESERVATIONS = 101
+    RESOURCE_POLICIES = 102
+    ROUTERS = 103
+    ROUTES = 104
+    SECURITY_POLICIES = 105
+    SECURITY_POLICY_CEVAL_RULES = 106
+    SECURITY_POLICY_RULES = 107
+    SNAPSHOTS = 108
+    SSD_TOTAL_GB = 109
+    SSL_CERTIFICATES = 110
+    STATIC_ADDRESSES = 111
+    STATIC_BYOIP_ADDRESSES = 112
+    SUBNETWORKS = 113
+    SUBNET_RANGES_PER_NETWORK = 114
+    TARGET_HTTPS_PROXIES = 115
+    TARGET_HTTP_PROXIES = 116
+    TARGET_INSTANCES = 117
+    TARGET_POOLS = 118
+    TARGET_SSL_PROXIES = 119
+    TARGET_TCP_PROXIES = 120
+    TARGET_VPN_GATEWAYS = 121
+    URL_MAPS = 122
+    VPN_GATEWAYS = 123
+    VPN_TUNNELS = 124
+    XPN_SERVICE_PROJECTS = 125
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -52331,6 +52364,11 @@ class Route(_messages.Message):
   or outside the VPC network. For more information, read the Routes overview.
   (== resource_for {$api_version}.routes ==)
 
+  Enums:
+    IlbRouteBehaviorOnUnhealthyValueValuesEnum: ILB route behavior when ILB is
+      deemed unhealthy based on user specified threshold on the Backend
+      Service of the internal load balancing.
+
   Messages:
     WarningsValueListEntry: A WarningsValueListEntry object.
 
@@ -52347,6 +52385,9 @@ class Route(_messages.Message):
       applies to. Both IPv4 and IPv6 are supported.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    ilbRouteBehaviorOnUnhealthy: ILB route behavior when ILB is deemed
+      unhealthy based on user specified threshold on the Backend Service of
+      the internal load balancing.
     kind: [Output Only] Type of this resource. Always compute#routes for Route
       resources.
     name: Name of the resource. Provided by the client when the resource is
@@ -52395,6 +52436,17 @@ class Route(_messages.Message):
     warnings: [Output Only] If potential misconfigurations are detected for
       this route, this field will be populated with warning messages.
   """
+
+  class IlbRouteBehaviorOnUnhealthyValueValuesEnum(_messages.Enum):
+    r"""ILB route behavior when ILB is deemed unhealthy based on user
+    specified threshold on the Backend Service of the internal load balancing.
+
+    Values:
+      DO_NOT_WITHDRAW_ROUTE_IF_ILB_UNHEALTHY: <no description>
+      WITHDRAW_ROUTE_IF_ILB_UNHEALTHY: <no description>
+    """
+    DO_NOT_WITHDRAW_ROUTE_IF_ILB_UNHEALTHY = 0
+    WITHDRAW_ROUTE_IF_ILB_UNHEALTHY = 1
 
   class WarningsValueListEntry(_messages.Message):
     r"""A WarningsValueListEntry object.
@@ -52501,22 +52553,23 @@ class Route(_messages.Message):
   description = _messages.StringField(3)
   destRange = _messages.StringField(4)
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='compute#route')
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  nextHopGateway = _messages.StringField(9)
-  nextHopIlb = _messages.StringField(10)
-  nextHopInstance = _messages.StringField(11)
-  nextHopInterconnectAttachment = _messages.StringField(12)
-  nextHopIp = _messages.StringField(13)
-  nextHopNetwork = _messages.StringField(14)
-  nextHopPeering = _messages.StringField(15)
-  nextHopVpnTunnel = _messages.StringField(16)
-  priority = _messages.IntegerField(17, variant=_messages.Variant.UINT32)
-  selfLink = _messages.StringField(18)
-  selfLinkWithId = _messages.StringField(19)
-  tags = _messages.StringField(20, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 21, repeated=True)
+  ilbRouteBehaviorOnUnhealthy = _messages.EnumField('IlbRouteBehaviorOnUnhealthyValueValuesEnum', 6)
+  kind = _messages.StringField(7, default='compute#route')
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  nextHopGateway = _messages.StringField(10)
+  nextHopIlb = _messages.StringField(11)
+  nextHopInstance = _messages.StringField(12)
+  nextHopInterconnectAttachment = _messages.StringField(13)
+  nextHopIp = _messages.StringField(14)
+  nextHopNetwork = _messages.StringField(15)
+  nextHopPeering = _messages.StringField(16)
+  nextHopVpnTunnel = _messages.StringField(17)
+  priority = _messages.IntegerField(18, variant=_messages.Variant.UINT32)
+  selfLink = _messages.StringField(19)
+  selfLinkWithId = _messages.StringField(20)
+  tags = _messages.StringField(21, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 22, repeated=True)
 
 
 class RouteList(_messages.Message):
@@ -53599,7 +53652,7 @@ class RouterNatRule(_messages.Message):
     description: An optional description of this rule.
     match: CEL expression that specifies the match condition that egress
       traffic from a VM is evaluated against. If it evaluates to true, the
-      corresponding ?action? is enforced.  The following examples are valid
+      corresponding `action` is enforced.  The following examples are valid
       match expressions:  "inIpRange(destination.ip, '1.1.0.0/16') ||
       inIpRange(destination.ip, '2.2.0.0/16')"  "destination.ip == '1.1.0.1'
       || destination.ip == '8.8.8.8'"
@@ -54805,7 +54858,7 @@ class SecurityPolicyRuleHttpHeaderAction(_messages.Message):
 
   Fields:
     requestHeadersToAdds: The list of request headers to add or overwrite if
-      they?re already present.
+      they're already present.
   """
 
   requestHeadersToAdds = _messages.MessageField('SecurityPolicyRuleHttpHeaderActionHttpHeaderOption', 1, repeated=True)
@@ -55143,7 +55196,7 @@ class ServiceAttachment(_messages.Message):
   represents a service that a producer has exposed. It encapsulates the load
   balancer which fronts the service runs and a list of NAT IP ranges that the
   producers uses to represent the consumers connecting to the service. next
-  tag = 18
+  tag = 19
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service
@@ -55152,6 +55205,8 @@ class ServiceAttachment(_messages.Message):
       connection from consumer forwarding rules.
 
   Fields:
+    connectedEndpoints: [Output Only] An array of connections for all the
+      consumers connected to this service attachment.
     connectionPreference: The connection preference of service attachment. The
       value can be set to ACCEPT_AUTOMATIC. An ACCEPT_AUTOMATIC service
       attachment is one that always accepts the connection from consumer
@@ -55193,11 +55248,15 @@ class ServiceAttachment(_messages.Message):
     producerForwardingRule: The URL of a forwarding rule with
       loadBalancingScheme INTERNAL* that is serving the endpoint identified by
       this service attachment.
+    pscServiceAttachmentId: [Output Only] An 128-bit global unique ID of the
+      PSC service attachment.
     region: [Output Only] URL of the region where the service attachment
       resides. This field applies only to the region resource. You must
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
+    targetService: The URL of a service serving the endpoint identified by
+      this service attachment.
   """
 
   class ConnectionPreferenceValueValuesEnum(_messages.Enum):
@@ -55214,21 +55273,24 @@ class ServiceAttachment(_messages.Message):
     ACCEPT_MANUAL = 1
     CONNECTION_PREFERENCE_UNSPECIFIED = 2
 
-  connectionPreference = _messages.EnumField('ConnectionPreferenceValueValuesEnum', 1)
-  consumerAcceptLists = _messages.MessageField('ServiceAttachmentConsumerProjectLimit', 2, repeated=True)
-  consumerForwardingRules = _messages.MessageField('ServiceAttachmentConsumerForwardingRule', 3, repeated=True)
-  consumerRejectLists = _messages.StringField(4, repeated=True)
-  creationTimestamp = _messages.StringField(5)
-  description = _messages.StringField(6)
-  enableProxyProtocol = _messages.BooleanField(7)
-  fingerprint = _messages.BytesField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default='compute#serviceAttachment')
-  name = _messages.StringField(11)
-  natSubnets = _messages.StringField(12, repeated=True)
-  producerForwardingRule = _messages.StringField(13)
-  region = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
+  connectedEndpoints = _messages.MessageField('ServiceAttachmentConnectedEndpoint', 1, repeated=True)
+  connectionPreference = _messages.EnumField('ConnectionPreferenceValueValuesEnum', 2)
+  consumerAcceptLists = _messages.MessageField('ServiceAttachmentConsumerProjectLimit', 3, repeated=True)
+  consumerForwardingRules = _messages.MessageField('ServiceAttachmentConsumerForwardingRule', 4, repeated=True)
+  consumerRejectLists = _messages.StringField(5, repeated=True)
+  creationTimestamp = _messages.StringField(6)
+  description = _messages.StringField(7)
+  enableProxyProtocol = _messages.BooleanField(8)
+  fingerprint = _messages.BytesField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default='compute#serviceAttachment')
+  name = _messages.StringField(12)
+  natSubnets = _messages.StringField(13, repeated=True)
+  producerForwardingRule = _messages.StringField(14)
+  pscServiceAttachmentId = _messages.MessageField('Uint128', 15)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  targetService = _messages.StringField(18)
 
 
 class ServiceAttachmentAggregatedList(_messages.Message):
@@ -55387,15 +55449,53 @@ class ServiceAttachmentAggregatedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 7)
 
 
+class ServiceAttachmentConnectedEndpoint(_messages.Message):
+  r"""[Output Only] A connection connected to this service attachment.
+
+  Enums:
+    StatusValueValuesEnum: The status of a connected endpoint to this service
+      attachment.
+
+  Fields:
+    endpoint: The url of a connected endpoint.
+    forwardingRule: The url of a consumer forwarding rule. [Deprecated] Do not
+      use.
+    pscConnectionId: The PSC connection id of the connected endpoint.
+    status: The status of a connected endpoint to this service attachment.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""The status of a connected endpoint to this service attachment.
+
+    Values:
+      ACCEPTED: <no description>
+      CLOSED: <no description>
+      PENDING: <no description>
+      REJECTED: <no description>
+      STATUS_UNSPECIFIED: <no description>
+    """
+    ACCEPTED = 0
+    CLOSED = 1
+    PENDING = 2
+    REJECTED = 3
+    STATUS_UNSPECIFIED = 4
+
+  endpoint = _messages.StringField(1)
+  forwardingRule = _messages.StringField(2)
+  pscConnectionId = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
+
+
 class ServiceAttachmentConsumerForwardingRule(_messages.Message):
   r"""[Output Only] A consumer forwarding rule connected to this service
-  attachment.
+  attachment. [Deprecated] Do not use.
 
   Enums:
     StatusValueValuesEnum: The status of the forwarding rule.
 
   Fields:
     forwardingRule: The url of a consumer forwarding rule.
+    pscConnectionId: The PSC connection id of the PSC Forwarding Rule.
     status: The status of the forwarding rule.
   """
 
@@ -55404,17 +55504,20 @@ class ServiceAttachmentConsumerForwardingRule(_messages.Message):
 
     Values:
       ACCEPTED: <no description>
+      CLOSED: <no description>
       PENDING: <no description>
       REJECTED: <no description>
       STATUS_UNSPECIFIED: <no description>
     """
     ACCEPTED = 0
-    PENDING = 1
-    REJECTED = 2
-    STATUS_UNSPECIFIED = 3
+    CLOSED = 1
+    PENDING = 2
+    REJECTED = 3
+    STATUS_UNSPECIFIED = 4
 
   forwardingRule = _messages.StringField(1)
-  status = _messages.EnumField('StatusValueValuesEnum', 2)
+  pscConnectionId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
 
 
 class ServiceAttachmentConsumerProjectLimit(_messages.Message):
@@ -57501,9 +57604,7 @@ class Subnetwork(_messages.Message):
       to use DRAINING: only applicable to subnetworks that have the purpose
       set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to
       the load balancer are being drained. A subnetwork that is draining
-      cannot be used or modified until it reaches a status of READY CREATING:
-      Subnetwork is provisioning DELETING: Subnetwork is being deleted
-      UPDATING: Subnetwork is being updated
+      cannot be used or modified until it reaches a status of READY
 
   Fields:
     aggregationInterval: Can only be specified if VPC flow logging for this
@@ -57634,9 +57735,7 @@ class Subnetwork(_messages.Message):
       DRAINING: only applicable to subnetworks that have the purpose set to
       INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load
       balancer are being drained. A subnetwork that is draining cannot be used
-      or modified until it reaches a status of READY CREATING: Subnetwork is
-      provisioning DELETING: Subnetwork is being deleted UPDATING: Subnetwork
-      is being updated
+      or modified until it reaches a status of READY
     vlans: A repeated field indicating the VLAN IDs supported on this
       subnetwork. During Subnet creation, specifying vlan is valid only if
       enable_l2 is true. During Subnet Update, specifying vlan is allowed only
@@ -57771,9 +57870,7 @@ class Subnetwork(_messages.Message):
     only applicable to subnetworks that have the purpose set to
     INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load
     balancer are being drained. A subnetwork that is draining cannot be used
-    or modified until it reaches a status of READY CREATING: Subnetwork is
-    provisioning DELETING: Subnetwork is being deleted UPDATING: Subnetwork is
-    being updated
+    or modified until it reaches a status of READY
 
     Values:
       DRAINING: <no description>
@@ -58346,8 +58443,9 @@ class SubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
 
 
 class Subsetting(_messages.Message):
-  r"""Subsetting options to make L4 ILB support any number of backend
-  instances
+  r"""Subsetting configuration for this BackendService. Currently this is
+  applicable only for Internal TCP/UDP load balancing and Internal HTTP(S)
+  load balancing.
 
   Enums:
     PolicyValueValuesEnum:
@@ -61990,6 +62088,18 @@ class UDPHealthCheck(_messages.Message):
   portName = _messages.StringField(2)
   request = _messages.StringField(3)
   response = _messages.StringField(4)
+
+
+class Uint128(_messages.Message):
+  r"""A Uint128 object.
+
+  Fields:
+    high: A string attribute.
+    low: A string attribute.
+  """
+
+  high = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
+  low = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
 
 
 class UpcomingMaintenance(_messages.Message):

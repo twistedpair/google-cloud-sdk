@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -491,7 +491,7 @@
           "$ref": "SecurityMarks"
         },
         "eventTime": {
-          "description": "The time at which the event took place, or when an update to the finding occurred. For example, if the finding represents an open firewall it would capture the time the detector believes the firewall became open. The accuracy is determined by the detector. If the finding were to be resolved afterward, this time would reflect when the finding was resolved.",
+          "description": "The time at which the event took place, or when an update to the finding occurred. For example, if the finding represents an open firewall it would capture the time the detector believes the firewall became open. The accuracy is determined by the detector. If the finding were to be resolved afterward, this time would reflect when the finding was resolved. Must not be set to a value greater than the current timestamp.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -517,6 +517,10 @@
             "MEDIUM",
             "LOW"
           ]
+        },
+        "canonicalName": {
+          "description": "The canonical name of the finding. It's either \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\", \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\" or \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\", depending on the closest CRM ancestor of the resource associated with the finding.",
+          "type": "string"
         }
       }
     },
@@ -535,6 +539,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "canonicalName": {
+          "description": "The canonical name of the marks. Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"folders\/{folder_id}\/assets\/{asset_id}\/securityMarks\" \"projects\/{project_number}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\"",
+          "type": "string"
         }
       }
     },
@@ -687,7 +695,7 @@
           "$ref": "GoogleCloudSecuritycenterV1p1beta1SecurityMarks"
         },
         "eventTime": {
-          "description": "The time at which the event took place, or when an update to the finding occurred. For example, if the finding represents an open firewall it would capture the time the detector believes the firewall became open. The accuracy is determined by the detector. If the finding were to be resolved afterward, this time would reflect when the finding was resolved.",
+          "description": "The time at which the event took place, or when an update to the finding occurred. For example, if the finding represents an open firewall it would capture the time the detector believes the firewall became open. The accuracy is determined by the detector. If the finding were to be resolved afterward, this time would reflect when the finding was resolved. Must not be set to a value greater than the current timestamp.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -713,6 +721,10 @@
             "MEDIUM",
             "LOW"
           ]
+        },
+        "canonicalName": {
+          "description": "The canonical name of the finding. It's either \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\", \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\" or \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\", depending on the closest CRM ancestor of the resource associated with the finding.",
+          "type": "string"
         }
       }
     },
@@ -731,6 +743,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "canonicalName": {
+          "description": "The canonical name of the marks. Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"folders\/{folder_id}\/assets\/{asset_id}\/securityMarks\" \"projects\/{project_number}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\"",
+          "type": "string"
         }
       }
     },

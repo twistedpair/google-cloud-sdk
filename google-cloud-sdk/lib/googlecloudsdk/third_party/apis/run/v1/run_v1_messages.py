@@ -340,7 +340,10 @@ class Container(_messages.Message):
       will be restarted if the probe fails. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
-    name: (Optional) Name of the container specified as a DNS_LABEL.
+    name: (Optional) Name of the container specified as a DNS_LABEL. Currently
+      unused in Cloud Run. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/names/#dns-label-names
     ports: (Optional) List of ports to expose from the container. Only a
       single port can be specified. The specified ports must be listening on
       all interfaces (0.0.0.0) within the container to be accessible. If
@@ -360,6 +363,13 @@ class Container(_messages.Message):
       info: https://kubernetes.io/docs/concepts/policy/security-context/ More
       info: https://kubernetes.io/docs/tasks/configure-pod-container/security-
       context/
+    startupProbe: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: not supported Startup probe of application within the
+      container. All other probes are disabled if a startup probe is provided,
+      until it succeeds. Container will not be added to service endpoints if
+      the probe fails. More info:
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle#container-probes
     terminationMessagePath: (Optional) Cloud Run fully managed: not supported
       Cloud Run for Anthos: supported Path at which the file to which the
       container's termination message will be written is mounted into the
@@ -375,9 +385,10 @@ class Container(_messages.Message):
       container log output if the termination message file is empty and the
       container exited with an error. The log output is limited to 2048 bytes
       or 80 lines, whichever is smaller. Defaults to File. Cannot be updated.
-    volumeMounts: (Optional) Cloud Run fully managed: not supported Cloud Run
-      for Anthos: supported Pod volumes to mount into the container's
-      filesystem.
+    volumeMounts: (Optional) Cloud Run fully managed: supported Volume to
+      mount into the container's filesystem. Only supports
+      SecretVolumeSources. Cloud Run for Anthos: supported Pod volumes to
+      mount into the container's filesystem.
     workingDir: (Optional) Cloud Run fully managed: not supported Cloud Run
       for Anthos: supported Container's working directory. If not specified,
       the container runtime's default will be used, which might be configured
@@ -396,10 +407,11 @@ class Container(_messages.Message):
   readinessProbe = _messages.MessageField('Probe', 10)
   resources = _messages.MessageField('ResourceRequirements', 11)
   securityContext = _messages.MessageField('SecurityContext', 12)
-  terminationMessagePath = _messages.StringField(13)
-  terminationMessagePolicy = _messages.StringField(14)
-  volumeMounts = _messages.MessageField('VolumeMount', 15, repeated=True)
-  workingDir = _messages.StringField(16)
+  startupProbe = _messages.MessageField('Probe', 13)
+  terminationMessagePath = _messages.StringField(14)
+  terminationMessagePolicy = _messages.StringField(15)
+  volumeMounts = _messages.MessageField('VolumeMount', 16, repeated=True)
+  workingDir = _messages.StringField(17)
 
 
 class ContainerPort(_messages.Message):
@@ -531,9 +543,10 @@ class EnvVar(_messages.Message):
       escaped with a double $$, ie: $$(VAR_NAME). Escaped references will
       never be expanded, regardless of whether the variable exists or not.
       Defaults to "".
-    valueFrom: (Optional) Cloud Run fully managed: not supported Cloud Run for
-      Anthos: supported Source for the environment variable's value. Cannot be
-      used if value is not empty.
+    valueFrom: (Optional) Cloud Run fully managed: supported Source for the
+      environment variable's value. Only supports secret_key_ref. Cloud Run
+      for Anthos: supported Source for the environment variable's value.
+      Cannot be used if value is not empty.
   """
 
   name = _messages.StringField(1)
@@ -548,8 +561,9 @@ class EnvVarSource(_messages.Message):
   Fields:
     configMapKeyRef: (Optional) Cloud Run fully managed: not supported Cloud
       Run for Anthos: supported Selects a key of a ConfigMap.
-    secretKeyRef: (Optional) Cloud Run fully managed: not supported Cloud Run
-      for Anthos: supported Selects a key of a secret in the pod's namespace
+    secretKeyRef: (Optional) Cloud Run fully managed: supported. Selects a key
+      (version) of a secret in Secret Manager. Cloud Run for Anthos:
+      supported. Selects a key of a secret in the pod's namespace.
   """
 
   configMapKeyRef = _messages.MessageField('ConfigMapKeySelector', 1)
@@ -676,21 +690,22 @@ class HTTPHeader(_messages.Message):
 
 
 class KeyToPath(_messages.Message):
-  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
-  Maps a string key to a path within a volume.
+  r"""Cloud Run fully managed: supported Cloud Run for Anthos: supported Maps
+  a string key to a path within a volume.
 
   Fields:
-    key: Cloud Run fully managed: not supported Cloud Run for Anthos:
-      supported The key to project.
+    key: Cloud Run fully managed: supported The Cloud Secret Manager secret
+      version. Can be 'latest' for the latest value or an integer for a
+      specific version. Cloud Run for Anthos: supported The key to project.
     mode: (Optional) Cloud Run fully managed: not supported Cloud Run for
       Anthos: supported Mode bits to use on this file, must be a value between
       0000 and 0777. If not specified, the volume defaultMode will be used.
       This might be in conflict with other options that affect the file mode,
       like fsGroup, and the result can be other mode bits set.
-    path: Cloud Run fully managed: not supported Cloud Run for Anthos:
-      supported The relative path of the file to map the key to. May not be an
-      absolute path. May not contain the path element '..'. May not start with
-      the string '..'.
+    path: Cloud Run fully managed: supported Cloud Run for Anthos: supported
+      The relative path of the file to map the key to. May not be an absolute
+      path. May not contain the path element '..'. May not start with the
+      string '..'.
   """
 
   key = _messages.StringField(1)
@@ -1089,16 +1104,16 @@ class ObjectMeta(_messages.Message):
       Run for Anthos: supported List of objects that own this object. If ALL
       objects in the list have been deleted, this object will be garbage
       collected.
-    resourceVersion: (Optional) An opaque value that represents the internal
+    resourceVersion: Optional. An opaque value that represents the internal
       version of this object that can be used by clients to determine when
       objects have changed. May be used for optimistic concurrency, change
       detection, and the watch operation on a resource or set of resources.
       Clients must treat these values as opaque and passed unmodified back to
-      the server. They may only be valid for a particular resource or set of
-      resources. Populated by the system. Read-only. Value must be treated as
-      opaque by clients. More info:
-      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
-      conventions.md#concurrency-control-and-consistency
+      the server or omit the value to disable conflict-detection. They may
+      only be valid for a particular resource or set of resources. Populated
+      by the system. Read-only. Value must be treated as opaque by clients or
+      omitted. More info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#concurrency-control-and-consistency
     selfLink: (Optional) SelfLink is a URL representing this object. Populated
       by the system. Read-only. string selfLink = 4;
     uid: (Optional) UID is the unique in time and space value for this object.
@@ -1195,7 +1210,7 @@ class OwnerReference(_messages.Message):
     controller: If true, this reference points to the managing controller.
       +optional
     kind: Kind of the referent. More info:
-      https://git.k8s.io/community/contributors/devel/api-
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
       conventions.md#types-kinds
     name: Name of the referent. More info: http://kubernetes.io/docs/user-
       guide/identifiers#names
@@ -1787,8 +1802,8 @@ class RunNamespacesDomainmappingsCreateRequest(_messages.Message):
 
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     parent: The namespace in which the domain mapping should be created. For
       Cloud Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -1804,8 +1819,8 @@ class RunNamespacesDomainmappingsDeleteRequest(_messages.Message):
 
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the domain mapping to delete. For Cloud Run (fully
       managed), replace {namespace_id} with the project ID or number.
@@ -1869,8 +1884,8 @@ class RunNamespacesRevisionsDeleteRequest(_messages.Message):
 
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the revision to delete. For Cloud Run (fully managed),
       replace {namespace_id} with the project ID or number.
@@ -1975,8 +1990,8 @@ class RunNamespacesServicesCreateRequest(_messages.Message):
   r"""A RunNamespacesServicesCreateRequest object.
 
   Fields:
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     parent: The namespace in which the service should be created. For Cloud
       Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -1993,8 +2008,8 @@ class RunNamespacesServicesDeleteRequest(_messages.Message):
 
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the service to delete. For Cloud Run (fully managed),
       replace {namespace_id} with the project ID or number.
@@ -2057,8 +2072,8 @@ class RunNamespacesServicesReplaceServiceRequest(_messages.Message):
   r"""A RunNamespacesServicesReplaceServiceRequest object.
 
   Fields:
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     name: The name of the service being replaced. For Cloud Run (fully
       managed), replace {namespace_id} with the project ID or number.
     service: A Service resource to be passed as the request body.
@@ -2146,8 +2161,8 @@ class RunProjectsLocationsDomainmappingsCreateRequest(_messages.Message):
 
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     parent: The namespace in which the domain mapping should be created. For
       Cloud Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -2163,8 +2178,8 @@ class RunProjectsLocationsDomainmappingsDeleteRequest(_messages.Message):
 
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the domain mapping to delete. For Cloud Run (fully
       managed), replace {namespace_id} with the project ID or number.
@@ -2275,8 +2290,8 @@ class RunProjectsLocationsRevisionsDeleteRequest(_messages.Message):
 
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the revision to delete. For Cloud Run (fully managed),
       replace {namespace_id} with the project ID or number.
@@ -2418,8 +2433,8 @@ class RunProjectsLocationsServicesCreateRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesCreateRequest object.
 
   Fields:
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     parent: The namespace in which the service should be created. For Cloud
       Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -2436,8 +2451,8 @@ class RunProjectsLocationsServicesDeleteRequest(_messages.Message):
 
   Fields:
     apiVersion: Cloud Run currently ignores this parameter.
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     kind: Cloud Run currently ignores this parameter.
     name: The name of the service to delete. For Cloud Run (fully managed),
       replace {namespace_id} with the project ID or number.
@@ -2521,8 +2536,8 @@ class RunProjectsLocationsServicesReplaceServiceRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesReplaceServiceRequest object.
 
   Fields:
-    dryRun: DryRun is a query string parameter which indicates that the server
-      should run validation without persisting the request.
+    dryRun: Indicates that the server should validate the request and populate
+      default values without persisting the request. Supported values: `all`
     name: The name of the service being replaced. For Cloud Run (fully
       managed), replace {namespace_id} with the project ID or number.
     service: A Service resource to be passed as the request body.
@@ -2684,14 +2699,21 @@ class SecretKeySelector(_messages.Message):
   SecretKeySelector selects a key of a Secret.
 
   Fields:
-    key: Cloud Run fully managed: not supported Cloud Run for Anthos:
-      supported The key of the secret to select from. Must be a valid secret
-      key.
+    key: Cloud Run fully managed: supported A Cloud Secret Manager secret
+      version. Must be 'latest' for the latest version or an integer for a
+      specific version. Cloud Run for Anthos: supported The key of the secret
+      to select from. Must be a valid secret key.
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.
-    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
-      supported The name of the secret in the pod's namespace to select from.
+    name: Cloud Run fully managed: supported The name of the secret in Cloud
+      Secret Manager. By default, the secret is assumed to be in the same
+      project. If the secret is in another project, you must define an alias.
+      An alias definition has the form: :projects//secrets/. If multiple alias
+      definitions are needed, they must be separated by commas. The alias
+      definitions must be set on the run.googleapis.com/secrets annotation.
+      Cloud Run for Anthos: supported The name of the secret in the pod's
+      namespace to select from.
     optional: (Optional) Cloud Run fully managed: not supported Cloud Run for
       Anthos: supported Specify whether the Secret or its key must be defined
   """
@@ -2703,9 +2725,11 @@ class SecretKeySelector(_messages.Message):
 
 
 class SecretVolumeSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
-  The contents of the target Secret's Data field will be presented in a volume
-  as files using the keys in the Data field as the file names.
+  r"""Cloud Run fully managed: supported The secret's value will be presented
+  as the content of a file whose name is defined in the item path. If no items
+  are defined, the name of the file is the secret_name. Cloud Run for Anthos:
+  supported The contents of the target Secret's Data field will be presented
+  in a volume as files using the keys in the Data field as the file names.
 
   Fields:
     defaultMode: (Optional) Cloud Run fully managed: not supported Cloud Run
@@ -2717,7 +2741,11 @@ class SecretVolumeSource(_messages.Message):
       representation of the mode bits. So, the integer value should look
       exactly as the chmod numeric notation, i.e. Unix chmod "777" (a=rwx)
       should have the integer value 777.
-    items: (Optional) Cloud Run fully managed: not supported Cloud Run for
+    items: (Optional) Cloud Run fully managed: supported If unspecified, the
+      volume will expose a file whose name is the secret_name. If specified,
+      the key will be used as the version to fetch from Cloud Secret Manager
+      and the path will be the name of the file exposed in the volume. When
+      items are defined, they must specify a key and a path. Cloud Run for
       Anthos: supported If unspecified, each key-value pair in the Data field
       of the referenced Secret will be projected into the volume as a file
       whose name is the key and content is the value. If specified, the listed
@@ -2727,8 +2755,14 @@ class SecretVolumeSource(_messages.Message):
     optional: (Optional) Cloud Run fully managed: not supported Cloud Run for
       Anthos: supported Specify whether the Secret or its keys must be
       defined.
-    secretName: Cloud Run fully managed: not supported Cloud Run for Anthos:
-      supported Name of the secret in the container's namespace to use.
+    secretName: Cloud Run fully managed: supported The name of the secret in
+      Cloud Secret Manager. By default, the secret is assumed to be in the
+      same project. If the secret is in another project, you must define an
+      alias. An alias definition has the form: :projects//secrets/. If
+      multiple alias definitions are needed, they must be separated by commas.
+      The alias definitions must be set on the run.googleapis.com/secrets
+      annotation. Cloud Run for Anthos: supported Name of the secret in the
+      container's namespace to use.
   """
 
   defaultMode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2773,7 +2807,18 @@ class Service(_messages.Message):
       "serving.knative.dev/v1".
     kind: The kind of resource, in this case "Service".
     metadata: Metadata associated with this Service, including name,
-      namespace, labels, and annotations.
+      namespace, labels, and annotations. Cloud Run (fully managed) uses the
+      following annotation keys to configure features on a Service: *
+      `run.googleapis.com/ingress` sets the ingress settings for the Service.
+      See [the ingress settings documentation](/run/docs/securing/ingress) for
+      details on configuring ingress settings. * `run.googleapis.com/ingress-
+      status` is output-only and contains the currently active ingress
+      settings for the Service. `run.googleapis.com/ingress-status` may differ
+      from `run.googleapis.com/ingress` while the system is processing a
+      change to `run.googleapis.com/ingress` or if the system failed to
+      process a change to `run.googleapis.com/ingress`. When the system has
+      processed all changes successfully `run.googleapis.com/ingress-status`
+      and `run.googleapis.com/ingress` are equal.
     spec: Spec holds the desired state of the Service (from the client).
     status: Status communicates the observed state of the Service (from the
       controller).
@@ -2934,15 +2979,15 @@ class Status(_messages.Message):
     message: A human-readable description of the status of this operation.
       +optional
     metadata: Standard list metadata. More info:
-      https://git.k8s.io/community/contributors/devel/api-
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
       conventions.md#types-kinds +optional
     reason: A machine-readable description of why this operation is in the
       "Failure" status. If this value is empty there is no information
       available. A Reason clarifies an HTTP status code but does not override
       it. +optional
     status: Status of the operation. One of: "Success" or "Failure". More
-      info: https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#spec-and-status +optional
+      info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#spec-and-status +optional
   """
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2991,8 +3036,8 @@ class StatusDetails(_messages.Message):
       StatusReason. +optional
     kind: The kind attribute of the resource associated with the status
       StatusReason. On some operations may differ from the requested resource
-      Kind. More info: https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#types-kinds +optional
+      Kind. More info: https://git.k8s.io/community/contributors/devel/sig-
+      architecture/api-conventions.md#types-kinds +optional
     name: The name attribute of the resource associated with the status
       StatusReason (when there is a single name which can be described).
       +optional
@@ -3101,10 +3146,9 @@ class Volume(_messages.Message):
   Fields:
     configMap: Cloud Run fully managed: not supported Cloud Run for Anthos:
       supported
-    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
-      supported Volume's name.
-    secret: Cloud Run fully managed: not supported Cloud Run for Anthos:
-      supported
+    name: Cloud Run fully managed: supported Cloud Run for Anthos: supported
+      Volume's name.
+    secret: Cloud Run fully managed: supported Cloud Run for Anthos: supported
   """
 
   configMap = _messages.MessageField('ConfigMapVolumeSource', 1)
@@ -3117,12 +3161,12 @@ class VolumeMount(_messages.Message):
   VolumeMount describes a mounting of a Volume within a container.
 
   Fields:
-    mountPath: Cloud Run fully managed: not supported Cloud Run for Anthos:
+    mountPath: Cloud Run fully managed: supported Cloud Run for Anthos:
       supported Path within the container at which the volume should be
       mounted. Must not contain ':'.
-    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
-      supported This must match the Name of a Volume.
-    readOnly: (Optional) Cloud Run fully managed: not supported Cloud Run for
+    name: Cloud Run fully managed: supported Cloud Run for Anthos: supported
+      This must match the Name of a Volume.
+    readOnly: (Optional) Cloud Run fully managed: supported Cloud Run for
       Anthos: supported Only true is accepted. Defaults to true.
     subPath: (Optional) Cloud Run fully managed: not supported Cloud Run for
       Anthos: supported Path within the volume from which the container's

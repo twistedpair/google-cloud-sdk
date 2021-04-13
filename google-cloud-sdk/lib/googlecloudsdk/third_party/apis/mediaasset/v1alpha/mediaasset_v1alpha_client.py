@@ -39,14 +39,80 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_assetTypes_assets_actions = self.ProjectsLocationsAssetTypesAssetsActionsService(self)
     self.projects_locations_assetTypes_assets_transformations = self.ProjectsLocationsAssetTypesAssetsTransformationsService(self)
     self.projects_locations_assetTypes_assets = self.ProjectsLocationsAssetTypesAssetsService(self)
+    self.projects_locations_assetTypes_rules = self.ProjectsLocationsAssetTypesRulesService(self)
     self.projects_locations_assetTypes = self.ProjectsLocationsAssetTypesService(self)
     self.projects_locations_complexTypes = self.ProjectsLocationsComplexTypesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_transformers = self.ProjectsLocationsTransformersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAssetTypesAssetsActionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_assetTypes_assets_actions resource."""
+
+    _NAME = 'projects_locations_assetTypes_assets_actions'
+
+    def __init__(self, client):
+      super(MediaassetV1alpha.ProjectsLocationsAssetTypesAssetsActionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single action.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesAssetsActionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Action) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/actions/{actionsId}',
+        http_method='GET',
+        method_id='mediaasset.projects.locations.assetTypes.assets.actions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsActionsGetRequest',
+        response_type_name='Action',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists actions in a given project and location.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesAssetsActionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListActionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/actions',
+        http_method='GET',
+        method_id='mediaasset.projects.locations.assetTypes.assets.actions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/actions',
+        request_field='',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsActionsListRequest',
+        response_type_name='ListActionsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsAssetTypesAssetsTransformationsService(base_api.BaseApiService):
     """Service class for the projects_locations_assetTypes_assets_transformations resource."""
@@ -92,7 +158,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (GoogleIamV1Policy) The response message.
       """
       config = self.GetMethodConfig('GetIamPolicy')
       return self._RunMethod(
@@ -108,7 +174,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+resource}:getIamPolicy',
         request_field='',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetIamPolicyRequest',
-        response_type_name='Policy',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -146,7 +212,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesAssetsTransformationsSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (GoogleIamV1Policy) The response message.
       """
       config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
@@ -160,9 +226,9 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
+        request_field='googleIamV1SetIamPolicyRequest',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsTransformationsSetIamPolicyRequest',
-        response_type_name='Policy',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -173,7 +239,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesAssetsTransformationsTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (TestIamPermissionsResponse) The response message.
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
       """
       config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
@@ -187,9 +253,9 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
+        request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsTransformationsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -237,7 +303,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesAssetsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -253,7 +319,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsDeleteRequest',
-        response_type_name='Empty',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -291,7 +357,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesAssetsGetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (GoogleIamV1Policy) The response message.
       """
       config = self.GetMethodConfig('GetIamPolicy')
       return self._RunMethod(
@@ -307,7 +373,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+resource}:getIamPolicy',
         request_field='',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsGetIamPolicyRequest',
-        response_type_name='Policy',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -392,33 +458,6 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def LroList(self, request, global_params=None):
-      r"""Lists assets in a given project and location.
-
-      Args:
-        request: (MediaassetProjectsLocationsAssetTypesAssetsLroListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListAssetsResponse) The response message.
-      """
-      config = self.GetMethodConfig('LroList')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    LroList.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets:lroList',
-        http_method='POST',
-        method_id='mediaasset.projects.locations.assetTypes.assets.lroList',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha/{+parent}/assets:lroList',
-        request_field='listAssetsRequest',
-        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsLroListRequest',
-        response_type_name='ListAssetsResponse',
-        supports_download=False,
-    )
-
     def LroUpdate(self, request, global_params=None):
       r"""Updates the parameters of a single asset.
 
@@ -480,7 +519,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesAssetsSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (GoogleIamV1Policy) The response message.
       """
       config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
@@ -494,9 +533,9 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
+        request_field='googleIamV1SetIamPolicyRequest',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsSetIamPolicyRequest',
-        response_type_name='Policy',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -507,7 +546,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesAssetsTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (TestIamPermissionsResponse) The response message.
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
       """
       config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
@@ -521,9 +560,154 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
+        request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAssetTypesRulesService(base_api.BaseApiService):
+    """Service class for the projects_locations_assetTypes_rules resource."""
+
+    _NAME = 'projects_locations_assetTypes_rules'
+
+    def __init__(self, client):
+      super(MediaassetV1alpha.ProjectsLocationsAssetTypesRulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new rule in a given project and location.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesRulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/rules',
+        http_method='POST',
+        method_id='mediaasset.projects.locations.assetTypes.rules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['ruleId'],
+        relative_path='v1alpha/{+parent}/rules',
+        request_field='rule',
+        request_type_name='MediaassetProjectsLocationsAssetTypesRulesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single rule.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesRulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/rules/{rulesId}',
+        http_method='DELETE',
+        method_id='mediaasset.projects.locations.assetTypes.rules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='MediaassetProjectsLocationsAssetTypesRulesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single rule.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesRulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/rules/{rulesId}',
+        http_method='GET',
+        method_id='mediaasset.projects.locations.assetTypes.rules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='MediaassetProjectsLocationsAssetTypesRulesGetRequest',
+        response_type_name='Rule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists rules in a given project and location.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesRulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/rules',
+        http_method='GET',
+        method_id='mediaasset.projects.locations.assetTypes.rules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/rules',
+        request_field='',
+        request_type_name='MediaassetProjectsLocationsAssetTypesRulesListRequest',
+        response_type_name='ListRulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single rule.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesRulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/rules/{rulesId}',
+        http_method='PATCH',
+        method_id='mediaasset.projects.locations.assetTypes.rules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='rule',
+        request_type_name='MediaassetProjectsLocationsAssetTypesRulesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -625,7 +809,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesGetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (GoogleIamV1Policy) The response message.
       """
       config = self.GetMethodConfig('GetIamPolicy')
       return self._RunMethod(
@@ -641,7 +825,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+resource}:getIamPolicy',
         request_field='',
         request_type_name='MediaassetProjectsLocationsAssetTypesGetIamPolicyRequest',
-        response_type_name='Policy',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -706,7 +890,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (GoogleIamV1Policy) The response message.
       """
       config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
@@ -720,9 +904,9 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
+        request_field='googleIamV1SetIamPolicyRequest',
         request_type_name='MediaassetProjectsLocationsAssetTypesSetIamPolicyRequest',
-        response_type_name='Policy',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -733,7 +917,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsAssetTypesTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (TestIamPermissionsResponse) The response message.
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
       """
       config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
@@ -747,9 +931,9 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
+        request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='MediaassetProjectsLocationsAssetTypesTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -851,7 +1035,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsComplexTypesGetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (GoogleIamV1Policy) The response message.
       """
       config = self.GetMethodConfig('GetIamPolicy')
       return self._RunMethod(
@@ -867,7 +1051,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+resource}:getIamPolicy',
         request_field='',
         request_type_name='MediaassetProjectsLocationsComplexTypesGetIamPolicyRequest',
-        response_type_name='Policy',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -932,7 +1116,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsComplexTypesSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (GoogleIamV1Policy) The response message.
       """
       config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
@@ -946,9 +1130,9 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
+        request_field='googleIamV1SetIamPolicyRequest',
         request_type_name='MediaassetProjectsLocationsComplexTypesSetIamPolicyRequest',
-        response_type_name='Policy',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -959,7 +1143,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsComplexTypesTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (TestIamPermissionsResponse) The response message.
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
       """
       config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
@@ -973,9 +1157,9 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
+        request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='MediaassetProjectsLocationsComplexTypesTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -1195,7 +1379,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsTransformersGetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (GoogleIamV1Policy) The response message.
       """
       config = self.GetMethodConfig('GetIamPolicy')
       return self._RunMethod(
@@ -1211,7 +1395,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+resource}:getIamPolicy',
         request_field='',
         request_type_name='MediaassetProjectsLocationsTransformersGetIamPolicyRequest',
-        response_type_name='Policy',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -1276,7 +1460,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsTransformersSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Policy) The response message.
+        (GoogleIamV1Policy) The response message.
       """
       config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
@@ -1290,9 +1474,9 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
+        request_field='googleIamV1SetIamPolicyRequest',
         request_type_name='MediaassetProjectsLocationsTransformersSetIamPolicyRequest',
-        response_type_name='Policy',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -1303,7 +1487,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request: (MediaassetProjectsLocationsTransformersTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (TestIamPermissionsResponse) The response message.
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
       """
       config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
@@ -1317,9 +1501,9 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
+        request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='MediaassetProjectsLocationsTransformersTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 

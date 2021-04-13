@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         },
         "https://www.googleapis.com/auth/service.management": {
           "description": "Manage your Google API service configuration"
@@ -245,6 +245,17 @@
         "service": {
           "description": "Output only. The name of the peering service that's associated with this connection, in the following format: `services\/{service name}`.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "DeleteConnectionRequest": {
+      "id": "DeleteConnectionRequest",
+      "description": "Request to delete a private service access connection. The call will fail if there are any managed service instances using this connection.",
+      "type": "object",
+      "properties": {
+        "consumerNetwork": {
+          "description": "Required. The network that the consumer is using to connect with services. Must be in the form of projects\/{project}\/global\/networks\/{network} {project} is a project number, as in '12345' {network} is a network name.",
           "type": "string"
         }
       }
@@ -938,7 +949,7 @@
           }
         },
         "configVersion": {
-          "description": "Deprecated. The service config compiler always sets this field to `3`.",
+          "description": "Obsolete. Do not use. This field has no semantic meaning. The service config compiler always sets this field to `3`.",
           "type": "integer",
           "format": "uint32"
         }
@@ -2916,6 +2927,35 @@
                 "https://www.googleapis.com/auth/service.management"
               ],
               "description": "Creates a private connection that establishes a VPC Network Peering connection to a VPC network in the service producer's organization. The administrator of the service consumer's VPC network invokes this method. The administrator must assign one or more allocated IP ranges for provisioning subnetworks in the service producer's VPC network. This connection is used for all supported services in the service producer's organization, so it only needs to be invoked once."
+            },
+            "deleteConnection": {
+              "id": "servicenetworking.services.connections.deleteConnection",
+              "path": "v1/{+name}",
+              "flatPath": "v1/services/{servicesId}/connections/{connectionsId}",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The private service connection that connects to a service producer organization. The name includes both the private service name and the VPC network peering name in the format of `services\/{peering_service_name}\/connections\/{vpc_peering_name}`. For Google services that support this functionality, this is `services\/servicenetworking.googleapis.com\/connections\/servicenetworking-googleapis-com`.",
+                  "pattern": "^services\/[^\/]+\/connections\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "DeleteConnectionRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Deletes a private service access connection."
             },
             "patch": {
               "id": "servicenetworking.services.connections.patch",

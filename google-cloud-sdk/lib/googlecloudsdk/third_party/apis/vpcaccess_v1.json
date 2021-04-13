@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -301,6 +301,20 @@
         "subnet": {
           "description": "The subnet in which to house the VPC Access Connector.",
           "$ref": "Subnet"
+        },
+        "machineType": {
+          "description": "Machine type of VM Instance underlying connector. Default is e2-micro",
+          "type": "string"
+        },
+        "minInstances": {
+          "description": "Minimum value of instances in autoscaling group underlying the connector.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxInstances": {
+          "description": "Maximum value of instances in autoscaling group underlying the connector.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

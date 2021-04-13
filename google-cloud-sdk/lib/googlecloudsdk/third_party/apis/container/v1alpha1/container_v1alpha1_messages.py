@@ -4762,8 +4762,6 @@ class WorkloadIdentityConfig(_messages.Message):
   r"""Configuration for the use of k8s Service Accounts in GCP IAM policies.
 
   Fields:
-    enableAlts: DEPRECATED: Use enable_alts instead enable_alts controls
-      whether the alts handshaker should be enabled or not for direct-path.
     identityNamespace: IAM Identity Namespace to attach all k8s Service
       Accounts to.
     identityProvider: identity provider is the third party identity provider.
@@ -4777,11 +4775,10 @@ class WorkloadIdentityConfig(_messages.Message):
       to.
   """
 
-  enableAlts = _messages.BooleanField(1)
-  identityNamespace = _messages.StringField(2)
-  identityProvider = _messages.StringField(3)
-  issuingCertificateAuthority = _messages.StringField(4)
-  workloadPool = _messages.StringField(5)
+  identityNamespace = _messages.StringField(1)
+  identityProvider = _messages.StringField(2)
+  issuingCertificateAuthority = _messages.StringField(3)
+  workloadPool = _messages.StringField(4)
 
 
 class WorkloadMetadataConfig(_messages.Message):

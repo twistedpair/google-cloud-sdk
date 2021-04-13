@@ -577,10 +577,13 @@
           }
         },
         "deliveryPipelineSnapshot": {
-          "description": "Releases take a snapshot of the world at creation time.",
+          "description": "Output only. Snapshot of the parent pipelint taken at release creation time.",
+          "readOnly": true,
           "$ref": "DeliveryPipeline"
         },
-        "targetSnapshot": {
+        "targetSnapshots": {
+          "description": "Output only. Snapshot of the parent pipeline's targets taken at release creation time.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "Target"

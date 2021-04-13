@@ -244,10 +244,12 @@ def FormatRegistryDescriptions():
       for attribute, description in attributes:
         descriptions.append('*{attribute}*:::\n{description}\n'.format(
             attribute=attribute, description=description))
+      descriptions.append(':::\n')
     if example:
       _AppendParagraph(descriptions)
       descriptions.append('For example:\n+\n{example}\n'.format(
           example=''.join(example)))
+  descriptions.append('::\n')
 
   # Generate the "attributes for all printers" markdown.
   description, attributes, example = _ParseFormatDocString(
@@ -413,6 +415,7 @@ def TransformsDescriptions(transforms):
       _AppendParagraph(descriptions)
       descriptions.append('For example:\n+\n{example}\n'.format(
           example=''.join(example)))
+    descriptions.append('::\n')
   return ''.join(descriptions)
 
 

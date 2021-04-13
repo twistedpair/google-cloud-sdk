@@ -136,7 +136,7 @@ class Build(_messages.Message):
     serviceAccount: IAM service account whose credentials will be used at
       build runtime. Must be of the format
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. ACCOUNT can be email
-      address or uniqueId of the service account. This field is in beta.
+      address or uniqueId of the service account.
     source: The location of the source files to build.
     sourceProvenance: Output only. A permanent fixed identifier for source.
     startTime: Output only. Time at which execution of the build was started.

@@ -560,7 +560,7 @@
     },
     "DeleteOrganizationMetadata": {
       "id": "DeleteOrganizationMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by DeleteOrganization.",
+      "description": "A status object which is used as the `metadata` field for the operation returned by DeleteOrganization.",
       "type": "object",
       "properties": {
       }
@@ -596,7 +596,7 @@
     },
     "MoveFolderMetadata": {
       "id": "MoveFolderMetadata",
-      "description": "Metadata pertaining to the Folder move process.",
+      "description": "Metadata pertaining to the folder move process.",
       "type": "object",
       "properties": {
         "displayName": {
@@ -615,14 +615,14 @@
     },
     "DeleteFolderMetadata": {
       "id": "DeleteFolderMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by DeleteFolder.",
+      "description": "A status object which is used as the `metadata` field for the `Operation` returned by `DeleteFolder`.",
       "type": "object",
       "properties": {
       }
     },
     "UndeleteFolderMetadata": {
       "id": "UndeleteFolderMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by UndeleteFolder.",
+      "description": "A status object which is used as the `metadata` field for the `Operation` returned by `UndeleteFolder`.",
       "type": "object",
       "properties": {
       }
@@ -638,7 +638,7 @@
           "format": "google-datetime"
         },
         "gettable": {
-          "description": "True if the project can be retrieved using GetProject. No other operations on the project are guaranteed to work until the project creation is complete.",
+          "description": "True if the project can be retrieved using `GetProject`. No other operations on the project are guaranteed to work until the project creation is complete.",
           "type": "boolean"
         },
         "ready": {
@@ -663,14 +663,14 @@
     },
     "DeleteProjectMetadata": {
       "id": "DeleteProjectMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by DeleteProject.",
+      "description": "A status object which is used as the `metadata` field for the Operation returned by `DeleteProject`.",
       "type": "object",
       "properties": {
       }
     },
     "UndeleteProjectMetadata": {
       "id": "UndeleteProjectMetadata",
-      "description": "A status object which is used as the `metadata` field for the Operation returned by UndeleteProject.",
+      "description": "A status object which is used as the `metadata` field for the Operation returned by `UndeleteProject`.",
       "type": "object",
       "properties": {
       }
@@ -713,6 +713,20 @@
     "DeleteTagValueMetadata": {
       "id": "DeleteTagValueMetadata",
       "description": "Runtime operation information for deleting a TagValue.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CreateTagBindingMetadata": {
+      "id": "CreateTagBindingMetadata",
+      "description": "Runtime operation information for creating a TagValue.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DeleteTagBindingMetadata": {
+      "id": "DeleteTagBindingMetadata",
+      "description": "Runtime operation information for deleting a TagBinding.",
       "type": "object",
       "properties": {
       }

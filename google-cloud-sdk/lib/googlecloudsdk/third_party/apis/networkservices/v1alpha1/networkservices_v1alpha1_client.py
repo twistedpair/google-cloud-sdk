@@ -43,7 +43,9 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_edgeCacheOrigins = self.ProjectsLocationsEdgeCacheOriginsService(self)
     self.projects_locations_edgeCacheServices = self.ProjectsLocationsEdgeCacheServicesService(self)
     self.projects_locations_endpointConfigSelectors = self.ProjectsLocationsEndpointConfigSelectorsService(self)
+    self.projects_locations_grpcRoutes = self.ProjectsLocationsGrpcRoutesService(self)
     self.projects_locations_httpFilters = self.ProjectsLocationsHttpFiltersService(self)
+    self.projects_locations_observabilityPolicies = self.ProjectsLocationsObservabilityPoliciesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_routers = self.ProjectsLocationsRoutersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -953,6 +955,232 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsGrpcRoutesService(base_api.BaseApiService):
+    """Service class for the projects_locations_grpcRoutes resource."""
+
+    _NAME = 'projects_locations_grpcRoutes'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsGrpcRoutesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new GrpcRoute in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGrpcRoutesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/grpcRoutes',
+        http_method='POST',
+        method_id='networkservices.projects.locations.grpcRoutes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['grpcRouteId'],
+        relative_path='v1alpha1/{+parent}/grpcRoutes',
+        request_field='grpcRoute',
+        request_type_name='NetworkservicesProjectsLocationsGrpcRoutesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single GrpcRoute.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/grpcRoutes/{grpcRoutesId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.grpcRoutes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGrpcRoutesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single GrpcRoute.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGrpcRoutesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GrpcRoute) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/grpcRoutes/{grpcRoutesId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.grpcRoutes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGrpcRoutesGetRequest',
+        response_type_name='GrpcRoute',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGrpcRoutesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/grpcRoutes/{grpcRoutesId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkservices.projects.locations.grpcRoutes.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGrpcRoutesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists GrpcRoutes in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGrpcRoutesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGrpcRoutesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/grpcRoutes',
+        http_method='GET',
+        method_id='networkservices.projects.locations.grpcRoutes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/grpcRoutes',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGrpcRoutesListRequest',
+        response_type_name='ListGrpcRoutesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single GrpcRoute.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGrpcRoutesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/grpcRoutes/{grpcRoutesId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.grpcRoutes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='grpcRoute',
+        request_type_name='NetworkservicesProjectsLocationsGrpcRoutesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGrpcRoutesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/grpcRoutes/{grpcRoutesId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkservices.projects.locations.grpcRoutes.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='NetworkservicesProjectsLocationsGrpcRoutesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGrpcRoutesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/grpcRoutes/{grpcRoutesId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.grpcRoutes.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='NetworkservicesProjectsLocationsGrpcRoutesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsHttpFiltersService(base_api.BaseApiService):
     """Service class for the projects_locations_httpFilters resource."""
 
@@ -1175,6 +1403,232 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+resource}:testIamPermissions',
         request_field='testIamPermissionsRequest',
         request_type_name='NetworkservicesProjectsLocationsHttpFiltersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsObservabilityPoliciesService(base_api.BaseApiService):
+    """Service class for the projects_locations_observabilityPolicies resource."""
+
+    _NAME = 'projects_locations_observabilityPolicies'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsObservabilityPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new ObservabilityPolicy in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsObservabilityPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/observabilityPolicies',
+        http_method='POST',
+        method_id='networkservices.projects.locations.observabilityPolicies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['observabilityPolicyId'],
+        relative_path='v1alpha1/{+parent}/observabilityPolicies',
+        request_field='observabilityPolicy',
+        request_type_name='NetworkservicesProjectsLocationsObservabilityPoliciesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single ObservabilityPolicy.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsObservabilityPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/observabilityPolicies/{observabilityPoliciesId}',
+        http_method='DELETE',
+        method_id='networkservices.projects.locations.observabilityPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsObservabilityPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ObservabilityPolicy.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsObservabilityPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ObservabilityPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/observabilityPolicies/{observabilityPoliciesId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.observabilityPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsObservabilityPoliciesGetRequest',
+        response_type_name='ObservabilityPolicy',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsObservabilityPoliciesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/observabilityPolicies/{observabilityPoliciesId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkservices.projects.locations.observabilityPolicies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsObservabilityPoliciesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ObservabilityPolicies in a given project and location.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsObservabilityPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListObservabilityPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/observabilityPolicies',
+        http_method='GET',
+        method_id='networkservices.projects.locations.observabilityPolicies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/observabilityPolicies',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsObservabilityPoliciesListRequest',
+        response_type_name='ListObservabilityPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single ObservabilityPolicy.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsObservabilityPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/observabilityPolicies/{observabilityPoliciesId}',
+        http_method='PATCH',
+        method_id='networkservices.projects.locations.observabilityPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='observabilityPolicy',
+        request_type_name='NetworkservicesProjectsLocationsObservabilityPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsObservabilityPoliciesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/observabilityPolicies/{observabilityPoliciesId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkservices.projects.locations.observabilityPolicies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='NetworkservicesProjectsLocationsObservabilityPoliciesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsObservabilityPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/observabilityPolicies/{observabilityPoliciesId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkservices.projects.locations.observabilityPolicies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='NetworkservicesProjectsLocationsObservabilityPoliciesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )

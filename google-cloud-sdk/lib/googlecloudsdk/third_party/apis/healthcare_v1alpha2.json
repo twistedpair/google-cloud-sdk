@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -533,7 +533,7 @@
           ]
         },
         "writeDisposition": {
-          "description": "Determines whether existing tables in the destination dataset are overwritten or appended to. If a write_disposition is specified, the `force` parameter is ignored.",
+          "description": "Determines if existing data in the destination dataset is overwritten, appended to, or not written if the tables contain data. If a write_disposition is specified, the `force` parameter is ignored.",
           "type": "string",
           "enumDescriptions": [
             "Default behavior is the same as WRITE_EMPTY.",
@@ -1941,7 +1941,7 @@
           "type": "boolean"
         },
         "writeDisposition": {
-          "description": "Determines whether existing tables in the destination dataset are overwritten or appended to. If a write_disposition is specified, the `force` parameter is ignored.",
+          "description": "Determines if existing data in the destination dataset is overwritten, appended to, or not written if the tables contain data. If a write_disposition is specified, the `force` parameter is ignored.",
           "type": "string",
           "enumDescriptions": [
             "Default behavior is the same as WRITE_EMPTY.",

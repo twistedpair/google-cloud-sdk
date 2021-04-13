@@ -35,14 +35,17 @@ class NameExpansionIterator:
   See NameExpansionResult docstring for more info.
   """
 
-  def __init__(self, urls, recursion_requested=False):
+  def __init__(self, urls, all_versions=False, recursion_requested=False):
     """Instantiates NameExpansionIterator.
 
     Args:
       urls (Iterable[str]): The URLs to expand.
+      all_versions (bool): True if all versions of objects should be fetched,
+        else False.
       recursion_requested (bool): True if recursion is requested, else False.
     """
     self._urls = urls
+    self._all_versions = all_versions
     self._recursion_requested = recursion_requested
 
   def __iter__(self):
@@ -56,7 +59,8 @@ class NameExpansionIterator:
     """
     for url in self._urls:
       resources = plurality_checkable_iterator.PluralityCheckableIterator(
-          wildcard_iterator.get_wildcard_iterator(url))
+          wildcard_iterator.get_wildcard_iterator(
+              url, all_versions=self._all_versions))
       is_name_expansion_iterator_empty = True
       original_storage_url = storage_url.storage_url_from_string(url)
 
@@ -76,7 +80,7 @@ class NameExpansionIterator:
         # Append '**' to fetch all objects under this container.
         new_storage_url = resource.storage_url.join('**')
         child_resources = wildcard_iterator.get_wildcard_iterator(
-            new_storage_url.url_string)
+            new_storage_url.url_string, all_versions=self._all_versions)
         for child_resource in child_resources:
           yield NameExpansionResult(child_resource, resource.storage_url,
                                     original_storage_url)

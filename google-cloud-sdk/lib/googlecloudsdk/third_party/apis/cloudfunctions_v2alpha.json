@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -294,6 +294,10 @@
         "storageSource": {
           "description": "If provided, get the source from this location in Google Cloud Storage.",
           "$ref": "StorageSource"
+        },
+        "repoSource": {
+          "description": "If provided, get the source from this location in a Cloud Source Repository.",
+          "$ref": "RepoSource"
         }
       }
     },
@@ -314,6 +318,41 @@
           "description": "Google Cloud Storage generation for the object. If the generation is omitted, the latest generation will be used.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "RepoSource": {
+      "id": "RepoSource",
+      "description": "Location of the source in a Google Cloud Source Repository.",
+      "type": "object",
+      "properties": {
+        "branchName": {
+          "description": "Regex matching branches to build. The syntax of the regular expressions accepted is the syntax accepted by RE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
+          "type": "string"
+        },
+        "tagName": {
+          "description": "Regex matching tags to build. The syntax of the regular expressions accepted is the syntax accepted by RE2 and described at https:\/\/github.com\/google\/re2\/wiki\/Syntax",
+          "type": "string"
+        },
+        "commitSha": {
+          "description": "Explicit commit SHA to build.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "ID of the project that owns the Cloud Source Repository. If omitted, the project ID requesting the build is assumed.",
+          "type": "string"
+        },
+        "repoName": {
+          "description": "Name of the Cloud Source Repository.",
+          "type": "string"
+        },
+        "dir": {
+          "description": "Directory, relative to the source root, in which to run the build. This must be a relative path. If a step's `dir` is specified and is an absolute path, this value is ignored for that step's execution. eg. helloworld (no leading slash allowed)",
+          "type": "string"
+        },
+        "invertRegex": {
+          "description": "Only trigger a build if the revision regex does NOT match the revision regex.",
+          "type": "boolean"
         }
       }
     },
@@ -489,6 +528,10 @@
         "uploadUrl": {
           "description": "The generated Google Cloud Storage signed URL that should be used for a function source code upload. The uploaded file should be a zip archive which contains a function.",
           "type": "string"
+        },
+        "storageSource": {
+          "description": "The location of the source code in the upload bucket. Once the archive is uploaded using the `upload_url` use this field to set the `function.build_config.source.storage_source` during CreateFunction and UpdateFunction. Generation defaults to 0, as Cloud Storage provides a new generation only upon uploading a new object or version of an object.",
+          "$ref": "StorageSource"
         }
       }
     },

@@ -174,6 +174,16 @@ properties:
     type: array
     items:
       $ref: NetworkInterface.yaml
+  networkPerformanceConfig:
+    description: A NetworkPerformanceConfig attribute.
+    $ref: NetworkPerformanceConfig.yaml
+  postKeyRevocationActionType:
+    description: PostKeyRevocationActionType of the instance.
+    type: string
+    enum:
+    - NOOP
+    - POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED
+    - SHUTDOWN
   privateIpv6GoogleAccess:
     description: |-
       The private IPv6 google access type for the VM. If not
@@ -235,8 +245,8 @@ properties:
     type: string
   sourceMachineImageEncryptionKey:
     description: |-
-      Source GMI encryption key when creating an instance
-      from GMI.
+      Source machine image encryption key when creating an
+      instance from a machine image.
     $ref: CustomerEncryptionKey.yaml
   startRestricted:
     description: |-

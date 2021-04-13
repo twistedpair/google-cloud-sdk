@@ -123,6 +123,11 @@ properties:
     type: array
     items:
       $ref: BackendServiceCdnPolicyNegativeCachingPolicy.yaml
+  requestCoalescing:
+    description: |-
+      If true then Cloud CDN will combine multiple concurrent cache fill
+      requests into a small number of requests to the origin.
+    type: boolean
   serveWhileStale:
     description: |-
       Serve existing content from the cache (if available) when

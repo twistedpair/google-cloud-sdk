@@ -1905,7 +1905,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new Backup in a given project and location."
+                      "description": "Creates a new backup in a given project and location."
                     },
                     "delete": {
                       "id": "metastore.projects.locations.services.backups.delete",

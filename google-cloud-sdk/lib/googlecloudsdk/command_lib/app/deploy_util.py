@@ -567,7 +567,6 @@ def RunDeploy(
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
     parallel_build=True,
     flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
-    dispatch_admin_api=False,
     use_legacy_apis=False):
   """Perform a deployment based on the given args.
 
@@ -586,8 +585,6 @@ def RunDeploy(
     flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
       should upload files so that the server can build the image or build the
       image on client.
-    dispatch_admin_api: bool, speak to the (new) Admin API rather than the (old)
-      Admin Console for config push of dispatch.yaml.
     use_legacy_apis: bool, if true, use the legacy deprecated admin-console-hr
       superapp for queue.yaml and cron.yaml uploads instead of Cloud Tasks &
       Cloud Scheduler FEs.
@@ -689,7 +686,7 @@ def RunDeploy(
     for config in configs:
       message = 'Updating config [{config}]'.format(config=config.name)
       with progress_tracker.ProgressTracker(message):
-        if config.name == 'dispatch' and dispatch_admin_api:
+        if config.name == 'dispatch':
           api_client.UpdateDispatchRules(config.GetRules())
         elif config.name == yaml_parsing.ConfigYamlInfo.INDEX:
           index_api.CreateMissingIndexes(project, config.parsed)

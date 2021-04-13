@@ -779,6 +779,9 @@ apis:
     v1alpha1:
       discovery_doc: networkservices_v1alpha1.json
   networksecurity:
+    v1beta1:
+      discovery_doc: networksecurity_v1beta1.json
+      default: true
     v1alpha1:
       discovery_doc: networksecurity_v1alpha1.json
   notebooks:

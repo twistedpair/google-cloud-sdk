@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -271,12 +271,16 @@
             "enumDescriptions": [
               "Default unspecified reason.",
               "Indicates a chargeback for fraud was issued for the transaction associated with the assessment.",
-              "Indicates the transaction associated with the assessment is suspected of being fraudulent based on the payment method, billing details, shipping address or other transaction information."
+              "Indicates the transaction associated with the assessment is suspected of being fraudulent based on the payment method, billing details, shipping address or other transaction information.",
+              "Indicates that the user passed a 2FA challenge.",
+              "Indicates that the user failed a 2FA challenge."
             ],
             "enum": [
               "REASON_UNSPECIFIED",
               "CHARGEBACK",
-              "PAYMENT_HEURISTICS"
+              "PAYMENT_HEURISTICS",
+              "TWO_FACTOR_PASSED",
+              "TWO_FACTOR_FAILED"
             ]
           }
         }

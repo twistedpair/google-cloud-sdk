@@ -85,6 +85,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_RUNTIMES = (
+      'projects.locations.runtimes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/runtimes/'
+              '{runtimesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SCHEDULES = (
       'projects.locations.schedules',
       '{+name}',

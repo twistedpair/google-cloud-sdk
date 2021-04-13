@@ -57,6 +57,19 @@ class AnalyzePackagesMetadata(_messages.Message):
   resourceUri = _messages.StringField(2)
 
 
+class AnalyzePackagesMetadataV1(_messages.Message):
+  r"""AnalyzePackagesMetadata contains metadata for an active scan of a
+  container image.
+
+  Fields:
+    createTime: When the scan was created.
+    resourceUri: The resource URI of the container image being scanned.
+  """
+
+  createTime = _messages.StringField(1)
+  resourceUri = _messages.StringField(2)
+
+
 class AnalyzePackagesRequest(_messages.Message):
   r"""AnalyzePackagesRequest is the request to analyze a list of packages and
   create Vulnerability Occurrences for it.
@@ -72,6 +85,17 @@ class AnalyzePackagesRequest(_messages.Message):
 
 
 class AnalyzePackagesResponse(_messages.Message):
+  r"""AnalyzePackagesResponse contains the information necessary to find
+  results for the given scan.
+
+  Fields:
+    scan: The name of the scan resource created by this successful scan.
+  """
+
+  scan = _messages.StringField(1)
+
+
+class AnalyzePackagesResponseV1(_messages.Message):
   r"""AnalyzePackagesResponse contains the information necessary to find
   results for the given scan.
 
@@ -850,6 +874,10 @@ class PackageData(_messages.Message):
     osVersion: The version of the OS This field is deprecated and the
       information is in cpe_uri
     package: The package being analysed for vulnerabilities
+    projectId: The projectId of the package to which this data belongs. Most
+      of Drydock's code does not set or use this field. This is added
+      specifically so we can group packages by projects and decide whether or
+      not to apply NVD data to the packages belonging to a specific project.
     version: The version of the package being analysed
   """
 
@@ -857,7 +885,8 @@ class PackageData(_messages.Message):
   os = _messages.StringField(2)
   osVersion = _messages.StringField(3)
   package = _messages.StringField(4)
-  version = _messages.StringField(5)
+  projectId = _messages.StringField(5)
+  version = _messages.StringField(6)
 
 
 class PackageIssue(_messages.Message):

@@ -23,7 +23,7 @@ import enum
 import re
 import uuid
 
-from googlecloudsdk.api_lib.run import container_resource
+from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import platforms
 
@@ -50,6 +50,21 @@ class SpecialConnector(enum.Enum):
   # that all mapped secrets are already being used correctly and that we aren't
   # parsing new user input.
   PATH_OR_ENV = 0
+
+
+def _GetSecretsAnnotation(resource):
+  return resource.template_annotations.get(revision.SECRETS_ANNOTATION, '')
+
+
+def _SetSecretsAnnotation(resource, value):
+  annotations = resource.template_annotations
+  if value:
+    annotations[revision.SECRETS_ANNOTATION] = value
+  else:
+    try:
+      del annotations[revision.SECRETS_ANNOTATION]
+    except KeyError:
+      pass
 
 
 def _ParseAnnotation(formatted_annotation):
@@ -109,22 +124,14 @@ def PruneAnnotation(resource):
   """
   in_use = _InUse(resource)
 
-  formatted_annotation = resource.annotations.get(
-      container_resource.SECRETS_ANNOTATION, '')
+  formatted_annotation = _GetSecretsAnnotation(resource)
   to_keep = {
       alias: rs
       for alias, rs in _ParseAnnotation(formatted_annotation).items()
       if alias in in_use
   }
 
-  if to_keep:
-    resource.annotations[
-        container_resource.SECRETS_ANNOTATION] = _FormatAnnotation(to_keep)
-  else:
-    try:
-      del resource.annotations[container_resource.SECRETS_ANNOTATION]
-    except KeyError:
-      pass
+  _SetSecretsAnnotation(resource, _FormatAnnotation(to_keep))
 
 
 class ReachableSecret(object):
@@ -284,8 +291,7 @@ class ReachableSecret(object):
     if not self._IsRemote():
       return self.secret_name
 
-    formatted_annotation = resource.annotations.get(
-        container_resource.SECRETS_ANNOTATION, '')
+    formatted_annotation = _GetSecretsAnnotation(resource)
     remotes = _ParseAnnotation(formatted_annotation)
     for alias, other_rs in remotes.items():
       if self == other_rs:
@@ -293,8 +299,7 @@ class ReachableSecret(object):
     new_alias = self.secret_name[:5] + '-' + str(uuid.uuid1())
     remotes[new_alias] = self
 
-    resource.annotations[
-        container_resource.SECRETS_ANNOTATION] = _FormatAnnotation(remotes)
+    _SetSecretsAnnotation(resource, _FormatAnnotation(remotes))
     return new_alias
 
   def FormatAnnotationItem(self):

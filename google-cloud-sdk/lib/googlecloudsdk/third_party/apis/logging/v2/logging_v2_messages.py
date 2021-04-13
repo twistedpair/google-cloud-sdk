@@ -41,6 +41,48 @@ class BigQueryOptions(_messages.Message):
   usesTimestampColumnPartitioning = _messages.BooleanField(2)
 
 
+class BucketMetadata(_messages.Message):
+  r"""Metadata for LongRunningUpdateBucket Operations.
+
+  Enums:
+    StateValueValuesEnum: State of an operation.
+
+  Fields:
+    createBucketRequest: LongRunningCreateBucket RPC request.
+    endTime: The end time of an operation.
+    startTime: The create time of an operation.
+    state: State of an operation.
+    updateBucketRequest: LongRunningUpdateBucket RPC request.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of an operation.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Should not be used.
+      OPERATION_STATE_SCHEDULED: The operation is scheduled.
+      OPERATION_STATE_WAITING_FOR_PERMISSIONS: Waiting for necessary
+        permissions.
+      OPERATION_STATE_RUNNING: The operation is running.
+      OPERATION_STATE_SUCCEEDED: The operation was completed successfully.
+      OPERATION_STATE_FAILED: The operation failed.
+      OPERATION_STATE_CANCELLED: The operation was cancelled by the user.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    OPERATION_STATE_SCHEDULED = 1
+    OPERATION_STATE_WAITING_FOR_PERMISSIONS = 2
+    OPERATION_STATE_RUNNING = 3
+    OPERATION_STATE_SUCCEEDED = 4
+    OPERATION_STATE_FAILED = 5
+    OPERATION_STATE_CANCELLED = 6
+
+  createBucketRequest = _messages.MessageField('CreateBucketRequest', 1)
+  endTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  updateBucketRequest = _messages.MessageField('UpdateBucketRequest', 5)
+
+
 class BucketOptions(_messages.Message):
   r"""BucketOptions describes the bucket boundaries used to create a histogram
   for the distribution. The buckets can be in a linear sequence, an
@@ -114,14 +156,65 @@ class CmekSettings(_messages.Message):
   serviceAccountId = _messages.StringField(3)
 
 
+class CopyLogEntriesMetadata(_messages.Message):
+  r"""Unimplemented. Do not use.Metadata for CopyLogEntries long running
+  operations.
+
+  Enums:
+    StateValueValuesEnum: State of an operation.
+
+  Fields:
+    cancellationRequested: Identifies whether the user has requested
+      cancellation of the operation.
+    createTime: The create time of an operation.
+    endTime: The end time of an operation.
+    progress: Estimated progress of the operation (0 - 100%).
+    request: CopyLogEntries RPC request.
+    state: State of an operation.
+    writerIdentity: The IAM identity of a service account that must be granted
+      access to the destination. If the service account is not granted
+      permission to the destination within an hour, the operation will be
+      cancelled. Example: "serviceAccount:foo@bar.com"
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of an operation.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Should not be used.
+      OPERATION_STATE_SCHEDULED: The operation is scheduled.
+      OPERATION_STATE_WAITING_FOR_PERMISSIONS: Waiting for necessary
+        permissions.
+      OPERATION_STATE_RUNNING: The operation is running.
+      OPERATION_STATE_SUCCEEDED: The operation was completed successfully.
+      OPERATION_STATE_FAILED: The operation failed.
+      OPERATION_STATE_CANCELLED: The operation was cancelled by the user.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    OPERATION_STATE_SCHEDULED = 1
+    OPERATION_STATE_WAITING_FOR_PERMISSIONS = 2
+    OPERATION_STATE_RUNNING = 3
+    OPERATION_STATE_SUCCEEDED = 4
+    OPERATION_STATE_FAILED = 5
+    OPERATION_STATE_CANCELLED = 6
+
+  cancellationRequested = _messages.BooleanField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  progress = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  request = _messages.MessageField('CopyLogEntriesRequest', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  writerIdentity = _messages.StringField(7)
+
+
 class CopyLogEntriesRequest(_messages.Message):
   r"""The parameters to CopyLogEntries.
 
   Fields:
     destination: Required. Destination to which to copy logs.
-    filter: Required. A filter specifying which log entries to copy. The
-      filter must include a latest time for the logs to be copied. The filter
-      must be no more than 20k characters.
+    filter: Optional. A filter specifying which log entries to copy. The
+      filter must be no more than 20k characters. An empty filter matches all
+      log entries.
     name: Required. Bucket from which to copy logs. e.g. "projects/my-
       project/locations/my-location/buckets/my-source-bucket
   """
@@ -129,6 +222,37 @@ class CopyLogEntriesRequest(_messages.Message):
   destination = _messages.StringField(1)
   filter = _messages.StringField(2)
   name = _messages.StringField(3)
+
+
+class CopyLogEntriesResponse(_messages.Message):
+  r"""Unimplemented. Do not use.Response type for CopyLogEntries long running
+  operations.
+
+  Fields:
+    logEntriesCopiedCount: Number of log entries copied.
+  """
+
+  logEntriesCopiedCount = _messages.IntegerField(1)
+
+
+class CreateBucketRequest(_messages.Message):
+  r"""The parameters to CreateBucket.
+
+  Fields:
+    bucket: Required. The new bucket. The region specified in the new bucket
+      must be compliant with any Location Restriction Org Policy. The name
+      field in the bucket is ignored.
+    bucketId: Required. A client-assigned identifier such as "my-bucket".
+      Identifiers are limited to 100 characters and can include only letters,
+      digits, underscores, hyphens, and periods.
+    parent: Required. The resource in which to create the bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" Example: "projects/my-
+      logging-project/locations/global"
+  """
+
+  bucket = _messages.MessageField('LogBucket', 1)
+  bucketId = _messages.StringField(2)
+  parent = _messages.StringField(3)
 
 
 class DlpOptions(_messages.Message):
@@ -5674,6 +5798,34 @@ class TailLogEntriesResponse(_messages.Message):
 
 class UndeleteBucketRequest(_messages.Message):
   r"""The parameters to UndeleteBucket."""
+
+
+class UpdateBucketRequest(_messages.Message):
+  r"""The parameters to UpdateBucket.
+
+  Fields:
+    bucket: Required. The updated bucket.
+    name: Required. The full resource name of the bucket to update.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+      Example: "projects/my-project-id/locations/my-location/buckets/my-
+      bucket-id". Also requires permission
+      "resourcemanager.projects.updateLiens" to set the locked property
+    updateMask: Required. Field mask that specifies the fields in bucket that
+      need an update. A bucket field will be overwritten if, and only if, it
+      is in the update mask. name and output only fields cannot be updated.For
+      a detailed FieldMask definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
+      updateMask=retention_days.
+  """
+
+  bucket = _messages.MessageField('LogBucket', 1)
+  name = _messages.StringField(2)
+  updateMask = _messages.StringField(3)
 
 
 class WriteLogEntriesRequest(_messages.Message):

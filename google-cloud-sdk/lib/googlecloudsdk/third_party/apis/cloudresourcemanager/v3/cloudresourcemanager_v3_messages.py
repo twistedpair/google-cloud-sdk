@@ -148,8 +148,8 @@ class CloudresourcemanagerFoldersDeleteRequest(_messages.Message):
 
   Fields:
     etag: Optional. The etag known to the client for the expected state of the
-      Folder. This is to be used for optimistic concurrency.
-    name: Required. The resource name of the Folder to be deleted. Must be of
+      folder. This is to be used for optimistic concurrency.
+    name: Required. The resource name of the folder to be deleted. Must be of
       the form `folders/{folder_id}`.
     validateOnly: Optional. True to perform validations necessary for
       deletion, but not actually perform the action.
@@ -179,7 +179,7 @@ class CloudresourcemanagerFoldersGetRequest(_messages.Message):
   r"""A CloudresourcemanagerFoldersGetRequest object.
 
   Fields:
-    name: Required. The resource name of the Folder to retrieve. Must be of
+    name: Required. The resource name of the folder to retrieve. Must be of
       the form `folders/{folder_id}`.
   """
 
@@ -190,15 +190,15 @@ class CloudresourcemanagerFoldersListRequest(_messages.Message):
   r"""A CloudresourcemanagerFoldersListRequest object.
 
   Fields:
-    pageSize: Optional. The maximum number of Folders to return in the
+    pageSize: Optional. The maximum number of folders to return in the
       response. If unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListFolders` that indicates where this listing should continue from.
-    parent: Required. The resource name of the Organization or Folder whose
-      Folders are being listed. Must be of the form `folders/{folder_id}` or
+    parent: Required. The resource name of the organization or folder whose
+      folders are being listed. Must be of the form `folders/{folder_id}` or
       `organizations/{org_id}`. Access to this method is controlled by
       checking the `resourcemanager.folders.list` permission on the `parent`.
-    showDeleted: Optional. Controls whether Folders in the DELETE_REQUESTED
+    showDeleted: Optional. Controls whether folders in the DELETE_REQUESTED
       state should be returned. Defaults to false.
   """
 
@@ -227,7 +227,7 @@ class CloudresourcemanagerFoldersPatchRequest(_messages.Message):
 
   Fields:
     folder: A Folder resource to be passed as the request body.
-    name: Output only. The resource name of the Folder. Its format is
+    name: Output only. The resource name of the folder. Its format is
       `folders/{folder_id}`, for example: "folders/1234".
     updateMask: Required. Fields to be updated. Only the `display_name` can be
       updated.
@@ -249,25 +249,26 @@ class CloudresourcemanagerFoldersSearchRequest(_messages.Message):
       response. If unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `SearchFolders` that indicates from where search should continue.
-    query: Optional. Search criteria used to select the Folders to return. If
+    query: Optional. Search criteria used to select the folders to return. If
       no search criteria is specified then all accessible folders will be
       returned. Query expressions can be used to restrict results based upon
       displayName, state and parent, where the operators `=` (`:`) `NOT`,
       `AND` and `OR` can be used along with the suffix wildcard symbol `*`.
-      The displayName field in a query expression should use escaped quotes
+      The `displayName` field in a query expression should use escaped quotes
       for values that include whitespace to prevent unexpected behavior. |
       Field | Description |
       |-------------------------|----------------------------------------| |
       displayName | Filters by displayName. | | parent | Filters by parent
-      (e.g. folders/123). | | state, lifecycleState | Filters by state. | Some
-      example queries are: * Query `displayName=Test*` returns Folder
-      resources whose display name starts with "Test". * Query `state=ACTIVE`
-      returns Folder resources with `state` set to `ACTIVE`. * Query
-      `parent=folders/123` returns Folder resources that have `folders/123` as
-      a parent resource. * Query `parent=folders/123 AND state=ACTIVE` returns
-      active Folder resources that have `folders/123` as a parent resource. *
-      Query `displayName=\\"Test String\\"` returns Folder resources with
-      display names that include both "Test" and "String".
+      (for example: folders/123). | | state, lifecycleState | Filters by
+      state. | Some example queries are: * Query `displayName=Test*` returns
+      Folder resources whose display name starts with "Test". * Query
+      `state=ACTIVE` returns Folder resources with `state` set to `ACTIVE`. *
+      Query `parent=folders/123` returns Folder resources that have
+      `folders/123` as a parent resource. * Query `parent=folders/123 AND
+      state=ACTIVE` returns active Folder resources that have `folders/123` as
+      a parent resource. * Query `displayName=\\"Test String\\"` returns
+      Folder resources with display names that include both "Test" and
+      "String".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -309,7 +310,7 @@ class CloudresourcemanagerFoldersUndeleteRequest(_messages.Message):
   r"""A CloudresourcemanagerFoldersUndeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the Folder to undelete. Must be of
+    name: Required. The resource name of the folder to undelete. Must be of
       the form `folders/{folder_id}`.
     undeleteFolderRequest: A UndeleteFolderRequest resource to be passed as
       the request body.
@@ -466,7 +467,7 @@ class CloudresourcemanagerOrganizationsSearchRequest(_messages.Message):
   r"""A CloudresourcemanagerOrganizationsSearchRequest object.
 
   Fields:
-    pageSize: Optional. The maximum number of Organizations to return in the
+    pageSize: Optional. The maximum number of organizations to return in the
       response. If unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `SearchOrganizations` that indicates from where listing should continue.
@@ -565,15 +566,15 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsListRequest object.
 
   Fields:
-    pageSize: Optional. The maximum number of Projects to return in the
-      response. The server can return fewer Projects than requested. If
+    pageSize: Optional. The maximum number of projects to return in the
+      response. The server can return fewer projects than requested. If
       unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       ListProjects that indicates from where listing should continue.
     parent: Required. The name of the parent resource to list projects under.
       For example, setting this field to 'folders/1234' would list all
       projects directly under that folder.
-    showDeleted: Optional. Indicate that Projects in the `DELETE_REQUESTED`
+    showDeleted: Optional. Indicate that projects in the `DELETE_REQUESTED`
       state should also be returned. Normally only `ACTIVE` projects are
       returned.
   """
@@ -601,7 +602,7 @@ class CloudresourcemanagerProjectsPatchRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsPatchRequest object.
 
   Fields:
-    name: Output only. The unique resource name of the Project. It is an int64
+    name: Output only. The unique resource name of the project. It is an int64
       generated number prefixed by "projects/". Example:
       `projects/415104041262`
     project: A Project resource to be passed as the request body.
@@ -620,8 +621,8 @@ class CloudresourcemanagerProjectsSearchRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsSearchRequest object.
 
   Fields:
-    pageSize: Optional. The maximum number of Projects to return in the
-      response. The server can return fewer Projects than requested. If
+    pageSize: Optional. The maximum number of projects to return in the
+      response. The server can return fewer projects than requested. If
       unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       ListProjects that indicates from where listing should continue.
@@ -631,21 +632,21 @@ class CloudresourcemanagerProjectsSearchRequest(_messages.Message):
       fields. Some eligible fields are: | Field | Description | |-------------
       ------------|----------------------------------------------| |
       displayName, name | Filters by displayName. | | parent | Project's
-      parent. (e.g. folders/123, organizations/*) Prefer parent field over
-      parent.type and parent.id. | | parent.type | Parent's type: `folder` or
-      `organization`. | | parent.id | Parent's id number (e.g. 123) | | id,
-      projectId | Filters by projectId. | | state, lifecycleState | Filters by
-      state. | | labels | Filters by label name or value. | | labels. (where
-      *key* is the name of a label) | Filters by label name. | Search
-      expressions are case insensitive. Some examples queries: | Query |
-      Description | |------------------|--------------------------------------
-      ---------------| | name:how* | The project's name starts with "how". | |
-      name:Howl | The project's name is `Howl` or `howl`. | | name:HOWL |
+      parent (for example: folders/123, organizations/*). Prefer parent field
+      over parent.type and parent.id.| | parent.type | Parent's type: `folder`
+      or `organization`. | | parent.id | Parent's id number (for example: 123)
+      | | id, projectId | Filters by projectId. | | state, lifecycleState |
+      Filters by state. | | labels | Filters by label name or value. | |
+      labels.\ (where *key* is the name of a label) | Filters by label name.|
+      Search expressions are case insensitive. Some examples queries: | Query
+      | Description | |------------------|------------------------------------
+      -----------------| | name:how* | The project's name starts with "how". |
+      | name:Howl | The project's name is `Howl` or `howl`. | | name:HOWL |
       Equivalent to above. | | NAME:howl | Equivalent to above. | |
       labels.color:* | The project has the label `color`. | | labels.color:red
       | The project's label `color` has the value `red`. | | labels.color:red
       labels.size:big | The project's label `color` has the value `red` and
-      its label `size` has the value `big`. | If no query is specified, the
+      its label `size` has the value `big`.| If no query is specified, the
       call will return projects for which the user has the
       `resourcemanager.projects.get` permission.
   """
@@ -689,7 +690,7 @@ class CloudresourcemanagerProjectsUndeleteRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsUndeleteRequest object.
 
   Fields:
-    name: Required. The name of the Project (for example,
+    name: Required. The name of the project (for example,
       `projects/415104041262`). Required.
     undeleteProjectRequest: A UndeleteProjectRequest resource to be passed as
       the request body.
@@ -1011,8 +1012,8 @@ class CreateProjectMetadata(_messages.Message):
 
   Fields:
     createTime: Creation time of the project creation workflow.
-    gettable: True if the project can be retrieved using GetProject. No other
-      operations on the project are guaranteed to work until the project
+    gettable: True if the project can be retrieved using `GetProject`. No
+      other operations on the project are guaranteed to work until the project
       creation is complete.
     ready: True if the project creation process is complete.
   """
@@ -1020,6 +1021,10 @@ class CreateProjectMetadata(_messages.Message):
   createTime = _messages.StringField(1)
   gettable = _messages.BooleanField(2)
   ready = _messages.BooleanField(3)
+
+
+class CreateTagBindingMetadata(_messages.Message):
+  r"""Runtime operation information for creating a TagValue."""
 
 
 class CreateTagKeyMetadata(_messages.Message):
@@ -1031,14 +1036,14 @@ class CreateTagValueMetadata(_messages.Message):
 
 
 class DeleteFolderMetadata(_messages.Message):
-  r"""A status object which is used as the `metadata` field for the Operation
-  returned by DeleteFolder.
+  r"""A status object which is used as the `metadata` field for the
+  `Operation` returned by `DeleteFolder`.
   """
 
 
 
 class DeleteOrganizationMetadata(_messages.Message):
-  r"""A status object which is used as the `metadata` field for the Operation
+  r"""A status object which is used as the `metadata` field for the operation
   returned by DeleteOrganization.
   """
 
@@ -1046,9 +1051,13 @@ class DeleteOrganizationMetadata(_messages.Message):
 
 class DeleteProjectMetadata(_messages.Message):
   r"""A status object which is used as the `metadata` field for the Operation
-  returned by DeleteProject.
+  returned by `DeleteProject`.
   """
 
+
+
+class DeleteTagBindingMetadata(_messages.Message):
+  r"""Runtime operation information for deleting a TagBinding."""
 
 
 class DeleteTagKeyMetadata(_messages.Message):
@@ -1106,40 +1115,40 @@ class Expr(_messages.Message):
 
 
 class Folder(_messages.Message):
-  r"""A Folder in an Organization's resource hierarchy, used to organize that
-  Organization's resources.
+  r"""A folder in an organization's resource hierarchy, used to organize that
+  organization's resources.
 
   Enums:
     StateValueValuesEnum: Output only. The lifecycle state of the folder.
-      Updates to the state must be performed via DeleteFolder and
+      Updates to the state must be performed using DeleteFolder and
       UndeleteFolder.
 
   Fields:
-    createTime: Output only. Timestamp when the Folder was created.
-    deleteTime: Output only. Timestamp when the Folder was requested to be
+    createTime: Output only. Timestamp when the folder was created.
+    deleteTime: Output only. Timestamp when the folder was requested to be
       deleted.
     displayName: The folder's display name. A folder's display name must be
-      unique amongst its siblings, e.g. no two folders with the same parent
-      can share the same display name. The display name must start and end
-      with a letter or digit, may contain letters, digits, spaces, hyphens and
-      underscores and can be no longer than 30 characters. This is captured by
-      the regular expression: `[\p{L}\p{N}]([\p{L}\p{N}_-
+      unique amongst its siblings. For example, no two folders with the same
+      parent can share the same display name. The display name must start and
+      end with a letter or digit, may contain letters, digits, spaces, hyphens
+      and underscores and can be no longer than 30 characters. This is
+      captured by the regular expression: `[\p{L}\p{N}]([\p{L}\p{N}_-
       ]{0,28}[\p{L}\p{N}])?`.
     etag: Output only. A checksum computed by the server based on the current
-      value of the Folder resource. This may be sent on update and delete
+      value of the folder resource. This may be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
-    name: Output only. The resource name of the Folder. Its format is
+    name: Output only. The resource name of the folder. Its format is
       `folders/{folder_id}`, for example: "folders/1234".
-    parent: Required. The Folder's parent's resource name. Updates to the
-      folder's parent must be performed via MoveFolder.
+    parent: Required. The folder's parent's resource name. Updates to the
+      folder's parent must be performed using MoveFolder.
     state: Output only. The lifecycle state of the folder. Updates to the
-      state must be performed via DeleteFolder and UndeleteFolder.
-    updateTime: Output only. Timestamp when the Folder was last modified.
+      state must be performed using DeleteFolder and UndeleteFolder.
+    updateTime: Output only. Timestamp when the folder was last modified.
   """
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The lifecycle state of the folder. Updates to the state
-    must be performed via DeleteFolder and UndeleteFolder.
+    must be performed using DeleteFolder and UndeleteFolder.
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.
@@ -1304,7 +1313,7 @@ class ListFoldersResponse(_messages.Message):
   r"""The ListFolders response message.
 
   Fields:
-    folders: A possibly paginated list of Folders that are direct descendants
+    folders: A possibly paginated list of folders that are direct descendants
       of the specified parent resource.
     nextPageToken: A pagination token returned from a previous call to
       `ListFolders` that indicates from where listing should continue.
@@ -1400,7 +1409,7 @@ class ListTagValuesResponse(_messages.Message):
 
 
 class MoveFolderMetadata(_messages.Message):
-  r"""Metadata pertaining to the Folder move process.
+  r"""Metadata pertaining to the folder move process.
 
   Fields:
     destinationParent: The resource name of the folder or organization to move
@@ -1418,9 +1427,9 @@ class MoveFolderRequest(_messages.Message):
   r"""The MoveFolder request message.
 
   Fields:
-    destinationParent: Required. The resource name of the Folder or
-      Organization to reparent the folder under. Must be of the form
-      `folders/{folder_id}` or `organizations/{org_id}`.
+    destinationParent: Required. The resource name of the folder or
+      organization which should be the folder's new parent. Must be of the
+      form `folders/{folder_id}` or `organizations/{org_id}`.
     etag: Optional. The etag known to the client for the expected state of the
       Folder. This is to be used for optimistic concurrency.
     validateOnly: Optional. True to perform validations necessary for moving
@@ -1565,7 +1574,7 @@ class Operation(_messages.Message):
 
 class Organization(_messages.Message):
   r"""The root node in the resource hierarchy to which a particular entity's
-  (e.g., company) resources belong.
+  (a company, for example) resources belong.
 
   Enums:
     StateValueValuesEnum: Output only. The organization's current lifecycle
@@ -1578,10 +1587,10 @@ class Organization(_messages.Message):
     directoryCustomerId: Immutable. The G Suite / Workspace customer id used
       in the Directory API.
     displayName: Output only. A human-readable string that refers to the
-      Organization in the GCP Console UI. This string is set by the server and
-      cannot be changed. The string will be set to the primary domain (for
-      example, "google.com") of the G Suite customer that owns the
-      organization.
+      organization in the Google Cloud Console. This string is set by the
+      server and cannot be changed. The string will be set to the primary
+      domain (for example, "google.com") of the Google Workspace customer that
+      owns the organization.
     etag: Output only. A checksum computed by the server based on the current
       value of the Organization resource. This may be sent on update and
       delete requests to ensure the client has an up-to-date value before
@@ -1601,7 +1610,7 @@ class Organization(_messages.Message):
       STATE_UNSPECIFIED: Unspecified state. This is only useful for
         distinguishing unset values.
       ACTIVE: The normal and active state.
-      DELETE_REQUESTED: The Organization has been marked for deletion by the
+      DELETE_REQUESTED: The organization has been marked for deletion by the
         user.
     """
     STATE_UNSPECIFIED = 0
@@ -1691,15 +1700,14 @@ class Policy(_messages.Message):
 
 
 class Project(_messages.Message):
-  r"""A Project is a high-level Google Cloud Platform entity. It is a
-  container for ACLs, APIs, App Engine Apps, VMs, and other Google Cloud
-  Platform resources.
+  r"""A project is a high-level Google Cloud entity. It is a container for
+  ACLs, APIs, App Engine Apps, VMs, and other Google Cloud Platform resources.
 
   Enums:
-    StateValueValuesEnum: Output only. The Project lifecycle state.
+    StateValueValuesEnum: Output only. The project lifecycle state.
 
   Messages:
-    LabelsValue: Optional. The labels associated with this Project. Label keys
+    LabelsValue: Optional. The labels associated with this project. Label keys
       must be between 1 and 63 characters long and must conform to the
       following regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?. Label
       values must be between 0 and 63 characters long and must conform to the
@@ -1713,14 +1721,14 @@ class Project(_messages.Message):
     createTime: Output only. Creation time.
     deleteTime: Output only. The time at which this resource was requested for
       deletion.
-    displayName: Optional. A user-assigned display name of the Project. When
+    displayName: Optional. A user-assigned display name of the project. When
       present it must be between 4 to 30 characters. Allowed characters are:
       lowercase and uppercase letters, numbers, hyphen, single-quote, double-
       quote, space, and exclamation point. Example: `My Project`
     etag: Output only. A checksum computed by the server based on the current
       value of the Project resource. This may be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
-    labels: Optional. The labels associated with this Project. Label keys must
+    labels: Optional. The labels associated with this project. Label keys must
       be between 1 and 63 characters long and must conform to the following
       regular expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?. Label values must
       be between 0 and 63 characters long and must conform to the regular
@@ -1729,21 +1737,21 @@ class Project(_messages.Message):
       a representation such as JSON that does not depend on specific
       characters being disallowed. Example: `"myBusinessDimension" :
       "businessValue"`
-    name: Output only. The unique resource name of the Project. It is an int64
+    name: Output only. The unique resource name of the project. It is an int64
       generated number prefixed by "projects/". Example:
       `projects/415104041262`
     parent: Optional. A reference to a parent Resource. eg.,
       `organizations/123` or `folders/876`.
-    projectId: Immutable. The unique, user-assigned id of the Project. It must
+    projectId: Immutable. The unique, user-assigned id of the project. It must
       be 6 to 30 lowercase ASCII letters, digits, or hyphens. It must start
       with a letter. Trailing hyphens are prohibited. Example: `tokyo-
       rain-123`
-    state: Output only. The Project lifecycle state.
+    state: Output only. The project lifecycle state.
     updateTime: Output only. The most recent time this resource was modified.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The Project lifecycle state.
+    r"""Output only. The project lifecycle state.
 
     Values:
       STATE_UNSPECIFIED: Unspecified state. This is only used/useful for
@@ -1759,7 +1767,7 @@ class Project(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. The labels associated with this Project. Label keys must be
+    r"""Optional. The labels associated with this project. Label keys must be
     between 1 and 63 characters long and must conform to the following regular
     expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?. Label values must be between
     0 and 63 characters long and must conform to the regular expression
@@ -2117,8 +2125,8 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class UndeleteFolderMetadata(_messages.Message):
-  r"""A status object which is used as the `metadata` field for the Operation
-  returned by UndeleteFolder.
+  r"""A status object which is used as the `metadata` field for the
+  `Operation` returned by `UndeleteFolder`.
   """
 
 
@@ -2127,7 +2135,7 @@ class UndeleteFolderRequest(_messages.Message):
   r"""The UndeleteFolder request message.
 
   Fields:
-    etag: The etag known to the client for the expected state of the Folder.
+    etag: The etag known to the client for the expected state of the folder.
       This is to be used for optimistic concurrency.
     validateOnly: True to perform validations necessary for undeletion, but
       not actually perform the action.
@@ -2146,7 +2154,7 @@ class UndeleteOrganizationMetadata(_messages.Message):
 
 class UndeleteProjectMetadata(_messages.Message):
   r"""A status object which is used as the `metadata` field for the Operation
-  returned by UndeleteProject.
+  returned by `UndeleteProject`.
   """
 
 
@@ -2156,7 +2164,7 @@ class UndeleteProjectRequest(_messages.Message):
 
   Fields:
     etag: Optional. The etag known to the client for the expected state of the
-      Project. This is to be used for optimistic concurrency.
+      project. This is to be used for optimistic concurrency.
     validateOnly: Optional. True to perform validations necessary for
       undeletion, but not actually perform the action.
   """

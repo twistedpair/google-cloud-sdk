@@ -355,10 +355,10 @@ class DatabaseInstance(_messages.Message):
     DatabaseVersionValueValuesEnum: The database engine type and version. The
       *databaseVersion* field cannot be changed after instance creation. MySQL
       instances: *MYSQL_8_0*, *MYSQL_5_7* (default), or *MYSQL_5_6*.
-      PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or
-      *POSTGRES_12* (default). SQL Server instances: *SQLSERVER_2017_STANDARD*
-      (default), *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
-      *SQLSERVER_2017_WEB*.
+      PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11*,
+      *POSTGRES_12*, or *POSTGRES_13* (default). SQL Server instances:
+      *SQLSERVER_2017_STANDARD* (default), *SQLSERVER_2017_ENTERPRISE*,
+      *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
       following. *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not
       replicating from a primary instance. *ON_PREMISES_INSTANCE*: An instance
@@ -392,10 +392,10 @@ class DatabaseInstance(_messages.Message):
     databaseVersion: The database engine type and version. The
       *databaseVersion* field cannot be changed after instance creation. MySQL
       instances: *MYSQL_8_0*, *MYSQL_5_7* (default), or *MYSQL_5_6*.
-      PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or
-      *POSTGRES_12* (default). SQL Server instances: *SQLSERVER_2017_STANDARD*
-      (default), *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
-      *SQLSERVER_2017_WEB*.
+      PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11*,
+      *POSTGRES_12*, or *POSTGRES_13* (default). SQL Server instances:
+      *SQLSERVER_2017_STANDARD* (default), *SQLSERVER_2017_ENTERPRISE*,
+      *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.
     diskEncryptionConfiguration: Disk encryption configuration specific to an
       instance. Applies only to Second Generation instances.
     diskEncryptionStatus: Disk encryption status specific to an instance.
@@ -482,9 +482,9 @@ class DatabaseInstance(_messages.Message):
     r"""The database engine type and version. The *databaseVersion* field
     cannot be changed after instance creation. MySQL instances: *MYSQL_8_0*,
     *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances:
-    *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default).
-    SQL Server instances: *SQLSERVER_2017_STANDARD* (default),
-    *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
+    *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11*, *POSTGRES_12*, or
+    *POSTGRES_13* (default). SQL Server instances: *SQLSERVER_2017_STANDARD*
+    (default), *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
     *SQLSERVER_2017_WEB*.
 
     Values:
@@ -1837,9 +1837,8 @@ class Settings(_messages.Message):
     storageAutoResizeLimit: The maximum size to which storage capacity can be
       automatically increased. The default value is 0, which specifies that
       there is no limit.
-    tier: The tier (or machine type) for this instance, for example
-      *db-n1-standard-1* (MySQL instances) or *db-custom-1-3840* (PostgreSQL
-      instances).
+    tier: The tier (or machine type) for this instance, for example *db-
+      custom-1-3840* .
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
   """
@@ -2971,7 +2970,7 @@ class Tier(_messages.Message):
     RAM: The maximum RAM usage of this tier in bytes.
     kind: This is always *sql#tier*.
     region: The applicable regions for this tier.
-    tier: An identifier for the machine type, for example, db-n1-standard-1.
+    tier: An identifier for the machine type, for example, db-custom-1-3840.
       For related information, see Pricing.
   """
 
@@ -3022,6 +3021,8 @@ class User(_messages.Message):
       operations, host defaults to an empty string. For *update* operations,
       host is specified as part of the request URL. The host name cannot be
       updated after insertion.
+    iamEmail: The full email for an IAM user. For normal database users, this
+      will not be filled. Only applicable to MySQL database users.
     instance: The name of the Cloud SQL instance. This does not include the
       project ID. Can be omitted for *update* since it is already specified on
       the URL.
@@ -3052,13 +3053,14 @@ class User(_messages.Message):
 
   etag = _messages.StringField(1)
   host = _messages.StringField(2)
-  instance = _messages.StringField(3)
-  kind = _messages.StringField(4)
-  name = _messages.StringField(5)
-  password = _messages.StringField(6)
-  project = _messages.StringField(7)
-  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  iamEmail = _messages.StringField(3)
+  instance = _messages.StringField(4)
+  kind = _messages.StringField(5)
+  name = _messages.StringField(6)
+  password = _messages.StringField(7)
+  project = _messages.StringField(8)
+  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
 
 
 class UsersListResponse(_messages.Message):

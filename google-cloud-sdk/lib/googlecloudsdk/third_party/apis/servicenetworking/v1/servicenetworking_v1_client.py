@@ -205,6 +205,33 @@ class ServicenetworkingV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DeleteConnection(self, request, global_params=None):
+      r"""Deletes a private service access connection.
+
+      Args:
+        request: (ServicenetworkingServicesConnectionsDeleteConnectionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteConnection')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteConnection.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/services/{servicesId}/connections/{connectionsId}',
+        http_method='POST',
+        method_id='servicenetworking.services.connections.deleteConnection',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='deleteConnectionRequest',
+        request_type_name='ServicenetworkingServicesConnectionsDeleteConnectionRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""List the private connections that are configured in a service consumer's VPC network.
 

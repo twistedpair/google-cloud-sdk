@@ -80,17 +80,15 @@ class HeartbeatConnectorRequest(_messages.Message):
   serving state.
 
   Fields:
-    forwarded: False if the request has been received directly from a VM.
     heartbeatTime: Required. When this request was sent.
     ipAddress: Required. The IP address of the VM.
     lameduck: If the VM is in lameduck mode, meaning that it is in the process
       of shutting down and should not be used for new connections.
   """
 
-  forwarded = _messages.BooleanField(1)
-  heartbeatTime = _messages.StringField(2)
-  ipAddress = _messages.StringField(3)
-  lameduck = _messages.BooleanField(4)
+  heartbeatTime = _messages.StringField(1)
+  ipAddress = _messages.StringField(2)
+  lameduck = _messages.BooleanField(3)
 
 
 class HeartbeatConnectorResponse(_messages.Message):

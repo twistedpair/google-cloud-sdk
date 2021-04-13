@@ -963,6 +963,7 @@ class Detail(_messages.Message):
     severityName: The severity (eg: distro assigned severity) for this
       vulnerability.
     source: The source from which the information in this Detail was obtained.
+    vendor: The vendor of the product. e.g. "google"
   """
 
   cpeUri = _messages.StringField(1)
@@ -975,6 +976,7 @@ class Detail(_messages.Message):
   packageType = _messages.StringField(8)
   severityName = _messages.StringField(9)
   source = _messages.StringField(10)
+  vendor = _messages.StringField(11)
 
 
 class Discovered(_messages.Message):

@@ -5,6 +5,53 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 336.0.0 (2021-04-13)
+
+### Assured Workloads
+
+*   Promoted `--resource-settings` of `gcloud assured workloads create` to GA.
+
+### Cloud Composer
+
+* Added support of Airflow 2.0 CLI nested commands to `gcloud composer environments run`.
+* Updated `gcloud beta composer environments run my-environment upgrade_check` to run upgrade check to Airflow 2.0 for Composer environments with Airflow 1.10.15+.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.11.14
+  * Fix header parsing causing permission denined errors with Firestore JS SDK v8.3.2.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.61.
+
+### Compute Engine
+
+* Added `--request-coalescing` to `gcloud beta compute backend-services create`,  `gcloud beta compute backend-services update`,
+  `gcloud beta compute backend-buckets create` and `gcloud beta compute backend-buckets update`.
+* Added `cdnPolicy.requestCoalescing` field support to `gcloud beta compute backend-services import`.
+* Promoted `--target_distribution_shape` flag of `gcloud compute instance-groups managed` `create` and `update` to GA.
+ Added `--compute-service-account` flag to `gcloud compute instances import`.
+* Removed unneeded `curl` progress output from `gcloud compute ssh` with
+  `--internal-ip  flag.
+* Promoted `--zone` flag to `gcloud beta compute images describe-from-family`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.45.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kpt
+
+* Updated kpt from v0.38.1 to v0.39.0.
+* Updated import of cli-utils from v0.23.5 to v0.24.0.
+* Updated import of kyaml from v0.10.13 to v0.10.15.
+* Updated import of cmd/config from v0.9.5 to v0.9.7.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 335.0.0 (2021-04-06)
 
 ### Breaking Changes

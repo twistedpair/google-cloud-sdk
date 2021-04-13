@@ -254,5 +254,8 @@ RESOURCE_SETTINGS_MAP = {
                    ).GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings,
     ReleaseTrack.BETA:
         GetMessages(ReleaseTrack.BETA
-                   ).GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings
+                   ).GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings,
+    ReleaseTrack.GA:
+        GetMessages(ReleaseTrack.GA
+                   ).GoogleCloudAssuredworkloadsV1WorkloadResourceSettings
 }

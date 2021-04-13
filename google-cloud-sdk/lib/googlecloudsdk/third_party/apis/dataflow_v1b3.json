@@ -103,7 +103,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         },
         "https://www.googleapis.com/auth/compute": {
           "description": "View and manage your Google Compute Engine resources"
@@ -2598,6 +2598,10 @@
             "FLEXRS_SPEED_OPTIMIZED",
             "FLEXRS_COST_OPTIMIZED"
           ]
+        },
+        "stagingLocation": {
+          "description": "The Cloud Storage path for staging local files. Must be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
+          "type": "string"
         }
       }
     },

@@ -402,8 +402,7 @@ def ApplyCdnPolicyArgs(client,
                        backend_service,
                        is_update=False,
                        apply_signed_url_cache_max_age=False,
-                       cleared_fields=None,
-                       support_request_coalescing=False):
+                       cleared_fields=None):
   """Applies the CdnPolicy arguments to the specified backend service.
 
   If there are no arguments related to CdnPolicy, the backend service remains
@@ -420,7 +419,6 @@ def ApplyCdnPolicyArgs(client,
       arguments.
     cleared_fields: Reference to list with fields that should be cleared. Valid
       only for update command.
-    support_request_coalescing: If True then maps request coalescing argument
   """
   if backend_service.cdnPolicy is not None:
     cdn_policy = encoding.CopyProtoMessage(backend_service.cdnPolicy)
@@ -435,7 +433,7 @@ def ApplyCdnPolicyArgs(client,
       'signed_url_cache_max_age'):
     cdn_policy.signedUrlCacheMaxAgeSec = args.signed_url_cache_max_age
 
-  if support_request_coalescing and args.request_coalescing is not None:
+  if args.request_coalescing is not None:
     cdn_policy.requestCoalescing = args.request_coalescing
 
   if args.cache_mode:

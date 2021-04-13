@@ -6662,14 +6662,17 @@ class GoogleCloudAiplatformUiMeasurement(_messages.Message):
   the Metrics got by executing a Trial using suggested hyperparameter values.
 
   Fields:
+    elapsedDuration: Output only. Time that the Trial has been running at the
+      point of this Measurement.
     metrics: Output only. A list of metrics got by evaluating the objective
       functions using suggested Parameter values.
     stepCount: Output only. The number of steps the machine learning model has
       been trained for. Must be non-negative.
   """
 
-  metrics = _messages.MessageField('GoogleCloudAiplatformUiMeasurementMetric', 1, repeated=True)
-  stepCount = _messages.IntegerField(2)
+  elapsedDuration = _messages.StringField(1)
+  metrics = _messages.MessageField('GoogleCloudAiplatformUiMeasurementMetric', 2, repeated=True)
+  stepCount = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformUiMeasurementMetric(_messages.Message):
@@ -7675,6 +7678,14 @@ class GoogleCloudAiplatformUiTrial(_messages.Message):
     StateValueValuesEnum: Output only. The detailed state of the Trial.
 
   Fields:
+    clientId: Output only. The identifier of the client that originally
+      requested this Trial. Each client is identified by a unique client_id.
+      When a client asks for a suggestion, Vizier will assign it a Trial. The
+      client should evaluate the Trial, complete it, and report back to
+      Vizier. If suggestion is asked again by same client_id before the Trial
+      is completed, the same Trial will be returned. Multiple clients with
+      different client_ids can ask for suggestions simultaneously, each of
+      them will get their own Trial.
     customJob: Output only. The CustomJob name linked to the Trial. It's set
       for a HyperparameterTuningJob's Trial.
     endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
@@ -7682,6 +7693,11 @@ class GoogleCloudAiplatformUiTrial(_messages.Message):
     finalMeasurement: Output only. The final measurement containing the
       objective value.
     id: Output only. The identifier of the Trial assigned by the service.
+    infeasibleReason: Output only. A human readable string describing why the
+      Trial is infeasible. This is set only if Trial state is `INFEASIBLE`.
+    measurements: Output only. A list of measurements that are strictly
+      lexicographically ordered by their induced tuples (steps,
+      elapsed_duration). These are used for early stopping computations.
     name: Output only. Resource name of the Trial assigned by the service.
     parameters: Output only. The parameters of the Trial.
     startTime: Output only. Time when the Trial was started.
@@ -7709,14 +7725,17 @@ class GoogleCloudAiplatformUiTrial(_messages.Message):
     SUCCEEDED = 4
     INFEASIBLE = 5
 
-  customJob = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformUiMeasurement', 3)
-  id = _messages.StringField(4)
-  name = _messages.StringField(5)
-  parameters = _messages.MessageField('GoogleCloudAiplatformUiTrialParameter', 6, repeated=True)
-  startTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  clientId = _messages.StringField(1)
+  customJob = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformUiMeasurement', 4)
+  id = _messages.StringField(5)
+  infeasibleReason = _messages.StringField(6)
+  measurements = _messages.MessageField('GoogleCloudAiplatformUiMeasurement', 7, repeated=True)
+  name = _messages.StringField(8)
+  parameters = _messages.MessageField('GoogleCloudAiplatformUiTrialParameter', 9, repeated=True)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class GoogleCloudAiplatformUiTrialParameter(_messages.Message):
@@ -12088,14 +12107,17 @@ class GoogleCloudAiplatformV1alpha1Measurement(_messages.Message):
   the Metrics got by executing a Trial using suggested hyperparameter values.
 
   Fields:
+    elapsedDuration: Output only. Time that the Trial has been running at the
+      point of this Measurement.
     metrics: Output only. A list of metrics got by evaluating the objective
       functions using suggested Parameter values.
     stepCount: Output only. The number of steps the machine learning model has
       been trained for. Must be non-negative.
   """
 
-  metrics = _messages.MessageField('GoogleCloudAiplatformV1alpha1MeasurementMetric', 1, repeated=True)
-  stepCount = _messages.IntegerField(2)
+  elapsedDuration = _messages.StringField(1)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1alpha1MeasurementMetric', 2, repeated=True)
+  stepCount = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformV1alpha1MeasurementMetric(_messages.Message):
@@ -13035,11 +13057,24 @@ class GoogleCloudAiplatformV1alpha1Trial(_messages.Message):
     StateValueValuesEnum: Output only. The detailed state of the Trial.
 
   Fields:
+    clientId: Output only. The identifier of the client that originally
+      requested this Trial. Each client is identified by a unique client_id.
+      When a client asks for a suggestion, Vizier will assign it a Trial. The
+      client should evaluate the Trial, complete it, and report back to
+      Vizier. If suggestion is asked again by same client_id before the Trial
+      is completed, the same Trial will be returned. Multiple clients with
+      different client_ids can ask for suggestions simultaneously, each of
+      them will get their own Trial.
     endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
       or `INFEASIBLE`.
     finalMeasurement: Output only. The final measurement containing the
       objective value.
     id: Output only. The identifier of the Trial assigned by the service.
+    infeasibleReason: Output only. A human readable string describing why the
+      Trial is infeasible. This is set only if Trial state is `INFEASIBLE`.
+    measurements: Output only. A list of measurements that are strictly
+      lexicographically ordered by their induced tuples (steps,
+      elapsed_duration). These are used for early stopping computations.
     name: Output only. Resource name of the Trial assigned by the service.
     parameters: Output only. The parameters of the Trial.
     startTime: Output only. Time when the Trial was started.
@@ -13067,13 +13102,16 @@ class GoogleCloudAiplatformV1alpha1Trial(_messages.Message):
     SUCCEEDED = 4
     INFEASIBLE = 5
 
-  endTime = _messages.StringField(1)
-  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1alpha1Measurement', 2)
-  id = _messages.StringField(3)
-  name = _messages.StringField(4)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1TrialParameter', 5, repeated=True)
-  startTime = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  clientId = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1alpha1Measurement', 3)
+  id = _messages.StringField(4)
+  infeasibleReason = _messages.StringField(5)
+  measurements = _messages.MessageField('GoogleCloudAiplatformV1alpha1Measurement', 6, repeated=True)
+  name = _messages.StringField(7)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1TrialParameter', 8, repeated=True)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class GoogleCloudAiplatformV1alpha1TrialParameter(_messages.Message):
@@ -16760,14 +16798,17 @@ class GoogleCloudAiplatformV1beta1Measurement(_messages.Message):
   the Metrics got by executing a Trial using suggested hyperparameter values.
 
   Fields:
+    elapsedDuration: Output only. Time that the Trial has been running at the
+      point of this Measurement.
     metrics: Output only. A list of metrics got by evaluating the objective
       functions using suggested Parameter values.
     stepCount: Output only. The number of steps the machine learning model has
       been trained for. Must be non-negative.
   """
 
-  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1MeasurementMetric', 1, repeated=True)
-  stepCount = _messages.IntegerField(2)
+  elapsedDuration = _messages.StringField(1)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1MeasurementMetric', 2, repeated=True)
+  stepCount = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformV1beta1MeasurementMetric(_messages.Message):
@@ -20843,12 +20884,16 @@ class GoogleCloudAiplatformV1beta1Tensorboard(_messages.Message):
     createTime: Output only. Timestamp when this Tensorboard was created.
     description: Description of this Tensorboard.
     displayName: Required. User provided name of this Tensorboard.
+    encryptionSpec: Customer-managed encryption key spec for a Tensorboard. If
+      set, this Tensorboard and all sub-resources of this Tensorboard will be
+      secured by this key.
     etag: Used to perform a consistent read-modify-write updates. If not set,
       a blind "overwrite" update happens.
     kmsKeyName: By default Tensorboard is encrypted with Google provided keys.
       Users can optionally supply a KMS key to encrypt their data Format: `pro
       jects/{project_id}/locations/{location}/keyRings/{key_ring_id}/cryptoKey
-      s/{key_id}`
+      s/{key_id}` Will be removed and reserved soon for encryption_spec uCAIP
+      replacement.
     labels: The labels with user-defined metadata to organize your
       Tensorboards. Label keys and values can be no longer than 64 characters
       (Unicode codepoints), can only contain lowercase letters, numeric
@@ -20898,12 +20943,13 @@ class GoogleCloudAiplatformV1beta1Tensorboard(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  kmsKeyName = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  runCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(10)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 5)
+  etag = _messages.StringField(6)
+  kmsKeyName = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  runCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1beta1TensorboardBlob(_messages.Message):
@@ -21421,6 +21467,14 @@ class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
     StateValueValuesEnum: Output only. The detailed state of the Trial.
 
   Fields:
+    clientId: Output only. The identifier of the client that originally
+      requested this Trial. Each client is identified by a unique client_id.
+      When a client asks for a suggestion, Vizier will assign it a Trial. The
+      client should evaluate the Trial, complete it, and report back to
+      Vizier. If suggestion is asked again by same client_id before the Trial
+      is completed, the same Trial will be returned. Multiple clients with
+      different client_ids can ask for suggestions simultaneously, each of
+      them will get their own Trial.
     customJob: Output only. The CustomJob name linked to the Trial. It's set
       for a HyperparameterTuningJob's Trial.
     endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
@@ -21428,6 +21482,11 @@ class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
     finalMeasurement: Output only. The final measurement containing the
       objective value.
     id: Output only. The identifier of the Trial assigned by the service.
+    infeasibleReason: Output only. A human readable string describing why the
+      Trial is infeasible. This is set only if Trial state is `INFEASIBLE`.
+    measurements: Output only. A list of measurements that are strictly
+      lexicographically ordered by their induced tuples (steps,
+      elapsed_duration). These are used for early stopping computations.
     name: Output only. Resource name of the Trial assigned by the service.
     parameters: Output only. The parameters of the Trial.
     startTime: Output only. Time when the Trial was started.
@@ -21455,14 +21514,17 @@ class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
     SUCCEEDED = 4
     INFEASIBLE = 5
 
-  customJob = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1beta1Measurement', 3)
-  id = _messages.StringField(4)
-  name = _messages.StringField(5)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1TrialParameter', 6, repeated=True)
-  startTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  clientId = _messages.StringField(1)
+  customJob = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1beta1Measurement', 4)
+  id = _messages.StringField(5)
+  infeasibleReason = _messages.StringField(6)
+  measurements = _messages.MessageField('GoogleCloudAiplatformV1beta1Measurement', 7, repeated=True)
+  name = _messages.StringField(8)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1TrialParameter', 9, repeated=True)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class GoogleCloudAiplatformV1beta1TrialParameter(_messages.Message):

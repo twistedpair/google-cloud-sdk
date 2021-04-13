@@ -191,7 +191,7 @@ class Build(_messages.Message):
     serviceAccount: IAM service account whose credentials will be used at
       build runtime. Must be of the format
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. ACCOUNT can be email
-      address or uniqueId of the service account. This field is in beta.
+      address or uniqueId of the service account.
     source: The location of the source files to build.
     sourceProvenance: Output only. A permanent fixed identifier for source.
     startTime: Output only. Time at which execution of the build was started.
@@ -755,7 +755,7 @@ class ClusterOptions(_messages.Message):
 
   Fields:
     name: Identifier of the GKE Cluster this build should execute on. Example:
-      projects/{project_id}/locations/{location}/cluster/{cluster_name} The
+      projects/{project_id}/locations/{location}/clusters/{cluster_name} The
       cluster's project ID must be the same project ID that is running the
       build. The cluster must exist and have the CloudBuild add-on enabled.
   """

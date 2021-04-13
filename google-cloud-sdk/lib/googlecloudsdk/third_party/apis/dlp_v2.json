@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -1854,7 +1854,7 @@
       "type": "object",
       "properties": {
         "cryptoKey": {
-          "description": "The key used by the encryption function.",
+          "description": "The key used by the encryption function. For deterministic encryption using AES-SIV, the provided key is internally expanded to 64 bytes prior to use.",
           "$ref": "GooglePrivacyDlpV2CryptoKey"
         },
         "surrogateInfoType": {

@@ -51,9 +51,11 @@ LEGACY_V1_FLAGS = [
 ]
 LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
 
+EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED = 'google.cloud.pubsub.topic.v1.messagePublished'
+
 
 def _GetSource(source_arg):
-  """Parse the source bucket and object from the --source flag."""
+  """Parses the source bucket and object from the --source flag."""
   if not source_arg:
     raise exceptions.FunctionsError(SOURCE_ERROR_MESSAGE)
 
@@ -65,7 +67,7 @@ def _GetSource(source_arg):
 
 
 def _GetServiceConfig(args, messages):
-  """Construct a ServiceConfig message from the command-line arguments."""
+  """Constructs a ServiceConfig message from the command-line arguments."""
   env_var_flags = map_util.GetMapFlagsFromArgs('env-vars', args)
   env_vars = map_util.ApplyMapFlags({}, **env_var_flags)
 
@@ -90,16 +92,25 @@ def _GetServiceConfig(args, messages):
 
 
 def _GetEventTrigger(args, messages):
-  """Construct an EventTrigger message from the command-line arguments."""
-  event_trigger = None
+  """Constructs an EventTrigger message from the command-line arguments."""
+  if not args.trigger_topic and not args.trigger_event_filters:
+    return None
+
+  event_type = None
+  pubsub_topic = None
+
+  if args.trigger_topic:
+    event_type = EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED
+    pubsub_topic = 'projects/{}/topics/{}'.format(
+        properties.VALUES.core.project.GetOrFail(), args.trigger_topic)
+
+  event_trigger = messages.EventTrigger(
+      eventType=event_type,
+      pubsubTopic=pubsub_topic,
+      serviceAccountEmail=args.trigger_service_account or args.service_account,
+      triggerRegion=args.trigger_location)
 
   if args.trigger_event_filters:
-    event_trigger = messages.EventTrigger(
-        serviceAccountEmail=args.trigger_service_account or
-        args.service_account,
-        triggerRegion=args.trigger_location,
-        pubsubTopic=args.trigger_topic)
-
     for trigger_event_filter in args.trigger_event_filters:
       attribute, value = trigger_event_filter.split('=', 1)
       if attribute == 'type':
@@ -112,7 +123,7 @@ def _GetEventTrigger(args, messages):
 
 
 def _GetSignatureType(args, event_trigger):
-  """Determine the function signature type from the command-line arguments."""
+  """Determines the function signature type from the command-line arguments."""
   if args.IsSpecified('trigger_http') or not event_trigger:
     if args.IsSpecified('signature_type') and args.signature_type != 'http':
       raise exceptions.FunctionsError(
@@ -127,7 +138,7 @@ def _GetSignatureType(args, event_trigger):
 
 
 def _GetBuildConfig(args, messages, event_trigger):
-  """Construct a BuildConfig message from the command-line arguments."""
+  """Constructs a BuildConfig message from the command-line arguments."""
   source_bucket, source_object = _GetSource(args.source)
 
   build_env_var_flags = map_util.GetMapFlagsFromArgs('build-env-vars', args)
@@ -156,7 +167,7 @@ def _GetBuildConfig(args, messages, event_trigger):
 
 
 def _GetIngressSettings(args, messages):
-  """Construct ingress setting enum from command-line arguments."""
+  """Constructs ingress setting enum from command-line arguments."""
   if args.IsSpecified('ingress_settings'):
     ingress_settings_enum = arg_utils.ChoiceEnumMapper(
         arg_name='ingress_settings',
@@ -169,7 +180,7 @@ def _GetIngressSettings(args, messages):
 
 
 def _GetVpcAndVpcEgressSettings(args, messages):
-  """Construct vpc connector and egress settings from command-line arguments."""
+  """Constructs vpc connector and egress settings from command-line arguments."""
   vpc_connector = args.vpc_connector
 
   if not args.IsSpecified('egress_settings'):
@@ -204,7 +215,7 @@ def _GetLabels(args, messages):
 
 
 def Run(args, release_track):
-  """Run a function deployment with the given args."""
+  """Runs a function deployment with the given args."""
   client = api_util.GetClientInstance(release_track=release_track)
   messages = api_util.GetMessagesModule(release_track=release_track)
 
@@ -231,3 +242,7 @@ def Run(args, release_track):
 
   api_util.WaitForOperation(client, messages, operation,
                             'Deploying function (may take a while)')
+
+  return client.projects_locations_functions.Get(
+      messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
+          name=function_ref.RelativeName()))

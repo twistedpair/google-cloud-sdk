@@ -2060,7 +2060,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Subscribe to a particular API Product. Subscription includes things like: - API Product to which the developer is subscribing. - When the subscription is to be started. - When the subscription will end. The API Product associated with the subscription cannot be used before the start of the subscription and after the end of the subscription.
+      r"""Creates a subscription to an API product. .
 
       Args:
         request: (ApigeeOrganizationsDevelopersSubscriptionsCreateRequest) input message
@@ -2087,7 +2087,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Expire(self, request, global_params=None):
-      r"""Expire a subscription. This will expire a subscription immediately.
+      r"""Expires an API product subscription immediately.
 
       Args:
         request: (ApigeeOrganizationsDevelopersSubscriptionsExpireRequest) input message
@@ -2114,7 +2114,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the details regarding a particular subscription.
+      r"""Gets details for an API product subscription.
 
       Args:
         request: (ApigeeOrganizationsDevelopersSubscriptionsGetRequest) input message
@@ -2141,7 +2141,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List all the Subscriptions.
+      r"""Lists all API product subscriptions for a developer.
 
       Args:
         request: (ApigeeOrganizationsDevelopersSubscriptionsListRequest) input message
@@ -6840,6 +6840,60 @@ class ApigeeV1(base_api.BaseApiClient):
       super(ApigeeV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def MigrateConfigData(self, request, global_params=None):
+      r"""Copies all proxy and environment configuration data from an Apigee Edge organization into Apigee X/Hybrid.
+
+      Args:
+        request: (ApigeeProjectsMigrateConfigDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('MigrateConfigData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MigrateConfigData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}:migrateConfigData',
+        http_method='POST',
+        method_id='apigee.projects.migrateConfigData',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=[],
+        relative_path='v1/{+project}:migrateConfigData',
+        request_field='googleCloudApigeeV1MigrateConfigDataRequest',
+        request_type_name='ApigeeProjectsMigrateConfigDataRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def MigrateDeveloperPortals(self, request, global_params=None):
+      r"""Migrates all developer portals from an Apigee edge organization into ApigeeX/Hybrid.
+
+      Args:
+        request: (ApigeeProjectsMigrateDeveloperPortalsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('MigrateDeveloperPortals')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MigrateDeveloperPortals.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}:migrateDeveloperPortals',
+        http_method='POST',
+        method_id='apigee.projects.migrateDeveloperPortals',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=[],
+        relative_path='v1/{+project}:migrateDeveloperPortals',
+        request_field='googleCloudApigeeV1MigrateDeveloperPortalsRequest',
+        request_type_name='ApigeeProjectsMigrateDeveloperPortalsRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
     def ProvisionOrganization(self, request, global_params=None):
       r"""Provisions a new Apigee organization with a functioning runtime. This is the standard way to create trial organizations for a free Apigee trial.

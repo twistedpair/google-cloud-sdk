@@ -51,6 +51,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_POLICYBASEDROUTES = (
+      'projects.locations.global.policyBasedRoutes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/policyBasedRoutes/'
+              '{policyBasedRoutesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_INTERNALRANGES = (
       'projects.locations.internalRanges',
       '{+name}',
@@ -69,17 +80,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_POLICYBASEDROUTES = (
-      'projects.locations.policyBasedRoutes',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'policyBasedRoutes/{policyBasedRoutesId}',
       },
       ['name'],
       True

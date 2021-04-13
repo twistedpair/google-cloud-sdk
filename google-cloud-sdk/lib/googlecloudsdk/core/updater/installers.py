@@ -22,11 +22,14 @@ from __future__ import unicode_literals
 import os
 import re
 import ssl
+import stat
 import tarfile
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import local_file_adapter
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core import transport
 from googlecloudsdk.core import url_opener
 from googlecloudsdk.core.console import console_io
@@ -35,6 +38,7 @@ from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import http_encoding
 from googlecloudsdk.core.util import retry
 
+import requests
 import six
 from six.moves import urllib
 
@@ -131,7 +135,8 @@ def MakeRequest(url, command_path):
         raise e
       # If we fail again with a 403, that means we used the credentials, but
       # they didn't have access to the resource.
-      raise AuthenticationError("""\
+      raise AuthenticationError(
+          """\
 Account [{account}] does not have permission to install this component.  Please
 ensure that this account should have access or run:
 
@@ -160,6 +165,122 @@ def _RawRequest(*args, **kwargs):
     if e.last_result[1]:
       exceptions.reraise(e.last_result[1][1], tb=e.last_result[1][2])
     raise
+
+
+def MakeRequestViaRequests(url, command_path):
+  """Gets the request object for the given URL using the requests library.
+
+  If the URL is for cloud storage and we get a 403, this will try to load the
+  active credentials and use them to authenticate the download.
+
+  Args:
+    url: str, the URL to download.
+    command_path: str, the command path to include in the User-Agent header if
+      the URL is HTTP.
+
+  Raises:
+    AuthenticationError: If this download requires authentication and there
+      are no credentials or the credentials do not have access.
+
+  Returns:
+    requests.Response object
+  """
+  if url.startswith(ComponentInstaller.GCS_BROWSER_DL_URL):
+    url = url.replace(ComponentInstaller.GCS_BROWSER_DL_URL,
+                      ComponentInstaller.GCS_API_DL_URL, 1)
+  headers = {
+      b'Cache-Control':
+          b'no-cache',
+      b'User-Agent':
+          http_encoding.Encode(transport.MakeUserAgentString(command_path))
+  }
+  timeout = TIMEOUT_IN_SEC
+  if command_path == UPDATE_MANAGER_COMMAND_PATH:
+    timeout = UPDATE_MANAGER_TIMEOUT_IN_SEC
+
+  try:
+    return _RawRequestViaRequests(url, headers=headers, timeout=timeout)
+  except requests.exceptions.HTTPError as e:
+    if e.response.status_code != 403 or not e.response.url.startswith(
+        ComponentInstaller.GCS_API_DL_URL):
+      raise e
+    try:
+      creds = store.LoadFreshCredential(use_google_auth=True)
+      creds.apply(headers)
+    except store.Error as e:
+      # If we fail here, it is because there are no active credentials or the
+      # credentials are bad.
+      raise AuthenticationError(
+          'This component requires valid credentials to install.', e)
+    try:
+      # Retry the download using the credentials.
+      return _RawRequestViaRequests(url, headers=headers, timeout=timeout)
+    except requests.exceptions.HTTPError as e:
+      if e.response.status_code != 403:
+        raise e
+      # If we fail again with a 403, that means we used the credentials, but
+      # they didn't have access to the resource.
+      raise AuthenticationError(
+          """\
+Account [{account}] does not have permission to install this component.  Please
+ensure that this account should have access or run:
+
+$ gcloud config set account `ACCOUNT`
+
+to choose another account.""".format(
+    account=properties.VALUES.core.account.Get()), e)
+
+
+def _RawRequestViaRequests(*args, **kwargs):
+  """Executes an HTTP request."""
+
+  def RetryIf(exc_type, exc_value, unused_traceback, unused_state):
+    return (exc_type == requests.exceptions.HTTPError and
+            exc_value.response.status_code == 404)
+
+  def StatusUpdate(unused_result, unused_state):
+    log.debug('Retrying request...')
+
+  retryer = retry.Retryer(
+      max_retrials=3,
+      exponential_sleep_multiplier=2,
+      jitter_ms=100,
+      status_update_func=StatusUpdate)
+  try:
+    return retryer.RetryOnException(
+        _ExecuteRequestAndRaiseExceptions,
+        args,
+        kwargs,
+        should_retry_if=RetryIf,
+        sleep_ms=500)
+  except retry.RetryException as e:
+    # last_result is (return value, sys.exc_info)
+    if e.last_result[1]:
+      exceptions.reraise(e.last_result[1][1], tb=e.last_result[1][2])
+    raise
+
+
+def _ExecuteRequestAndRaiseExceptions(url, headers, timeout):
+  """Executes an HTTP request using requests.
+
+  Args:
+    url: str, the url to download.
+    headers: obj, the headers to include in the request.
+    timeout: int, the timeout length for the request.
+
+  Returns:
+    A response object from the request.
+
+  Raises:
+    requests.exceptions.HTTPError in the case of a client or server error.
+  """
+  requests_session = core_requests.GetSession()
+  if url.startswith('file://'):
+    requests_session.mount('file://', local_file_adapter.LocalFileAdapter())
+  response = requests_session.get(
+      url, headers=headers, timeout=timeout, stream=True)
+  response.raise_for_status()
+  return response
 
 
 def DownloadAndExtractTar(url, download_dir, extract_dir,
@@ -229,6 +350,10 @@ def DownloadAndExtractTar(url, download_dir, extract_dir,
     for num, member in enumerate(members, start=1):
       files.append(member.name + '/' if member.isdir() else member.name)
       tar.extract(member, extract_dir)
+      full_path = os.path.join(extract_dir, member.name)
+      # Ensure read-and-write permission for all files
+      if os.path.isfile(full_path) and not os.access(full_path, os.W_OK):
+        os.chmod(full_path, stat.S_IWUSR|stat.S_IREAD)
       install_callback(num / total_files)
 
     install_callback(1)

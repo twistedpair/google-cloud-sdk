@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -463,7 +463,7 @@
           }
         },
         "serviceAccount": {
-          "description": "IAM service account whose credentials will be used at build runtime. Must be of the format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. ACCOUNT can be email address or uniqueId of the service account. This field is in beta.",
+          "description": "IAM service account whose credentials will be used at build runtime. Must be of the format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. ACCOUNT can be email address or uniqueId of the service account. ",
           "type": "string"
         },
         "availableSecrets": {

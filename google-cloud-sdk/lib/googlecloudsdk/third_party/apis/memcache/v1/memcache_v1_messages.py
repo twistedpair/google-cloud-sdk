@@ -431,8 +431,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messag
   user, indicating published upcoming future maintenance schedule
 
   Fields:
-    canReschedule: This field will be deprecated, and will be always set to
-      true since reschedule can happen multiple times now.
+    canReschedule: This field is deprecated, and will be always set to true
+      since reschedule can happen multiple times now. This field should not be
+      removed until all service producers remove this for their customers.
     endTime: The scheduled end time for the maintenance.
     rolloutManagementPolicy: The rollout management policy this maintenance
       schedule is associated with. When doing reschedule update request, the
@@ -790,6 +791,8 @@ class Instance(_messages.Message):
       STATE_UNSPECIFIED: State not set.
       CREATING: Memcached instance is being created.
       READY: Memcached instance has been created and ready to be used.
+      UPDATING: Memcached instance is updating configuration such as
+        maintenance policy and schedule.
       DELETING: Memcached instance is being deleted.
       PERFORMING_MAINTENANCE: Memcached instance is going through maintenance,
         e.g. data plane rollout.
@@ -797,8 +800,9 @@ class Instance(_messages.Message):
     STATE_UNSPECIFIED = 0
     CREATING = 1
     READY = 2
-    DELETING = 3
-    PERFORMING_MAINTENANCE = 4
+    UPDATING = 3
+    DELETING = 4
+    PERFORMING_MAINTENANCE = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

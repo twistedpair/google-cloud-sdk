@@ -125,21 +125,20 @@ def AddCreateWorkloadFlags(parser, release_track):
       '--provisioned-resources-parent',
       help=('The parent of the provisioned projects, for example, '
             'folders/{FOLDER_ID}'))
-  if release_track != ReleaseTrack.GA:
-    parser.add_argument(
-        '--resource-settings',
-        type=arg_parsers.ArgDict(spec={
-            'consumer-project-id': str,
-            'encryption-keys-project-id': str
-        }),
-        metavar='KEY=VALUE',
-        help=(
-            'A comma-separated, key=value map of custom resource settings such '
-            'as custom project ids, for example: consumer-project-id={CONSUMER_PROJECT_ID} '
-            'Note: Currently only consumer-project-id and '
-            'encryption-keys-project-id are supported. The '
-            'encryption-keys-project-id setting can be specified only if KMS settings '
-            'are provided'))
+  parser.add_argument(
+      '--resource-settings',
+      type=arg_parsers.ArgDict(spec={
+          'consumer-project-id': str,
+          'encryption-keys-project-id': str
+      }),
+      metavar='KEY=VALUE',
+      help=(
+          'A comma-separated, key=value map of custom resource settings such '
+          'as custom project ids, for example: consumer-project-id={CONSUMER_PROJECT_ID} '
+          'Note: Currently only consumer-project-id and '
+          'encryption-keys-project-id are supported. The '
+          'encryption-keys-project-id setting can be specified only if KMS settings '
+          'are provided'))
 
 
 def AddDeleteWorkloadFlags(parser):

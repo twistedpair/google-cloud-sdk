@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
         }
       }
     }
@@ -1301,6 +1301,115 @@
         }
       }
     },
+    "GoogleCloudApigeeV1TargetServer": {
+      "id": "GoogleCloudApigeeV1TargetServer",
+      "description": "TargetServer configuration. TargetServers are used to decouple a proxy's TargetEndpoint HTTPTargetConnections from concrete URLs for backend services.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource id of this target server. Values must match the regular expression ",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. A human-readable description of this TargetServer.",
+          "type": "string"
+        },
+        "host": {
+          "description": "Required. The host name this target connects to. Value must be a valid hostname as described by RFC-1123.",
+          "type": "string"
+        },
+        "port": {
+          "description": "Required. The port number this target connects to on the given host. Value must be between 1 and 65535, inclusive.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "isEnabled": {
+          "description": "Optional. Enabling\/disabling a TargetServer is useful when TargetServers are used in load balancing configurations, and one or more TargetServers need to taken out of rotation periodically. Defaults to true.",
+          "type": "boolean"
+        },
+        "sSLInfo": {
+          "description": "Optional. Specifies TLS configuration info for this TargetServer. The JSON name is `sSLInfo` for legacy\/backwards compatibility reasons -- Edge originally supported SSL, and the name is still used for TLS configuration.",
+          "$ref": "GoogleCloudApigeeV1TlsInfo"
+        },
+        "protocol": {
+          "description": "Immutable. The protocol used by this TargetServer.",
+          "type": "string",
+          "enumDescriptions": [
+            "UNSPECIFIED defaults to HTTP for backwards compatibility.",
+            "The TargetServer uses HTTP.",
+            "The TargetServer uses GRPC."
+          ],
+          "enum": [
+            "PROTOCOL_UNSPECIFIED",
+            "HTTP",
+            "GRPC"
+          ]
+        }
+      }
+    },
+    "GoogleCloudApigeeV1TlsInfo": {
+      "id": "GoogleCloudApigeeV1TlsInfo",
+      "description": "TLS configuration information for VirtualHosts and TargetServers.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Required. Enables TLS. If false, neither one-way nor two-way TLS will be enabled.",
+          "type": "boolean"
+        },
+        "clientAuthEnabled": {
+          "description": "Optional. Enables two-way TLS.",
+          "type": "boolean"
+        },
+        "keyStore": {
+          "description": "Required if `client_auth_enabled` is true. The resource ID of the keystore. References not yet supported.",
+          "type": "string"
+        },
+        "keyAlias": {
+          "description": "Required if `client_auth_enabled` is true. The resource ID for the alias containing the private key and cert.",
+          "type": "string"
+        },
+        "trustStore": {
+          "description": "The resource ID of the truststore. References not yet supported.",
+          "type": "string"
+        },
+        "ignoreValidationErrors": {
+          "description": "If true, Edge ignores TLS certificate errors. Valid when configuring TLS for target servers and target endpoints, and when configuring virtual hosts that use 2-way TLS. When used with a target endpoint\/target server, if the backend system uses SNI and returns a cert with a subject Distinguished Name (DN) that does not match the hostname, there is no way to ignore the error and the connection fails.",
+          "type": "boolean"
+        },
+        "protocols": {
+          "description": "The TLS versioins to be used.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ciphers": {
+          "description": "The SSL\/TLS cipher suites to be used. Must be one of the cipher suite names listed in: http:\/\/docs.oracle.com\/javase\/8\/docs\/technotes\/guides\/security\/StandardNames.html#ciphersuites",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "commonName": {
+          "description": "The TLS Common Name of the certificate.",
+          "$ref": "GoogleCloudApigeeV1TlsInfoCommonName"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1TlsInfoCommonName": {
+      "id": "GoogleCloudApigeeV1TlsInfoCommonName",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The TLS Common Name string of the certificate.",
+          "type": "string"
+        },
+        "wildcardMatch": {
+          "description": "Indicates whether the cert should be matched against as a wildcard cert.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudApigeeV1TraceConfig": {
       "id": "GoogleCloudApigeeV1TraceConfig",
       "description": "TraceConfig defines the configurations in an environment of distributed trace.",
@@ -1585,6 +1694,20 @@
         "tlsInfo": {
           "description": "TLS settings for the target server.",
           "$ref": "GoogleCloudApigeeV1TlsInfoConfig"
+        },
+        "protocol": {
+          "description": "The protocol used by this target server.",
+          "type": "string",
+          "enumDescriptions": [
+            "UNSPECIFIED defaults to HTTP for backwards compatibility.",
+            "The TargetServer uses HTTP.",
+            "The TargetServer uses GRPC."
+          ],
+          "enum": [
+            "PROTOCOL_UNSPECIFIED",
+            "HTTP",
+            "GRPC"
+          ]
         }
       }
     },
@@ -2086,6 +2209,24 @@
           "description": "Full name of the Pub\/Sub subcription. Use the following structure in your request: `subscription \"projects\/foo\/subscription\/bar\"`",
           "type": "string"
         }
+      }
+    },
+    "GoogleCloudApigeeV1MigrateConfigDataRequest": {
+      "id": "GoogleCloudApigeeV1MigrateConfigDataRequest",
+      "description": "Request for MigrateConfigData.",
+      "type": "object",
+      "properties": {
+        "organizationId": {
+          "description": "Required. The id of the Apigee organization to migrate.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1MigrateDeveloperPortalsRequest": {
+      "id": "GoogleCloudApigeeV1MigrateDeveloperPortalsRequest",
+      "description": "Request for MigrateDeveloperPortals.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudApigeeV1ListOrganizationsResponse": {
@@ -2897,101 +3038,6 @@
         "type": {
           "description": "The string \"Application\"",
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudApigeeV1TargetServer": {
-      "id": "GoogleCloudApigeeV1TargetServer",
-      "description": "TargetServer configuration. TargetServers are used to decouple a proxy's TargetEndpoint HTTPTargetConnections from concrete URLs for backend services.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Required. The resource id of this target server. Values must match the regular expression ",
-          "type": "string"
-        },
-        "description": {
-          "description": "Optional. A human-readable description of this TargetServer.",
-          "type": "string"
-        },
-        "host": {
-          "description": "Required. The host name this target connects to. Value must be a valid hostname as described by RFC-1123.",
-          "type": "string"
-        },
-        "port": {
-          "description": "Required. The port number this target connects to on the given host. Value must be between 1 and 65535, inclusive.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "isEnabled": {
-          "description": "Optional. Enabling\/disabling a TargetServer is useful when TargetServers are used in load balancing configurations, and one or more TargetServers need to taken out of rotation periodically. Defaults to true.",
-          "type": "boolean"
-        },
-        "sSLInfo": {
-          "description": "Optional. Specifies TLS configuration info for this TargetServer. The JSON name is `sSLInfo` for legacy\/backwards compatibility reasons -- Edge originally supported SSL, and the name is still used for TLS configuration.",
-          "$ref": "GoogleCloudApigeeV1TlsInfo"
-        }
-      }
-    },
-    "GoogleCloudApigeeV1TlsInfo": {
-      "id": "GoogleCloudApigeeV1TlsInfo",
-      "description": "TLS configuration information for VirtualHosts and TargetServers.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Required. Enables TLS. If false, neither one-way nor two-way TLS will be enabled.",
-          "type": "boolean"
-        },
-        "clientAuthEnabled": {
-          "description": "Optional. Enables two-way TLS.",
-          "type": "boolean"
-        },
-        "keyStore": {
-          "description": "Required if `client_auth_enabled` is true. The resource ID of the keystore. References not yet supported.",
-          "type": "string"
-        },
-        "keyAlias": {
-          "description": "Required if `client_auth_enabled` is true. The resource ID for the alias containing the private key and cert.",
-          "type": "string"
-        },
-        "trustStore": {
-          "description": "The resource ID of the truststore. References not yet supported.",
-          "type": "string"
-        },
-        "ignoreValidationErrors": {
-          "description": "If true, Edge ignores TLS certificate errors. Valid when configuring TLS for target servers and target endpoints, and when configuring virtual hosts that use 2-way TLS. When used with a target endpoint\/target server, if the backend system uses SNI and returns a cert with a subject Distinguished Name (DN) that does not match the hostname, there is no way to ignore the error and the connection fails.",
-          "type": "boolean"
-        },
-        "protocols": {
-          "description": "The TLS versioins to be used.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ciphers": {
-          "description": "The SSL\/TLS cipher suites to be used. Must be one of the cipher suite names listed in: http:\/\/docs.oracle.com\/javase\/8\/docs\/technotes\/guides\/security\/StandardNames.html#ciphersuites",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "commonName": {
-          "description": "The TLS Common Name of the certificate.",
-          "$ref": "GoogleCloudApigeeV1TlsInfoCommonName"
-        }
-      }
-    },
-    "GoogleCloudApigeeV1TlsInfoCommonName": {
-      "id": "GoogleCloudApigeeV1TlsInfoCommonName",
-      "type": "object",
-      "properties": {
-        "value": {
-          "description": "The TLS Common Name string of the certificate.",
-          "type": "string"
-        },
-        "wildcardMatch": {
-          "description": "Indicates whether the cert should be matched against as a wildcard cert.",
-          "type": "boolean"
         }
       }
     },
@@ -4561,32 +4607,32 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The ID of the DeveloperSubscription.",
+          "description": "Output only. Name of the API product subscription.",
           "readOnly": true,
           "type": "string"
         },
         "apiproduct": {
-          "description": "The name of the API Product to which the developer is subscribing.",
+          "description": "Name of the API product for which the developer is purchasing a subscription.",
           "type": "string"
         },
         "startTime": {
-          "description": "The time when the subscription should be enabled. Specified as milliseconds since epoch.",
+          "description": "Time when the API product subscription starts in milliseconds since epoch.",
           "type": "string",
           "format": "int64"
         },
         "endTime": {
-          "description": "The time when the subscription will end. Specified as milliseconds since epoch.",
+          "description": "Time when the API product subscription ends in milliseconds since epoch.",
           "type": "string",
           "format": "int64"
         },
         "createdAt": {
-          "description": "Output only. Creation time of this subscription in milliseconds since epoch.",
+          "description": "Output only. Time when the API product subscription was created in milliseconds since epoch.",
           "readOnly": true,
           "type": "string",
           "format": "int64"
         },
         "lastModifiedAt": {
-          "description": "Output only. Modified time of this subscription in milliseconds since epoch.",
+          "description": "Output only. Time when the API product subscription was last modified in milliseconds since epoch.",
           "readOnly": true,
           "type": "string",
           "format": "int64"
@@ -4606,7 +4652,7 @@
           }
         },
         "nextStartKey": {
-          "description": "A key that can be sent as `start_key` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "Value that can be sent as `startKey` to retrieve the next page of content. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         }
       }
@@ -4861,7 +4907,7 @@
           }
         },
         "nextStartKey": {
-          "description": "A key that can be sent as `start_key` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "Value that can be sent as `startKey` to retrieve the next page of content. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         }
       }
@@ -5571,6 +5617,94 @@
               "description": "Lists hybrid services and its trusted issuers service account ids. This api is authenticated and unauthorized(allow all the users) and used by runtime authn-authz service to query control plane's issuer service account ids."
             }
           }
+        }
+      }
+    },
+    "projects": {
+      "methods": {
+        "migrateConfigData": {
+          "id": "apigee.projects.migrateConfigData",
+          "path": "v1/{+project}:migrateConfigData",
+          "flatPath": "v1/projects/{projectsId}:migrateConfigData",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Required. Name of the GCP project in which to migrate the organization's config data in the following format: `projects\/{project}`.",
+              "pattern": "^projects\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project"
+          ],
+          "request": {
+            "$ref": "GoogleCloudApigeeV1MigrateConfigDataRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Copies all proxy and environment configuration data from an Apigee Edge organization into Apigee X\/Hybrid."
+        },
+        "migrateDeveloperPortals": {
+          "id": "apigee.projects.migrateDeveloperPortals",
+          "path": "v1/{+project}:migrateDeveloperPortals",
+          "flatPath": "v1/projects/{projectsId}:migrateDeveloperPortals",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Required. Name of the GCP project in which to migrate the organization's developer portals `projects\/{project}`.",
+              "pattern": "^projects\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project"
+          ],
+          "request": {
+            "$ref": "GoogleCloudApigeeV1MigrateDeveloperPortalsRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Migrates all developer portals from an Apigee edge organization into ApigeeX\/Hybrid."
+        },
+        "provisionOrganization": {
+          "id": "apigee.projects.provisionOrganization",
+          "path": "v1/{+project}:provisionOrganization",
+          "flatPath": "v1/projects/{projectsId}:provisionOrganization",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Required. Name of the GCP project with which to associate the Apigee organization.",
+              "pattern": "^projects\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project"
+          ],
+          "request": {
+            "$ref": "GoogleCloudApigeeV1ProvisionOrganizationRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Provisions a new Apigee organization with a functioning runtime. This is the standard way to create trial organizations for a free Apigee trial."
         }
       }
     },
@@ -8160,116 +8294,6 @@
                 }
               }
             },
-            "references": {
-              "methods": {
-                "create": {
-                  "id": "apigee.organizations.environments.references.create",
-                  "path": "v1/{+parent}/references",
-                  "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/references",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent environment name under which the Reference will be created. Must be of the form `organizations\/{org}\/environments\/{env}`.",
-                      "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "GoogleCloudApigeeV1Reference"
-                  },
-                  "response": {
-                    "$ref": "GoogleCloudApigeeV1Reference"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a Reference in the specified environment."
-                },
-                "delete": {
-                  "id": "apigee.organizations.environments.references.delete",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/references/{referencesId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the Reference to delete. Must be of the form `organizations\/{org}\/environments\/{env}\/references\/{ref}`.",
-                      "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/references\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudApigeeV1Reference"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Deletes a Reference from an environment. Returns the deleted Reference resource."
-                },
-                "get": {
-                  "id": "apigee.organizations.environments.references.get",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/references/{referencesId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the Reference to get. Must be of the form `organizations\/{org}\/environments\/{env}\/references\/{ref}`.",
-                      "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/references\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudApigeeV1Reference"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets a Reference resource."
-                },
-                "update": {
-                  "id": "apigee.organizations.environments.references.update",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/references/{referencesId}",
-                  "httpMethod": "PUT",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the Reference to update. Must be of the form `organizations\/{org}\/environments\/{env}\/references\/{ref}`.",
-                      "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/references\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "GoogleCloudApigeeV1Reference"
-                  },
-                  "response": {
-                    "$ref": "GoogleCloudApigeeV1Reference"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates an existing Reference. Note that this operation has PUT semantics; it will replace the entirety of the existing Reference with the resource in the request body."
-                }
-              }
-            },
             "targetservers": {
               "methods": {
                 "create": {
@@ -8382,6 +8406,116 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates an existing TargetServer. Note that this operation has PUT semantics; it will replace the entirety of the existing TargetServer with the resource in the request body."
+                }
+              }
+            },
+            "references": {
+              "methods": {
+                "create": {
+                  "id": "apigee.organizations.environments.references.create",
+                  "path": "v1/{+parent}/references",
+                  "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/references",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent environment name under which the Reference will be created. Must be of the form `organizations\/{org}\/environments\/{env}`.",
+                      "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudApigeeV1Reference"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1Reference"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a Reference in the specified environment."
+                },
+                "delete": {
+                  "id": "apigee.organizations.environments.references.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/references/{referencesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Reference to delete. Must be of the form `organizations\/{org}\/environments\/{env}\/references\/{ref}`.",
+                      "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/references\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1Reference"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a Reference from an environment. Returns the deleted Reference resource."
+                },
+                "get": {
+                  "id": "apigee.organizations.environments.references.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/references/{referencesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Reference to get. Must be of the form `organizations\/{org}\/environments\/{env}\/references\/{ref}`.",
+                      "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/references\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1Reference"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a Reference resource."
+                },
+                "update": {
+                  "id": "apigee.organizations.environments.references.update",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/references/{referencesId}",
+                  "httpMethod": "PUT",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the Reference to update. Must be of the form `organizations\/{org}\/environments\/{env}\/references\/{ref}`.",
+                      "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/references\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudApigeeV1Reference"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1Reference"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates an existing Reference. Note that this operation has PUT semantics; it will replace the entirety of the existing Reference with the resource in the request body."
                 }
               }
             },
@@ -10773,7 +10907,7 @@
                       "type": "string"
                     },
                     "startKey": {
-                      "description": "Name of the rate plan from which to start displaying the list of rate plans. If omitted, list starts from the first item. For example, to view the rate plans from 51-150, set the value of `start_key` to the name of the 51st rate plan and set the value of `count` to 100.",
+                      "description": "Name of the rate plan from which to start displaying the list of rate plans. If omitted, the list starts from the first item. For example, to view the rate plans from 51-150, set the value of `startKey` to the name of the 51st rate plan and set the value of `count` to 100.",
                       "location": "query",
                       "type": "string"
                     },
@@ -12371,7 +12505,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Resource name of the Developer which is subscribing to some API Product. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}`",
+                      "description": "Required. Email address of the developer that is purchasing a subscription to the API product. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}`",
                       "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -12390,7 +12524,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Subscribe to a particular API Product. Subscription includes things like: - API Product to which the developer is subscribing. - When the subscription is to be started. - When the subscription will end. The API Product associated with the subscription cannot be used before the start of the subscription and after the end of the subscription."
+                  "description": "Creates a subscription to an API product. "
                 },
                 "get": {
                   "id": "apigee.organizations.developers.subscriptions.get",
@@ -12399,7 +12533,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Resource name of the Developer Subscription. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}\/subscriptions\/{subscription}`",
+                      "description": "Required. Name of the API product subscription. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}\/subscriptions\/{subscription}`",
                       "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+\/subscriptions\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -12415,7 +12549,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Get the details regarding a particular subscription."
+                  "description": "Gets details for an API product subscription."
                 },
                 "list": {
                   "id": "apigee.organizations.developers.subscriptions.list",
@@ -12424,19 +12558,19 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Resource name of the developer. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}`",
+                      "description": "Required. Email address of the developer. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}`",
                       "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "startKey": {
-                      "description": "Used for pagination. `start_key` specifies the first Subscription which will be included in the returned list of Subscriptions. For example, to view the 100 Subscriptions from from 51-150, you will set the value of `start_key` to the `subscription_id` of the 51st subscription and set the value of `count` to 100. If no value is specified for this field, then it will return the first `count` subscriptions.",
+                      "description": "Name of the API product subscription from which to start displaying the list of subscriptions. If omitted, the list starts from the first item. For example, to view the API product subscriptions from 51-150, set the value of `startKey` to the name of the 51st subscription and set the value of `count` to 100.",
                       "location": "query",
                       "type": "string"
                     },
                     "count": {
-                      "description": "The number of Subscriptions you want to retrieve from the API. Leaving `count` empty will return 50 subscriptions. The maximum limit is 1000.",
+                      "description": "Number of API product subscriptions to return in the API call. Use with `startKey` to provide more targeted filtering. Defaults to 100. The maximum limit is 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -12451,7 +12585,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "List all the Subscriptions."
+                  "description": "Lists all API product subscriptions for a developer."
                 },
                 "expire": {
                   "id": "apigee.organizations.developers.subscriptions.expire",
@@ -12460,7 +12594,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Resource name of the Developer Subscription. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}\/subscriptions\/{subscription}`",
+                      "description": "Required. Name of the API product subscription. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}\/subscriptions\/{subscription}`",
                       "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+\/subscriptions\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -12479,7 +12613,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Expire a subscription. This will expire a subscription immediately."
+                  "description": "Expires an API product subscription immediately."
                 }
               }
             }
@@ -12680,38 +12814,6 @@
               }
             }
           }
-        }
-      }
-    },
-    "projects": {
-      "methods": {
-        "provisionOrganization": {
-          "id": "apigee.projects.provisionOrganization",
-          "path": "v1/{+project}:provisionOrganization",
-          "flatPath": "v1/projects/{projectsId}:provisionOrganization",
-          "httpMethod": "POST",
-          "parameters": {
-            "project": {
-              "description": "Required. Name of the GCP project with which to associate the Apigee organization.",
-              "pattern": "^projects\/[^\/]+$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "project"
-          ],
-          "request": {
-            "$ref": "GoogleCloudApigeeV1ProvisionOrganizationRequest"
-          },
-          "response": {
-            "$ref": "GoogleLongrunningOperation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Provisions a new Apigee organization with a functioning runtime. This is the standard way to create trial organizations for a free Apigee trial."
         }
       }
     }

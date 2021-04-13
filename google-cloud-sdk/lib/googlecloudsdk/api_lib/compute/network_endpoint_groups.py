@@ -55,7 +55,8 @@ class NetworkEndpointGroupsClient(object):
              serverless_deployment_platform=None,
              serverless_deployment_resource=None,
              serverless_deployment_version=None,
-             serverless_deployment_url_mask=None):
+             serverless_deployment_url_mask=None,
+             psc_target_service=None):
     """Creates a network endpoint group."""
     is_zonal = hasattr(neg_ref, 'zone')
     is_regional = hasattr(neg_ref, 'region')
@@ -119,6 +120,18 @@ class NetworkEndpointGroupsClient(object):
             appEngine=app_engine,
             cloudFunction=cloud_function,
             serverlessDeployment=serverless_deployment)
+      elif psc_target_service and arg_utils.ChoiceToEnum(
+          network_endpoint_type,
+          endpoint_type_enum) == endpoint_type_enum.PRIVATE_SERVICE_CONNECT:
+
+        network_endpoint_group = self.messages.NetworkEndpointGroup(
+            name=neg_ref.Name(),
+            networkEndpointType=arg_utils.ChoiceToEnum(network_endpoint_type,
+                                                       endpoint_type_enum),
+            defaultPort=default_port,
+            network=network_uri,
+            subnetwork=subnet_uri,
+            pscTargetService=psc_target_service)
       else:
         network_endpoint_group = self.messages.NetworkEndpointGroup(
             name=neg_ref.Name(),

@@ -26,7 +26,11 @@ class ThreadMessage(object):
   """Message that can be sent from multithreading workers to global status."""
 
 
-class ProgressMessage(ThreadMessage):
+class IncrementProgressMessage(ThreadMessage):
+  """Simple message indicating one of something has completed."""
+
+
+class DetailedProgressMessage(ThreadMessage):
   """Message class for sending information about operation progress.
 
   This class contains specific information on the progress of operating on a
@@ -112,20 +116,20 @@ class WorkloadEstimatorMessage(ThreadMessage):
   """Message class for estimating total workload of operation.
 
   Attributes:
-    file_count (int): Number of files to add to workload estimation.
-    size (int): Number of bytes to add to workload estimation.
+    item_count (int): Number of items to add to workload estimation.
+    size (int|None): Number of bytes to add to workload estimation.
   """
 
-  def __init__(self, file_count, size):
+  def __init__(self, item_count, size=None):
     # pylint:disable=g-doc-args
     """Initializes WorkloadEstimatorMessage. Args in attributes docstring."""
     # pylint:enable=g-doc-args
-    self.file_count = file_count
+    self.item_count = item_count
     self.size = size
 
   def __repr__(self):
     """Returns a string with a valid constructor for this message."""
-    return '{class_name}(file_count={file_count}, size={size})'.format(
+    return '{class_name}(item_count={item_count}, size={size})'.format(
         class_name=self.__class__.__name__,
-        file_count=self.file_count,
+        item_count=self.item_count,
         size=self.size)

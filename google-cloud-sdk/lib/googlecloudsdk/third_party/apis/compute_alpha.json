@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20210319",
+ "revision": "20210402",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1233,22 +1233,6 @@
     }
    }
   },
-  "Any": {
-   "id": "Any",
-   "type": "object",
-   "description": "`Any` contains an arbitrary serialized protocol buffer message along with a URL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form of utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\nFoo foo = ...; Any any; any.PackFrom(foo); ... if (any.UnpackTo(&foo)) { ... }\n\nExample 2: Pack and unpack a message in Java.\n\nFoo foo = ...; Any any = Any.pack(foo); ... if (any.is(Foo.class)) { foo = any.unpack(Foo.class); }\n\nExample 3: Pack and unpack a message in Python.\n\nfoo = Foo(...) any = Any() any.Pack(foo) ... if any.Is(Foo.DESCRIPTOR): any.Unpack(foo) ...\n\nExample 4: Pack and unpack a message in Go\n\nfoo := &pb.Foo{...} any, err := anypb.New(foo) if err != nil { ... } ... foo := &pb.Foo{} if err := any.UnmarshalTo(foo); err != nil { ... }\n\nThe pack methods provided by protobuf library will by default use 'type.googleapis.com/full.type.name' as the type URL and the unpack methods only use the fully qualified type name after the last '/' in the type URL, for example \"foo.bar.com/x/y.z\" will yield type name \"y.z\".\n\n\n\nJSON ==== The JSON representation of an `Any` value uses the regular representation of the deserialized, embedded message, with an additional field `@type` which contains the type URL. Example:\n\npackage google.profile; message Person { string first_name = 1; string last_name = 2; }\n\n{ \"@type\": \"type.googleapis.com/google.profile.Person\", \"firstName\": , \"lastName\":  }\n\nIf the embedded message type is well-known and has a custom JSON representation, that representation will be embedded adding a field `value` which holds the custom JSON in addition to the `@type` field. Example (for message [google.protobuf.Duration][]):\n\n{ \"@type\": \"type.googleapis.com/google.protobuf.Duration\", \"value\": \"1.212s\" }",
-   "properties": {
-    "typeUrl": {
-     "type": "string",
-     "description": "A URL/resource name that uniquely identifies the type of the serialized protocol buffer message. This string must contain at least one \"/\" character. The last segment of the URL's path must represent the fully qualified name of the type (as in `path/google.protobuf.Duration`). The name should be in a canonical form (e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they expect it to use in the context of Any. However, for URLs which use the scheme `http`, `https`, or no scheme, one can optionally set up a type server that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed. * An HTTP GET on the URL must yield a [google.protobuf.Type][] value in binary format, or produce an error. * Applications are allowed to cache lookup results based on the URL, or have them precompiled into a binary to avoid any lookup. Therefore, binary compatibility needs to be preserved on changes to types. (Use versioned type names to manage breaking changes.)\n\nNote: this functionality is not currently available in the official protobuf release, and it is not used for type URLs beginning with type.googleapis.com.\n\nSchemes other than `http`, `https` (or the empty scheme) might be used with implementation specific semantics."
-    },
-    "value": {
-     "type": "string",
-     "description": "Must be a valid serialized protocol buffer of the above specified type.",
-     "format": "byte"
-    }
-   }
-  },
   "AttachedDisk": {
    "id": "AttachedDisk",
    "type": "object",
@@ -2446,6 +2430,10 @@
       "$ref": "BackendBucketCdnPolicyBypassCacheOnRequestHeader"
      }
     },
+    "cacheKeyPolicy": {
+     "$ref": "BackendBucketCdnPolicyCacheKeyPolicy",
+     "description": "The CacheKeyPolicy for this CdnPolicy."
+    },
     "cacheMode": {
      "type": "string",
      "description": "Specifies the cache setting for all responses from this backend. The possible values are:\n\nUSE_ORIGIN_HEADERS Requires the origin to set valid caching headers to cache content. Responses without these headers will not be cached at Google's edge, and will require a full trip to the origin on every request, potentially impacting performance and increasing load on the origin server.\n\nFORCE_CACHE_ALL Cache all content, ignoring any \"private\", \"no-store\" or \"no-cache\" directives in Cache-Control response headers. Warning: this may result in Cloud CDN caching private, per-user (user identifiable) content.\n\nCACHE_ALL_STATIC Automatically cache static content, including common image formats, media (video and audio), and web assets (JavaScript and CSS). Requests and responses that are marked as uncacheable, as well as dynamic content (including HTML), will not be cached.",
@@ -2519,6 +2507,27 @@
     "headerName": {
      "type": "string",
      "description": "The header field name to match on when bypassing cache. Values are case-insensitive."
+    }
+   }
+  },
+  "BackendBucketCdnPolicyCacheKeyPolicy": {
+   "id": "BackendBucketCdnPolicyCacheKeyPolicy",
+   "type": "object",
+   "description": "Message containing what to include in the cache key for a request for Cloud CDN.",
+   "properties": {
+    "includeHttpHeaders": {
+     "type": "array",
+     "description": "Allows HTTP request headers (by name) to be used in the cache key.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "queryStringWhitelist": {
+     "type": "array",
+     "description": "Names of query string parameters to include in cache keys. All other parameters will be excluded. '&' and '=' will be percent encoded and not treated as delimiters.",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -3803,23 +3812,24 @@
     },
     "instance": {
      "$ref": "Instance",
-     "description": "The instance defining the VM instances to be created."
+     "description": "DEPRECATED: Please use instance_properties instead."
     },
     "instanceProperties": {
      "$ref": "InstanceProperties",
      "description": "The instance properties defining the VM instances to be created. Required if sourceInstanceTemplate is not provided."
     },
     "locationPolicy": {
-     "$ref": "LocationPolicy"
+     "$ref": "LocationPolicy",
+     "description": "Policy for chosing target zone."
     },
     "minCount": {
      "type": "string",
-     "description": "The minimum number of instances to create. If no min_count is specified then count is used as the default value. If min_count instances cannot be created, then no instances will be created.",
+     "description": "The minimum number of instances to create. If no min_count is specified then count is used as the default value. If min_count instances cannot be created, then no instances will be created and instances already created will be deleted.",
      "format": "int64"
     },
     "namePattern": {
      "type": "string",
-     "description": "The string pattern used for the names of the VMs. Either name_pattern or predefined_names must be set. The pattern should contain one consecutive sequence of placeholder hash characters (#) with each character corresponding to one digit of the generated instance name. Example: name_pattern of inst-#### will generate instance names like inst-0001, inst-0002, ... . If there already exist instance(s) whose names match the name pattern in the same project and zone, then the generated instance numbers will start after the biggest existing number. For example, if there exists an instance with name inst-0050, then instance names generated using the pattern inst-#### will be inst-0051, inst-0052, etc. The name pattern placeholder #...# can contain up to 18 characters."
+     "description": "The string pattern used for the names of the VMs. Either name_pattern or per_instance_properties must be set. The pattern should contain one continuous sequence of placeholder hash characters (#) with each character corresponding to one digit of the generated instance name. Example: name_pattern of inst-#### will generate instance names such as inst-0001, inst-0002, ... . If there already exist instance(s) whose names match the name pattern in the same project and zone, then the generated instance numbers will start after the biggest existing number. For example, if there exists an instance with name inst-0050, then instance names generated using the pattern inst-#### will be inst-0051, inst-0052, etc. The name pattern placeholder #...# can contain up to 18 characters."
     },
     "perInstanceProperties": {
      "type": "object",
@@ -3830,7 +3840,7 @@
     },
     "predefinedNames": {
      "type": "array",
-     "description": "List of predefined names. The number of names provided must be equal to count.",
+     "description": "DEPRECATED: Please use per_instance_properties instead.",
      "items": {
       "type": "string"
      }
@@ -3873,6 +3883,20 @@
     "includeHost": {
      "type": "boolean",
      "description": "If true, requests to different hosts will be cached separately."
+    },
+    "includeHttpHeaders": {
+     "type": "array",
+     "description": "Allows HTTP request headers (by name) to be used in the cache key.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "includeNamedCookies": {
+     "type": "array",
+     "description": "Allows HTTP cookies (by name) to be used in the cache key. The name=value pair will be used in the cache key Cloud CDN generates.",
+     "items": {
+      "type": "string"
+     }
     },
     "includeProtocol": {
      "type": "boolean",
@@ -7229,6 +7253,23 @@
      "type": "string",
      "description": "[Output Only] The PSC connection id of the PSC Forwarding Rule.",
      "format": "uint64"
+    },
+    "pscConnectionStatus": {
+     "type": "string",
+     "enum": [
+      "ACCEPTED",
+      "CLOSED",
+      "PENDING",
+      "REJECTED",
+      "STATUS_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
     },
     "region": {
      "type": "string",
@@ -14203,7 +14244,7 @@
     },
     "ipsecInternalAddresses": {
      "type": "array",
-     "description": "URL of addresses that have been reserved for the interconnect attachment, Used only for interconnect attachment that has the encryption option as IPSEC. The addresses must be RFC 1918 IP address ranges. When creating HA VPN gateway over the interconnect attachment, if the attachment is configured to use an RFC 1918 IP address, then the VPN gateway?s IP address will be allocated from the IP address range specified here. For example, if the HA VPN gateway?s interface 0 is paired to this interconnect attachment, then an RFC 1918 IP address for the VPN gateway interface 0 will be allocated from the IP address specified for this interconnect attachment. If this field is not specified for interconnect attachment that has encryption option as IPSEC, later on when creating HA VPN gateway on this interconnect attachment, the HA VPN gateway's IP address will be allocated from regional external IP address pool.\nNot currently available in all Interconnect locations.",
+     "description": "URL of addresses that have been reserved for the interconnect attachment, Used only for interconnect attachment that has the encryption option as IPSEC. The addresses must be RFC 1918 IP address ranges. When creating HA VPN gateway over the interconnect attachment, if the attachment is configured to use an RFC 1918 IP address, then the VPN gateway's IP address will be allocated from the IP address range specified here. For example, if the HA VPN gateway's interface 0 is paired to this interconnect attachment, then an RFC 1918 IP address for the VPN gateway interface 0 will be allocated from the IP address specified for this interconnect attachment. If this field is not specified for interconnect attachment that has encryption option as IPSEC, later on when creating HA VPN gateway on this interconnect attachment, the HA VPN gateway's IP address will be allocated from regional external IP address pool.\nNot currently available in all Interconnect locations.",
      "items": {
       "type": "string"
      }
@@ -15958,7 +15999,7 @@
    "properties": {
     "locations": {
      "type": "object",
-     "description": "Location configurations mapped by location name. Currently only zone names are supported and must be represented as valid internal URLs, like: zones/us-central1-a.",
+     "description": "Location configurations mapped by location name. Currently only zone names are supported and must be represented as valid internal URLs, such as zones/us-central1-a.",
      "additionalProperties": {
       "$ref": "LocationPolicyLocation"
      }
@@ -15971,6 +16012,7 @@
    "properties": {
     "preference": {
      "type": "string",
+     "description": "Preference for a given locaction: ALLOW or DENY.",
      "enum": [
       "ALLOW",
       "DENY",
@@ -16828,6 +16870,24 @@
      "type": "string",
      "description": "[Output Only] Tag describing the version."
     },
+    "targetStatus": {
+     "type": "string",
+     "description": "[Output Only] The eventual status of the instance. The instance group manager will not be identified as stable till each managed instance reaches its targetStatus.",
+     "enum": [
+      "ABANDONED",
+      "DELETED",
+      "RUNNING",
+      "STOPPED",
+      "SUSPENDED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
     "version": {
      "$ref": "ManagedInstanceVersion",
      "description": "[Output Only] Intended version of this instance."
@@ -17279,7 +17339,7 @@
     },
     "serverlessDeployment": {
      "$ref": "NetworkEndpointGroupServerlessDeployment",
-     "description": "Only valid when networkEndpointType is \"SERVERLESS\". Only one of cloudRun, appEngine cloudFunction or serverlessDeployment may be set."
+     "description": "Only valid when networkEndpointType is \"SERVERLESS\". Only one of cloudRun, appEngine, cloudFunction or serverlessDeployment may be set."
     },
     "size": {
      "type": "integer",
@@ -17624,23 +17684,23 @@
   "NetworkEndpointGroupServerlessDeployment": {
    "id": "NetworkEndpointGroupServerlessDeployment",
    "type": "object",
-   "description": "Configuration for a Serverless Deployment network endpoint group (NEG). The platform must be provided.\n\nNote: The target backend service must be in the same project and located in the same region as the Serverless NEG.",
+   "description": "Configuration for a serverless network endpoint group (NEG). The platform must be provided.\n\nNote: The target backend service must be in the same project and located in the same region as the Serverless NEG.",
    "properties": {
     "platform": {
      "type": "string",
-     "description": "The platform of the backend target(s) of this NEG. Possible values include:\n\n \n- apigateway.googleapis.com \n- appengine.googleapies.com \n- cloudfunctions.googleapis.com \n- run.googleapis.com"
+     "description": "The platform of the backend target(s) of this NEG. Possible values include:\n\n \n- API Gateway: apigateway.googleapis.com \n- App Engine: appengine.googleapis.com \n- Cloud Functions: cloudfunctions.googleapis.com \n- Cloud Run: run.googleapis.com"
     },
     "resource": {
      "type": "string",
-     "description": "The user-defined name of the workload/instance. This value must be provided explicitly or in the urlMask. The resource identified by this value is platform-specific and is as follows:\n\n \n- API Gateway: The gateway id \n- AppEngine: The service name \n- Cloud Functions: The function name \n- Cloud Run: The service name"
+     "description": "The user-defined name of the workload/instance. This value must be provided explicitly or in the urlMask. The resource identified by this value is platform-specific and is as follows:\n\n \n- API Gateway: The gateway ID \n- App Engine: The service name \n- Cloud Functions: The function name \n- Cloud Run: The service name"
     },
     "urlMask": {
      "type": "string",
-     "description": "A template to parse platform-specific fields from a request URL. URL mask allows for routing to multiple services on the same serverless platform without having to create multiple Network Endpoint Groups and backend services. The fields parsed by this template is platform-specific and are as follows:\n\n \n- API Gateway: The gateway id \n- AppEngine: The service and version \n- Cloud Functions: The function \n- Cloud Run: The service and tag"
+     "description": "A template to parse platform-specific fields from a request URL. URL mask allows for routing to multiple resources on the same serverless platform without having to create multiple Network Endpoint Groups and backend resources. The fields parsed by this template are platform-specific and are as follows:\n\n \n- API Gateway: The gateway ID \n- App Engine: The service and version \n- Cloud Functions: The function name \n- Cloud Run: The service and tag"
     },
     "version": {
      "type": "string",
-     "description": "The optional resource version. The version identified by this value is as platform-specific and is follows:\n\n \n- API Gateway: Unused \n- AppEngine: The service version \n- Cloud Functions: Unused \n- Cloud Run: The service tag"
+     "description": "The optional resource version. The version identified by this value is platform-specific and is follows:\n\n \n- API Gateway: Unused \n- App Engine: The service version \n- Cloud Functions: Unused \n- Cloud Run: The service tag"
     }
    }
   },
@@ -20481,10 +20541,6 @@
      "description": "[Output Only] Type of the resource. Always `compute#operation` for Operation resources.",
      "default": "compute#operation"
     },
-    "metadata": {
-     "$ref": "Any",
-     "description": "[Output Only] Service-specific metadata attached to this operation."
-    },
     "name": {
      "type": "string",
      "description": "[Output Only] Name of the operation."
@@ -23012,6 +23068,7 @@
       "COMMITTED_LICENSES",
       "COMMITTED_LOCAL_SSD_TOTAL_GB",
       "COMMITTED_MEMORY_OPTIMIZED_CPUS",
+      "COMMITTED_N2A_CPUS",
       "COMMITTED_N2D_CPUS",
       "COMMITTED_N2_CPUS",
       "COMMITTED_NVIDIA_A100_GPUS",
@@ -23057,6 +23114,7 @@
       "M1_CPUS",
       "M2_CPUS",
       "MACHINE_IMAGES",
+      "N2A_CPUS",
       "N2D_CPUS",
       "N2_CPUS",
       "NETWORKS",
@@ -23120,6 +23178,8 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -26034,6 +26094,18 @@
      "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
      "format": "uint64"
     },
+    "ilbRouteBehaviorOnUnhealthy": {
+     "type": "string",
+     "description": "ILB route behavior when ILB is deemed unhealthy based on user specified threshold on the Backend Service of the internal load balancing.",
+     "enum": [
+      "DO_NOT_WITHDRAW_ROUTE_IF_ILB_UNHEALTHY",
+      "WITHDRAW_ROUTE_IF_ILB_UNHEALTHY"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "kind": {
      "type": "string",
      "description": "[Output Only] Type of this resource. Always compute#routes for Route resources.",
@@ -27091,7 +27163,7 @@
     },
     "match": {
      "type": "string",
-     "description": "CEL expression that specifies the match condition that egress traffic from a VM is evaluated against. If it evaluates to true, the corresponding ?action? is enforced.\n\nThe following examples are valid match expressions:\n\n\"inIpRange(destination.ip, '1.1.0.0/16') || inIpRange(destination.ip, '2.2.0.0/16')\"\n\n\"destination.ip == '1.1.0.1' || destination.ip == '8.8.8.8'\""
+     "description": "CEL expression that specifies the match condition that egress traffic from a VM is evaluated against. If it evaluates to true, the corresponding `action` is enforced.\n\nThe following examples are valid match expressions:\n\n\"inIpRange(destination.ip, '1.1.0.0/16') || inIpRange(destination.ip, '2.2.0.0/16')\"\n\n\"destination.ip == '1.1.0.1' || destination.ip == '8.8.8.8'\""
     },
     "ruleNumber": {
      "type": "integer",
@@ -28264,7 +28336,7 @@
    "properties": {
     "requestHeadersToAdds": {
      "type": "array",
-     "description": "The list of request headers to add or overwrite if they?re already present.",
+     "description": "The list of request headers to add or overwrite if they're already present.",
      "items": {
       "$ref": "SecurityPolicyRuleHttpHeaderActionHttpHeaderOption"
      }
@@ -28571,8 +28643,15 @@
   "ServiceAttachment": {
    "id": "ServiceAttachment",
    "type": "object",
-   "description": "Represents a ServiceAttachment resource.\n\nA service attachment represents a service that a producer has exposed. It encapsulates the load balancer which fronts the service runs and a list of NAT IP ranges that the producers uses to represent the consumers connecting to the service. next tag = 18",
+   "description": "Represents a ServiceAttachment resource.\n\nA service attachment represents a service that a producer has exposed. It encapsulates the load balancer which fronts the service runs and a list of NAT IP ranges that the producers uses to represent the consumers connecting to the service. next tag = 19",
    "properties": {
+    "connectedEndpoints": {
+     "type": "array",
+     "description": "[Output Only] An array of connections for all the consumers connected to this service attachment.",
+     "items": {
+      "$ref": "ServiceAttachmentConnectedEndpoint"
+     }
+    },
     "connectionPreference": {
      "type": "string",
      "description": "The connection preference of service attachment. The value can be set to ACCEPT_AUTOMATIC. An ACCEPT_AUTOMATIC service attachment is one that always accepts the connection from consumer forwarding rules.",
@@ -28656,6 +28735,10 @@
      "type": "string",
      "description": "The URL of a forwarding rule with loadBalancingScheme INTERNAL* that is serving the endpoint identified by this service attachment."
     },
+    "pscServiceAttachmentId": {
+     "$ref": "Uint128",
+     "description": "[Output Only] An 128-bit global unique ID of the PSC service attachment."
+    },
     "region": {
      "type": "string",
      "description": "[Output Only] URL of the region where the service attachment resides. This field applies only to the region resource. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
@@ -28663,6 +28746,10 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "targetService": {
+     "type": "string",
+     "description": "The URL of a service serving the endpoint identified by this service attachment."
     }
    }
   },
@@ -28790,25 +28877,70 @@
     }
    }
   },
+  "ServiceAttachmentConnectedEndpoint": {
+   "id": "ServiceAttachmentConnectedEndpoint",
+   "type": "object",
+   "description": "[Output Only] A connection connected to this service attachment.",
+   "properties": {
+    "endpoint": {
+     "type": "string",
+     "description": "The url of a connected endpoint."
+    },
+    "forwardingRule": {
+     "type": "string",
+     "description": "The url of a consumer forwarding rule. [Deprecated] Do not use."
+    },
+    "pscConnectionId": {
+     "type": "string",
+     "description": "The PSC connection id of the connected endpoint.",
+     "format": "uint64"
+    },
+    "status": {
+     "type": "string",
+     "description": "The status of a connected endpoint to this service attachment.",
+     "enum": [
+      "ACCEPTED",
+      "CLOSED",
+      "PENDING",
+      "REJECTED",
+      "STATUS_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "ServiceAttachmentConsumerForwardingRule": {
    "id": "ServiceAttachmentConsumerForwardingRule",
    "type": "object",
-   "description": "[Output Only] A consumer forwarding rule connected to this service attachment.",
+   "description": "[Output Only] A consumer forwarding rule connected to this service attachment. [Deprecated] Do not use.",
    "properties": {
     "forwardingRule": {
      "type": "string",
      "description": "The url of a consumer forwarding rule."
+    },
+    "pscConnectionId": {
+     "type": "string",
+     "description": "The PSC connection id of the PSC Forwarding Rule.",
+     "format": "uint64"
     },
     "status": {
      "type": "string",
      "description": "The status of the forwarding rule.",
      "enum": [
       "ACCEPTED",
+      "CLOSED",
       "PENDING",
       "REJECTED",
       "STATUS_UNSPECIFIED"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -30689,7 +30821,7 @@
     },
     "state": {
      "type": "string",
-     "description": "[Output Only] The state of the subnetwork, which can be one of the following values: READY: Subnetwork is created and ready to use DRAINING: only applicable to subnetworks that have the purpose set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load balancer are being drained. A subnetwork that is draining cannot be used or modified until it reaches a status of READY CREATING: Subnetwork is provisioning DELETING: Subnetwork is being deleted UPDATING: Subnetwork is being updated",
+     "description": "[Output Only] The state of the subnetwork, which can be one of the following values: READY: Subnetwork is created and ready to use DRAINING: only applicable to subnetworks that have the purpose set to INTERNAL_HTTPS_LOAD_BALANCER and indicates that connections to the load balancer are being drained. A subnetwork that is draining cannot be used or modified until it reaches a status of READY",
      "enum": [
       "DRAINING",
       "READY"
@@ -31144,7 +31276,7 @@
   "Subsetting": {
    "id": "Subsetting",
    "type": "object",
-   "description": "Subsetting options to make L4 ILB support any number of backend instances",
+   "description": "Subsetting configuration for this BackendService. Currently this is applicable only for Internal TCP/UDP load balancing and Internal HTTP(S) load balancing.",
    "properties": {
     "policy": {
      "type": "string",
@@ -34227,6 +34359,20 @@
     "response": {
      "type": "string",
      "description": "The bytes to match against the beginning of the response data. It is an error if this is empty. The response data can only be ASCII."
+    }
+   }
+  },
+  "Uint128": {
+   "id": "Uint128",
+   "type": "object",
+   "properties": {
+    "high": {
+     "type": "string",
+     "format": "uint64"
+    },
+    "low": {
+     "type": "string",
+     "format": "uint64"
     }
    }
   },
@@ -46221,6 +46367,12 @@
        "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
        "location": "query"
       },
+      "secureTags": {
+       "type": "string",
+       "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 300.",
+       "repeated": true,
+       "location": "query"
+      },
       "zone": {
        "type": "string",
        "description": "The name of the zone for this request.",
@@ -46793,6 +46945,12 @@
       "requestId": {
        "type": "string",
        "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "secureTags": {
+       "type": "string",
+       "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 300.",
+       "repeated": true,
        "location": "query"
       },
       "sourceInstanceTemplate": {
@@ -48127,6 +48285,11 @@
      "httpMethod": "PUT",
      "description": "Updates an instance only if the necessary resources are available. This method can update only a specific set of instance properties. See  Updating a running instance for a list of updatable instance properties.",
      "parameters": {
+      "clearSecureTag": {
+       "type": "boolean",
+       "description": "Whether to clear secure tags from the instance.\n\nThis property is mutually exclusive with the secure_tag property; you can only specify one or the other, but not both.",
+       "location": "query"
+      },
       "instance": {
        "type": "string",
        "description": "Name of the instance resource to update.",
@@ -48178,6 +48341,12 @@
       "requestId": {
        "type": "string",
        "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "secureTags": {
+       "type": "string",
+       "description": "Secure tags to apply to this instance. Maximum number of secure tags allowed is 300.",
+       "repeated": true,
        "location": "query"
       },
       "zone": {
@@ -59618,6 +59787,12 @@
        "type": "string",
        "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
        "location": "query"
+      },
+      "secureTags": {
+       "type": "string",
+       "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 300.",
+       "repeated": true,
+       "location": "query"
       }
      },
      "parameterOrder": [
@@ -59689,7 +59864,7 @@
      "id": "compute.regionInstantSnapshots.export",
      "path": "projects/{project}/regions/{region}/instantSnapshots/{instantSnapshot}/export",
      "httpMethod": "POST",
-     "description": "Export the changed blocks between two instant snapshots to a customer?s bucket in the user specified format.",
+     "description": "Export the changed blocks between two instant snapshots to a customer's bucket in the user specified format.",
      "parameters": {
       "instantSnapshot": {
        "type": "string",
@@ -71512,7 +71687,7 @@
      "id": "compute.zoneInstantSnapshots.export",
      "path": "projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}/export",
      "httpMethod": "POST",
-     "description": "Export the changed blocks between two instant snapshots to a customer?s bucket in the user specified format.",
+     "description": "Export the changed blocks between two instant snapshots to a customer's bucket in the user specified format.",
      "parameters": {
       "instantSnapshot": {
        "type": "string",

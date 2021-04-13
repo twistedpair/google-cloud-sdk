@@ -2473,6 +2473,8 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       job.
     serviceAccountEmail: The email address of the service account to run the
       job as.
+    stagingLocation: The Cloud Storage path for staging local files. Must be a
+      valid Cloud Storage URL, beginning with `gs://`.
     subnetwork: Subnetwork to which VMs will be assigned, if desired. You can
       specify a subnetwork using either a complete URL or an abbreviated path.
       Expected to be of the form "https://www.googleapis.com/compute/v1/projec
@@ -2565,11 +2567,12 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
   network = _messages.StringField(9)
   numWorkers = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   serviceAccountEmail = _messages.StringField(11)
-  subnetwork = _messages.StringField(12)
-  tempLocation = _messages.StringField(13)
-  workerRegion = _messages.StringField(14)
-  workerZone = _messages.StringField(15)
-  zone = _messages.StringField(16)
+  stagingLocation = _messages.StringField(12)
+  subnetwork = _messages.StringField(13)
+  tempLocation = _messages.StringField(14)
+  workerRegion = _messages.StringField(15)
+  workerZone = _messages.StringField(16)
+  zone = _messages.StringField(17)
 
 
 class FloatingPointList(_messages.Message):

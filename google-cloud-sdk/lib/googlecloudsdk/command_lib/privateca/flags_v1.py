@@ -22,6 +22,8 @@ from googlecloudsdk.api_lib.privateca import base as privateca_base
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.privateca import preset_profiles
 from googlecloudsdk.command_lib.privateca import text_utils
 
 import six
@@ -41,6 +43,13 @@ _VALID_EXTENDED_KEY_USAGES = [
 
 def _StripVal(val):
   return six.text_type(val).strip()
+
+
+def AddUsePresetProfilesFlag(parser):
+  base.Argument(
+      '--use-preset-profile',
+      help='The name of an existing preset profile used to encapsulate X.509 parameter values.',
+      required=False).AddToParser(parser)
 
 
 def AddInlineX509ParametersFlags(parser, is_ca):
@@ -99,8 +108,23 @@ def ParseX509Parameters(args, is_ca):
   Returns:
     An X509Parameters object.
   """
-  # TODO(b/183243757): Check if a preset profile was used instead of
-  # inline values.
+  preset_profile_set = args.IsKnownAndSpecified('use_preset_profile')
+  # TODO(b/183243757): Change to args.IsSpecified once --use-preset-profile flag
+  # is registered.
+  has_inline_values = any([
+      args.IsKnownAndSpecified(flag) for flag in
+      ['key_usages', 'extended_key_usages', 'max_chain_length', 'is_ca_cert']
+  ])
+
+  if preset_profile_set and has_inline_values:
+    raise exceptions.InvalidArgumentException(
+        '--use-preset-profile',
+        '--use-preset-profile may not be specified if one or more of '
+        '--key-usages, --extended-key-usages or --max-chain-length are '
+        'specified.')
+  if preset_profile_set:
+    return preset_profiles.GetPresetX509Parameters(args.use_preset_profile)
+
   base_key_usages = args.key_usages or []
   if is_ca:
     # A CA should have these KeyUsages to be RFC 5280 compliant.

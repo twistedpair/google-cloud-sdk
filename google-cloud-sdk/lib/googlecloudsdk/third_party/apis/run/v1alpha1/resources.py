@@ -31,50 +31,6 @@ class Collections(enum.Enum):
       ['namespacesId'],
       True
   )
-  NAMESPACES_CLOUDAUDITLOGSSOURCES = (
-      'namespaces.cloudauditlogssources',
-      '{+name}',
-      {
-          '':
-              'namespaces/{namespacesId}/cloudauditlogssources/'
-              '{cloudauditlogssourcesId}',
-      },
-      ['name'],
-      True
-  )
-  NAMESPACES_CLOUDPUBSUBSOURCES = (
-      'namespaces.cloudpubsubsources',
-      '{+name}',
-      {
-          '':
-              'namespaces/{namespacesId}/cloudpubsubsources/'
-              '{cloudpubsubsourcesId}',
-      },
-      ['name'],
-      True
-  )
-  NAMESPACES_CLOUDSCHEDULERSOURCES = (
-      'namespaces.cloudschedulersources',
-      '{+name}',
-      {
-          '':
-              'namespaces/{namespacesId}/cloudschedulersources/'
-              '{cloudschedulersourcesId}',
-      },
-      ['name'],
-      True
-  )
-  NAMESPACES_CLOUDSTORAGESOURCES = (
-      'namespaces.cloudstoragesources',
-      '{+name}',
-      {
-          '':
-              'namespaces/{namespacesId}/cloudstoragesources/'
-              '{cloudstoragesourcesId}',
-      },
-      ['name'],
-      True
-  )
   NAMESPACES_CONFIGURATIONS = (
       'namespaces.configurations',
       '{+name}',
@@ -135,16 +91,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  NAMESPACES_TRIGGERS = (
-      'namespaces.triggers',
-      '{+name}',
-      {
-          '':
-              'namespaces/{namespacesId}/triggers/{triggersId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
@@ -157,50 +103,6 @@ class Collections(enum.Enum):
       'projects/{projectsId}/locations/{locationsId}',
       {},
       ['projectsId', 'locationsId'],
-      True
-  )
-  PROJECTS_LOCATIONS_CLOUDAUDITLOGSSOURCES = (
-      'projects.locations.cloudauditlogssources',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'cloudauditlogssources/{cloudauditlogssourcesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CLOUDPUBSUBSOURCES = (
-      'projects.locations.cloudpubsubsources',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'cloudpubsubsources/{cloudpubsubsourcesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CLOUDSCHEDULERSOURCES = (
-      'projects.locations.cloudschedulersources',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'cloudschedulersources/{cloudschedulersourcesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CLOUDSTORAGESOURCES = (
-      'projects.locations.cloudstoragesources',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'cloudstoragesources/{cloudstoragesourcesId}',
-      },
-      ['name'],
       True
   )
   PROJECTS_LOCATIONS_CONFIGURATIONS = (
@@ -254,17 +156,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/services/'
               '{servicesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_TRIGGERS = (
-      'projects.locations.triggers',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/triggers/'
-              '{triggersId}',
       },
       ['name'],
       True
