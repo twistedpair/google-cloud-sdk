@@ -3155,7 +3155,7 @@ class TableFieldSchema(_messages.Message):
       REQUIRED and REPEATED. The default value is NULLABLE.
     name: [Required] The field name. The name must contain only letters (a-z,
       A-Z), numbers (0-9), or underscores (_), and must start with a letter or
-      underscore. The maximum length is 128 characters.
+      underscore. The maximum length is 300 characters.
     policyTags: A PolicyTagsValue attribute.
     precision: [Optional] Precision (maximum number of total digits in base
       10) and scale (maximum number of digits in the fractional part in base

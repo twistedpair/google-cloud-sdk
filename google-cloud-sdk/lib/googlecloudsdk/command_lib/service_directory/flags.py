@@ -41,6 +41,17 @@ def AddPortFlag(parser):
       type=int).AddToParser(parser)
 
 
+def AddNetworkFlag(parser):
+  """Adds a network flag for service-directory commands."""
+  return base.Argument(
+      '--network',
+      help="""\
+        Specifies the Google Compute Engine Network (VPC) of the Endpoint.
+        Network and Project existence is not checked.
+        Example: `projects/<PROJECT_NUM>/locations/global/networks/<NETWORK_NAME>`
+        The default is empty string.""").AddToParser(parser)
+
+
 def AddAnnotationsFlag(parser, resource_type, dictionary_size_limit):
   """Adds annotations flags for service-directory commands."""
   return base.Argument(

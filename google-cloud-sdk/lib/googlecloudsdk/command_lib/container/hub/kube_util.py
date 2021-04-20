@@ -140,24 +140,35 @@ class MembershipCRDCreationOperation(object):
 class KubeconfigProcessor(object):
   """A helper class that processes kubeconfig and context arguments."""
 
-  def __init__(self):
+  def __init__(self, gke_uri, gke_cluster, kubeconfig, context):
     """Constructor for KubeconfigProcessor.
+
+    Args:
+      gke_uri: the URI of the GKE cluster; for example,
+               'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
+      gke_cluster: the "location/name" of the GKE cluster. The location can
+                   be a zone or a region for e.g `us-central1-a/my-cluster`
+      kubeconfig: the kubeconfig path
+      context: the context to use
 
     Raises:
       exceptions.Error: if kubectl is not installed
     """
+
+    self.gke_uri = gke_uri
+    self.gke_cluster = gke_cluster
+    self.kubeconfig = kubeconfig
+    self.context = context
     # Warn if kubectl is not installed.
     if not c_util.CheckKubectlInstalled():
       raise exceptions.Error('kubectl not installed.')
     self.gke_cluster_self_link = None
     self.gke_cluster_uri = None
 
-  def GetKubeconfigAndContext(self, flags, temp_kubeconfig_dir):
+  def GetKubeconfigAndContext(self, temp_kubeconfig_dir):
     """Gets the kubeconfig, cluster context and resource link from arguments and defaults.
 
     Args:
-      flags: the flags passed to the enclosing command. It must include
-        kubeconfig and context.
       temp_kubeconfig_dir: a TemporaryDirectoryObject.
 
     Returns:
@@ -169,14 +180,15 @@ class KubeconfigProcessor(object):
       exceptions.Error: if the context does not exist in the deduced kubeconfig
         file
     """
+
     # Parsing flags to get the name and location of the GKE cluster to register
-    if flags.gke_uri or flags.gke_cluster:
+    if self.gke_uri or self.gke_cluster:
       cluster_project = None
-      if flags.gke_uri:
-        cluster_project, location, name = _ParseGKEURI(flags.gke_uri)
+      if self.gke_uri:
+        cluster_project, location, name = _ParseGKEURI(self.gke_uri)
       else:
         cluster_project = properties.VALUES.core.project.GetOrFail()
-        location, name = _ParseGKECluster(flags.gke_cluster)
+        location, name = _ParseGKECluster(self.gke_cluster)
 
       self.gke_cluster_self_link, self.gke_cluster_uri = api_util.GetGKEURIAndResourceName(
           cluster_project, location, name)
@@ -188,13 +200,13 @@ class KubeconfigProcessor(object):
     # and KUBERNETES_SERVICE_HOST environment variables are set in a kubernetes
     # cluster automatically, which can be used by kubectl to talk to
     # the API server.
-    if not flags.kubeconfig and encoding.GetEncodedValue(
+    if not self.kubeconfig and encoding.GetEncodedValue(
         os.environ, 'KUBERNETES_SERVICE_PORT') and encoding.GetEncodedValue(
             os.environ, 'KUBERNETES_SERVICE_HOST'):
       return None, None
 
     kubeconfig_file = (
-        flags.kubeconfig or encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
+        self.kubeconfig or encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
         or '~/.kube/config')
 
     kubeconfig = files.ExpandHomeDir(kubeconfig_file)
@@ -205,7 +217,7 @@ class KubeconfigProcessor(object):
           'variable, or ensure that $HOME/.kube/config exists')
     kc = kconfig.Kubeconfig.LoadFromFile(kubeconfig)
 
-    context_name = flags.context
+    context_name = self.context
 
     if context_name not in kc.contexts:
       raise exceptions.Error(
@@ -253,13 +265,26 @@ class KubernetesPoller(waiter.OperationPoller):
 class KubernetesClient(object):
   """A client for accessing a subset of the Kubernetes API."""
 
-  # TODO(b/152240680): Refactor KubernetesClient so it doesn't rely on a flags
-  # argument.
-  def __init__(self, flags):
+  def __init__(self,
+               gke_uri=None,
+               gke_cluster=None,
+               kubeconfig=None,
+               context=None,
+               public_issuer_url=None,
+               enable_workload_identity=False,
+               manage_workload_identity_bucket=False):
     """Constructor for KubernetesClient.
 
     Args:
-      flags: the flags passed to the enclosing command.
+      gke_uri: the URI of the GKE cluster; for example,
+               'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
+      gke_cluster: the "location/name" of the GKE cluster. The location can
+                   be a zone or a region for e.g `us-central1-a/my-cluster`
+      kubeconfig: the kubeconfig path
+      context: the context to use
+      public_issuer_url: the public issuer url
+      enable_workload_identity: whether to enable workload identity
+      manage_workload_identity_bucket: the workload identity bucket
 
     Raises:
       exceptions.Error: if the client cannot be configured
@@ -272,12 +297,16 @@ class KubernetesClient(object):
     # If the cluster to be registered is a GKE cluster, create a temporary
     # directory to store the kubeconfig that will be generated using the
     # GKE GetCluster() API
-    if flags and (flags.gke_uri or flags.gke_cluster):
+    if gke_uri or gke_cluster:
       self.temp_kubeconfig_dir = files.TemporaryDirectory()
 
-    self.processor = KubeconfigProcessor()
+    self.processor = KubeconfigProcessor(
+        gke_uri=gke_uri,
+        gke_cluster=gke_cluster,
+        kubeconfig=kubeconfig,
+        context=context)
     self.kubeconfig, self.context = self.processor.GetKubeconfigAndContext(
-        flags, self.temp_kubeconfig_dir)
+        self.temp_kubeconfig_dir)
 
     # This previously fixed b/152465794. It is probably unnecessary now that
     # we use the official K8s client, but it's also still true that we don't
@@ -285,16 +314,11 @@ class KubernetesClient(object):
     # this check later if we need the K8s client in other scenarios. For now,
     # the impact of switching to the official client can be minimized to only
     # scenarios where we actually need it.
-    if (hasattr(flags, 'public_issuer_url') and
-        flags.public_issuer_url) or (hasattr(flags, 'enable_workload_identity')
-                                     and self.processor.gke_cluster_uri):
+    if public_issuer_url or (enable_workload_identity and
+                             self.processor.gke_cluster_uri):
       return
 
-    if (flags and
-        ((hasattr(flags, 'enable_workload_identity') and
-          flags.enable_workload_identity) or
-         (hasattr(flags, 'manage_workload_identity_bucket') and
-          flags.manage_workload_identity_bucket))):
+    if enable_workload_identity or manage_workload_identity_bucket:
       self.kube_client = self.processor.GetKubeClient(
           self.kubeconfig, self.context)
 

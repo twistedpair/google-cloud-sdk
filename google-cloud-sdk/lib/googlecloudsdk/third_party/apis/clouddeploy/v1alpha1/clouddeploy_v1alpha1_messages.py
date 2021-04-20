@@ -13,6 +13,10 @@ from apitools.base.py import extra_types
 package = 'clouddeploy'
 
 
+class ApproveRolloutResponse(_messages.Message):
+  r"""A ApproveRolloutResponse object."""
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -378,29 +382,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest(_messag
   validateOnly = _messages.BooleanField(5)
 
 
-class ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetIamPolicyRequest(_messages.Message):
-  r"""A
-  ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetRequest
   object.
@@ -449,12 +430,30 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesPromoteRequest(_messa
     name: Required. The `Release` being promoted. Format is projects/{projectI
       D}/locations/{locationName}/deliveryPipelines/{pipelineName}/release/{re
       leaseName}.
+    rolloutId: [Optional] The ID to assign to the generated `Rollout`.
     toTarget: [Optional] The name of the `Target` to which we are promoting
       the Release.
   """
 
   name = _messages.StringField(1, required=True)
-  toTarget = _messages.StringField(2)
+  rolloutId = _messages.StringField(2)
+  toTarget = _messages.StringField(3)
+
+
+class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveRequest(_messages.Message):
+  r"""A
+  ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveRequest
+  object.
+
+  Fields:
+    approved: True = approve; false = reject
+    name: Required. Name of the Rollout. Format is projects/{project}/location
+      s/{location}/deliveryPipelines/{deliveryPipeline}/
+      releases/{release}/rollouts/{rollout}.
+  """
+
+  approved = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest(_messages.Message):
@@ -488,28 +487,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
   rollout = _messages.MessageField('Rollout', 3)
   rolloutId = _messages.StringField(4)
   validateOnly = _messages.BooleanField(5)
-
-
-class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetIamPolicyRequest(_messages.Message):
-  r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetIamPol
-  icyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetRequest(_messages.Message):
@@ -554,22 +531,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest(_
   parent = _messages.StringField(5, required=True)
 
 
-class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsSetIamPolicyRequest(_messages.Message):
-  r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsSetIamPol
-  icyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsTestIamPermissionsRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsTestIamPe
   rmissionsRequest object.
@@ -584,23 +545,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsTestIamPermis
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class ClouddeployProjectsLocationsDeliveryPipelinesReleasesSetIamPolicyRequest(_messages.Message):
-  r"""A
-  ClouddeployProjectsLocationsDeliveryPipelinesReleasesSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesTestIamPermissionsRequest(_messages.Message):
@@ -702,29 +646,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsDeleteRequest(_message
   validateOnly = _messages.BooleanField(5)
 
 
-class ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetIamPolicyRequest(_messages.Message):
-  r"""A
-  ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetRequest object.
 
@@ -807,23 +728,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(_messages
   validateOnly = _messages.BooleanField(7)
 
 
-class ClouddeployProjectsLocationsDeliveryPipelinesTargetsSetIamPolicyRequest(_messages.Message):
-  r"""A
-  ClouddeployProjectsLocationsDeliveryPipelinesTargetsSetIamPolicyRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
 class ClouddeployProjectsLocationsDeliveryPipelinesTargetsTestIamPermissionsRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesTargetsTestIamPermissions
   Request object.
@@ -875,7 +779,7 @@ class ClouddeployProjectsLocationsListRequest(_messages.Message):
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """

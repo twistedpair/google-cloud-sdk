@@ -662,7 +662,7 @@
       "type": "object",
       "properties": {
         "logName": {
-          "description": "Optional. A default log resource name that is assigned to all log entries in entries that do not specify a value for log_name: \"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" \"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\" \"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\" [LOG_ID] must be URL-encoded. For example: \"projects\/my-project-id\/logs\/syslog\" \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\" The permission logging.logEntries.create is needed on each project, organization, billing account, or folder that is receiving new log entries, whether the resource is specified in logName or in an individual log entry.",
+          "description": "Optional. A default log resource name that is assigned to all log entries in entries that do not specify a value for log_name: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example: \"projects\/my-project-id\/logs\/syslog\" \"organizations\/123\/logs\/cloudaudit.googleapis.com%2Factivity\" The permission logging.logEntries.create is needed on each project, organization, billing account, or folder that is receiving new log entries, whether the resource is specified in logName or in an individual log entry.",
           "type": "string"
         },
         "resource": {
@@ -980,7 +980,7 @@
           }
         },
         "resourceNames": {
-          "description": "Required. Names of one or more parent resources from which to retrieve log entries: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" May alternatively be one or more views projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDProjects listed in the project_ids field are added to this list.",
+          "description": "Required. Names of one or more parent resources from which to retrieve log entries: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]May alternatively be one or more views: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]Projects listed in the project_ids field are added to this list.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1148,7 +1148,7 @@
       "type": "object",
       "properties": {
         "resourceNames": {
-          "description": "Required. Name of a parent resource from which to retrieve log entries: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" May alternatively be one or more views: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID\" \"organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID\" \"folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID\"",
+          "description": "Required. Name of a parent resource from which to retrieve log entries: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]May alternatively be one or more views: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]",
           "type": "array",
           "items": {
             "type": "string"
@@ -1369,7 +1369,7 @@
       "type": "object",
       "properties": {
         "resourceNames": {
-          "description": "Required. Names of one or more log views to run a SQL query. Currently, only a single view may be selected. Multiple view selection will be supported in the future.Examples: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDRequires 'logging.views.access' on view resource.",
+          "description": "Required. Names of one or more log views to run a SQL query. Currently, only a single view may be selected. Multiple view selection will be supported in the future.Examples: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]Requires 'logging.views.access' on view resource.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1439,7 +1439,7 @@
       "type": "object",
       "properties": {
         "jobName": {
-          "description": "Reference to the Job that was created to run the query. Example: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/jobs\/JOB_ID",
+          "description": "Reference to the Job that was created to run the query. Example: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/jobs\/[JOB_ID]",
           "type": "string"
         },
         "jobComplete": {
@@ -2569,7 +2569,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -3142,7 +3142,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "logName": {
-                  "description": "Required. The resource name of the log to delete: \"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" \"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\" \"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\" [LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
+                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\".For more information about log names, see LogEntry.",
                   "pattern": "^projects\/[^\/]+\/logs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3168,7 +3168,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name that owns the logs: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" ",
+                  "description": "Required. The resource name that owns the logs: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3186,7 +3186,7 @@
                   "type": "string"
                 },
                 "resourceNames": {
-                  "description": "Optional. The resource name that owns the logs: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be: \"projects\/PROJECT_ID\" \"organizations\/ORGANIZATION_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\" \"folders\/FOLDER_ID\"",
+                  "description": "Optional. The resource name that owns the logs: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]To support legacy queries, it could also be: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
@@ -3763,7 +3763,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -4336,7 +4336,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "logName": {
-                  "description": "Required. The resource name of the log to delete: \"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" \"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\" \"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\" [LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
+                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\".For more information about log names, see LogEntry.",
                   "pattern": "^folders\/[^\/]+\/logs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4362,7 +4362,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name that owns the logs: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" ",
+                  "description": "Required. The resource name that owns the logs: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]",
                   "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4380,7 +4380,7 @@
                   "type": "string"
                 },
                 "resourceNames": {
-                  "description": "Optional. The resource name that owns the logs: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be: \"projects\/PROJECT_ID\" \"organizations\/ORGANIZATION_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\" \"folders\/FOLDER_ID\"",
+                  "description": "Optional. The resource name that owns the logs: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]To support legacy queries, it could also be: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
@@ -4898,7 +4898,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -5387,7 +5387,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "logName": {
-                  "description": "Required. The resource name of the log to delete: \"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" \"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\" \"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\" [LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
+                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\".For more information about log names, see LogEntry.",
                   "pattern": "^billingAccounts\/[^\/]+\/logs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5413,7 +5413,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name that owns the logs: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" ",
+                  "description": "Required. The resource name that owns the logs: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]",
                   "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5431,7 +5431,7 @@
                   "type": "string"
                 },
                 "resourceNames": {
-                  "description": "Optional. The resource name that owns the logs: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be: \"projects\/PROJECT_ID\" \"organizations\/ORGANIZATION_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\" \"folders\/FOLDER_ID\"",
+                  "description": "Optional. The resource name that owns the logs: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]To support legacy queries, it could also be: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
@@ -6332,7 +6332,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -6905,7 +6905,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "logName": {
-                  "description": "Required. The resource name of the log to delete: \"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" \"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\" \"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\" [LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
+                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\".For more information about log names, see LogEntry.",
                   "pattern": "^organizations\/[^\/]+\/logs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6931,7 +6931,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name that owns the logs: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" ",
+                  "description": "Required. The resource name that owns the logs: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]",
                   "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6949,7 +6949,7 @@
                   "type": "string"
                 },
                 "resourceNames": {
-                  "description": "Optional. The resource name that owns the logs: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be: \"projects\/PROJECT_ID\" \"organizations\/ORGANIZATION_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\" \"folders\/FOLDER_ID\"",
+                  "description": "Optional. The resource name that owns the logs: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]To support legacy queries, it could also be: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
@@ -7087,7 +7087,7 @@
               "type": "string"
             },
             "pageSize": {
-              "description": "The maximum number of results to return. If not set, the service will select a default.",
+              "description": "The maximum number of results to return. If not set, the service selects a default.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -7725,7 +7725,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "logName": {
-              "description": "Required. The resource name of the log to delete: \"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" \"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\" \"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\" [LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". For more information about log names, see LogEntry.",
+              "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\".For more information about log names, see LogEntry.",
               "pattern": "^[^\/]+\/[^\/]+\/logs\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -7751,7 +7751,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "Required. The resource name that owns the logs: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" ",
+              "description": "Required. The resource name that owns the logs: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]",
               "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -7769,7 +7769,7 @@
               "type": "string"
             },
             "resourceNames": {
-              "description": "Optional. The resource name that owns the logs: projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be: \"projects\/PROJECT_ID\" \"organizations\/ORGANIZATION_ID\" \"billingAccounts\/BILLING_ACCOUNT_ID\" \"folders\/FOLDER_ID\"",
+              "description": "Optional. The resource name that owns the logs: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID] folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]To support legacy queries, it could also be: projects\/[PROJECT_ID] organizations\/[ORGANIZATION_ID] billingAccounts\/[BILLING_ACCOUNT_ID] folders\/[FOLDER_ID]",
               "location": "query",
               "repeated": true,
               "type": "string"

@@ -181,6 +181,8 @@ class CloudFunction(_messages.Message):
       available during build time.
     buildId: Output only. The Cloud Build ID of the latest successful
       deployment of the function.
+    buildName: Output only. The Cloud Build Name of the function deployment.
+      projects//locations//builds/.
     buildWorkerPool: Name of the Cloud Build Custom Worker Pool that should be
       used to build the function. The format of this field is
       `projects/{project}/locations/{region}/workerPools/{workerPool}` where
@@ -397,32 +399,33 @@ class CloudFunction(_messages.Message):
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   buildEnvironmentVariables = _messages.MessageField('BuildEnvironmentVariablesValue', 2)
   buildId = _messages.StringField(3)
-  buildWorkerPool = _messages.StringField(4)
-  description = _messages.StringField(5)
-  entryPoint = _messages.StringField(6)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 7)
-  eventTrigger = _messages.MessageField('EventTrigger', 8)
-  httpsTrigger = _messages.MessageField('HttpsTrigger', 9)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  maxInstances = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  minInstances = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  name = _messages.StringField(14)
-  network = _messages.StringField(15)
-  runtime = _messages.StringField(16)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 17, repeated=True)
-  secretVolumes = _messages.MessageField('SecretVolume', 18, repeated=True)
-  serviceAccountEmail = _messages.StringField(19)
-  sourceArchiveUrl = _messages.StringField(20)
-  sourceRepository = _messages.MessageField('SourceRepository', 21)
-  sourceToken = _messages.StringField(22)
-  sourceUploadUrl = _messages.StringField(23)
-  status = _messages.EnumField('StatusValueValuesEnum', 24)
-  timeout = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
-  versionId = _messages.IntegerField(27)
-  vpcConnector = _messages.StringField(28)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 29)
+  buildName = _messages.StringField(4)
+  buildWorkerPool = _messages.StringField(5)
+  description = _messages.StringField(6)
+  entryPoint = _messages.StringField(7)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 8)
+  eventTrigger = _messages.MessageField('EventTrigger', 9)
+  httpsTrigger = _messages.MessageField('HttpsTrigger', 10)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  maxInstances = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  minInstances = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  name = _messages.StringField(15)
+  network = _messages.StringField(16)
+  runtime = _messages.StringField(17)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 18, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 19, repeated=True)
+  serviceAccountEmail = _messages.StringField(20)
+  sourceArchiveUrl = _messages.StringField(21)
+  sourceRepository = _messages.MessageField('SourceRepository', 22)
+  sourceToken = _messages.StringField(23)
+  sourceUploadUrl = _messages.StringField(24)
+  status = _messages.EnumField('StatusValueValuesEnum', 25)
+  timeout = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
+  versionId = _messages.IntegerField(28)
+  vpcConnector = _messages.StringField(29)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 30)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -632,7 +635,7 @@ class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -1067,6 +1070,9 @@ class OperationMetadataV1(_messages.Message):
   Fields:
     buildId: The Cloud Build ID of the function created or updated by an API
       call. This field is only populated for Create and Update operations.
+    buildName: The Cloud Build Name of the function deployment. This field is
+      only populated for Create and Update operations.
+      projects//locations//builds/.
     request: The original request that started the operation.
     sourceToken: An identifier for Firebase function sources. Disclaimer: This
       field is only supported for Firebase function deployments.
@@ -1118,12 +1124,13 @@ class OperationMetadataV1(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   buildId = _messages.StringField(1)
-  request = _messages.MessageField('RequestValue', 2)
-  sourceToken = _messages.StringField(3)
-  target = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
-  versionId = _messages.IntegerField(7)
+  buildName = _messages.StringField(2)
+  request = _messages.MessageField('RequestValue', 3)
+  sourceToken = _messages.StringField(4)
+  target = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+  versionId = _messages.IntegerField(8)
 
 
 class Policy(_messages.Message):

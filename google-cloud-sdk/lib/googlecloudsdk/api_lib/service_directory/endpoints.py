@@ -91,9 +91,15 @@ class EndpointsClientBeta(EndpointsClient):
   def __init__(self):
     super(EndpointsClientBeta, self).__init__(base.ReleaseTrack.BETA)
 
-  def Create(self, endpoint_ref, address=None, port=None, metadata=None):
+  def Create(self,
+             endpoint_ref,
+             address=None,
+             port=None,
+             metadata=None,
+             network=None):
     """Endpoints create request."""
-    endpoint = self.msgs.Endpoint(address=address, port=port, metadata=metadata)
+    endpoint = self.msgs.Endpoint(
+        address=address, port=port, metadata=metadata, network=network)
     create_req = self.msgs.ServicedirectoryProjectsLocationsNamespacesServicesEndpointsCreateRequest(
         parent=endpoint_ref.Parent().RelativeName(),
         endpoint=endpoint,

@@ -1064,6 +1064,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         running.
       DOCKER_IMAGE_VPCSC_PERMISSION_DENIED: Docker failed because a request
         was denied by the organization's policy.
+      WORKING_DIR_NOT_RELATIVE: Working directory is not relative
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1106,6 +1107,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_TOO_MANY_SYMBOLIC_LINK_LEVELS = 38
     LOCAL_CONTAINER_MANAGER_NOT_RUNNING = 39
     DOCKER_IMAGE_VPCSC_PERMISSION_DENIED = 40
+    WORKING_DIR_NOT_RELATIVE = 41
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

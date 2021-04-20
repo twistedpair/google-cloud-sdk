@@ -68,9 +68,9 @@ Forwarding rules can be either global or regional, specified with the
 the scope of a forwarding rule, refer to
 https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
 
-Forwarding rules can be external, internal, internal managed, or
+Forwarding rules can be external, external managed, internal, internal managed, or
 internal self-managed, specified with the
-``--load-balancing-scheme=[EXTERNAL|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
+``--load-balancing-scheme=[EXTERNAL|EXTERNAL_MANAGED|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
 flag. External forwarding rules are accessible from the internet, while
 internal forwarding rules are only accessible from within their VPC
 networks. You can specify a reserved static external or internal IP
@@ -349,12 +349,14 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
                         ' region of the forwarding rule.'))
 
 
-def AddressArgHelp(include_l7_internal_load_balancing):
+def AddressArgHelp(include_l7_internal_load_balancing, include_gfe3):
   """Build the help text for the address argument."""
 
   lb_schemes = '(EXTERNAL, INTERNAL, INTERNAL_MANAGED'
   if include_l7_internal_load_balancing:
     lb_schemes += ', INTERNAL_MANAGED'
+  if include_gfe3:
+    lb_schemes += ', EXTERNAL_MANAGED'
   lb_schemes += ')'
 
   detailed_help = """\
@@ -375,8 +377,9 @@ def AddressArgHelp(include_l7_internal_load_balancing):
 
     The load-balancing-scheme (%s) and the forwarding rule's target determine
     the type of IP address that you can use. The address type must be external
-    for load-balancing-scheme EXTERNAL, and for the other load-balancing-schemes
-    the address must be internal. For detailed information, refer to
+    for load-balancing-scheme EXTERNAL or EXTERNAL_MANAGED, and for the other
+    load-balancing-schemes the address must be internal. For detailed
+    information, refer to
     https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications.
   """ % (
       lb_schemes)
@@ -384,7 +387,7 @@ def AddressArgHelp(include_l7_internal_load_balancing):
   return textwrap.dedent(detailed_help)
 
 
-def AddressArg(include_l7_internal_load_balancing):
+def AddressArg(include_l7_internal_load_balancing, include_gfe3):
   return compute_flags.ResourceArgument(
       name='--address',
       required=False,
@@ -395,12 +398,13 @@ def AddressArg(include_l7_internal_load_balancing):
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
       short_help='IP address that the forwarding rule will serve.',
       detailed_help=AddressArgHelp(
-          include_l7_internal_load_balancing=include_l7_internal_load_balancing)
-  )
+          include_l7_internal_load_balancing=include_l7_internal_load_balancing,
+          include_gfe3=include_gfe3))
 
 
 def AddUpdateArgs(parser,
                   include_l7_internal_load_balancing=False,
+                  include_gfe3=False,
                   include_psc_google_apis=False,
                   include_target_service_attachment=False):
   """Adds common flags for mutating forwarding rule targets."""
@@ -446,12 +450,14 @@ def AddUpdateArgs(parser,
   AddLoadBalancingScheme(
       parser,
       include_l7_ilb=include_l7_internal_load_balancing,
+      include_gfe3=include_gfe3,
       include_psc_google_apis=include_psc_google_apis,
       include_target_service_attachment=include_target_service_attachment)
 
 
 def AddLoadBalancingScheme(parser,
                            include_l7_ilb=False,
+                           include_gfe3=False,
                            include_psc_google_apis=False,
                            include_target_service_attachment=False):
   """Adds the load-balancing-scheme flag."""
@@ -474,6 +480,13 @@ def AddLoadBalancingScheme(parser,
     load_balancing_choices.update({
         'INTERNAL_MANAGED': 'Internal HTTP(S) Load Balancing, used with '
                             '--target-http-proxy, --target-https-proxy.'
+    })
+
+  if include_gfe3:
+    load_balancing_choices.update({
+        'EXTERNAL_MANAGED':
+            'Envoy based External HTTP(S) Load Balancing, used with '
+            '--target-http-proxy, --target-https-proxy.'
     })
 
   # There isn't a default load-balancing-scheme for PSC forwarding rules.
@@ -554,11 +567,12 @@ def AddIpVersionGroup(parser):
 
 
 def AddAddressesAndIPVersions(parser, required,
-                              include_l7_internal_load_balancing):
+                              include_l7_internal_load_balancing, include_gfe3):
   """Adds Addresses and IP versions flag."""
 
   address_arg = AddressArg(
-      include_l7_internal_load_balancing=include_l7_internal_load_balancing)
+      include_l7_internal_load_balancing=include_l7_internal_load_balancing,
+      include_gfe3=include_gfe3)
   group = parser.add_mutually_exclusive_group(required=required)
   AddIpVersionGroup(group)
   address_arg.AddArgument(parser, mutex_group=group)

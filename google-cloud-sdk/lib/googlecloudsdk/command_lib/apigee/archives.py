@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
+import zipfile
 
 from googlecloudsdk.command_lib.apigee import errors
 from googlecloudsdk.core import log
@@ -48,15 +49,18 @@ class LocalDirectoryArchive(object):
   ]
 
   def __init__(self, src_dir):
-    # Check if the directory exists.
-    if src_dir and not os.path.exists(src_dir):
-      raise files.MissingFileError(
-          'Archive directory does not exist: {}'.format(src_dir))
+    self._CheckIfPathExists(src_dir)
     # Check if the path resolves to a directory.
     if src_dir and not os.path.isdir(src_dir):
       raise errors.SourcePathIsNotDirectoryError(src_dir)
     self._src_dir = src_dir if src_dir is not None else files.GetCWD()
     self._tmp_dir = files.TemporaryDirectory()
+
+  def _CheckIfPathExists(self, path):
+    """Checks that the given file path exists."""
+    if path and not os.path.exists(path):
+      raise files.MissingFileError(
+          'Path to archive deployment does not exist: {}'.format(path))
 
   def _ZipFileFilter(self, file_name):
     """Filter all files in the archive directory to only allow Apigee files."""
@@ -84,6 +88,12 @@ class LocalDirectoryArchive(object):
     dst_file = os.path.join(self._tmp_dir.path, self._ARCHIVE_FILE_NAME)
     archive.MakeZipFromDir(dst_file, self._src_dir, self._ZipFileFilter)
     return dst_file
+
+  def ValidateZipFilePath(self, zip_path):
+    """Checks that the zip file path exists and the file is a zip archvie."""
+    self._CheckIfPathExists(zip_path)
+    if not zipfile.is_zipfile(zip_path):
+      raise errors.BundleFileNotValidError(zip_path)
 
   def Close(self):
     """Deletes the local temporary directory."""

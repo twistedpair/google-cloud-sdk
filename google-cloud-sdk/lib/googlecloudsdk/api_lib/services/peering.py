@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google LLC. All Rights Reserved.
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,9 +22,11 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis
 
+NETWORK_URL_FORMAT = 'projects/%s/global/networks/%s'
+
 
 def CreateConnection(project_number, service, network, ranges):
-  """Make API call to create a connection a specific service.
+  """Make API call to create a connection to a specific service.
 
   Args:
     project_number: The number of the project for which to peer the service.
@@ -48,7 +50,7 @@ def CreateConnection(project_number, service, network, ranges):
   request = messages.ServicenetworkingServicesConnectionsCreateRequest(
       parent='services/' + service,
       connection=messages.Connection(
-          network='projects/%s/global/networks/%s' % (project_number, network),
+          network=NETWORK_URL_FORMAT % (project_number, network),
           reservedPeeringRanges=ranges))
   try:
     return client.services_connections.Create(request)
@@ -58,8 +60,41 @@ def CreateConnection(project_number, service, network, ranges):
         e, exceptions.CreateConnectionsPermissionDeniedException)
 
 
+def DeleteConnection(project_number, service, network):
+  """Make API call to delete an existing connection to a specific service.
+
+  Args:
+    project_number: The number of the project which is peered to the service.
+    service: The name of the service peered with.
+    network: The network in consumer project peered with.
+
+  Raises:
+    exceptions.DeleteConnectionsPermissionDeniedException: when the delete
+        connection API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the peering
+        service.
+
+  Returns:
+    The result of the delete connection operation.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  # the API only takes project number, so we cannot use resource parser.
+  request = messages.ServicenetworkingServicesConnectionsDeleteConnectionRequest(
+      name='services/%s/connections/-' % service,
+      deleteConnectionRequest=messages.DeleteConnectionRequest(
+          consumerNetwork=NETWORK_URL_FORMAT % (project_number, network)))
+  try:
+    return client.services_connections.DeleteConnection(request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(
+        e, exceptions.DeleteConnectionsPermissionDeniedException)
+
+
 def UpdateConnection(project_number, service, network, ranges, force):
-  """Make API call to update a connection a specific service.
+  """Make API call to update a connection to a specific service.
 
   Args:
     project_number: The number of the project for which to peer the service.
@@ -69,7 +104,7 @@ def UpdateConnection(project_number, service, network, ranges, force):
     force: If true, update the connection even if the update can be destructive.
 
   Raises:
-    exceptions.CreateConnectionsPermissionDeniedException: when the create
+    exceptions.UpdateConnectionsPermissionDeniedException: when the update
         connection API fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the peering
         service.
@@ -84,7 +119,7 @@ def UpdateConnection(project_number, service, network, ranges, force):
   request = messages.ServicenetworkingServicesConnectionsPatchRequest(
       name='services/%s/connections/-' % service,
       connection=messages.Connection(
-          network='projects/%s/global/networks/%s' % (project_number, network),
+          network=NETWORK_URL_FORMAT % (project_number, network),
           reservedPeeringRanges=ranges),
       force=force)
   try:
@@ -92,7 +127,7 @@ def UpdateConnection(project_number, service, network, ranges, force):
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
     exceptions.ReraiseError(
-        e, exceptions.CreateConnectionsPermissionDeniedException)
+        e, exceptions.UpdateConnectionsPermissionDeniedException)
 
 
 def ListConnections(project_number, service, network):
@@ -151,8 +186,7 @@ def EnableVpcServiceControls(project_number, service, network):
   # the API only takes project number, so we cannot use resource parser.
   request = messages.ServicenetworkingServicesEnableVpcServiceControlsRequest(
       enableVpcServiceControlsRequest=messages.EnableVpcServiceControlsRequest(
-          consumerNetwork='projects/%s/global/networks/%s' %
-          (project_number, network)),
+          consumerNetwork=NETWORK_URL_FORMAT % (project_number, network)),
       parent='services/' + service)
   try:
     return client.services.EnableVpcServiceControls(request)
@@ -185,9 +219,8 @@ def DisableVpcServiceControls(project_number, service, network):
   # the API only takes project number, so we cannot use resource parser.
   request = messages.ServicenetworkingServicesDisableVpcServiceControlsRequest(
       disableVpcServiceControlsRequest=messages
-      .DisableVpcServiceControlsRequest(
-          consumerNetwork='projects/%s/global/networks/%s' %
-          (project_number, network)),
+      .DisableVpcServiceControlsRequest(consumerNetwork=NETWORK_URL_FORMAT %
+                                        (project_number, network)),
       parent='services/' + service)
   try:
     return client.services.DisableVpcServiceControls(request)

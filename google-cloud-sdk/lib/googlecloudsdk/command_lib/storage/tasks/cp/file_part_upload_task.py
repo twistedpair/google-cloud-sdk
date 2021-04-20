@@ -32,9 +32,9 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import file_part
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
-from googlecloudsdk.command_lib.storage.tasks import delete_object_task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core.util import files
 
 

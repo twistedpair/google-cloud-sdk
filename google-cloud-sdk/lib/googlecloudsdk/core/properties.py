@@ -264,6 +264,8 @@ class _Sections(object):
     auth: Section, The section containing auth properties for the Cloud SDK.
     billing: Section, The section containing billing properties for the Cloud
       SDK.
+    blueprints: Section, the section containing blueprints properties for the
+      Cloud SDK.
     builds: Section, The section containing builds properties for the Cloud SDK.
     artifacts: Section, The section containing artifacts properties for the
       Cloud SDK.
@@ -337,6 +339,8 @@ class _Sections(object):
       Cloud SDK.
     proxy: Section, The section containing proxy properties for the Cloud SDK.
     pubsub: Section, The section containing pubsub properties for the Cloud SDK.
+    recaptcha: Section, The section containing recaptcha properties for the
+      Cloud SDK.
     redis: Section, The section containing redis properties for the Cloud SDK.
     run: Section, The section containing run properties for the Cloud SDK.
     secrets: Section, The section containing secretmanager properties for the
@@ -373,6 +377,7 @@ class _Sections(object):
     self.artifacts = _SectionArtifacts()
     self.auth = _SectionAuth()
     self.billing = _SectionBilling()
+    self.blueprints = _SectionBlueprints()
     self.builds = _SectionBuilds()
     self.code = _SectionCode()
     self.component_manager = _SectionComponentManager()
@@ -411,6 +416,7 @@ class _Sections(object):
     self.privateca = _SectionPrivateCa()
     self.proxy = _SectionProxy()
     self.pubsub = _SectionPubsub()
+    self.recaptcha = _SectionRecaptcha()
     self.redis = _SectionRedis()
     self.run = _SectionRun()
     self.secrets = _SectionSecrets()
@@ -433,6 +439,7 @@ class _Sections(object):
         self.app,
         self.auth,
         self.billing,
+        self.blueprints,
         self.builds,
         self.artifacts,
         self.code,
@@ -471,6 +478,7 @@ class _Sections(object):
         self.pubsub,
         self.privateca,
         self.proxy,
+        self.recaptcha,
         self.redis,
         self.run,
         self.secrets,
@@ -945,6 +953,19 @@ class _SectionCompute(_Section):
         'a public image project, and global image resources are used for all '
         'other projects. Setting this property to `zonal` or `global` '
         'overrides the default behavior.')
+
+
+class _SectionBlueprints(_Section):
+  """Contains the properties for the 'blueprints' section."""
+
+  def __init__(self):
+    super(_SectionBlueprints, self).__init__('blueprints', hidden=True)
+    self.location = self._Add(
+        'location',
+        default='us-central1',
+        help_text='The default region to use when working with'
+        'blueprints-related resources. When a `--location` flag is required '
+        'but not provided, the command will fall back to this value, if set.')
 
 
 class _SectionFunctions(_Section):
@@ -2052,6 +2073,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.assuredworkloads = self._Add('assuredworkloads')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.binaryauthorization = self._Add('binaryauthorization')
+    self.blueprints = self._Add('config')
     self.artifactregistry = self._Add('artifactregistry')
     self.categorymanager = self._Add('categorymanager')
     self.certificatemanager = self._Add('certificatemanager')
@@ -2130,6 +2152,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.replicapoolupdater = self._Add('replicapoolupdater')
     self.resourcesettings = self._Add('resourcesettings')
     self.runtimeconfig = self._Add('runtimeconfig')
+    self.recaptcha = self._Add('recaptchaenterprise')
     self.redis = self._Add('redis')
     self.run = self._Add('run')
     self.scc = self._Add('securitycenter')
@@ -2333,6 +2356,13 @@ class _SectionMetastore(_Section):
             availability, and sufficient scalability for enterprise-level
             Dataproc Metastore workloads.""",
         choices=[x.name for x in list(_SectionMetastore.Tier)])
+
+
+class _SectionRecaptcha(_Section):
+  """Contains the properties for the 'recaptcha' section."""
+
+  def __init__(self):
+    super(_SectionRecaptcha, self).__init__('recaptcha')
 
 
 class _SectionRedis(_Section):

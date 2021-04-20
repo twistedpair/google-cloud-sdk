@@ -87,14 +87,18 @@ class ACMDiffPrinter(resource_printer_base.ResourcePrinter):
           buf_new.getvalue().split('\n'))
 
     lines_diff = difflib.ndiff(lines_old, lines_new)
-    pattern = re.compile(r'^(\+|-)(\s+)')
+
+    empty_line_pattern = re.compile(r'^\s*$')
+    empty_config_pattern = re.compile(r'^(\+|-)\s+\{\}$')
     for line in lines_diff:
       # We want to show the entire contents of resource, but without the
-      # additional information added by ndiff, which always leads with '?'.
-      if line and line[0] != '?':
-        # Make the +/- show up right in front of the resource instead of at the
-        # very beginning of the line.
-        print(pattern.sub(r'\g<2>\g<1>', line))
+      # additional information added by ndiff, which always leads with '?'. We
+      # also don't want to show empty lines produced from comparing unset
+      # fields, as well as lines produced from comparing empty messages, which
+      # will look like '+ {}' or '- {}'.
+      if line and line[0] != '?' and not empty_line_pattern.match(
+          line) and not empty_config_pattern.match(line):
+        print(line)
 
   def _AddRecord(self, record, delimit=False):
     """Immediately prints the first two columns of record as a unified diff.
@@ -119,9 +123,9 @@ class ACMDiffPrinter(resource_printer_base.ResourcePrinter):
       lines: yaml printer formatted strings
 
     Returns:
-      lines with 1 less whitespace, and no '-' for yaml array elements.
+      lines with no '-' prefix for yaml array elements.
     """
-    return [line.replace(' ', '', 1).replace('-', ' ', 1) for line in lines]
+    return [line.replace('-', ' ', 1) for line in lines]
 
 
 class Error(exceptions.Error):

@@ -57,6 +57,33 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Approve(self, request, global_params=None):
+      r"""Promotes a Release in the Delivery Pipeline.
+
+      Args:
+        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApproveRolloutResponse) The response message.
+      """
+      config = self.GetMethodConfig('Approve')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Approve.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:approve',
+        http_method='POST',
+        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.approve',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['approved'],
+        relative_path='v1alpha1/{+name}:approve',
+        request_field='',
+        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveRequest',
+        response_type_name='ApproveRolloutResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new Rollout in a given project and location.
 
@@ -111,33 +138,6 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:getIamPolicy',
-        http_method='GET',
-        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1alpha1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists Rollouts in a given project and location.
 
@@ -162,33 +162,6 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest',
         response_type_name='ListRolloutsResponse',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:setIamPolicy',
-        http_method='POST',
-        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsSetIamPolicyRequest',
-        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -310,33 +283,6 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}:getIamPolicy',
-        http_method='GET',
-        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1alpha1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists Releases in a given project and location.
 
@@ -383,38 +329,11 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
         method_id='clouddeploy.projects.locations.deliveryPipelines.releases.promote',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['toTarget'],
+        query_params=['rolloutId', 'toTarget'],
         relative_path='v1alpha1/{+name}:promote',
         request_field='',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesPromoteRequest',
         response_type_name='PromoteReleaseResponse',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}:setIamPolicy',
-        http_method='POST',
-        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesSetIamPolicyRequest',
-        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -536,33 +455,6 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/targets/{targetsId}:getIamPolicy',
-        http_method='GET',
-        method_id='clouddeploy.projects.locations.deliveryPipelines.targets.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1alpha1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists Targets in a given project and location.
 
@@ -614,33 +506,6 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
         request_field='target',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (ClouddeployProjectsLocationsDeliveryPipelinesTargetsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/targets/{targetsId}:setIamPolicy',
-        http_method='POST',
-        method_id='clouddeploy.projects.locations.deliveryPipelines.targets.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesTargetsSetIamPolicyRequest',
-        response_type_name='Policy',
         supports_download=False,
     )
 

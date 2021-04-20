@@ -673,7 +673,7 @@ class MetastoreProjectsLocationsListRequest(_messages.Message):
       documented in more detail in AIP-160 (https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the next_page_token field in the
       response. Send that page token to receive the subsequent page.
   """

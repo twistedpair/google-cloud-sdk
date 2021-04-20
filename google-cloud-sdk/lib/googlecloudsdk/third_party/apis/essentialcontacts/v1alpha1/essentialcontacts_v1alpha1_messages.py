@@ -785,6 +785,9 @@ class GoogleCloudEssentialcontactsV1alpha1Contact(_messages.Message):
 
   Enums:
     NotificationCategorySubscriptionsValueListEntryValuesEnum:
+    ValidationStateValueValuesEnum: The validity of the contact. A contact is
+      considered valid if it is the correct recipient for notifications for a
+      particular resource.
     VerificationStateValueValuesEnum: The verification state of this contact's
       email address.
 
@@ -800,6 +803,12 @@ class GoogleCloudEssentialcontactsV1alpha1Contact(_messages.Message):
       {resource_type}/{resource_id}/contacts/{contact_id}
     notificationCategorySubscriptions: The categories of notifications that
       the contact will receive communications for.
+    validateTime: The last time the validation_state was updated, either
+      manually or automatically. A contact is considered stale if its
+      validation state was updated more than 1 year ago.
+    validationState: The validity of the contact. A contact is considered
+      valid if it is the correct recipient for notifications for a particular
+      resource.
     verificationExpireTime: Time when the current verification token will
       expire. After this a new token will need to be generated for the user to
       verify the contact.
@@ -842,6 +851,22 @@ class GoogleCloudEssentialcontactsV1alpha1Contact(_messages.Message):
     PRODUCT_UPDATES = 9
     TECHNICAL_INCIDENTS = 10
 
+  class ValidationStateValueValuesEnum(_messages.Enum):
+    r"""The validity of the contact. A contact is considered valid if it is
+    the correct recipient for notifications for a particular resource.
+
+    Values:
+      VALIDATION_STATE_UNSPECIFIED: The validation state is unknown or
+        unspecified.
+      VALID: The contact is marked as valid. This is usually done manually by
+        the contact admin. All new contacts begin in the valid state.
+      INVALID: The contact is considered invalid. This may become the state if
+        the contact's email is found to be unreachable.
+    """
+    VALIDATION_STATE_UNSPECIFIED = 0
+    VALID = 1
+    INVALID = 2
+
   class VerificationStateValueValuesEnum(_messages.Enum):
     r"""The verification state of this contact's email address.
 
@@ -864,8 +889,10 @@ class GoogleCloudEssentialcontactsV1alpha1Contact(_messages.Message):
   languageTag = _messages.StringField(2)
   name = _messages.StringField(3)
   notificationCategorySubscriptions = _messages.EnumField('NotificationCategorySubscriptionsValueListEntryValuesEnum', 4, repeated=True)
-  verificationExpireTime = _messages.StringField(5)
-  verificationState = _messages.EnumField('VerificationStateValueValuesEnum', 6)
+  validateTime = _messages.StringField(5)
+  validationState = _messages.EnumField('ValidationStateValueValuesEnum', 6)
+  verificationExpireTime = _messages.StringField(7)
+  verificationState = _messages.EnumField('VerificationStateValueValuesEnum', 8)
 
 
 class GoogleCloudEssentialcontactsV1alpha1ListContactsResponse(_messages.Message):

@@ -442,7 +442,7 @@
     },
     "Trace": {
       "id": "Trace",
-      "description": "Trace represents one simulated packet forwarding path. * Each trace contains multiple ordered Steps. * Each step is in a particular state with associated configuration. * State is categorized as final or non-final states. * Each final state has a reason associated. * Each trace must end with a final state (the last step). ``` |---------------------Trace----------------------| Step1(State) Step2(State) --- StepN(State(final)) ```",
+      "description": "Trace represents one simulated packet forwarding path. * Each trace contains multiple ordered steps. * Each step is in a particular state with associated configuration. * State is categorized as final or non-final states. * Each final state has a reason associated. * Each trace must end with a final state (the last step). ``` |---------------------Trace----------------------| Step1(State) Step2(State) --- StepN(State(final)) ```",
       "type": "object",
       "properties": {
         "endpointInfo": {
@@ -1090,8 +1090,8 @@
             "Access to the Cloud SQL instance endpoint is not authorized. See [Authorizing with authorized networks](https:\/\/cloud.google.com\/sql\/docs\/mysql\/authorize-networks) for more details.",
             "Packet was dropped inside Google Kubernetes Engine Service.",
             "Packet was dropped inside Cloud SQL Service.",
-            "Packet was dropped as there is no peering between the originating network and the Google Managed Services Network.",
-            "Packet was dropped because Cloud SQL instance has neither private nor public IP address."
+            "Packet was dropped because there is no peering between the originating network and the Google Managed Services Network.",
+            "Packet was dropped because the Cloud SQL instance has neither a private nor a public IP address."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1630,7 +1630,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
@@ -87,9 +89,11 @@ def AddReplacementMethodFlag(parser):
   parser.add_argument(
       '--replacement-method',
       choices={
-          'substitute': 'Updated instances will be deleted and created again '
-                        'with another name.',
-          'recreate': 'Updated instances will be recreated with the same name.',
+          'substitute':
+              'Delete old instances and create instances with new names.',
+          'recreate':
+              'Recreate instances and preserve the instance names. '
+              'The instance IDs and creation timestamps might change.',
       },
       help="Type of replacement method. Specifies what action will be taken "
            "to update instances. Defaults to ``recreate'' if the managed "
@@ -105,42 +109,62 @@ def AddForceArg(parser):
             'configurations without validation.'))
 
 
-INSTANCE_ACTION_CHOICES = {
-    'none': 'No action',
-    'refresh': 'Apply properties that are possible to apply '
-               'without stopping the instance',
-    'restart': 'Stop the instance and start it again',
-    'replace': 'Delete the instance and create it again'
-}
+INSTANCE_ACTION_CHOICES_WITHOUT_NONE = collections.OrderedDict([
+    ('refresh', "Apply the new configuration without stopping instances, "
+                "if possible. For example, use ``refresh'' to apply changes "
+                "that only affect metadata or additional disks."),
+    ('restart', 'Apply the new configuration without replacing instances, '
+                'if possible. For example, stopping instances and starting '
+                'them again is sufficient to apply changes to machine type.'),
+    ('replace', "Replace old instances according to the "
+                "``--replacement-method'' flag.")
+])
 
 
-def AddMinimalActionArg(parser):
+def _CombineOrderedChoices(choices1, choices2):
+  merged = collections.OrderedDict([])
+  merged.update(choices1.items())
+  merged.update(choices2.items())
+  return merged
+
+
+INSTANCE_ACTION_CHOICES_WITH_NONE = _CombineOrderedChoices(
+    {'none': 'No action'}, INSTANCE_ACTION_CHOICES_WITHOUT_NONE)
+
+
+def AddMinimalActionArg(parser, with_none=True):
+  choices = (INSTANCE_ACTION_CHOICES_WITH_NONE if with_none
+             else INSTANCE_ACTION_CHOICES_WITHOUT_NONE)
+  default = 'none' if with_none else 'replace'
   parser.add_argument(
       '--minimal-action',
-      choices=INSTANCE_ACTION_CHOICES,
-      default='none',
-      help='Perform at least this action on each instance while updating.')
+      choices=choices,
+      default=default,
+      help='Perform at least this action on each instance while updating. '
+           'If the update requires a more disruptive action, then the more '
+           'disruptive action is performed.')
 
 
-def AddMostDisruptiveActionArg(parser):
+def AddMostDisruptiveActionArg(parser, with_none=True):
+  choices = (INSTANCE_ACTION_CHOICES_WITH_NONE if with_none
+             else INSTANCE_ACTION_CHOICES_WITHOUT_NONE)
   parser.add_argument(
       '--most-disruptive-allowed-action',
-      choices=INSTANCE_ACTION_CHOICES,
+      choices=choices,
       default='replace',
       help='Perform at most this action on each instance while updating. '
-      'If the update requires a more disruptive action than the one '
-      'specified here, then the update will fail and no changes '
-      'will be made.')
+           'If the update requires a more disruptive action than the one '
+           'specified here, then the update fails and no changes are made.')
 
 
 def MapInstanceActionEnumValue(instance_action, messages,
                                instance_action_enum):
-  """Map the UpdatePolicy action values to appropriate apply updates request enum.
+  """Map the UpdatePolicy action values to appropriate request enum.
 
   Args:
     instance_action: instance action to map.
     messages: module containing message classes.
-    instance_action_enum: corresponding apply updates request class enum.
+    instance_action_enum: corresponding request class enum.
 
   Returns:
     Corresponding apply updates request instance action enum object.

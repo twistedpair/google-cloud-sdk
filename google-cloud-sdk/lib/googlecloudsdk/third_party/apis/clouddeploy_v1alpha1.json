@@ -677,6 +677,12 @@
         }
       }
     },
+    "ApproveRolloutResponse": {
+      "id": "ApproveRolloutResponse",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListRolloutsResponse": {
       "id": "ListRolloutsResponse",
       "description": "ListRolloutsResponse is the response object reutrned by `ListRollouts`.",
@@ -1109,7 +1115,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -1802,65 +1808,6 @@
                       ],
                       "description": "Deletes a single Target."
                     },
-                    "setIamPolicy": {
-                      "id": "clouddeploy.projects.locations.deliveryPipelines.targets.setIamPolicy",
-                      "path": "v1alpha1/{+resource}:setIamPolicy",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/targets/{targetsId}:setIamPolicy",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "SetIamPolicyRequest"
-                      },
-                      "response": {
-                        "$ref": "Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                    },
-                    "getIamPolicy": {
-                      "id": "clouddeploy.projects.locations.deliveryPipelines.targets.getIamPolicy",
-                      "path": "v1alpha1/{+resource}:getIamPolicy",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/targets/{targetsId}:getIamPolicy",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "response": {
-                        "$ref": "Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                    },
                     "testIamPermissions": {
                       "id": "clouddeploy.projects.locations.deliveryPipelines.targets.testIamPermissions",
                       "path": "v1alpha1/{+resource}:testIamPermissions",
@@ -2069,6 +2016,11 @@
                           "description": "[Optional] The name of the `Target` to which we are promoting the Release.",
                           "location": "query",
                           "type": "string"
+                        },
+                        "rolloutId": {
+                          "description": "[Optional] The ID to assign to the generated `Rollout`.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -2081,65 +2033,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Promotes a Release in the Delivery Pipeline."
-                    },
-                    "setIamPolicy": {
-                      "id": "clouddeploy.projects.locations.deliveryPipelines.releases.setIamPolicy",
-                      "path": "v1alpha1/{+resource}:setIamPolicy",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}:setIamPolicy",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "SetIamPolicyRequest"
-                      },
-                      "response": {
-                        "$ref": "Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                    },
-                    "getIamPolicy": {
-                      "id": "clouddeploy.projects.locations.deliveryPipelines.releases.getIamPolicy",
-                      "path": "v1alpha1/{+resource}:getIamPolicy",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}:getIamPolicy",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "response": {
-                        "$ref": "Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
                     },
                     "testIamPermissions": {
                       "id": "clouddeploy.projects.locations.deliveryPipelines.releases.testIamPermissions",
@@ -2174,6 +2067,36 @@
                   "resources": {
                     "rollouts": {
                       "methods": {
+                        "approve": {
+                          "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.approve",
+                          "path": "v1alpha1/{+name}:approve",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:approve",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. Name of the Rollout. Format is projects\/{project}\/locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/{rollout}.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "approved": {
+                              "description": "True = approve; false = reject",
+                              "location": "query",
+                              "type": "boolean"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "ApproveRolloutResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Promotes a Release in the Delivery Pipeline."
+                        },
                         "list": {
                           "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.list",
                           "path": "v1alpha1/{+parent}/rollouts",
@@ -2287,65 +2210,6 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Creates a new Rollout in a given project and location."
-                        },
-                        "setIamPolicy": {
-                          "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.setIamPolicy",
-                          "path": "v1alpha1/{+resource}:setIamPolicy",
-                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:setIamPolicy",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "resource"
-                          ],
-                          "request": {
-                            "$ref": "SetIamPolicyRequest"
-                          },
-                          "response": {
-                            "$ref": "Policy"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                        },
-                        "getIamPolicy": {
-                          "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.getIamPolicy",
-                          "path": "v1alpha1/{+resource}:getIamPolicy",
-                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:getIamPolicy",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "options.requestedPolicyVersion": {
-                              "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                              "location": "query",
-                              "type": "integer",
-                              "format": "int32"
-                            }
-                          },
-                          "parameterOrder": [
-                            "resource"
-                          ],
-                          "response": {
-                            "$ref": "Policy"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
                         },
                         "testIamPermissions": {
                           "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.testIamPermissions",

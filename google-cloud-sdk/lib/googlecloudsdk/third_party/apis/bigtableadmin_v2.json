@@ -2701,7 +2701,7 @@
                         "Only populates `name`.",
                         "Only populates `name` and fields related to the table's schema.",
                         "Only populates `name` and fields related to the table's replication state.",
-                        "Only populates 'name' and fields related to the table's encryption state.",
+                        "Only populates `name` and fields related to the table's encryption state.",
                         "Populates all fields."
                       ],
                       "enum": [
@@ -2763,7 +2763,7 @@
                         "Only populates `name`.",
                         "Only populates `name` and fields related to the table's schema.",
                         "Only populates `name` and fields related to the table's replication state.",
-                        "Only populates 'name' and fields related to the table's encryption state.",
+                        "Only populates `name` and fields related to the table's encryption state.",
                         "Populates all fields."
                       ],
                       "enum": [
@@ -3102,7 +3102,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

@@ -33,8 +33,8 @@ def AddSettingsNameArgToParser(parser):
       metavar='SETTING_NAME',
       help=(
           'Name of the resource settings. The list of available settings'
-          ' can be found here: '
-          # TODO(b/177564987): Add a url of the list of resource settings
+          ' can be fetched using the list command: \n'
+          ' $ gcloud resource-settings list'
       ))
 
 

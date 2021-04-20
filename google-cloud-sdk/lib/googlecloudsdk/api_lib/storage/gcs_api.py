@@ -27,6 +27,7 @@ from __future__ import unicode_literals
 
 import json
 
+from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper as apitools_http_wrapper
 from apitools.base.py import list_pager
@@ -122,6 +123,7 @@ class GcsRequestConfig(cloud_api.RequestConfig):
       precondition_metageneration_match (int): Perform request only if
           metageneration of target object/bucket matches the given integer.
       predefined_acl_string (str): Passed to parent class.
+      predefined_default_acl_string (str): Passed to parent class.
       size (int): Object size in bytes.
   """
 
@@ -132,10 +134,12 @@ class GcsRequestConfig(cloud_api.RequestConfig):
                precondition_generation_match=None,
                precondition_metageneration_match=None,
                predefined_acl_string=None,
+               predefined_default_acl_string=None,
                size=None):
     super(GcsRequestConfig, self).__init__(
         md5_hash=md5_hash,
         predefined_acl_string=predefined_acl_string,
+        predefined_default_acl_string=predefined_default_acl_string,
         size=size)
     self.gzip_encoded = gzip_encoded
     self.max_bytes_per_call = max_bytes_per_call
@@ -301,6 +305,76 @@ class GcsApi(cloud_api.CloudApi):
 
     metadata = self.client.buckets.Get(request)
     return gcs_metadata_util.get_bucket_resource_from_metadata(metadata)
+
+  @_catch_http_error_raise_gcs_api_error()
+  def patch_bucket(self,
+                   bucket_resource,
+                   request_config=None,
+                   fields_scope=cloud_api.FieldsScope.NO_ACL):
+    """See super class."""
+    validated_request_config = cloud_api.get_provider_request_config(
+        request_config, GcsRequestConfig)
+
+    projection = self._get_projection(fields_scope,
+                                      self.messages.StorageBucketsPatchRequest)
+    metadata = (
+        bucket_resource.metadata or
+        gcs_metadata_util.get_metadata_from_bucket_resource(bucket_resource))
+
+    # Blank metadata objects need to be explicitly emptied.
+    apitools_include_fields = []
+    for metadata_field in (
+        'billing',
+        'encryption',
+        'lifecycle',
+        'logging',
+        'retentionPolicy',
+        'versioning',
+        'website',
+    ):
+      attr = getattr(metadata, metadata_field, None)
+      if attr and not encoding.MessageToDict(attr):
+        apitools_include_fields.append(metadata_field)
+        setattr(metadata, metadata_field, None)
+
+    # Handle nulling lists with sentinel values.
+    if metadata.cors and metadata.cors == gcs_metadata_util.REMOVE_CORS_CONFIG:
+      apitools_include_fields.append('cors')
+      metadata.cors = []
+    if (metadata.defaultObjectAcl and metadata.defaultObjectAcl[0]
+        == gcs_metadata_util.PRIVATE_DEFAULT_OBJECT_ACL):
+      apitools_include_fields.append('defaultObjectAcl')
+      metadata.defaultObjectAcl = []
+
+    # Must null out existing ACLs to apply new ones.
+    if validated_request_config.predefined_acl_string:
+      apitools_include_fields.append('acl')
+      predefined_acl = getattr(
+          self.messages.StorageBucketsPatchRequest.PredefinedAclValueValuesEnum,
+          validated_request_config.predefined_acl_string)
+    else:
+      predefined_acl = None
+    if validated_request_config.predefined_default_acl_string:
+      apitools_include_fields.append('defaultObjectAcl')
+      predefined_default_acl = getattr(
+          self.messages.StorageBucketsPatchRequest
+          .PredefinedDefaultObjectAclValueValuesEnum,
+          validated_request_config.predefined_default_acl_string)
+    else:
+      predefined_default_acl = None
+
+    apitools_request = self.messages.StorageBucketsPatchRequest(
+        bucket=metadata.name,
+        bucketResource=metadata,
+        projection=projection,
+        ifMetagenerationMatch=validated_request_config
+        .precondition_metageneration_match,
+        predefinedAcl=predefined_acl,
+        predefinedDefaultObjectAcl=predefined_default_acl)
+
+    with self.client.IncludeFields(apitools_include_fields):
+      return gcs_metadata_util.get_bucket_resource_from_metadata(
+          self.client.buckets.Patch(apitools_request))
 
   def list_buckets(self, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""

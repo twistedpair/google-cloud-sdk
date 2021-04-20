@@ -103,6 +103,8 @@ def BuildIndex(is_ancestor, kind, properties):
 
 def NormalizeIndexes(indexes):
   """Removes the last index property if it is __key__:asc which is redundant."""
+  if not indexes:
+    return set()
   for index in indexes:
     if (index.properties and index.properties[-1].name == '__key__' and
         index.properties[-1].direction == 'asc'):

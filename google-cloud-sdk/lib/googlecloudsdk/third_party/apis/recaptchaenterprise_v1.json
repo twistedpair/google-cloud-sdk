@@ -214,7 +214,8 @@
             "The provided user verification token was malformed.",
             "The user verification token had expired.",
             "The user verification had already been seen.",
-            "The user verification token was not present."
+            "The user verification token was not present.",
+            "A retriable error (such as network failure) occurred on the browser. Could easily be simulated by an attacker."
           ],
           "enum": [
             "INVALID_REASON_UNSPECIFIED",
@@ -222,7 +223,8 @@
             "MALFORMED",
             "EXPIRED",
             "DUPE",
-            "MISSING"
+            "MISSING",
+            "BROWSER_ERROR"
           ]
         },
         "createTime": {
@@ -246,14 +248,14 @@
       "type": "object",
       "properties": {
         "annotation": {
-          "description": "Required. The annotation that will be assigned to the Event.",
+          "description": "Optional. The annotation that will be assigned to the Event. This field can be left empty to provide reasons that apply to an event without concluding whether the event is legitimate or fraudulent.",
           "type": "string",
           "enumDescriptions": [
             "Default unspecified type.",
             "Provides information that the event turned out to be legitimate.",
             "Provides information that the event turned out to be fraudulent.",
-            "Provides information that the event was related to a login event in which the user typed the correct password.",
-            "Provides information that the event was related to a login event in which the user typed the incorrect password."
+            "Provides information that the event was related to a login event in which the user typed the correct password. Deprecated, prefer indicating CORRECT_PASSWORD through the reasons field instead.",
+            "Provides information that the event was related to a login event in which the user typed the incorrect password. Deprecated, prefer indicating INCORRECT_PASSWORD through the reasons field instead."
           ],
           "enum": [
             "ANNOTATION_UNSPECIFIED",
@@ -273,14 +275,18 @@
               "Indicates a chargeback for fraud was issued for the transaction associated with the assessment.",
               "Indicates the transaction associated with the assessment is suspected of being fraudulent based on the payment method, billing details, shipping address or other transaction information.",
               "Indicates that the user passed a 2FA challenge.",
-              "Indicates that the user failed a 2FA challenge."
+              "Indicates that the user failed a 2FA challenge.",
+              "Indicates the user provided the correct password.",
+              "Indicates the user provided an incorrect password."
             ],
             "enum": [
               "REASON_UNSPECIFIED",
               "CHARGEBACK",
               "PAYMENT_HEURISTICS",
-              "TWO_FACTOR_PASSED",
-              "TWO_FACTOR_FAILED"
+              "PASSED_TWO_FACTOR",
+              "FAILED_TWO_FACTOR",
+              "CORRECT_PASSWORD",
+              "INCORRECT_PASSWORD"
             ]
           }
         }

@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20210402",
+ "revision": "20210409",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1114,6 +1114,21 @@
      "type": "string",
      "description": "Specifies type of machine (name only) which has fixed number of vCPUs and fixed amount of memory. This also includes specifying custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY pattern."
     },
+    "maintenanceFreezeDurationHours": {
+     "type": "integer",
+     "description": "Specifies the number of hours after reservation creation where instances using the reservation won't be scheduled for maintenance.",
+     "format": "int32"
+    },
+    "maintenanceInterval": {
+     "type": "string",
+     "description": "For more information about maintenance intervals, see Setting maintenance intervals.",
+     "enum": [
+      "PERIODIC"
+     ],
+     "enumDescriptions": [
+      ""
+     ]
+    },
     "minCpuPlatform": {
      "type": "string",
      "description": "Minimum cpu platform the reservation."
@@ -1416,7 +1431,7 @@
    "properties": {
     "autoscalingPolicy": {
      "$ref": "AutoscalingPolicy",
-     "description": "The configuration parameters for the autoscaling algorithm. You can define one or more of the policies for an autoscaler: cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.\n\nIf none of these are specified, the default will be to autoscale based on cpuUtilization to 0.6 or 60%."
+     "description": "The configuration parameters for the autoscaling algorithm. You can define one or more signals for an autoscaler: cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.\n\nIf none of these are specified, the default will be to autoscale based on cpuUtilization to 0.6 or 60%."
     },
     "creationTimestamp": {
      "type": "string",
@@ -24808,6 +24823,21 @@
     "locationHint": {
      "type": "string",
      "description": "An opaque location hint used to place the instance close to other resources. This field is for use by internal tools that use the public API."
+    },
+    "maintenanceFreezeDurationHours": {
+     "type": "integer",
+     "description": "Specifies the number of hours after VM instance creation where the VM won't be scheduled for maintenance.",
+     "format": "int32"
+    },
+    "maintenanceInterval": {
+     "type": "string",
+     "description": "For more information about maintenance intervals, see Setting maintenance intervals.",
+     "enum": [
+      "PERIODIC"
+     ],
+     "enumDescriptions": [
+      ""
+     ]
     },
     "minNodeCpus": {
      "type": "integer",

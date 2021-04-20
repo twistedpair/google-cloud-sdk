@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://osconfig.googleapis.com/v1alpha/'
-DOCS_URL = 'https://cloud.google.com/compute/docs/manage-os'
+DOCS_URL = 'https://cloud.google.com/compute/docs/osconfig/rest'
 
 
 class Collections(enum.Enum):
@@ -48,6 +48,29 @@ class Collections(enum.Enum):
               '{instanceOSPoliciesCompliancesId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_INSTANCES = (
+      'projects.locations.instances',
+      'projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+      {},
+      ['projectsId', 'locationsId', 'instancesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_INSTANCES_INVENTORIES = (
+      'projects.locations.instances.inventories',
+      'projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/'
+      'inventory',
+      {},
+      ['projectsId', 'locationsId', 'instancesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_INSTANCES_VULNERABILITYREPORTS = (
+      'projects.locations.instances.vulnerabilityReports',
+      'projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/'
+      'vulnerabilityReport',
+      {},
+      ['projectsId', 'locationsId', 'instancesId'],
       True
   )
   PROJECTS_LOCATIONS_OSPOLICYASSIGNMENTS = (

@@ -2511,6 +2511,381 @@
       "properties": {
       }
     },
+    "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob",
+      "description": "Represents a job that runs periodically to monitor the deployed models in an endpoint. It will analyze the logged training & prediction data to detect any abnormal behaviors.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of a ModelDeploymentMonitoringJob.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The user-defined name of the ModelDeploymentMonitoringJob. The name can be up to 128 characters long and can be consist of any UTF-8 characters. Display name of a ModelDeploymentMonitoringJob.",
+          "type": "string"
+        },
+        "endpoint": {
+          "description": "Required. Endpoint resource name. Format: `projects\/{project}\/locations\/{location}\/endpoints\/{endpoint}`",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The detailed state of the monitoring job. When the job is still creating, the state will be 'PENDING'. Once the job is successfully created, the state will be 'RUNNING'. Pause the job, the state will be 'PAUSED'. Resume the job, the state will return to 'RUNNING'.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The job state is unspecified.",
+            "The job has been just created or resumed and processing has not yet begun.",
+            "The service is preparing to run the job.",
+            "The job is in progress.",
+            "The job completed successfully.",
+            "The job failed.",
+            "The job is being cancelled. From this state the job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
+            "The job has been cancelled.",
+            "The job has been stopped, and can be resumed.",
+            "The job has expired."
+          ],
+          "enum": [
+            "JOB_STATE_UNSPECIFIED",
+            "JOB_STATE_QUEUED",
+            "JOB_STATE_PENDING",
+            "JOB_STATE_RUNNING",
+            "JOB_STATE_SUCCEEDED",
+            "JOB_STATE_FAILED",
+            "JOB_STATE_CANCELLING",
+            "JOB_STATE_CANCELLED",
+            "JOB_STATE_PAUSED",
+            "JOB_STATE_EXPIRED"
+          ]
+        },
+        "scheduleState": {
+          "description": "Output only. Schedule state when the monitoring job is in Running state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "The pipeline is picked up and wait to run.",
+            "The pipeline is offline and will be scheduled for next run.",
+            "The pipeline is running."
+          ],
+          "enum": [
+            "MONITORING_SCHEDULE_STATE_UNSPECIFIED",
+            "PENDING",
+            "OFFLINE",
+            "RUNNING"
+          ]
+        },
+        "modelDeploymentMonitoringObjectiveConfigs": {
+          "description": "Required. The config for monitoring objectives. This is a per DeployedModel config. Each DeployedModel needs to be configed separately.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig"
+          }
+        },
+        "modelDeploymentMonitoringScheduleConfig": {
+          "description": "Required. Schedule config for running the monitoring job.",
+          "$ref": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringScheduleConfig"
+        },
+        "loggingSamplingStrategy": {
+          "description": "Required. Sample Strategy for logging.",
+          "$ref": "GoogleCloudAiplatformV1alpha1SamplingStrategy"
+        },
+        "modelMonitoringAlertConfig": {
+          "description": "Alert config for model monitoring.",
+          "$ref": "GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig"
+        },
+        "predictInstanceSchemaUri": {
+          "description": "YAML schema file uri describing the format of a single instance, which are given to format this Endpoint's prediction (and explanation). If not set, we will generate predict schema from collected predict requests.",
+          "type": "string"
+        },
+        "samplePredictInstance": {
+          "description": "Sample Predict instance, same format as PredictRequest.instances, this can be set as a replacement of ModelDeploymentMonitoringJob.predict_instance_schema_uri. If not set, we will generate predict schema from collected predict requests.",
+          "type": "any"
+        },
+        "analysisInstanceSchemaUri": {
+          "description": "YAML schema file uri describing the format of a single instance that you want Tensorflow Data Validation (TFDV) to analyze. If this field is empty, all the feature data types are inferred from predict_instance_schema_uri, meaning that TFDV will use the data in the exact format(data type) as prediction request\/response. If there are any data type differences between predict instance and TFDV instance, this field can be used to override the schema. For models trained with AI Platform, this field must be set as all the fields in predict instance formatted as string.",
+          "type": "string"
+        },
+        "bigqueryTables": {
+          "description": "Output only. The created bigquery tables for the job under customer project. Customer could do their own query & analysis. There could be 4 log tables in maximum: 1. Training data logging predict request\/response 2. Serving data logging predict request\/response",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringBigQueryTable"
+          }
+        },
+        "logTtl": {
+          "description": "The TTL of BigQuery tables in user projects which stores logs. A day is the basic unit of the TTL and we take the ceil of TTL\/86400(a day). e.g. { second: 3600} indicates ttl = 1 day.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "labels": {
+          "description": "The labels with user-defined metadata to organize your ModelDeploymentMonitoringJob. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. See https:\/\/goo.gl\/xmQnxf for more information and examples of labels.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when this ModelDeploymentMonitoringJob was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when this ModelDeploymentMonitoringJob was updated most recently.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "nextScheduleTime": {
+          "description": "Output only. Timestamp when this monitoring pipeline will be scheduled to run for the next round.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "statsAnomaliesBaseDirectory": {
+          "description": "Stats anomalies base folder path.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GcsDestination"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig",
+      "description": "ModelDeploymentMonitoringObjectiveConfig contains the pair of deployed_model_id to ModelMonitoringObjectiveConfig.",
+      "type": "object",
+      "properties": {
+        "deployedModelId": {
+          "description": "The DeployedModel ID of the objective config.",
+          "type": "string"
+        },
+        "objectiveConfig": {
+          "description": "The objective config of for the modelmonitoring job of this deployed model.",
+          "$ref": "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfig",
+      "description": "Next ID: 6",
+      "type": "object",
+      "properties": {
+        "trainingDataset": {
+          "description": "Training dataset for models. This field has to be set only if TrainingPredictionSkewDetectionConfig is specified.",
+          "$ref": "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigTrainingDataset"
+        },
+        "trainingPredictionSkewDetectionConfig": {
+          "description": "The config for skew between training data and prediction data.",
+          "$ref": "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig"
+        },
+        "predictionDriftDetectionConfig": {
+          "description": "The config for drift of prediction data.",
+          "$ref": "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigTrainingDataset": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigTrainingDataset",
+      "description": "Training Dataset information.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "The resource name of the Dataset used to train this Model.",
+          "type": "string"
+        },
+        "gcsSource": {
+          "description": "The Google Cloud Storage uri of the unmanaged Dataset used to train this Model.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GcsSource"
+        },
+        "bigquerySource": {
+          "description": "The BigQuery table of the unmanaged Dataset used to train this Model.",
+          "$ref": "GoogleCloudAiplatformV1alpha1BigQuerySource"
+        },
+        "dataFormat": {
+          "description": "Data format of the dataset, only applicable if the input is from Google Cloud Storage. The possible formats are: \"tf-record\" The source file is a TFRecord file. \"csv\" The source file is a CSV file.",
+          "type": "string"
+        },
+        "targetField": {
+          "description": "The target field name the model is to predict. This field will be excluded when doing Predict and (or) Explain for the training data.",
+          "type": "string"
+        },
+        "loggingSamplingStrategy": {
+          "description": "Strategy to sample data from Training Dataset. If not set, we process the whole dataset.",
+          "$ref": "GoogleCloudAiplatformV1alpha1SamplingStrategy"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SamplingStrategy": {
+      "id": "GoogleCloudAiplatformV1alpha1SamplingStrategy",
+      "description": "Sampling Strategy for logging, can be for both training and prediction dataset. Next ID: 2",
+      "type": "object",
+      "properties": {
+        "randomSampleConfig": {
+          "description": "Random sample config. Will support more sampling strategies later.",
+          "$ref": "GoogleCloudAiplatformV1alpha1SamplingStrategyRandomSampleConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SamplingStrategyRandomSampleConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1SamplingStrategyRandomSampleConfig",
+      "description": "Requests are randomly selected.",
+      "type": "object",
+      "properties": {
+        "sampleRate": {
+          "description": "Sample rate (0, 1]",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig",
+      "description": "The config for Training & Prediction data skew detection. It specifies the training dataset sources and the skew detection parameters.",
+      "type": "object",
+      "properties": {
+        "skewThresholds": {
+          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for skew, a value threshold must be configed for that feature. The threshold here is against feature distribution distance between the training and prediction feature.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1alpha1ThresholdConfig"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ThresholdConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1ThresholdConfig",
+      "description": "The config for feature monitoring threshold. Next ID: 3",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Specify a threshold value that can trigger the alert. If this threshold config is for feature distribution distance: 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig",
+      "description": "The config for Prediction data drift detection.",
+      "type": "object",
+      "properties": {
+        "driftThresholds": {
+          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for drift, a value threshold must be configed for that feature. The threshold here is against feature distribution distance between different time windws.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1alpha1ThresholdConfig"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringScheduleConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringScheduleConfig",
+      "description": "The config for scheduling monitoring job.",
+      "type": "object",
+      "properties": {
+        "monitorInterval": {
+          "description": "Required. The model monitoring job running interval. It will be rounded up to next full hour.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig",
+      "description": "Next ID: 2",
+      "type": "object",
+      "properties": {
+        "emailAlertConfig": {
+          "description": "Email alert config.",
+          "$ref": "GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfigEmailAlertConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfigEmailAlertConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfigEmailAlertConfig",
+      "description": "The config for email alert.",
+      "type": "object",
+      "properties": {
+        "userEmails": {
+          "description": "The email addresses to send the alert.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringBigQueryTable": {
+      "id": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringBigQueryTable",
+      "description": "ModelDeploymentMonitoringBigQueryTable specifies the BigQuery table name as well as some information of the logs stored in this table.",
+      "type": "object",
+      "properties": {
+        "logSource": {
+          "description": "The source of log.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified source.",
+            "Logs coming from Training dataset.",
+            "Logs coming from Serving traffic."
+          ],
+          "enum": [
+            "LOG_SOURCE_UNSPECIFIED",
+            "TRAINING",
+            "SERVING"
+          ]
+        },
+        "logType": {
+          "description": "The type of log.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified type.",
+            "Predict logs.",
+            "Explain logs."
+          ],
+          "enum": [
+            "LOG_TYPE_UNSPECIFIED",
+            "PREDICT",
+            "EXPLAIN"
+          ]
+        },
+        "bigqueryTablePath": {
+          "description": "The created BigQuery table to store logs. Customer could do their own query & analysis. Format: `bq:\/\/.model_deployment_monitoring_._`",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ListModelDeploymentMonitoringJobsResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1ListModelDeploymentMonitoringJobsResponse",
+      "description": "Response message for ModelDeploymentMonitoringJobService.ListModelDeploymentMonitoringJobs.",
+      "type": "object",
+      "properties": {
+        "modelDeploymentMonitoringJobs": {
+          "description": "A list of ModelDeploymentMonitoringJobs that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1PauseModelDeploymentMonitoringJobRequest": {
+      "id": "GoogleCloudAiplatformV1alpha1PauseModelDeploymentMonitoringJobRequest",
+      "description": "Request message for ModelDeploymentMonitoringJobService.PauseModelDeploymentMonitoringJob.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ResumeModelDeploymentMonitoringJobRequest": {
+      "id": "GoogleCloudAiplatformV1alpha1ResumeModelDeploymentMonitoringJobRequest",
+      "description": "Request message for ModelDeploymentMonitoringJobService.ResumeModelDeploymentMonitoringJob.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudAiplatformV1alpha1SearchMigratableResourcesRequest": {
       "id": "GoogleCloudAiplatformV1alpha1SearchMigratableResourcesRequest",
       "description": "Request message for MigrationService.SearchMigratableResources.",
@@ -2958,7 +3333,7 @@
     },
     "GoogleCloudAiplatformV1alpha1ModelContainerSpec": {
       "id": "GoogleCloudAiplatformV1alpha1ModelContainerSpec",
-      "description": "Specification of a container for serving predictions. This message is a subset of the Kubernetes Container v1 core [specification](https:\/\/tinyurl.com\/k8s-io-api\/v1.18\/#container-v1-core).",
+      "description": "Specification of a container for serving predictions. Some fields in this message correspond to fields in the Kubernetes Container v1 core [specification](https:\/\/tinyurl.com\/k8s-io-api\/v1.18\/#container-v1-core).",
       "type": "object",
       "properties": {
         "imageUri": {
@@ -5667,6 +6042,17 @@
         "type": {
           "description": "The type of the schema.",
           "type": "string"
+        },
+        "locale": {
+          "description": "Locale of this entity type's values. IETF language tag, such as \"en-US\", as defined in BCP 47 (http:\/\/tools.ietf.org\/html\/bcp47). The default value is \"en-US\" if not specified.",
+          "type": "string"
+        },
+        "semanticTypes": {
+          "description": "The predefined semantic types of the schema. Used to generate synthetic fake values. For example, the type is \"Top_left_sender_name\", the semantic_types can be [\"Person_full_name\",\"Company_name\"].",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -7592,6 +7978,17 @@
       "properties": {
       }
     },
+    "GoogleCloudAiplatformUiUpdateModelDeploymentMonitoringJobOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiUpdateModelDeploymentMonitoringJobOperationMetadata",
+      "description": "Runtime operation information for ModelDeploymentMonitoringJobService.UpdateModelDeploymentMonitoringJob.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformUiUpdateSpecialistPoolOperationMetadata": {
       "id": "GoogleCloudAiplatformUiUpdateSpecialistPoolOperationMetadata",
       "description": "Runtime operation metadata for SpecialistPoolService.UpdateSpecialistPool.",
@@ -8903,6 +9300,17 @@
         "nearestNeighborSearchOperationMetadata": {
           "description": "The operation metadata with regard to ScaNN Index operation.",
           "$ref": "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1UpdateModelDeploymentMonitoringJobOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1UpdateModelDeploymentMonitoringJobOperationMetadata",
+      "description": "Runtime operation information for ModelDeploymentMonitoringJobService.UpdateModelDeploymentMonitoringJob.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
         }
       }
     },
@@ -11075,6 +11483,17 @@
         "nearestNeighborSearchOperationMetadata": {
           "description": "The operation metadata with regard to ScaNN Index operation.",
           "$ref": "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1UpdateModelDeploymentMonitoringJobOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1UpdateModelDeploymentMonitoringJobOperationMetadata",
+      "description": "Runtime operation information for ModelDeploymentMonitoringJobService.UpdateModelDeploymentMonitoringJob.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
         }
       }
     },
@@ -17241,7 +17660,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -17902,161 +18321,6 @@
                           }
                         }
                       }
-                    }
-                  }
-                }
-              }
-            },
-            "modelDeploymentMonitoringJobs": {
-              "resources": {
-                "operations": {
-                  "methods": {
-                    "list": {
-                      "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.list",
-                      "path": "v1alpha1/{+name}/operations",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}/operations",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation's parent resource.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "The standard list filter.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The standard list page size.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "The standard list page token.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningListOperationsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                    },
-                    "get": {
-                      "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}/operations/{operationsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+\/operations\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                    },
-                    "delete": {
-                      "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.delete",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}/operations/{operationsId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to be deleted.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+\/operations\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleProtobufEmpty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                    },
-                    "cancel": {
-                      "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.cancel",
-                      "path": "v1alpha1/{+name}:cancel",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}/operations/{operationsId}:cancel",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to be cancelled.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+\/operations\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleProtobufEmpty"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                    },
-                    "wait": {
-                      "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.wait",
-                      "path": "v1alpha1/{+name}:wait",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}/operations/{operationsId}:wait",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the operation resource to wait on.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+\/operations\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "timeout": {
-                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-duration"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
                     }
                   }
                 }
@@ -21556,6 +21820,379 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Cancels a BatchPredictionJob. Starts asynchronous cancellation on the BatchPredictionJob. The server makes the best effort to cancel the job, but success is not guaranteed. Clients can use JobService.GetBatchPredictionJob or other methods to check whether the cancellation succeeded or whether the job completed despite cancellation. On a successful cancellation, the BatchPredictionJob is not deleted;instead its BatchPredictionJob.state is set to `CANCELLED`. Any files already outputted by the job are not deleted."
+                }
+              }
+            },
+            "modelDeploymentMonitoringJobs": {
+              "methods": {
+                "create": {
+                  "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.create",
+                  "path": "v1alpha1/{+parent}/modelDeploymentMonitoringJobs",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the ModelDeploymentMonitoringJob. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a ModelDeploymentMonitoringJob. It will run periodically on a configured interval."
+                },
+                "get": {
+                  "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the ModelDeploymentMonitoringJob. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a ModelDeploymentMonitoringJob."
+                },
+                "list": {
+                  "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.list",
+                  "path": "v1alpha1/{+parent}/modelDeploymentMonitoringJobs",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent of the ModelDeploymentMonitoringJob. Format: `projects\/{project}\/locations\/{location}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "readMask": {
+                      "description": "Mask specifying which fields to read",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1ListModelDeploymentMonitoringJobsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists ModelDeploymentMonitoringJobs in a Location."
+                },
+                "patch": {
+                  "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. Resource name of a ModelDeploymentMonitoringJob.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. The update mask applies to the resource.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a ModelDeploymentMonitoringJob."
+                },
+                "delete": {
+                  "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the model monitoring job to delete. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a ModelDeploymentMonitoringJob."
+                },
+                "pause": {
+                  "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.pause",
+                  "path": "v1alpha1/{+name}:pause",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}:pause",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the ModelDeploymentMonitoringJob to pause. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1PauseModelDeploymentMonitoringJobRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleProtobufEmpty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Pauses a ModelDeploymentMonitoringJob. If the job is running, the server makes a best effort to cancel the job. Will mark ModelDeploymentMonitoringJob.state to 'PAUSED'."
+                },
+                "resume": {
+                  "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.resume",
+                  "path": "v1alpha1/{+name}:resume",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}:resume",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the ModelDeploymentMonitoringJob to resume. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1ResumeModelDeploymentMonitoringJobRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleProtobufEmpty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Resumes a paused ModelDeploymentMonitoringJob. It will start to run from next scheduled time. A deleted ModelDeploymentMonitoringJob can't be resumed."
+                }
+              }
+              ,
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.list",
+                      "path": "v1alpha1/{+name}/operations",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.delete",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.cancel",
+                      "path": "v1alpha1/{+name}:cancel",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    },
+                    "wait": {
+                      "id": "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.wait",
+                      "path": "v1alpha1/{+name}:wait",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}/operations/{operationsId}:wait",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to wait on.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modelDeploymentMonitoringJobs\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "timeout": {
+                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-duration"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                    }
+                  }
                 }
               }
             },

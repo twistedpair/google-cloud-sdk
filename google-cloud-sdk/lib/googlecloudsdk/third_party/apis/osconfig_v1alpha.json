@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/compute/docs/manage-os",
+  "documentationLink": "https://cloud.google.com/compute/docs/osconfig/rest",
   "protocol": "rest",
   "rootUrl": "https://osconfig.googleapis.com/",
   "mtlsRootUrl": "https://osconfig.mtls.googleapis.com/",
@@ -1492,8 +1492,8 @@
           "description": "The CVE of the vulnerability. CVE cannot be empty and the combination of should be unique across vulnerabilities for a VM.",
           "type": "string"
         },
-        "cvssScore": {
-          "description": "The CVSS score of this vulnerability. CVSS score is on a scale of 0 - 10 where 0 indicates low severity and 10 indicates high severity.",
+        "cvssV2Score": {
+          "description": "The CVSS V2 score of this vulnerability. CVSS V2 score is on a scale of 0 - 10 where 0 indicates low severity and 10 indicates high severity.",
           "type": "number",
           "format": "float"
         },
@@ -1970,6 +1970,9 @@
                       "response": {
                         "$ref": "Operation"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
                       "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
                     },
                     "cancel": {
@@ -1995,6 +1998,9 @@
                       "response": {
                         "$ref": "Empty"
                       },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
                       "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
                     }
                   }

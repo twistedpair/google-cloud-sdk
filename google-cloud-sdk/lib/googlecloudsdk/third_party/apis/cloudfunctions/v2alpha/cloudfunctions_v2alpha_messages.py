@@ -200,7 +200,7 @@ class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -684,6 +684,9 @@ class OperationMetadataV1(_messages.Message):
   Fields:
     buildId: The Cloud Build ID of the function created or updated by an API
       call. This field is only populated for Create and Update operations.
+    buildName: The Cloud Build Name of the function deployment. This field is
+      only populated for Create and Update operations.
+      projects//locations//builds/.
     request: The original request that started the operation.
     sourceToken: An identifier for Firebase function sources. Disclaimer: This
       field is only supported for Firebase function deployments.
@@ -735,12 +738,13 @@ class OperationMetadataV1(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   buildId = _messages.StringField(1)
-  request = _messages.MessageField('RequestValue', 2)
-  sourceToken = _messages.StringField(3)
-  target = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
-  versionId = _messages.IntegerField(7)
+  buildName = _messages.StringField(2)
+  request = _messages.MessageField('RequestValue', 3)
+  sourceToken = _messages.StringField(4)
+  target = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+  versionId = _messages.IntegerField(8)
 
 
 class RepoSource(_messages.Message):

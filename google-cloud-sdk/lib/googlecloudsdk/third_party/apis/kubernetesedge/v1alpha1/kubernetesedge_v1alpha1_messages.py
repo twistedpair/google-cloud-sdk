@@ -163,10 +163,12 @@ class Cluster(_messages.Message):
 
   Fields:
     createTime: A string attribute.
+    defaultMaxPodsPerNode: The default maximum number of pods per node.
     endpoint: The IP address of the Kubernetes API server.
     hub: GKE Hub configuration.
     labels: A LabelsValue attribute.
     name: A string attribute.
+    networking: Cluster-wide networking configuration.
     updateTime: A string attribute.
   """
 
@@ -195,11 +197,29 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  endpoint = _messages.StringField(2)
-  hub = _messages.MessageField('Hub', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  defaultMaxPodsPerNode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(3)
+  hub = _messages.MessageField('Hub', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  networking = _messages.MessageField('ClusterNetworking', 7)
+  updateTime = _messages.StringField(8)
+
+
+class ClusterNetworking(_messages.Message):
+  r"""Cluster-wide networking configuration.
+
+  Fields:
+    clusterIpv4CidrBlocks: All pods in the cluster are assigned an RFC1918
+      IPv4 address from these ranges. Only a single range is supported. This
+      field cannot be changed after creation.
+    servicesIpv4CidrBlocks: All services in the cluster are assigned an
+      RFC1918 IPv4 address from these ranges. Only a single range is
+      supported. This field cannot be changed after creation.
+  """
+
+  clusterIpv4CidrBlocks = _messages.StringField(1, repeated=True)
+  servicesIpv4CidrBlocks = _messages.StringField(2, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -554,7 +574,7 @@ class KubernetesedgeProjectsLocationsListRequest(_messages.Message):
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """

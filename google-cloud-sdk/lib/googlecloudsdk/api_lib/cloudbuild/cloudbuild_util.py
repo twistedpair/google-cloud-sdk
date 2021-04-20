@@ -567,12 +567,4 @@ def BitbucketServerConfigFromArgs(args, update=False):
     bbs.webhookKey = args.webhook_key
   if not update and args.peered_network is not None:
     bbs.peeredNetwork = args.peered_network
-  if args.connected_repositories is not None:
-    bbs.connectedRepositories = []
-    for repo in args.connected_repositories:
-      parts = repo.split('/')
-      r = messages.BitbucketServerRepositoryId()
-      r.projectKey = parts[0]
-      r.repoSlug = parts[1]
-      bbs.connectedRepositories.append(r)
   return bbs

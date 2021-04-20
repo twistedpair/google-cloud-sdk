@@ -1285,6 +1285,10 @@ class AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk(_me
 class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Message):
   r"""Properties of the SKU instances being reserved. Next ID: 9
 
+  Enums:
+    MaintenanceIntervalValueValuesEnum: For more information about maintenance
+      intervals, see Setting maintenance intervals.
+
   Fields:
     guestAccelerators: Specifies accelerator type and count.
     localSsds: Specifies amount of local ssd to reserve with each instance.
@@ -1296,14 +1300,30 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
       of vCPUs and fixed amount of memory. This also includes specifying
       custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY
       pattern.
+    maintenanceFreezeDurationHours: Specifies the number of hours after
+      reservation creation where instances using the reservation won't be
+      scheduled for maintenance.
+    maintenanceInterval: For more information about maintenance intervals, see
+      Setting maintenance intervals.
     minCpuPlatform: Minimum cpu platform the reservation.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""For more information about maintenance intervals, see Setting
+    maintenance intervals.
+
+    Values:
+      PERIODIC: <no description>
+    """
+    PERIODIC = 0
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
   locationHint = _messages.StringField(3)
   machineType = _messages.StringField(4)
-  minCpuPlatform = _messages.StringField(5)
+  maintenanceFreezeDurationHours = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 6)
+  minCpuPlatform = _messages.StringField(7)
 
 
 class AllocationSpecificSKUReservation(_messages.Message):
@@ -1720,7 +1740,7 @@ class Autoscaler(_messages.Message):
 
   Fields:
     autoscalingPolicy: The configuration parameters for the autoscaling
-      algorithm. You can define one or more of the policies for an autoscaler:
+      algorithm. You can define one or more signals for an autoscaler:
       cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.
       If none of these are specified, the default will be to autoscale based
       on cpuUtilization to 0.6 or 60%.
@@ -48391,6 +48411,8 @@ class Scheduling(_messages.Message):
   r"""Sets the scheduling options for an Instance. NextID: 20
 
   Enums:
+    MaintenanceIntervalValueValuesEnum: For more information about maintenance
+      intervals, see Setting maintenance intervals.
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
       this instance. For standard instances, the default behavior is MIGRATE.
       For preemptible instances, the default and only possible behavior is
@@ -48407,6 +48429,10 @@ class Scheduling(_messages.Message):
     locationHint: An opaque location hint used to place the instance close to
       other resources. This field is for use by internal tools that use the
       public API.
+    maintenanceFreezeDurationHours: Specifies the number of hours after VM
+      instance creation where the VM won't be scheduled for maintenance.
+    maintenanceInterval: For more information about maintenance intervals, see
+      Setting maintenance intervals.
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
@@ -48421,6 +48447,15 @@ class Scheduling(_messages.Message):
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
       information on the possible instance states.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""For more information about maintenance intervals, see Setting
+    maintenance intervals.
+
+    Values:
+      PERIODIC: <no description>
+    """
+    PERIODIC = 0
 
   class OnHostMaintenanceValueValuesEnum(_messages.Enum):
     r"""Defines the maintenance behavior for this instance. For standard
@@ -48437,10 +48472,12 @@ class Scheduling(_messages.Message):
 
   automaticRestart = _messages.BooleanField(1)
   locationHint = _messages.StringField(2)
-  minNodeCpus = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 4, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 5)
-  preemptible = _messages.BooleanField(6)
+  maintenanceFreezeDurationHours = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 4)
+  minNodeCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 6, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 7)
+  preemptible = _messages.BooleanField(8)
 
 
 class SchedulingNodeAffinity(_messages.Message):

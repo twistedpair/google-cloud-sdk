@@ -601,6 +601,26 @@
         }
       }
     },
+    "GoogleAppengineV1betaLocationMetadata": {
+      "id": "GoogleAppengineV1betaLocationMetadata",
+      "description": "Metadata for the given google.cloud.location.Location.",
+      "type": "object",
+      "properties": {
+        "standardEnvironmentAvailable": {
+          "description": "App Engine standard environment is available in the given location.@OutputOnly",
+          "type": "boolean"
+        },
+        "flexibleEnvironmentAvailable": {
+          "description": "App Engine flexible environment is available in the given location.@OutputOnly",
+          "type": "boolean"
+        },
+        "searchApiAvailable": {
+          "description": "Output only. Search API (https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search) is available in the given location.",
+          "readOnly": true,
+          "type": "boolean"
+        }
+      }
+    },
     "OperationMetadataV1": {
       "id": "OperationMetadataV1",
       "description": "Metadata for the given google.longrunning.Operation.",
@@ -1179,7 +1199,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

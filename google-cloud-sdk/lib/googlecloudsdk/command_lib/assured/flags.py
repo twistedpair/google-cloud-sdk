@@ -24,12 +24,10 @@ from googlecloudsdk.command_lib.assured import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _GA_COMPLIANCE_REGIMES = [
-    'CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4', 'US_REGIONAL_ACCESS'
-]
-_BETA_COMPLIANCE_REGIMES = [
     'CJIS', 'FEDRAMP_HIGH', 'FEDRAMP_MODERATE', 'IL4', 'US_REGIONAL_ACCESS',
     'HIPAA', 'HITRUST'
 ]
+_BETA_COMPLIANCE_REGIMES = _GA_COMPLIANCE_REGIMES
 
 compliance_regimes = {
     ReleaseTrack.GA: _GA_COMPLIANCE_REGIMES,

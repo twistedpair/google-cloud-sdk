@@ -42,11 +42,12 @@ class ToolResultsHistoryPicker(object):
     self._client = client
     self._messages = messages
 
-  def _ListHistoriesByName(self, history_name):
+  def _ListHistoriesByName(self, history_name, page_size):
     """Lists histories by name using the Tool Results API.
 
     Args:
        history_name: string containing the history name.
+       page_size: maximum number of histories to return.
 
     Returns:
       A list of histories matching the name.
@@ -55,7 +56,7 @@ class ToolResultsHistoryPicker(object):
       HttpException if the Tool Results service reports a backend error.
     """
     request = self._messages.ToolresultsProjectsHistoriesListRequest(
-        projectId=self._project, filterByName=history_name)
+        projectId=self._project, filterByName=history_name, pageSize=page_size)
     try:
       response = self._client.projects_histories.List(request)
       log.debug('\nToolResultsHistories.List response:\n{0}\n'.format(response))
@@ -108,10 +109,10 @@ class ToolResultsHistoryPicker(object):
     if not history_name:
       return None
 
-    histories = self._ListHistoriesByName(history_name).histories
+    # There might be several histories with the same name. We only fetch the
+    # first history which is the history with the most recent results.
+    histories = self._ListHistoriesByName(history_name, 1).histories
     if histories:
-      # There might be several histories with the same name. We always pick the
-      # first history which is the history with the most recent results.
       return histories[0].historyId
     else:
       new_history = self._CreateHistory(history_name)

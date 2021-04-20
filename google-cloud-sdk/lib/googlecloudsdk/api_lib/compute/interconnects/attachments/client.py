@@ -83,7 +83,7 @@ class InterconnectAttachment(object):
                                    admin_enabled, bandwidth, pairing_key,
                                    vlan_tag_802_1q, candidate_subnets,
                                    partner_metadata, partner_asn, validate_only,
-                                   mtu):
+                                   mtu, encryption, ipsec_internal_addresses):
     """Make an interconnect attachment insert request."""
     interconnect_self_link = None
     if interconnect:
@@ -107,6 +107,12 @@ class InterconnectAttachment(object):
         partnerAsn=partner_asn)
     if mtu:
       attachment.mtu = mtu
+    if encryption:
+      attachment.encryption = (
+          self._messages.InterconnectAttachment.EncryptionValueValuesEnum(
+              encryption))
+    if ipsec_internal_addresses:
+      attachment.ipsecInternalAddresses = ipsec_internal_addresses
     if validate_only is not None:
       return (self._client.interconnectAttachments, 'Insert',
               self._messages.ComputeInterconnectAttachmentsInsertRequest(
@@ -204,6 +210,8 @@ class InterconnectAttachment(object):
                   partner_portal_url=None,
                   partner_asn=None,
                   mtu=None,
+                  encryption=None,
+                  ipsec_internal_addresses=None,
                   only_generate_request=False,
                   validate_only=None):
     """Create an interconnectAttachment."""
@@ -236,7 +244,7 @@ class InterconnectAttachment(object):
             description, interconnect, router, attachment_type,
             edge_availability_domain, admin_enabled, bandwidth, pairing_key,
             vlan_tag_802_1q, candidate_subnets, partner_metadata, partner_asn,
-            validate_only, mtu)
+            validate_only, mtu, encryption, ipsec_internal_addresses)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

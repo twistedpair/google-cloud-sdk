@@ -431,7 +431,7 @@ class AppengineAppsLocationsListRequest(_messages.Message):
       documented in more detail in AIP-160 (https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the next_page_token field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -1392,6 +1392,24 @@ class FirewallRule(_messages.Message):
   description = _messages.StringField(2)
   priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   sourceRange = _messages.StringField(4)
+
+
+class GoogleAppengineV1betaLocationMetadata(_messages.Message):
+  r"""Metadata for the given google.cloud.location.Location.
+
+  Fields:
+    flexibleEnvironmentAvailable: App Engine flexible environment is available
+      in the given location.@OutputOnly
+    searchApiAvailable: Output only. Search API
+      (https://cloud.google.com/appengine/docs/standard/python/search) is
+      available in the given location.
+    standardEnvironmentAvailable: App Engine standard environment is available
+      in the given location.@OutputOnly
+  """
+
+  flexibleEnvironmentAvailable = _messages.BooleanField(1)
+  searchApiAvailable = _messages.BooleanField(2)
+  standardEnvironmentAvailable = _messages.BooleanField(3)
 
 
 class HealthCheck(_messages.Message):

@@ -341,7 +341,8 @@ class GetQueryResultsResponse(_messages.Message):
       are present, this will always be true. If this is false, totalRows will
       not be available.
     jobName: Reference to the Job that was created to run the query. Example:
-      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/jobs/JOB_ID
+      projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/jobs/[
+      JOB_ID]
     pageToken: A token used for paging results. When this token is non-empty,
       it indicates additional results are available.
     rows: An object with as many results as can be contained within the
@@ -572,15 +573,15 @@ class ListLogEntriesRequest(_messages.Message):
       project identifiers or project numbers from which to retrieve log
       entries. Example: "my-project-1A".
     resourceNames: Required. Names of one or more parent resources from which
-      to retrieve log entries: "projects/[PROJECT_ID]"
-      "organizations/[ORGANIZATION_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]"
-      "folders/[FOLDER_ID]" May alternatively be one or more views projects/PR
-      OJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID organizat
-      ion/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
-      D billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKE
-      T_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKE
-      T_ID/views/VIEW_IDProjects listed in the project_ids field are added to
-      this list.
+      to retrieve log entries: projects/[PROJECT_ID]
+      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
+      folders/[FOLDER_ID]May alternatively be one or more views: projects/[PRO
+      JECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      /views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATIO
+      N_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/
+      [LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Projects listed in the
+      project_ids field are added to this list.
   """
 
   filter = _messages.StringField(1)
@@ -1869,7 +1870,7 @@ class LoggingBillingAccountsLocationsListRequest(_messages.Message):
       documented in more detail in AIP-160 (https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the next_page_token field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -1914,13 +1915,12 @@ class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
 
   Fields:
     logName: Required. The resource name of the log to delete:
-      "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
-      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog", "organizations/1234567890
-      /logs/cloudresourcemanager.googleapis.com%2Factivity". For more
-      information about log names, see LogEntry.
+      projects/[PROJECT_ID]/logs/[LOG_ID]
+      organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
+      folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog".For more information about
+      log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -1938,16 +1938,17 @@ class LoggingBillingAccountsLogsListRequest(_messages.Message):
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: Optional. The resource name that owns the logs:
-      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
-      D organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
-      iews/VIEW_ID billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/bu
-      ckets/BUCKET_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/bu
-      ckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it could also
-      be: "projects/PROJECT_ID" "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID" "folders/FOLDER_ID"
+      projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
+    resourceNames: Optional. The resource name that owns the logs: projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
+      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
+      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
+      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
+      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+      queries, it could also be: projects/[PROJECT_ID]
+      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
+      folders/[FOLDER_ID]
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2552,7 +2553,7 @@ class LoggingFoldersLocationsListRequest(_messages.Message):
       documented in more detail in AIP-160 (https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the next_page_token field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -2607,13 +2608,12 @@ class LoggingFoldersLogsDeleteRequest(_messages.Message):
 
   Fields:
     logName: Required. The resource name of the log to delete:
-      "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
-      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog", "organizations/1234567890
-      /logs/cloudresourcemanager.googleapis.com%2Factivity". For more
-      information about log names, see LogEntry.
+      projects/[PROJECT_ID]/logs/[LOG_ID]
+      organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
+      folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog".For more information about
+      log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -2631,16 +2631,17 @@ class LoggingFoldersLogsListRequest(_messages.Message):
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: Optional. The resource name that owns the logs:
-      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
-      D organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
-      iews/VIEW_ID billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/bu
-      ckets/BUCKET_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/bu
-      ckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it could also
-      be: "projects/PROJECT_ID" "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID" "folders/FOLDER_ID"
+      projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
+    resourceNames: Optional. The resource name that owns the logs: projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
+      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
+      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
+      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
+      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+      queries, it could also be: projects/[PROJECT_ID]
+      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
+      folders/[FOLDER_ID]
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3101,7 +3102,7 @@ class LoggingLocationsListRequest(_messages.Message):
       documented in more detail in AIP-160 (https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the next_page_token field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -3156,13 +3157,12 @@ class LoggingLogsDeleteRequest(_messages.Message):
 
   Fields:
     logName: Required. The resource name of the log to delete:
-      "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
-      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog", "organizations/1234567890
-      /logs/cloudresourcemanager.googleapis.com%2Factivity". For more
-      information about log names, see LogEntry.
+      projects/[PROJECT_ID]/logs/[LOG_ID]
+      organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
+      folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog".For more information about
+      log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -3180,16 +3180,17 @@ class LoggingLogsListRequest(_messages.Message):
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: Optional. The resource name that owns the logs:
-      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
-      D organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
-      iews/VIEW_ID billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/bu
-      ckets/BUCKET_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/bu
-      ckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it could also
-      be: "projects/PROJECT_ID" "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID" "folders/FOLDER_ID"
+      projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
+    resourceNames: Optional. The resource name that owns the logs: projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
+      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
+      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
+      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
+      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+      queries, it could also be: projects/[PROJECT_ID]
+      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
+      folders/[FOLDER_ID]
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3572,7 +3573,7 @@ class LoggingOrganizationsLocationsListRequest(_messages.Message):
       documented in more detail in AIP-160 (https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the next_page_token field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -3627,13 +3628,12 @@ class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
 
   Fields:
     logName: Required. The resource name of the log to delete:
-      "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
-      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog", "organizations/1234567890
-      /logs/cloudresourcemanager.googleapis.com%2Factivity". For more
-      information about log names, see LogEntry.
+      projects/[PROJECT_ID]/logs/[LOG_ID]
+      organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
+      folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog".For more information about
+      log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -3651,16 +3651,17 @@ class LoggingOrganizationsLogsListRequest(_messages.Message):
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: Optional. The resource name that owns the logs:
-      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
-      D organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
-      iews/VIEW_ID billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/bu
-      ckets/BUCKET_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/bu
-      ckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it could also
-      be: "projects/PROJECT_ID" "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID" "folders/FOLDER_ID"
+      projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
+    resourceNames: Optional. The resource name that owns the logs: projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
+      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
+      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
+      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
+      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+      queries, it could also be: projects/[PROJECT_ID]
+      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
+      folders/[FOLDER_ID]
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4189,7 +4190,7 @@ class LoggingProjectsLocationsListRequest(_messages.Message):
       documented in more detail in AIP-160 (https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the next_page_token field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -4244,13 +4245,12 @@ class LoggingProjectsLogsDeleteRequest(_messages.Message):
 
   Fields:
     logName: Required. The resource name of the log to delete:
-      "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
-      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog", "organizations/1234567890
-      /logs/cloudresourcemanager.googleapis.com%2Factivity". For more
-      information about log names, see LogEntry.
+      projects/[PROJECT_ID]/logs/[LOG_ID]
+      organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
+      folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
+      example, "projects/my-project-id/logs/syslog".For more information about
+      log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -4268,16 +4268,17 @@ class LoggingProjectsLogsListRequest(_messages.Message):
       nextPageToken from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The resource name that owns the logs:
-      "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: Optional. The resource name that owns the logs:
-      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
-      D organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
-      iews/VIEW_ID billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/bu
-      ckets/BUCKET_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/bu
-      ckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it could also
-      be: "projects/PROJECT_ID" "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID" "folders/FOLDER_ID"
+      projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]
+    resourceNames: Optional. The resource name that owns the logs: projects/[P
+      ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] o
+      rganizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
+      D]/views/[VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
+      ION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/location
+      s/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]To support legacy
+      queries, it could also be: projects/[PROJECT_ID]
+      organizations/[ORGANIZATION_ID] billingAccounts/[BILLING_ACCOUNT_ID]
+      folders/[FOLDER_ID]
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5275,12 +5276,13 @@ class QueryRequest(_messages.Message):
       FROM audit_log;
     resourceNames: Required. Names of one or more log views to run a SQL
       query. Currently, only a single view may be selected. Multiple view
-      selection will be supported in the future.Examples: projects/PROJECT_ID/
-      locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID organization/ORGAN
-      IZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID billing
-      Accounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/view
-      s/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/view
-      s/VIEW_IDRequires 'logging.views.access' on view resource.
+      selection will be supported in the future.Examples: projects/[PROJECT_ID
+      ]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] organizati
+      ons/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/
+      [VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/b
+      uckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/[LOCATI
+      ON_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires
+      'logging.views.access' on view resource.
   """
 
   dryRun = _messages.BooleanField(1)
@@ -5762,14 +5764,14 @@ class TailLogEntriesRequest(_messages.Message):
       parent resource that is not in resource_names will cause the filter to
       return no results. The maximum length of the filter is 20000 characters.
     resourceNames: Required. Name of a parent resource from which to retrieve
-      log entries: "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" May
-      alternatively be one or more views: "projects/PROJECT_ID/locations/LOCAT
-      ION_ID/buckets/BUCKET_ID/views/VIEW_ID" "organization/ORGANIZATION_ID/lo
-      cations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID" "billingAccounts/BI
-      LLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID"
-      "folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID
-      "
+      log entries: projects/[PROJECT_ID] organizations/[ORGANIZATION_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID] folders/[FOLDER_ID]May
+      alternatively be one or more views: projects/[PROJECT_ID]/locations/[LOC
+      ATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] organizations/[ORGANIZATIO
+      N_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] billin
+      gAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_I
+      D]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[
+      BUCKET_ID]/views/[VIEW_ID]
   """
 
   bufferWindow = _messages.StringField(1)
@@ -5867,15 +5869,16 @@ class WriteLogEntriesRequest(_messages.Message):
       changed. See LogEntry.
     logName: Optional. A default log resource name that is assigned to all log
       entries in entries that do not specify a value for log_name:
-      "projects/[PROJECT_ID]/logs/[LOG_ID]"
-      "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
-      "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
-      example: "projects/my-project-id/logs/syslog" "organizations/1234567890/
-      logs/cloudresourcemanager.googleapis.com%2Factivity" The permission
-      logging.logEntries.create is needed on each project, organization,
-      billing account, or folder that is receiving new log entries, whether
-      the resource is specified in logName or in an individual log entry.
+      projects/[PROJECT_ID]/logs/[LOG_ID]
+      organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
+      billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
+      folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
+      example: "projects/my-project-id/logs/syslog"
+      "organizations/123/logs/cloudaudit.googleapis.com%2Factivity" The
+      permission logging.logEntries.create is needed on each project,
+      organization, billing account, or folder that is receiving new log
+      entries, whether the resource is specified in logName or in an
+      individual log entry.
     partialSuccess: Optional. Whether valid entries should be written even if
       some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
       errors. If any entry is not written, then the response status is the

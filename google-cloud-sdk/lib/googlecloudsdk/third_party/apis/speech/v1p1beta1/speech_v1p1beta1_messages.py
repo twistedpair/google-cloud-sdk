@@ -475,12 +475,12 @@ class RecognitionConfig(_messages.Message):
       RecognitionConfig. *Model* *Description* command_and_search Best for
       short queries such as voice commands or voice search. phone_call Best
       for audio that originated from a phone call (typically recorded at an
-      8khz sampling rate). video Best for audio that originated from from
-      video or includes multiple speakers. Ideally the audio is recorded at a
-      16khz or greater sampling rate. This is a premium model that costs more
-      than the standard rate. default Best for audio that is not one of the
-      specific audio models. For example, long-form audio. Ideally the audio
-      is high-fidelity, recorded at a 16khz or greater sampling rate.
+      8khz sampling rate). video Best for audio that originated from video or
+      includes multiple speakers. Ideally the audio is recorded at a 16khz or
+      greater sampling rate. This is a premium model that costs more than the
+      standard rate. default Best for audio that is not one of the specific
+      audio models. For example, long-form audio. Ideally the audio is high-
+      fidelity, recorded at a 16khz or greater sampling rate.
     profanityFilter: If set to `true`, the server will attempt to filter out
       profanities, replacing all but the initial character in each filtered
       word with asterisks, e.g. "f***". If set to `false` or omitted,

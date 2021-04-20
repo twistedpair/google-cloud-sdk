@@ -14,6 +14,28 @@ from apitools.base.py import extra_types
 package = 'cloudbuild'
 
 
+class AddBitbucketServerConnectedRepositoryRequest(_messages.Message):
+  r"""RPC request object accepted by the AddBitbucketServerConnectedRepository
+  RPC method.
+
+  Fields:
+    connectedRepository: The connected repository to add.
+  """
+
+  connectedRepository = _messages.MessageField('BitbucketServerRepositoryId', 1)
+
+
+class AddBitbucketServerConnectedRepositoryResponse(_messages.Message):
+  r"""RPC request object returned by the AddBitbucketServerConnectedRepository
+  RPC method.
+
+  Fields:
+    connectedRepository: The connected repository.
+  """
+
+  connectedRepository = _messages.MessageField('BitbucketServerRepositoryId', 1)
+
+
 class ApprovalConfig(_messages.Message):
   r"""ApprovalConfig describes configuration for manual approval of a build.
 
@@ -191,10 +213,14 @@ class BitbucketServerRepositoryId(_messages.Message):
   Fields:
     projectKey: Required. Identifier for the project storing the repository.
     repoSlug: Required. Identifier for the repository.
+    webhookId: Output only. The ID of the webhook that was created for
+      receiving events from this repo. We only create and manage a single
+      webhook for each repo.
   """
 
   projectKey = _messages.StringField(1)
   repoSlug = _messages.StringField(2)
+  webhookId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class BitbucketServerSecrets(_messages.Message):
@@ -1321,6 +1347,23 @@ class CloudbuildProjectsInstallationsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(6)
 
 
+class CloudbuildProjectsLocationsBitbucketServerConfigsAddBitbucketServerConnectedRepositoryRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsBitbucketServerConfigsAddBitbucketServerCon
+  nectedRepositoryRequest object.
+
+  Fields:
+    addBitbucketServerConnectedRepositoryRequest: A
+      AddBitbucketServerConnectedRepositoryRequest resource to be passed as
+      the request body.
+    config: Required. The name of the `BitbucketServerConfig` to add a
+      connected repository. Format: `projects/{project}/locations/{location}/b
+      itbucketServerConfigs/{config}`
+  """
+
+  addBitbucketServerConnectedRepositoryRequest = _messages.MessageField('AddBitbucketServerConnectedRepositoryRequest', 1)
+  config = _messages.StringField(2, required=True)
+
+
 class CloudbuildProjectsLocationsBitbucketServerConfigsCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsBitbucketServerConfigsCreateRequest object.
 
@@ -1390,6 +1433,23 @@ class CloudbuildProjectsLocationsBitbucketServerConfigsPatchRequest(_messages.Me
   bitbucketServerConfig = _messages.MessageField('BitbucketServerConfig', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class CloudbuildProjectsLocationsBitbucketServerConfigsRemoveBitbucketServerConnectedRepositoryRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsBitbucketServerConfigsRemoveBitbucketServer
+  ConnectedRepositoryRequest object.
+
+  Fields:
+    config: Required. The name of the `BitbucketServerConfig` to remove a
+      connected repository. Format: `projects/{project}/locations/{location}/b
+      itbucketServerConfigs/{config}`
+    removeBitbucketServerConnectedRepositoryRequest: A
+      RemoveBitbucketServerConnectedRepositoryRequest resource to be passed as
+      the request body.
+  """
+
+  config = _messages.StringField(1, required=True)
+  removeBitbucketServerConnectedRepositoryRequest = _messages.MessageField('RemoveBitbucketServerConnectedRepositoryRequest', 2)
 
 
 class CloudbuildProjectsLocationsBuildsCreateRequest(_messages.Message):
@@ -2572,6 +2632,17 @@ class ReceiveTriggerWebhookResponse(_messages.Message):
   the ReceiveTriggerWebhook method.
   """
 
+
+
+class RemoveBitbucketServerConnectedRepositoryRequest(_messages.Message):
+  r"""RPC request object accepted by RemoveBitbucketServerConnectedRepository
+  RPC method.
+
+  Fields:
+    connectedRepository: The connected repository to remove.
+  """
+
+  connectedRepository = _messages.MessageField('BitbucketServerRepositoryId', 1)
 
 
 class RepoSource(_messages.Message):

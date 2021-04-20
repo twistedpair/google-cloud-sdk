@@ -1,0 +1,86 @@
+# -*- coding: utf-8 -*- #
+# Copyright 2021 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Iterator for deleting buckets and objects."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
+from googlecloudsdk.command_lib.storage import progress_callbacks
+from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.tasks.rb import delete_bucket_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+
+from six.moves import queue
+
+
+class DeleteTaskIteratorFactory:
+  """Creates bucket and object delete task iterators."""
+
+  def __init__(self, name_expansion_iterator, task_status_queue=None):
+    """Initializes factory.
+
+    Args:
+      name_expansion_iterator (NameExpansionIterator): Iterable of wildcard
+        iterators to flatten.
+      task_status_queue (multiprocessing.Queue|None): Used for estimating total
+        workload from this iterator.
+    """
+    self._name_expansion_iterator = name_expansion_iterator
+    self._task_status_queue = task_status_queue
+
+    self._bucket_delete_tasks = queue.Queue()
+    self._object_delete_tasks = queue.Queue()
+    self._flat_wildcard_results_iterator = (
+        self._get_flat_wildcard_results_iterator())
+
+  def _get_flat_wildcard_results_iterator(self):
+    """Iterates through items matching delete query, dividing into two lists.
+
+    Separates objects and buckets, so we can return two separate iterators.
+
+    Yields:
+      True if resource found.
+    """
+    items_count = 0
+
+    for name_expansion_result in self._name_expansion_iterator:
+      resource = name_expansion_result.resource
+      if isinstance(resource, resource_reference.BucketResource):
+        self._bucket_delete_tasks.put(
+            delete_bucket_task.DeleteBucketTask(resource.storage_url))
+      else:
+        self._object_delete_tasks.put(
+            delete_object_task.DeleteObjectTask(resource.storage_url))
+      items_count += 1
+      yield True
+
+    progress_callbacks.workload_estimator_callback(self._task_status_queue,
+                                                   items_count)
+
+  def _resource_iterator(self, resource_queue):
+    try:
+      while (not resource_queue.empty() or
+             next(self._flat_wildcard_results_iterator)):
+        if not resource_queue.empty():
+          yield resource_queue.get()
+    except StopIteration:
+      pass
+
+  def bucket_iterator(self):
+    return self._resource_iterator(self._bucket_delete_tasks)
+
+  def object_iterator(self):
+    return self._resource_iterator(self._object_delete_tasks)

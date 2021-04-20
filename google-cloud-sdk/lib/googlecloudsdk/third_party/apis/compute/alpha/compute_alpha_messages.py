@@ -1361,9 +1361,8 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
   r"""Properties of the SKU instances being reserved. Next ID: 9
 
   Enums:
-    MaintenanceIntervalValueValuesEnum: Specifies whether this VM may be a
-      stable fleet VM. Setting this to "Periodic" designates this VM as a
-      Stable Fleet VM.  See go/stable-fleet-ug for more details.
+    MaintenanceIntervalValueValuesEnum: For more information about maintenance
+      intervals, see Setting maintenance intervals.
 
   Fields:
     guestAccelerators: Specifies accelerator type and count.
@@ -1379,16 +1378,14 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
     maintenanceFreezeDurationHours: Specifies the number of hours after
       reservation creation where instances using the reservation won't be
       scheduled for maintenance.
-    maintenanceInterval: Specifies whether this VM may be a stable fleet VM.
-      Setting this to "Periodic" designates this VM as a Stable Fleet VM.  See
-      go/stable-fleet-ug for more details.
+    maintenanceInterval: For more information about maintenance intervals, see
+      Setting maintenance intervals.
     minCpuPlatform: Minimum cpu platform the reservation.
   """
 
   class MaintenanceIntervalValueValuesEnum(_messages.Enum):
-    r"""Specifies whether this VM may be a stable fleet VM. Setting this to
-    "Periodic" designates this VM as a Stable Fleet VM.  See go/stable-fleet-
-    ug for more details.
+    r"""For more information about maintenance intervals, see Setting
+    maintenance intervals.
 
     Values:
       PERIODIC: <no description>
@@ -1929,7 +1926,7 @@ class Autoscaler(_messages.Message):
 
   Fields:
     autoscalingPolicy: The configuration parameters for the autoscaling
-      algorithm. You can define one or more of the policies for an autoscaler:
+      algorithm. You can define one or more signals for an autoscaler:
       cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.
       If none of these are specified, the default will be to autoscale based
       on cpuUtilization to 0.6 or 60%.
@@ -3741,6 +3738,7 @@ class BackendService(_messages.Message):
       SSL: <no description>
       TCP: <no description>
       UDP: <no description>
+      UNSPECIFIED: <no description>
     """
     ALL = 0
     GRPC = 1
@@ -3750,6 +3748,7 @@ class BackendService(_messages.Message):
     SSL = 5
     TCP = 6
     UDP = 7
+    UNSPECIFIED = 8
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     r"""Type of session affinity to use. The default is NONE.  When the
@@ -5002,6 +5001,9 @@ class BulkInsertInstanceResource(_messages.Message):
       instances. Keys of this map specify requested instance names. Can be
       empty if name_pattern is used.
     predefinedNames: DEPRECATED: Please use per_instance_properties instead.
+    secureTags: Secure tags to apply to this instance. These can be later
+      modified by the update method. Maximum number of secure tags allowed is
+      300.
     sourceInstanceTemplate: Specifies the instance template from which to
       create instances. You may combine sourceInstanceTemplate with
       instanceProperties to override specific values from an existing instance
@@ -5049,7 +5051,8 @@ class BulkInsertInstanceResource(_messages.Message):
   namePattern = _messages.StringField(6)
   perInstanceProperties = _messages.MessageField('PerInstancePropertiesValue', 7)
   predefinedNames = _messages.StringField(8, repeated=True)
-  sourceInstanceTemplate = _messages.StringField(9)
+  secureTags = _messages.StringField(9, repeated=True)
+  sourceInstanceTemplate = _messages.StringField(10)
 
 
 class BulkInsertInstanceResourcePerInstanceProperties(_messages.Message):
@@ -11883,17 +11886,13 @@ class ComputeInstancesBulkInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    secureTags: Secure tags to apply to this instance. These can be later
-      modified by the update method. Maximum number of secure tags allowed is
-      300.
     zone: The name of the zone for this request.
   """
 
   bulkInsertInstanceResource = _messages.MessageField('BulkInsertInstanceResource', 1)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
-  secureTags = _messages.StringField(4, repeated=True)
-  zone = _messages.StringField(5, required=True)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
@@ -19933,16 +19932,12 @@ class ComputeRegionInstancesBulkInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    secureTags: Secure tags to apply to this instance. These can be later
-      modified by the update method. Maximum number of secure tags allowed is
-      300.
   """
 
   bulkInsertInstanceResource = _messages.MessageField('BulkInsertInstanceResource', 1)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
-  secureTags = _messages.StringField(5, repeated=True)
 
 
 class ComputeRegionInstantSnapshotsDeleteRequest(_messages.Message):
@@ -30530,6 +30525,7 @@ class ForwardingRule(_messages.Message):
       ALL: <no description>
       ESP: <no description>
       ICMP: <no description>
+      L3_DEFAULT: <no description>
       SCTP: <no description>
       TCP: <no description>
       UDP: <no description>
@@ -30538,9 +30534,10 @@ class ForwardingRule(_messages.Message):
     ALL = 1
     ESP = 2
     ICMP = 3
-    SCTP = 4
-    TCP = 5
-    UDP = 6
+    L3_DEFAULT = 4
+    SCTP = 5
+    TCP = 6
+    UDP = 7
 
   class IpVersionValueValuesEnum(_messages.Enum):
     r"""The IP Version that will be used by this forwarding rule. Valid
@@ -54273,9 +54270,8 @@ class Scheduling(_messages.Message):
   r"""Sets the scheduling options for an Instance. NextID: 20
 
   Enums:
-    MaintenanceIntervalValueValuesEnum: Specifies whether this VM may be a
-      stable fleet VM. Setting this to "Periodic" designates this VM as a
-      Stable Fleet VM.  See go/stable-fleet-ug for more details.
+    MaintenanceIntervalValueValuesEnum: For more information about maintenance
+      intervals, see Setting maintenance intervals.
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
       this instance. For standard instances, the default behavior is MIGRATE.
       For preemptible instances, the default and only possible behavior is
@@ -54302,11 +54298,10 @@ class Scheduling(_messages.Message):
     locationHint: An opaque location hint used to place the instance close to
       other resources. This field is for use by internal tools that use the
       public API.
-    maintenanceFreezeDurationHours: Specifies the number of hours after
-      instance creation where the instance won't be scheduled for maintenance.
-    maintenanceInterval: Specifies whether this VM may be a stable fleet VM.
-      Setting this to "Periodic" designates this VM as a Stable Fleet VM.  See
-      go/stable-fleet-ug for more details.
+    maintenanceFreezeDurationHours: Specifies the number of hours after VM
+      instance creation where the VM won't be scheduled for maintenance.
+    maintenanceInterval: For more information about maintenance intervals, see
+      Setting maintenance intervals.
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
@@ -54323,9 +54318,8 @@ class Scheduling(_messages.Message):
   """
 
   class MaintenanceIntervalValueValuesEnum(_messages.Enum):
-    r"""Specifies whether this VM may be a stable fleet VM. Setting this to
-    "Periodic" designates this VM as a Stable Fleet VM.  See go/stable-fleet-
-    ug for more details.
+    r"""For more information about maintenance intervals, see Setting
+    maintenance intervals.
 
     Values:
       PERIODIC: <no description>

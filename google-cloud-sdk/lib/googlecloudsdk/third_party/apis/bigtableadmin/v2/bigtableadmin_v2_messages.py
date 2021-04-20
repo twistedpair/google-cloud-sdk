@@ -754,7 +754,7 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
         schema.
       REPLICATION_VIEW: Only populates `name` and fields related to the
         table's replication state.
-      ENCRYPTION_VIEW: Only populates 'name' and fields related to the table's
+      ENCRYPTION_VIEW: Only populates `name` and fields related to the table's
         encryption state.
       FULL: Populates all fields.
     """
@@ -805,7 +805,7 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
         schema.
       REPLICATION_VIEW: Only populates `name` and fields related to the
         table's replication state.
-      ENCRYPTION_VIEW: Only populates 'name' and fields related to the table's
+      ENCRYPTION_VIEW: Only populates `name` and fields related to the table's
         encryption state.
       FULL: Populates all fields.
     """
@@ -917,7 +917,7 @@ class BigtableadminProjectsLocationsListRequest(_messages.Message):
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """

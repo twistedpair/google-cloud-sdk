@@ -32,14 +32,36 @@ class TensorboardExperimentsClient(object):
   def __init__(self,
                client=None,
                messages=None,
-               version=constants.ALPHA_VERSION):
+               version=constants.BETA_VERSION):
     self.client = client or apis.GetClientInstance(
         constants.AI_PLATFORM_API_NAME,
         constants.AI_PLATFORM_API_VERSION[version])
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_tensorboards_experiments
+    self._version = version
 
   def Create(self, tensorboard_ref, args):
+    if self._version == constants.ALPHA_VERSION:
+      return self.CreateAlpha(tensorboard_ref, args)
+    else:
+      return self.CreateBeta(tensorboard_ref, args)
+
+  def CreateBeta(self, tensorboard_ref, args):
+    """Create a new Tensorboard experiment."""
+    labels = labels_util.ParseCreateArgs(
+        args, self.messages.GoogleCloudAiplatformV1beta1TensorboardExperiment
+        .LabelsValue)
+    request = self.messages.AiplatformProjectsLocationsTensorboardsExperimentsCreateRequest(
+        parent=tensorboard_ref.RelativeName(),
+        googleCloudAiplatformV1beta1TensorboardExperiment=self.messages
+        .GoogleCloudAiplatformV1beta1TensorboardExperiment(
+            displayName=args.display_name,
+            description=args.description,
+            labels=labels),
+        tensorboardExperimentId=args.tensorboard_experiment_id)
+    return self._service.Create(request)
+
+  def CreateAlpha(self, tensorboard_ref, args):
     """Create a new Tensorboard experiment."""
     labels = labels_util.ParseCreateArgs(
         args, self.messages.GoogleCloudAiplatformV1alpha1TensorboardExperiment
@@ -79,9 +101,48 @@ class TensorboardExperimentsClient(object):
     return self._service.Delete(request)
 
   def Patch(self, tensorboard_exp_ref, args):
+    if self._version == constants.ALPHA_VERSION:
+      return self.PatchAlpha(tensorboard_exp_ref, args)
+    else:
+      return self.PatchBeta(tensorboard_exp_ref, args)
+
+  def PatchBeta(self, tensorboard_exp_ref, args):
     """Update a Tensorboard experiment."""
-    tensorboard_exp =\
-        self.messages.GoogleCloudAiplatformV1alpha1TensorboardExperiment()
+    tensorboard_exp = (
+        self.messages.GoogleCloudAiplatformV1beta1TensorboardExperiment())
+    update_mask = []
+
+    def GetLabels():
+      return self.Get(tensorboard_exp_ref).labels
+
+    labels_update = labels_util.ProcessUpdateArgsLazy(
+        args, self.messages.GoogleCloudAiplatformV1beta1TensorboardExperiment
+        .LabelsValue, GetLabels)
+    if labels_update.needs_update:
+      tensorboard_exp.labels = labels_update.labels
+      update_mask.append('labels')
+
+    if args.display_name is not None:
+      tensorboard_exp.displayName = args.display_name
+      update_mask.append('display_name')
+
+    if args.description is not None:
+      tensorboard_exp.description = args.description
+      update_mask.append('description')
+
+    if not update_mask:
+      raise errors.NoFieldsSpecifiedError('No updates requested.')
+
+    request = self.messages.AiplatformProjectsLocationsTensorboardsExperimentsPatchRequest(
+        name=tensorboard_exp_ref.RelativeName(),
+        googleCloudAiplatformV1beta1TensorboardExperiment=tensorboard_exp,
+        updateMask=','.join(update_mask))
+    return self._service.Patch(request)
+
+  def PatchAlpha(self, tensorboard_exp_ref, args):
+    """Update a Tensorboard experiment."""
+    tensorboard_exp = (
+        self.messages.GoogleCloudAiplatformV1alpha1TensorboardExperiment())
     update_mask = []
 
     def GetLabels():

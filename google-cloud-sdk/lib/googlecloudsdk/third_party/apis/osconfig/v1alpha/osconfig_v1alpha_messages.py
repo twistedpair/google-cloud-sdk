@@ -2054,8 +2054,9 @@ class VulnerabilityReportVulnerabilityDetails(_messages.Message):
   Fields:
     cve: The CVE of the vulnerability. CVE cannot be empty and the combination
       of should be unique across vulnerabilities for a VM.
-    cvssScore: The CVSS score of this vulnerability. CVSS score is on a scale
-      of 0 - 10 where 0 indicates low severity and 10 indicates high severity.
+    cvssV2Score: The CVSS V2 score of this vulnerability. CVSS V2 score is on
+      a scale of 0 - 10 where 0 indicates low severity and 10 indicates high
+      severity.
     cvssV3: The full description of the CVSSv3 for this vulnerability.
     description: The note or description describing the vulnerability.
     references: Corresponds to the references attached to the
@@ -2064,7 +2065,7 @@ class VulnerabilityReportVulnerabilityDetails(_messages.Message):
   """
 
   cve = _messages.StringField(1)
-  cvssScore = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  cvssV2Score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   cvssV3 = _messages.MessageField('CVSSv3', 3)
   description = _messages.StringField(4)
   references = _messages.MessageField('VulnerabilityReportVulnerabilityDetailsReference', 5, repeated=True)

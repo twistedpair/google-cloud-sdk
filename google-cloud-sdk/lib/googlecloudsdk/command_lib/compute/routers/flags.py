@@ -177,7 +177,7 @@ def AddInterfaceArgs(parser, for_update=False, support_router_appliance=False):
   if support_router_appliance:
     parser.add_argument(
         '--redundant-interface',
-        help='The interface that is redundant to current interface.')
+        help='The interface that is redundant to the current interface.')
 
 
 def AddBgpPeerArgs(parser,
@@ -393,3 +393,15 @@ def AddGetNatMappingInfoArgs(parser, include_nat_name_filter):
         '--nat-name',
         required=False,
         help='The NAT name to filter out NAT mapping information')
+
+
+def AddEncryptedInterconnectRouter(parser):
+  """Adds encrypted interconnect router flag."""
+  parser.add_argument(
+      '--encrypted-interconnect-router',
+      required=False,
+      action='store_true',
+      default=None,
+      hidden=True,
+      help='Indicates if a router is dedicated for use with encrypted '
+      'interconnect attachments (VLAN attachments).')

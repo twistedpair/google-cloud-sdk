@@ -1667,7 +1667,7 @@ class Autoscaler(_messages.Message):
 
   Fields:
     autoscalingPolicy: The configuration parameters for the autoscaling
-      algorithm. You can define one or more of the policies for an autoscaler:
+      algorithm. You can define one or more signals for an autoscaler:
       cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.
       If none of these are specified, the default will be to autoscale based
       on cpuUtilization to 0.6 or 60%.

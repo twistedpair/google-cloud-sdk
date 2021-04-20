@@ -27,18 +27,24 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
   r"""The request message to annotate an Assessment.
 
   Enums:
-    AnnotationValueValuesEnum: Required. The annotation that will be assigned
-      to the Event.
+    AnnotationValueValuesEnum: Optional. The annotation that will be assigned
+      to the Event. This field can be left empty to provide reasons that apply
+      to an event without concluding whether the event is legitimate or
+      fraudulent.
     ReasonsValueListEntryValuesEnum:
 
   Fields:
-    annotation: Required. The annotation that will be assigned to the Event.
+    annotation: Optional. The annotation that will be assigned to the Event.
+      This field can be left empty to provide reasons that apply to an event
+      without concluding whether the event is legitimate or fraudulent.
     reasons: Optional. Optional reasons for the annotation that will be
       assigned to the Event.
   """
 
   class AnnotationValueValuesEnum(_messages.Enum):
-    r"""Required. The annotation that will be assigned to the Event.
+    r"""Optional. The annotation that will be assigned to the Event. This
+    field can be left empty to provide reasons that apply to an event without
+    concluding whether the event is legitimate or fraudulent.
 
     Values:
       ANNOTATION_UNSPECIFIED: Default unspecified type.
@@ -47,9 +53,12 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
       FRAUDULENT: Provides information that the event turned out to be
         fraudulent.
       PASSWORD_CORRECT: Provides information that the event was related to a
-        login event in which the user typed the correct password.
+        login event in which the user typed the correct password. Deprecated,
+        prefer indicating CORRECT_PASSWORD through the reasons field instead.
       PASSWORD_INCORRECT: Provides information that the event was related to a
         login event in which the user typed the incorrect password.
+        Deprecated, prefer indicating INCORRECT_PASSWORD through the reasons
+        field instead.
     """
     ANNOTATION_UNSPECIFIED = 0
     LEGITIMATE = 1
@@ -68,14 +77,18 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
         assessment is suspected of being fraudulent based on the payment
         method, billing details, shipping address or other transaction
         information.
-      TWO_FACTOR_PASSED: Indicates that the user passed a 2FA challenge.
-      TWO_FACTOR_FAILED: Indicates that the user failed a 2FA challenge.
+      PASSED_TWO_FACTOR: Indicates that the user passed a 2FA challenge.
+      FAILED_TWO_FACTOR: Indicates that the user failed a 2FA challenge.
+      CORRECT_PASSWORD: Indicates the user provided the correct password.
+      INCORRECT_PASSWORD: Indicates the user provided an incorrect password.
     """
     REASON_UNSPECIFIED = 0
     CHARGEBACK = 1
     PAYMENT_HEURISTICS = 2
-    TWO_FACTOR_PASSED = 3
-    TWO_FACTOR_FAILED = 4
+    PASSED_TWO_FACTOR = 3
+    FAILED_TWO_FACTOR = 4
+    CORRECT_PASSWORD = 5
+    INCORRECT_PASSWORD = 6
 
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 1)
   reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 2, repeated=True)
@@ -439,6 +452,8 @@ class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
       EXPIRED: The user verification token had expired.
       DUPE: The user verification had already been seen.
       MISSING: The user verification token was not present.
+      BROWSER_ERROR: A retriable error (such as network failure) occurred on
+        the browser. Could easily be simulated by an attacker.
     """
     INVALID_REASON_UNSPECIFIED = 0
     UNKNOWN_INVALID_REASON = 1
@@ -446,6 +461,7 @@ class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
     EXPIRED = 3
     DUPE = 4
     MISSING = 5
+    BROWSER_ERROR = 6
 
   action = _messages.StringField(1)
   createTime = _messages.StringField(2)

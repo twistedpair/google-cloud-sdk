@@ -5,6 +5,78 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 337.0.0 (2021-04-20)
+
+### Assured Workloads
+
+*   Added HIPAA and HITRUST as compliance regime options for `gcloud assured workloads create` command in GA.
+
+### BigQuery
+
+* Added `bq truncate` command. This command will only be available to selected customers in private preview.
+* Added `--job` to `bq delete`.
+
+### Cloud Access Context Manager
+
+* Changed behavior of `perimeters dry-run describe`:
+    * Not displaying unset fields.
+    * +/- signs now are displayed at the very beginning of the line, instead of
+      being displayed right in front of the resource text.
+    * Extra space added in front of top-level fields like names/title/type
+      to align text.
+
+### Cloud Dataflow
+
+* Promoted `gcloud dataflow snapshots` to GA.
+
+### Cloud Domains
+
+* Fixed issue where multiple address line fields were not supported in commands with interactive prompts:
+  * `gcloud beta domains registrations register`
+  * `gcloud beta domains registrations configure contacts`
+
+### Cloud Filestore
+
+* Promoted `gcloud filestore backups` to GA.
+* Added `gcloud filestore instances restore` to enable restoring a Cloud
+  Filestore instance from a backup.
+* Added support for creating Filestore instances from backup using `gcloud
+  filestore instances create`.
+* Promoted  `--source-backup` and `--source-backup-region` flags to GA to
+  specify backup details; these flags should be used in conjunction with
+  `--file-share` flag.
+
+### Cloud Memorystore
+
+* Added support for Redis 6.x.
+
+### Cloud Resource Settings
+
+* Promoted `gcloud resource-settings` to GA.
+
+### Cloud Services
+
+* Promoted `gcloud services vpc-peerings delete` to beta.
+
+### Compute Engine
+
+* Promoted `--redundant-interface`, `--subnetwork` and `--subnetwork-region` flags of `gcloud compute routers add-interface` to beta.
+* Promoted `--instance` and `--instance-zone` flags of `gcloud compute routers add-bgp-peer` to beta.
+* Promoted `--interface-names` of `gcloud compute routers remove-interface` to beta.
+* Promoted `--peer-names` of `gcloud compute routers remove-bgp-peer` to beta.
+
+### Essential Contacts
+
+* Promoted `gcloud essential-contacts` to beta.
+
+### Service Directory
+
+* Added `--network` flag to `gcloud service-directory endpoints create` command in beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 336.0.0 (2021-04-13)
 
 ### Assured Workloads

@@ -391,13 +391,6 @@
             "format": "uint32"
           }
         },
-        "paths": {
-          "description": "Required. A list of HTTP paths to match. gRPC methods must be presented as fully-qualified name in the form of \"\/packageName.serviceName\/methodName\". Each path can be an exact match, or a prefix match (example, \u201C\/packageName.serviceName\/*\u201D) or a suffix match (example, *\/video\u201D) or a presence(any) match \u201C*\u201D.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
         "methods": {
           "description": "Optional. A list of HTTP methods to match. Should not be set for gRPC services.",
           "type": "array",
@@ -839,7 +832,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

@@ -165,7 +165,23 @@ def _PromptForSingleContact(domains_messages, unused_current_contact=None):
       'State (if applicable):  ')
   contact.postalAddress.locality = console_io.PromptResponse('City:  ')
   contact.postalAddress.addressLines.append(
-      console_io.PromptResponse('Street address (incl. building, apt):  '))
+      util.PromptWithValidator(
+          validator=util.ValidateNonEmpty,
+          error_message=' Address Line 1 must not be empty.',
+          prompt_string='Address Line 1:  '))
+
+  optional_address_lines = []
+  address_line_num = 2
+  while len(optional_address_lines) < 4:
+    address_line_num = 2 + len(optional_address_lines)
+    address_line = console_io.PromptResponse(
+        'Address Line {} (if applicable):  '.format(address_line_num))
+    if not address_line:
+      break
+    optional_address_lines += [address_line]
+
+  if optional_address_lines:
+    contact.postalAddress.addressLines.extend(optional_address_lines)
   return contact
 
 

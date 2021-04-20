@@ -636,7 +636,7 @@ def AddMigStatefulUpdateInstanceFlag(parser):
           with the new config.""")
   parser.add_argument(
       '--instance-update-minimal-action',
-      choices=mig_flags.INSTANCE_ACTION_CHOICES,
+      choices=mig_flags.INSTANCE_ACTION_CHOICES_WITH_NONE,
       default='none',
       help="""
           Perform at least this action on the instance while updating, if

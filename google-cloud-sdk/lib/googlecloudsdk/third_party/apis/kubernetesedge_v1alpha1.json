@@ -252,6 +252,15 @@
           "description": "GKE Hub configuration.",
           "$ref": "Hub"
         },
+        "networking": {
+          "description": "Cluster-wide networking configuration.",
+          "$ref": "ClusterNetworking"
+        },
+        "defaultMaxPodsPerNode": {
+          "description": "The default maximum number of pods per node.",
+          "type": "integer",
+          "format": "int32"
+        },
         "endpoint": {
           "description": "The IP address of the Kubernetes API server.",
           "type": "string"
@@ -266,6 +275,27 @@
         "membership": {
           "description": "Name of the membership resource to use when registering this cluster to GKE Hub e.g. projects\/{project}\/locations\/global\/memberships\/{membership}.",
           "type": "string"
+        }
+      }
+    },
+    "ClusterNetworking": {
+      "id": "ClusterNetworking",
+      "description": "Cluster-wide networking configuration.",
+      "type": "object",
+      "properties": {
+        "clusterIpv4CidrBlocks": {
+          "description": "All pods in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "servicesIpv4CidrBlocks": {
+          "description": "All services in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -753,7 +783,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

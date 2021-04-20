@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute.operations import poller
 from googlecloudsdk.api_lib.util import waiter
+import six
 
 
 class VpnGatewayHelper(object):
@@ -46,7 +47,8 @@ class VpnGatewayHelper(object):
   def _service(self):
     return self._client.vpnGateways
 
-  def GetVpnGatewayForInsert(self, name, description, network):
+  def GetVpnGatewayForInsert(self, name, description, network,
+                             vpn_interfaces_with_interconnect_attachments):
     """Returns the VpnGateway message for an insert request.
 
     Args:
@@ -55,12 +57,29 @@ class VpnGatewayHelper(object):
         resource.
       network: String representing the network URL the VPN gateway resource
         belongs to.
+      vpn_interfaces_with_interconnect_attachments: Dict representing pairs
+      interface id and interconnected attachment associated with vpn gateway on
+      this interface.
 
     Returns:
       The VpnGateway message object that can be used in an insert request.
     """
-    return self._messages.VpnGateway(
-        name=name, description=description, network=network)
+    if vpn_interfaces_with_interconnect_attachments is not None:
+      vpn_interfaces = []
+      for key, value in sorted(
+          vpn_interfaces_with_interconnect_attachments.items()):
+        vpn_interfaces.append(
+            self._messages.VpnGatewayVpnGatewayInterface(
+                id=int(key), interconnectAttachment=six.text_type(value)))
+
+      return self._messages.VpnGateway(
+          name=name,
+          description=description,
+          network=network,
+          vpnInterfaces=vpn_interfaces)
+    else:
+      return self._messages.VpnGateway(
+          name=name, description=description, network=network)
 
   def WaitForOperation(self, vpn_gateway_ref, operation_ref, wait_message):
     """Waits for the specified operation to complete and returns the target.

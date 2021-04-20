@@ -48,5 +48,9 @@ class DeleteBucketTask(task.Task):
     # pylint:disable=broad-except
     except Exception as e:
       # pylint:enable=broad-except
-      # TODO(b/184388666): Suggest "rm -r" command if bucket not empty error.
-      log.error(e)
+      if 'not empty' in str(e):
+        log.error(
+            type(e)('Bucket is not empty. To delete all objects and then delete'
+                    ' bucket, use: gcloud storage rm -r'))
+      else:
+        log.error(e)

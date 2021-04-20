@@ -1919,7 +1919,8 @@ class Permission(_messages.Message):
     r"""The current custom role support level.
 
     Values:
-      SUPPORTED: Permission is fully supported for custom role use.
+      SUPPORTED: Default state. Permission is fully supported for custom role
+        use.
       TESTING: Permission is being tested to check custom role compatibility.
       NOT_SUPPORTED: Permission is not supported for custom role use.
     """

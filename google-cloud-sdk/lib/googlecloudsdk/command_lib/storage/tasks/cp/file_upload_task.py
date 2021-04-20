@@ -28,10 +28,10 @@ import os
 
 from googlecloudsdk.api_lib.storage import gcs_api
 from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
-from googlecloudsdk.command_lib.storage.tasks import delete_object_task
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_upload_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
 

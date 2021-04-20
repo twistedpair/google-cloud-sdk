@@ -19,22 +19,25 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
-
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.functions.v1 import env_vars as env_vars_api_util
+from googlecloudsdk.api_lib.functions.v1 import exceptions as function_exceptions
+from googlecloudsdk.api_lib.functions.v1 import secrets as secrets_util
 from googlecloudsdk.api_lib.functions.v1 import util as api_util
 from googlecloudsdk.calliope import base as calliope_base
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
 from googlecloudsdk.command_lib.functions import flags
+from googlecloudsdk.command_lib.functions import secrets_config
 from googlecloudsdk.command_lib.functions.v1.deploy import labels_util
 from googlecloudsdk.command_lib.functions.v1.deploy import source_util
 from googlecloudsdk.command_lib.functions.v1.deploy import trigger_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import map_util
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-
 from six.moves import urllib
 
 
@@ -96,6 +99,68 @@ def _ApplyEnvVarsArgsToFunction(function, args):
     function.environmentVariables = env_vars_api_util.DictToEnvVarsProperty(
         env_vars_type_class, new_env_vars)
     updated_fields.append('environmentVariables')
+  return updated_fields
+
+
+def _LogSecretsPermissionMessage(project, service_account_email):
+  """Logs a warning message asking the user to grant access to secrets.
+
+  This will be removed once access checker is added.
+
+  Args:
+    project: Project id.
+    service_account_email: Runtime service account email.
+  """
+  if not service_account_email:
+    service_account_email = '{project}@appspot.gserviceaccount.com'.format(
+        project=project)
+  message = ('This deployment uses secrets. Ensure that the runtime service '
+             "account '{sa}' has access to the secrets. You can do that by "
+             "granting the permission 'roles/secretmanager.secretAccessor' to "
+             'the runtime service account on the project or secrets.\n')
+  command = (
+      'E.g. gcloud projects add-iam-policy-binding {project} --member='
+      "'serviceAccount:{sa}' --role='roles/secretmanager.secretAccessor'")
+  # TODO(b/185133105): Log this message for secret access failures only
+  log.warning(
+      (message + command).format(project=project, sa=service_account_email))
+
+
+def _ApplySecretsArgsToFunction(function, args):
+  """Populates cloud function message with secrets payload if applicable.
+
+  It compares the CLI args with the existing secrets configuration to compute
+  the effective secrets configuration.
+
+  Args:
+    function: Cloud function message to be checked and populated.
+    args: All CLI arguments.
+
+  Returns:
+    updated_fields: update mask containing the list of fields to be updated.
+  """
+  updated_fields = []
+  new_secrets_dict_by_type = {}
+  needs_update = {}
+  old_secrets_dict = secrets_util.GetSecretsAsDict(function)
+  try:
+    new_secrets_dict_by_type, needs_update = secrets_config.ApplyFlags(
+        old_secrets_dict, args)
+  except ArgumentTypeError as error:
+    exceptions.reraise(function_exceptions.FunctionsError(error))
+
+  if new_secrets_dict_by_type[
+      'secret_environment_variables'] or new_secrets_dict_by_type[
+          'secret_volumes']:
+    _LogSecretsPermissionMessage(_GetProject(), function.serviceAccountEmail)
+  if needs_update['secret_environment_variables']:
+    function.secretEnvironmentVariables = secrets_util.SecretEnvVarsToMessages(
+        new_secrets_dict_by_type['secret_environment_variables'], _GetProject())
+    updated_fields.append('secretEnvironmentVariables')
+  if needs_update['secret_volumes']:
+    function.secretVolumes = secrets_util.SecretVolumesToMessages(
+        new_secrets_dict_by_type['secret_volumes'], _GetProject())
+    updated_fields.append('secretVolumes')
   return updated_fields
 
 
@@ -196,7 +261,7 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
              'nodejs-runtimes').format(version='Node.js 6' if args.runtime ==
                                        'nodejs6' else 'Node.js 8'))
     elif is_new_function:
-      raise exceptions.RequiredArgumentException(
+      raise calliope_exceptions.RequiredArgumentException(
           'runtime', 'Flag `--runtime` is required for new functions.')
   if args.vpc_connector or args.clear_vpc_connector:
     function.vpcConnector = ('' if args.clear_vpc_connector else
@@ -207,7 +272,7 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
                                 not args.clear_vpc_connector) or
                                args.vpc_connector)
     if not will_have_vpc_connector:
-      raise exceptions.RequiredArgumentException(
+      raise calliope_exceptions.RequiredArgumentException(
           'vpc-connector', 'Flag `--vpc-connector` is '
           'required for setting `egress-settings`.')
     egress_settings_enum = arg_utils.ChoiceEnumMapper(
@@ -251,7 +316,7 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
   if args.IsSpecified('security_level'):
     will_have_http_trigger = had_http_trigger or args.trigger_http
     if not will_have_http_trigger:
-      raise exceptions.RequiredArgumentException(
+      raise calliope_exceptions.RequiredArgumentException(
           'trigger-http',
           'Flag `--trigger-http` is required for setting `security-level`.')
     security_level_enum = arg_utils.ChoiceEnumMapper(
@@ -285,6 +350,9 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
 
   ensure_all_users_invoke = flags.ShouldEnsureAllUsersInvoke(args)
   deny_all_users_invoke = flags.ShouldDenyAllUsersInvoke(args)
+
+  # Applies secrets args to function
+  updated_fields.extend(_ApplySecretsArgsToFunction(function, args))
 
   if is_new_function:
     if (function.httpsTrigger and not ensure_all_users_invoke and
@@ -339,7 +407,7 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
       elif deny_all_users_invoke:
         stop_trying_perm_set[0] = (
             api_util.RemoveFunctionIamPolicyBindingIfFound(function.name))
-    except exceptions.HttpException:
+    except calliope_exceptions.HttpException:
       stop_trying_perm_set[0] = True
       log.warning('Setting IAM policy failed, try "%s"' %
                   _CreateBindPolicyCommand(args.NAME, args.region))

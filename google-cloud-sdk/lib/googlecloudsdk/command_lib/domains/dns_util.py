@@ -205,12 +205,9 @@ def _GetCloudDnsDetails(domains_messages, cloud_dns_zone, domain,
     dns_keys = []
     req = dns_messages.DnsDnsKeysListRequest(
         project=zone_ref.project,
-        managedZone=zone_ref.managedZone,
-        maxResults=1)
+        managedZone=zone_ref.managedZone)
     while True:
-      resp = dns.dnsKeys.List(
-          dns_messages.DnsDnsKeysListRequest(
-              project=zone_ref.project, managedZone=zone_ref.managedZone))
+      resp = dns.dnsKeys.List(req)
       dns_keys += resp.dnsKeys
       req.pageToken = resp.nextPageToken
       if not resp.nextPageToken:

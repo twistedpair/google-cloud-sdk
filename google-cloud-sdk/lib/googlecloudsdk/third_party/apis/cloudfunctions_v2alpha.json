@@ -660,6 +660,10 @@
         "sourceToken": {
           "description": "An identifier for Firebase function sources. Disclaimer: This field is only supported for Firebase function deployments.",
           "type": "string"
+        },
+        "buildName": {
+          "description": "The Cloud Build Name of the function deployment. This field is only populated for Create and Update operations. projects\/\/locations\/\/builds\/.",
+          "type": "string"
         }
       }
     },
@@ -725,7 +729,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

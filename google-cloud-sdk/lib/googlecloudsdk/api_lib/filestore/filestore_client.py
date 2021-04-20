@@ -496,6 +496,18 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
     self.client = GetClient(version=BETA_API_VERSION)
     self.messages = GetMessages(version=BETA_API_VERSION)
 
+  def _ParseSourceBackupFromFileshare(self, file_share):
+    if 'source-backup' not in file_share:
+      return None
+    project = properties.VALUES.core.project.Get(required=True)
+    location = file_share.get('source-backup-region')
+    if location is None:
+      raise InvalidArgumentError(
+          "If 'source-backup' is specified, 'source-backup-region' must also "
+          'be specified.')
+    return backup_util.BACKUP_NAME_TEMPLATE.format(
+        project, location, file_share.get('source-backup'))
+
   def ParseFileShareIntoInstance(self,
                                  instance,
                                  file_share,
@@ -519,8 +531,8 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
           raise InvalidArgumentError(
               "If 'source-backup' is specified, 'source-backup-region' must also "
               "be specified.")
-        source_backup = backup_util.BACKUP_NAME_TEMPLATE.format(
-            project, location, file_share.get('source-backup'))
+
+      source_backup = self._ParseSourceBackupFromFileshare(file_share)
 
       nfs_export_options = FilestoreClient.MakeNFSExportOptionsMsg(
           self.messages, file_share.get('nfs-export-options', []))
@@ -556,11 +568,15 @@ class FilestoreAdapter(BetaFilestoreAdapter):
           fs for fs in instance.fileShares if fs.name != file_share.get('name')
       ]
 
+      source_backup = self._ParseSourceBackupFromFileshare(file_share)
+
       nfs_export_options = FilestoreClient.MakeNFSExportOptionsMsg(
           self.messages, file_share.get('nfs-export-options', []))
+
       file_share_config = self.messages.FileShareConfig(
           name=file_share.get('name'),
           capacityGb=utils.BytesToGb(file_share.get('capacity')),
+          sourceBackup=source_backup,
           nfsExportOptions=nfs_export_options)
       instance.fileShares.append(file_share_config)
 

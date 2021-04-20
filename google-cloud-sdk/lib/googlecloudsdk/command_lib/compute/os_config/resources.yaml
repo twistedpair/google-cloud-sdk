@@ -1,0 +1,54 @@
+project:
+  name: project
+  collection: osconfig.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    property: core/project
+    help: |
+      Project of the {resource}.
+
+location:
+  name: location
+  collection: osconfig.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    property: compute/zone
+    help: |
+      Location of the {resource}.
+
+instance:
+  name: instance
+  collection: osconfig.projects.locations.instances
+  attributes:
+  - *project
+  - *location
+  - &instance
+    parameter_name: instancesId
+    attribute_name: instance
+    help: |
+      Compute Engine VM instance.
+
+vulnerability_report:
+  name: vulnerability_report
+  collection: osconfig.projects.locations.instances.vulnerabilityReports
+  attributes:
+  - *project
+  - *location
+  - *instance
+  help: |
+    Vulnerability report for the {resource}.
+
+inventory:
+  name: inventory
+  collection: osconfig.projects.locations.instances.inventories
+  attributes:
+  - *project
+  - *location
+  - *instance
+  help: |
+    Inventory of the {resource}.

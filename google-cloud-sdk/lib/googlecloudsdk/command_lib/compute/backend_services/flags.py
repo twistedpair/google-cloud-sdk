@@ -206,16 +206,18 @@ def BackendServiceArgumentForTargetTcpProxy(required=True):
         """)
 
 
-def AddLoadBalancingScheme(parser, include_l7_ilb=False):
+def AddLoadBalancingScheme(parser, include_l7_ilb=False, include_gfe3=False):
   parser.add_argument(
       '--load-balancing-scheme',
       choices=['INTERNAL', 'EXTERNAL', 'INTERNAL_SELF_MANAGED'] +
-      (['INTERNAL_MANAGED'] if include_l7_ilb else []),
+      (['INTERNAL_MANAGED'] if include_l7_ilb else []) +
+      (['EXTERNAL_MANAGED'] if include_gfe3 else []),
       type=lambda x: x.replace('-', '_').upper(),
       default='EXTERNAL',
       help="""\
       Specifies the load balancer type. Choose EXTERNAL for load balancers
-      that receive traffic from external clients. Choose INTERNAL for
+      that receive traffic from external clients. Choose EXTERNAL_MANAGED for
+      Envoy based External HTTP(S) Load Balancig. Choose INTERNAL for
       Internal TCP/UDP Load Balancing. Choose INTERNAL_MANAGED for
       Internal HTTP(S) Load Balancing. Choose INTERNAL_SELF_MANAGED for
       Traffic Director. For more information, refer to this guide:
@@ -515,12 +517,12 @@ def AddSessionAffinity(parser,
         'GENERATED_COOKIE': (
             '(Applicable if `--load-balancing-scheme` is '
             '`INTERNAL_MANAGED`, `INTERNAL_SELF_MANAGED`, or `EXTERNAL`) '
-            ' If the `--load-balancing-scheme` is `EXTERNAL`, routes '
-            ' requests to backend VMs or endpoints in a NEG, based on the '
-            ' contents of the `GCLB` cookie set by the load balancer. Only '
-            ' applicable when `--protocol` is HTTP, HTTPS, or HTTP2. If the '
-            ' `--load-balancing-scheme` is `INTERNAL_MANAGED` or '
-            ' `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
+            ' If the `--load-balancing-scheme` is `EXTERNAL` or '
+            '`EXTERNAL_MANAGED`, routes requests to backend VMs or endpoints '
+            ' in a NEG, based on the contents of the `GCLB` cookie set by the '
+            ' load balancer. Only applicable when `--protocol` is HTTP, HTTPS, '
+            ' or HTTP2. If the `--load-balancing-scheme` is `INTERNAL_MANAGED` '
+            ' or `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
             ' endpoints in a NEG, based on the contents of the `GCILB` cookie '
             ' set by the proxy. (If no cookie is present, the proxy '
             ' chooses a backend VM or endpoint and sends a `Set-Cookie` '
@@ -528,11 +530,11 @@ def AddSessionAffinity(parser,
             ' is `INTERNAL_SELF_MANAGED`, routes requests to backend VMs or '
             ' endpoints in a NEG, based on the contents of a cookie set by '
             ' Traffic Director.'),
-        'CLIENT_IP_PROTO': (
-            '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
-            'Connections from the same client IP with the same IP '
-            'protocol will go to the same backend VM while that VM remains'
-            ' healthy.'),
+        'CLIENT_IP_PROTO':
+            ('(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
+             'Connections from the same client IP with the same IP '
+             'protocol will go to the same backend VM while that VM remains'
+             ' healthy.'),
         'CLIENT_IP_PORT_PROTO': (
             '(Applicable if `--load-balancing-scheme` is `INTERNAL`) '
             'Connections from the same client IP with the same IP protocol and '
@@ -549,14 +551,14 @@ def AddSessionAffinity(parser,
             ' load balancing locality policy is either `RING_HASH` or `MAGLEV` '
             ' and the backend service\'s consistent hash specifies the HTTP '
             ' cookie.'),
-        'HEADER_FIELD': (
-            '(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`'
-            ' or `INTERNAL_SELF_MANAGED`) Route requests to backend VMs or '
-            ' endpoints in a NEG based on the value of the HTTP header named '
-            ' in the `--custom-request-header` flag. This session '
-            ' affinity is only valid if the load balancing locality policy '
-            ' is either RING_HASH or MAGLEV and the backend service\'s '
-            ' consistent hash specifies the name of the HTTP header.'),
+        'HEADER_FIELD':
+            ('(Applicable if `--load-balancing-scheme` is `INTERNAL_MANAGED`'
+             ' or `INTERNAL_SELF_MANAGED`) Route requests to backend VMs or '
+             ' endpoints in a NEG based on the value of the HTTP header named '
+             ' in the `--custom-request-header` flag. This session '
+             ' affinity is only valid if the load balancing locality policy '
+             ' is either RING_HASH or MAGLEV and the backend service\'s '
+             ' consistent hash specifies the name of the HTTP header.'),
     })
     if support_client_only:
       choices.update({
@@ -693,6 +695,10 @@ def AddProtocol(parser,
 
       If the `load-balancing-scheme` is `EXTERNAL` and `region` is set
       (External Network Load Balancing), the protocol must be one of: TCP, UDP.
+
+      If the `load-balancing-scheme` is `EXTERNAL_MANAGED` and `region` is not
+      set (Envoy based External HTTP(S) Load Balancing), the protocol must be
+      one of: HTTP, HTTPS, HTTP2.
       """.format(ilb_protocols, td_protocols))
 
 

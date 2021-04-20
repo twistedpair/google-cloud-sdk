@@ -46,6 +46,8 @@ _EDGE_AVAILABILITY_DOMAIN_CHOICES = {
     'any': 'Any Availability Domain',
 }
 
+_ENCRYPTION_CHOICES = frozenset({'IPSEC', 'NONE'})
+
 
 class InterconnectAttachmentsCompleter(compute_completers.ListCommandCompleter):
 
@@ -267,6 +269,65 @@ def AddMtu(parser):
       """)
 
 
+def AddEncryption(parser):
+  """Adds encryption flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--encryption',
+      hidden=True,
+      required=False,
+      choices=_ENCRYPTION_CHOICES,
+      help="""\
+      Indicates the user-supplied encryption option for this interconnect
+      attachment (VLAN attachment).
+
+      Possible values are:
+
+      `NONE` - This is the default value, which means the interconnect attachment
+      carries unencrypted traffic. VMs can send traffic to or
+      receive traffic from such interconnect attachment.
+
+      `IPSEC` - The interconnect attachment carries only traffic that is encrypted
+      by an IPsec device; for example, an HA VPN gateway or third-party
+      IPsec VPN. VMs cannot directly send traffic to or receive traffic from such
+      an interconnect attachment. To use IPsec-encrypted Cloud Interconnect,
+      you must create the interconnect attachment with this option.
+
+      """)
+
+
 def GetAdminEnabledFlag(args):
   """Determines value of admin_enabled/enable_admin flag."""
   return args.enable_admin if args.enable_admin is not None else args.admin_enabled
+
+
+def GetIpsecInternalAddressesFlag():
+  """Adds ipsec-internal-addresses flag to the argparse.ArgumentParser."""
+  return base.Argument(
+      '--ipsec-internal-addresses',
+      required=False,
+      hidden=True,
+      type=arg_parsers.ArgList(max_length=1),
+      metavar='ADDRESSES',
+      help="""\
+      List of addresses in URL format that have been reserved for the interconnect
+      attachment (VLAN attachment). Use this option only for an interconnect
+      attachment that has its encryption option set as IPSEC.
+      When creating an HA VPN gateway for the interconnect attachment, if the
+      attachment is configured to use a regional internal IP address, then the VPN
+      gateway's IP address is allocated from the IP address range specified here.
+      If this field is not specified when creating interconnect attachments,
+      then when creating a future HA VPN gateway for this interconnect attachment,
+      the HA VPN gateway's IP address is allocated from a regional external IP
+      address pool.
+      """)
+
+
+def GetAddressRef(resources, name, region, project):
+  """Generates an address reference from the specified name, region and project."""
+  return resources.Parse(
+      name,
+      collection='compute.addresses',
+      params={
+          'project': project,
+          'region': region
+      })

@@ -112,7 +112,7 @@
           "description": "View your Google Compute Engine resources"
         },
         "https://www.googleapis.com/auth/userinfo.email": {
-          "description": "View your email address"
+          "description": "See your primary Google Account email address"
         }
       }
     }

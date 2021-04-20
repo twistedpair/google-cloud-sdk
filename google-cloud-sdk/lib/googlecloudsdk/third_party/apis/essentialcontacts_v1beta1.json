@@ -155,6 +155,25 @@
         "languageTag": {
           "description": "The preferred language for notifications, as a ISO 639-1 language code. See [Supported languages](https:\/\/cloud.google.com\/resource-manager\/docs\/managing-notification-contacts#supported-languages) for a list of supported languages.",
           "type": "string"
+        },
+        "validationState": {
+          "description": "The validity of the contact. A contact is considered valid if it is the correct recipient for notifications for a particular resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "The validation state is unknown or unspecified.",
+            "The contact is marked as valid. This is usually done manually by the contact admin. All new contacts begin in the valid state.",
+            "The contact is considered invalid. This may become the state if the contact's email is found to be unreachable."
+          ],
+          "enum": [
+            "VALIDATION_STATE_UNSPECIFIED",
+            "VALID",
+            "INVALID"
+          ]
+        },
+        "validateTime": {
+          "description": "The last time the validation_state was updated, either manually or automatically. A contact is considered stale if its validation state was updated more than 1 year ago.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

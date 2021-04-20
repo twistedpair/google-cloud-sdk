@@ -18,8 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.core import exceptions
+
 
 INSTANCES_ARG_FOR_OS_UPGRADE = compute_flags.ResourceArgument(
     resource_name='instance',
@@ -50,3 +54,65 @@ def AddPatchDeploymentsCreateFlags(parser, api_version):
         information about the patch deployment format, see https://cloud.google.com/compute/docs/osconfig/rest/{api_version}/projects.patchDeployments."""
       .format(api_version=api_version),
   )
+
+
+def ValidateZone(value, flag_name):
+  """Performs basic syntax check on a zone; doesn't validate whether it exists.
+
+  Args:
+    value: str, the zone to validate
+    flag_name: str, the flag's name; included in the exception's message
+
+  Raises:
+    exceptions.Error: if value is an invalid zone
+  """
+  ValidateFlagNotEmpty(value, flag_name)
+  parts = value.split('-')
+  if len(parts) == 3 and all(p.isalnum() for p in parts):
+    return
+  raise exceptions.Error(
+      'Invalid value `{value}` for flag {flag_name}. '
+      'For valid values, see {url}'.format(
+          value=value,
+          flag_name=flag_name,
+          url='https://cloud.google.com/compute/docs/regions-zones'))
+
+
+def ValidateFlagNotEmpty(value, flag_name):
+  """Ensures that value is not empty.
+
+  Args:
+    value: str, the value to check
+    flag_name: str, the flag's name; included in the exception's message
+
+  Raises:
+    exceptions.Error: if value is empty
+  """
+  if not value:
+    raise exceptions.Error('Missing required flag ' + flag_name)
+
+
+def ValidateInstanceID(value, param_name):
+  """Performs syntax check on an instance ID; doesn't check whether it exists.
+
+  Args:
+    value: str, the instance ID to check
+    param_name: str, the parameter's name; included in the exception's message
+
+  Raises:
+    exceptions.Error: if value is an invalid instance ID
+  """
+  if not value:
+    raise exceptions.Error('Missing required parameter ' + param_name)
+
+  if re.match(r'^\d+$', value):
+    return
+
+  raise exceptions.Error(
+      'Invalid value `{value}` for parameter {param_name}. '
+      'For details on valid instance IDs, refer to the criteria '
+      'documented under the field `id` at: {url}'.format(
+          value=value,
+          param_name=param_name,
+          url='https://cloud.google.com/compute/docs/reference/rest/v1/instances'
+      ))

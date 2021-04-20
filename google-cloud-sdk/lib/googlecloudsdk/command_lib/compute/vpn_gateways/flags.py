@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -34,7 +35,7 @@ DEFAULT_LIST_FORMAT = """\
 
 
 class VpnGatewaysCompleter(compute_completers.ListCommandCompleter):
-  """A VPN Gateway completer for a resource argument."""
+  """A VPN gateway completer for a resource argument."""
 
   def __init__(self, **kwargs):
     super(VpnGatewaysCompleter, self).__init__(
@@ -44,7 +45,7 @@ class VpnGatewaysCompleter(compute_completers.ListCommandCompleter):
 
 
 def GetVpnGatewayArgument(required=True, plural=False):
-  """Returns the resource argument object for the VPN Gateway flag."""
+  """Returns the resource argument object for the VPN gateway flag."""
   return compute_flags.ResourceArgument(
       resource_name='VPN Gateway',
       completer=VpnGatewaysCompleter,
@@ -56,7 +57,7 @@ def GetVpnGatewayArgument(required=True, plural=False):
 
 
 def GetVpnGatewayArgumentForOtherResource(required=False):
-  """Returns the flag for specifying the VPN Gateway."""
+  """Returns the flag for specifying the VPN gateway."""
   return compute_flags.ResourceArgument(
       name='--vpn-gateway',
       resource_name='VPN Gateway',
@@ -64,19 +65,17 @@ def GetVpnGatewayArgumentForOtherResource(required=False):
       plural=False,
       required=required,
       regional_collection='compute.vpnGateways',
-      short_help=(
-          'Reference to a VPN gateway, this flag is used for creating '
-          'HA VPN tunnels.'
-      ),
+      short_help=('Reference to a VPN gateway, this flag is used for creating '
+                  'HA VPN tunnels.'),
       region_explanation=('Should be the same as region, if not specified, '
                           'it will be automatically set.'),
       detailed_help="""\
-        Reference to a Highly Available VPN Gateway.
+        Reference to a Highly Available VPN gateway.
         """)
 
 
 def GetPeerVpnGatewayArgumentForOtherResource(required=False):
-  """Returns the flag for specifying the peer VPN Gateway."""
+  """Returns the flag for specifying the peer VPN gateway."""
   return compute_flags.ResourceArgument(
       name='--peer-gcp-gateway',
       resource_name='VPN Gateway',
@@ -85,7 +84,7 @@ def GetPeerVpnGatewayArgumentForOtherResource(required=False):
       required=required,
       regional_collection='compute.vpnGateways',
       short_help=(
-          'Peer side Highly Available VPN Gateway representing the remote '
+          'Peer side Highly Available VPN gateway representing the remote '
           'tunnel endpoint, this flag is used when creating HA VPN tunnels '
           'from Google Cloud to Google Cloud.'
           'Either --peer-external-gateway or --peer-gcp-gateway must be specified when '
@@ -93,12 +92,43 @@ def GetPeerVpnGatewayArgumentForOtherResource(required=False):
       region_explanation=('Should be the same as region, if not specified, '
                           'it will be automatically set.'),
       detailed_help="""\
-        Reference to the peer side Highly Available VPN Gateway.
+        Reference to the peer side Highly Available VPN gateway.
         """)
 
 
 def GetDescriptionFlag():
-  """Returns the flag for VPN Gateway description."""
+  """Returns the flag for VPN gateway description."""
   return base.Argument(
       '--description',
-      help='An optional, textual description for the VPN Gateway.')
+      help='An optional, textual description for the VPN gateway.')
+
+
+def GetInterconnectAttachmentsFlag():
+  """Returns the flag for interconnect attachments (VLAN attachments) associated with a VPN gateway."""
+  return base.Argument(
+      '--interconnect-attachments',
+      type=arg_parsers.ArgList(max_length=2),
+      hidden=True,
+      required=False,
+      metavar='INTERCONNECT_ATTACHMENTS',
+      help="""\
+      Names of interconnect attachments (VLAN attachments) associated with the
+      VPN gateway interfaces. You must specify this field when using a VPN gateway
+      for IPsec-encrypted Cloud Interconnect. Otherwise, this field is optional.
+
+      For example,
+      `--interconnect-attachments attachment-a-zone1,attachment-a-zone2`
+      associates VPN gateway with attachment from zone1 on interface 0 and with
+      attachment from zone2 on interface 1.
+      """)
+
+
+def GetInterconnectAttachmentRef(resources, name, region, project):
+  """Generates an interconnect attachment reference from the specified name, region and project."""
+  return resources.Parse(
+      name,
+      collection='compute.interconnectAttachments',
+      params={
+          'project': project,
+          'region': region
+      })

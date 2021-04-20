@@ -1076,7 +1076,9 @@ class CommandBuilder(object):
     """
     operation_ref = resources.REGISTRY.Parse(
         getattr(operation, self.spec.async_.response_name_field),
-        collection=self.spec.async_.collection)
+        collection=self.spec.async_.collection,
+        api_version=(
+            self.spec.async_.api_version or self.spec.request.api_version))
     request_string = self.spec.async_.request_issued_message or request_string
     if request_string:
       log.status.Print(self._Format(request_string, resource_ref,

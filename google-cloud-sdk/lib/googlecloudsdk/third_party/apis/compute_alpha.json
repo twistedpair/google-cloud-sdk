@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20210402",
+ "revision": "20210409",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1198,7 +1198,7 @@
     },
     "maintenanceInterval": {
      "type": "string",
-     "description": "Specifies whether this VM may be a stable fleet VM. Setting this to \"Periodic\" designates this VM as a Stable Fleet VM.\n\nSee go/stable-fleet-ug for more details.",
+     "description": "For more information about maintenance intervals, see Setting maintenance intervals.",
      "enum": [
       "PERIODIC"
      ],
@@ -1593,7 +1593,7 @@
    "properties": {
     "autoscalingPolicy": {
      "$ref": "AutoscalingPolicy",
-     "description": "The configuration parameters for the autoscaling algorithm. You can define one or more of the policies for an autoscaler: cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.\n\nIf none of these are specified, the default will be to autoscale based on cpuUtilization to 0.6 or 60%."
+     "description": "The configuration parameters for the autoscaling algorithm. You can define one or more signals for an autoscaler: cpuUtilization, customMetricUtilizations, and loadBalancingUtilization.\n\nIf none of these are specified, the default will be to autoscale based on cpuUtilization to 0.6 or 60%."
     },
     "creationTimestamp": {
      "type": "string",
@@ -2842,9 +2842,11 @@
       "HTTPS",
       "SSL",
       "TCP",
-      "UDP"
+      "UDP",
+      "UNSPECIFIED"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -3841,6 +3843,13 @@
     "predefinedNames": {
      "type": "array",
      "description": "DEPRECATED: Please use per_instance_properties instead.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "secureTags": {
+     "type": "array",
+     "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 300.",
      "items": {
       "type": "string"
      }
@@ -7105,11 +7114,13 @@
       "ALL",
       "ESP",
       "ICMP",
+      "L3_DEFAULT",
       "SCTP",
       "TCP",
       "UDP"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -27835,12 +27846,12 @@
     },
     "maintenanceFreezeDurationHours": {
      "type": "integer",
-     "description": "Specifies the number of hours after instance creation where the instance won't be scheduled for maintenance.",
+     "description": "Specifies the number of hours after VM instance creation where the VM won't be scheduled for maintenance.",
      "format": "int32"
     },
     "maintenanceInterval": {
      "type": "string",
-     "description": "Specifies whether this VM may be a stable fleet VM. Setting this to \"Periodic\" designates this VM as a Stable Fleet VM.\n\nSee go/stable-fleet-ug for more details.",
+     "description": "For more information about maintenance intervals, see Setting maintenance intervals.",
      "enum": [
       "PERIODIC"
      ],
@@ -46367,12 +46378,6 @@
        "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
        "location": "query"
       },
-      "secureTags": {
-       "type": "string",
-       "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 300.",
-       "repeated": true,
-       "location": "query"
-      },
       "zone": {
        "type": "string",
        "description": "The name of the zone for this request.",
@@ -59786,12 +59791,6 @@
       "requestId": {
        "type": "string",
        "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-       "location": "query"
-      },
-      "secureTags": {
-       "type": "string",
-       "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 300.",
-       "repeated": true,
        "location": "query"
       }
      },

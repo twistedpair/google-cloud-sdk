@@ -424,11 +424,11 @@ class DropInfo(_messages.Message):
         Engine Service.
       DROPPED_INSIDE_CLOUD_SQL_SERVICE: Packet was dropped inside Cloud SQL
         Service.
-      GOOGLE_MANAGED_SERVICE_NO_PEERING: Packet was dropped as there is no
-        peering between the originating network and the Google Managed
+      GOOGLE_MANAGED_SERVICE_NO_PEERING: Packet was dropped because there is
+        no peering between the originating network and the Google Managed
         Services Network.
-      CLOUD_SQL_INSTANCE_NO_IP_ADDRESS: Packet was dropped because Cloud SQL
-        instance has neither private nor public IP address.
+      CLOUD_SQL_INSTANCE_NO_IP_ADDRESS: Packet was dropped because the Cloud
+        SQL instance has neither a private nor a public IP address.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1242,7 +1242,7 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -1949,7 +1949,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 class Trace(_messages.Message):
   r"""Trace represents one simulated packet forwarding path. * Each trace
-  contains multiple ordered Steps. * Each step is in a particular state with
+  contains multiple ordered steps. * Each step is in a particular state with
   associated configuration. * State is categorized as final or non-final
   states. * Each final state has a reason associated. * Each trace must end
   with a final state (the last step). ```

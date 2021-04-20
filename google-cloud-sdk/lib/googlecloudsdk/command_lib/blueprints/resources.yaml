@@ -1,0 +1,47 @@
+project:
+  name: project
+  collection: config.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: "The project name."
+    property: core/project
+
+location:
+  name: location
+  collection: config.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: "The location of the {resource}."
+    property: blueprints/location
+  disable_auto_completers: false
+
+deployment:
+  name: deployment
+  collection: config.projects.locations.deployments
+  attributes:
+  - *project
+  - *location
+  - &deployment
+    parameter_name: deploymentsId
+    attribute_name: deployment
+    help: "The name of the deployment."
+  disable_auto_completers: false
+
+revision:
+  name: revision
+  collection: config.projects.locations.deployments.revisions
+  request_id_field: name
+  attributes:
+  - *project
+  - *location
+  - *deployment
+  - &revision
+    parameter_name: revisionsId
+    attribute_name: revision
+    help: "The name of the revision."
+  disable_auto_completers: false

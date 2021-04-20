@@ -3408,78 +3408,17 @@
         }
       }
     },
-    "GoogleCloudDialogflowV2ListEnvironmentsResponse": {
-      "id": "GoogleCloudDialogflowV2ListEnvironmentsResponse",
-      "description": "The response message for Environments.ListEnvironments.",
-      "type": "object",
-      "properties": {
-        "environments": {
-          "description": "The list of agent environments. There will be a maximum number of items returned based on the page_size field in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDialogflowV2Environment"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDialogflowV2Environment": {
-      "id": "GoogleCloudDialogflowV2Environment",
-      "description": "You can create multiple versions of your agent and publish them to separate environments. When you edit an agent, you are editing the draft agent. At any point, you can save the draft agent as an agent version, which is an immutable snapshot of your agent. When you save the draft agent, it is published to the default environment. When you create agent versions, you can publish them to custom environments. You can create a variety of custom environments for: - testing - development - production - etc. For more information, see the [versions and environments guide](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-versions).",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The unique identifier of this agent environment. Format: `projects\/\/agent\/environments\/`. For Environment ID, \"-\" is reserved for 'draft' environment.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "description": {
-          "description": "Optional. The developer-provided description for this environment. The maximum length is 500 characters. If exceeded, the request is rejected.",
-          "type": "string"
-        },
-        "agentVersion": {
-          "description": "Optional. The agent version loaded into this environment. Format: `projects\/\/agent\/versions\/`.",
-          "type": "string"
-        },
-        "state": {
-          "description": "Output only. The state of this environment. This field is read-only, i.e., it cannot be set by create and update methods.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Not specified. This value is not used.",
-            "Stopped.",
-            "Loading.",
-            "Running."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "STOPPED",
-            "LOADING",
-            "RUNNING"
-          ]
-        },
-        "updateTime": {
-          "description": "Output only. The last update time of this environment. This field is read-only, i.e., it cannot be set by create and update methods.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
     "GoogleCloudDialogflowV2Fulfillment": {
       "id": "GoogleCloudDialogflowV2Fulfillment",
       "description": "By default, your agent responds to a matched intent with a static response. As an alternative, you can provide a more dynamic response by using fulfillment. When you enable fulfillment for an intent, Dialogflow responds to that intent by calling a service that you define. For example, if an end-user wants to schedule a haircut on Friday, your service can check your database and respond to the end-user with availability information for Friday. For more information, see the [fulfillment guide](https:\/\/cloud.google.com\/dialogflow\/docs\/fulfillment-overview).",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The unique identifier of the fulfillment. Format: `projects\/\/agent\/fulfillment`.",
+          "description": "Required. The unique identifier of the fulfillment. Supported formats: - `projects\/\/agent\/fulfillment` - `projects\/\/locations\/\/agent\/fulfillment` This field is not used for Fulfillment in an Environment.",
           "type": "string"
         },
         "displayName": {
-          "description": "Optional. The human-readable name of the fulfillment, unique within the agent.",
+          "description": "Optional. The human-readable name of the fulfillment, unique within the agent. This field is not used for Fulfillment in an Environment.",
           "type": "string"
         },
         "genericWebService": {
@@ -3545,6 +3484,118 @@
             "TYPE_UNSPECIFIED",
             "SMALLTALK"
           ]
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2ListEnvironmentsResponse": {
+      "id": "GoogleCloudDialogflowV2ListEnvironmentsResponse",
+      "description": "The response message for Environments.ListEnvironments.",
+      "type": "object",
+      "properties": {
+        "environments": {
+          "description": "The list of agent environments. There will be a maximum number of items returned based on the page_size field in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2Environment"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2Environment": {
+      "id": "GoogleCloudDialogflowV2Environment",
+      "description": "You can create multiple versions of your agent and publish them to separate environments. When you edit an agent, you are editing the draft agent. At any point, you can save the draft agent as an agent version, which is an immutable snapshot of your agent. When you save the draft agent, it is published to the default environment. When you create agent versions, you can publish them to custom environments. You can create a variety of custom environments for: - testing - development - production - etc. For more information, see the [versions and environments guide](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-versions).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The unique identifier of this agent environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. The developer-provided description for this environment. The maximum length is 500 characters. If exceeded, the request is rejected.",
+          "type": "string"
+        },
+        "agentVersion": {
+          "description": "Optional. The agent version loaded into this environment. Supported formats: - `projects\/\/agent\/versions\/` - `projects\/\/locations\/\/agent\/versions\/`",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of this environment. This field is read-only, i.e., it cannot be set by create and update methods.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified. This value is not used.",
+            "Stopped.",
+            "Loading.",
+            "Running."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "STOPPED",
+            "LOADING",
+            "RUNNING"
+          ]
+        },
+        "updateTime": {
+          "description": "Output only. The last update time of this environment. This field is read-only, i.e., it cannot be set by create and update methods.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "textToSpeechSettings": {
+          "description": "Optional. Text to speech settings for this environment.",
+          "$ref": "GoogleCloudDialogflowV2TextToSpeechSettings"
+        },
+        "fulfillment": {
+          "description": "Optional. The fulfillment settings to use for this environment.",
+          "$ref": "GoogleCloudDialogflowV2Fulfillment"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2TextToSpeechSettings": {
+      "id": "GoogleCloudDialogflowV2TextToSpeechSettings",
+      "description": "Instructs the speech synthesizer on how to generate the output audio content.",
+      "type": "object",
+      "properties": {
+        "enableTextToSpeech": {
+          "description": "Optional. Indicates whether text to speech is enabled. Even when this field is false, other settings in this proto are still retained.",
+          "type": "boolean"
+        },
+        "outputAudioEncoding": {
+          "description": "Required. Audio encoding of the synthesized audio content.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "Uncompressed 16-bit signed little-endian samples (Linear PCM). Audio content returned as LINEAR16 also contains a WAV header.",
+            "MP3 audio at 32kbps.",
+            "MP3 audio at 64kbps.",
+            "Opus encoded audio wrapped in an ogg container. The result will be a file which can be played natively on Android, and in browsers (at least Chrome and Firefox). The quality of the encoding is considerably higher than MP3 while using approximately the same bitrate.",
+            "8-bit samples that compand 14-bit audio samples using G.711 PCMU\/mu-law."
+          ],
+          "enum": [
+            "OUTPUT_AUDIO_ENCODING_UNSPECIFIED",
+            "OUTPUT_AUDIO_ENCODING_LINEAR_16",
+            "OUTPUT_AUDIO_ENCODING_MP3",
+            "OUTPUT_AUDIO_ENCODING_MP3_64_KBPS",
+            "OUTPUT_AUDIO_ENCODING_OGG_OPUS",
+            "OUTPUT_AUDIO_ENCODING_MULAW"
+          ]
+        },
+        "sampleRateHertz": {
+          "description": "Optional. The synthesis sample rate (in hertz) for this audio. If not provided, then the synthesizer will use the default sample rate based on the audio encoding. If this is different from the voice's natural sample rate, then the synthesizer will honor this request by converting to the desired sample rate (which might result in worse audio quality).",
+          "type": "integer",
+          "format": "int32"
+        },
+        "synthesizeSpeechConfigs": {
+          "description": "Optional. Configuration of how speech should be synthesized, mapping from language (https:\/\/cloud.google.com\/dialogflow\/docs\/reference\/language) to SynthesizeSpeechConfig.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudDialogflowV2SynthesizeSpeechConfig"
+          }
         }
       }
     },
@@ -9516,7 +9567,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The unique identifier of the fulfillment. Format: `projects\/\/agent\/fulfillment`.",
+                      "description": "Required. The unique identifier of the fulfillment. Supported formats: - `projects\/\/agent\/fulfillment` - `projects\/\/locations\/\/agent\/fulfillment` This field is not used for Fulfillment in an Environment.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/agent\/fulfillment$",
                       "location": "path",
                       "required": true,
@@ -10548,7 +10599,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The agent to list all environments from. Format: `projects\/\/agent`.",
+                          "description": "Required. The agent to list all environments from. Format: - `projects\/\/agent` - `projects\/\/locations\/\/agent`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/agent$",
                           "location": "path",
                           "required": true,
@@ -12184,7 +12235,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. The unique identifier of the fulfillment. Format: `projects\/\/agent\/fulfillment`.",
+                  "description": "Required. The unique identifier of the fulfillment. Supported formats: - `projects\/\/agent\/fulfillment` - `projects\/\/locations\/\/agent\/fulfillment` This field is not used for Fulfillment in an Environment.",
                   "pattern": "^projects\/[^\/]+\/agent\/fulfillment$",
                   "location": "path",
                   "required": true,
@@ -13216,7 +13267,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The agent to list all environments from. Format: `projects\/\/agent`.",
+                      "description": "Required. The agent to list all environments from. Format: - `projects\/\/agent` - `projects\/\/locations\/\/agent`",
                       "pattern": "^projects\/[^\/]+\/agent$",
                       "location": "path",
                       "required": true,

@@ -47,8 +47,7 @@ properties:
   name:
     description: |-
       Name of the AuthorizationPolicy resource. It matches pattern
-      `projects/*/locations/{location}/authorizationPolicies/<authoriz
-      ation_policy>`.
+      `projects/*/locations/{location}/authorizationPolicies/`.
     type: string
   rules:
     description: |-

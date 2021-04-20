@@ -183,19 +183,13 @@ class Destination(_messages.Message):
       advanced use cases.
     methods: Optional. A list of HTTP methods to match. Should not be set for
       gRPC services.
-    paths: Required. A list of HTTP paths to match. gRPC methods must be
-      presented as fully-qualified name in the form of
-      "/packageName.serviceName/methodName". Each path can be an exact match,
-      or a prefix match (example, "/packageName.serviceName/*") or a suffix
-      match (example, */video") or a presence(any) match "*".
     ports: Required. List of destination ports to match.
   """
 
   hosts = _messages.StringField(1, repeated=True)
   httpHeaderMatch = _messages.MessageField('HttpHeaderMatch', 2)
   methods = _messages.StringField(3, repeated=True)
-  paths = _messages.StringField(4, repeated=True)
-  ports = _messages.IntegerField(5, repeated=True, variant=_messages.Variant.UINT32)
+  ports = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.UINT32)
 
 
 class Empty(_messages.Message):
@@ -981,7 +975,7 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """

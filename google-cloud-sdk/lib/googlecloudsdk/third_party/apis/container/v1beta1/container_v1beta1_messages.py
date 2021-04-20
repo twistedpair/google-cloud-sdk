@@ -716,6 +716,8 @@ class ClusterUpdate(_messages.Message):
   Fields:
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
+    desiredAuthenticatorGroupsConfig: AuthenticatorGroupsConfig specifies the
+      config for the cluster security groups settings.
     desiredAutoGke: AutoGKE is the configuration for AutoGKE settings on the
       cluster.
     desiredAutopilot: The desired Autopilot configuration for the cluster.
@@ -853,47 +855,48 @@ class ClusterUpdate(_messages.Message):
     PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL = 3
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
-  desiredAutoGke = _messages.MessageField('AutoGKE', 2)
-  desiredAutopilot = _messages.MessageField('Autopilot', 3)
-  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 4)
-  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 5)
-  desiredClusterTelemetry = _messages.MessageField('ClusterTelemetry', 6)
-  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 7)
-  desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 8)
-  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 9)
-  desiredDnsConfig = _messages.MessageField('DNSConfig', 10)
-  desiredEnableGvnic = _messages.BooleanField(11)
-  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 12)
-  desiredImage = _messages.StringField(13)
-  desiredImageProject = _messages.StringField(14)
-  desiredImageType = _messages.StringField(15)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 16)
-  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 17)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 18)
-  desiredLocations = _messages.StringField(19, repeated=True)
-  desiredLoggingService = _messages.StringField(20)
-  desiredMaster = _messages.MessageField('Master', 21)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 22)
-  desiredMasterVersion = _messages.StringField(23)
-  desiredMonitoringService = _messages.StringField(24)
-  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 25)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 26)
-  desiredNodePoolId = _messages.StringField(27)
-  desiredNodeVersion = _messages.StringField(28)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 29)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 30)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 31)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 32)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 33)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 34)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 35)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 36)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 37)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 38)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 39)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 40)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 41)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 42)
+  desiredAuthenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 2)
+  desiredAutoGke = _messages.MessageField('AutoGKE', 3)
+  desiredAutopilot = _messages.MessageField('Autopilot', 4)
+  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 5)
+  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 6)
+  desiredClusterTelemetry = _messages.MessageField('ClusterTelemetry', 7)
+  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 8)
+  desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 9)
+  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 10)
+  desiredDnsConfig = _messages.MessageField('DNSConfig', 11)
+  desiredEnableGvnic = _messages.BooleanField(12)
+  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 13)
+  desiredImage = _messages.StringField(14)
+  desiredImageProject = _messages.StringField(15)
+  desiredImageType = _messages.StringField(16)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 17)
+  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 18)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 19)
+  desiredLocations = _messages.StringField(20, repeated=True)
+  desiredLoggingService = _messages.StringField(21)
+  desiredMaster = _messages.MessageField('Master', 22)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 23)
+  desiredMasterVersion = _messages.StringField(24)
+  desiredMonitoringService = _messages.StringField(25)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 26)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 27)
+  desiredNodePoolId = _messages.StringField(28)
+  desiredNodeVersion = _messages.StringField(29)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 30)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 31)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 32)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 33)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 34)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 35)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 36)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 37)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 38)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 39)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 40)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 41)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 42)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 43)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1637,6 +1640,31 @@ class DatabaseEncryption(_messages.Message):
 
   keyName = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day value, with a zero year, such as an
+  anniversary * A year on its own, with zero month and day values * A year and
+  month value, with a zero day, such as a credit card expiration date Related
+  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class DefaultSnatStatus(_messages.Message):
@@ -3539,6 +3567,10 @@ class SandboxConfig(_messages.Message):
 class ServerConfig(_messages.Message):
   r"""Kubernetes Engine service configuration.
 
+  Messages:
+    WindowsVersionMapsValue: Maps of Kubernetes version and supported Windows
+      server versions.
+
   Fields:
     channels: List of release channel configurations.
     defaultClusterVersion: Version of Kubernetes the service deploys by
@@ -3548,7 +3580,35 @@ class ServerConfig(_messages.Message):
     validMasterVersions: List of valid master versions, in descending order.
     validNodeVersions: List of valid node upgrade target versions, in
       descending order.
+    windowsVersionMaps: Maps of Kubernetes version and supported Windows
+      server versions.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WindowsVersionMapsValue(_messages.Message):
+    r"""Maps of Kubernetes version and supported Windows server versions.
+
+    Messages:
+      AdditionalProperty: An additional property for a WindowsVersionMapsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        WindowsVersionMapsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WindowsVersionMapsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A WindowsVersions attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('WindowsVersions', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   channels = _messages.MessageField('ReleaseChannelConfig', 1, repeated=True)
   defaultClusterVersion = _messages.StringField(2)
@@ -3556,6 +3616,7 @@ class ServerConfig(_messages.Message):
   validImageTypes = _messages.StringField(4, repeated=True)
   validMasterVersions = _messages.StringField(5, repeated=True)
   validNodeVersions = _messages.StringField(6, repeated=True)
+  windowsVersionMaps = _messages.MessageField('WindowsVersionMapsValue', 7)
 
 
 class ServiceExternalIPsConfig(_messages.Message):
@@ -4634,6 +4695,30 @@ class VerticalPodAutoscaling(_messages.Message):
 
   enableExperimentalFeatures = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
+
+
+class WindowsVersion(_messages.Message):
+  r"""Windows server version.
+
+  Fields:
+    imageType: Windows server image type
+    osVersion: Windows server build number
+    supportEndDate: Mainstream support end date
+  """
+
+  imageType = _messages.StringField(1)
+  osVersion = _messages.StringField(2)
+  supportEndDate = _messages.MessageField('Date', 3)
+
+
+class WindowsVersions(_messages.Message):
+  r"""Windows server versions.
+
+  Fields:
+    windowsVersions: List of Windows server versions.
+  """
+
+  windowsVersions = _messages.MessageField('WindowsVersion', 1, repeated=True)
 
 
 class WorkloadALTSConfig(_messages.Message):

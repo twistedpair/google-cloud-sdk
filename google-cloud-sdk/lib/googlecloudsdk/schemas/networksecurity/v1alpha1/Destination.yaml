@@ -5,7 +5,6 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - hosts
-- paths
 - ports
 additionalProperties: false
 properties:
@@ -45,17 +44,6 @@ properties:
   methods:
     description: |-
       A list of HTTP methods to match. Should not be set for gRPC services.
-    type: array
-    items:
-      type: string
-  paths:
-    description: |-
-      A list of HTTP paths to match. gRPC methods must be presented as
-      fully-qualified name in the form of
-      "/packageName.serviceName/methodName". Each path can be an exact
-      match, or a prefix match (example, "/packageName.serviceName/*")
-      or a suffix match (example, */video") or a presence(any) match
-      "*".
     type: array
     items:
       type: string

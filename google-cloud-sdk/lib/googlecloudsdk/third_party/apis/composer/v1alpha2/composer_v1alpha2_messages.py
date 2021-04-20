@@ -223,7 +223,9 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       Composer components may be under maintenance. * config.workloadsConfig *
       The workloads config settings for GKE cluster within Composer
       environment. Supported for Cloud Composer environments in versions
-      composer-2.*.*-airflow-*.*.* and newer.
+      composer-2.*.*-airflow-*.*.* and newer. * config.environmentSize * The
+      size of the environment. Supported for Cloud Composer environments in
+      versions composer-2.*.*-airflow-*.*.* and newer.
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -472,6 +474,11 @@ class Environment(_messages.Message):
 class EnvironmentConfig(_messages.Message):
   r"""Configuration information for an environment.
 
+  Enums:
+    EnvironmentSizeValueValuesEnum: Optional. The size of the environment.
+      This field is supported for Cloud Composer environments in versions
+      composer-2.*.*-airflow-*.*.* and newer.
+
   Fields:
     airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
       within this environment (see [Airflow web interface](/composer/docs/how-
@@ -487,6 +494,9 @@ class EnvironmentConfig(_messages.Message):
       composer-1.*.*-airflow-*.*.*.
     encryptionConfig: Optional. The encryption options for the Composer
       environment and its dependencies. Cannot be updated.
+    environmentSize: Optional. The size of the environment. This field is
+      supported for Cloud Composer environments in versions
+      composer-2.*.*-airflow-*.*.* and newer.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
     maintenanceWindow: Optional. The maintenance window is the period when
@@ -518,19 +528,37 @@ class EnvironmentConfig(_messages.Message):
       environments in versions composer-2.*.*-airflow-*.*.* and newer.
   """
 
+  class EnvironmentSizeValueValuesEnum(_messages.Enum):
+    r"""Optional. The size of the environment. This field is supported for
+    Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and
+    newer.
+
+    Values:
+      ENVIRONMENT_SIZE_UNSPECIFIED: The size of the environment is
+        unspecified.
+      ENVIRONMENT_SIZE_SMALL: The environment size is small.
+      ENVIRONMENT_SIZE_MEDIUM: The environment size is medium.
+      ENVIRONMENT_SIZE_LARGE: The environment size is large.
+    """
+    ENVIRONMENT_SIZE_UNSPECIFIED = 0
+    ENVIRONMENT_SIZE_SMALL = 1
+    ENVIRONMENT_SIZE_MEDIUM = 2
+    ENVIRONMENT_SIZE_LARGE = 3
+
   airflowUri = _messages.StringField(1)
   dagGcsPrefix = _messages.StringField(2)
   databaseConfig = _messages.MessageField('DatabaseConfig', 3)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
-  gkeCluster = _messages.StringField(5)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
-  nodeConfig = _messages.MessageField('NodeConfig', 7)
-  nodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 9)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 10)
-  webServerConfig = _messages.MessageField('WebServerConfig', 11)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 12)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 13)
+  environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 5)
+  gkeCluster = _messages.StringField(6)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
+  nodeConfig = _messages.MessageField('NodeConfig', 8)
+  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 10)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
+  webServerConfig = _messages.MessageField('WebServerConfig', 12)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 13)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 14)
 
 
 class IPAllocationPolicy(_messages.Message):

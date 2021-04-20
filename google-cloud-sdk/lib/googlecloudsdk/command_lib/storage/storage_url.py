@@ -201,10 +201,16 @@ class CloudUrl(StorageUrl):
     scheme = _get_scheme_from_url_string(url_string)
 
     # gs://a/b/c/d#num => a/b/c/d#num
-    url_string = url_string[len(scheme.value + '://'):]
+    schemeless_url_string = url_string[len(scheme.value + '://'):]
+
+    if schemeless_url_string.startswith('/'):
+      raise errors.InvalidUrlError(
+          'Cloud URL scheme should be followed by colon and two slashes: "://".'
+          ' Found: "{}"'.format(url_string))
 
     # a/b/c/d#num => a, b/c/d#num
-    bucket_name, _, object_name = url_string.partition(cls.CLOUD_URL_DELIM)
+    bucket_name, _, object_name = schemeless_url_string.partition(
+        cls.CLOUD_URL_DELIM)
 
     # b/c/d#num => b/c/d, num
     object_name, _, generation = object_name.partition('#')
@@ -217,7 +223,7 @@ class CloudUrl(StorageUrl):
 
   def _validate_object_name(self):
     if self.object_name == '.' or self.object_name == '..':
-      raise errors.InvalidUrlError('%s is an invalid root-level object name' %
+      raise errors.InvalidUrlError('%s is an invalid root-level object name.' %
                                    self.object_name)
 
   @property
@@ -250,16 +256,17 @@ class CloudUrl(StorageUrl):
     return bool(self.scheme and not self.bucket_name)
 
 
-def _get_scheme_from_url_string(url_str):
+def _get_scheme_from_url_string(url_string):
   """Returns scheme component of a URL string."""
-  end_scheme_idx = url_str.find('://')
+  end_scheme_idx = url_string.find('://')
   if end_scheme_idx == -1:
     # File is the default scheme.
     return ProviderPrefix.FILE
   else:
-    prefix_string = url_str[0:end_scheme_idx].lower()
+    prefix_string = url_string[0:end_scheme_idx].lower()
     if prefix_string not in VALID_SCHEMES:
-      raise errors.InvalidUrlError('Unrecognized scheme "%s"' % prefix_string)
+      raise errors.InvalidUrlError(
+          'Unrecognized scheme "{}"'.format(prefix_string))
     return ProviderPrefix(prefix_string)
 
 

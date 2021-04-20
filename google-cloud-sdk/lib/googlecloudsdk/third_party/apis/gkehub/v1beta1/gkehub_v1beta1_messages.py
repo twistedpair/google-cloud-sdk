@@ -284,7 +284,7 @@ class GkehubProjectsLocationsListRequest(_messages.Message):
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -308,11 +308,23 @@ class GkehubProjectsLocationsMembershipsCreateRequest(_messages.Message):
       `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
     parent: Required. The parent (project and location) where the Memberships
       will be created. Specified in the format `projects/*/locations/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   membership = _messages.MessageField('Membership', 1)
   membershipId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
@@ -321,9 +333,21 @@ class GkehubProjectsLocationsMembershipsDeleteRequest(_messages.Message):
   Fields:
     name: Required. The Membership resource name in the format
       `projects/*/locations/*/memberships/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest(_messages.Message):
@@ -453,13 +477,25 @@ class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
     membership: A Membership resource to be passed as the request body.
     name: Required. The membership resource name in the format:
       `projects/[project_id]/locations/global/memberships/[membership_id]`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Mask of fields to update. At least one field path
       must be specified in this mask.
   """
 
   membership = _messages.MessageField('Membership', 1)
   name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class GkehubProjectsLocationsMembershipsSetIamPolicyRequest(_messages.Message):

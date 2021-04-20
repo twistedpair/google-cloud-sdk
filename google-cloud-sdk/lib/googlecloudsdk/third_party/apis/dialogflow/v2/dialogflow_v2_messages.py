@@ -232,8 +232,8 @@ class DialogflowProjectsAgentEnvironmentsListRequest(_messages.Message):
       page. By default 100 and at most 1000.
     pageToken: Optional. The next_page_token value returned from a previous
       list request.
-    parent: Required. The agent to list all environments from. Format:
-      `projects//agent`.
+    parent: Required. The agent to list all environments from. Format: -
+      `projects//agent` - `projects//locations//agent`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1159,8 +1159,10 @@ class DialogflowProjectsAgentUpdateFulfillmentRequest(_messages.Message):
   Fields:
     googleCloudDialogflowV2Fulfillment: A GoogleCloudDialogflowV2Fulfillment
       resource to be passed as the request body.
-    name: Required. The unique identifier of the fulfillment. Format:
-      `projects//agent/fulfillment`.
+    name: Required. The unique identifier of the fulfillment. Supported
+      formats: - `projects//agent/fulfillment` -
+      `projects//locations//agent/fulfillment` This field is not used for
+      Fulfillment in an Environment.
     updateMask: Required. The mask to control which fields get updated. If the
       mask is not present, all fields will be updated.
   """
@@ -1856,8 +1858,8 @@ class DialogflowProjectsLocationsAgentEnvironmentsListRequest(_messages.Message)
       page. By default 100 and at most 1000.
     pageToken: Optional. The next_page_token value returned from a previous
       list request.
-    parent: Required. The agent to list all environments from. Format:
-      `projects//agent`.
+    parent: Required. The agent to list all environments from. Format: -
+      `projects//agent` - `projects//locations//agent`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2622,8 +2624,10 @@ class DialogflowProjectsLocationsAgentUpdateFulfillmentRequest(_messages.Message
   Fields:
     googleCloudDialogflowV2Fulfillment: A GoogleCloudDialogflowV2Fulfillment
       resource to be passed as the request body.
-    name: Required. The unique identifier of the fulfillment. Format:
-      `projects//agent/fulfillment`.
+    name: Required. The unique identifier of the fulfillment. Supported
+      formats: - `projects//agent/fulfillment` -
+      `projects//locations//agent/fulfillment` This field is not used for
+      Fulfillment in an Environment.
     updateMask: Required. The mask to control which fields get updated. If the
       mask is not present, all fields will be updated.
   """
@@ -8030,15 +8034,20 @@ class GoogleCloudDialogflowV2Environment(_messages.Message):
 
   Fields:
     agentVersion: Optional. The agent version loaded into this environment.
-      Format: `projects//agent/versions/`.
+      Supported formats: - `projects//agent/versions/` -
+      `projects//locations//agent/versions/`
     description: Optional. The developer-provided description for this
       environment. The maximum length is 500 characters. If exceeded, the
       request is rejected.
+    fulfillment: Optional. The fulfillment settings to use for this
+      environment.
     name: Output only. The unique identifier of this agent environment.
-      Format: `projects//agent/environments/`. For Environment ID, "-" is
-      reserved for 'draft' environment.
+      Supported formats: - `projects//agent/environments/` -
+      `projects//locations//agent/environments/`
     state: Output only. The state of this environment. This field is read-
       only, i.e., it cannot be set by create and update methods.
+    textToSpeechSettings: Optional. Text to speech settings for this
+      environment.
     updateTime: Output only. The last update time of this environment. This
       field is read-only, i.e., it cannot be set by create and update methods.
   """
@@ -8060,9 +8069,11 @@ class GoogleCloudDialogflowV2Environment(_messages.Message):
 
   agentVersion = _messages.StringField(1)
   description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  updateTime = _messages.StringField(5)
+  fulfillment = _messages.MessageField('GoogleCloudDialogflowV2Fulfillment', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  textToSpeechSettings = _messages.MessageField('GoogleCloudDialogflowV2TextToSpeechSettings', 6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudDialogflowV2EventInput(_messages.Message):
@@ -8229,13 +8240,16 @@ class GoogleCloudDialogflowV2Fulfillment(_messages.Message):
 
   Fields:
     displayName: Optional. The human-readable name of the fulfillment, unique
-      within the agent.
+      within the agent. This field is not used for Fulfillment in an
+      Environment.
     enabled: Optional. Whether fulfillment is enabled.
     features: Optional. The field defines whether the fulfillment is enabled
       for certain features.
     genericWebService: Configuration for a generic web service.
-    name: Required. The unique identifier of the fulfillment. Format:
-      `projects//agent/fulfillment`.
+    name: Required. The unique identifier of the fulfillment. Supported
+      formats: - `projects//agent/fulfillment` -
+      `projects//locations//agent/fulfillment` This field is not used for
+      Fulfillment in an Environment.
   """
 
   displayName = _messages.StringField(1)
@@ -10789,6 +10803,98 @@ class GoogleCloudDialogflowV2TextInput(_messages.Message):
 
   languageCode = _messages.StringField(1)
   text = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2TextToSpeechSettings(_messages.Message):
+  r"""Instructs the speech synthesizer on how to generate the output audio
+  content.
+
+  Enums:
+    OutputAudioEncodingValueValuesEnum: Required. Audio encoding of the
+      synthesized audio content.
+
+  Messages:
+    SynthesizeSpeechConfigsValue: Optional. Configuration of how speech should
+      be synthesized, mapping from language
+      (https://cloud.google.com/dialogflow/docs/reference/language) to
+      SynthesizeSpeechConfig.
+
+  Fields:
+    enableTextToSpeech: Optional. Indicates whether text to speech is enabled.
+      Even when this field is false, other settings in this proto are still
+      retained.
+    outputAudioEncoding: Required. Audio encoding of the synthesized audio
+      content.
+    sampleRateHertz: Optional. The synthesis sample rate (in hertz) for this
+      audio. If not provided, then the synthesizer will use the default sample
+      rate based on the audio encoding. If this is different from the voice's
+      natural sample rate, then the synthesizer will honor this request by
+      converting to the desired sample rate (which might result in worse audio
+      quality).
+    synthesizeSpeechConfigs: Optional. Configuration of how speech should be
+      synthesized, mapping from language
+      (https://cloud.google.com/dialogflow/docs/reference/language) to
+      SynthesizeSpeechConfig.
+  """
+
+  class OutputAudioEncodingValueValuesEnum(_messages.Enum):
+    r"""Required. Audio encoding of the synthesized audio content.
+
+    Values:
+      OUTPUT_AUDIO_ENCODING_UNSPECIFIED: Not specified.
+      OUTPUT_AUDIO_ENCODING_LINEAR_16: Uncompressed 16-bit signed little-
+        endian samples (Linear PCM). Audio content returned as LINEAR16 also
+        contains a WAV header.
+      OUTPUT_AUDIO_ENCODING_MP3: MP3 audio at 32kbps.
+      OUTPUT_AUDIO_ENCODING_MP3_64_KBPS: MP3 audio at 64kbps.
+      OUTPUT_AUDIO_ENCODING_OGG_OPUS: Opus encoded audio wrapped in an ogg
+        container. The result will be a file which can be played natively on
+        Android, and in browsers (at least Chrome and Firefox). The quality of
+        the encoding is considerably higher than MP3 while using approximately
+        the same bitrate.
+      OUTPUT_AUDIO_ENCODING_MULAW: 8-bit samples that compand 14-bit audio
+        samples using G.711 PCMU/mu-law.
+    """
+    OUTPUT_AUDIO_ENCODING_UNSPECIFIED = 0
+    OUTPUT_AUDIO_ENCODING_LINEAR_16 = 1
+    OUTPUT_AUDIO_ENCODING_MP3 = 2
+    OUTPUT_AUDIO_ENCODING_MP3_64_KBPS = 3
+    OUTPUT_AUDIO_ENCODING_OGG_OPUS = 4
+    OUTPUT_AUDIO_ENCODING_MULAW = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SynthesizeSpeechConfigsValue(_messages.Message):
+    r"""Optional. Configuration of how speech should be synthesized, mapping
+    from language
+    (https://cloud.google.com/dialogflow/docs/reference/language) to
+    SynthesizeSpeechConfig.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        SynthesizeSpeechConfigsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        SynthesizeSpeechConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SynthesizeSpeechConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDialogflowV2SynthesizeSpeechConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDialogflowV2SynthesizeSpeechConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  enableTextToSpeech = _messages.BooleanField(1)
+  outputAudioEncoding = _messages.EnumField('OutputAudioEncodingValueValuesEnum', 2)
+  sampleRateHertz = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  synthesizeSpeechConfigs = _messages.MessageField('SynthesizeSpeechConfigsValue', 4)
 
 
 class GoogleCloudDialogflowV2TrainAgentRequest(_messages.Message):

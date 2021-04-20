@@ -74,6 +74,30 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ASSETTYPES_ASSETS_ANNOTATIONSETS = (
+      'projects.locations.assetTypes.assets.annotationSets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/assetTypes/'
+              '{assetTypesId}/assets/{assetsId}/annotationSets/'
+              '{annotationSetsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ASSETTYPES_ASSETS_ANNOTATIONSETS_ANNOTATIONS = (
+      'projects.locations.assetTypes.assets.annotationSets.annotations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/assetTypes/'
+              '{assetTypesId}/assets/{assetsId}/annotationSets/'
+              '{annotationSetsId}/annotations/{annotationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_ASSETTYPES_ASSETS_TRANSFORMATIONS = (
       'projects.locations.assetTypes.assets.transformations',
       '{+name}',

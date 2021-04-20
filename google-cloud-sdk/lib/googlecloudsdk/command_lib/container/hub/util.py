@@ -25,8 +25,8 @@ from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.core.util import files
 
 
-def AddUnRegisterCommonArgs(parser):
-  """Adds the flags shared between '(un)register' subcommands to parser.
+def AddClusterConnectionCommonArgs(parser):
+  """Adds the flags necessary to create a KubeClient.
 
   Args:
     parser: an argparse.ArgumentParser, to which the common flags will be added

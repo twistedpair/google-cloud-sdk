@@ -959,18 +959,18 @@ class SpecChange(ConfigChanger):
     return resource
 
 
-class JobMaxAttemptsChange(ConfigChanger):
+class JobMaxRetriesChange(ConfigChanger):
   """Represents the user intent to update a job's restart policy."""
 
-  def __init__(self, max_attempts):
-    super(JobMaxAttemptsChange, self).__init__()
-    self._max_attempts = max_attempts
+  def __init__(self, max_retries):
+    super(JobMaxRetriesChange, self).__init__()
+    self._max_retries = max_retries
 
   def Adjust(self, resource):
-    if self._max_attempts == 1:
+    if self._max_retries == 0:
       resource.template.restart_policy = job.RestartPolicy.NEVER
       resource.backoff_limit = 0
     else:
       resource.template.restart_policy = job.RestartPolicy.ON_FAILURE
-      resource.backoff_limit = self._max_attempts - 1
+      resource.backoff_limit = self._max_retries
     return resource

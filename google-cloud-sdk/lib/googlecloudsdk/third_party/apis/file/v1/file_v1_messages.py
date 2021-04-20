@@ -402,7 +402,7 @@ class FileProjectsLocationsListRequest(_messages.Message):
       locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -528,8 +528,10 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       software_versions.
     maintenanceSettings: Optional. The MaintenanceSettings associated with
       instance.
-    name: Unique name of the resource. It uses the form:
-      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+    name: Unique name of the resource. It uses the form: `projects/{project_id
+      |project_number}/locations/{location_id}/instances/{instance_id}` Note:
+      Either project_id or project_number and be used, but keep it consistent
+      with other APIs (e.g. RescheduleUpdate)
     producerMetadata: Output only. Custom string attributes used primarily to
       expose producer-specific information in monitoring dashboards. See
       go/get-instance-metadata.
@@ -1038,6 +1040,7 @@ class Instance(_messages.Message):
       projects/{project}/locations/{location}/instances/{instance}.
     networks: VPC networks to which the instance is connected. For this
       version, only a single network is supported.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The instance state.
     statusMessage: Output only. Additional information about the instance
       state, if available.
@@ -1122,9 +1125,10 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   networks = _messages.MessageField('NetworkConfig', 7, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  statusMessage = _messages.StringField(9)
-  tier = _messages.EnumField('TierValueValuesEnum', 10)
+  satisfiesPzs = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  statusMessage = _messages.StringField(10)
+  tier = _messages.EnumField('TierValueValuesEnum', 11)
 
 
 class ListBackupsResponse(_messages.Message):

@@ -594,7 +594,7 @@
     },
     "GooglePrivacyDlpV2Table": {
       "id": "GooglePrivacyDlpV2Table",
-      "description": "Structured content to inspect. Up to 50,000 `Value`s per request allowed. See https:\/\/cloud.google.com\/dlp\/docs\/inspecting-text#inspecting_a_table to learn more.",
+      "description": "Structured content to inspect. Up to 50,000 `Value`s per request allowed. See https:\/\/cloud.google.com\/dlp\/docs\/inspecting-structured-text#inspecting_a_table to learn more.",
       "type": "object",
       "properties": {
         "headers": {

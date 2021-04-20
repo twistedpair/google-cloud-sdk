@@ -276,3 +276,16 @@ class SourcePathIsNotDirectoryError(exceptions.Error):
   def __init__(self, src_path):
     msg = "Source path is not a directory: {}".format(src_path)
     super(SourcePathIsNotDirectoryError, self).__init__(msg)
+
+
+class BundleFileNotValidError(exceptions.Error):
+  """Raised when a bundle file is not valid.
+
+  The deploy command validates that the bundle file provided by the
+  --bundle-file command line flag is a valid zip archive, and if not, raises
+  this exception.
+  """
+
+  def __init__(self, bundle_file):
+    msg = "Bundle file is not a valid zip archive: {}".format(bundle_file)
+    super(BundleFileNotValidError, self).__init__(msg)

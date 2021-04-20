@@ -864,17 +864,16 @@ def AddCompletionsFlag(parser):
       'considered done. Use this flag to trigger multiple runs of the job.')
 
 
-def AddMaxAttemptsFlag(parser):
-  """Add job max attempts flag to specify number of instance restarts."""
+def AddMaxRetriesFlag(parser):
+  """Add job max retries flag to specify number of instance restarts."""
   parser.add_argument(
-      '--max-attempts',
-      type=arg_parsers.BoundedInt(lower_bound=1),
+      '--max-retries',
+      type=arg_parsers.BoundedInt(lower_bound=0),
       default=6,
-      help='Number of times an instance will be allowed to run in case of '
+      help='Number of times an instance is allowed to restart in case of '
       'failure before being failed permanently. This applies per-instance, not '
-      'per-job. If set to 1, instances will only run once and never be '
-      'restarted on failure. If set to any other positive integer N, instances '
-      'will be allowed to restart N-1 times.')
+      'per-job. If set to 0, instances will only run once and never be '
+      'retried on failure.')
 
 
 def AddWaitForCompletionFlag(parser):
@@ -1280,8 +1279,8 @@ def GetConfigurationChanges(args):
     changes.append(config_changes.SpecChange('parallelism', args.parallelism))
   if FlagIsExplicitlySet(args, 'completions'):
     changes.append(config_changes.SpecChange('completions', args.completions))
-  if FlagIsExplicitlySet(args, 'max_attempts'):
-    changes.append(config_changes.JobMaxAttemptsChange(args.max_attempts))
+  if FlagIsExplicitlySet(args, 'max_retries'):
+    changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
   if FlagIsExplicitlySet(args, 'binary_authorization'):
     changes.append(
         config_changes.SetAnnotationChange(

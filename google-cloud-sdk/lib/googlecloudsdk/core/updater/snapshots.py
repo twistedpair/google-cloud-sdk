@@ -739,6 +739,12 @@ class ComponentSnapshotDiff(object):
       filtered = [diff for diff in self.__diffs if diff.state is state]
     return sorted(filtered, key=lambda d: d.name)
 
+  def FilterDuplicatesArm(self, component_ids):
+    """Filter out x86_64 components that are available in arm versions."""
+    return set(i for i in component_ids
+               if not ('darwin-x86_64' in i and
+                       i.replace('x86_64', 'arm') in component_ids))
+
   def ToRemove(self, update_seed):
     """Calculate the components that need to be uninstalled.
 
@@ -760,27 +766,40 @@ class ComponentSnapshotDiff(object):
     # Get the full set of everything that needs to be updated together that we
     # currently have installed
     if self._EnableFallback():
-      native_seed = set(update_seed) & self.__native_all_components
-      darwin_x86_64 = set(update_seed) - native_seed
       connected = self.current.ConnectedComponents(
-          native_seed, platform_filter=self.__platform_filter)
+          update_seed, platform_filter=self.__platform_filter)
       connected |= self.latest.ConnectedComponents(
-          connected | set(native_seed), platform_filter=self.__platform_filter)
+          connected | set(update_seed), platform_filter=self.__platform_filter)
       connected_darwin_x86_64 = self.current.ConnectedComponents(
-          darwin_x86_64, platform_filter=self.DARWIN_X86_64)
+          update_seed, platform_filter=self.DARWIN_X86_64)
       connected_darwin_x86_64 |= self.latest.ConnectedComponents(
-          connected_darwin_x86_64 | set(darwin_x86_64),
+          connected_darwin_x86_64 | set(update_seed),
           platform_filter=self.DARWIN_X86_64)
       connected |= connected_darwin_x86_64
+      x86_removal_candidates = connected - self.FilterDuplicatesArm(connected)
+      installed_components = set(self.current.components.keys())
+      x86_removal_seed = x86_removal_candidates & installed_components
+      if x86_removal_seed:
+        log.warning('The ARM versions of the following components are '
+                    'available, replacing installed x86_64 versions: [{}].'
+                    .format(', '.join(x86_removal_seed)))
+      removal_candidates = connected & set(self.current.components.keys())
+      # We need to remove anything that no longer exists or that has been
+      # updated, and existing x86_64 versions that could be updated to native
+      # arm versions
+      return (self.__removed_components |
+              self.__updated_components |
+              x86_removal_seed) & removal_candidates
     else:
       connected = self.current.ConnectedComponents(
           update_seed, platform_filter=self.__platform_filter)
       connected |= self.latest.ConnectedComponents(
           connected | set(update_seed), platform_filter=self.__platform_filter)
-    removal_candidates = connected & set(self.current.components.keys())
-    # We need to remove anything that no longer exists or that has been updated
-    return (self.__removed_components |
-            self.__updated_components) & removal_candidates
+      removal_candidates = connected & set(self.current.components.keys())
+      # We need to remove anything that no longer exists or that has been
+      # updated
+      return (self.__removed_components |
+              self.__updated_components) & removal_candidates
 
   def ToInstall(self, update_seed):
     """Calculate the components that need to be installed.
@@ -810,6 +829,7 @@ class ComponentSnapshotDiff(object):
       native_seed = set(update_seed) & native_valid_seed
       darwin_x86_64 = set(update_seed) - native_seed
       darwin_x86_64 -= missing_platform_darwin_x86_64
+      valid_seed = native_seed | darwin_x86_64
 
       if darwin_x86_64:
         log.warning('The ARM versions of the following components are not '
@@ -818,23 +838,24 @@ class ComponentSnapshotDiff(object):
                                        if 'darwin' not in c_id])))
 
       local_connected = self.current.ConnectedComponents(
-          native_seed, platform_filter=self.__platform_filter)
+          valid_seed, platform_filter=self.__platform_filter)
       all_required = self.latest.DependencyClosureForComponents(
-          local_connected | set(native_seed),
+          local_connected | set(valid_seed),
           platform_filter=self.__platform_filter)
       local_connected_darwin_x86_64 = self.current.ConnectedComponents(
-          darwin_x86_64, platform_filter=self.DARWIN_X86_64)
+          valid_seed, platform_filter=self.DARWIN_X86_64)
       all_required |= self.latest.DependencyClosureForComponents(
-          local_connected_darwin_x86_64 | set(darwin_x86_64),
+          local_connected_darwin_x86_64 | valid_seed,
           platform_filter=self.DARWIN_X86_64)
 
       remote_connected = self.latest.ConnectedComponents(
-          local_connected | set(native_seed),
+          local_connected | valid_seed,
           platform_filter=self.__platform_filter)
       remote_connected |= self.latest.ConnectedComponents(
-          local_connected_darwin_x86_64 | set(darwin_x86_64),
+          local_connected_darwin_x86_64 | valid_seed,
           platform_filter=self.__platform_filter)
       all_required |= remote_connected & set(installed_components)
+      all_required = self.FilterDuplicatesArm(all_required)
     else:
       local_connected = self.current.ConnectedComponents(
           update_seed, platform_filter=self.__platform_filter)

@@ -239,8 +239,7 @@
           "description": "The cpe_uri in [cpe format] (https:\/\/cpe.mitre.org\/specification\/) in which the vulnerability may manifest. Examples include distro or storage location for vulnerable jar.",
           "type": "string"
         },
-        "projectId": {
-          "description": "The projectId of the package to which this data belongs. Most of Drydock's code does not set or use this field. This is added specifically so we can group packages by projects and decide whether or not to apply NVD data to the packages belonging to a specific project.",
+        "unused": {
           "type": "string"
         }
       }

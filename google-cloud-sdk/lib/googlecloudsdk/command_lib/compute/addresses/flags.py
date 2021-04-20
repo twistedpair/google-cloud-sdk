@@ -186,7 +186,10 @@ def AddNetworkTier(parser):
 
 def AddPurpose(parser, support_psc_google_apis):
   """Adds purpose flag."""
-  choices = ['VPC_PEERING', 'SHARED_LOADBALANCER_VIP', 'GCE_ENDPOINT']
+  choices = [
+      'VPC_PEERING', 'SHARED_LOADBALANCER_VIP', 'GCE_ENDPOINT',
+      'IPSEC_INTERCONNECT'
+  ]
   if support_psc_google_apis:
     choices.append('PRIVATE_SERVICE_CONNECT')
   parser.add_argument(

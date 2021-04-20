@@ -25,6 +25,30 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 
 
+# Since CORS is a list in apitools, we need special handling, or blank
+# CORS lists will get sent with other configuration commands, such as lifecycle,
+# which would cause CORS configuration to be unintentionally removed.
+# Protorpc defaults list values to an empty list and won't allow us to set the
+# value to None like other configuration fields, so there is no way to
+# distinguish the default value from when we actually want to remove the CORS
+# configuration. To work around this, we create a dummy CORS entry that
+# signifies that we should nullify the CORS configuration.
+# A value of [] means don't modify the CORS configuration.
+# A value of REMOVE_CORS_CONFIG means remove the CORS configuration.
+REMOVE_CORS_CONFIG = [
+    apis.GetMessagesModule('storage', 'v1').Bucket.CorsValueListEntry(
+        maxAgeSeconds=-1, method=['REMOVE_CORS_CONFIG'])
+]
+
+# Similar to CORS above, we need a sentinel value allowing us to specify
+# when a default object ACL should be private (containing no entries).
+# A defaultObjectAcl value of [] means don't modify the default object ACL.
+# A value of [PRIVATE_DEFAULT_OBJ_ACL] means create an empty/private default
+# object ACL.
+PRIVATE_DEFAULT_OBJECT_ACL = apis.GetMessagesModule(
+    'storage', 'v1').ObjectAccessControl(id='PRIVATE_DEFAULT_OBJ_ACL')
+
+
 def copy_select_object_metadata(source_metadata, destination_metadata):
   """Copies specific metadata from source_metadata to destination_metadata.
 

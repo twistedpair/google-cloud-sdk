@@ -35,17 +35,23 @@ class NameExpansionIterator:
   See NameExpansionResult docstring for more info.
   """
 
-  def __init__(self, urls, all_versions=False, recursion_requested=False):
+  def __init__(self,
+               urls,
+               all_versions=False,
+               include_buckets=False,
+               recursion_requested=False):
     """Instantiates NameExpansionIterator.
 
     Args:
       urls (Iterable[str]): The URLs to expand.
       all_versions (bool): True if all versions of objects should be fetched,
         else False.
+      include_buckets (bool): True if buckets should be fetched.
       recursion_requested (bool): True if recursion is requested, else False.
     """
     self._urls = urls
     self._all_versions = all_versions
+    self._include_buckets = include_buckets
     self._recursion_requested = recursion_requested
 
   def __iter__(self):
@@ -71,6 +77,11 @@ class NameExpansionIterator:
                                     original_storage_url)
           is_name_expansion_iterator_empty = False
           continue
+
+        if self._include_buckets and resource.storage_url.is_bucket():
+          yield NameExpansionResult(resource, resource.storage_url,
+                                    original_storage_url)
+          is_name_expansion_iterator_empty = False
 
         if not self._recursion_requested:
           log.info('Omitting {} because it is a container, and recursion'

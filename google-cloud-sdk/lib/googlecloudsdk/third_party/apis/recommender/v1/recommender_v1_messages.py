@@ -805,7 +805,7 @@ class RecommenderBillingAccountsLocationsInsightTypesInsightsListRequest(_messag
       ]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ INSIGHT_TYPE_ID refers to
       supported insight types:
-      https://cloud.google.com/recommender/docs/insights/insight-types.)
+      https://cloud.google.com/recommender/docs/insights/insight-types.
   """
 
   filter = _messages.StringField(1)
@@ -953,7 +953,7 @@ class RecommenderFoldersLocationsInsightTypesInsightsListRequest(_messages.Messa
       ]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ INSIGHT_TYPE_ID refers to
       supported insight types:
-      https://cloud.google.com/recommender/docs/insights/insight-types.)
+      https://cloud.google.com/recommender/docs/insights/insight-types.
   """
 
   filter = _messages.StringField(1)
@@ -1103,7 +1103,7 @@ class RecommenderOrganizationsLocationsInsightTypesInsightsListRequest(_messages
       ]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ INSIGHT_TYPE_ID refers to
       supported insight types:
-      https://cloud.google.com/recommender/docs/insights/insight-types.)
+      https://cloud.google.com/recommender/docs/insights/insight-types.
   """
 
   filter = _messages.StringField(1)
@@ -1250,7 +1250,7 @@ class RecommenderProjectsLocationsInsightTypesInsightsListRequest(_messages.Mess
       ]` LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/ INSIGHT_TYPE_ID refers to
       supported insight types:
-      https://cloud.google.com/recommender/docs/insights/insight-types.)
+      https://cloud.google.com/recommender/docs/insights/insight-types.
   """
 
   filter = _messages.StringField(1)

@@ -47,13 +47,19 @@ class RequestConfig(object):
 
   Attributes:
       md5_hash (str): MD5 digest to use for validation.
-      predefined_acl_string (str): ACL to be set on the object.
+      predefined_acl_string (str): ACL to set on resource.
+      predefined_default_acl_string (str): Default ACL to set on resources.
       size (int): Object size in bytes.
   """
 
-  def __init__(self, md5_hash=None, predefined_acl_string=None, size=None):
+  def __init__(self,
+               md5_hash=None,
+               predefined_acl_string=None,
+               predefined_default_acl_string=None,
+               size=None):
     self.md5_hash = md5_hash
     self.predefined_acl_string = predefined_acl_string
+    self.predefined_default_acl_string = predefined_default_acl_string
     self.size = size
 
   def __eq__(self, other):
@@ -61,7 +67,8 @@ class RequestConfig(object):
       return NotImplemented
     return (self.md5_hash == other.md5_hash and
             self.predefined_acl_string == other.predefined_acl_string and
-            self.size == other.size)
+            self.predefined_default_acl_string
+            == other.predefined_default_acl_string and self.size == other.size)
 
 
 # TODO(b/172849424) Refactor RequestConfigs as a whole to avoid this.
@@ -87,6 +94,8 @@ def get_provider_request_config(generic_request_config,
   return provider_request_config_type(
       md5_hash=generic_request_config.md5_hash,
       predefined_acl_string=generic_request_config.predefined_acl_string,
+      predefined_default_acl_string=generic_request_config
+      .predefined_default_acl_string,
       size=generic_request_config.size)
 
 
@@ -135,15 +144,13 @@ class CloudApi(object):
     raise NotImplementedError('delete_bucket must be overridden.')
 
   def get_bucket(self, bucket_name, fields_scope=None):
-    """Gets Bucket metadata.
+    """Gets bucket metadata.
 
     Args:
       bucket_name (str): Name of the bucket.
       fields_scope (FieldsScope): Determines the fields and projection
-          parameters of API call.
-
-    Return:
-      resource_reference.BucketResource containing the bucket metadata.
+        parameters of API call.
+    Return: resource_reference.BucketResource containing the bucket metadata.
 
     Raises:
       CloudApiError: API returned an error.
@@ -152,6 +159,28 @@ class CloudApi(object):
       ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('get_bucket must be overridden.')
+
+  def patch_bucket(self,
+                   bucket_resource,
+                   request_config=None,
+                   fields_scope=None):
+    """Patches bucket metadata.
+
+    Args:
+      bucket_resource (BucketResource): Contans metadata to patch.
+      request_config (RequestConfig): Object containing general API function
+        arguments. Subclasses for specific cloud providers are available.
+      fields_scope (FieldsScope): Determines the fields and projection
+        parameters of API call.
+    Return: resource_reference.BucketResource containing the bucket metadata.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
+      ValueError: Invalid fields_scope.
+    """
+    raise NotImplementedError('patch_bucket must be overridden.')
 
   def list_buckets(self, fields_scope=None):
     """Lists bucket metadata for the given project.

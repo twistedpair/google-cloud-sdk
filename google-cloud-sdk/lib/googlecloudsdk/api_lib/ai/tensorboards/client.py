@@ -28,14 +28,37 @@ from googlecloudsdk.command_lib.util.args import labels_util
 class TensorboardsClient(object):
   """High-level client for the AI Platform Tensorboard surface."""
 
-  def __init__(self, client=None, messages=None):
+  def __init__(self,
+               client=None,
+               messages=None,
+               version=constants.BETA_VERSION):
     self.client = client or apis.GetClientInstance(
         constants.AI_PLATFORM_API_NAME,
-        constants.AI_PLATFORM_API_VERSION[constants.ALPHA_VERSION])
+        constants.AI_PLATFORM_API_VERSION[version])
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_tensorboards
+    self.version = version
 
   def Create(self, location_ref, args):
+    if self.version == constants.ALPHA_VERSION:
+      return self.CreateAlpha(location_ref, args)
+    else:
+      return self.CreateBeta(location_ref, args)
+
+  def CreateBeta(self, location_ref, args):
+    """Create a new Tensorboard."""
+    labels = labels_util.ParseCreateArgs(
+        args, self.messages.GoogleCloudAiplatformV1beta1Tensorboard.LabelsValue)
+    request = self.messages.AiplatformProjectsLocationsTensorboardsCreateRequest(
+        parent=location_ref.RelativeName(),
+        googleCloudAiplatformV1beta1Tensorboard=self.messages
+        .GoogleCloudAiplatformV1beta1Tensorboard(
+            displayName=args.display_name,
+            description=args.description,
+            labels=labels))
+    return self._service.Create(request)
+
+  def CreateAlpha(self, location_ref, args):
     """Create a new Tensorboard."""
     labels = labels_util.ParseCreateArgs(
         args,

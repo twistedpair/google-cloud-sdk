@@ -371,10 +371,14 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_MODELDEPLOYMENTMONITORINGJOBS = (
       'projects.locations.modelDeploymentMonitoringJobs',
-      'projects/{projectsId}/locations/{locationsId}/'
-      'modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}',
-      {},
-      ['projectsId', 'locationsId', 'modelDeploymentMonitoringJobsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'modelDeploymentMonitoringJobs/'
+              '{modelDeploymentMonitoringJobsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_MODELDEPLOYMENTMONITORINGJOBS_OPERATIONS = (

@@ -25,6 +25,7 @@ import re
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.asset import client_util
+from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.command_lib.asset import utils as asset_utils
 from googlecloudsdk.command_lib.util.anthos import binary_operations as bin_ops
 from googlecloudsdk.command_lib.util.declarative.clients import client_base
@@ -32,6 +33,7 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.resource import resource_filter
@@ -60,6 +62,10 @@ RESOURCE_LIST_FORMAT = (
 
 class ResourceNotFoundException(client_base.ClientException):
   """General Purpose Exception."""
+
+
+class AssetInventoryNotEnabledException(client_base.ClientException):
+  """Exception for when Asset Inventory Is Not Enabled."""
 
 
 # TODO(b/181223251): Remove this workaround once config-connector is updated.
@@ -232,6 +238,24 @@ def _BulkExportPostStatus(preexisting_file_count, path):
         'Exported resource configuration(s) to [{}].\n'.format(path))
 
 
+def CheckForAssetInventoryEnablementWithPrompt(project=None):
+  """Checks if the cloudasset API is enabled, prompts to enable if not."""
+  project = project or properties.VALUES.core.project.GetOrFail()
+  service_name = 'cloudasset.googleapis.com'
+  if not enable_api.IsServiceEnabled(project, service_name):
+    if console_io.PromptContinue(
+        default=False,
+        prompt_string=(
+            'API [{}] is required to continue, but is not enabled on project [{}]. '
+            'Would you like to enable and retry (this will take a '
+            'few minutes)?').format(service_name, project)):
+      enable_api.EnableService(project, service_name)
+    else:
+      raise AssetInventoryNotEnabledException(
+          'Aborted by user: API [{}] must be enabled on project [{}] to continue.'
+          .format(service_name, project))
+
+
 class KccClient(client_base.DeclarativeClient):
   """KRM Yaml Export based Declarative Client."""
 
@@ -385,6 +409,8 @@ class KccClient(client_base.DeclarativeClient):
       return _ExecuteBinaryWithStreaming(cmd=cmd, in_str=asset_list_input)
 
   def BulkExport(self, args):
+    CheckForAssetInventoryEnablementWithPrompt(
+        getattr(args, 'project', None))
     cmd = self._GetBinaryCommand(args, 'bulk-export')
     return self._CallBulkExport(cmd, args, asset_list_input=None)
 
@@ -396,10 +422,12 @@ class KccClient(client_base.DeclarativeClient):
 
   def BulkExportFromAssetList(self, args):
     """BulkExport with support for resource kind/asset type and filtering."""
+    CheckForAssetInventoryEnablementWithPrompt(
+        getattr(args, 'project', None))
     args.all = True  # Remove scope (e.g. project, org & folder) from cmd.
-    kind_filters = (getattr(args, 'resource_types', None) or
-                    self._ParseKindTypesFileData(
-                        getattr(args, 'resource_types_file', None)))
+    kind_filters = (
+        getattr(args, 'resource_types', None) or self._ParseKindTypesFileData(
+            getattr(args, 'resource_types_file', None)))
     if kind_filters:
       kind_filters = self._GetKrmResourceTypeTable(filter_kinds=kind_filters)
     asset_list_input = _GetAssetInventoryListInput(
@@ -509,3 +537,4 @@ class KccClient(client_base.DeclarativeClient):
             gvk.service in asset_uri):
           exportable_kinds.append(gvk)
     return sorted(exportable_kinds, key=lambda x: x.kind)
+

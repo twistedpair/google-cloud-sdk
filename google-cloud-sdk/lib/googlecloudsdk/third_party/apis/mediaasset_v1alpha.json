@@ -290,6 +290,111 @@
         }
       }
     },
+    "AnnotationSet": {
+      "id": "AnnotationSet",
+      "description": "An annotationSet resource is associated with an Asset and is a collection of timed-metadata that can be modified and searched at a high throughput.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "A user-specified resource name of the annotationSet `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time of the annotationSet.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The latest update time of the annotationSet.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "The labels associated with this resource. Each label is a key-value pair.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "etag": {
+          "description": "Etag of the resource used in output and update requests.",
+          "type": "string"
+        }
+      }
+    },
+    "ListAnnotationSetsResponse": {
+      "id": "ListAnnotationSetsResponse",
+      "description": "Response message for AnnotationSetsService.ListAnnotationSets.",
+      "type": "object",
+      "properties": {
+        "annotationSets": {
+          "description": "The annotationSets from the specified asset.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotationSet"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "Annotation": {
+      "id": "Annotation",
+      "description": "An annotation resource is associated with an AnnotationSet and represents timed-metadata that can be modified and searched at a high throughput.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. An automatically-generated resource name of the annotation `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}\/annotations\/{annotation}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time of the annotation.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The latest update time of the annotation.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "The labels associated with this resource. Each label is a key-value pair.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "etag": {
+          "description": "Etag of the resource used in output and update requests.",
+          "type": "string"
+        }
+      }
+    },
+    "ListAnnotationsResponse": {
+      "id": "ListAnnotationsResponse",
+      "description": "Response message for AnnotationsService.ListAnnotations.",
+      "type": "object",
+      "properties": {
+        "annotations": {
+          "description": "The annotations from the specified asset.",
+          "type": "array",
+          "items": {
+            "$ref": "Annotation"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
     "AssetTransformation": {
       "id": "AssetTransformation",
       "description": "An asset transformation resource. Asset transformation is a read-only resource and is nested under an asset. It contains the status of the transformations associated with an Asset. Each field contains the current status of transformation execution, last invocation time and any error information for the last execution.",
@@ -755,6 +860,10 @@
           "description": "https:\/\/cloud.google.com\/pubsub\/docs\/overview Configure the associated AssetType to publish event messages using Pub\/Sub.",
           "$ref": "CloudPubSubNotificationConfig"
         },
+        "transformation": {
+          "description": "Configure the associated AssetType to invoke transformers.",
+          "$ref": "RuleTransformationConfig"
+        },
         "name": {
           "description": "A user-specified resource name of the rule `projects\/{project}\/locations\/{location}\/assetTypes\/{type}\/rules\/{rule}`.",
           "type": "string"
@@ -788,6 +897,32 @@
         "pubsubTopic": {
           "description": "Required. A Pub\/Sub topic to which messages are sent by GCMA. https:\/\/cloud.google.com\/pubsub\/docs\/overview",
           "type": "string"
+        }
+      }
+    },
+    "RuleTransformationConfig": {
+      "id": "RuleTransformationConfig",
+      "description": "A RuleTransformationConfig configure the associated AssetType to invoke transformers on its Assets.",
+      "type": "object",
+      "properties": {
+        "transformer": {
+          "description": "Required. Reference to a transformer to execute, in the following form: `projects\/{project}\/locations\/{location}\/transformers\/{name}`.",
+          "type": "string"
+        },
+        "inputs": {
+          "description": "Key-value pairs representing input parameters to the transformers. The key maps to the transformer input parameter name. The value is interpreted as a literal or a path within asset if it's prefixed by \"$asset.\", e.g. \"$asset.file.url\".",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        },
+        "outputs": {
+          "description": "Key-value pairs representing output parameters from the transformers. The key maps to the transformer output parameter name. The value will be the path to the metadata in the asset to which this output should be assigned.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1459,7 +1594,7 @@
                   "type": "boolean"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -2358,6 +2493,338 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Lists actions in a given project and location."
+                        }
+                      }
+                    },
+                    "annotationSets": {
+                      "methods": {
+                        "create": {
+                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.create",
+                          "path": "v1alpha/{+parent}/annotationSets",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The parent resource where this AnnotationSet will be created. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "annotationSetId": {
+                              "description": "The ID of the annotationSet resource to be created.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "AnnotationSet"
+                          },
+                          "response": {
+                            "$ref": "AnnotationSet"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Creates a new annotationSet in a given project and location."
+                        },
+                        "get": {
+                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.get",
+                          "path": "v1alpha/{+name}",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the AnnotationSet to retrieve. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "AnnotationSet"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets details of a single annotationSet."
+                        },
+                        "list": {
+                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.list",
+                          "path": "v1alpha/{+parent}/annotationSets",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The name of the asset that owns this collection of annotationSets. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of annotationSets to return. The service may return fewer than this value. If unspecified, at most 50 annotationSets will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "A page token, received from a previous `ListAnnotationSets` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListAnnotationSets` must match the call that provided the page token.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "The filter to apply to list results.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListAnnotationSetsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists annotationSets in a given project and location."
+                        },
+                        "delete": {
+                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.delete",
+                          "path": "v1alpha/{+name}",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the annotationSet to delete. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "etag": {
+                              "description": "The current etag of the annotationSet. If an etag is provided and does not match the current etag of the annotationSet, deletion will be blocked and a FAILED_PRECONDITION error will be returned.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes a single annotationSet."
+                        },
+                        "patch": {
+                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.patch",
+                          "path": "v1alpha/{+name}",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "A user-specified resource name of the annotationSet `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}`.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Required. The list of fields to be updated.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "AnnotationSet"
+                          },
+                          "response": {
+                            "$ref": "AnnotationSet"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Updates the parameters of a single annotationSet."
+                        }
+                      }
+                      ,
+                      "resources": {
+                        "annotations": {
+                          "methods": {
+                            "create": {
+                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.create",
+                              "path": "v1alpha/{+parent}/annotations",
+                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The parent resource where this Annotation will be created. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}`",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "request": {
+                                "$ref": "Annotation"
+                              },
+                              "response": {
+                                "$ref": "Annotation"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Creates a new annotation in a given project and location."
+                            },
+                            "get": {
+                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.get",
+                              "path": "v1alpha/{+name}",
+                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The name of the Annotation to retrieve. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}\/annotations\/{annotation}`",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "Annotation"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Gets details of a single annotation."
+                            },
+                            "list": {
+                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.list",
+                              "path": "v1alpha/{+parent}/annotations",
+                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The parent, which owns this collection of annotations. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}`",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "pageSize": {
+                                  "description": "The maximum number of annotations to return. The service may return fewer than this value. If unspecified, at most 50 annotations will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "pageToken": {
+                                  "description": "A page token, received from a previous `ListAnnotations` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListAnnotations` must match the call that provided the page token.",
+                                  "location": "query",
+                                  "type": "string"
+                                },
+                                "filter": {
+                                  "description": "The filter to apply to list results.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "response": {
+                                "$ref": "ListAnnotationsResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Lists annotations in a given project and location."
+                            },
+                            "delete": {
+                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.delete",
+                              "path": "v1alpha/{+name}",
+                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}",
+                              "httpMethod": "DELETE",
+                              "parameters": {
+                                "name": {
+                                  "description": "Required. The name of the annotation to delete. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}\/annotations\/{annotation}`",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "etag": {
+                                  "description": "The current etag of the annotation. If an etag is provided and does not match the current etag of the annotation, deletion will be blocked and a FAILED_PRECONDITION error will be returned.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "Empty"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Deletes a single annotation."
+                            },
+                            "patch": {
+                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.patch",
+                              "path": "v1alpha/{+name}",
+                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}",
+                              "httpMethod": "PATCH",
+                              "parameters": {
+                                "name": {
+                                  "description": "Output only. An automatically-generated resource name of the annotation `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}\/annotations\/{annotation}`.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "updateMask": {
+                                  "description": "Required. The list of fields to be updated.",
+                                  "location": "query",
+                                  "type": "string",
+                                  "format": "google-fieldmask"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "request": {
+                                "$ref": "Annotation"
+                              },
+                              "response": {
+                                "$ref": "Annotation"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Updates the parameters of a single annotation."
+                            }
+                          }
                         }
                       }
                     },

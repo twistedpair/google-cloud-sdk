@@ -253,6 +253,7 @@ def AddFileShareArg(parser,
           """\
 File share configuration for an instance.  Specifying both `name` and `capacity`
 is required.
+
 *capacity*::: The desired capacity of the volume. The capacity must be a whole
 number followed by a capacity unit such as ``TB'' for terabyte. If no capacity
 unit is specified, GB is assumed. The minimum capacity for a standard instance
@@ -388,12 +389,14 @@ The default value is 65534.
 *source-snapshot-region*::: The region of the source snapshot. If
 unspecified, it is assumed that the Filestore snapshot is local and
 instance-zone will be used.
+
 """
   source_backup_help = """\
 
 *source-backup*::: The name of the backup to restore from.
 
 *source-backup-region*::: The region of the source backup.
+
 """
 
   spec = FILE_SHARE_ARG_SPEC.copy()
@@ -433,8 +436,7 @@ def AddInstanceCreateArgs(parser, api_version):
       api_version,
       include_snapshot_flags=(
           api_version == filestore_client.ALPHA_API_VERSION),
-      include_backup_flags=(api_version == filestore_client.ALPHA_API_VERSION or
-                            api_version == filestore_client.BETA_API_VERSION))
+      include_backup_flags=True)
 
 
 def AddInstanceUpdateArgs(parser, api_version):
