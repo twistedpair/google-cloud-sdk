@@ -609,6 +609,9 @@ class GameServerCluster(_messages.Message):
       server cluster. Game server clusters receive new game server allocations
       based on the relative allocation priorites set for each cluster, if the
       realm is configured for multicluster allocation.
+    clusterState: Output only. The state of the Kubernetes cluster, this will
+      be available if 'view' is set to `FULL` in the relevant List/Get/Preview
+      request.
     connectionInfo: The game server cluster connection information. This
       information is used to manage game server clusters.
     createTime: Output only. The creation time.
@@ -670,13 +673,14 @@ class GameServerCluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   allocationPriority = _messages.EnumField('AllocationPriorityValueValuesEnum', 1)
-  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  clusterState = _messages.MessageField('KubernetesClusterState', 2)
+  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class GameServerClusterConnectionInfo(_messages.Message):
@@ -1283,18 +1287,62 @@ class GameservicesProjectsLocationsRealmsGameServerClustersGetRequest(_messages.
   r"""A GameservicesProjectsLocationsRealmsGameServerClustersGetRequest
   object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. View for the returned GameServerCluster
+      objects. When `FULL` is specified, the `cluster_state` field is also
+      returned in the GameServerCluster object, which includes the state of
+      the referenced Kubernetes cluster such as versions and provider info.
+      The default/unset value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as
+      BASIC, which does not return the `cluster_state` field.
+
   Fields:
     name: Required. The name of the game server cluster to retrieve, in the
       following form: `projects/{project}/locations/{location}/realms/{realm-
       id}/gameServerClusters/{cluster}`.
+    view: Optional. View for the returned GameServerCluster objects. When
+      `FULL` is specified, the `cluster_state` field is also returned in the
+      GameServerCluster object, which includes the state of the referenced
+      Kubernetes cluster such as versions and provider info. The default/unset
+      value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
+      not return the `cluster_state` field.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. View for the returned GameServerCluster objects. When `FULL`
+    is specified, the `cluster_state` field is also returned in the
+    GameServerCluster object, which includes the state of the referenced
+    Kubernetes cluster such as versions and provider info. The default/unset
+    value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
+    not return the `cluster_state` field.
+
+    Values:
+      GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED: The default / unset value. The API
+        will default to the BASIC view.
+      BASIC: Include basic information of a GameServerCluster resource and
+        omit `cluster_state`. This is the default value (for
+        ListGameServerClusters, GetGameServerCluster and
+        PreviewCreateGameServerCluster).
+      FULL: Include everything.
+    """
+    GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class GameservicesProjectsLocationsRealmsGameServerClustersListRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsRealmsGameServerClustersListRequest
   object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. View for the returned GameServerCluster
+      objects. When `FULL` is specified, the `cluster_state` field is also
+      returned in the GameServerCluster object, which includes the state of
+      the referenced Kubernetes cluster such as versions and provider info.
+      The default/unset value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as
+      BASIC, which does not return the `cluster_state` field.
 
   Fields:
     filter: Optional. The filter to apply to list results.
@@ -1309,13 +1357,41 @@ class GameservicesProjectsLocationsRealmsGameServerClustersListRequest(_messages
       List request, if any.
     parent: Required. The parent resource name, in the following form:
       "projects/{project}/locations/{location}/realms/{realm}".
+    view: Optional. View for the returned GameServerCluster objects. When
+      `FULL` is specified, the `cluster_state` field is also returned in the
+      GameServerCluster object, which includes the state of the referenced
+      Kubernetes cluster such as versions and provider info. The default/unset
+      value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
+      not return the `cluster_state` field.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. View for the returned GameServerCluster objects. When `FULL`
+    is specified, the `cluster_state` field is also returned in the
+    GameServerCluster object, which includes the state of the referenced
+    Kubernetes cluster such as versions and provider info. The default/unset
+    value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
+    not return the `cluster_state` field.
+
+    Values:
+      GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED: The default / unset value. The API
+        will default to the BASIC view.
+      BASIC: Include basic information of a GameServerCluster resource and
+        omit `cluster_state`. This is the default value (for
+        ListGameServerClusters, GetGameServerCluster and
+        PreviewCreateGameServerCluster).
+      FULL: Include everything.
+    """
+    GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
 
   filter = _messages.StringField(1)
   orderBy = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class GameservicesProjectsLocationsRealmsGameServerClustersPatchRequest(_messages.Message):
@@ -1346,6 +1422,14 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest(
   GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest
   object.
 
+  Enums:
+    ViewValueValuesEnum: Optional. View for the returned GameServerCluster
+      objects. When `FULL` is specified, the `cluster_state` field is also
+      returned in the GameServerCluster object, which includes the state of
+      the referenced Kubernetes cluster such as versions and provider info.
+      The default/unset value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as
+      BASIC, which does not return the `cluster_state` field.
+
   Fields:
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
@@ -1354,12 +1438,40 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest(
     parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}/realms/{realm}`.
     previewTime: Optional. The target timestamp to compute the preview.
+    view: Optional. View for the returned GameServerCluster objects. When
+      `FULL` is specified, the `cluster_state` field is also returned in the
+      GameServerCluster object, which includes the state of the referenced
+      Kubernetes cluster such as versions and provider info. The default/unset
+      value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
+      not return the `cluster_state` field.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. View for the returned GameServerCluster objects. When `FULL`
+    is specified, the `cluster_state` field is also returned in the
+    GameServerCluster object, which includes the state of the referenced
+    Kubernetes cluster such as versions and provider info. The default/unset
+    value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
+    not return the `cluster_state` field.
+
+    Values:
+      GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED: The default / unset value. The API
+        will default to the BASIC view.
+      BASIC: Include basic information of a GameServerCluster resource and
+        omit `cluster_state`. This is the default value (for
+        ListGameServerClusters, GetGameServerCluster and
+        PreviewCreateGameServerCluster).
+      FULL: Include everything.
+    """
+    GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
 
   gameServerCluster = _messages.MessageField('GameServerCluster', 1)
   gameServerClusterId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   previewTime = _messages.StringField(4)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class GameservicesProjectsLocationsRealmsGameServerClustersPreviewDeleteRequest(_messages.Message):
@@ -1508,6 +1620,73 @@ class GkeHubClusterReference(_messages.Message):
   """
 
   membership = _messages.StringField(1)
+
+
+class KubernetesClusterState(_messages.Message):
+  r"""The state of the Kubernetes cluster.
+
+  Enums:
+    InstallationStateValueValuesEnum: Output only. The state for the installed
+      versions of Agones/Kubernetes.
+
+  Fields:
+    agonesVersionInstalled: Output only. The version of Agones currently
+      installed in the registered Kubernetes cluster.
+    agonesVersionTargeted: Output only. The version of Agones that is targeted
+      to be installed in the cluster.
+    installationState: Output only. The state for the installed versions of
+      Agones/Kubernetes.
+    kubernetesVersionInstalled: Output only. The version of Kubernetes that is
+      currently used in the registered Kubernetes cluster (as detected by the
+      Cloud Game Servers service).
+    provider: Output only. The cloud provider type reported by the first
+      node's providerID in the list of nodes on the Kubernetes endpoint. On
+      Kubernetes platforms that support zero-node clusters (like GKE-on-GCP),
+      the provider type will be empty.
+    versionInstalledErrorMessage: Output only. The detailed error message for
+      the installed versions of Agones/Kubernetes.
+  """
+
+  class InstallationStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state for the installed versions of
+    Agones/Kubernetes.
+
+    Values:
+      INSTALLATION_STATE_UNSPECIFIED: The default value. This value is used if
+        the state is omitted.
+      AGONES_KUBERNETES_VERSION_SUPPORTED: The combination of Agones and
+        Kubernetes versions is supported by Google Cloud Game Servers.
+      AGONES_VERSION_UNSUPPORTED: The installed version of Agones is not
+        supported by Google Cloud Game Servers.
+      AGONES_KUBERNETES_VERSION_UNSUPPORTED: The installed version of Agones
+        is supported by Google Cloud Game Servers, but the installed version
+        of Kubernetes is not recommended or supported by the version of
+        Agones.
+      AGONES_VERSION_UNRECOGNIZED: The installed version of Agones is not
+        recognized, where the Agones controller's image name does not have
+        version string as {major}.{minor}(.{patch}).
+      KUBERNETES_VERSION_UNRECOGNIZED: The server version of Kubernetes
+        cluster is not recognized, where the API server didn't return parsable
+        version info on path/version.
+      VERSION_VERIFICATION_FAILED: Failed to read or verify the version of
+        Agones or Kubernetes. See version_installed_error_message for details.
+      AGONES_NOT_INSTALLED: Agones is not installed.
+    """
+    INSTALLATION_STATE_UNSPECIFIED = 0
+    AGONES_KUBERNETES_VERSION_SUPPORTED = 1
+    AGONES_VERSION_UNSUPPORTED = 2
+    AGONES_KUBERNETES_VERSION_UNSUPPORTED = 3
+    AGONES_VERSION_UNRECOGNIZED = 4
+    KUBERNETES_VERSION_UNRECOGNIZED = 5
+    VERSION_VERIFICATION_FAILED = 6
+    AGONES_NOT_INSTALLED = 7
+
+  agonesVersionInstalled = _messages.StringField(1)
+  agonesVersionTargeted = _messages.StringField(2)
+  installationState = _messages.EnumField('InstallationStateValueValuesEnum', 3)
+  kubernetesVersionInstalled = _messages.StringField(4)
+  provider = _messages.StringField(5)
+  versionInstalledErrorMessage = _messages.StringField(6)
 
 
 class LabelSelector(_messages.Message):
@@ -2028,14 +2207,18 @@ class PreviewCreateGameServerClusterResponse(_messages.Message):
   GameServerClustersService.PreviewCreateGameServerCluster.
 
   Fields:
+    clusterState: Output only. The state of the Kubernetes cluster in preview,
+      this will be available if 'view' is set to `FULL` in the relevant
+      List/Get/Preview request.
     deployedState: The deployed state.
     etag: The ETag of the game server cluster.
     targetState: The target state.
   """
 
-  deployedState = _messages.MessageField('DeployedState', 1)
-  etag = _messages.StringField(2)
-  targetState = _messages.MessageField('TargetState', 3)
+  clusterState = _messages.MessageField('KubernetesClusterState', 1)
+  deployedState = _messages.MessageField('DeployedState', 2)
+  etag = _messages.StringField(3)
+  targetState = _messages.MessageField('TargetState', 4)
 
 
 class PreviewDeleteGameServerClusterResponse(_messages.Message):

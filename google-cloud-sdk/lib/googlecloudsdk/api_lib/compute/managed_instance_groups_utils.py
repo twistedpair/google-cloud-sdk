@@ -304,13 +304,16 @@ def AddScaleInControlFlag(parser, include_clear=False):
 def AddPredictiveAutoscaling(parser, standard=True):
   """Add Predictive autoscaling arguments to the parser."""
   choices = {
-      'none': """
-      (Default) No predictions are made based on the scaling metric
-       when calculating the number of VM instances.""",
-      'optimize-availability': """
-      Predictive autoscaling predicts the future values of the
-      scaling metric and scales the group in advance to ensure that new
-      VM instances are ready in time to cover the predicted peak."""}
+      'none': """\
+(Default) No predictions are made when calculating the number of VM
+instances.
+""",
+      'optimize-availability': """\
+Predictive autoscaling predicts the future values of the
+scaling metric and scales the group in advance to ensure that new
+VM instances are ready in time to cover the predicted peak.
+"""
+  }
   if standard:
     choices['standard'] = """
     Standard predictive autoscaling  predicts the future values of
@@ -319,7 +322,9 @@ def AddPredictiveAutoscaling(parser, standard=True):
   parser.add_argument(
       '--cpu-utilization-predictive-method',
       choices=choices,
-      help='Indicates which method of prediction is used for CPU utilization metric, if any.'
+      help="""
+      Indicates whether to use a predictive algorithm when scaling based on
+      CPU.""",
   )
 
 
@@ -844,17 +849,16 @@ def AddAutoscalersToMigs(migs_iterator,
     yield mig
 
 
-def _BuildCpuUtilization(args, messages, predictive=False):
+def _BuildCpuUtilization(args, messages):
   """Builds the CPU Utilization message given relevant arguments."""
-  flags_to_check = ['target_cpu_utilization', 'scale_based_on_cpu']
-  if predictive:
-    flags_to_check.append('cpu_utilization_predictive_method')
+  flags_to_check = ['target_cpu_utilization', 'scale_based_on_cpu',
+                    'cpu_utilization_predictive_method']
 
   if instance_utils.IsAnySpecified(args, *flags_to_check):
     cpu_message = messages.AutoscalingPolicyCpuUtilization()
     if args.target_cpu_utilization:
       cpu_message.utilizationTarget = args.target_cpu_utilization
-    if predictive and args.cpu_utilization_predictive_method:
+    if args.cpu_utilization_predictive_method:
       cpu_predictive_enum = messages.AutoscalingPolicyCpuUtilization.PredictiveMethodValueValuesEnum
       cpu_message.predictiveMethod = arg_utils.ChoiceToEnum(
           args.cpu_utilization_predictive_method, cpu_predictive_enum)
@@ -1124,21 +1128,19 @@ def BuildScheduled(args, messages):
                   **scaling_schedule))])
 
 
-def _BuildAutoscalerPolicy(args, messages, original, predictive=False):
+def _BuildAutoscalerPolicy(args, messages, original):
   """Builds AutoscalingPolicy from args.
 
   Args:
     args: command line arguments.
     messages: module containing message classes.
     original: original autoscaler message.
-    predictive: bool, whether to inclue the
-      `autoscalingPolicy.cpuUtilization.predictiveMethod` field in the message.
   Returns:
     AutoscalingPolicy message object.
   """
   policy_dict = {
       'coolDownPeriodSec': args.cool_down_period,
-      'cpuUtilization': _BuildCpuUtilization(args, messages, predictive),
+      'cpuUtilization': _BuildCpuUtilization(args, messages),
       'customMetricUtilizations': _BuildCustomMetricUtilizations(
           args, messages, original),
       'loadBalancingUtilization': _BuildLoadBalancingUtilization(
@@ -1184,15 +1186,13 @@ def BuildAutoscaler(args,
                     messages,
                     igm_ref,
                     name,
-                    original,
-                    predictive=False):
+                    original):
   """Builds autoscaler message protocol buffer."""
   autoscaler = messages.Autoscaler(
       autoscalingPolicy=_BuildAutoscalerPolicy(
           args,
           messages,
-          original,
-          predictive=predictive),
+          original),
       description=args.description,
       name=name,
       target=igm_ref.SelfLink(),

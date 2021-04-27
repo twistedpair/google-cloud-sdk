@@ -302,6 +302,98 @@ class CloudAuditLoggingFeatureState(_messages.Message):
 
 
 
+class CloudBuildFeatureSpec(_messages.Message):
+  r"""Cloud Build for Anthos feature spec. This is required since Feature
+  proto requires a spec.
+
+  Messages:
+    MembershipConfigsValue: The map from membership path (e.g. projects/foo-
+      proj/locations/global/memberships/bar) to the CloudBuildMembershipConfig
+      that is chosen for that member cluster. If CloudBuild feature is enabled
+      for a hub and the membership path of a cluster in that hub exists in
+      this map then it has Cloud Build hub feature enabled for that particular
+      cluster.
+
+  Fields:
+    membershipConfigs: The map from membership path (e.g. projects/foo-
+      proj/locations/global/memberships/bar) to the CloudBuildMembershipConfig
+      that is chosen for that member cluster. If CloudBuild feature is enabled
+      for a hub and the membership path of a cluster in that hub exists in
+      this map then it has Cloud Build hub feature enabled for that particular
+      cluster.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipConfigsValue(_messages.Message):
+    r"""The map from membership path (e.g. projects/foo-
+    proj/locations/global/memberships/bar) to the CloudBuildMembershipConfig
+    that is chosen for that member cluster. If CloudBuild feature is enabled
+    for a hub and the membership path of a cluster in that hub exists in this
+    map then it has Cloud Build hub feature enabled for that particular
+    cluster.
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MembershipConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A CloudBuildMembershipConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('CloudBuildMembershipConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  membershipConfigs = _messages.MessageField('MembershipConfigsValue', 1)
+
+
+class CloudBuildFeatureState(_messages.Message):
+  r"""An empty state for Cloud Build for Anthos feature. This is required
+  since FeatureStateDetails requires a state.
+  """
+
+
+
+class CloudBuildMembershipConfig(_messages.Message):
+  r"""Configurations for each Cloud Build enabled cluster.
+
+  Enums:
+    SecurityPolicyValueValuesEnum: Whether it is allowed to run the privileged
+      builds on the cluster or not.
+
+  Fields:
+    securityPolicy: Whether it is allowed to run the privileged builds on the
+      cluster or not.
+    version: Version of the cloud build software on the cluster.
+  """
+
+  class SecurityPolicyValueValuesEnum(_messages.Enum):
+    r"""Whether it is allowed to run the privileged builds on the cluster or
+    not.
+
+    Values:
+      SECURITY_POLICY_UNSPECIFIED: Unspecified policy
+      NON_PRIVILEGED: Privileged build pods are disallowed
+      PRIVILEGED: Privileged build pods are allowed
+    """
+    SECURITY_POLICY_UNSPECIFIED = 0
+    NON_PRIVILEGED = 1
+    PRIVILEGED = 2
+
+  securityPolicy = _messages.EnumField('SecurityPolicyValueValuesEnum', 1)
+  version = _messages.StringField(2)
+
+
 class ConfigManagementFeatureSpec(_messages.Message):
   r"""Spec for Anthos Config Management (ACM).
 
@@ -607,6 +699,7 @@ class Feature(_messages.Message):
     authorizerFeatureSpec: The specification for the Authorizer Feature.
     cloudauditloggingFeatureSpec: The specification for Anthos Cloud Audit
       Logging.
+    cloudbuildFeatureSpec: The specification for Cloud Build for Anthos.
     configmanagementFeatureSpec: The specification for Anthos Config
       Management.
     createTime: Output only. When the Feature was created.
@@ -657,21 +750,22 @@ class Feature(_messages.Message):
   appdevexperienceFeatureSpec = _messages.MessageField('AppDevExperienceFeatureSpec', 3)
   authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 4)
   cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 5)
-  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 6)
-  createTime = _messages.StringField(7)
-  deleteTime = _messages.StringField(8)
-  description = _messages.StringField(9)
-  featureState = _messages.MessageField('FeatureState', 10)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 11)
-  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 14)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 15)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 16)
-  name = _messages.StringField(17)
-  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 18)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 19)
-  updateTime = _messages.StringField(20)
+  cloudbuildFeatureSpec = _messages.MessageField('CloudBuildFeatureSpec', 6)
+  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 7)
+  createTime = _messages.StringField(8)
+  deleteTime = _messages.StringField(9)
+  description = _messages.StringField(10)
+  featureState = _messages.MessageField('FeatureState', 11)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 12)
+  identityserviceFeatureSpec = _messages.MessageField('IdentityServiceFeatureSpec', 13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 15)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 16)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 17)
+  name = _messages.StringField(18)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 19)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 20)
+  updateTime = _messages.StringField(21)
 
 
 class FeatureState(_messages.Message):
@@ -765,6 +859,7 @@ class FeatureStateDetails(_messages.Message):
     authorizerFeatureState: State for the Authorizer Feature.
     cloudauditloggingFeatureState: The state of the Anthos Cloud Audit Logging
       feature.
+    cloudbuildFeatureState: State for the Cloud Build for Anthos Feature.
     code: The code describes, at a high level, if the Feature is operating
       correctly. Non-`OK` codes should have details in the `description`
       describing what actions (if any) need to be taken to return the Feature
@@ -808,17 +903,18 @@ class FeatureStateDetails(_messages.Message):
   appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 3)
   authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 4)
   cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 5)
-  code = _messages.EnumField('CodeValueValuesEnum', 6)
-  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 7)
-  description = _messages.StringField(8)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 9)
-  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 10)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 11)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 12)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 13)
-  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 14)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 15)
-  updateTime = _messages.StringField(16)
+  cloudbuildFeatureState = _messages.MessageField('CloudBuildFeatureState', 6)
+  code = _messages.EnumField('CodeValueValuesEnum', 7)
+  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 8)
+  description = _messages.StringField(9)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 10)
+  identityserviceFeatureState = _messages.MessageField('IdentityServiceFeatureState', 11)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 12)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 13)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 14)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 15)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 16)
+  updateTime = _messages.StringField(17)
 
 
 class FeatureTest(_messages.Message):

@@ -62,6 +62,33 @@ class MediaassetV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      r"""Cancel any pending invocations under this action.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesAssetsActionsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CancelActionResponse) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/actions/{actionsId}:cancel',
+        http_method='POST',
+        method_id='mediaasset.projects.locations.assetTypes.assets.actions.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:cancel',
+        request_field='cancelActionRequest',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsActionsCancelRequest',
+        response_type_name='CancelActionResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single action.
 
@@ -113,6 +140,33 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsActionsListRequest',
         response_type_name='ListActionsResponse',
+        supports_download=False,
+    )
+
+    def Trigger(self, request, global_params=None):
+      r"""Trigger an invocation with the latest input state.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesAssetsActionsTriggerRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TriggerActionResponse) The response message.
+      """
+      config = self.GetMethodConfig('Trigger')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Trigger.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/actions/{actionsId}:trigger',
+        http_method='POST',
+        method_id='mediaasset.projects.locations.assetTypes.assets.actions.trigger',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:trigger',
+        request_field='triggerActionRequest',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsActionsTriggerRequest',
+        response_type_name='TriggerActionResponse',
         supports_download=False,
     )
 

@@ -668,7 +668,7 @@ class EdgeCacheOrigin(_messages.Message):
 
 class EdgeCacheService(_messages.Message):
   r"""EdgeCacheService defines the IP addresses, protocols, security policies,
-  cache policies and routing configuration. Next ID: 16
+  cache policies and routing configuration. Next ID: 17
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the EdgeCache
@@ -677,6 +677,12 @@ class EdgeCacheService(_messages.Message):
   Fields:
     createTime: Output only. Creation timestamp in RFC3339 text format.
     description: Optional. A human-readable description of the resource.
+    disableHttp2: Optional. Disables HTTP/2. HTTP/2 (h2) is enabled by default
+      and recommended for performance. HTTP/2 improves connection re-use and
+      reduces connection setup overhead by sending multiple streams over the
+      same connection. Some legacy HTTP clients may have issues with HTTP/2
+      connections due to broken HTTP/2 implementations. Setting this to 'true'
+      will prevent HTTP/2 from being advertised and negotiated.
     disableQuic: Optional. HTTP/3 (IETF QUIC) and Google QUIC are enabled by
       default.
     edgeSecurityPolicy: Optional. Resource URL that points at the Cloud Armor
@@ -741,17 +747,18 @@ class EdgeCacheService(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  disableQuic = _messages.BooleanField(3)
-  edgeSecurityPolicy = _messages.StringField(4)
-  edgeSslCertificates = _messages.StringField(5, repeated=True)
-  ipv4Addresses = _messages.StringField(6, repeated=True)
-  ipv6Addresses = _messages.StringField(7, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 8)
-  logConfig = _messages.MessageField('LogConfig', 9)
-  name = _messages.StringField(10)
-  requireTls = _messages.BooleanField(11)
-  routing = _messages.MessageField('Routing', 12)
-  updateTime = _messages.StringField(13)
+  disableHttp2 = _messages.BooleanField(3)
+  disableQuic = _messages.BooleanField(4)
+  edgeSecurityPolicy = _messages.StringField(5)
+  edgeSslCertificates = _messages.StringField(6, repeated=True)
+  ipv4Addresses = _messages.StringField(7, repeated=True)
+  ipv6Addresses = _messages.StringField(8, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 9)
+  logConfig = _messages.MessageField('LogConfig', 10)
+  name = _messages.StringField(11)
+  requireTls = _messages.BooleanField(12)
+  routing = _messages.MessageField('Routing', 13)
+  updateTime = _messages.StringField(14)
 
 
 class Empty(_messages.Message):

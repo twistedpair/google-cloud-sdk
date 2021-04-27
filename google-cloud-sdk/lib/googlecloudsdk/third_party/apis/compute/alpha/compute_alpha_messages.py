@@ -30130,14 +30130,6 @@ class FirewallPolicyRule(_messages.Message):
       applies. This field allows you to control which network's VMs get this
       rule. If this field is left blank, all VMs within the organization will
       receive the rule.
-    targetSecureLabels: A list of secure labels that controls which instances
-      the firewall rule applies to. If targetSecureLabel are specified, then
-      the firewall rule applies only to instances in the VPC network that have
-      one of those secure labels. targetSecureLabel may not be set at the same
-      time as targetServiceAccounts. If neither targetServiceAccounts nor
-      targetSecureLabel are specified, the firewall rule applies to all
-      instances on the specified network. Maximum number of target label
-      values allowed is 256.
     targetSecureTags: A list of secure tags that controls which instances the
       firewall rule applies to. If targetSecureTag are specified, then the
       firewall rule applies only to instances in the VPC network that have one
@@ -30171,9 +30163,8 @@ class FirewallPolicyRule(_messages.Message):
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   ruleTupleCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   targetResources = _messages.StringField(10, repeated=True)
-  targetSecureLabels = _messages.StringField(11, repeated=True)
-  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 12, repeated=True)
-  targetServiceAccounts = _messages.StringField(13, repeated=True)
+  targetSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 11, repeated=True)
+  targetServiceAccounts = _messages.StringField(12, repeated=True)
 
 
 class FirewallPolicyRuleMatcher(_messages.Message):
@@ -30186,9 +30177,6 @@ class FirewallPolicyRuleMatcher(_messages.Message):
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
       ranges allowed is 256.
-    srcSecureLabels: List of firewall label values, which should be matched at
-      the source of the traffic. Maximum number of source label values allowed
-      is 256.
     srcSecureTags: List of secure tag values, which should be matched at the
       source of the traffic. For INGRESS rule, if all the srcSecureTag are
       INEFFECTIVE, and there is no srcIpRange, this rule will be ignored.
@@ -30198,8 +30186,7 @@ class FirewallPolicyRuleMatcher(_messages.Message):
   destIpRanges = _messages.StringField(1, repeated=True)
   layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 2, repeated=True)
   srcIpRanges = _messages.StringField(3, repeated=True)
-  srcSecureLabels = _messages.StringField(4, repeated=True)
-  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 5, repeated=True)
+  srcSecureTags = _messages.MessageField('FirewallPolicyRuleSecureTag', 4, repeated=True)
 
 
 class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
@@ -30356,11 +30343,11 @@ class ForwardingRule(_messages.Message):
       is valid.  - Network Load Balancing: The load balancing scheme is
       EXTERNAL, and one of TCP or UDP is valid.
     allPorts: This field is used along with the backend_service field for
-      internal load balancing or with the target field for internal
-      TargetInstance. This field cannot be used with port or portRange fields.
-      When the load balancing scheme is INTERNAL and protocol is TCP/UDP,
-      specify this field to allow packets addressed to any ports will be
-      forwarded to the backends configured with this forwarding rule.
+      Internal TCP/UDP Load Balancing or Network Load Balancing, or with the
+      target field for internal and external TargetInstance.  You can only use
+      one of ports and port_range, or allPorts. The three are mutually
+      exclusive.  For TCP, UDP and SCTP traffic, packets addressed to any
+      ports will be forwarded to the target or backendService.
     allowGlobalAccess: This field is used along with the backend_service field
       for internal load balancing or with the target field for internal
       TargetInstance. If the field is set to TRUE, clients can access ILB from
@@ -30449,29 +30436,28 @@ class ForwardingRule(_messages.Message):
       For GlobalForwardingRule, the valid value is PREMIUM.  If this field is
       not specified, it is assumed to be PREMIUM. If IPAddress is specified,
       this value must be equal to the networkTier of the Address.
-    portRange: This field can be used only if: * Load balancing scheme is one
-      of EXTERNAL,  INTERNAL_SELF_MANAGED or INTERNAL_MANAGED, and *
-      IPProtocol is one of TCP, UDP, or SCTP.  Packets addressed to ports in
-      the specified range will be forwarded to target or  backend_service. You
-      can only use one of ports, port_range, or allPorts. The three are
-      mutually exclusive. Forwarding rules with the same [IPAddress,
-      IPProtocol] pair must have disjoint port ranges.  Some types of
-      forwarding target have constraints on the acceptable ports:   -
-      TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetGrpcProxy:
-      no constraints  - TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587,
-      700, 993, 995, 1688, 1883, 5222  - TargetSslProxy: 25, 43, 110, 143,
-      195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222  - TargetVpnGateway:
-      500, 4500
+    portRange: This field can be used only if:   - Load balancing scheme is
+      one of EXTERNAL,  INTERNAL_SELF_MANAGED or INTERNAL_MANAGED  -
+      IPProtocol is one of TCP, UDP, or SCTP.    Packets addressed to ports in
+      the specified range will be forwarded to target or  backend_service.
+      You can only use one of ports, port_range, or allPorts. The three are
+      mutually exclusive.  Forwarding rules with the same [IPAddress,
+      IPProtocol] pair must have disjoint ports.  Some types of forwarding
+      target have constraints on the acceptable ports:   - TargetHttpProxy:
+      80, 8080  - TargetHttpsProxy: 443  - TargetGrpcProxy: no constraints  -
+      TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
+      1688, 1883, 5222  - TargetSslProxy: 25, 43, 110, 143, 195, 443, 465,
+      587, 700, 993, 995, 1688, 1883, 5222  - TargetVpnGateway: 500, 4500
     ports: The ports field is only supported when the forwarding rule
       references a backend_service directly. Supported load balancing products
       are Internal TCP/UDP Load Balancing and Network Load Balancing. Only
       packets addressed to the specified list of ports are forwarded to
       backends.  You can only use one of ports and port_range, or allPorts.
       The three are mutually exclusive.  You can specify a list of up to five
-      ports, which can be non-contiguous.  For Internal TCP/UDP Load
-      Balancing, if you specify allPorts, you should not specify ports.  For
-      more information, see [Port specifications](/load-
-      balancing/docs/forwarding-rule-concepts#port_specifications).
+      ports, which can be non-contiguous.  Forwarding rules with the same
+      [IPAddress, IPProtocol] pair must have disjoint ports.  For more
+      information, see [Port specifications](/load-balancing/docs/forwarding-
+      rule-concepts#port_specifications).
     pscConnectionId: [Output Only] The PSC connection id of the PSC Forwarding
       Rule.
     pscConnectionStatus: A PscConnectionStatusValueValuesEnum attribute.
@@ -31997,12 +31983,13 @@ class HealthCheckService(_messages.Message):
       retrieve the HealthCheckService.
     healthChecks: List of URLs to the HealthCheck resources. Must have at
       least one HealthCheck, and not more than 10. HealthCheck resources must
-      have portSpecification=USE_SERVING_PORT. For regional
-      HealthCheckService, the HealthCheck must be regional and in the same
-      region. For global HealthCheckService, HealthCheck must be global. Mix
-      of regional and global HealthChecks is not supported. Multiple regional
-      HealthChecks must belong to the same region. Regional
-      HealthChecks</code? must belong to the same region as zones of NEGs.
+      have portSpecification=USE_SERVING_PORT or
+      portSpecification=USE_FIXED_PORT. For regional HealthCheckService, the
+      HealthCheck must be regional and in the same region. For global
+      HealthCheckService, HealthCheck must be global. Mix of regional and
+      global HealthChecks is not supported. Multiple regional HealthChecks
+      must belong to the same region. Regional HealthChecks must belong to the
+      same region as zones of NEGs.
     healthStatusAggregationPolicy: Optional. Policy for how the results from
       multiple health checks for the same endpoint are aggregated. Defaults to
       NO_AGGREGATION if unspecified.   - NO_AGGREGATION. An EndpointHealth
@@ -34606,9 +34593,6 @@ class Instance(_messages.Message):
       only field.
     satisfiesPzs: [Output Only] Reserved for future use.
     scheduling: Sets the scheduling options for this instance.
-    secureLabels: Secure labels to apply to this instance. These can be later
-      modified by the update method. Maximum number of secure labels allowed
-      is 300.
     secureTags: Secure tags to apply to this instance. These can be later
       modified by the update method. Maximum number of secure tags allowed is
       300.
@@ -34763,23 +34747,22 @@ class Instance(_messages.Message):
   resourceStatus = _messages.MessageField('ResourceStatus', 33)
   satisfiesPzs = _messages.BooleanField(34)
   scheduling = _messages.MessageField('Scheduling', 35)
-  secureLabels = _messages.StringField(36, repeated=True)
-  secureTags = _messages.StringField(37, repeated=True)
-  selfLink = _messages.StringField(38)
-  selfLinkWithId = _messages.StringField(39)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 40, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 41)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 42)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 43)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 44)
-  sourceMachineImage = _messages.StringField(45)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 46)
-  startRestricted = _messages.BooleanField(47)
-  status = _messages.EnumField('StatusValueValuesEnum', 48)
-  statusMessage = _messages.StringField(49)
-  tags = _messages.MessageField('Tags', 50)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 51)
-  zone = _messages.StringField(52)
+  secureTags = _messages.StringField(36, repeated=True)
+  selfLink = _messages.StringField(37)
+  selfLinkWithId = _messages.StringField(38)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 39, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 40)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 41)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 42)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 43)
+  sourceMachineImage = _messages.StringField(44)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 45)
+  startRestricted = _messages.BooleanField(46)
+  status = _messages.EnumField('StatusValueValuesEnum', 47)
+  statusMessage = _messages.StringField(48)
+  tags = _messages.MessageField('Tags', 49)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 50)
+  zone = _messages.StringField(51)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -35294,7 +35277,16 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  r"""Represents a Managed Instance Group resource.  An instance group is a
+  r"""Whether the instance is a standby. Properties of a standby instance
+  comparing to the regular instance:
+  ========================================================================= |
+  regular | standby
+  =========================================================================
+  managed by IGM? | yes | yes added to the IG? | yes | yes counts towards
+  IGM's target size? | yes | no taken into account by Autoscaler? | yes | no
+  receives traffic from LB? | yes | no
+  =========================================================================
+  Represents a Managed Instance Group resource.  An instance group is a
   collection of VM instances that you can manage as a single entity. For more
   information, read Instance groups.  For zonal Managed Instance Group, use
   the instanceGroupManagers resource.  For regional Managed Instance Group,
@@ -36266,9 +36258,17 @@ class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   Fields:
     instances: The URLs of one or more instances to delete. This can be a full
       URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+    skipInstancesOnValidationError: Specifies whether the request should
+      proceed despite the inclusion of instances that are not members of the
+      group or that are already in the process of being deleted or abandoned.
+      If this field is set to `false` and such an instance is specified in the
+      request, the operation fails. The operation always fails if the request
+      contains a malformed instance URL or a reference to an instance that
+      exists in a zone or region other than the group's zone or region.
   """
 
   instances = _messages.StringField(1, repeated=True)
+  skipInstancesOnValidationError = _messages.BooleanField(2)
 
 
 class InstanceGroupManagersDeletePerInstanceConfigsReq(_messages.Message):
@@ -38706,6 +38706,11 @@ class InterconnectAttachment(_messages.Message):
       take one of the following values:  - OS_ACTIVE: The attachment has been
       turned up and is ready to use.  - OS_UNPROVISIONED: The attachment is
       not ready to use yet, because turnup is not complete.
+    StackTypeValueValuesEnum: The stack type for this interconnect attachment
+      to identify whether the IPv6 feature is enabled or not. If not
+      specified, IPV4_ONLY will be used.  This field can be both set at
+      interconnect attachments creation and update interconnect attachment
+      operations.
     StateValueValuesEnum: [Output Only] The current state of this attachment's
       functionality. Enum values ACTIVE and UNPROVISIONED are shared by
       DEDICATED/PRIVATE, PARTNER, and PARTNER_PROVIDER interconnect
@@ -38747,6 +38752,14 @@ class InterconnectAttachment(_messages.Message):
       BPS_500M: 500 Mbit/s  - BPS_1G: 1 Gbit/s  - BPS_2G: 2 Gbit/s  - BPS_5G:
       5 Gbit/s  - BPS_10G: 10 Gbit/s  - BPS_20G: 20 Gbit/s  - BPS_50G: 50
       Gbit/s
+    candidateIpv6Subnets: Up to 16 candidate prefixes that control the
+      allocation of cloudRouterIpv6Address and customerRouterIpv6Address for
+      this attachment. Each prefix must be in the Global Unique Address (GUA)
+      space. It is highly recommended that it be in a range owned by the
+      requestor. A GUA in a range owned by Google will cause the request to
+      fail. Google will select an available prefix from the supplied
+      candidates or fail the request. If not supplied, a /125 from a Google-
+      owned GUA block will be selected.
     candidateSubnets: Up to 16 candidate prefixes that can be used to restrict
       the allocation of cloudRouterIpAddress and customerRouterIpAddress for
       this attachment. All prefixes must be within link-local address space
@@ -38757,11 +38770,24 @@ class InterconnectAttachment(_messages.Message):
       link-local space.
     cloudRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on Cloud Router Interface for this interconnect attachment.
+    cloudRouterIpv6Address: [Output Only] IPv6 address + prefix length to be
+      configured on Cloud Router Interface for this interconnect attachment.
+    cloudRouterIpv6InterfaceId: If supplied, the interface id (index within
+      the subnet) to be used for the cloud router address. The id must be in
+      the range of 1 to 6. If a subnet mask is supplied, it must be /125, and
+      the subnet should either be 0 or match the selected subnet.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on the customer router subinterface for this interconnect
       attachment.
+    customerRouterIpv6Address: [Output Only] IPv6 address + prefix length to
+      be configured on the customer router subinterface for this interconnect
+      attachment.
+    customerRouterIpv6InterfaceId: If supplied, the interface id (index within
+      the subnet) to be used for the customer router address. The id must be
+      in the range of 1 to 6. If a subnet mask is supplied, it must be /125,
+      and the subnet should either be 0 or match the selected subnet.
     dataplaneVersion: [Output Only] Dataplane version for this
       InterconnectAttachment.
     description: An optional description of this resource.
@@ -38857,6 +38883,10 @@ class InterconnectAttachment(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    stackType: The stack type for this interconnect attachment to identify
+      whether the IPv6 feature is enabled or not. If not specified, IPV4_ONLY
+      will be used.  This field can be both set at interconnect attachments
+      creation and update interconnect attachment operations.
     state: [Output Only] The current state of this attachment's functionality.
       Enum values ACTIVE and UNPROVISIONED are shared by DEDICATED/PRIVATE,
       PARTNER, and PARTNER_PROVIDER interconnect attachments, while enum
@@ -38972,6 +39002,19 @@ class InterconnectAttachment(_messages.Message):
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
 
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""The stack type for this interconnect attachment to identify whether
+    the IPv6 feature is enabled or not. If not specified, IPV4_ONLY will be
+    used.  This field can be both set at interconnect attachments creation and
+    update interconnect attachment operations.
+
+    Values:
+      IPV4_IPV6: <no description>
+      IPV4_ONLY: <no description>
+    """
+    IPV4_IPV6 = 0
+    IPV4_ONLY = 1
+
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The current state of this attachment's functionality.
     Enum values ACTIVE and UNPROVISIONED are shared by DEDICATED/PRIVATE,
@@ -39051,35 +39094,41 @@ class InterconnectAttachment(_messages.Message):
 
   adminEnabled = _messages.BooleanField(1)
   bandwidth = _messages.EnumField('BandwidthValueValuesEnum', 2)
-  candidateSubnets = _messages.StringField(3, repeated=True)
-  cloudRouterIpAddress = _messages.StringField(4)
-  creationTimestamp = _messages.StringField(5)
-  customerRouterIpAddress = _messages.StringField(6)
-  dataplaneVersion = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  description = _messages.StringField(8)
-  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 9)
-  encryption = _messages.EnumField('EncryptionValueValuesEnum', 10)
-  googleReferenceId = _messages.StringField(11)
-  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(13)
-  ipsecInternalAddresses = _messages.StringField(14, repeated=True)
-  kind = _messages.StringField(15, default='compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  mtu = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  name = _messages.StringField(19)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 20)
-  pairingKey = _messages.StringField(21)
-  partnerAsn = _messages.IntegerField(22)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 23)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 24)
-  region = _messages.StringField(25)
-  router = _messages.StringField(26)
-  selfLink = _messages.StringField(27)
-  selfLinkWithId = _messages.StringField(28)
-  state = _messages.EnumField('StateValueValuesEnum', 29)
-  type = _messages.EnumField('TypeValueValuesEnum', 30)
-  vlanTag8021q = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  candidateIpv6Subnets = _messages.StringField(3, repeated=True)
+  candidateSubnets = _messages.StringField(4, repeated=True)
+  cloudRouterIpAddress = _messages.StringField(5)
+  cloudRouterIpv6Address = _messages.StringField(6)
+  cloudRouterIpv6InterfaceId = _messages.StringField(7)
+  creationTimestamp = _messages.StringField(8)
+  customerRouterIpAddress = _messages.StringField(9)
+  customerRouterIpv6Address = _messages.StringField(10)
+  customerRouterIpv6InterfaceId = _messages.StringField(11)
+  dataplaneVersion = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  description = _messages.StringField(13)
+  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 14)
+  encryption = _messages.EnumField('EncryptionValueValuesEnum', 15)
+  googleReferenceId = _messages.StringField(16)
+  id = _messages.IntegerField(17, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(18)
+  ipsecInternalAddresses = _messages.StringField(19, repeated=True)
+  kind = _messages.StringField(20, default='compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(21)
+  labels = _messages.MessageField('LabelsValue', 22)
+  mtu = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  name = _messages.StringField(24)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 25)
+  pairingKey = _messages.StringField(26)
+  partnerAsn = _messages.IntegerField(27)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 28)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 29)
+  region = _messages.StringField(30)
+  router = _messages.StringField(31)
+  selfLink = _messages.StringField(32)
+  selfLinkWithId = _messages.StringField(33)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 34)
+  state = _messages.EnumField('StateValueValuesEnum', 35)
+  type = _messages.EnumField('TypeValueValuesEnum', 36)
+  vlanTag8021q = _messages.IntegerField(37, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -40915,15 +40964,14 @@ class LocationPolicyLocation(_messages.Message):
   r"""A LocationPolicyLocation object.
 
   Enums:
-    PreferenceValueValuesEnum: Preference for a given locaction: ALLOW or
-      DENY.
+    PreferenceValueValuesEnum: Preference for a given location: ALLOW or DENY.
 
   Fields:
-    preference: Preference for a given locaction: ALLOW or DENY.
+    preference: Preference for a given location: ALLOW or DENY.
   """
 
   class PreferenceValueValuesEnum(_messages.Enum):
-    r"""Preference for a given locaction: ALLOW or DENY.
+    r"""Preference for a given location: ALLOW or DENY.
 
     Values:
       ALLOW: <no description>
@@ -50103,10 +50151,18 @@ class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
       (instances not belonging to this managed group, already being deleted or
       being abandoned). If `false`, fail whole flow, if such instance is
       passed. DEPRECATED: Use skip_instances_on_validation_error instead.
+    skipInstancesOnValidationError: Specifies whether the request should
+      proceed despite the inclusion of instances that are not members of the
+      group or that are already in the process of being deleted or abandoned.
+      If this field is set to `false` and such an instance is specified in the
+      request, the operation fails. The operation always fails if the request
+      contains a malformed instance URL or a reference to an instance that
+      exists in a zone or region other than the group's zone or region.
   """
 
   instances = _messages.StringField(1, repeated=True)
   skipInapplicableInstances = _messages.BooleanField(2)
+  skipInstancesOnValidationError = _messages.BooleanField(3)
 
 
 class RegionInstanceGroupManagersListErrorsResponse(_messages.Message):
@@ -53034,9 +53090,13 @@ class RouterBgpPeer(_messages.Message):
       terminated and all associated routing information is removed. If set to
       TRUE, the peer connection can be established with routing information.
       The default is TRUE.
+    enableIpv6: Enable IPv6 traffic over BGP Peer. If not specified, it is
+      disabled by default.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
+    ipv6NexthopAddress: IPv6 address of the interface inside Google Cloud
+      Platform.
     managementType: [Output Only] The resource that configures and manages
       this BGP peer.  - MANAGED_BY_USER is the default value and can be
       managed by you or other users  - MANAGED_BY_ATTACHMENT is a BGP peer
@@ -53054,6 +53114,8 @@ class RouterBgpPeer(_messages.Message):
       use a different value.
     peerIpAddress: IP address of the BGP interface outside Google Cloud
       Platform. Only IPv4 is supported.
+    peerIpv6NexthopAddress: IPv6 address of the BGP interface outside Google
+      Cloud Platform.
     routerApplianceInstance: URI of the VM instance that is used as third-
       party router appliances such as Next Gen Firewalls, Virtual Routers, or
       Router Appliances. The VM instance must be located in zones contained in
@@ -53119,13 +53181,16 @@ class RouterBgpPeer(_messages.Message):
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
   bfd = _messages.MessageField('RouterBgpPeerBfd', 5)
   enable = _messages.EnumField('EnableValueValuesEnum', 6)
-  interfaceName = _messages.StringField(7)
-  ipAddress = _messages.StringField(8)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  peerAsn = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(12)
-  routerApplianceInstance = _messages.StringField(13)
+  enableIpv6 = _messages.BooleanField(7)
+  interfaceName = _messages.StringField(8)
+  ipAddress = _messages.StringField(9)
+  ipv6NexthopAddress = _messages.StringField(10)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  peerAsn = _messages.IntegerField(13, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(14)
+  peerIpv6NexthopAddress = _messages.StringField(15)
+  routerApplianceInstance = _messages.StringField(16)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -53503,10 +53568,24 @@ class RouterNat(_messages.Message):
     drainNatIps: A list of URLs of the IP resources to be drained. These IPs
       must be valid static external IPs that have been assigned to the NAT.
       These IPs should be used for updating/patching a NAT only.
+    enableDynamicPortAllocation: Enable Dynamic Port Allocation. If not
+      specified, it is disabled by default. If set to true,  - Dynamic Port
+      Allocation will be enabled on this NAT config.  -
+      enableEndpointIndependentMapping cannot be set to true.  - If minPorts
+      is set, minPortsPerVm must be set to a power of two greater than or
+      equal to 32. If minPortsPerVm is not set, a minimum of 32 ports will be
+      allocated to a VM from this NAT config.
     enableEndpointIndependentMapping: A boolean attribute.
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
     logConfig: Configure logging on this NAT.
+    maxPortsPerVm: Maximum number of ports allocated to a VM from this NAT
+      config when Dynamic Port Allocation is enabled. If Dynamic Port
+      Allocation is not enabled, this field has no effect. If Dynamic Port
+      Allocation is enabled, and this field is set, it must be set to a power
+      of two greater than minPortsPerVm, or 64 if minPortsPerVm is not set. If
+      Dynamic Port Allocation is enabled and this field is not set, a maximum
+      of 65536 ports will be allocated to a VM from this NAT config.
     minPortsPerVm: Minimum number of ports allocated to a VM from this NAT
       config. If not set, a default number of ports is allocated to a VM. This
       is rounded up to the nearest power of 2. For example, if the value of
@@ -53583,20 +53662,22 @@ class RouterNat(_messages.Message):
     LIST_OF_SUBNETWORKS = 2
 
   drainNatIps = _messages.StringField(1, repeated=True)
-  enableEndpointIndependentMapping = _messages.BooleanField(2)
-  icmpIdleTimeoutSec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  logConfig = _messages.MessageField('RouterNatLogConfig', 4)
-  minPortsPerVm = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  name = _messages.StringField(6)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 7)
-  natIps = _messages.StringField(8, repeated=True)
-  rules = _messages.MessageField('RouterNatRule', 9, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 10)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 11, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  tcpTimeWaitTimeoutSec = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  enableDynamicPortAllocation = _messages.BooleanField(2)
+  enableEndpointIndependentMapping = _messages.BooleanField(3)
+  icmpIdleTimeoutSec = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 5)
+  maxPortsPerVm = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  minPortsPerVm = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  name = _messages.StringField(8)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 9)
+  natIps = _messages.StringField(10, repeated=True)
+  rules = _messages.MessageField('RouterNatRule', 11, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 12)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 13, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  tcpTimeWaitTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -53743,11 +53824,15 @@ class RouterStatusBgpPeerStatus(_messages.Message):
   Fields:
     advertisedRoutes: Routes that were advertised to the remote BGP peer
     bfdStatus: A BfdStatus attribute.
+    enableIpv6: Enable IPv6 traffic over BGP Peer. If not specified, it is
+      disabled by default.
     ipAddress: IP address of the local BGP interface.
+    ipv6NexthopAddress: IPv6 address of the local BGP interface.
     linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
     name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
+    peerIpv6NexthopAddress: IPv6 address of the remote BGP interface.
     routerApplianceInstance: [Output only] URI of the VM instance that is used
       as third-party router appliances such as Next Gen Firewalls, Virtual
       Routers, or Router Appliances. The VM instance is the peer side of the
@@ -53773,16 +53858,19 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
   advertisedRoutes = _messages.MessageField('Route', 1, repeated=True)
   bfdStatus = _messages.MessageField('BfdStatus', 2)
-  ipAddress = _messages.StringField(3)
-  linkedVpnTunnel = _messages.StringField(4)
-  name = _messages.StringField(5)
-  numLearnedRoutes = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(7)
-  routerApplianceInstance = _messages.StringField(8)
-  state = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  uptime = _messages.StringField(11)
-  uptimeSeconds = _messages.StringField(12)
+  enableIpv6 = _messages.BooleanField(3)
+  ipAddress = _messages.StringField(4)
+  ipv6NexthopAddress = _messages.StringField(5)
+  linkedVpnTunnel = _messages.StringField(6)
+  name = _messages.StringField(7)
+  numLearnedRoutes = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(9)
+  peerIpv6NexthopAddress = _messages.StringField(10)
+  routerApplianceInstance = _messages.StringField(11)
+  state = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  uptime = _messages.StringField(14)
+  uptimeSeconds = _messages.StringField(15)
 
 
 class RouterStatusNatStatus(_messages.Message):
@@ -54267,7 +54355,7 @@ class ScalingScheduleStatus(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 20
+  r"""Sets the scheduling options for an Instance. NextID: 21
 
   Enums:
     MaintenanceIntervalValueValuesEnum: For more information about maintenance

@@ -27,9 +27,11 @@ from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
 from googlecloudsdk.core import log
+from googlecloudsdk.core import yaml
 import six
 
 
@@ -846,18 +848,26 @@ def CreateNetworkInterfaceMessage(resources,
   return network_interface
 
 
-def CreateNetworkInterfaceMessages(resources, compute_client,
-                                   network_interface_arg, project, location,
-                                   scope):
+def CreateNetworkInterfaceMessages(resources,
+                                   compute_client,
+                                   network_interface_arg,
+                                   project,
+                                   location,
+                                   scope,
+                                   network_interface_file=None):
   """Create network interface messages.
 
   Args:
     resources: generates resource references.
     compute_client: creates resources.
-    network_interface_arg: CLI argument specyfying network interfaces.
+    network_interface_arg: CLI argument specifying network interfaces.
     project: project of the instance that will own the generated network
       interfaces.
-    zone: zone of the instance that will own the generated network interfaces.
+    location: Location of the instance that will own the new network interfaces.
+    scope: Location type of the instance that will own the new network
+      interfaces.
+    network_interface_file: CLI argument specifying network interfaces in a YAML
+      file.
 
   Returns:
     list, items are NetworkInterfaceMessages.
@@ -884,6 +894,17 @@ def CreateNetworkInterfaceMessages(resources, compute_client,
               scope=scope,
               alias_ip_ranges_string=interface.get('aliases', None),
               network_tier=network_tier))
+  elif network_interface_file is not None:
+    network_interface_yaml = yaml.load(network_interface_file)
+    if not network_interface_yaml:  # Empty files/lists.
+      return result
+    for interface in network_interface_yaml:
+      if not interface:  # Empty dicts.
+        continue
+      network_interface = messages_util.DictToMessageWithErrorCheck(
+          interface, compute_client.messages.NetworkInterface)
+      result.append(network_interface)
+
   return result
 
 
@@ -900,11 +921,14 @@ def GetNetworkInterfacesWithValidation(args,
                                        support_ipv6_network_tier=False,
                                        support_ipv6_public_ptr_domain=False):
   """Validates and retrieves the network interface message."""
-  if args.network_interface:
+  network_interface_from_file = getattr(args, 'network_interface_from_file',
+                                        None)
+  if args.network_interface or network_interface_from_file:
     return CreateNetworkInterfaceMessages(
         resources=resource_parser,
         compute_client=compute_client,
         network_interface_arg=args.network_interface,
+        network_interface_file=network_interface_from_file,
         project=project,
         location=location,
         scope=scope)

@@ -154,16 +154,21 @@ def _PromptForSingleContact(domains_messages, unused_current_contact=None):
   contact.postalAddress.regionCode = util.PromptWithValidator(
       validator=util.ValidateRegionCode,
       error_message=(
-          ' Country code must be in ISO 3166-1 format, e.g. "US" or "PL".\n'
-          ' See https://support.google.com/business/answer/6270107 for a list '
-          'of valid choices.'),
-      prompt_string='Country code:  ',
-      message='Enter two-letter country code, e.g. "US" or "PL".')
+          ' Country / Region code must be in ISO 3166-1 format, e.g. "US" or '
+          '"PL".\n See https://support.google.com/business/answer/6270107 for a'
+          ' list of valid choices.'),
+      prompt_string='Country / Region code:  ',
+      message='Enter two-letter Country / Region code, e.g. "US" or "PL".')
+  if contact.postalAddress.regionCode != 'US':
+    log.status.Print('Refer to the guidelines for entering address field '
+                     'information at '
+                     'https://support.google.com/business/answer/6397478.')
   contact.postalAddress.postalCode = console_io.PromptResponse(
-      'Postal code/zipcode:  ')
+      'Postal / ZIP code:  ')
   contact.postalAddress.administrativeArea = console_io.PromptResponse(
-      'State (if applicable):  ')
-  contact.postalAddress.locality = console_io.PromptResponse('City:  ')
+      'State / Administrative area (if applicable):  ')
+  contact.postalAddress.locality = console_io.PromptResponse(
+      'City / Locality:  ')
   contact.postalAddress.addressLines.append(
       util.PromptWithValidator(
           validator=util.ValidateNonEmpty,

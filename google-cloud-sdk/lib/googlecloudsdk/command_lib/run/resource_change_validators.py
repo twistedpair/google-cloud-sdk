@@ -36,7 +36,7 @@ def ValidateClearVpcConnector(service, args):
 
   Raises:
     exceptions.ConfigurationError: If the command cannot prompt and
-      VPC egress is set to 'all'.
+      VPC egress is set to 'all' or 'all-traffic'.
     console_io.OperationCancelledError: If the user answers no to the
       confirmation prompt.
   """
@@ -54,7 +54,8 @@ def ValidateClearVpcConnector(service, args):
     # --vpc-egress flag not specified and egress settings not set on service.
     return
 
-  if egress != container_resource.EGRESS_SETTINGS_ALL:
+  if (egress != container_resource.EGRESS_SETTINGS_ALL and
+      egress != container_resource.EGRESS_SETTINGS_ALL_TRAFFIC):
     return
 
   if console_io.CanPrompt():
@@ -65,6 +66,6 @@ def ValidateClearVpcConnector(service, args):
         cancel_on_no=True)
   else:
     raise exceptions.ConfigurationError(
-        'Cannot remove VPC connector with VPC egress set to "all". Set'
+        'Cannot remove VPC connector with VPC egress set to "{}". Set'
         ' `--vpc-egress=private-ranges-only` or run this command '
-        'interactively and provide confirmation to continue.')
+        'interactively and provide confirmation to continue.'.format(egress))

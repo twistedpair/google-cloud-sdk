@@ -140,12 +140,17 @@ class ReachableSecret(object):
   adds to that annotation as needed.
   """
 
-  _PROJECT_NUMBER_PARTIAL = r'[0-9]{1,19}'  # int64, not the project 'id'.
-  _SECRET_NAME_PARTIAL = r'[a-zA-Z0-9-_]{1,255}'
+  _PROJECT_NUMBER_PARTIAL = r'(?P<project>[0-9]{1,19})'
+  _SECRET_NAME_PARTIAL = r'(?P<secret>[a-zA-Z0-9-_]{1,255})'
+  _REMOTE_SECRET_VERSION_SHORT = r':(?P<version_short>.+)'
+  _REMOTE_SECRET_VERSION_LONG = r'/versions/(?P<version_long>.+)'
+  _REMOTE_SECRET_VERSION = (r'(?:' + _REMOTE_SECRET_VERSION_SHORT + r'|' +
+                            _REMOTE_SECRET_VERSION_LONG + r')?')
 
   # The user syntax for referring to a secret in another project.
-  _REMOTE_SECRET_FLAG_VALUE = (r'^projects/(' + _PROJECT_NUMBER_PARTIAL +
-                               r')/secrets/(' + _SECRET_NAME_PARTIAL + r')$')
+  _REMOTE_SECRET_FLAG_VALUE = (r'^projects/' + _PROJECT_NUMBER_PARTIAL +
+                               r'/secrets/' + _SECRET_NAME_PARTIAL +
+                               _REMOTE_SECRET_VERSION + r'$')
 
   @staticmethod
   def IsRemotePath(secret_name):
@@ -167,9 +172,15 @@ class ReachableSecret(object):
     if platforms.IsManaged():
       match = re.search(self._REMOTE_SECRET_FLAG_VALUE, flag_value)
       if match:
-        self.remote_project_number = match.groups()[0]
-        self.secret_name = match.groups()[1]
-        self.secret_version = 'latest'
+        self.remote_project_number = match.group('project')
+        self.secret_name = match.group('secret')
+
+        self.secret_version = match.group('version_short')
+        if self.secret_version is None:
+          self.secret_version = match.group('version_long')
+        if self.secret_version is None:
+          self.secret_version = 'latest'
+
         return
 
     self._InitWithLocalSecret(flag_value, connector_name)
@@ -313,7 +324,6 @@ class ReachableSecret(object):
     """
     if not self._IsRemote():
       raise TypeError('Only remote paths go in annotations')
-    # Note: This currently omits the secret version.
     return 'projects/{remote_project_number}/secrets/{secret_name}'.format(
         remote_project_number=self.remote_project_number,
         secret_name=self.secret_name)

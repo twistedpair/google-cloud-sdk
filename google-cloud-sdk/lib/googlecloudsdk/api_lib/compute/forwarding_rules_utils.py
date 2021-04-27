@@ -20,9 +20,9 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
+from googlecloudsdk.command_lib.compute.forwarding_rules import exceptions
 from googlecloudsdk.command_lib.compute.forwarding_rules import flags
 from googlecloudsdk.core import properties
 
@@ -30,26 +30,26 @@ from googlecloudsdk.core import properties
 def _ValidateGlobalArgs(args):
   """Validate the global forwarding rules args."""
   if args.target_instance:
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'You cannot specify [--target-instance] for a global '
         'forwarding rule.')
   if args.target_pool:
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'You cannot specify [--target-pool] for a global '
         'forwarding rule.')
 
   if getattr(args, 'backend_service', None):
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'You cannot specify [--backend-service] for a global '
         'forwarding rule.')
 
   if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL':
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'You cannot specify internal [--load-balancing-scheme] for a global '
         'forwarding rule.')
 
   if getattr(args, 'target_vpn_gateway', None):
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'You cannot specify [--target-vpn-gateway] for a global '
         'forwarding rule.')
 
@@ -63,15 +63,15 @@ def _ValidateGlobalArgs(args):
           '[--target-https-proxy], [--target-grpc-proxy] '
           'or [--target-tcp-proxy] for an '
           'INTERNAL_SELF_MANAGED [--load-balancing-scheme].')
-      raise calliope_exceptions.ToolException(target_error_message_with_tcp)
+      raise exceptions.ArgumentError(target_error_message_with_tcp)
 
     if getattr(args, 'subnet', None):
-      raise calliope_exceptions.ToolException(
+      raise exceptions.ArgumentError(
           'You cannot specify [--subnet] for an INTERNAL_SELF_MANAGED '
           '[--load-balancing-scheme].')
 
     if not getattr(args, 'address', None):
-      raise calliope_exceptions.ToolException(
+      raise exceptions.ArgumentError(
           'You must specify [--address] for an INTERNAL_SELF_MANAGED '
           '[--load-balancing-scheme]')
 
@@ -103,7 +103,7 @@ def _ValidateRegionalArgs(args):
   """
 
   if getattr(args, 'global', None):
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'You cannot specify [--global] for a regional '
         'forwarding rule.')
 
@@ -112,13 +112,13 @@ def _ValidateRegionalArgs(args):
   # because it can be set as default project setting, so here let backend do
   # validation.
   if args.target_instance_zone and not args.target_instance:
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'You cannot specify [--target-instance-zone] unless you are '
         'specifying [--target-instance].')
 
   if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL':
     if getattr(args, 'port_range', None):
-      raise calliope_exceptions.ToolException(
+      raise exceptions.ArgumentError(
           'You cannot specify [--port-range] for a forwarding rule '
           'whose [--load-balancing-scheme] is internal, '
           'please use [--ports] flag instead.')
@@ -129,7 +129,7 @@ def _ValidateRegionalArgs(args):
       getattr(args, 'load_balancing_scheme', None) not in [None, 'EXTERNAL'] or
       not getattr(args, 'backend_service', None) or
       not getattr(args, 'subnet', None) or getattr(args, 'network', None)):
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'IPv6 forwarding rules are only supported for EXTERNAL '
         '[--load-balancing-scheme] with Backend Service and must '
         'be assigned a subnetwork only.')
@@ -138,12 +138,12 @@ def _ValidateRegionalArgs(args):
             args, 'target_service_attachment', None) and getattr(
                 args, 'load_balancing_scheme',
                 None) not in schemes_allowing_network_fields:
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'You cannot specify [--subnet] or [--network] for non-internal '
         '[--load-balancing-scheme] non-PSC forwarding rule.')
 
   if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED':
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'You cannot specify an INTERNAL_SELF_MANAGED [--load-balancing-scheme] '
         'for a regional forwarding rule.')
 
@@ -215,7 +215,7 @@ def GetRegionalTarget(client,
     if target_region != region_arg or (
         args.target_service_attachment_region and region_arg and
         args.target_service_attachment_region != region_arg):
-      raise calliope_exceptions.ToolException(
+      raise exceptions.ArgumentError(
           'The region of the provided service attachment must equal the '
           '[--region] of the forwarding rule.')
 

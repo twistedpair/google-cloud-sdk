@@ -2211,22 +2211,197 @@
         }
       }
     },
-    "GoogleCloudApigeeV1MigrateConfigDataRequest": {
-      "id": "GoogleCloudApigeeV1MigrateConfigDataRequest",
-      "description": "Request for MigrateConfigData.",
+    "GoogleCloudApigeeV1Instance": {
+      "id": "GoogleCloudApigeeV1Instance",
+      "description": "Apigee runtime instance.",
       "type": "object",
       "properties": {
-        "organizationId": {
-          "description": "Required. The id of the Apigee organization to migrate.",
+        "name": {
+          "description": "Required. Resource ID of the instance. Values must match the regular expression `^a-z{0,30}[a-z\\d]$`.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Required. Compute Engine location where the instance resides.",
+          "type": "string"
+        },
+        "peeringCidrRange": {
+          "description": "Optional. Size of the CIDR block range that will be reserved by the instance. PAID organizations support `SLASH_16` to `SLASH_20` and defaults to `SLASH_16`. Evaluation organizations support only `SLASH_23`.",
+          "type": "string",
+          "enumDescriptions": [
+            "Range not specified.",
+            "`\/16` CIDR range.",
+            "`\/17` CIDR range.",
+            "`\/18` CIDR range.",
+            "`\/19` CIDR range.",
+            "`\/20` CIDR range.",
+            "`\/23` CIDR range. Supported for evaluation only."
+          ],
+          "enum": [
+            "CIDR_RANGE_UNSPECIFIED",
+            "SLASH_16",
+            "SLASH_17",
+            "SLASH_18",
+            "SLASH_19",
+            "SLASH_20",
+            "SLASH_23"
+          ]
+        },
+        "nodeConfig": {
+          "description": "Optional. NodeConfig of the instance.",
+          "$ref": "GoogleCloudApigeeV1NodeConfig"
+        },
+        "host": {
+          "description": "Output only. Internal hostname or IP address of the Apigee endpoint used by clients to connect to the service.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "externalHost": {
+          "description": "Output only. External hostname or IP address of the Apigee endpoint used by clients to connect to the service.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "externalHostEnabled": {
+          "description": "Optional. Flag that specifies whether the external Apigee endpoint is enabled for the instance.",
+          "type": "boolean"
+        },
+        "port": {
+          "description": "Output only. Port number of the exposed Apigee endpoint.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Description of the instance.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Optional. Display name for the instance.",
+          "type": "string"
+        },
+        "createdAt": {
+          "description": "Output only. Time the instance was created in milliseconds since epoch.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "lastModifiedAt": {
+          "description": "Output only. Time the instance was last modified in milliseconds since epoch.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "diskEncryptionKeyName": {
+          "description": "Customer Managed Encryption Key (CMEK) used for disk and volume encryption. Required for Apigee paid subscriptions only. Use the following format: `projects\/([^\/]+)\/locations\/([^\/]+)\/keyRings\/([^\/]+)\/cryptoKeys\/([^\/]+)`",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the instance. Values other than `ACTIVE` means the resource is not ready to use.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Resource is in an unspecified state.",
+            "Resource is being created.",
+            "Resource is provisioned and ready to use.",
+            "The resource is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING"
+          ]
+        }
+      }
+    },
+    "GoogleCloudApigeeV1NodeConfig": {
+      "id": "GoogleCloudApigeeV1NodeConfig",
+      "description": "NodeConfig for the instance.",
+      "type": "object",
+      "properties": {
+        "minNodeCount": {
+          "description": "Optional. The minimum size of the nodepool that will be reserved by the instance. If not specified, default is determined by the size of the CIDR block range.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxNodeCount": {
+          "description": "Optional. The maximum size of the nodepool that will be reserved by the instance. If not specified, default is determined by the size of the CIDR block range.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1ListInstancesResponse": {
+      "id": "GoogleCloudApigeeV1ListInstancesResponse",
+      "description": "Response for ListInstances.",
+      "type": "object",
+      "properties": {
+        "instances": {
+          "description": "Instances in the specified organization.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1Instance"
+          }
+        },
+        "nextPageToken": {
+          "description": "Page token that you can include in a ListInstance request to retrieve the next page of content. If omitted, no subsequent pages exist.",
           "type": "string"
         }
       }
     },
-    "GoogleCloudApigeeV1MigrateDeveloperPortalsRequest": {
-      "id": "GoogleCloudApigeeV1MigrateDeveloperPortalsRequest",
-      "description": "Request for MigrateDeveloperPortals.",
+    "GoogleCloudApigeeV1InstanceAttachment": {
+      "id": "GoogleCloudApigeeV1InstanceAttachment",
+      "description": "InstanceAttachment represents the installation of an environment onto an instance.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Output only. ID of the attachment.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "environment": {
+          "description": "ID of the attached environment.",
+          "type": "string"
+        },
+        "createdAt": {
+          "description": "Output only. Time the attachment was created in milliseconds since epoch.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "state": {
+          "description": "Output only. State of the instance attachment. Values other than ACTIVE means the resource is not ready to use.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Resource is in an unspecified state.",
+            "Resource is being created.",
+            "Resource is provisioned and ready to use.",
+            "The resource is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING"
+          ]
+        }
+      }
+    },
+    "GoogleCloudApigeeV1ListInstanceAttachmentsResponse": {
+      "id": "GoogleCloudApigeeV1ListInstanceAttachmentsResponse",
+      "description": "Response for ListInstanceAttachments.",
+      "type": "object",
+      "properties": {
+        "attachments": {
+          "description": "Attachments for the instance.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1InstanceAttachment"
+          }
+        },
+        "nextPageToken": {
+          "description": "Page token that you can include in a ListInstanceAttachments request to retrieve the next page of content. If omitted, no subsequent pages exist.",
+          "type": "string"
+        }
       }
     },
     "GoogleCloudApigeeV1ListOrganizationsResponse": {
@@ -2529,6 +2704,56 @@
         }
       }
     },
+    "GoogleCloudApigeeV1InfraMigrationPlan": {
+      "id": "GoogleCloudApigeeV1InfraMigrationPlan",
+      "description": "Migration plan details all the relevant information required to replicate the infrastructure from the organization's Apigee Edge resources to Apigee X resources.",
+      "type": "object",
+      "properties": {
+        "organization": {
+          "description": "Organization details extracted from Apigee Edge organization.",
+          "$ref": "GoogleCloudApigeeV1Organization"
+        },
+        "environments": {
+          "description": "Environment details extracted from Apigee Edge environments owned by the organization.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1Environment"
+          }
+        },
+        "instances": {
+          "description": "Apigee X instances modeled after the Apigee Edge organization resources.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1Instance"
+          }
+        },
+        "instanceAttachments": {
+          "description": "Apigee X instance attachments modeled after Apigee Edge environment resources.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1InstanceAttachment"
+          }
+        }
+      }
+    },
+    "GoogleCloudApigeeV1MigrateConfigDataRequest": {
+      "id": "GoogleCloudApigeeV1MigrateConfigDataRequest",
+      "description": "Request for MigrateConfigData.",
+      "type": "object",
+      "properties": {
+        "organizationId": {
+          "description": "Required. The id of the Apigee organization to migrate.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1MigrateDeveloperPortalsRequest": {
+      "id": "GoogleCloudApigeeV1MigrateDeveloperPortalsRequest",
+      "description": "Request for MigrateDeveloperPortals.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudApigeeV1Reference": {
       "id": "GoogleCloudApigeeV1Reference",
       "description": "A Reference configuration. References must refer to a keystore that also exists in the parent environment.",
@@ -2756,7 +2981,7 @@
             "The caller does not have permission to execute the specified operation. `PERMISSION_DENIED` must not be used for rejections caused by exhausting some resource (use `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED` must not be used if the caller can not be identified (use `UNAUTHENTICATED` instead for those errors). This error code does not imply the request is valid or the requested entity exists or satisfies other pre-conditions. HTTP Mapping: 403 Forbidden",
             "The request does not have valid authentication credentials for the operation. HTTP Mapping: 401 Unauthorized",
             "Some resource has been exhausted, perhaps a per-user quota, or perhaps the entire file system is out of space. HTTP Mapping: 429 Too Many Requests",
-            "The operation was rejected because the system is not in a state required for the operation's execution. For example, the directory to be deleted is non-empty, an rmdir operation is applied to a non-directory, etc. Service implementors can use the following guidelines to decide between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can retry just the failing call. (b) Use `ABORTED` if the client should retry at a higher level (e.g., when a client-specified test-and-set fails, indicating the client should restart a read-modify-write sequence). (c) Use `FAILED_PRECONDITION` if the client should not retry until the system state has been explicitly fixed. E.g., if an \"rmdir\" fails because the directory is non-empty, `FAILED_PRECONDITION` should be returned since the client should not retry unless the files are deleted from the directory. HTTP Mapping: 400 Bad Request",
+            "The operation was rejected because the system is not in a state required for the operation's execution. For example, the directory to be deleted is non-empty, an rmdir operation is applied to a non-directory, etc. Service implementors can use the following guidelines to decide between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can retry just the failing call. (b) Use `ABORTED` if the client should retry at a higher level. For example, when a client-specified test-and-set fails, indicating the client should restart a read-modify-write sequence. (c) Use `FAILED_PRECONDITION` if the client should not retry until the system state has been explicitly fixed. For example, if an \"rmdir\" fails because the directory is non-empty, `FAILED_PRECONDITION` should be returned since the client should not retry unless the files are deleted from the directory. HTTP Mapping: 400 Bad Request",
             "The operation was aborted, typically due to a concurrency issue such as a sequencer check failure or transaction abort. See the guidelines above for deciding between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 409 Conflict",
             "The operation was attempted past the valid range. E.g., seeking or reading past end-of-file. Unlike `INVALID_ARGUMENT`, this error indicates a problem that may be fixed if the system state changes. For example, a 32-bit file system will generate `INVALID_ARGUMENT` if asked to read at an offset that is not in the range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read from an offset past the current file size. There is a fair bit of overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`. We recommend using `OUT_OF_RANGE` (the more specific error) when it applies so that callers who are iterating through a space can easily look for an `OUT_OF_RANGE` error to detect when they are done. HTTP Mapping: 400 Bad Request",
             "The operation is not implemented or is not supported\/enabled in this service. HTTP Mapping: 501 Not Implemented",
@@ -5228,199 +5453,6 @@
         }
       }
     },
-    "GoogleCloudApigeeV1Instance": {
-      "id": "GoogleCloudApigeeV1Instance",
-      "description": "Apigee runtime instance.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Required. Resource ID of the instance. Values must match the regular expression `^a-z{0,30}[a-z\\d]$`.",
-          "type": "string"
-        },
-        "location": {
-          "description": "Required. Compute Engine location where the instance resides.",
-          "type": "string"
-        },
-        "peeringCidrRange": {
-          "description": "Optional. Size of the CIDR block range that will be reserved by the instance. PAID organizations support `SLASH_16` to `SLASH_20` and defaults to `SLASH_16`. Evaluation organizations support only `SLASH_23`.",
-          "type": "string",
-          "enumDescriptions": [
-            "Range not specified.",
-            "`\/16` CIDR range.",
-            "`\/17` CIDR range.",
-            "`\/18` CIDR range.",
-            "`\/19` CIDR range.",
-            "`\/20` CIDR range.",
-            "`\/23` CIDR range. Supported for evaluation only."
-          ],
-          "enum": [
-            "CIDR_RANGE_UNSPECIFIED",
-            "SLASH_16",
-            "SLASH_17",
-            "SLASH_18",
-            "SLASH_19",
-            "SLASH_20",
-            "SLASH_23"
-          ]
-        },
-        "nodeConfig": {
-          "description": "Optional. NodeConfig of the instance.",
-          "$ref": "GoogleCloudApigeeV1NodeConfig"
-        },
-        "host": {
-          "description": "Output only. Internal hostname or IP address of the Apigee endpoint used by clients to connect to the service.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "externalHost": {
-          "description": "Output only. External hostname or IP address of the Apigee endpoint used by clients to connect to the service.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "externalHostEnabled": {
-          "description": "Optional. Flag that specifies whether the external Apigee endpoint is enabled for the instance.",
-          "type": "boolean"
-        },
-        "port": {
-          "description": "Output only. Port number of the exposed Apigee endpoint.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "description": {
-          "description": "Optional. Description of the instance.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "Optional. Display name for the instance.",
-          "type": "string"
-        },
-        "createdAt": {
-          "description": "Output only. Time the instance was created in milliseconds since epoch.",
-          "readOnly": true,
-          "type": "string",
-          "format": "int64"
-        },
-        "lastModifiedAt": {
-          "description": "Output only. Time the instance was last modified in milliseconds since epoch.",
-          "readOnly": true,
-          "type": "string",
-          "format": "int64"
-        },
-        "diskEncryptionKeyName": {
-          "description": "Customer Managed Encryption Key (CMEK) used for disk and volume encryption. Required for Apigee paid subscriptions only. Use the following format: `projects\/([^\/]+)\/locations\/([^\/]+)\/keyRings\/([^\/]+)\/cryptoKeys\/([^\/]+)`",
-          "type": "string"
-        },
-        "state": {
-          "description": "Output only. State of the instance. Values other than `ACTIVE` means the resource is not ready to use.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Resource is in an unspecified state.",
-            "Resource is being created.",
-            "Resource is provisioned and ready to use.",
-            "The resource is being deleted."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "CREATING",
-            "ACTIVE",
-            "DELETING"
-          ]
-        }
-      }
-    },
-    "GoogleCloudApigeeV1NodeConfig": {
-      "id": "GoogleCloudApigeeV1NodeConfig",
-      "description": "NodeConfig for the instance.",
-      "type": "object",
-      "properties": {
-        "minNodeCount": {
-          "description": "Optional. The minimum size of the nodepool that will be reserved by the instance. If not specified, default is determined by the size of the CIDR block range.",
-          "type": "string",
-          "format": "int64"
-        },
-        "maxNodeCount": {
-          "description": "Optional. The maximum size of the nodepool that will be reserved by the instance. If not specified, default is determined by the size of the CIDR block range.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "GoogleCloudApigeeV1ListInstancesResponse": {
-      "id": "GoogleCloudApigeeV1ListInstancesResponse",
-      "description": "Response for ListInstances.",
-      "type": "object",
-      "properties": {
-        "instances": {
-          "description": "Instances in the specified organization.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudApigeeV1Instance"
-          }
-        },
-        "nextPageToken": {
-          "description": "Page token that you can include in a ListInstance request to retrieve the next page of content. If omitted, no subsequent pages exist.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudApigeeV1InstanceAttachment": {
-      "id": "GoogleCloudApigeeV1InstanceAttachment",
-      "description": "InstanceAttachment represents the installation of an environment onto an instance.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. ID of the attachment.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "environment": {
-          "description": "ID of the attached environment.",
-          "type": "string"
-        },
-        "createdAt": {
-          "description": "Output only. Time the attachment was created in milliseconds since epoch.",
-          "readOnly": true,
-          "type": "string",
-          "format": "int64"
-        },
-        "state": {
-          "description": "Output only. State of the instance attachment. Values other than ACTIVE means the resource is not ready to use.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Resource is in an unspecified state.",
-            "Resource is being created.",
-            "Resource is provisioned and ready to use.",
-            "The resource is being deleted."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "CREATING",
-            "ACTIVE",
-            "DELETING"
-          ]
-        }
-      }
-    },
-    "GoogleCloudApigeeV1ListInstanceAttachmentsResponse": {
-      "id": "GoogleCloudApigeeV1ListInstanceAttachmentsResponse",
-      "description": "Response for ListInstanceAttachments.",
-      "type": "object",
-      "properties": {
-        "attachments": {
-          "description": "Attachments for the instance.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudApigeeV1InstanceAttachment"
-          }
-        },
-        "nextPageToken": {
-          "description": "Page token that you can include in a ListInstanceAttachments request to retrieve the next page of content. If omitted, no subsequent pages exist.",
-          "type": "string"
-        }
-      }
-    },
     "GoogleCloudApigeeV1ListNatAddressesResponse": {
       "id": "GoogleCloudApigeeV1ListNatAddressesResponse",
       "description": "Response for ListNatAddresses.",
@@ -5617,94 +5649,6 @@
               "description": "Lists hybrid services and its trusted issuers service account ids. This api is authenticated and unauthorized(allow all the users) and used by runtime authn-authz service to query control plane's issuer service account ids."
             }
           }
-        }
-      }
-    },
-    "projects": {
-      "methods": {
-        "migrateConfigData": {
-          "id": "apigee.projects.migrateConfigData",
-          "path": "v1/{+project}:migrateConfigData",
-          "flatPath": "v1/projects/{projectsId}:migrateConfigData",
-          "httpMethod": "POST",
-          "parameters": {
-            "project": {
-              "description": "Required. Name of the GCP project in which to migrate the organization's config data in the following format: `projects\/{project}`.",
-              "pattern": "^projects\/[^\/]+$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "project"
-          ],
-          "request": {
-            "$ref": "GoogleCloudApigeeV1MigrateConfigDataRequest"
-          },
-          "response": {
-            "$ref": "GoogleLongrunningOperation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Copies all proxy and environment configuration data from an Apigee Edge organization into Apigee X\/Hybrid."
-        },
-        "migrateDeveloperPortals": {
-          "id": "apigee.projects.migrateDeveloperPortals",
-          "path": "v1/{+project}:migrateDeveloperPortals",
-          "flatPath": "v1/projects/{projectsId}:migrateDeveloperPortals",
-          "httpMethod": "POST",
-          "parameters": {
-            "project": {
-              "description": "Required. Name of the GCP project in which to migrate the organization's developer portals `projects\/{project}`.",
-              "pattern": "^projects\/[^\/]+$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "project"
-          ],
-          "request": {
-            "$ref": "GoogleCloudApigeeV1MigrateDeveloperPortalsRequest"
-          },
-          "response": {
-            "$ref": "GoogleLongrunningOperation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Migrates all developer portals from an Apigee edge organization into ApigeeX\/Hybrid."
-        },
-        "provisionOrganization": {
-          "id": "apigee.projects.provisionOrganization",
-          "path": "v1/{+project}:provisionOrganization",
-          "flatPath": "v1/projects/{projectsId}:provisionOrganization",
-          "httpMethod": "POST",
-          "parameters": {
-            "project": {
-              "description": "Required. Name of the GCP project with which to associate the Apigee organization.",
-              "pattern": "^projects\/[^\/]+$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "project"
-          ],
-          "request": {
-            "$ref": "GoogleCloudApigeeV1ProvisionOrganizationRequest"
-          },
-          "response": {
-            "$ref": "GoogleLongrunningOperation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Provisions a new Apigee organization with a functioning runtime. This is the standard way to create trial organizations for a free Apigee trial."
         }
       }
     },
@@ -9547,34 +9491,6 @@
         },
         "instances": {
           "methods": {
-            "reportStatus": {
-              "id": "apigee.organizations.instances.reportStatus",
-              "path": "v1/{+instance}:reportStatus",
-              "flatPath": "v1/organizations/{organizationsId}/instances/{instancesId}:reportStatus",
-              "httpMethod": "POST",
-              "parameters": {
-                "instance": {
-                  "description": "The name of the instance reporting this status. For SaaS the request will be rejected if no instance exists under this name. Format is organizations\/{org}\/instances\/{instance}",
-                  "pattern": "^organizations\/[^\/]+\/instances\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "instance"
-              ],
-              "request": {
-                "$ref": "GoogleCloudApigeeV1ReportInstanceStatusRequest"
-              },
-              "response": {
-                "$ref": "GoogleCloudApigeeV1ReportInstanceStatusResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Reports the latest status for a runtime instance."
-            },
             "create": {
               "id": "apigee.organizations.instances.create",
               "path": "v1/{+parent}/instances",
@@ -9728,67 +9644,38 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Updates an Apigee runtime instance. You can update the fields described in NodeConfig. No other fields will be updated. **Note:** Not supported for Apigee hybrid."
+            },
+            "reportStatus": {
+              "id": "apigee.organizations.instances.reportStatus",
+              "path": "v1/{+instance}:reportStatus",
+              "flatPath": "v1/organizations/{organizationsId}/instances/{instancesId}:reportStatus",
+              "httpMethod": "POST",
+              "parameters": {
+                "instance": {
+                  "description": "The name of the instance reporting this status. For SaaS the request will be rejected if no instance exists under this name. Format is organizations\/{org}\/instances\/{instance}",
+                  "pattern": "^organizations\/[^\/]+\/instances\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "instance"
+              ],
+              "request": {
+                "$ref": "GoogleCloudApigeeV1ReportInstanceStatusRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudApigeeV1ReportInstanceStatusResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Reports the latest status for a runtime instance."
             }
           }
           ,
           "resources": {
-            "canaryevaluations": {
-              "methods": {
-                "create": {
-                  "id": "apigee.organizations.instances.canaryevaluations.create",
-                  "path": "v1/{+parent}/canaryevaluations",
-                  "flatPath": "v1/organizations/{organizationsId}/instances/{instancesId}/canaryevaluations",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. Name of the organization. Use the following structure in your request: `organizations\/{org}\/instances\/{instance}`.",
-                      "pattern": "^organizations\/[^\/]+\/instances\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "GoogleCloudApigeeV1CanaryEvaluation"
-                  },
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new canary evaluation for an organization."
-                },
-                "get": {
-                  "id": "apigee.organizations.instances.canaryevaluations.get",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/organizations/{organizationsId}/instances/{instancesId}/canaryevaluations/{canaryevaluationsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. Name of the CanaryEvaluation. Use the following structure in your request: `organizations\/{org}\/instances\/*\/canaryevaluations\/{evaluation}`",
-                      "pattern": "^organizations\/[^\/]+\/instances\/[^\/]+\/canaryevaluations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudApigeeV1CanaryEvaluation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets a CanaryEvaluation for an organization."
-                }
-              }
-            },
             "attachments": {
               "methods": {
                 "create": {
@@ -9904,6 +9791,63 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes an attachment. **Note:** Not supported for Apigee hybrid."
+                }
+              }
+            },
+            "canaryevaluations": {
+              "methods": {
+                "create": {
+                  "id": "apigee.organizations.instances.canaryevaluations.create",
+                  "path": "v1/{+parent}/canaryevaluations",
+                  "flatPath": "v1/organizations/{organizationsId}/instances/{instancesId}/canaryevaluations",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Name of the organization. Use the following structure in your request: `organizations\/{org}\/instances\/{instance}`.",
+                      "pattern": "^organizations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudApigeeV1CanaryEvaluation"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new canary evaluation for an organization."
+                },
+                "get": {
+                  "id": "apigee.organizations.instances.canaryevaluations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/organizations/{organizationsId}/instances/{instancesId}/canaryevaluations/{canaryevaluationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the CanaryEvaluation. Use the following structure in your request: `organizations\/{org}\/instances\/*\/canaryevaluations\/{evaluation}`",
+                      "pattern": "^organizations\/[^\/]+\/instances\/[^\/]+\/canaryevaluations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1CanaryEvaluation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a CanaryEvaluation for an organization."
                 }
               }
             },
@@ -12814,6 +12758,124 @@
               }
             }
           }
+        }
+      }
+    },
+    "projects": {
+      "methods": {
+        "generateInfraMigrationPlan": {
+          "id": "apigee.projects.generateInfraMigrationPlan",
+          "path": "v1/{+project}:generateInfraMigrationPlan",
+          "flatPath": "v1/projects/{projectsId}:generateInfraMigrationPlan",
+          "httpMethod": "GET",
+          "parameters": {
+            "project": {
+              "description": "Required. Name of the GCP project in which to migrate the organization's infrastructure `projects\/{project}`.",
+              "pattern": "^projects\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "organizationId": {
+              "description": "Required. The ID of the Apigee Organization associated with the project.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project"
+          ],
+          "response": {
+            "$ref": "GoogleCloudApigeeV1InfraMigrationPlan"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Generates an Apigee X infrastructure representation from the existing Apigee Edge organization's resources."
+        },
+        "migrateConfigData": {
+          "id": "apigee.projects.migrateConfigData",
+          "path": "v1/{+project}:migrateConfigData",
+          "flatPath": "v1/projects/{projectsId}:migrateConfigData",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Required. Name of the GCP project in which to migrate the organization's config data in the following format: `projects\/{project}`.",
+              "pattern": "^projects\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project"
+          ],
+          "request": {
+            "$ref": "GoogleCloudApigeeV1MigrateConfigDataRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Copies all proxy and environment configuration data from an Apigee Edge organization into Apigee X\/Hybrid."
+        },
+        "migrateDeveloperPortals": {
+          "id": "apigee.projects.migrateDeveloperPortals",
+          "path": "v1/{+project}:migrateDeveloperPortals",
+          "flatPath": "v1/projects/{projectsId}:migrateDeveloperPortals",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Required. Name of the GCP project in which to migrate the organization's developer portals `projects\/{project}`.",
+              "pattern": "^projects\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project"
+          ],
+          "request": {
+            "$ref": "GoogleCloudApigeeV1MigrateDeveloperPortalsRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Migrates all developer portals from an Apigee edge organization into ApigeeX\/Hybrid."
+        },
+        "provisionOrganization": {
+          "id": "apigee.projects.provisionOrganization",
+          "path": "v1/{+project}:provisionOrganization",
+          "flatPath": "v1/projects/{projectsId}:provisionOrganization",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Required. Name of the GCP project with which to associate the Apigee organization.",
+              "pattern": "^projects\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project"
+          ],
+          "request": {
+            "$ref": "GoogleCloudApigeeV1ProvisionOrganizationRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Provisions a new Apigee organization with a functioning runtime. This is the standard way to create trial organizations for a free Apigee trial."
         }
       }
     }

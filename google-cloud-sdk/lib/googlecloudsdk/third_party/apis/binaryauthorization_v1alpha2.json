@@ -206,6 +206,39 @@
         }
       }
     },
+    "ContinuousValidationConfig": {
+      "id": "ContinuousValidationConfig",
+      "description": "A user config for specifying the continuous validation (CV) settings for various policies. There is at most one config per project (a singleton resource).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name, in the format `projects\/*\/continuousValidationConfig`. There is at most one config per project.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "enforcementPolicyConfig": {
+          "description": "The continuous validation config for enforcement policy.",
+          "$ref": "EnforcementPolicyConfig"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the config was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "EnforcementPolicyConfig": {
+      "id": "EnforcementPolicyConfig",
+      "description": "Continuous validation config for enforcement policy.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether continuous validation is enabled for enforcement policy.",
+          "type": "boolean"
+        }
+      }
+    },
     "Policy": {
       "id": "Policy",
       "description": "A policy for container image binary authorization.",
@@ -593,6 +626,59 @@
   "resources": {
     "projects": {
       "methods": {
+        "getContinuousValidationConfig": {
+          "id": "binaryauthorization.projects.getContinuousValidationConfig",
+          "path": "v1alpha2/{+name}",
+          "flatPath": "v1alpha2/projects/{projectsId}/continuousValidationConfig",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The name of the continuous validation config.",
+              "pattern": "^projects\/[^\/]+\/continuousValidationConfig$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "ContinuousValidationConfig"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Gets the continuous validation config for the project. Returns a default config if the project does not have one. The default config disables continuous validation on all policies."
+        },
+        "updateContinuousValidationConfig": {
+          "id": "binaryauthorization.projects.updateContinuousValidationConfig",
+          "path": "v1alpha2/{+name}",
+          "flatPath": "v1alpha2/projects/{projectsId}/continuousValidationConfig",
+          "httpMethod": "PUT",
+          "parameters": {
+            "name": {
+              "description": "Output only. The resource name, in the format `projects\/*\/continuousValidationConfig`. There is at most one config per project.",
+              "pattern": "^projects\/[^\/]+\/continuousValidationConfig$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "ContinuousValidationConfig"
+          },
+          "response": {
+            "$ref": "ContinuousValidationConfig"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Updates a project's continuous validation config, and returns a copy of the new config. A config is always updated as a whole to avoid race conditions with concurrent updating requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is malformed."
+        },
         "getPolicy": {
           "id": "binaryauthorization.projects.getPolicy",
           "path": "v1alpha2/{+name}",

@@ -195,22 +195,26 @@ class ReleaseClient(object):
             release=release_config,
             releaseId=release_ref.Name()))
 
-  def Promote(self, release_ref, to_target):
-    """Promotes the release to the first target in the promote sequence.
+  def Promote(self, release_ref, to_target, rollout_id=None):
+    """Promotes the release to a specified target in the promotion sequence.
 
     Args:
       release_ref: release resource object.
       to_target: the destination target to promote into.
+      rollout_id: ID to assign to the generated rollout.
 
     Returns:
       The operation message.
     """
-    log.debug('promoting release to target{}.'.format(to_target))
+    log.debug('promoting release {} to target{}.'.format(
+        release_ref.RelativeName(), to_target))
 
     return self._service.Promote(
         self.messages
         .ClouddeployProjectsLocationsDeliveryPipelinesReleasesPromoteRequest(
-            toTarget=to_target, name=release_ref.RelativeName()))
+            toTarget=to_target,
+            name=release_ref.RelativeName(),
+            rolloutId=rollout_id))
 
   def Get(self, name):
     """Gets a release resource.

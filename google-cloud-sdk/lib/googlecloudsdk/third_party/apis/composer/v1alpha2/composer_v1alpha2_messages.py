@@ -221,11 +221,12 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       Composer environments in versions composer-1.*.*-airflow-*.*.*. *
       config.maintenanceWindow * Maintenance window during which Cloud
       Composer components may be under maintenance. * config.workloadsConfig *
-      The workloads config settings for GKE cluster within Composer
-      environment. Supported for Cloud Composer environments in versions
-      composer-2.*.*-airflow-*.*.* and newer. * config.environmentSize * The
-      size of the environment. Supported for Cloud Composer environments in
-      versions composer-2.*.*-airflow-*.*.* and newer.
+      The workloads configuration settings for the GKE cluster associated with
+      the Cloud Composer environment. Supported for Cloud Composer
+      environments in versions composer-2.*.*-airflow-*.*.* and newer. *
+      config.environmentSize * The size of the Cloud Composer environment.
+      Supported for Cloud Composer environments in versions
+      composer-2.*.*-airflow-*.*.* and newer.
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -366,7 +367,7 @@ class Empty(_messages.Message):
 
 
 class EncryptionConfig(_messages.Message):
-  r"""The encryption options for the Composer environment and its
+  r"""The encryption options for the Cloud Composer environment and its
   dependencies.
 
   Fields:
@@ -475,9 +476,9 @@ class EnvironmentConfig(_messages.Message):
   r"""Configuration information for an environment.
 
   Enums:
-    EnvironmentSizeValueValuesEnum: Optional. The size of the environment.
-      This field is supported for Cloud Composer environments in versions
-      composer-2.*.*-airflow-*.*.* and newer.
+    EnvironmentSizeValueValuesEnum: Optional. The size of the Cloud Composer
+      environment. This field is supported for Cloud Composer environments in
+      versions composer-2.*.*-airflow-*.*.* and newer.
 
   Fields:
     airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
@@ -492,10 +493,10 @@ class EnvironmentConfig(_messages.Message):
       instance used internally by Apache Airflow software. This field is
       supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*.
-    encryptionConfig: Optional. The encryption options for the Composer
+    encryptionConfig: Optional. The encryption options for the Cloud Composer
       environment and its dependencies. Cannot be updated.
-    environmentSize: Optional. The size of the environment. This field is
-      supported for Cloud Composer environments in versions
+    environmentSize: Optional. The size of the Cloud Composer environment.
+      This field is supported for Cloud Composer environments in versions
       composer-2.*.*-airflow-*.*.* and newer.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
@@ -522,16 +523,17 @@ class EnvironmentConfig(_messages.Message):
     webServerNetworkAccessControl: Optional. The network-level access control
       policy for the Airflow web server. If unspecified, no network-level
       access restrictions will be applied.
-    workloadsConfig: Optional. The Workloads Config settings for GKE cluster
-      within Composer environment. GKE cluster handles Airflow scheduler and
-      workers workloads. This field is supported for Cloud Composer
-      environments in versions composer-2.*.*-airflow-*.*.* and newer.
+    workloadsConfig: Optional. The workloads configuration settings for the
+      GKE cluster associated with the Cloud Composer environment. The GKE
+      cluster runs Airflow scheduler and workers workloads. This field is
+      supported for Cloud Composer environments in versions
+      composer-2.*.*-airflow-*.*.* and newer.
   """
 
   class EnvironmentSizeValueValuesEnum(_messages.Enum):
-    r"""Optional. The size of the environment. This field is supported for
-    Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and
-    newer.
+    r"""Optional. The size of the Cloud Composer environment. This field is
+    supported for Cloud Composer environments in versions
+    composer-2.*.*-airflow-*.*.* and newer.
 
     Values:
       ENVIRONMENT_SIZE_UNSPECIFIED: The size of the environment is
@@ -567,33 +569,38 @@ class IPAllocationPolicy(_messages.Message):
 
   Fields:
     clusterIpv4CidrBlock: Optional. The IP address range used to allocate IP
-      addresses to pods in the GKE cluster. This field is applicable only when
-      `use_ip_aliases` is true. Set to blank to have GKE choose a range with
-      the default size. Set to /netmask (e.g. `/14`) to have GKE choose a
+      addresses to pods in the GKE cluster. For Cloud Composer environments in
+      versions composer-1.*.*-airflow-*.*.*, this field is applicable only
+      when `use_ip_aliases` is true. Set to blank to have GKE choose a range
+      with the default size. Set to /netmask (e.g. `/14`) to have GKE choose a
       range with a specific netmask. Set to a
       [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
     clusterSecondaryRangeName: Optional. The name of the GKE cluster's
-      secondary range used to allocate IP addresses to pods. This field is
-      applicable only when `use_ip_aliases` is true.
+      secondary range used to allocate IP addresses to pods. For Cloud
+      Composer environments in versions composer-1.*.*-airflow-*.*.*, this
+      field is applicable only when `use_ip_aliases` is true.
     servicesIpv4CidrBlock: Optional. The IP address range of the services IP
-      addresses in this GKE cluster. This field is applicable only when
-      `use_ip_aliases` is true. Set to blank to have GKE choose a range with
-      the default size. Set to /netmask (e.g. `/14`) to have GKE choose a
+      addresses in this GKE cluster. For Cloud Composer environments in
+      versions composer-1.*.*-airflow-*.*.*, this field is applicable only
+      when `use_ip_aliases` is true. Set to blank to have GKE choose a range
+      with the default size. Set to /netmask (e.g. `/14`) to have GKE choose a
       range with a specific netmask. Set to a
       [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
     servicesSecondaryRangeName: Optional. The name of the services' secondary
-      range used to allocate IP addresses to the GKE cluster. This field is
-      applicable only when `use_ip_aliases` is true.
+      range used to allocate IP addresses to the GKE cluster. For Cloud
+      Composer environments in versions composer-1.*.*-airflow-*.*.*, this
+      field is applicable only when `use_ip_aliases` is true.
     useIpAliases: Optional. Whether or not to enable Alias IPs in the GKE
-      cluster. If `true`, a VPC-native cluster is created. For Cloud Composer
-      environments in versions composer-2.*.*-airflow-*.*.* and newer this
-      field is `true` by default and cannot be changed.
+      cluster. If `true`, a VPC-native cluster is created. This field is only
+      supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. Environments in newer versions always use
+      VPC-native GKE clusters.
   """
 
   clusterIpv4CidrBlock = _messages.StringField(1)
@@ -757,6 +764,8 @@ class NodeConfig(_messages.Message):
     oauthScopes: Optional. The set of Google API scopes to be made available
       on all node VMs. If `oauth_scopes` is empty, defaults to
       ["https://www.googleapis.com/auth/cloud-platform"]. Cannot be updated.
+      This field is supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*.
     serviceAccount: Optional. The Google Cloud Platform Service Account to be
       used by the workloads. If a service account is not specified, the
       "default" Compute Engine service account is used. Cannot be updated for
@@ -990,8 +999,8 @@ class PrivateEnvironmentConfig(_messages.Message):
       `web_server_ipv4_cidr_block`.
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
       environment is created. If this field is set to true,
-      `IPAllocationPolicy.use_ip_aliases` must be set to true (for Cloud
-      Composer environments in versions composer-1.*.*-airflow-*.*.*).
+      `IPAllocationPolicy.use_ip_aliases` must be set to true for Cloud
+      Composer environments in versions composer-1.*.*-airflow-*.*.*.
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
     webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for
@@ -1013,6 +1022,18 @@ class PrivateEnvironmentConfig(_messages.Message):
 
 class RestartWebServerRequest(_messages.Message):
   r"""Restart Airflow web server."""
+
+
+class SchedulerResource(_messages.Message):
+  r"""Configuration for resources used by Airflow scheduler.
+
+  Fields:
+    cpu: Optional. CPU request and limit for Airflow scheduler.
+    memoryGb: Optional. Memory (GB) request and limit for Airflow scheduler.
+  """
+
+  cpu = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class SoftwareConfig(_messages.Message):
@@ -1107,9 +1128,10 @@ class SoftwareConfig(_messages.Message):
       use the empty string as the value.
     pythonVersion: Optional. The major version of Python used to run the
       Apache Airflow scheduler, worker, and webserver processes. Can be set to
-      '2' or '3'. If not specified, the default is '3'. Cannot be updated. For
-      Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and
-      newer, '3' is the only supported major version of Python.
+      '2' or '3'. If not specified, the default is '3'. Cannot be updated.
+      This field is only supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. Environments in newer versions always use
+      Python major version 3.
   """
 
   class AirflowExecutorTypeValueValuesEnum(_messages.Enum):
@@ -1378,22 +1400,43 @@ class WebServerNetworkAccessControl(_messages.Message):
   allowedIpRanges = _messages.MessageField('AllowedIpRange', 1, repeated=True)
 
 
-class WorkloadsConfig(_messages.Message):
-  r"""The Kubernetes workloads configuration for GKE cluster within Composer
-  environment. Supported for Cloud Composer environments in versions
-  composer-2.*.*-airflow-*.*.* and newer.
+class WorkerResource(_messages.Message):
+  r"""Configuration for resources used by Airflow workers.
 
   Fields:
+    cpu: Optional. CPU request and limit for a single Airflow worker replica.
+    maxCount: Optional. Maximum number of workers for autoscaling.
+    memoryGb: Optional. Memory (GB) request and limit for a single Airflow
+      worker replica.
+    minCount: Optional. Minimum number of workers for autoscaling.
+  """
+
+  cpu = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  minCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class WorkloadsConfig(_messages.Message):
+  r"""The Kubernetes workloads configuration for GKE cluster associated with
+  the Cloud Composer environment. Supported for Cloud Composer environments in
+  versions composer-2.*.*-airflow-*.*.* and newer.
+
+  Fields:
+    scheduler: Optional. Resources used by Airflow scheduler.
     schedulerCpu: Optional. CPU request and limit for Airflow scheduler.
+    worker: Optional. Resources used by Airflow workers.
     workerCpu: Optional. CPU request and limit for Airflow worker.
     workerMaxCount: Optional. Maximum number of workers for autoscaling.
     workerMinCount: Optional. Minimum number of workers for autoscaling.
   """
 
-  schedulerCpu = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  workerCpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  workerMaxCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  workerMinCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  scheduler = _messages.MessageField('SchedulerResource', 1)
+  schedulerCpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  worker = _messages.MessageField('WorkerResource', 3)
+  workerCpu = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  workerMaxCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  workerMinCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 encoding.AddCustomJsonFieldMapping(

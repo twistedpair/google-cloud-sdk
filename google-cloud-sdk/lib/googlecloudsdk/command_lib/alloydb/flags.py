@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-"""Common flags for some of the Alloydb commands.
+"""Common flags for some of the AlloyDB commands.
 
 Flags are specified with functions that take in a single argument, the parser,
 and add the newly constructed flag to that parser.
@@ -51,7 +51,7 @@ def AddCluster(parser):
   """Adds a positional cluster argument to parser.
 
   Args:
-    parser: argparse parser.
+    parser: argparse.Parser: Parser object for command line inputs.
   """
   parser.add_argument(
       'cluster',
@@ -63,8 +63,8 @@ def AddRegion(parser, required=True):
   """Adds --region flag to parser.
 
   Args:
-    parser: argparse parser.
-    required: whether or not --region is required
+    parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --region is required.
   """
   parser.add_argument(
       '--region',

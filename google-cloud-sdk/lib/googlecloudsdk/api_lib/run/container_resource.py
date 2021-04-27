@@ -31,6 +31,7 @@ CMEK_KEY_ANNOTATION = 'run.googleapis.com/encryption-key'
 
 EGRESS_SETTINGS_ANNOTATION = 'run.googleapis.com/vpc-access-egress'
 EGRESS_SETTINGS_ALL = 'all'
+EGRESS_SETTINGS_ALL_TRAFFIC = 'all-traffic'
 EGRESS_SETTINGS_PRIVATE_RANGES_ONLY = 'private-ranges-only'
 
 

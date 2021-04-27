@@ -592,6 +592,12 @@
         "canReschedule": {
           "description": "If the scheduled maintenance can be rescheduled, default is true.",
           "type": "boolean"
+        },
+        "scheduleDeadlineTime": {
+          "description": "Output only. The time deadline any schedule start time cannot go beyond, including reschedule.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

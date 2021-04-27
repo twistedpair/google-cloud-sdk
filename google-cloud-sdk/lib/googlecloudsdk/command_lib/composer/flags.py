@@ -392,6 +392,34 @@ WORKER_CPU = base.Argument(
     CPU allocated to each Airflow worker
     """)
 
+SCHEDULER_MEMORY = base.Argument(
+    '--scheduler-memory',
+    hidden=True,
+    type=arg_parsers.BinarySize(
+        lower_bound='128MB',
+        upper_bound='512GB',
+        suggested_binary_size_scales=['MB', 'GB'],
+        default_unit='G'),
+    default=None,
+    help="""\
+    Memory allocated to Airflow scheduler. If units are not provided,
+    defaults to GB.
+    """)
+
+WORKER_MEMORY = base.Argument(
+    '--worker-memory',
+    hidden=True,
+    type=arg_parsers.BinarySize(
+        lower_bound='128MB',
+        upper_bound='512GB',
+        suggested_binary_size_scales=['MB', 'GB'],
+        default_unit='G'),
+    default=None,
+    help="""\
+    Memory allocated to Airflow worker. If units are not provided,
+    defaults to GB.
+    """)
+
 MIN_WORKERS = base.Argument(
     '--min-workers',
     hidden=True,
@@ -778,13 +806,13 @@ def ValidateDiskSize(parameter_name, disk_size):
   Args:
     parameter_name: parameter_name, the name of the parameter, formatted as
         it would be in help text (e.g., '--disk-size' or 'DISK_SIZE')
-    disk_size: int, the disk size in bytes
+    disk_size: int, the disk size in bytes, or None for default value
 
   Raises:
     exceptions.InvalidArgumentException: the disk size was invalid
   """
   gb_mask = (1 << 30) - 1
-  if disk_size & gb_mask:
+  if disk_size and disk_size & gb_mask:
     raise exceptions.InvalidArgumentException(
         parameter_name, 'Must be an integer quantity of GB.')
 
@@ -936,6 +964,8 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group):
       AUTOSCALING_FLAG_GROUP_DESCRIPTION, hidden=True)
   SCHEDULER_CPU.AddToParser(update_group)
   WORKER_CPU.AddToParser(update_group)
+  SCHEDULER_MEMORY.AddToParser(update_group)
+  WORKER_MEMORY.AddToParser(update_group)
   MIN_WORKERS.AddToParser(update_group)
   MAX_WORKERS.AddToParser(update_group)
 

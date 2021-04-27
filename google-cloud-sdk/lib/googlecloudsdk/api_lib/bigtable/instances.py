@@ -49,7 +49,8 @@ def GetIamPolicy(instance_ref, release_track):
   """Get IAM policy for a given instance."""
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
-  if release_track == base.ReleaseTrack.ALPHA:
+  if (release_track == base.ReleaseTrack.ALPHA or
+      release_track == base.ReleaseTrack.BETA):
     req = msgs.BigtableadminProjectsInstancesGetIamPolicyRequest(
         resource=instance_ref.RelativeName(),
         getIamPolicyRequest=msgs.GetIamPolicyRequest(
@@ -65,7 +66,8 @@ def SetIamPolicy(instance_ref, release_track, policy):
   """Sets the given policy on the instance, overwriting what exists."""
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
-  if release_track == base.ReleaseTrack.ALPHA:
+  if (release_track == base.ReleaseTrack.ALPHA or
+      release_track == base.ReleaseTrack.BETA):
     policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
   req = msgs.BigtableadminProjectsInstancesSetIamPolicyRequest(
       resource=instance_ref.RelativeName(),

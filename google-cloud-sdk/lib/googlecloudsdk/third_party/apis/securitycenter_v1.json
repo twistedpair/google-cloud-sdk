@@ -948,7 +948,7 @@
     },
     "Resource": {
       "id": "Resource",
-      "description": "Information related to the Google Cloud resource that is associated with this finding. LINT.IfChange",
+      "description": "Information related to the Google Cloud resource that is associated with this finding.",
       "type": "object",
       "properties": {
         "name": {

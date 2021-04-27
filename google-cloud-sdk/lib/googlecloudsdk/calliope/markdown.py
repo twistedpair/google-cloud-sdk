@@ -430,7 +430,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     self._out('\n{usage}{depth}\n'.format(
         usage=usage, depth=':' * (depth + _SECOND_LINE_OFFSET)))
     if arg.is_required and depth and not single:
-      modal = ('\nThis {arg_type} must be specified if any of the other '
+      modal = ('\n+\nThis {arg_type} must be specified if any of the other '
                'arguments in this group are specified.').format(
                    arg_type=self._ArgTypeName(arg))
     else:
@@ -462,7 +462,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         continue
       if heading:
         self._out('\n{0} {1}\n\n'.format(':' * (depth + _SECOND_LINE_OFFSET),
-                                         ' '.join(heading)))
+                                         '\n+\n'.join(heading)))
         heading = None
         depth += 1
       if a.is_group:

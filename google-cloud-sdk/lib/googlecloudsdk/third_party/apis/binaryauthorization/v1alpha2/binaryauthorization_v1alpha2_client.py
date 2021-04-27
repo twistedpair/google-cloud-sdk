@@ -490,6 +490,33 @@ class BinaryauthorizationV1alpha2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GetContinuousValidationConfig(self, request, global_params=None):
+      r"""Gets the continuous validation config for the project. Returns a default config if the project does not have one. The default config disables continuous validation on all policies.
+
+      Args:
+        request: (BinaryauthorizationProjectsGetContinuousValidationConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ContinuousValidationConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetContinuousValidationConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetContinuousValidationConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/continuousValidationConfig',
+        http_method='GET',
+        method_id='binaryauthorization.projects.getContinuousValidationConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}',
+        request_field='',
+        request_type_name='BinaryauthorizationProjectsGetContinuousValidationConfigRequest',
+        response_type_name='ContinuousValidationConfig',
+        supports_download=False,
+    )
+
     def GetPolicy(self, request, global_params=None):
       r"""A policy specifies the attestors that must attest to a container image, before the project is allowed to deploy that image. There is at most one policy per project. All image admission requests are permitted if a project has no policy. Gets the policy for this project. Returns a default policy if the project does not have one.
 
@@ -514,6 +541,33 @@ class BinaryauthorizationV1alpha2(base_api.BaseApiClient):
         request_field='',
         request_type_name='BinaryauthorizationProjectsGetPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def UpdateContinuousValidationConfig(self, request, global_params=None):
+      r"""Updates a project's continuous validation config, and returns a copy of the new config. A config is always updated as a whole to avoid race conditions with concurrent updating requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is malformed.
+
+      Args:
+        request: (ContinuousValidationConfig) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ContinuousValidationConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateContinuousValidationConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateContinuousValidationConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/continuousValidationConfig',
+        http_method='PUT',
+        method_id='binaryauthorization.projects.updateContinuousValidationConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}',
+        request_field='<request>',
+        request_type_name='ContinuousValidationConfig',
+        response_type_name='ContinuousValidationConfig',
         supports_download=False,
     )
 

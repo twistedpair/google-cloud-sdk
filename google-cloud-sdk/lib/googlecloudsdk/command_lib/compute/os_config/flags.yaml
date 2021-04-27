@@ -1,0 +1,5 @@
+file:
+  arg_name: file
+  required: true
+  help_text: |-
+    Absolute path to OS policy assignment file on your local client. File must be in either JSON or YAML format.

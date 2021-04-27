@@ -28,7 +28,7 @@ The location of the source that contains skaffold.yaml. The location can be a di
 
 
 def AddGcsSourceStagingDirFlag(parser, hidden=False):
-  """Add a Google Cloud Storage directory flag for staging the build."""
+  """Adds a Google Cloud Storage directory flag for staging the build."""
   parser.add_argument(
       '--gcs-source-staging-dir',
       hidden=hidden,
@@ -39,7 +39,7 @@ def AddGcsSourceStagingDirFlag(parser, hidden=False):
 
 
 def AddIgnoreFileFlag(parser, hidden=False):
-  """Add an ignore file flag."""
+  """Adds an ignore file flag."""
   parser.add_argument(
       '--ignore-file',
       hidden=hidden,
@@ -48,7 +48,7 @@ def AddIgnoreFileFlag(parser, hidden=False):
 
 
 def AddToTargetFlag(parser, hidden=False):
-  """Add to-target flag."""
+  """Adds to-target flag."""
   parser.add_argument(
       '--to-target',
       hidden=hidden,
@@ -56,7 +56,7 @@ def AddToTargetFlag(parser, hidden=False):
 
 
 def AddGcsRenderDirFlag(parser, hidden=False):
-  """Add gcs-render-dir flag."""
+  """Adds gcs-render-dir flag."""
   parser.add_argument(
       '--gcs-render-dir',
       hidden=hidden,
@@ -65,7 +65,7 @@ def AddGcsRenderDirFlag(parser, hidden=False):
 
 
 def AddImagesGroup(parser, hidden=False):
-  """Add Images flag."""
+  """Adds Images flag."""
   images_group = parser.add_mutually_exclusive_group()
   images_group.add_argument(
       '--images',
@@ -87,7 +87,7 @@ For example:
 
 
 def AddSourceFlag(parser, hidden=False):
-  """Add source flag."""
+  """Adds source flag."""
   parser.add_argument(
       '--source',
       hidden=hidden,
@@ -97,10 +97,29 @@ def AddSourceFlag(parser, hidden=False):
 
 
 def AddConfigFile(parser, hidden=False):
-  """Add config flag."""
+  """Adds config flag."""
   parser.add_argument(
       '--file',
       hidden=hidden,
       required=True,
       help='Path to yaml file containing Deliver Pipeline(s), Target(s) declarative definitions.',
   )
+
+
+def AddToTarget(parser, hidden=False):
+  """Adds to-target flag."""
+  parser.add_argument(
+      '--to-target', hidden=hidden, help='Destination target to promote into.')
+
+
+def AddRolloutID(parser, hidden=False):
+  """Adds rollout-id flag."""
+  parser.add_argument(
+      '--rollout-id',
+      hidden=hidden,
+      help='ID to assign to the generated rollout for promotion.')
+
+
+def AddRelease(parser, help_text, hidden=False):
+  """Adds release flag."""
+  parser.add_argument('--release', hidden=hidden, help=help_text)

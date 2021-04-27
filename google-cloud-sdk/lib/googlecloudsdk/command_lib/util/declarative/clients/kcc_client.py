@@ -48,16 +48,66 @@ ApiClientArgs = collections.namedtuple('ApiClientArgs', [
     'content_type', 'filter_func'
 ])
 
-KrmGroupValueKind = collections.namedtuple('KrmGroupValueKind', [
-    'kind', 'service', 'group', 'bulk_export_supported', 'export_supported',
-    'resource_name_format'
-])
-
-
 RESOURCE_LIST_FORMAT = (
     'table[box](GVK.Kind, SupportsBulkExport.yesno("x", ""):label="BULK '
     'EXPORT?", SupportsExport.yesno("x", ""):label="EXPORT?", '
     'ResourceNameFormat:label="RESOURCE NAME FORMAT")')
+
+
+class KrmGroupValueKind(object):
+  """Value class for KRM Group Value Kind Data."""
+
+  def __init__(self,
+               kind,
+               service,
+               group,
+               bulk_export_supported,
+               export_supported,
+               version=None,
+               resource_name_format=None):
+    self.kind = kind
+    self.service = service
+    self.group = group
+    self.version = version
+    self.bulk_export_supported = bulk_export_supported
+    self.export_supported = export_supported
+    self.resource_name_format = resource_name_format
+
+  def AsDict(self):
+    """Convert to Config Connector compatible dict format."""
+    gvk = collections.OrderedDict()
+    output = collections.OrderedDict()
+    gvk['Group'] = self.group
+    gvk['Kind'] = self.kind
+    gvk['Version'] = self.version or ''
+    output['GVK'] = gvk
+    output['ResourceNameFormat'] = self.resource_name_format or ''
+    output['SupportsBulkExport'] = self.bulk_export_supported
+    output['SupportsExport'] = self.export_supported
+    return output
+
+  def __str__(self):
+    return yaml.dump(self.AsDict(), round_trip=True)
+
+  def __repr__(self):
+    return self.__str__()
+
+  def __eq__(self, o):
+    if not isinstance(o, KrmGroupValueKind):
+      return False
+    return (self.kind == o.kind and self.service == o.service and
+            self.group == o.group and self.version == o.version and
+            self.bulk_export_supported == o.bulk_export_supported and
+            self.export_supported == o.export_supported and
+            self.resource_name_format == o.resource_name_format)
+
+  def __hash__(self):
+    return sum(
+        map(hash, [
+            self.kind, self.service, self.group, self.version,
+            self.bulk_export_supported, self.export_supported,
+            self.resource_name_format
+        ]))
 
 
 class ResourceNotFoundException(client_base.ClientException):
@@ -479,9 +529,7 @@ class KccClient(client_base.DeclarativeClient):
         aborted_message='Aborted Export.'):
       supported_kinds = self.ListSupportedResourcesForParent(
           project=project, organization=organization, folder=folder)
-      supported_kinds = [x._asdict() for x in supported_kinds]
-      for kind in supported_kinds:
-        del kind['service']  # Exclude 'service' from output
+      supported_kinds = [x.AsDict() for x in supported_kinds]
       return supported_kinds
 
   # TODO(b/182609806): Cache print resources data or load to static table.
@@ -501,8 +549,6 @@ class KccClient(client_base.DeclarativeClient):
           kind_val not in filter_kinds and
           group_kind_val not in filter_kinds):
         continue
-      group_val = gvk['GVK']['Group']
-      service_val = group_val.split('.')[0].lower()
       table.append(KrmGroupValueKind(
           kind=kind_val, service=service_val, group=group_val,
           bulk_export_supported=gvk['SupportsBulkExport'],
@@ -537,4 +583,3 @@ class KccClient(client_base.DeclarativeClient):
             gvk.service in asset_uri):
           exportable_kinds.append(gvk)
     return sorted(exportable_kinds, key=lambda x: x.kind)
-

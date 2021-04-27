@@ -447,11 +447,12 @@ class Endpoint(_messages.Message):
       syntax and read/write to the same location in Service Directory.
     name: Immutable. The resource name for the endpoint in the format
       `projects/*/locations/*/namespaces/*/services/*/endpoints/*`.
-    network: Immutable. Specifies the Google Compute Engine Network (VPC) of
-      the Endpoint. Project MUST be specified by project-number, project-id is
-      rejected. Invalid networks (bad format) are rejected. Network and
-      Project existence is not checked. Example: `projects/project-
-      number/locations/global/networks/my-network`
+    network: Immutable. The Google Compute Engine network (VPC) of the
+      endpoint in the format `projects//locations/global/networks/*`. The
+      project must be specified by project number (project id is rejected).
+      Incorrectly formatted networks are rejected, but no other validation is
+      performed on this field (ex. network or project existence, reachability,
+      or permissions).
     port: Optional. Service Directory rejects values outside of `[0, 65535]`.
     uid: Output only. A globally unique identifier (in UUID4 format) for this
       endpoint.

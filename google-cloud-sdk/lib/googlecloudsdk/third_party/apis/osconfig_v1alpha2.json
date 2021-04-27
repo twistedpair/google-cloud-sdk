@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/compute/docs/manage-os",
+  "documentationLink": "https://cloud.google.com/compute/docs/osconfig/rest",
   "protocol": "rest",
   "rootUrl": "https://osconfig.googleapis.com/",
   "mtlsRootUrl": "https://osconfig.mtls.googleapis.com/",

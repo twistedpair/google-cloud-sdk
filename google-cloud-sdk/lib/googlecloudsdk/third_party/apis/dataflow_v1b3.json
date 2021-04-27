@@ -240,6 +240,10 @@
           "description": "The disk byte size of the snapshot. Only available for snapshots in READY state.",
           "type": "string",
           "format": "int64"
+        },
+        "region": {
+          "description": "Cloud region where this snapshot lives in, e.g., \"us-central1\".",
+          "type": "string"
         }
       }
     },
@@ -2370,6 +2374,13 @@
             "PUBSUB_TOPIC",
             "PUBSUB_SUBSCRIPTION"
           ]
+        },
+        "customMetadata": {
+          "description": "Optional. Additional metadata for describing this parameter.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

@@ -379,6 +379,15 @@ class _BaseInstances(object):
             reducers.ActiveDirectoryConfig(sql_messages,
                                            args.active_directory_domain))
 
+    # ALPHA args.
+    if _IsAlpha(release_track):
+      if args.allocated_ip_range_name:
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        # At CloudSQL admin api, reservedIpRange is the field for allocated ip
+        # range name.
+        settings.ipConfiguration.reservedIpRange = args.allocated_ip_range_name
+
     return settings
 
   @classmethod

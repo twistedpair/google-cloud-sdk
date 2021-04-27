@@ -106,6 +106,8 @@ def _get_full_bucket_metadata_string(resource):
       resource.metadata['LoggingEnabled'])
   website_value = _get_error_or_exists_string(resource.metadata['Website'])
   cors_value = _get_error_or_exists_string(resource.metadata['CORSRules'])
+  encryption_value = _get_error_or_exists_string(
+      resource.metadata['ServerSideEncryptionConfiguration'])
   lifecycle_configuration_value = _get_error_or_exists_string(
       resource.metadata['LifecycleConfiguration'])
 
@@ -136,6 +138,7 @@ def _get_full_bucket_metadata_string(resource):
       '{logging_config_line}'
       '{website_config_line}'
       '{cors_config_line}'
+      '{encryption_config_line}'
       '{lifecycle_config_line}'
       '{requester_pays_line}'
       '{acl_section}'
@@ -151,6 +154,8 @@ def _get_full_bucket_metadata_string(resource):
           'Website configuration', website_value),
       cors_config_line=resource_util.get_padded_metadata_key_value_line(
           'CORS configuration', cors_value),
+      encryption_config_line=resource_util.get_padded_metadata_key_value_line(
+          'Encryption configuration', encryption_value),
       lifecycle_config_line=resource_util.get_padded_metadata_key_value_line(
           'Lifecycle configuration', lifecycle_configuration_value),
       requester_pays_line=resource_util.get_padded_metadata_key_value_line(

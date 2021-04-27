@@ -315,8 +315,8 @@ def AddArgsForAddIamPolicyBinding(parser,
 
   help_text = """
     Role name to assign to the member. The role name is the complete path of a
-    predefined role, such as `roles/logging.viewer`, or a custom role, such as
-    `organizations/{ORGANIZATION_ID}/roles/logging.viewer`.
+    predefined role, such as `roles/logging.viewer`, or the role ID for a
+    custom role, such as `organizations/{ORGANIZATION_ID}/roles/logging.viewer`.
   """
 
   parser.add_argument(

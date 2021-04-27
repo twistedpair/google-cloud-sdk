@@ -52,3 +52,58 @@ inventory:
   - *instance
   help: |
     Inventory of the {resource}.
+
+# Create OS policy assignment is a separate resource due to
+#   the requirement of the request_id_field in the create method.
+create_os_policy_assignment:
+  name: OS policy assignment
+  collection: osconfig.projects.locations.osPolicyAssignments
+  request_id_field: osPolicyAssignmentId
+  attributes:
+  - *project
+  - *location
+  - &create_os_policy_assignment
+    parameter_name: osPolicyAssignmentsId
+    attribute_name: os_policy_assignment
+    help: |
+      OS policy assignment.
+
+os_policy_assignment:
+  name: OS policy assignment
+  collection: osconfig.projects.locations.osPolicyAssignments
+  attributes:
+  - *project
+  - *location
+  - &os_policy_assignment
+    parameter_name: osPolicyAssignmentsId
+    attribute_name: os_policy_assignment
+    help: |
+      OS policy assignment.
+
+# An additional OS policy assignment resource is needed since Gcloud
+#   disallows positional arguments with dashes. The only difference is
+#   in attribute_name.
+os_policy_assignment_operation_attribute:
+  name: OS policy assignment
+  collection: osconfig.projects.locations.osPolicyAssignments
+  attributes:
+  - *project
+  - *location
+  - &os_policy_assignment_operation_attribute
+    parameter_name: osPolicyAssignmentsId
+    attribute_name: os-policy-assignment
+    help: |
+      OS policy assignment.
+
+os_policy_assignment_operation:
+  name: OS policy assignment operation
+  collection: osconfig.projects.locations.osPolicyAssignments.operations
+  attributes:
+  - *project
+  - *location
+  - *os_policy_assignment_operation_attribute
+  - &os_policy_assignment_operations
+    parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      OS policy assignment operation.

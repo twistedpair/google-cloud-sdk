@@ -21,10 +21,13 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from enum import Enum
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import common_args
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core import exceptions as core_exceptions
 import six
 
 
@@ -71,10 +74,8 @@ INSTANCE_DETAILS_KEY_MAP = {
     'noAgentDetectedInstanceCount': InstanceDetailsStates.FINISHED,
 }
 
-
 _GCS_PREFIXES = ('gs://', 'https://www.googleapis.com/storage/v1/',
                  'https://storage.googleapis.com/')
-
 
 _MAX_LIST_BATCH_SIZE = 100
 
@@ -122,6 +123,25 @@ def GetResourceName(uri):
 def GetGuestPolicyRelativePath(parent, guest_policy):
   """Returns the relative path of an osconfig guest policy."""
   return '/'.join([parent, 'guestPolicies', guest_policy])
+
+
+def GetApiMessage(api_version):
+  """Returns the messages module with the given api_version."""
+  return apis.GetMessagesModule('osconfig', api_version)
+
+
+def GetApiVersion(args):
+  """Return api version for the corresponding release track."""
+  release_track = args.calliope_command.ReleaseTrack()
+
+  if release_track == base.ReleaseTrack.ALPHA:
+    return 'v1alpha'
+  elif release_track == base.ReleaseTrack.BETA:
+    return 'v1beta'
+  elif release_track == base.ReleaseTrack.GA:
+    return 'v1'
+  else:
+    raise core_exceptions.UnsupportedReleaseTrackError(release_track)
 
 
 def AddResourceParentArgs(parser, noun, verb):
@@ -179,12 +199,12 @@ def GetResourceAndUpdateFieldsFromFile(file_path, resource_message_type):
     resource_to_parse = yaml.load_path(file_path)
   except yaml.YAMLParseError as e:
     raise exceptions.BadFileException(
-        'Policy config file [{0}] cannot be parsed. {1}'
-        .format(file_path, six.text_type(e)))
+        'Policy config file [{0}] cannot be parsed. {1}'.format(
+            file_path, six.text_type(e)))
   except yaml.FileLoadError as e:
     raise exceptions.BadFileException(
-        'Policy config file [{0}] cannot be opened or read. {1}'
-        .format(file_path, six.text_type(e)))
+        'Policy config file [{0}] cannot be opened or read. {1}'.format(
+            file_path, six.text_type(e)))
 
   if not isinstance(resource_to_parse, dict):
     raise exceptions.BadFileException(
@@ -237,3 +257,18 @@ def GetGcsParams(arg_name, path):
       'object': obj_str[0],
       'generationNumber': int(obj_str[1]),
   }
+
+
+def ParseOSConfigAssignmentFile(ref, args, req):
+  """Returns modified request with parsed OS policy assignment and update mask."""
+  del ref
+  api_version = GetApiVersion(args)
+  messages = GetApiMessage(api_version)
+  (policy_assignment_config,
+   update_fields) = GetResourceAndUpdateFieldsFromFile(
+       args.file, messages.OSPolicyAssignment)
+  req.oSPolicyAssignment = policy_assignment_config
+  update_fields.sort()
+  if 'update' in args.command_path:
+    req.updateMask = ','.join(update_fields)
+  return req

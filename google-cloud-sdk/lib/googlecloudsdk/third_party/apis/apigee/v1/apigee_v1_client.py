@@ -6841,6 +6841,33 @@ class ApigeeV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GenerateInfraMigrationPlan(self, request, global_params=None):
+      r"""Generates an Apigee X infrastructure representation from the existing Apigee Edge organization's resources.
+
+      Args:
+        request: (ApigeeProjectsGenerateInfraMigrationPlanRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1InfraMigrationPlan) The response message.
+      """
+      config = self.GetMethodConfig('GenerateInfraMigrationPlan')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateInfraMigrationPlan.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}:generateInfraMigrationPlan',
+        http_method='GET',
+        method_id='apigee.projects.generateInfraMigrationPlan',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['organizationId'],
+        relative_path='v1/{+project}:generateInfraMigrationPlan',
+        request_field='',
+        request_type_name='ApigeeProjectsGenerateInfraMigrationPlanRequest',
+        response_type_name='GoogleCloudApigeeV1InfraMigrationPlan',
+        supports_download=False,
+    )
+
     def MigrateConfigData(self, request, global_params=None):
       r"""Copies all proxy and environment configuration data from an Apigee Edge organization into Apigee X/Hybrid.
 

@@ -260,6 +260,9 @@ apis:
   clouddeploy:
     v1alpha1:
       discovery_doc: clouddeploy_v1alpha1.json
+    v1:
+      default: true
+      discovery_doc: clouddeploy_v1.json
   clouderrorreporting:
     v1beta1:
       discovery_doc: clouderrorreporting_v1beta1.json
@@ -589,6 +592,8 @@ apis:
       resources:
         projects.locations.global.memberships:
           path: projects/{projectsId}/locations/global/memberships
+    v1beta:
+      discovery_doc: gkehub_v1beta.json
     v1beta1:
       discovery_doc: gkehub_v1beta1.json
     v1:

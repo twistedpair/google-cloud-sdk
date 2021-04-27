@@ -1529,7 +1529,7 @@ class Policy(_messages.Message):
 
 class Resource(_messages.Message):
   r"""Information related to the Google Cloud resource that is associated with
-  this finding. LINT.IfChange
+  this finding.
 
   Fields:
     folders: Contains a Folder message for each folder in the assets ancestry.

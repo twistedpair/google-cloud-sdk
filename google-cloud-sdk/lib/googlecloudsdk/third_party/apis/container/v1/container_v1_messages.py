@@ -3495,11 +3495,11 @@ class StatusCondition(_messages.Message):
         following guidelines to decide between `FAILED_PRECONDITION`,
         `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
         retry just the failing call. (b) Use `ABORTED` if the client should
-        retry at a higher level (e.g., when a client-specified test-and-set
-        fails, indicating the client should restart a read-modify-write
-        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
-        retry until the system state has been explicitly fixed. E.g., if an
-        "rmdir" fails because the directory is non-empty,
+        retry at a higher level. For example, when a client-specified test-
+        and-set fails, indicating the client should restart a read-modify-
+        write sequence. (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. For example,
+        if an "rmdir" fails because the directory is non-empty,
         `FAILED_PRECONDITION` should be returned since the client should not
         retry unless the files are deleted from the directory. HTTP Mapping:
         400 Bad Request

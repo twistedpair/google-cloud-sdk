@@ -327,10 +327,12 @@ class GoogleCloudAssuredworkloadsV1WorkloadResourceInfo(_messages.Message):
       RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
       CONSUMER_PROJECT: Consumer project.
       ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
+      KEYRING: Keyring resource that hosts encryption keys.
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     CONSUMER_PROJECT = 1
     ENCRYPTION_KEYS_PROJECT = 2
+    KEYRING = 3
 
   resourceId = _messages.IntegerField(1)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
@@ -361,10 +363,12 @@ class GoogleCloudAssuredworkloadsV1WorkloadResourceSettings(_messages.Message):
       RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
       CONSUMER_PROJECT: Consumer project.
       ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
+      KEYRING: Keyring resource that hosts encryption keys.
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     CONSUMER_PROJECT = 1
     ENCRYPTION_KEYS_PROJECT = 2
+    KEYRING = 3
 
   resourceId = _messages.StringField(1)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
@@ -616,10 +620,12 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo(_messages.Message):
       RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
       CONSUMER_PROJECT: Consumer project.
       ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
+      KEYRING: Keyring resource that hosts encryption keys.
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     CONSUMER_PROJECT = 1
     ENCRYPTION_KEYS_PROJECT = 2
+    KEYRING = 3
 
   resourceId = _messages.IntegerField(1)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
@@ -650,10 +656,12 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings(_messages.Messa
       RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
       CONSUMER_PROJECT: Consumer project.
       ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
+      KEYRING: Keyring resource that hosts encryption keys.
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     CONSUMER_PROJECT = 1
     ENCRYPTION_KEYS_PROJECT = 2
+    KEYRING = 3
 
   resourceId = _messages.StringField(1)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)

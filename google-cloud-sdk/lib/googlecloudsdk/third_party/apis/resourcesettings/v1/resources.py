@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://resourcesettings.googleapis.com/v1/'
-DOCS_URL = 'https://docs.google.com/document/d/1tl-qGQuTCsYINVk2aCjhpFkqj4PdM0huO6uu3AS0MTA/preview'
+DOCS_URL = 'https://docs.google.com/document/d/10cZBPkfZ5WxGl6b_xhIN0aB1OhXRxvq0YwzyLezAVeI/preview'
 
 
 class Collections(enum.Enum):

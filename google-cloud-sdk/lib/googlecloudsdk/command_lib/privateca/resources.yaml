@@ -1,3 +1,5 @@
+# -- Shared resources -- #
+
 project:
   name: project
   collection: privateca.projects
@@ -20,6 +22,8 @@ location:
     help: The location of the {resource}.
     property: privateca/location
   disable_auto_completers: true
+
+# -- Beta resources -- #
 
 certificate_authority:
   name: Certificate Authority
@@ -53,4 +57,19 @@ certificate:
     parameter_name: certificatesId
     attribute_name: certificate
     help: The ID of the certificate.
+  disable_auto_completers: true
+
+# -- GA resources -- #
+
+certificate_template:
+  name: CERTIFICATE_TEMPLATE
+  collection: privateca.projects.locations.certificateTemplates
+  request_id_field: certificate_template.name
+  attributes:
+  - *project
+  - *location
+  - &certificate_template
+    parameter_name: certificateTemplatesId
+    attribute_name: certificate_template
+    help: The ID of the certificate template.
   disable_auto_completers: true

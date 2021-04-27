@@ -5,6 +5,91 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 338.0.0 (2021-04-27)
+
+### Breaking Changes
+
+*   **(Cloud Run)** Deprecated `all` choice of `--vpc-egress` flag of `gcloud run deploy` and
+  `gcloud run services update`. A new `all-traffic` choice provides the same
+  functionality with a more specific name. `all` will continue to be supported,
+  but prefer to use `all-traffic`.
+*   **(Cloud Run)** Modified `gcloud beta run deploy` to accept either `--image` or `--source`,
+ but not both.
+
+
+### Cloud Dataproc
+
+*  Added `--confidential-compute` boolean flag to `gcloud dataproc clusters create` to allow users to configure Compute Engine Confidential VMs on Dataproc clusters.
+*  Added `--confidential-compute` boolean flags to `gcloud dataproc
+    workflow-templates set-managed-cluster` to allow users to configure Compute Engine Confidential VMs on Dataproc managed clusters.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.11.15
+  * Fixes issue with parsing empty headers which caused some valid requests to
+    be rejected.
+
+### Cloud Key Management Service
+
+*   Promote `get-certificate-chain` command to GA.
+
+### Cloud Memorystore
+
+* Added `timeout` key to `--redis-config` flag of `redis instances create`.
+* Added `timeout` key to `--redis-config` flag of `redis instances update`.
+
+### Cloud Pub/Sub
+
+* Promoted `--starting-offset` flag of `gcloud pubsub lite-subscriptions create` to GA.
+
+### Cloud Run
+
+* Added `all-traffic` choice to `--vpc-egress` flag of `gcloud run deploy`
+  and `gcloud run services update`. `all-traffic` provides the same
+  functionality as the existing `all` choice with a more specific name. `all` is
+  now deprecated but will continue to be supported. Prefer to use `all-traffic`.
+* Promoted `--binary-authorization` and `--breakglass` flags of `gcloud run
+  deploy` and `gcloud run services update` to beta.
+
+### Cloud Services
+
+* Promoted `gcloud services vpc-peerings delete` to GA.
+
+### Cloud Tasks
+
+*   Updated `gcloud tasks queues update [QUEUE_NAME] --clear-routing-override` to remove `appEngineRoutingOverride` values instead of setting them to empty strings.
+
+### Compute Engine
+
+* Promoted `--iap-tunnel-disable-connection-check` flag of `gcloud compute start-iap-tunnel` to GA.
+* Promoted `--cpu-utilization-predictive-autoscaling` flag of
+  `gcloud compute instance-groups managed set-autoscaling` and
+  `gcloud compute instance-groups managed update-autoscaling` to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.46.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Network Security
+
+* Promoted `gcloud network-security authorization-policies` to beta.
+* Promoted `gcloud network-security server-tls-policies` to beta.
+* Promoted `gcloud network-security client-tls-policies` to beta.
+
+### Secret Manager
+
+* Added `--etag` flag to the following commands:
+      * `gcloud beta secrets update`
+      * `gcloud beta secrets delete`
+      * `gcloud beta secrets versions enable`
+      * `gcloud beta secrets versions disable`
+      * `gcloud beta secrets versions destroy`
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 337.0.0 (2021-04-20)
 
 ### Assured Workloads

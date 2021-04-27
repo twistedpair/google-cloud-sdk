@@ -318,6 +318,8 @@ class ScanConfig(_messages.Message):
     displayName: Required. The user provided display name of the ScanConfig.
     exportToSecurityCommandCenter: Controls export of scan configurations and
       results to Security Command Center.
+    ignoreHttpStatusErrors: Whether to keep scanning even if most requests
+      return HTTP error codes.
     latestRun: Latest ScanRun if available.
     managedScan: Whether the scan config is managed by Web Security Scanner,
       output only.
@@ -399,16 +401,17 @@ class ScanConfig(_messages.Message):
   blacklistPatterns = _messages.StringField(2, repeated=True)
   displayName = _messages.StringField(3)
   exportToSecurityCommandCenter = _messages.EnumField('ExportToSecurityCommandCenterValueValuesEnum', 4)
-  latestRun = _messages.MessageField('ScanRun', 5)
-  managedScan = _messages.BooleanField(6)
-  maxQps = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  name = _messages.StringField(8)
-  riskLevel = _messages.EnumField('RiskLevelValueValuesEnum', 9)
-  schedule = _messages.MessageField('Schedule', 10)
-  startingUrls = _messages.StringField(11, repeated=True)
-  staticIpScan = _messages.BooleanField(12)
-  targetPlatforms = _messages.EnumField('TargetPlatformsValueListEntryValuesEnum', 13, repeated=True)
-  userAgent = _messages.EnumField('UserAgentValueValuesEnum', 14)
+  ignoreHttpStatusErrors = _messages.BooleanField(5)
+  latestRun = _messages.MessageField('ScanRun', 6)
+  managedScan = _messages.BooleanField(7)
+  maxQps = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  name = _messages.StringField(9)
+  riskLevel = _messages.EnumField('RiskLevelValueValuesEnum', 10)
+  schedule = _messages.MessageField('Schedule', 11)
+  startingUrls = _messages.StringField(12, repeated=True)
+  staticIpScan = _messages.BooleanField(13)
+  targetPlatforms = _messages.EnumField('TargetPlatformsValueListEntryValuesEnum', 14, repeated=True)
+  userAgent = _messages.EnumField('UserAgentValueValuesEnum', 15)
 
 
 class ScanConfigError(_messages.Message):

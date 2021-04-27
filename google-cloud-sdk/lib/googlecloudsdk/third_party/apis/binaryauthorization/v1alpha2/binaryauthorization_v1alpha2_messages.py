@@ -354,6 +354,17 @@ class BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest(_
   validateAttestationOccurrenceRequest = _messages.MessageField('ValidateAttestationOccurrenceRequest', 2)
 
 
+class BinaryauthorizationProjectsGetContinuousValidationConfigRequest(_messages.Message):
+  r"""A BinaryauthorizationProjectsGetContinuousValidationConfigRequest
+  object.
+
+  Fields:
+    name: Required. The name of the continuous validation config.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class BinaryauthorizationProjectsGetPolicyRequest(_messages.Message):
   r"""A BinaryauthorizationProjectsGetPolicyRequest object.
 
@@ -479,6 +490,25 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class ContinuousValidationConfig(_messages.Message):
+  r"""A user config for specifying the continuous validation (CV) settings for
+  various policies. There is at most one config per project (a singleton
+  resource).
+
+  Fields:
+    enforcementPolicyConfig: The continuous validation config for enforcement
+      policy.
+    name: Output only. The resource name, in the format
+      `projects/*/continuousValidationConfig`. There is at most one config per
+      project.
+    updateTime: Output only. Time when the config was last updated.
+  """
+
+  enforcementPolicyConfig = _messages.MessageField('EnforcementPolicyConfig', 1)
+  name = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -487,6 +517,16 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EnforcementPolicyConfig(_messages.Message):
+  r"""Continuous validation config for enforcement policy.
+
+  Fields:
+    enabled: Whether continuous validation is enabled for enforcement policy.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class Expr(_messages.Message):

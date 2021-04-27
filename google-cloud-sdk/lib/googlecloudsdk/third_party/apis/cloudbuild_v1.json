@@ -925,6 +925,10 @@
         "cluster": {
           "description": "Details about how this build should be executed on a GKE cluster.",
           "$ref": "ClusterOptions"
+        },
+        "anthosCluster": {
+          "description": "Details about how this build should be executed on a Anthos cluster.",
+          "$ref": "AnthosWorkerPool"
         }
       }
     },
@@ -935,6 +939,17 @@
       "properties": {
         "name": {
           "description": "Identifier of the GKE Cluster this build should execute on. Example: projects\/{project_id}\/locations\/{location}\/clusters\/{cluster_name} The cluster's project ID must be the same project ID that is running the build. The cluster must exist and have the CloudBuild add-on enabled.",
+          "type": "string"
+        }
+      }
+    },
+    "AnthosWorkerPool": {
+      "id": "AnthosWorkerPool",
+      "description": "Anthos CICD cluster option.",
+      "type": "object",
+      "properties": {
+        "membership": {
+          "description": "Membership of the GKE Hub registered cluster this build should execute on. Example: \/projects\/{project}\/locations\/{location}\/memberships\/{cluster_name} The cluster's project number must be the same project ID that is running the build.",
           "type": "string"
         }
       }
@@ -1205,7 +1220,7 @@
           "$ref": "CronConfig"
         },
         "pubsubConfig": {
-          "description": "PubsubConfig [Experimental] describes the configuration of a trigger that creates a build whenever a Pub\/Sub message is published.",
+          "description": "Optional. PubsubConfig describes the configuration of a trigger that creates a build whenever a Pub\/Sub message is published.",
           "$ref": "PubsubConfig"
         },
         "webhookConfig": {
@@ -1268,7 +1283,7 @@
           "$ref": "ApprovalConfig"
         },
         "filter": {
-          "description": "A Common Expression Language string.",
+          "description": "Optional. A Common Expression Language string.",
           "type": "string"
         }
       }
@@ -1484,7 +1499,7 @@
     },
     "PubsubConfig": {
       "id": "PubsubConfig",
-      "description": "PubsubConfig [Experimental] describes the configuration of a trigger that creates a build whenever a Pub\/Sub message is published.",
+      "description": "PubsubConfig describes the configuration of a trigger that creates a build whenever a Pub\/Sub message is published.",
       "type": "object",
       "properties": {
         "subscription": {
@@ -1604,7 +1619,8 @@
           "type": "string"
         },
         "webhookKey": {
-          "description": "Immutable. UUID included in webhook requests. The UUID is used to look up the corresponding config. Once this field has been set, it cannot be changed. If you need to change it, please create another BitbucketServerConfig.",
+          "description": "Output only. UUID included in webhook requests. The UUID is used to look up the corresponding config.",
+          "readOnly": true,
           "type": "string"
         },
         "apiKey": {
@@ -1912,6 +1928,10 @@
       "description": "RPC request object returned by the AddBitbucketServerConnectedRepository RPC method.",
       "type": "object",
       "properties": {
+        "config": {
+          "description": "The name of the `BitbucketServerConfig` that added connected repository. Format: `projects\/{project}\/locations\/{location}\/bitbucketServerConfigs\/{config}`",
+          "type": "string"
+        },
         "connectedRepository": {
           "description": "The connected repository.",
           "$ref": "BitbucketServerRepositoryId"

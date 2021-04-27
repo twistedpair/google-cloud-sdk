@@ -3,10 +3,10 @@
   "discoveryVersion": "v1",
   "id": "config:v1alpha1",
   "name": "config",
-  "canonicalName": "config",
+  "canonicalName": "Config",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "config API (prod)",
+  "title": "Cloud Config Manager API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/",
   "protocol": "rest",
   "rootUrl": "https://config.googleapis.com/",
   "mtlsRootUrl": "https://config.mtls.googleapis.com/",
@@ -22,6 +22,7 @@
   "baseUrl": "https://config.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -203,108 +204,6 @@
       "properties": {
       }
     },
-    "ListConfigSetsResponse": {
-      "id": "ListConfigSetsResponse",
-      "type": "object",
-      "properties": {
-        "configSets": {
-          "description": "List of ConfigSets.",
-          "type": "array",
-          "items": {
-            "$ref": "ConfigSet"
-          }
-        },
-        "nextPageToken": {
-          "type": "string"
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "ConfigSet": {
-      "id": "ConfigSet",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name of the config set. Format: `projects\/{project}\/locations\/{location}\/configSets\/{config_set}`",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. Time the config set was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Time the config set was last modified.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "description": "User-defined metadata for the config set.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "state": {
-          "description": "Output only. Current state of the config set.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "The default value. This value is used if the state is omitted.",
-            "The config set is being created.",
-            "The config set was created successfully.",
-            "The config set could not be created successfully."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "CREATING",
-            "CREATED",
-            "FAILED"
-          ]
-        },
-        "gcsSource": {
-          "description": "Required. URI of an object in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}` URI may also specify an object version (https:\/\/cloud.google.com\/storage\/docs\/gsutil\/addlhelp\/ObjectVersioningandConcurrencyControl). Format: `gs:\/\/{bucket}\/{object}#{version}`",
-          "type": "string"
-        },
-        "buildId": {
-          "description": "Output only. Corresponding Cloud Build run. Example format: 340738b6-9bfe-47d8-8254-5801134368d9",
-          "readOnly": true,
-          "type": "string"
-        },
-        "results": {
-          "description": "Output only. Locations of Cloud Build outputs.",
-          "readOnly": true,
-          "$ref": "CloudBuildResults"
-        }
-      }
-    },
-    "CloudBuildResults": {
-      "id": "CloudBuildResults",
-      "description": "Locations of results from a Cloud Build run (ex. hydration and actuation).",
-      "type": "object",
-      "properties": {
-        "content": {
-          "description": "Location of generated manifests in Google Cloud Storage (ex. hydration results, deployment ResourceGroup manifests, etc.). Format: `gs:\/\/{bucket}\/{object}`",
-          "type": "string"
-        },
-        "logs": {
-          "description": "Location of Cloud Build logs in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
-          "type": "string"
-        },
-        "artifacts": {
-          "description": "Location of kpt artifacts in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
-          "type": "string"
-        }
-      }
-    },
     "ListDeploymentsResponse": {
       "id": "ListDeploymentsResponse",
       "type": "object",
@@ -365,7 +264,8 @@
             "The deployment is healthy.",
             "The deployment is being updated.",
             "The deployment is being deleted.",
-            "The deployment has encountered an unexpected error."
+            "The deployment has encountered an unexpected error.",
+            "The deployment is no longer being actively reconciled. This may be the result of recovering the project after deletion."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -373,7 +273,8 @@
             "ACTIVE",
             "UPDATING",
             "DELETING",
-            "FAILED"
+            "FAILED",
+            "SUSPENDED"
           ]
         },
         "blueprint": {
@@ -382,6 +283,16 @@
         },
         "latestRevision": {
           "description": "Output only. Revision that was most recently applied. Format: `projects\/{project}\/locations\/{location}\/deployments\/{deployment}\/ revisions\/{revision}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deleteResults": {
+          "description": "Output only. Locations of outputs from delete operation.",
+          "readOnly": true,
+          "$ref": "ApplyResults"
+        },
+        "stateDetail": {
+          "description": "Output only. Customer-readable message about the current status.",
           "readOnly": true,
           "type": "string"
         }
@@ -399,6 +310,20 @@
         "gitSource": {
           "description": "Required. A set of files in a Git repository.",
           "$ref": "GitSource"
+        },
+        "preprocessors": {
+          "description": "Optional. Functions to run before the pipeline defined in the blueprint's kptfile. At most 5 preprocessors can be provided.",
+          "type": "array",
+          "items": {
+            "$ref": "Function"
+          }
+        },
+        "postprocessors": {
+          "description": "Optional. Functions to run after the pipeline defined in the blueprint's kptfile. At most 5 postprocessors can be provided.",
+          "type": "array",
+          "items": {
+            "$ref": "Function"
+          }
         }
       }
     },
@@ -417,6 +342,48 @@
         },
         "ref": {
           "description": "Git branch or tag.",
+          "type": "string"
+        }
+      }
+    },
+    "Function": {
+      "id": "Function",
+      "description": "A function that can be run to modify blueprint contents.",
+      "type": "object",
+      "properties": {
+        "image": {
+          "description": "Required. Container image to run. Example: `gcr.io\/kpt-fn\/set-label`",
+          "type": "string"
+        },
+        "config": {
+          "description": "Optional. KRM resource passed to the function as input. The entire resource must be no larger than 1 KB.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
+    },
+    "ApplyResults": {
+      "id": "ApplyResults",
+      "description": "Locations of outputs from config application.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "Location of generated manifests in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
+          "type": "string"
+        },
+        "logs": {
+          "description": "Location of logs in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
+          "type": "string"
+        },
+        "artifacts": {
+          "description": "Location of kpt artifacts in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
+          "type": "string"
+        },
+        "build": {
+          "description": "Corresponding Cloud Build run. Format: `projects\/{project}\/locations\/{location}\/builds\/{build}`",
           "type": "string"
         }
       }
@@ -515,6 +482,11 @@
           "description": "Output only. Locations of outputs from config application.",
           "readOnly": true,
           "$ref": "ApplyResults"
+        },
+        "stateDetail": {
+          "description": "Output only. Customer-readable message about the current status.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -537,29 +509,6 @@
         },
         "artifacts": {
           "description": "Location of kpt artifacts in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
-          "type": "string"
-        }
-      }
-    },
-    "ApplyResults": {
-      "id": "ApplyResults",
-      "description": "Locations of outputs from config application.",
-      "type": "object",
-      "properties": {
-        "content": {
-          "description": "Location of generated manifests in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
-          "type": "string"
-        },
-        "logs": {
-          "description": "Location of logs in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
-          "type": "string"
-        },
-        "artifacts": {
-          "description": "Location of kpt artifacts in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
-          "type": "string"
-        },
-        "build": {
-          "description": "Corresponding Cloud Build run. Format: `projects\/{project}\/locations\/{location}\/builds\/{build}`",
           "type": "string"
         }
       }
@@ -853,7 +802,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of results to return. If not set, the service will select a default.",
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -1026,179 +975,6 @@
                 }
               }
             },
-            "configSets": {
-              "methods": {
-                "list": {
-                  "id": "config.projects.locations.configSets.list",
-                  "path": "v1alpha1/{+parent}/configSets",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/configSets",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "orderBy": {
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListConfigSetsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists ConfigSets in a given project and location."
-                },
-                "get": {
-                  "id": "config.projects.locations.configSets.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/configSets/{configSetsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/configSets\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "ConfigSet"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets details of a single ConfigSet."
-                },
-                "create": {
-                  "id": "config.projects.locations.configSets.create",
-                  "path": "v1alpha1/{+parent}/configSets",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/configSets",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "configSetId": {
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "ConfigSet"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new ConfigSet in a given project and location."
-                },
-                "patch": {
-                  "id": "config.projects.locations.configSets.patch",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/configSets/{configSetsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Resource name of the config set. Format: `projects\/{project}\/locations\/{location}\/configSets\/{config_set}`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/configSets\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Field mask is used to specify the fields to be overwritten in the ConfigSet resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    },
-                    "requestId": {
-                      "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "ConfigSet"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates the parameters of a single ConfigSet."
-                },
-                "delete": {
-                  "id": "config.projects.locations.configSets.delete",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/configSets/{configSetsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/configSets\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Deletes a single ConfigSet."
-                }
-              }
-            },
             "deployments": {
               "methods": {
                 "list": {
@@ -1208,6 +984,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
+                      "description": "Required. The parent in whose context the Deployments are listed. The parent value is in the format: 'projects\/{project_id}\/locations\/{location}'.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1249,6 +1026,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
+                      "description": "Required. The name of this service resource in the format: 'projects\/{project_id}\/locations\/{location}\/deployments\/{deployment}'.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1273,6 +1051,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
+                      "description": "Required. The parent in whose context the Deployment is created. The parent value is in the format: 'projects\/{project_id}\/locations\/{location}'.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1348,6 +1127,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
+                      "description": "Required. The name of this service resource in the format: 'projects\/{project_id}\/locations\/{location}\/deployments\/{deployment}'.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deployments\/[^\/]+$",
                       "location": "path",
                       "required": true,

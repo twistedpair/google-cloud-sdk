@@ -962,6 +962,20 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsTestIamPermissionsRequest(
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class DatacatalogProjectsLocationsTaxonomiesReplaceRequest(_messages.Message):
+  r"""A DatacatalogProjectsLocationsTaxonomiesReplaceRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1ReplaceTaxonomyRequest: A
+      GoogleCloudDatacatalogV1ReplaceTaxonomyRequest resource to be passed as
+      the request body.
+    name: Required. Resource name of the taxonomy to be updated.
+  """
+
+  googleCloudDatacatalogV1ReplaceTaxonomyRequest = _messages.MessageField('GoogleCloudDatacatalogV1ReplaceTaxonomyRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DatacatalogProjectsLocationsTaxonomiesSetIamPolicyRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsTaxonomiesSetIamPolicyRequest object.
 
@@ -1734,9 +1748,9 @@ class GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema(_messages.Message):
 
 class GoogleCloudDatacatalogV1PolicyTag(_messages.Message):
   r"""Denotes one policy tag in a taxonomy (e.g. ssn). Policy tags can be
-  defined in a hierarchy. For example, consider the following hierarchy: +
-  Geolocation + LatLong + City + ZipCode Policy tag "Geolocation" contains 3
-  child policy tags: "LatLong", "City", and "ZipCode".
+  defined in a hierarchy. For example, consider the following hierarchy: ``` +
+  Geolocation + LatLong + City + ZipCode ``` Policy tag "Geolocation" contains
+  3 child policy tags: "LatLong", "City", and "ZipCode".
 
   Fields:
     childPolicyTags: Output only. Resource names of child policy tags of this
@@ -1788,6 +1802,17 @@ class GoogleCloudDatacatalogV1RenameTagTemplateFieldRequest(_messages.Message):
   """
 
   newTagTemplateFieldId = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1ReplaceTaxonomyRequest(_messages.Message):
+  r"""Request message for ReplaceTaxonomy.
+
+  Fields:
+    serializedTaxonomy: Required. Taxonomy to update along with its child
+      policy tags.
+  """
+
+  serializedTaxonomy = _messages.MessageField('GoogleCloudDatacatalogV1SerializedTaxonomy', 1)
 
 
 class GoogleCloudDatacatalogV1Schema(_messages.Message):
@@ -2269,10 +2294,10 @@ class GoogleCloudDatacatalogV1TagTemplateField(_messages.Message):
 class GoogleCloudDatacatalogV1Taxonomy(_messages.Message):
   r"""A taxonomy is a collection of hierarchical policy tags that classify
   data along a common axis. For instance a "data sensitivity" taxonomy could
-  contain the following policy tags: + PII + Account number + Age + SSN +
-  Zipcode + Financials + Revenue A "data origin" taxonomy could contain the
-  following policy tags: + User data + Employee data + Partner data + Public
-  data
+  contain the following policy tags: ``` + PII + Account number + Age + SSN +
+  Zipcode + Financials + Revenue ``` A "data origin" taxonomy could contain
+  the following policy tags: ``` + User data + Employee data + Partner data +
+  Public data ```
 
   Enums:
     ActivatedPolicyTypesValueListEntryValuesEnum:

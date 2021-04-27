@@ -290,6 +290,34 @@
         }
       }
     },
+    "CancelActionRequest": {
+      "id": "CancelActionRequest",
+      "description": "Request message for ActionsService.CancelAction.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CancelActionResponse": {
+      "id": "CancelActionResponse",
+      "description": "Response message of ActionsService.CancelAction.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "TriggerActionRequest": {
+      "id": "TriggerActionRequest",
+      "description": "Request message for ActionsService.TriggerAction.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "TriggerActionResponse": {
+      "id": "TriggerActionResponse",
+      "description": "Response message for ActionsService.TriggerAction.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "AnnotationSet": {
       "id": "AnnotationSet",
       "description": "An annotationSet resource is associated with an Asset and is a collection of timed-metadata that can be modified and searched at a high throughput.",
@@ -374,6 +402,14 @@
         "etag": {
           "description": "Etag of the resource used in output and update requests.",
           "type": "string"
+        },
+        "data": {
+          "description": "Required. Data held by the annotation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
         }
       }
     },
@@ -530,6 +566,13 @@
         "sortOrder": {
           "description": "Specifies sort order for all assets of the type. If not specified, assets are sorted in reverse create_time order (newest first).",
           "$ref": "SortOrderConfig"
+        },
+        "annotationSetConfigs": {
+          "description": "Mapping of annotationSet name to its configuration.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "AnnotationSetConfig"
+          }
         }
       }
     },
@@ -624,6 +667,24 @@
         }
       }
     },
+    "AnnotationSetConfig": {
+      "id": "AnnotationSetConfig",
+      "description": "Configuration of an annotationSet.",
+      "type": "object",
+      "properties": {
+        "complexType": {
+          "description": "Reference to the complex type name, in the following form: `projects\/{project}\/locations\/{location}\/complexTypes\/{name}`.",
+          "type": "string"
+        },
+        "indexedFieldConfigs": {
+          "description": "List of indexed fields (e.g. \"data.start\") to make available in searches with their corresponding properties.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "IndexedFieldConfig"
+          }
+        }
+      }
+    },
     "ListAssetTypesResponse": {
       "id": "ListAssetTypesResponse",
       "description": "Response message for AssetTypesService.ListAssetTypes.",
@@ -705,6 +766,20 @@
         "etag": {
           "description": "Etag of the resource used in output and update requests.",
           "type": "string"
+        },
+        "state": {
+          "description": "State of the asset",
+          "type": "string",
+          "enumDescriptions": [
+            "STATE_UNSPECIFIED maps with UNKNOWN or CREATING in AssetStatus_State in status.proto",
+            "ACTIVE maps with READY in AssetStatus_State in status.proto",
+            "DELETING maps with DELETING in AssetStatus_State in status.proto"
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETING"
+          ]
         }
       }
     },
@@ -2493,6 +2568,62 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Lists actions in a given project and location."
+                        },
+                        "cancel": {
+                          "id": "mediaasset.projects.locations.assetTypes.assets.actions.cancel",
+                          "path": "v1alpha/{+name}:cancel",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/actions/{actionsId}:cancel",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the action to cancel. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{type}\/assets\/{asset}\/actions\/{action}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/actions\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "CancelActionRequest"
+                          },
+                          "response": {
+                            "$ref": "CancelActionResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Cancel any pending invocations under this action."
+                        },
+                        "trigger": {
+                          "id": "mediaasset.projects.locations.assetTypes.assets.actions.trigger",
+                          "path": "v1alpha/{+name}:trigger",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/actions/{actionsId}:trigger",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the action to Trigger. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{type}\/assets\/{asset}\/actions\/{action}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/actions\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "TriggerActionRequest"
+                          },
+                          "response": {
+                            "$ref": "TriggerActionResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Trigger an invocation with the latest input state."
                         }
                       }
                     },

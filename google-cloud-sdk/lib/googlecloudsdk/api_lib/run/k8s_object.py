@@ -304,11 +304,6 @@ class KubernetesObject(object):
   @property
   def generation(self):
     self.AssertFullObject()
-    # For the hack where generation is in spec, it's worse than unpopulated in
-    # the metadata; it's always `1`.
-    # TODO(b/110275620): remove this hack.
-    if getattr(self._m.spec, 'generation', None) is not None:
-      return self._m.spec.generation
     return self._m.metadata.generation
 
   @generation.setter

@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://docs.google.com/document/d/1tl-qGQuTCsYINVk2aCjhpFkqj4PdM0huO6uu3AS0MTA/preview",
+  "documentationLink": "https://docs.google.com/document/d/10cZBPkfZ5WxGl6b_xhIN0aB1OhXRxvq0YwzyLezAVeI/preview",
   "protocol": "rest",
   "rootUrl": "https://resourcesettings.googleapis.com/",
   "mtlsRootUrl": "https://resourcesettings.mtls.googleapis.com/",

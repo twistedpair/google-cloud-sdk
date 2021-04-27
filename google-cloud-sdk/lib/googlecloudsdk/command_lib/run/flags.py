@@ -645,8 +645,13 @@ def AddEgressSettingsFlag(parser):
           container_resource.EGRESS_SETTINGS_PRIVATE_RANGES_ONLY:
               'Default option. Sends outbound traffic to private IP addresses '
               'defined by RFC1918 through the VPC connector.',
+          container_resource.EGRESS_SETTINGS_ALL_TRAFFIC:
+              'Sends all outbound traffic through the VPC connector.',
           container_resource.EGRESS_SETTINGS_ALL:
-              'Sends all outbound traffic through the VPC connector.'
+              '(DEPRECATED) Sends all outbound traffic through the VPC '
+              "connector. Provides the same functionality as '{all_traffic}'."
+              " Prefer to use '{all_traffic}' instead.".format(
+                  all_traffic=container_resource.EGRESS_SETTINGS_ALL_TRAFFIC)
       })
 
 
@@ -1821,9 +1826,12 @@ def GetAndValidatePlatform(args, release_track, product, allow_empty=False):
   return platform
 
 
-def AddSourceFlag(parser):
+def AddSourceAndImageFlags(parser):
   """Add deploy source flags, an image or a source for build."""
-  parser.add_argument(
+  group = parser.add_mutually_exclusive_group()
+
+  AddImageArg(group, required=False)
+  group.add_argument(
       '--source',
       help='The location of the source to build. The location can be a '
       'directory on a local disk or a gzipped archive file (.tar.gz) in '

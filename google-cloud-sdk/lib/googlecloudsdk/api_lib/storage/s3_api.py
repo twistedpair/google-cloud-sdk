@@ -30,6 +30,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import scaled_integer
@@ -222,12 +223,15 @@ class S3Api(cloud_api.CloudApi):
       # Data for FieldsScope.NO_ACL.
       for key, api_call, result_has_key in [
           ('CORSRules', self.client.get_bucket_cors, True),
+          ('ServerSideEncryptionConfiguration',
+           self.client.get_bucket_encryption, True),
           ('LifecycleConfiguration',
            self.client.get_bucket_lifecycle_configuration, False),
           ('LoggingEnabled', self.client.get_bucket_logging, True),
           ('Payer', self.client.get_bucket_request_payment, True),
           ('Versioning', self.client.get_bucket_versioning, False),
-          ('Website', self.client.get_bucket_website, False)]:
+          ('Website', self.client.get_bucket_website, False),
+      ]:
         try:
           api_result = api_call(Bucket=bucket_name)
           # Some results are wrapped in dictionaries with keys matching "key".
@@ -245,6 +249,82 @@ class S3Api(cloud_api.CloudApi):
     return s3_resource_reference.S3BucketResource(
         storage_url.CloudUrl(storage_url.ProviderPrefix.S3, bucket_name),
         metadata=metadata)
+
+  def patch_bucket(self,
+                   bucket_resource,
+                   request_config=None,
+                   fields_scope=cloud_api.FieldsScope.NO_ACL):
+    """See super class."""
+    del fields_scope  # Unused. API returns nothing for these put requests.
+
+    if ('FullACLConfiguration' in bucket_resource.metadata or
+        'ACL' in bucket_resource.metadata):
+      try:
+        if 'FullACLConfiguration' in bucket_resource.metadata:
+          # Can contain canned ACL and other settings.
+          # Takes priority over 'ACL' metadata key.
+          kwargs = bucket_resource.metadata['FullACLConfiguration']
+        else:
+          # Data returned by get_bucket_acl.
+          kwargs = {'AccessControlPolicy': bucket_resource.metadata['ACL']}
+        kwargs['Bucket'] = bucket_resource.name
+        self.client.put_bucket_acl(**kwargs)
+      except botocore.exceptions.ClientError as error:
+        # Don't return any ACL information in case the failure affected both
+        # metadata keys.
+        bucket_resource.metadata.pop('FullACLConfiguration', None)
+        bucket_resource.metadata.pop('ACL', None)
+        log.error(errors.S3ApiError(error))
+
+    patchable_metadata = {  # Key -> (client function, function kwargs).
+        'CORSRules': (
+            self.client.put_bucket_cors,
+            {'CORSConfiguration': {
+                'CORSRules': bucket_resource.metadata.get('CORSRules'),
+            }}),
+        'ServerSideEncryptionConfiguration': (
+            self.client.put_bucket_encryption,
+            {'ServerSideEncryptionConfiguration': bucket_resource.metadata.get(
+                'ServerSideEncryptionConfiguration'),
+            }),
+        'LifecycleConfiguration': (
+            self.client.put_bucket_lifecycle_configuration,
+            {'LifecycleConfiguration': bucket_resource.metadata.get(
+                'LifecycleConfiguration'),
+            }),
+        'LoggingEnabled': (
+            self.client.put_bucket_logging,
+            {'BucketLoggingStatus': {
+                'LoggingEnabled': bucket_resource.metadata.get(
+                    'LoggingEnabled'),
+            }}),
+        'Payer': (
+            self.client.put_bucket_request_payment,
+            {'RequestPaymentConfiguration': {
+                'Payer': bucket_resource.metadata.get('Payer'),
+            }}),
+        'Versioning': (
+            self.client.put_bucket_versioning,
+            {'VersioningConfiguration': bucket_resource.metadata.get(
+                'Versioning'),
+            }),
+        'Website': (
+            self.client.put_bucket_website,
+            {'WebsiteConfiguration': bucket_resource.metadata.get('Website')}),
+    }
+    for metadata_key, (patch_function,
+                       patch_kwargs) in patchable_metadata.items():
+      if metadata_key not in bucket_resource.metadata:
+        continue
+
+      patch_kwargs['Bucket'] = bucket_resource.name
+      try:
+        patch_function(**patch_kwargs)
+      except botocore.exceptions.ClientError as error:
+        log.error(errors.S3ApiError(error))
+        del bucket_resource.metadata[metadata_key]
+
+    return bucket_resource
 
   def list_buckets(self, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""

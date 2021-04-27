@@ -293,6 +293,11 @@
             "P3",
             "P4"
           ]
+        },
+        "clusterState": {
+          "description": "Output only. The state of the Kubernetes cluster, this will be available if 'view' is set to `FULL` in the relevant List\/Get\/Preview request.",
+          "readOnly": true,
+          "$ref": "KubernetesClusterState"
         }
       }
     },
@@ -337,6 +342,63 @@
         }
       }
     },
+    "KubernetesClusterState": {
+      "id": "KubernetesClusterState",
+      "description": "The state of the Kubernetes cluster.",
+      "type": "object",
+      "properties": {
+        "agonesVersionInstalled": {
+          "description": "Output only. The version of Agones currently installed in the registered Kubernetes cluster.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "kubernetesVersionInstalled": {
+          "description": "Output only. The version of Kubernetes that is currently used in the registered Kubernetes cluster (as detected by the Cloud Game Servers service).",
+          "readOnly": true,
+          "type": "string"
+        },
+        "installationState": {
+          "description": "Output only. The state for the installed versions of Agones\/Kubernetes.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The combination of Agones and Kubernetes versions is supported by Google Cloud Game Servers.",
+            "The installed version of Agones is not supported by Google Cloud Game Servers.",
+            "The installed version of Agones is supported by Google Cloud Game Servers, but the installed version of Kubernetes is not recommended or supported by the version of Agones.",
+            "The installed version of Agones is not recognized, where the Agones controller's image name does not have version string as {major}.{minor}(.{patch}).",
+            "The server version of Kubernetes cluster is not recognized, where the API server didn't return parsable version info on path\/version.",
+            "Failed to read or verify the version of Agones or Kubernetes. See version_installed_error_message for details.",
+            "Agones is not installed."
+          ],
+          "enum": [
+            "INSTALLATION_STATE_UNSPECIFIED",
+            "AGONES_KUBERNETES_VERSION_SUPPORTED",
+            "AGONES_VERSION_UNSUPPORTED",
+            "AGONES_KUBERNETES_VERSION_UNSUPPORTED",
+            "AGONES_VERSION_UNRECOGNIZED",
+            "KUBERNETES_VERSION_UNRECOGNIZED",
+            "VERSION_VERIFICATION_FAILED",
+            "AGONES_NOT_INSTALLED"
+          ]
+        },
+        "versionInstalledErrorMessage": {
+          "description": "Output only. The detailed error message for the installed versions of Agones\/Kubernetes.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "provider": {
+          "description": "Output only. The cloud provider type reported by the first node's providerID in the list of nodes on the Kubernetes endpoint. On Kubernetes platforms that support zero-node clusters (like GKE-on-GCP), the provider type will be empty.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "agonesVersionTargeted": {
+          "description": "Output only. The version of Agones that is targeted to be installed in the cluster.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "PreviewCreateGameServerClusterResponse": {
       "id": "PreviewCreateGameServerClusterResponse",
       "description": "Response message for GameServerClustersService.PreviewCreateGameServerCluster.",
@@ -353,6 +415,11 @@
         "targetState": {
           "description": "The target state.",
           "$ref": "TargetState"
+        },
+        "clusterState": {
+          "description": "Output only. The state of the Kubernetes cluster in preview, this will be available if 'view' is set to `FULL` in the relevant List\/Get\/Preview request.",
+          "readOnly": true,
+          "$ref": "KubernetesClusterState"
         }
       }
     },
@@ -2651,6 +2718,21 @@
                           "description": "Optional. Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.",
                           "location": "query",
                           "type": "string"
+                        },
+                        "view": {
+                          "description": "Optional. View for the returned GameServerCluster objects. When `FULL` is specified, the `cluster_state` field is also returned in the GameServerCluster object, which includes the state of the referenced Kubernetes cluster such as versions and provider info. The default\/unset value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does not return the `cluster_state` field.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "The default \/ unset value. The API will default to the BASIC view.",
+                            "Include basic information of a GameServerCluster resource and omit `cluster_state`. This is the default value (for ListGameServerClusters, GetGameServerCluster and PreviewCreateGameServerCluster).",
+                            "Include everything."
+                          ],
+                          "enum": [
+                            "GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
                         }
                       },
                       "parameterOrder": [
@@ -2676,6 +2758,21 @@
                           "location": "path",
                           "required": true,
                           "type": "string"
+                        },
+                        "view": {
+                          "description": "Optional. View for the returned GameServerCluster objects. When `FULL` is specified, the `cluster_state` field is also returned in the GameServerCluster object, which includes the state of the referenced Kubernetes cluster such as versions and provider info. The default\/unset value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does not return the `cluster_state` field.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "The default \/ unset value. The API will default to the BASIC view.",
+                            "Include basic information of a GameServerCluster resource and omit `cluster_state`. This is the default value (for ListGameServerClusters, GetGameServerCluster and PreviewCreateGameServerCluster).",
+                            "Include everything."
+                          ],
+                          "enum": [
+                            "GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
                         }
                       },
                       "parameterOrder": [
@@ -2745,6 +2842,21 @@
                           "location": "query",
                           "type": "string",
                           "format": "google-datetime"
+                        },
+                        "view": {
+                          "description": "Optional. View for the returned GameServerCluster objects. When `FULL` is specified, the `cluster_state` field is also returned in the GameServerCluster object, which includes the state of the referenced Kubernetes cluster such as versions and provider info. The default\/unset value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does not return the `cluster_state` field.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "The default \/ unset value. The API will default to the BASIC view.",
+                            "Include basic information of a GameServerCluster resource and omit `cluster_state`. This is the default value (for ListGameServerClusters, GetGameServerCluster and PreviewCreateGameServerCluster).",
+                            "Include everything."
+                          ],
+                          "enum": [
+                            "GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
                         }
                       },
                       "parameterOrder": [

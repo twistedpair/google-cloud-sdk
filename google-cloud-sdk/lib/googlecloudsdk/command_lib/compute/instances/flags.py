@@ -273,7 +273,8 @@ def AddSourceMachineImageEncryptionKey(parser):
       """.format(csek_help=csek_utils.CSEK_HELP_URL))
 
 
-def AddImageArgs(parser, enable_snapshots=False,
+def AddImageArgs(parser,
+                 enable_snapshots=False,
                  support_image_family_scope=False):
   """Adds arguments related to images for instances and instance-templates."""
 
@@ -344,12 +345,14 @@ def AddMaintenanceInterval():
   return base.Argument(
       '--maintenance-interval',
       type=lambda x: x.upper(),
-      choices={'PERIODIC': 'VMs receive infrastructure and hypervisor updates '
-                           'on a periodic basis, minimizing the number of'
-                           ' maintenance operations (live migrations or '
-                           'terminations) on an individual VM. Security updates'
-                           ' will still be applied as soon as they are '
-                           'available.'},
+      choices={
+          'PERIODIC': 'VMs receive infrastructure and hypervisor updates '
+                      'on a periodic basis, minimizing the number of'
+                      ' maintenance operations (live migrations or '
+                      'terminations) on an individual VM. Security updates'
+                      ' will still be applied as soon as they are '
+                      'available.'
+      },
       help="""
       Specifies how infrastructure upgrades should be applied to the VM.
       """)
@@ -1051,8 +1054,7 @@ def ValidateDiskBootFlags(args, enable_kms=False):
 
   if args.image and boot_disk_specified:
     raise exceptions.BadArgumentException(
-        '--disk',
-        'Each instance can have exactly one boot disk. One boot disk '
+        '--disk', 'Each instance can have exactly one boot disk. One boot disk '
         'was specified through [--disk] and another through [--image].')
 
   if boot_disk_specified:
@@ -1187,7 +1189,9 @@ def ValidateImageFlags(args):
 def AddAddressArgs(parser,
                    instances=True,
                    multiple_network_interface_cards=True,
-                   support_network_interface_nic_type=True):
+                   support_network_interface_nic_type=True,
+                   support_subinterface=False,
+                   instance_create=False):
   """Adds address arguments for instances and instance-templates."""
   addresses = parser.add_mutually_exclusive_group()
   AddNoAddressArg(addresses)
@@ -1312,15 +1316,55 @@ def AddAddressArgs(parser,
           The IP allocator will pick an available range with the specified
           netmask and allocate it to this network interface."""
 
-    parser.add_argument(
-        '--network-interface',
-        type=arg_parsers.ArgDict(
-            spec=multiple_network_interface_cards_spec,
-            allow_key_only=True,
-        ),
-        action='append',  # pylint:disable=protected-access
-        metavar='PROPERTY=VALUE',
-        help=network_interface_help)
+    if instance_create:
+      network_interfaces = parser.add_group(mutex=True)
+      network_interfaces.add_argument(
+          '--network-interface',
+          type=arg_parsers.ArgDict(
+              spec=multiple_network_interface_cards_spec,
+              allow_key_only=True,
+          ),
+          action='append',  # pylint:disable=protected-access
+          metavar='PROPERTY=VALUE',
+          help=network_interface_help)
+
+      if support_subinterface:
+        network_interface_file_help_text = """\
+            Same as --network_interface except that the value for the entry will be
+            read from a local file. This is used in case subinterfaces need to be
+            specified.
+
+            The following additional key is allowed:
+            *subinterfaces*::: Specifies the list of subinterfaces assigned to this
+            network interface of the instance.
+
+                The following keys are allowed:
+                subnet: Specifies the subnet that the subinterface will be
+                part of. The subnet should have l2-enable set and VLAN tagged.
+
+                vlan: Specifies the VLAN of the subinterface. Can have a value
+                between 2-4094. This should be the same VLAN as the subnet. VLAN tag
+                within a network interface is unique.
+
+                ip-address: Optional. Specifies the ip address of the
+                subinterface. If not specified, an ip address will be allocated from
+                subnet ip range.
+            """
+        network_interfaces.add_argument(
+            '--network-interface-from-file',
+            type=arg_parsers.FileContents(),
+            metavar='KEY=LOCAL_FILE_PATH',
+            help=network_interface_file_help_text)
+    else:
+      parser.add_argument(
+          '--network-interface',
+          type=arg_parsers.ArgDict(
+              spec=multiple_network_interface_cards_spec,
+              allow_key_only=True,
+          ),
+          action='append',  # pylint:disable=protected-access
+          metavar='PROPERTY=VALUE',
+          help=network_interface_help)
 
 
 def AddNoAddressArg(parser):
@@ -2002,13 +2046,16 @@ def ValidateNicFlags(args):
                                    --private_network_ip, or --subnet.
   """
   network_interface = getattr(args, 'network_interface', None)
-  if network_interface is None:
+  network_interface_from_file = getattr(args, 'network_interface_from_file',
+                                        None)
+  if network_interface is None and network_interface_from_file is None:
     return
-  for ni in network_interface:
-    if 'address' in ni and 'no-address' in ni:
-      raise exceptions.InvalidArgumentException(
-          '--network-interface',
-          'specifies both address and no-address for one interface')
+  elif network_interface is not None:
+    for ni in network_interface:
+      if 'address' in ni and 'no-address' in ni:
+        raise exceptions.InvalidArgumentException(
+            '--network-interface',
+            'specifies both address and no-address for one interface')
 
   conflicting_args = ['address', 'network', 'private_network_ip', 'subnet']
   conflicting_args_present = [
@@ -2019,9 +2066,15 @@ def ValidateNicFlags(args):
   conflicting_args = [
       '--{0}'.format(arg.replace('_', '-')) for arg in conflicting_args_present
   ]
-  raise exceptions.ConflictingArgumentsException(
-      '--network-interface',
-      'all of the following: ' + ', '.join(conflicting_args))
+
+  if network_interface is not None:
+    raise exceptions.ConflictingArgumentsException(
+        '--network-interface',
+        'all of the following: ' + ', '.join(conflicting_args))
+  else:
+    raise exceptions.ConflictingArgumentsException(
+        '--network-interface-from-file',
+        'all of the following: ' + ', '.join(conflicting_args))
 
 
 def AddDiskScopeFlag(parser):
@@ -2940,8 +2993,7 @@ def AddStackTypeArgs(parser):
       type=arg_utils.ChoiceToEnumName,
       help=('The stack type for this network interface to identify whether the '
             'IPv6 feature is enabled or not, only supports default NIC for '
-            'now. If not specified, IPV4_ONLY will be used.')
-      )
+            'now. If not specified, IPV4_ONLY will be used.'))
 
 
 def AddIpv6NetworkTierArgs(parser):
@@ -2978,9 +3030,7 @@ def AddNetworkPerformanceConfigsArgs(parser):
           for tier_val in constants.ADV_NETWORK_TIER_CHOICES
       ]))
 
-  spec = {
-      'total-egress-bandwidth-tier': str
-  }
+  spec = {'total-egress-bandwidth-tier': str}
 
   parser.add_argument(
       '--network-performance-configs',
@@ -3000,9 +3050,9 @@ def ValidateNetworkPerformanceConfigsArgs(args):
       raise exceptions.InvalidArgumentException(
           '--network-performance-configs',
           """Invalid total-egress-bandwidth-tier tier value, "{tier}".
-             Tier value must be one of the following {tier_values}"""
-          .format(tier=total_tier,
-                  tier_values=','.join([
-                      six.text_type(tier_val)
-                      for tier_val in constants.ADV_NETWORK_TIER_CHOICES
-                  ])))
+             Tier value must be one of the following {tier_values}""".format(
+                 tier=total_tier,
+                 tier_values=','.join([
+                     six.text_type(tier_val)
+                     for tier_val in constants.ADV_NETWORK_TIER_CHOICES
+                 ])))

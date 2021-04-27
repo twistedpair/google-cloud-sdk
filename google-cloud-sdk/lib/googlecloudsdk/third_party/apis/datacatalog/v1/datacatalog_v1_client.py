@@ -1178,7 +1178,7 @@ class DatacatalogV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a policy tag. This method also deletes - all of its descendant policy tags, if any, - the policies associated with the policy tag and its descendants, and - references from BigQuery table schema of the policy tag and its descendants.
+      r"""Deletes a policy tag. This method also deletes: * all of its descendant policy tags, if any * the policies associated with the policy tag and its descendants * references from BigQuery table schema of the policy tag and its descendants.
 
       Args:
         request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest) input message
@@ -1588,6 +1588,33 @@ class DatacatalogV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='googleCloudDatacatalogV1Taxonomy',
         request_type_name='DatacatalogProjectsLocationsTaxonomiesPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1Taxonomy',
+        supports_download=False,
+    )
+
+    def Replace(self, request, global_params=None):
+      r"""Replaces a taxonomy and all its policy tags. This operation atomically updates a taxonomy and all its policy tags. The taxonomy and its entire hierarchy of policy tags must be represented literally with the SerializedTaxonomy and the nested SerializedPolicyTag messages: - Existing policy tags that are missing from the SerializedPolicyTag messages will be deleted. - Policy tags without resource names are treated as new policy tags in the taxonomy and will be created. - Policy tags with valid policy tag resources names will be updated accordingly.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesReplaceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1Taxonomy) The response message.
+      """
+      config = self.GetMethodConfig('Replace')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Replace.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:replace',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.replace',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:replace',
+        request_field='googleCloudDatacatalogV1ReplaceTaxonomyRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesReplaceRequest',
         response_type_name='GoogleCloudDatacatalogV1Taxonomy',
         supports_download=False,
     )

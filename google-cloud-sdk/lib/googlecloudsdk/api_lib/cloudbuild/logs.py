@@ -119,8 +119,7 @@ def GetGCLLogTailerTransport():
     from googlecloudsdk.core import gapic_util
     from googlecloudsdk.third_party.logging_v2.gapic.transports.logging_service_v2_grpc_transport import LoggingServiceV2GrpcTransport
     # pylint: enable=g-import-not-at-top
-  # TODO(b/178405272): remove NameError exception handling
-  except (ImportError, NameError):
+  except ImportError:
     log.out.Print(LOG_STREAM_HELP_TEXT)
     return None
 
@@ -210,8 +209,7 @@ class GCLLogTailer(TailerBase):
         from googlecloudsdk.api_lib.logging import tailing
         from google.api_core import bidi
         # pylint: enable=g-import-not-at-top
-      # TODO(b/178405272): remove NameError exception handling
-      except (ImportError, NameError):
+      except ImportError:
         self._PrintLogLine(LOG_STREAM_HELP_TEXT)
         return
 

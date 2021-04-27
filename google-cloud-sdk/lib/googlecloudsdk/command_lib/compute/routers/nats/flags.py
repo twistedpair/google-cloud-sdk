@@ -80,7 +80,8 @@ def AddNatNameArg(parser, operation_type='operate on', plural=False):
 def AddCommonNatArgs(parser,
                      for_create=False,
                      with_rules=False,
-                     with_tcp_time_wait_timeout=False):
+                     with_tcp_time_wait_timeout=False,
+                     with_dynamic_port_allocation=False):
   """Adds common arguments for creating and updating NATs."""
   _AddIpAllocationArgs(parser, for_create)
   _AddSubnetworkArgs(parser, for_create)
@@ -93,6 +94,9 @@ def AddCommonNatArgs(parser,
 
   if with_rules:
     _AddRulesArg(parser)
+
+  if with_dynamic_port_allocation:
+    _AddDynamicPortAllocationArgs(parser, for_create)
 
 
 def _AddRulesArg(parser):
@@ -210,6 +214,32 @@ def _AddMinPortsPerVmArg(parser, for_create=False):
       'Clear minimum ports to be allocated to a VM')
 
 
+def _AddDynamicPortAllocationArgs(parser, for_create=False):
+  """Adds arguments for Dynamic Port Allocation to specify the maximum number of ports per VM for NAT."""
+
+  _AddClearableArgument(
+      parser,
+      for_create,
+      'max-ports-per-vm',
+      arg_parsers.BoundedInt(lower_bound=64, upper_bound=65536),
+      'Maximum ports to be allocated to a VM when Dynamic Port Allocation is enabled',
+      'Clear maximum ports to be allocated to a VM when Dynamic Port Allocation is enabled',
+      hidden=True
+  )
+  help_text = textwrap.dedent("""\
+  Enable dynamic port allocation.
+
+  If not specified, Dynamic Port Allocation is disabled by default.
+
+  Use `--enable-dynamic-port-allocation` to enable and `--no-enable-dynamic-port-allocation` to disable.
+  """)
+  parser.add_argument(
+      '--enable-dynamic-port-allocation',
+      hidden=True,
+      action=arg_parsers.StoreTrueFalseAction,
+      help=help_text)
+
+
 def _AddLoggingArgs(parser):
   """Adds arguments to configure NAT logging."""
   enable_logging_help_text = textwrap.dedent("""\
@@ -261,10 +291,11 @@ def _AddEndpointIndependentMappingArg(parser):
   Use `--no-enable-endpoint-independent-mapping` to disable endpoint-independent
   mapping.
   """)
-  parser.add_argument('--enable-endpoint-independent-mapping',
-                      action='store_true',
-                      default=None,
-                      help=help_text)
+  parser.add_argument(
+      '--enable-endpoint-independent-mapping',
+      action='store_true',
+      default=None,
+      help=help_text)
 
 
 def _AddClearableArgument(parser,
@@ -273,17 +304,21 @@ def _AddClearableArgument(parser,
                           arg_type,
                           arg_help,
                           clear_help,
-                          choices=None):
+                          choices=None,
+                          hidden=False):
   """Adds an argument for a field that can be cleared in an update."""
   if for_create:
     parser.add_argument(
-        '--{}'.format(arg_name), type=arg_type, help=arg_help, choices=choices)
+        '--{}'.format(arg_name), type=arg_type, help=arg_help, choices=choices,
+        hidden=hidden)
   else:
-    mutex = parser.add_mutually_exclusive_group(required=False)
+    mutex = parser.add_mutually_exclusive_group(required=False, hidden=hidden)
     mutex.add_argument(
-        '--{}'.format(arg_name), type=arg_type, help=arg_help, choices=choices)
+        '--{}'.format(arg_name), type=arg_type, help=arg_help, choices=choices,
+        hidden=hidden)
     mutex.add_argument(
         '--clear-{}'.format(arg_name),
         action='store_true',
         default=False,
-        help=clear_help)
+        help=clear_help,
+        hidden=hidden)

@@ -279,6 +279,10 @@
           "description": "The specification for Anthos Cloud Audit Logging.",
           "$ref": "CloudAuditLoggingFeatureSpec"
         },
+        "cloudbuildFeatureSpec": {
+          "description": "The specification for Cloud Build for Anthos.",
+          "$ref": "CloudBuildFeatureSpec"
+        },
         "apigeeFeatureSpec": {
           "description": "The specification for Apigee.",
           "$ref": "ApigeeFeatureSpec"
@@ -646,6 +650,45 @@
         }
       }
     },
+    "CloudBuildFeatureSpec": {
+      "id": "CloudBuildFeatureSpec",
+      "description": "Cloud Build for Anthos feature spec. This is required since Feature proto requires a spec.",
+      "type": "object",
+      "properties": {
+        "membershipConfigs": {
+          "description": "The map from membership path (e.g. projects\/foo-proj\/locations\/global\/memberships\/bar) to the CloudBuildMembershipConfig that is chosen for that member cluster. If CloudBuild feature is enabled for a hub and the membership path of a cluster in that hub exists in this map then it has Cloud Build hub feature enabled for that particular cluster.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "CloudBuildMembershipConfig"
+          }
+        }
+      }
+    },
+    "CloudBuildMembershipConfig": {
+      "id": "CloudBuildMembershipConfig",
+      "description": "Configurations for each Cloud Build enabled cluster.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Version of the cloud build software on the cluster.",
+          "type": "string"
+        },
+        "securityPolicy": {
+          "description": "Whether it is allowed to run the privileged builds on the cluster or not.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified policy",
+            "Privileged build pods are disallowed",
+            "Privileged build pods are allowed"
+          ],
+          "enum": [
+            "SECURITY_POLICY_UNSPECIFIED",
+            "NON_PRIVILEGED",
+            "PRIVILEGED"
+          ]
+        }
+      }
+    },
     "ApigeeFeatureSpec": {
       "id": "ApigeeFeatureSpec",
       "description": "Feature spec for Apigee",
@@ -891,6 +934,10 @@
         "cloudauditloggingFeatureState": {
           "description": "The state of the Anthos Cloud Audit Logging feature.",
           "$ref": "CloudAuditLoggingFeatureState"
+        },
+        "cloudbuildFeatureState": {
+          "description": "State for the Cloud Build for Anthos Feature.",
+          "$ref": "CloudBuildFeatureState"
         },
         "apigeeFeatureState": {
           "description": "State for the Apigee Feature.",
@@ -1589,6 +1636,13 @@
     "CloudAuditLoggingFeatureState": {
       "id": "CloudAuditLoggingFeatureState",
       "description": "An empty state for Audit Logging Allowlisting. This is required since FeatureStateDetails requires a state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CloudBuildFeatureState": {
+      "id": "CloudBuildFeatureState",
+      "description": "An empty state for Cloud Build for Anthos feature. This is required since FeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
       }

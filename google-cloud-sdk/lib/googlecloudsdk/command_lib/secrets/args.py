@@ -291,6 +291,22 @@ def AddUpdateRotationGroup(parser):
       help=('If set, removes rotation policy from a secret.'))
 
 
+def AddSecretEtag(parser):
+  """Add flag for specifying the current secret etag."""
+  parser.add_argument(
+      _ArgOrFlag('etag', False),
+      metavar='ETAG',
+      help=('Current etag of the secret.'))
+
+
+def AddVersionEtag(parser):
+  """Add flag for specifying the current secret version etag."""
+  parser.add_argument(
+      _ArgOrFlag('etag', False),
+      metavar='ETAG',
+      help=('Current etag of the secret version.'))
+
+
 def _ArgOrFlag(name, positional):
   """Returns the argument name in resource argument format or flag format.
 

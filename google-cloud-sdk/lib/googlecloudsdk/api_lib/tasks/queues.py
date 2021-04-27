@@ -109,10 +109,12 @@ class Queues(BaseQueues):
             app_engine_routing_override=None,
             stackdriver_logging_config=None):
     """Prepares and sends a Patch request for modifying a queue."""
-
-    if not any([retry_config, rate_limits, app_engine_routing_override,
-                stackdriver_logging_config]):
-      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+    if not any([retry_config, rate_limits, stackdriver_logging_config]):
+      # If appEngineRoutingOverride is in updated_fields then an empty
+      # app_engine_routing_override will remove the routing override field.
+      if not app_engine_routing_override and 'appEngineRoutingOverride' not in updated_fields:
+        raise NoFieldsSpecifiedError(
+            'Must specify at least one field to update.')
 
     queue = self.messages.Queue(name=queue_ref.RelativeName())
 

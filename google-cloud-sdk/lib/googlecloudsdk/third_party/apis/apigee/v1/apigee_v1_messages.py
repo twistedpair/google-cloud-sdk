@@ -3328,6 +3328,20 @@ class ApigeeOrganizationsSitesApicategoriesListRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
 
 
+class ApigeeProjectsGenerateInfraMigrationPlanRequest(_messages.Message):
+  r"""A ApigeeProjectsGenerateInfraMigrationPlanRequest object.
+
+  Fields:
+    organizationId: Required. The ID of the Apigee Organization associated
+      with the project.
+    project: Required. Name of the GCP project in which to migrate the
+      organization's infrastructure `projects/{project}`.
+  """
+
+  organizationId = _messages.StringField(1)
+  project = _messages.StringField(2, required=True)
+
+
 class ApigeeProjectsMigrateConfigDataRequest(_messages.Message):
   r"""A ApigeeProjectsMigrateConfigDataRequest object.
 
@@ -5419,6 +5433,28 @@ class GoogleCloudApigeeV1GraphQLOperationGroup(_messages.Message):
 
   operationConfigType = _messages.StringField(1)
   operationConfigs = _messages.MessageField('GoogleCloudApigeeV1GraphQLOperationConfig', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1InfraMigrationPlan(_messages.Message):
+  r"""Migration plan details all the relevant information required to
+  replicate the infrastructure from the organization's Apigee Edge resources
+  to Apigee X resources.
+
+  Fields:
+    environments: Environment details extracted from Apigee Edge environments
+      owned by the organization.
+    instanceAttachments: Apigee X instance attachments modeled after Apigee
+      Edge environment resources.
+    instances: Apigee X instances modeled after the Apigee Edge organization
+      resources.
+    organization: Organization details extracted from Apigee Edge
+      organization.
+  """
+
+  environments = _messages.MessageField('GoogleCloudApigeeV1Environment', 1, repeated=True)
+  instanceAttachments = _messages.MessageField('GoogleCloudApigeeV1InstanceAttachment', 2, repeated=True)
+  instances = _messages.MessageField('GoogleCloudApigeeV1Instance', 3, repeated=True)
+  organization = _messages.MessageField('GoogleCloudApigeeV1Organization', 4)
 
 
 class GoogleCloudApigeeV1IngressConfig(_messages.Message):
@@ -7938,11 +7974,11 @@ class GoogleCloudApigeeV1UpdateError(_messages.Message):
         following guidelines to decide between `FAILED_PRECONDITION`,
         `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
         retry just the failing call. (b) Use `ABORTED` if the client should
-        retry at a higher level (e.g., when a client-specified test-and-set
-        fails, indicating the client should restart a read-modify-write
-        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
-        retry until the system state has been explicitly fixed. E.g., if an
-        "rmdir" fails because the directory is non-empty,
+        retry at a higher level. For example, when a client-specified test-
+        and-set fails, indicating the client should restart a read-modify-
+        write sequence. (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. For example,
+        if an "rmdir" fails because the directory is non-empty,
         `FAILED_PRECONDITION` should be returned since the client should not
         retry unless the files are deleted from the directory. HTTP Mapping:
         400 Bad Request

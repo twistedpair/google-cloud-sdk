@@ -243,13 +243,13 @@ def ParseCreateOrUpdateQueueArgs(args,
   """Parses queue level args."""
   if release_track == base.ReleaseTrack.ALPHA:
     return messages.Queue(
-        retryConfig=_ParseRetryConfigArgs(args, queue_type, messages,
-                                          is_update, is_alpha=True),
+        retryConfig=_ParseRetryConfigArgs(
+            args, queue_type, messages, is_update, is_alpha=True),
         rateLimits=_ParseAlphaRateLimitsArgs(args, queue_type, messages,
                                              is_update),
         pullTarget=_ParsePullTargetArgs(args, queue_type, messages, is_update),
         appEngineHttpTarget=_ParseAppEngineHttpTargetArgs(
-            args, queue_type, messages, is_update))
+            args, queue_type, messages))
   elif release_track == base.ReleaseTrack.BETA:
     return messages.Queue(
         retryConfig=_ParseRetryConfigArgs(
@@ -258,7 +258,7 @@ def ParseCreateOrUpdateQueueArgs(args,
         stackdriverLoggingConfig=_ParseStackdriverLoggingConfigArgs(
             args, queue_type, messages, is_update),
         appEngineHttpQueue=_ParseAppEngineHttpQueueArgs(args, queue_type,
-                                                        messages, is_update),
+                                                        messages),
         type=_ParseQueueType(args, queue_type, messages, is_update))
   else:
     return messages.Queue(
@@ -268,7 +268,7 @@ def ParseCreateOrUpdateQueueArgs(args,
         stackdriverLoggingConfig=_ParseStackdriverLoggingConfigArgs(
             args, queue_type, messages, is_update),
         appEngineRoutingOverride=_ParseAppEngineRoutingOverrideArgs(
-            args, queue_type, messages, is_update))
+            args, queue_type, messages))
 
 
 def ExtractTargetFromAppEngineHostUrl(job, project):
@@ -476,31 +476,29 @@ def _ParseQueueType(args, queue_type, messages, is_update):
   return messages.Queue.TypeValueValuesEnum.PUSH
 
 
-def _ParseAppEngineHttpTargetArgs(args, queue_type, messages, is_update):
+def _ParseAppEngineHttpTargetArgs(args, queue_type, messages):
   """Parses the attributes of 'args' for Queue.appEngineHttpTarget."""
   if queue_type == constants.PUSH_QUEUE:
-    routing_override = _ParseAppEngineRoutingOverrideArgs(args, queue_type,
-                                                          messages, is_update)
+    routing_override = _ParseAppEngineRoutingOverrideArgs(
+        args, queue_type, messages)
     return messages.AppEngineHttpTarget(
         appEngineRoutingOverride=routing_override)
 
 
-def _ParseAppEngineHttpQueueArgs(args, queue_type, messages, is_update):
+def _ParseAppEngineHttpQueueArgs(args, queue_type, messages):
   """Parses the attributes of 'args' for Queue.appEngineHttpQueue."""
   if queue_type == constants.PUSH_QUEUE:
-    routing_override = _ParseAppEngineRoutingOverrideArgs(args, queue_type,
-                                                          messages, is_update)
+    routing_override = _ParseAppEngineRoutingOverrideArgs(
+        args, queue_type, messages)
     return messages.AppEngineHttpQueue(
         appEngineRoutingOverride=routing_override)
 
 
-def _ParseAppEngineRoutingOverrideArgs(args, queue_type, messages, is_update):
+def _ParseAppEngineRoutingOverrideArgs(args, queue_type, messages):
   """Parses the attributes of 'args' for AppEngineRouting."""
   if queue_type == constants.PUSH_QUEUE:
     if args.IsSpecified('routing_override'):
       return messages.AppEngineRouting(**args.routing_override)
-    elif is_update and args.IsSpecified('clear_routing_override'):
-      return messages.AppEngineRouting()
     return None
 
 

@@ -883,6 +883,8 @@ class SecretmanagerProjectsSecretsVersionsAccessRequest(_messages.Message):
   Fields:
     name: Required. The resource name of the SecretVersion in the format
       `projects/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/latest` is an alias to the most recently
+      created SecretVersion.
   """
 
   name = _messages.StringField(1, required=True)
@@ -936,8 +938,8 @@ class SecretmanagerProjectsSecretsVersionsGetRequest(_messages.Message):
   Fields:
     name: Required. The resource name of the SecretVersion in the format
       `projects/*/secrets/*/versions/*`.
-      `projects/*/secrets/*/versions/latest` is an alias to the `latest`
-      SecretVersion.
+      `projects/*/secrets/*/versions/latest` is an alias to the most recently
+      created SecretVersion.
   """
 
   name = _messages.StringField(1, required=True)

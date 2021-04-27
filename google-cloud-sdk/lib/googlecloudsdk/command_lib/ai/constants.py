@@ -60,24 +60,6 @@ You may view the status of your operation with the command
   $ gcloud beta ai operations describe {id} {sub_commands}\
 """
 
-CUSTOM_JOB_CREATION_DISPLAY_MESSAGE = """\
-Custom Job [{id}] submitted successfully.
-
-Your job is still active. You may view the status of your job with the command
-
-  $ gcloud alpha ai custom-jobs describe {id}
-
-Job State: {state}\
-"""
-
-CUSTOM_JOB_CANCEL_DISPLAY_MESSAGE = """\
-Request to cancel custom job [{id}] has been sent
-
-You may view the status of your job with the command
-
-  $ gcloud alpha ai custom-jobs describe {id}
-"""
-
 DEFAULT_OPERATION_COLLECTION = 'aiplatform.projects.locations.operations'
 
 CUSTOM_JOB_COLLECTION = 'aiplatform.projects.locations.customJobs'

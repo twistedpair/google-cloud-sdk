@@ -154,3 +154,8 @@ class Job(k8s_object.KubernetesObject):
   @backoff_limit.setter
   def backoff_limit(self, value):
     self.spec.backoffLimit = value
+
+  @property
+  def started_condition(self):
+    if self.conditions and STARTED_CONDITION in self.conditions:
+      return self.conditions[STARTED_CONDITION]

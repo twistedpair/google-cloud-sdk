@@ -222,6 +222,10 @@
         "staticIpScan": {
           "description": "Whether the scan configuration has enabled static IP address scan feature. If enabled, the scanner will access applications from static IP addresses.",
           "type": "boolean"
+        },
+        "ignoreHttpStatusErrors": {
+          "description": "Whether to keep scanning even if most requests return HTTP error codes.",
+          "type": "boolean"
         }
       }
     },

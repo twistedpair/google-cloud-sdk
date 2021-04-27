@@ -257,7 +257,7 @@
           "$ref": "ClusterNetworking"
         },
         "defaultMaxPodsPerNode": {
-          "description": "The default maximum number of pods per node.",
+          "description": "The default maximum number of pods per node used if a maximum value is not specified explicitly for a node pool in this cluster. If unspecified, the Kubernetes default value will be used.",
           "type": "integer",
           "format": "int32"
         },
@@ -381,6 +381,10 @@
         "bootstrapKubeconfig": {
           "description": "Kubeconfig data which may be used to bootstrap this node into its parent cluster using a TLS bootstrap token.",
           "$ref": "BootstrapKubeconfig"
+        },
+        "kubeletConfig": {
+          "description": "Kubelet configuration for this node. See https:\/\/kubernetes.io\/docs\/reference\/config-api\/kubelet-config.v1beta",
+          "$ref": "KubeletConfig"
         }
       }
     },
@@ -400,6 +404,18 @@
         "bootstrapToken": {
           "description": "Bearer token for authentication and TLS bootstrapping into the Kubernetes cluster.",
           "type": "string"
+        }
+      }
+    },
+    "KubeletConfig": {
+      "id": "KubeletConfig",
+      "description": "Kubelet configuration for this node. See https:\/\/kubernetes.io\/docs\/reference\/config-api\/kubelet-config.v1beta",
+      "type": "object",
+      "properties": {
+        "maxPods": {
+          "description": "The number of pods that can run on this Kubelet. If unspecified, the Kubernetes default will be used.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

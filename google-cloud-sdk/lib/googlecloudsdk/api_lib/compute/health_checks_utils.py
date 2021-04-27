@@ -131,7 +131,7 @@ def AddProtocolAgnosticUpdateArgs(parser, protocol_string):
             ' health check. Pass in an empty string to unset.'))
 
 
-def AddHttpRelatedCreationArgs(parser):
+def AddHttpRelatedCreationArgs(parser, include_weighted_load_balancing=False):
   """Adds parser arguments for creation related to HTTP."""
 
   _AddPortRelatedCreationArgs(parser)
@@ -153,6 +153,14 @@ def AddHttpRelatedCreationArgs(parser):
       ``/healthcheck''. The default value is ``/''.
       """)
 
+  if include_weighted_load_balancing:
+    parser.add_argument(
+        '--weight-report-mode',
+        choices=['ENABLE', 'DISABLE', 'DRY_RUN'],
+        help="""\
+        Defines whether Weighted Load Balancing is enabled.
+        """)
+
 
 def AddHttpRelatedResponseArg(parser):
   """Adds parser argument for HTTP response field."""
@@ -166,7 +174,7 @@ def AddHttpRelatedResponseArg(parser):
       """)
 
 
-def AddHttpRelatedUpdateArgs(parser):
+def AddHttpRelatedUpdateArgs(parser, include_weighted_load_balancing=False):
   """Adds parser arguments for update subcommands related to HTTP."""
 
   _AddPortRelatedUpdateArgs(parser)
@@ -187,6 +195,14 @@ def AddHttpRelatedUpdateArgs(parser):
       The request path that this health check monitors. For example,
       ``/healthcheck''.
       """)
+
+  if include_weighted_load_balancing:
+    parser.add_argument(
+        '--weight-report-mode',
+        choices=['ENABLE', 'DISABLE', 'DRY_RUN'],
+        help="""\
+        Defines whether Weighted Load Balancing is enabled.
+        """)
 
 
 def AddTcpRelatedCreationArgs(parser):

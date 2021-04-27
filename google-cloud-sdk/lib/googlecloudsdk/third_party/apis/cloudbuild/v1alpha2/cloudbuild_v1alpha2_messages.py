@@ -14,6 +14,20 @@ from apitools.base.py import extra_types
 package = 'cloudbuild'
 
 
+class AnthosWorkerPool(_messages.Message):
+  r"""Anthos CICD cluster option.
+
+  Fields:
+    membership: Membership of the GKE Hub registered cluster this build should
+      execute on. Example:
+      /projects/{project}/locations/{location}/memberships/{cluster_name} The
+      cluster's project number must be the same project ID that is running the
+      build.
+  """
+
+  membership = _messages.StringField(1)
+
+
 class ApprovalConfig(_messages.Message):
   r"""ApprovalConfig describes configuration for manual approval of a build.
 
@@ -382,6 +396,8 @@ class BuildOptions(_messages.Message):
       configuration file.
 
   Fields:
+    anthosCluster: Details about how this build should be executed on a Anthos
+      cluster.
     cluster: Details about how this build should be executed on a GKE cluster.
     diskSizeGb: Requested disk size for the VM that runs the build. Note that
       this is *NOT* "disk free"; some of the space will be used by the
@@ -514,19 +530,20 @@ class BuildOptions(_messages.Message):
     MUST_MATCH = 0
     ALLOW_LOOSE = 1
 
-  cluster = _messages.MessageField('ClusterOptions', 1)
-  diskSizeGb = _messages.IntegerField(2)
-  dynamicSubstitutions = _messages.BooleanField(3)
-  env = _messages.StringField(4, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 5)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 6)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 7)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 8)
-  secretEnv = _messages.StringField(9, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 10, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 11)
-  volumes = _messages.MessageField('Volume', 12, repeated=True)
-  workerPool = _messages.StringField(13)
+  anthosCluster = _messages.MessageField('AnthosWorkerPool', 1)
+  cluster = _messages.MessageField('ClusterOptions', 2)
+  diskSizeGb = _messages.IntegerField(3)
+  dynamicSubstitutions = _messages.BooleanField(4)
+  env = _messages.StringField(5, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 6)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 7)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 8)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 9)
+  secretEnv = _messages.StringField(10, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 11, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 12)
+  volumes = _messages.MessageField('Volume', 13, repeated=True)
+  workerPool = _messages.StringField(14)
 
 
 class BuildStep(_messages.Message):

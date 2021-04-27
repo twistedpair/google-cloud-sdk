@@ -384,7 +384,6 @@ If you want to enable all scopes use the 'cloud-platform' scope.
   if not beta:
     parser.add_argument(
         '--confidential-compute',
-        hidden=True,
         action='store_true',
         help="""\
         Enables Confidential VM. See https://cloud.google.com/compute/confidential-vm/docs for more information.

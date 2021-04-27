@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import operator
+
 from googlecloudsdk.api_lib.clouddeploy import client_util
+from googlecloudsdk.core import exceptions
 
 PENDING_APPROVAL_FILTER_TEMPLATE = ('approvalState="NEEDS_APPROVAL" AND '
                                     'state="PENDING_APPROVAL" AND target="{}"')
@@ -64,12 +67,13 @@ class RolloutClient(object):
 
     return sorted(rollouts, key=lambda x: x.createTime, reverse=True)
 
-  def GetCurrentRollout(self, releases, target_ref):
+  def GetCurrentRollout(self, releases, target_ref, index=0):
     """Gets the last deployed rollouts for the releases associated with the specified target.
 
     Args:
       releases: releases objects.
       target_ref: target object.
+      index: the nth rollout in the list to be returned.
 
     Returns:
       a rollout object.
@@ -82,6 +86,28 @@ class RolloutClient(object):
       rollouts.extend(self._service.List(request).rollouts)
 
     if rollouts:
-      return sorted(rollouts, key=lambda x: x.deployEndTime, reverse=True)[0]
+      if not 0 <= index < len(rollouts):
+        raise exceptions.Error(
+            'total number of rollouts for target {} is {}, index {} out of range.'
+            .format(target_ref.Name(), len(rollouts), index))
+
+      return sorted(
+          rollouts, key=operator.attrgetter('deployEndTime'),
+          reverse=True)[index]
 
     return None
+
+  def Approve(self, name, approved):
+    """Calls the approve API to approve or reject a rollout..
+
+    Args:
+      name: Name of the Rollout. Format is
+        projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}.
+      approved: True = approve; False = reject
+
+    Returns:
+      ApproveRolloutResponse message.
+    """
+    request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveRequest(
+        name=name, approved=approved)
+    return self._service.Approve(request)

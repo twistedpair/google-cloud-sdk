@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -49,6 +50,9 @@ def AddConnectionPreference(parser):
   connection_preference_choices = {
       'ACCEPT_AUTOMATIC':
           'Always accept connection requests from consumers automatically.',
+      'ACCEPT_MANUAL':
+          'Only accept connection requests from consumers with the approval of '
+          'the service provider.',
   }
 
   parser.add_argument(
@@ -59,7 +63,7 @@ def AddConnectionPreference(parser):
       help="This defines the service attachment's connection preference.")
 
 
-def AddEnableProxyProtocol(parser):
+def AddEnableProxyProtocolForCreate(parser):
   parser.add_argument(
       '--enable-proxy-protocol',
       action='store_true',
@@ -68,6 +72,49 @@ def AddEnableProxyProtocol(parser):
       If True, then enable the proxy protocol which is for supplying client
       TCP/IP address data in TCP connections that traverse proxies on their way
       to destination servers.
+      """)
+
+
+def AddEnableProxyProtocolForUpdate(parser):
+  parser.add_argument(
+      '--enable-proxy-protocol',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      If True, then enable the proxy protocol which is for supplying client
+      TCP/IP address data in TCP connections that traverse proxies on their way
+      to destination servers.
+      """)
+
+
+def AddConsumerRejectList(parser):
+  parser.add_argument(
+      '--consumer-reject-list',
+      type=arg_parsers.ArgList(),
+      metavar='REJECT_LIST',
+      default=None,
+      help="""\
+      Specifies a comma separated list of projects that are not allowed to
+      connect to this service attachment. The project can be specified using its
+      id or number.
+      """)
+
+
+def AddConsumerAcceptList(parser):
+  parser.add_argument(
+      '--consumer-accept-list',
+      type=arg_parsers.ArgDict(),
+      action='append',
+      metavar='PROJECT=LIMIT',
+      default=None,
+      help="""\
+      Adds consumer project(s) with connection limit(s) to the accept list of
+      the service attachment.
+
+      For example, `--consumer-accept-list myProjectId1=20` accepts a consumer
+      project myProjectId1 with connection limit 20.
+
+      * `PROJECT_ID_OR_NUM` - Consumer project id or number.
+      * `CONNECTION_LIMIT` - The max number of allowed connections.
       """)
 
 

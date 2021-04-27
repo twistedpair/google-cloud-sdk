@@ -18,18 +18,27 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import six
+
 
 def GetConnectionPreference(args, messages):
   """Get connection preference of the service attachment."""
   if args.connection_preference == 'ACCEPT_AUTOMATIC':
     return messages.ServiceAttachment.ConnectionPreferenceValueValuesEnum.ACCEPT_AUTOMATIC
+  if args.connection_preference == 'ACCEPT_MANUAL':
+    return messages.ServiceAttachment.ConnectionPreferenceValueValuesEnum.ACCEPT_MANUAL
 
   return None
 
 
-def GetEnableProxyProtocol(args):
-  """Get enable-proxy-protocol of the service attachment."""
-  if args.enable_proxy_protocol:
-    return True
-
-  return None
+def GetConsumerAcceptList(args, messages):
+  """Get consumer accept list of the service attachment."""
+  if args.consumer_accept_list is None:
+    return None
+  consumer_accept_list = []
+  for project_limit in args.consumer_accept_list:
+    for project_id, conn_limit in sorted(six.iteritems(project_limit)):
+      consumer_accept_list.append(
+          messages.ServiceAttachmentConsumerProjectLimit(
+              projectIdOrNum=project_id, connectionLimit=int(conn_limit)))
+  return consumer_accept_list

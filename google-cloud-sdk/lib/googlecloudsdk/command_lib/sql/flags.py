@@ -584,6 +584,19 @@ def AddNetwork(parser):
             'testsharednetwork`'))
 
 
+def AddAllocatedIpRangeName(parser):
+  """Adds the `--allocated-ip-range-name` flag to the parser."""
+  parser.add_argument(
+      '--allocated-ip-range-name',
+      required=False,
+      help=(
+          'The name of the ip range allocated for Cloud SQL instance with '
+          'private network connectivity. For example: '
+          '\'google-managed-services-default\'. If set, the instance ip will '
+          'be created in the allocated range represented by this name.'
+          ))
+
+
 def AddReplication(parser):
   base.ChoiceArgument(
       '--replication',

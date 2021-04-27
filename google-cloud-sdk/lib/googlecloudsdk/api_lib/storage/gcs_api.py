@@ -364,7 +364,7 @@ class GcsApi(cloud_api.CloudApi):
       predefined_default_acl = None
 
     apitools_request = self.messages.StorageBucketsPatchRequest(
-        bucket=metadata.name,
+        bucket=bucket_resource.name,
         bucketResource=metadata,
         projection=projection,
         ifMetagenerationMatch=validated_request_config

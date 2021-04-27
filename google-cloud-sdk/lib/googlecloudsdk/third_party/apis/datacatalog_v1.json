@@ -1179,7 +1179,7 @@
     },
     "GoogleCloudDatacatalogV1Taxonomy": {
       "id": "GoogleCloudDatacatalogV1Taxonomy",
-      "description": "A taxonomy is a collection of hierarchical policy tags that classify data along a common axis. For instance a \"data sensitivity\" taxonomy could contain the following policy tags: + PII + Account number + Age + SSN + Zipcode + Financials + Revenue A \"data origin\" taxonomy could contain the following policy tags: + User data + Employee data + Partner data + Public data",
+      "description": "A taxonomy is a collection of hierarchical policy tags that classify data along a common axis. For instance a \"data sensitivity\" taxonomy could contain the following policy tags: ``` + PII + Account number + Age + SSN + Zipcode + Financials + Revenue ``` A \"data origin\" taxonomy could contain the following policy tags: ``` + User data + Employee data + Partner data + Public data ```",
       "type": "object",
       "properties": {
         "name": {
@@ -1243,7 +1243,7 @@
     },
     "GoogleCloudDatacatalogV1PolicyTag": {
       "id": "GoogleCloudDatacatalogV1PolicyTag",
-      "description": "Denotes one policy tag in a taxonomy (e.g. ssn). Policy tags can be defined in a hierarchy. For example, consider the following hierarchy: + Geolocation + LatLong + City + ZipCode Policy tag \"Geolocation\" contains 3 child policy tags: \"LatLong\", \"City\", and \"ZipCode\".",
+      "description": "Denotes one policy tag in a taxonomy (e.g. ssn). Policy tags can be defined in a hierarchy. For example, consider the following hierarchy: ``` + Geolocation + LatLong + City + ZipCode ``` Policy tag \"Geolocation\" contains 3 child policy tags: \"LatLong\", \"City\", and \"ZipCode\".",
       "type": "object",
       "properties": {
         "name": {
@@ -1291,32 +1291,14 @@
         }
       }
     },
-    "GoogleCloudDatacatalogV1ImportTaxonomiesRequest": {
-      "id": "GoogleCloudDatacatalogV1ImportTaxonomiesRequest",
-      "description": "Request message for ImportTaxonomies.",
+    "GoogleCloudDatacatalogV1ReplaceTaxonomyRequest": {
+      "id": "GoogleCloudDatacatalogV1ReplaceTaxonomyRequest",
+      "description": "Request message for ReplaceTaxonomy.",
       "type": "object",
       "properties": {
-        "inlineSource": {
-          "description": "Inline source used for taxonomies import.",
-          "$ref": "GoogleCloudDatacatalogV1InlineSource"
-        },
-        "crossRegionalSource": {
-          "description": "Cross-regional source taxonomy to be imported.",
-          "$ref": "GoogleCloudDatacatalogV1CrossRegionalSource"
-        }
-      }
-    },
-    "GoogleCloudDatacatalogV1InlineSource": {
-      "id": "GoogleCloudDatacatalogV1InlineSource",
-      "description": "Inline source containing taxonomies to import.",
-      "type": "object",
-      "properties": {
-        "taxonomies": {
-          "description": "Required. Taxonomies to be imported.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudDatacatalogV1SerializedTaxonomy"
-          }
+        "serializedTaxonomy": {
+          "description": "Required. Taxonomy to update along with its child policy tags.",
+          "$ref": "GoogleCloudDatacatalogV1SerializedTaxonomy"
         }
       }
     },
@@ -1379,6 +1361,35 @@
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDatacatalogV1SerializedPolicyTag"
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1ImportTaxonomiesRequest": {
+      "id": "GoogleCloudDatacatalogV1ImportTaxonomiesRequest",
+      "description": "Request message for ImportTaxonomies.",
+      "type": "object",
+      "properties": {
+        "inlineSource": {
+          "description": "Inline source used for taxonomies import.",
+          "$ref": "GoogleCloudDatacatalogV1InlineSource"
+        },
+        "crossRegionalSource": {
+          "description": "Cross-regional source taxonomy to be imported.",
+          "$ref": "GoogleCloudDatacatalogV1CrossRegionalSource"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1InlineSource": {
+      "id": "GoogleCloudDatacatalogV1InlineSource",
+      "description": "Inline source containing taxonomies to import.",
+      "type": "object",
+      "properties": {
+        "taxonomies": {
+          "description": "Required. Taxonomies to be imported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1SerializedTaxonomy"
           }
         }
       }
@@ -2794,6 +2805,34 @@
                   ],
                   "description": "Returns the permissions that a caller has on a specified policy tag or taxonomy."
                 },
+                "replace": {
+                  "id": "datacatalog.projects.locations.taxonomies.replace",
+                  "path": "v1/{+name}:replace",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:replace",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Resource name of the taxonomy to be updated.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/taxonomies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudDatacatalogV1ReplaceTaxonomyRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudDatacatalogV1Taxonomy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Replaces a taxonomy and all its policy tags. This operation atomically updates a taxonomy and all its policy tags. The taxonomy and its entire hierarchy of policy tags must be represented literally with the SerializedTaxonomy and the nested SerializedPolicyTag messages: - Existing policy tags that are missing from the SerializedPolicyTag messages will be deleted. - Policy tags without resource names are treated as new policy tags in the taxonomy and will be created. - Policy tags with valid policy tag resources names will be updated accordingly."
+                },
                 "import": {
                   "id": "datacatalog.projects.locations.taxonomies.import",
                   "path": "v1/{+parent}/taxonomies:import",
@@ -2914,7 +2953,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a policy tag. This method also deletes - all of its descendant policy tags, if any, - the policies associated with the policy tag and its descendants, and - references from BigQuery table schema of the policy tag and its descendants."
+                      "description": "Deletes a policy tag. This method also deletes: * all of its descendant policy tags, if any * the policies associated with the policy tag and its descendants * references from BigQuery table schema of the policy tag and its descendants."
                     },
                     "patch": {
                       "id": "datacatalog.projects.locations.taxonomies.policyTags.patch",

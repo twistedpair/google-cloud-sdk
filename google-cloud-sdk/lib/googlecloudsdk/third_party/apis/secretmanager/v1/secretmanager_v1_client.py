@@ -119,7 +119,7 @@ class SecretmanagerV1(base_api.BaseApiClient):
           }
 
     def Access(self, request, global_params=None):
-      r"""Accesses a SecretVersion. This call returns the secret data. `projects/*/secrets/*/versions/latest` is an alias to the `latest` SecretVersion.
+      r"""Accesses a SecretVersion. This call returns the secret data. `projects/*/secrets/*/versions/latest` is an alias to the most recently created SecretVersion.
 
       Args:
         request: (SecretmanagerProjectsSecretsVersionsAccessRequest) input message
@@ -227,7 +227,7 @@ class SecretmanagerV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets metadata for a SecretVersion. `projects/*/secrets/*/versions/latest` is an alias to the `latest` SecretVersion.
+      r"""Gets metadata for a SecretVersion. `projects/*/secrets/*/versions/latest` is an alias to the most recently created SecretVersion.
 
       Args:
         request: (SecretmanagerProjectsSecretsVersionsGetRequest) input message

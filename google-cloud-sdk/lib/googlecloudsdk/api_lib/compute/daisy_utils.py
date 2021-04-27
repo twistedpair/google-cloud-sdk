@@ -103,6 +103,26 @@ OS_UPGRADE_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = (
     ROLE_IAM_SERVICE_ACCOUNT_USER,
 )
 
+# The list of regions supported by Cloud Build regional workers. All regions
+# should be supported in Q3 2021 when this list should no longer be needed.
+CLOUD_BUILD_REGIONS = (
+    'asia-east1',
+    'asia-northeast1',
+    'asia-southeast1',
+    'australia-southeast1',
+    'europe-west1',
+    'europe-west2',
+    'europe-west3',
+    'europe-west4',
+    'europe-west6',
+    'northamerica-northeast1',
+    'southamerica-east1',
+    'us-central1',
+    'us-east1',
+    'us-east4',
+    'us-west1',
+)
+
 # Used for unit testing as api_tools mocks can only assert on exact matches
 bucket_random_suffix_override = None
 
@@ -406,6 +426,52 @@ def _CreateCloudBuild(build_config, client, messages):
   return build, build_ref
 
 
+def _CreateRegionalCloudBuild(build_config, client, messages, build_region):
+  """Create a regional build in Cloud Build.
+
+  Args:
+    build_config: A cloud build Build message.
+    client: The cloud build api client.
+    messages: The cloud build api messages module.
+    build_region: region to which build in
+
+  Returns:
+    Tuple containing a cloud build build object and the resource reference
+    for that build.
+  """
+  log.debug('submitting build: {0}'.format(repr(build_config)))
+
+  parent_resource = resources.REGISTRY.Create(
+      collection='cloudbuild.projects.locations',
+      projectsId=properties.VALUES.core.project.GetOrFail(),
+      locationsId=build_region)
+
+  op = client.projects_locations_builds.Create(
+      messages.CloudbuildProjectsLocationsBuildsCreateRequest(
+          projectId=properties.VALUES.core.project.Get(),
+          parent=parent_resource.RelativeName(), build=build_config))
+
+  json = encoding.MessageToJson(op.metadata)
+  build = encoding.JsonToMessage(messages.BuildOperationMetadata, json).build
+
+  # Need to set the default version to 'v1'
+  build_ref = resources.REGISTRY.Parse(
+      None,
+      collection='cloudbuild.projects.locations.builds',
+      api_version='v1',
+      params={
+          'projectsId': build.projectId,
+          'locationsId': build_region,
+          'buildsId': build.id,
+      })
+  log.CreatedResource(build_ref)
+  if build.logUrl:
+    log.status.Print('Logs are available at [{0}].'.format(build.logUrl))
+  else:
+    log.status.Print('Logs are available in the Cloud Console.')
+  return build, build_ref
+
+
 def GetDaisyBucketName(bucket_location=None):
   """Determine bucket name for daisy.
 
@@ -529,21 +595,26 @@ def RunImageImport(args,
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
   AppendArg(import_args, 'client_version', config.CLOUD_SDK_VERSION)
-
-  builder = _GetBuilder(args, _IMAGE_IMPORT_BUILDER_EXECUTABLE,
-                        docker_image_tag, release_track, _GetImageImportRegion)
+  builder_region = _GetBuilderRegion(release_track, _GetImageImportRegion, args)
+  builder = _GetBuilder(_IMAGE_IMPORT_BUILDER_EXECUTABLE, docker_image_tag,
+                        builder_region)
   return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
                             IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
                             IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
 
 
-def _GetBuilder(
-    args,
-    executable,
-    docker_image_tag,
-    release_track,
-    region_getter,
-    use_regionalized_builder=lambda release_track: release_track != 'ga'):
+def _GetBuilderRegion(release_track, region_getter, args):
+  region = None
+  if release_track != 'ga':
+    # Use regionalized wrapper image for Alpha and Beta
+    try:
+      region = region_getter(args)
+    except HttpError:
+      region = None
+  return region
+
+
+def _GetBuilder(executable, docker_image_tag, builder_region):
   """Returns a path to a builder Docker images.
 
   If a region can be determined from region_getter and if regionalized builder
@@ -551,23 +622,15 @@ def _GetBuilder(
   builder is returned.
 
   Args:
-    args: An argparse namespace. All the arguments that were provided to this
-      command invocation.
     executable: name of builder executable to run
     docker_image_tag: tag for Docker builder images (e.g. 'release')
-    release_track: release track of the command used. One of - "alpha", "beta"
-      or "ga"
-    region_getter: method that returns desired region based on args
-    use_regionalized_builder: lambda that uses release_track arg to determine if
-      regionalized builder should be used.
+    builder_region: region for the builder
 
   Returns:
     str: a path to a builder Docker images.
   """
-  if use_regionalized_builder(release_track):
-    # Use regionalized wrapper image for Alpha and Beta
-    regionalized_builder = _GetRegionalizedBuilder(args, executable,
-                                                   region_getter,
+  if builder_region:
+    regionalized_builder = _GetRegionalizedBuilder(executable, builder_region,
                                                    docker_image_tag)
     if regionalized_builder:
       return regionalized_builder
@@ -575,23 +638,17 @@ def _GetBuilder(
       executable=executable, docker_image_tag=docker_image_tag)
 
 
-def _GetRegionalizedBuilder(args, executable, region_getter, docker_image_tag):
+def _GetRegionalizedBuilder(executable, region, docker_image_tag):
   """Return Docker image path for regionalized builder wrapper.
 
   Args:
-    args: gcloud command args
     executable: name of builder executable to run
-    region_getter: method that returns desired region based on args
+    region: region for the builder
     docker_image_tag: tag for Docker builder images (e.g. 'release')
 
   Returns:
     str: path to Docker images for regionalized builder.
   """
-  try:
-    region = region_getter(args)
-  except HttpError:
-    region = ''
-
   if not region:
     return ''
 
@@ -662,9 +719,9 @@ def RunOnestepImageImport(args,
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-
-  builder = _GetBuilder(args, _IMAGE_ONESTEP_IMPORT_BUILDER_EXECUTABLE,
-                        docker_image_tag, release_track, _GetImageImportRegion)
+  builder_region = _GetBuilderRegion(release_track, _GetImageImportRegion, args)
+  builder = _GetBuilder(_IMAGE_ONESTEP_IMPORT_BUILDER_EXECUTABLE,
+                        docker_image_tag, builder_region)
   return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
                             IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
                             IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
@@ -699,8 +756,9 @@ def RunImageExport(args,
   """
 
   AppendArg(export_args, 'client_version', config.CLOUD_SDK_VERSION)
-  builder = _GetBuilder(args, _IMAGE_EXPORT_BUILDER_EXECUTABLE,
-                        docker_image_tag, release_track, _GetImageExportRegion)
+  builder_region = _GetBuilderRegion(release_track, _GetImageExportRegion, args)
+  builder = _GetBuilder(_IMAGE_EXPORT_BUILDER_EXECUTABLE, docker_image_tag,
+                        builder_region)
   return RunImageCloudBuild(args, builder, export_args, tags, output_filter,
                             EXPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
                             EXPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
@@ -775,7 +833,8 @@ def _RunCloudBuild(args,
                    build_tags=None,
                    output_filter=None,
                    log_location=None,
-                   backoff=lambda elapsed: 1):
+                   backoff=lambda elapsed: 1,
+                   build_region=None):
   """Run a build with a specific builder on Google Cloud Builder.
 
   Args:
@@ -790,6 +849,7 @@ def _RunCloudBuild(args,
     log_location: GCS path to directory where logs will be stored.
     backoff: A function that takes the current elapsed time and returns
       the next sleep length. Both are in seconds.
+    build_region: Region to run Cloud Build in.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -821,7 +881,11 @@ def _RunCloudBuild(args,
       build_config.logsBucket = 'gs://{0}'.format(gcs_log_ref.bucket)
 
   # Start the build.
-  build, build_ref = _CreateCloudBuild(build_config, client, messages)
+  if build_region and build_region in CLOUD_BUILD_REGIONS:
+    build, build_ref = _CreateRegionalCloudBuild(build_config, client, messages,
+                                                 build_region)
+  else:
+    build, build_ref = _CreateCloudBuild(build_config, client, messages)
 
   # If the command is run --async, we just print out a reference to the build.
   if args.async_:
@@ -846,13 +910,13 @@ def _RunCloudBuild(args,
   return build
 
 
-def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
-                      no_guest_environment, can_ip_forward, deletion_protection,
-                      description, labels, machine_type, network, network_tier,
-                      subnet, private_network_ip, no_restart_on_failure, os,
-                      tags, zone, project, output_filter, release_track,
-                      hostname, no_address, byol, compute_service_account,
-                      service_account, no_service_account, scopes, no_scopes):
+def RunInstanceOVFImportBuild(
+    args, compute_client, instance_name, source_uri, no_guest_environment,
+    can_ip_forward, deletion_protection, description, labels, machine_type,
+    network, network_tier, subnet, private_network_ip, no_restart_on_failure,
+    os, tags, zone, project, output_filter, release_track, hostname, no_address,
+    byol, compute_service_account, service_account, no_service_account, scopes,
+    no_scopes):
   """Run a OVF into VM instance import build on Google Cloud Build.
 
   Args:
@@ -963,10 +1027,10 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   build_tags = ['gce-daisy', 'gce-ovf-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
-
-  builder = _GetBuilder(args, _OVF_IMPORT_BUILDER_EXECUTABLE,
-                        args.docker_image_tag, release_track,
-                        _GetInstanceImportRegion)
+  builder_region = _GetBuilderRegion(release_track, _GetInstanceImportRegion,
+                                     args)
+  builder = _GetBuilder(_OVF_IMPORT_BUILDER_EXECUTABLE, args.docker_image_tag,
+                        builder_region)
   return _RunCloudBuild(
       args,
       builder,
@@ -974,7 +1038,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
       build_tags,
       output_filter,
       backoff=backoff,
-      log_location=args.log_location)
+      log_location=args.log_location,
+      build_region=builder_region)
 
 
 def RunMachineImageOVFImportBuild(args, output_filter, release_track):
@@ -1062,14 +1127,10 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
   build_tags = ['gce-daisy', 'gce-ovf-machine-image-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
-
-  builder = _GetBuilder(
-      args,
-      _OVF_IMPORT_BUILDER_EXECUTABLE,
-      args.docker_image_tag,
-      release_track,
-      _GetMachineImageImportRegion,
-      use_regionalized_builder=lambda rt: rt == 'alpha')
+  builder_region = _GetBuilderRegion(release_track,
+                                     _GetMachineImageImportRegion, args)
+  builder = _GetBuilder(_OVF_IMPORT_BUILDER_EXECUTABLE, args.docker_image_tag,
+                        builder_region)
 
   return _RunCloudBuild(
       args,
@@ -1173,10 +1234,9 @@ def RunOsUpgradeBuild(args, output_filter, instance_uri, release_track):
   AppendArg(os_upgrade_args, 'client-version', config.CLOUD_SDK_VERSION)
 
   build_tags = ['gce-os-upgrade']
-
-  builder = _GetBuilder(args, _OS_UPGRADE_BUILDER_EXECUTABLE,
-                        args.docker_image_tag, release_track,
-                        _GetOSUpgradeRegion)
+  builder_region = _GetBuilderRegion(release_track, _GetOSUpgradeRegion, args)
+  builder = _GetBuilder(_OS_UPGRADE_BUILDER_EXECUTABLE, args.docker_image_tag,
+                        builder_region)
   return _RunCloudBuild(args, builder, os_upgrade_args, build_tags,
                         output_filter, args.log_location)
 

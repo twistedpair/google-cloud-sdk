@@ -7,7 +7,7 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Workflows API",
-  "description": "Orchestrate Workflows consisting of Google Cloud APIs, SaaS APIs or private API endpoints.",
+  "description": "Manage workflow definitions. To execute workflows and manage executions, see the Workflows Executions API.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

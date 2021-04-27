@@ -20,10 +20,10 @@ from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
 
-from googlecloudsdk.api_lib.clouddeploy import release
 from googlecloudsdk.api_lib.clouddeploy import rollout
 from googlecloudsdk.api_lib.clouddeploy import target
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
@@ -56,44 +56,36 @@ def DescribeTarget(target_ref):
   except apitools_exceptions.HttpError as error:
     raise exceptions.HttpException(error)
   output = {'Target': deploy_target}
-  releases, output = GetCurrentRelease(target_ref, output)
+  releases, current_rollout = target_util.GetReleasesAndCurrentRollout(
+      target_ref)
+  output = SetCurrentReleaseAndRollout(current_rollout, output)
   if deploy_target.approvalRequired:
     output = ListPendingApprovals(releases, target_ref, output)
 
   return output
 
 
-def GetCurrentRelease(target_ref, output):
-  """Gets the current release in the specified target and the last deployment associated with the release.
+def SetCurrentReleaseAndRollout(current_rollout, output):
+  """Set current release and the last deployment section in the output.
 
   Args:
-    target_ref: target object.
+    current_rollout: rollout message.
     output: a directory holds the output content.
 
   Returns:
-    releases associated with the target.
     a content directory.
   """
-  releases = []
-  try:
-    release_client = release.ReleaseClient()
-    # get all of the releases associated with the target.
-    releases = release_client.ListReleasesByTarget(target_ref)
-    # find the last deployed rollout.
-    current_rollout = rollout.RolloutClient().GetCurrentRollout(
-        releases, target_ref)
-    if current_rollout:
-      current_rollout_ref = resources.REGISTRY.Parse(
-          current_rollout.name,
-          collection='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts'
-      )
-      # get the name of the release associated with the current rollout.
-      output['Current Release'] = current_rollout_ref.Parent().RelativeName()
-      output['Last deployment'] = current_rollout.deployEndTime
-  except apitools_exceptions.HttpError as error:
-    log.debug('failed to get current release: ' + error.content)
 
-  return releases, output
+  if current_rollout:
+    current_rollout_ref = resources.REGISTRY.Parse(
+        current_rollout.name,
+        collection='clouddeploy.projects.locations.deliveryPipelines.releases.rollouts'
+    )
+    # get the name of the release associated with the current rollout.
+    output['Current Release'] = current_rollout_ref.Parent().RelativeName()
+    output['Last deployment'] = current_rollout.deployEndTime
+
+  return output
 
 
 def ListPendingApprovals(releases, target_ref, output):
@@ -118,6 +110,6 @@ def ListPendingApprovals(releases, target_ref, output):
           rollouts[ro.name] = ro.description
         output['Pending Approvals'] = rollouts
     except apitools_exceptions.HttpError as error:
-      log.debug('failed to list pending approvals: ' + error.content)
+      log.debug('Failed to list pending approvals: ' + error.content)
 
   return output

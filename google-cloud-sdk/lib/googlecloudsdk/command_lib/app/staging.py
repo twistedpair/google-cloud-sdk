@@ -555,7 +555,7 @@ _STAGING_REGISTRY = {
         CreateJava11MavenProjectCommand(),
     runtime_registry.RegistryEntry('java-gradle-project', {env.STANDARD}):
         CreateJava11GradleProjectCommand(),
-    runtime_registry.RegistryEntry('generic-copy', {env.STANDARD}):
+    runtime_registry.RegistryEntry('generic-copy', {env.FLEX, env.STANDARD}):
         StageAppWithoutAppYamlCommand(),
 }
 

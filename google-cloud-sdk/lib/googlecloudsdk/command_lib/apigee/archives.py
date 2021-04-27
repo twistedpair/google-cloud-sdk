@@ -47,6 +47,7 @@ class LocalDirectoryArchive(object):
       '.xml',
       '.xsd',
   ]
+  _ARCHIVE_ROOT = os.path.join('src', 'main', 'apigee')
 
   def __init__(self, src_dir):
     self._CheckIfPathExists(src_dir)
@@ -64,6 +65,8 @@ class LocalDirectoryArchive(object):
 
   def _ZipFileFilter(self, file_name):
     """Filter all files in the archive directory to only allow Apigee files."""
+    if not file_name.startswith(self._ARCHIVE_ROOT):
+      return False
     _, ext = os.path.splitext(file_name)
     full_path = os.path.join(self._src_dir, file_name)
     # Skip hidden unix directories. Assume hidden directories and the files

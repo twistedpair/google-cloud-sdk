@@ -668,7 +668,7 @@ def GenerateConnectAgentManifest(membership_ref,
       name=membership_ref)
   # Add optional flag values.
   if image_pull_secret_content:
-    request.imagePullSecretContent = image_pull_secret_content.encode('ascii')
+    request.imagePullSecretContent = image_pull_secret_content.encode('utf-8')
   if is_upgrade:
     request.isUpgrade = is_upgrade
   if namespace:

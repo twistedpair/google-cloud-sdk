@@ -582,6 +582,11 @@
           "readOnly": true,
           "type": "string",
           "format": "int64"
+        },
+        "satisfiesPzs": {
+          "description": "Output only. Reserved for future use.",
+          "readOnly": true,
+          "type": "boolean"
         }
       }
     },

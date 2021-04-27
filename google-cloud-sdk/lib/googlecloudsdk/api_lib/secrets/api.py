@@ -142,10 +142,11 @@ class Secrets(Client):
                 topics=topics_message_list,
                 rotation=rotation)))
 
-  def Delete(self, secret_ref):
+  def Delete(self, secret_ref, etag=None):
     """Delete a secret."""
     return self.service.Delete(
         self.messages.SecretmanagerProjectsSecretsDeleteRequest(
+            etag=etag,
             name=secret_ref.RelativeName()))
 
   def Get(self, secret_ref):
@@ -185,6 +186,7 @@ class Secrets(Client):
              secret_ref,
              labels,
              update_mask,
+             etag=None,
              expire_time=None,
              ttl=None,
              topics=None,
@@ -206,6 +208,7 @@ class Secrets(Client):
             name=secret_ref.RelativeName(),
             secret=self.messages.Secret(
                 labels=labels,
+                etag=etag,
                 expireTime=expire_time,
                 ttl=ttl,
                 topics=topics_message_list,
@@ -250,22 +253,31 @@ class Versions(Client):
         self.messages.SecretmanagerProjectsSecretsVersionsAccessRequest(
             name=version_ref.RelativeName()))
 
-  def Destroy(self, version_ref):
+  def Destroy(self, version_ref, etag=None):
     """Destroy a secret version."""
+    destroy_secret_version_request = self.messages.DestroySecretVersionRequest(
+        etag=etag)
     return self.service.Destroy(
         self.messages.SecretmanagerProjectsSecretsVersionsDestroyRequest(
+            destroySecretVersionRequest=destroy_secret_version_request,
             name=version_ref.RelativeName()))
 
-  def Disable(self, version_ref):
+  def Disable(self, version_ref, etag=None):
     """Disable a secret version."""
+    disable_secret_version_request = self.messages.DisableSecretVersionRequest(
+        etag=etag)
     return self.service.Disable(
         self.messages.SecretmanagerProjectsSecretsVersionsDisableRequest(
+            disableSecretVersionRequest=disable_secret_version_request,
             name=version_ref.RelativeName()))
 
-  def Enable(self, version_ref):
+  def Enable(self, version_ref, etag=None):
     """Enable a secret version."""
+    enable_secret_version_request = self.messages.EnableSecretVersionRequest(
+        etag=etag)
     return self.service.Enable(
         self.messages.SecretmanagerProjectsSecretsVersionsEnableRequest(
+            enableSecretVersionRequest=enable_secret_version_request,
             name=version_ref.RelativeName()))
 
   def Get(self, version_ref):

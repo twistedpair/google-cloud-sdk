@@ -517,12 +517,20 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'clouddeploy': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.clouddeploy.v1',
+                client_classpath='clouddeploy_v1_client.ClouddeployV1',
+                messages_modulepath='clouddeploy_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.clouddeploy.v1alpha1',
                 client_classpath='clouddeploy_v1alpha1_client.ClouddeployV1alpha1',
                 messages_modulepath='clouddeploy_v1alpha1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1236,6 +1244,14 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.gkehub.v1alpha2',
                 client_classpath='gkehub_v1alpha2_client.GkehubV1alpha2',
                 messages_modulepath='gkehub_v1alpha2_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.gkehub.v1beta',
+                client_classpath='gkehub_v1beta_client.GkehubV1beta',
+                messages_modulepath='gkehub_v1beta_messages',
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

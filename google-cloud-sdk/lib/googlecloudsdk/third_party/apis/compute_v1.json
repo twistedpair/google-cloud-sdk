@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20210409",
+ "revision": "20210419",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -6122,13 +6122,6 @@
       "type": "string"
      }
     },
-    "targetSecureLabels": {
-     "type": "array",
-     "description": "A list of secure labels that controls which instances the firewall rule applies to. If targetSecureLabel are specified, then the firewall rule applies only to instances in the VPC network that have one of those secure labels. targetSecureLabel may not be set at the same time as targetServiceAccounts. If neither targetServiceAccounts nor targetSecureLabel are specified, the firewall rule applies to all instances on the specified network. Maximum number of target label values allowed is 256.",
-     "items": {
-      "type": "string"
-     }
-    },
     "targetServiceAccounts": {
      "type": "array",
      "description": "A list of service accounts indicating the sets of instances that are applied with this rule.",
@@ -6160,13 +6153,6 @@
     "srcIpRanges": {
      "type": "array",
      "description": "CIDR IP address range. Maximum number of source CIDR IP ranges allowed is 256.",
-     "items": {
-      "type": "string"
-     }
-    },
-    "srcSecureLabels": {
-     "type": "array",
-     "description": "List of firewall label values, which should be matched at the source of the traffic. Maximum number of source label values allowed is 256.",
      "items": {
       "type": "string"
      }
@@ -6243,7 +6229,7 @@
     },
     "allPorts": {
      "type": "boolean",
-     "description": "This field is used along with the backend_service field for internal load balancing or with the target field for internal TargetInstance. This field cannot be used with port or portRange fields.\n\nWhen the load balancing scheme is INTERNAL and protocol is TCP/UDP, specify this field to allow packets addressed to any ports will be forwarded to the backends configured with this forwarding rule."
+     "description": "This field is used along with the backend_service field for Internal TCP/UDP Load Balancing or Network Load Balancing, or with the target field for internal and external TargetInstance.\n\nYou can only use one of ports and port_range, or allPorts. The three are mutually exclusive.\n\nFor TCP, UDP and SCTP traffic, packets addressed to any ports will be forwarded to the target or backendService."
     },
     "allowGlobalAccess": {
      "type": "boolean",
@@ -6354,11 +6340,11 @@
     },
     "portRange": {
      "type": "string",
-     "description": "This field can be used only if: * Load balancing scheme is one of EXTERNAL,  INTERNAL_SELF_MANAGED or INTERNAL_MANAGED, and * IPProtocol is one of TCP, UDP, or SCTP.\n\nPackets addressed to ports in the specified range will be forwarded to target or  backend_service. You can only use one of ports, port_range, or allPorts. The three are mutually exclusive. Forwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint port ranges.\n\nSome types of forwarding target have constraints on the acceptable ports:  \n- TargetHttpProxy: 80, 8080 \n- TargetHttpsProxy: 443 \n- TargetGrpcProxy: no constraints \n- TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222 \n- TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222 \n- TargetVpnGateway: 500, 4500"
+     "description": "This field can be used only if:  \n- Load balancing scheme is one of EXTERNAL,  INTERNAL_SELF_MANAGED or INTERNAL_MANAGED \n- IPProtocol is one of TCP, UDP, or SCTP.  \n\nPackets addressed to ports in the specified range will be forwarded to target or  backend_service.\n\nYou can only use one of ports, port_range, or allPorts. The three are mutually exclusive.\n\nForwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint ports.\n\nSome types of forwarding target have constraints on the acceptable ports:  \n- TargetHttpProxy: 80, 8080 \n- TargetHttpsProxy: 443 \n- TargetGrpcProxy: no constraints \n- TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222 \n- TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222 \n- TargetVpnGateway: 500, 4500"
     },
     "ports": {
      "type": "array",
-     "description": "The ports field is only supported when the forwarding rule references a backend_service directly. Supported load balancing products are Internal TCP/UDP Load Balancing and Network Load Balancing. Only packets addressed to the specified list of ports are forwarded to backends.\n\nYou can only use one of ports and port_range, or allPorts. The three are mutually exclusive.\n\nYou can specify a list of up to five ports, which can be non-contiguous.\n\nFor Internal TCP/UDP Load Balancing, if you specify allPorts, you should not specify ports.\n\nFor more information, see [Port specifications](/load-balancing/docs/forwarding-rule-concepts#port_specifications).",
+     "description": "The ports field is only supported when the forwarding rule references a backend_service directly. Supported load balancing products are Internal TCP/UDP Load Balancing and Network Load Balancing. Only packets addressed to the specified list of ports are forwarded to backends.\n\nYou can only use one of ports and port_range, or allPorts. The three are mutually exclusive.\n\nYou can specify a list of up to five ports, which can be non-contiguous.\n\nForwarding rules with the same [IPAddress, IPProtocol] pair must have disjoint ports.\n\nFor more information, see [Port specifications](/load-balancing/docs/forwarding-rule-concepts#port_specifications).",
      "items": {
       "type": "string"
      }
@@ -7400,7 +7386,7 @@
     },
     "healthChecks": {
      "type": "array",
-     "description": "List of URLs to the HealthCheck resources. Must have at least one HealthCheck, and not more than 10. HealthCheck resources must have portSpecification=USE_SERVING_PORT. For regional HealthCheckService, the HealthCheck must be regional and in the same region. For global HealthCheckService, HealthCheck must be global. Mix of regional and global HealthChecks is not supported. Multiple regional HealthChecks must belong to the same region. Regional HealthChecks\u003c/code? must belong to the same region as zones of NEGs.",
+     "description": "List of URLs to the HealthCheck resources. Must have at least one HealthCheck, and not more than 10. HealthCheck resources must have portSpecification=USE_SERVING_PORT or portSpecification=USE_FIXED_PORT. For regional HealthCheckService, the HealthCheck must be regional and in the same region. For global HealthCheckService, HealthCheck must be global. Mix of regional and global HealthChecks is not supported. Multiple regional HealthChecks must belong to the same region. Regional HealthChecks must belong to the same region as zones of NEGs.",
      "items": {
       "type": "string"
      }
@@ -9659,7 +9645,7 @@
   "InstanceGroupManager": {
    "id": "InstanceGroupManager",
    "type": "object",
-   "description": "Represents a Managed Instance Group resource.\n\nAn instance group is a collection of VM instances that you can manage as a single entity. For more information, read Instance groups.\n\nFor zonal Managed Instance Group, use the instanceGroupManagers resource.\n\nFor regional Managed Instance Group, use the regionInstanceGroupManagers resource. (== resource_for {$api_version}.instanceGroupManagers ==) (== resource_for {$api_version}.regionInstanceGroupManagers ==)",
+   "description": "Whether the instance is a standby. Properties of a standby instance comparing to the regular instance: ========================================================================= | regular | standby ========================================================================= managed by IGM? | yes | yes added to the IG? | yes | yes counts towards IGM's target size? | yes | no taken into account by Autoscaler? | yes | no receives traffic from LB? | yes | no =========================================================================\n\nRepresents a Managed Instance Group resource.\n\nAn instance group is a collection of VM instances that you can manage as a single entity. For more information, read Instance groups.\n\nFor zonal Managed Instance Group, use the instanceGroupManagers resource.\n\nFor regional Managed Instance Group, use the regionInstanceGroupManagers resource. (== resource_for {$api_version}.instanceGroupManagers ==) (== resource_for {$api_version}.regionInstanceGroupManagers ==)",
    "properties": {
     "autoHealingPolicies": {
      "type": "array",
@@ -13498,7 +13484,7 @@
    "properties": {
     "preference": {
      "type": "string",
-     "description": "Preference for a given locaction: ALLOW or DENY.",
+     "description": "Preference for a given location: ALLOW or DENY.",
      "enum": [
       "ALLOW",
       "DENY",
@@ -23506,7 +23492,7 @@
   "Scheduling": {
    "id": "Scheduling",
    "type": "object",
-   "description": "Sets the scheduling options for an Instance. NextID: 20",
+   "description": "Sets the scheduling options for an Instance. NextID: 21",
    "properties": {
     "automaticRestart": {
      "type": "boolean",

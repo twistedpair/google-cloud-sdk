@@ -767,18 +767,20 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       find Cloud resources that have a label "env". * `kmsKey:key` to find
       Cloud resources encrypted with a customer-managed encryption key whose
       name contains the word "key". * `state:ACTIVE` to find Cloud resources
-      whose state contains "ACTIVE" as a word. * `createTime<1609459200` to
-      find Cloud resources that were created before "2021-01-01 00:00:00 UTC".
+      whose state contains "ACTIVE" as a word. * `NOT state:ACTIVE` to find
+      {{gcp_name}} resources whose state doesn't contain "ACTIVE" as a word. *
+      `createTime<1609459200` to find Cloud resources that were created before
+      "2021-01-01 00:00:00 UTC". 1609459200 is the epoch timestamp of
+      "2021-01-01 00:00:00 UTC" in seconds. * `updateTime>1609459200` to find
+      Cloud resources that were updated after "2021-01-01 00:00:00 UTC".
       1609459200 is the epoch timestamp of "2021-01-01 00:00:00 UTC" in
-      seconds. * `updateTime>1609459200` to find Cloud resources that were
-      updated after "2021-01-01 00:00:00 UTC". 1609459200 is the epoch
-      timestamp of "2021-01-01 00:00:00 UTC" in seconds. * `Important` to find
+      seconds. * `Important` to find Cloud resources that contain "Important"
+      as a word in any of the searchable fields. * `Impor*` to find Cloud
+      resources that contain "Impor" as a prefix of any word in any of the
+      searchable fields. * `Important location:(us-west1 OR global)` to find
       Cloud resources that contain "Important" as a word in any of the
-      searchable fields. * `Impor*` to find Cloud resources that contain
-      "Impor" as a prefix of any word in any of the searchable fields. *
-      `Important location:(us-west1 OR global)` to find Cloud resources that
-      contain "Important" as a word in any of the searchable fields and are
-      also located in the "us-west1" region or the "global" location.
+      searchable fields and are also located in the "us-west1" region or the
+      "global" location.
     scope: Required. A scope can be a project, a folder, or an organization.
       The search is limited to the resources within the `scope`. The caller
       must be granted the
@@ -1947,8 +1949,8 @@ class GoogleIdentityAccesscontextmanagerV1DevicePolicy(_messages.Message):
 class GoogleIdentityAccesscontextmanagerV1EgressFrom(_messages.Message):
   r"""Defines the conditions under which an EgressPolicy matches a request.
   Conditions based on information about the source of the request. Note that
-  if the destination of the request is protected by a ServicePerimeter, then
-  that ServicePerimeter must have an IngressPolicy which allows access in
+  if the destination of the request is also protected by a ServicePerimeter,
+  then that ServicePerimeter must have an IngressPolicy which allows access in
   order for this request to succeed.
 
   Enums:
@@ -2017,18 +2019,20 @@ class GoogleIdentityAccesscontextmanagerV1EgressTo(_messages.Message):
   r"""Defines the conditions under which an EgressPolicy matches a request.
   Conditions are based on information about the ApiOperation intended to be
   performed on the `resources` specified. Note that if the destination of the
-  request is protected by a ServicePerimeter, then that ServicePerimeter must
-  have an IngressPolicy which allows access in order for this request to
-  succeed.
+  request is also protected by a ServicePerimeter, then that ServicePerimeter
+  must have an IngressPolicy which allows access in order for this request to
+  succeed. The request must match `operations` AND `resources` fields in order
+  to be allowed egress out of the perimeter.
 
   Fields:
-    operations: A list of ApiOperations that this egress rule applies to. A
-      request matches if it contains an operation/service in this list.
+    operations: A list of ApiOperations allowed to be performed by the sources
+      specified in the corresponding EgressFrom. A request matches if it uses
+      an operation/service in this list.
     resources: A list of resources, currently only projects in the form
-      `projects/`, that match this to stanza. A request matches if it contains
-      a resource in this list. If `*` is specified for resources, then this
-      EgressTo rule will authorize access to all resources outside the
-      perimeter.
+      `projects/`, that are allowed to be accessed by sources defined in the
+      corresponding EgressFrom. A request matches if it contains a resource in
+      this list. If `*` is specified for `resources`, then this EgressTo rule
+      will authorize access to all resources outside the perimeter.
   """
 
   operations = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ApiOperation', 1, repeated=True)
@@ -2037,7 +2041,9 @@ class GoogleIdentityAccesscontextmanagerV1EgressTo(_messages.Message):
 
 class GoogleIdentityAccesscontextmanagerV1IngressFrom(_messages.Message):
   r"""Defines the conditions under which an IngressPolicy matches a request.
-  Conditions are based on information about the source of the request.
+  Conditions are based on information about the source of the request. The
+  request must satisfy what is defined in `sources` AND identity related
+  fields in order to match.
 
   Enums:
     IdentityTypeValueValuesEnum: Specifies the type of identities that are
@@ -2111,8 +2117,8 @@ class GoogleIdentityAccesscontextmanagerV1IngressSource(_messages.Message):
       nonexistent AccessLevel will cause an error. If no AccessLevel names are
       listed, resources within the perimeter can only be accessed via Google
       Cloud calls with request origins within the perimeter. Example:
-      `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If `*` is specified,
-      then all IngressSources will be allowed.
+      `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
+      specified for `access_level`, then all IngressSources will be allowed.
     resource: A Google Cloud resource that is allowed to ingress the
       perimeter. Requests from these resources will be allowed to access
       perimeter data. Currently only projects are allowed. Format:
@@ -2129,18 +2135,17 @@ class GoogleIdentityAccesscontextmanagerV1IngressSource(_messages.Message):
 class GoogleIdentityAccesscontextmanagerV1IngressTo(_messages.Message):
   r"""Defines the conditions under which an IngressPolicy matches a request.
   Conditions are based on information about the ApiOperation intended to be
-  performed on the destination of the request.
+  performed on the target resource of the request. The request must satisfy
+  what is defined in `operations` AND `resources` in order to match.
 
   Fields:
-    operations: A list of ApiOperations the sources specified in corresponding
-      IngressFrom are allowed to perform in this ServicePerimeter.
+    operations: A list of ApiOperations allowed to be performed by the sources
+      specified in corresponding IngressFrom in this ServicePerimeter.
     resources: A list of resources, currently only projects in the form
       `projects/`, protected by this ServicePerimeter that are allowed to be
-      accessed by sources defined in the corresponding IngressFrom. A request
-      matches if it contains a resource in this list. If `*` is specified for
-      resources, then this IngressTo rule will authorize access to all
-      resources inside the perimeter, provided that the request also matches
-      the `operations` field.
+      accessed by sources defined in the corresponding IngressFrom. If a
+      single `*` is specified, then access to all resources inside the
+      perimeter are allowed.
   """
 
   operations = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ApiOperation', 1, repeated=True)
@@ -2501,11 +2506,11 @@ class IamPolicyAnalysisState(_messages.Message):
         following guidelines to decide between `FAILED_PRECONDITION`,
         `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
         retry just the failing call. (b) Use `ABORTED` if the client should
-        retry at a higher level (e.g., when a client-specified test-and-set
-        fails, indicating the client should restart a read-modify-write
-        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
-        retry until the system state has been explicitly fixed. E.g., if an
-        "rmdir" fails because the directory is non-empty,
+        retry at a higher level. For example, when a client-specified test-
+        and-set fails, indicating the client should restart a read-modify-
+        write sequence. (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. For example,
+        if an "rmdir" fails because the directory is non-empty,
         `FAILED_PRECONDITION` should be returned since the client should not
         retry unless the files are deleted from the directory. HTTP Mapping:
         400 Bad Request

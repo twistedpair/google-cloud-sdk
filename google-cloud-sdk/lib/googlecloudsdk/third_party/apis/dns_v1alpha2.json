@@ -994,6 +994,7 @@
           "type": "string"
         },
         "kind": {
+          "description": "Type of resource.",
           "default": "dns#managedZoneOperationsListResponse",
           "type": "string"
         }

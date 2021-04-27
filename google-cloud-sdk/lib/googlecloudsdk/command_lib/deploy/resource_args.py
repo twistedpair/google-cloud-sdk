@@ -184,3 +184,44 @@ def GetDeliveryPipelineResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       disable_auto_completers=False)
+
+
+def RolloutAttributeConfig():
+  """Creates the rollout resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='rollout', help_text='The rollout associated with the {resource}.')
+
+
+def GetRolloutResourceSpec():
+  """Constructs and returns the resource specification for Rollout."""
+  return concepts.ResourceSpec(
+      'clouddeploy.projects.locations.deliveryPipelines.releases.rollouts',
+      resource_name='rollout',
+      deliveryPipelinesId=DeliveryPipelineAttributeConfig(),
+      releasesId=ReleaseAttributeConfig(),
+      rolloutsId=RolloutAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      disable_auto_completers=False)
+
+
+def AddRolloutResourceArg(parser,
+                          help_text=None,
+                          positional=False,
+                          required=True):
+  """Add --rollout resource argument to the parser.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser for the command.
+    help_text: help text for this flag.
+    positional: if it is a positional flag.
+    required: if it is required.
+  """
+  help_text = help_text or 'The name of the Rollout.'
+
+  concept_parsers.ConceptParser.ForResource(
+      'rollout' if positional else '--rollout',
+      GetRolloutResourceSpec(),
+      help_text,
+      required=required,
+      plural=False).AddToParser(parser)

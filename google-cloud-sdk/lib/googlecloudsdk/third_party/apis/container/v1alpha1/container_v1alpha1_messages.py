@@ -4395,11 +4395,11 @@ class StatusCondition(_messages.Message):
         following guidelines to decide between `FAILED_PRECONDITION`,
         `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
         retry just the failing call. (b) Use `ABORTED` if the client should
-        retry at a higher level (e.g., when a client-specified test-and-set
-        fails, indicating the client should restart a read-modify-write
-        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
-        retry until the system state has been explicitly fixed. E.g., if an
-        "rmdir" fails because the directory is non-empty,
+        retry at a higher level. For example, when a client-specified test-
+        and-set fails, indicating the client should restart a read-modify-
+        write sequence. (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. For example,
+        if an "rmdir" fails because the directory is non-empty,
         `FAILED_PRECONDITION` should be returned since the client should not
         retry unless the files are deleted from the directory. HTTP Mapping:
         400 Bad Request
@@ -4569,6 +4569,7 @@ class UpdateNodePoolRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
+    gcfsConfig: GCFS config.
     image: The desired name of the image name to use for this node. This is
       used to create clusters using a custom image.
     imageProject: The project containing the desired image to use for this
@@ -4623,24 +4624,25 @@ class UpdateNodePoolRequest(_messages.Message):
   """
 
   clusterId = _messages.StringField(1)
-  image = _messages.StringField(2)
-  imageProject = _messages.StringField(3)
-  imageType = _messages.StringField(4)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 5)
-  labels = _messages.MessageField('NodeLabels', 6)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 7)
-  locations = _messages.StringField(8, repeated=True)
-  name = _messages.StringField(9)
-  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 10)
-  nodePoolId = _messages.StringField(11)
-  nodeVersion = _messages.StringField(12)
-  projectId = _messages.StringField(13)
-  tags = _messages.MessageField('NetworkTags', 14)
-  taints = _messages.MessageField('NodeTaints', 15)
-  updatedNodePool = _messages.MessageField('NodePool', 16)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 17)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 18)
-  zone = _messages.StringField(19)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 2)
+  image = _messages.StringField(3)
+  imageProject = _messages.StringField(4)
+  imageType = _messages.StringField(5)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 6)
+  labels = _messages.MessageField('NodeLabels', 7)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 8)
+  locations = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 11)
+  nodePoolId = _messages.StringField(12)
+  nodeVersion = _messages.StringField(13)
+  projectId = _messages.StringField(14)
+  tags = _messages.MessageField('NetworkTags', 15)
+  taints = _messages.MessageField('NodeTaints', 16)
+  updatedNodePool = _messages.MessageField('NodePool', 17)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 18)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 19)
+  zone = _messages.StringField(20)
 
 
 class UpgradeEvent(_messages.Message):

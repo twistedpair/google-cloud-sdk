@@ -99,6 +99,8 @@ def ConstructPatch(env_ref=None,
                    web_server_machine_type=None,
                    scheduler_cpu=None,
                    worker_cpu=None,
+                   scheduler_memory_gb=None,
+                   worker_memory_gb=None,
                    min_workers=None,
                    max_workers=None,
                    maintenance_window_start=None,
@@ -144,6 +146,10 @@ def ConstructPatch(env_ref=None,
         Can be specified only in Composer 2.0.0.
     worker_cpu: float or None, CPU allocated to each Airflow worker.
         Can be specified only in Composer 2.0.0.
+    scheduler_memory_gb: float or None, memory allocated to Airflow scheduler.
+      Can be specified only in Composer 2.0.0.
+    worker_memory_gb: float or None, memory allocated to each Airflow worker.
+      Can be specified only in Composer 2.0.0.
     min_workers: int or None, minimum number of workers
         in the Environment. Can be specified only in Composer 2.0.0.
     max_workers: int or None, maximumn number of workers
@@ -205,11 +211,13 @@ def ConstructPatch(env_ref=None,
   if web_server_machine_type:
     return _ConstructWebServerMachineTypePatch(
         web_server_machine_type, release_track=release_track)
-  if scheduler_cpu or worker_cpu or\
-      min_workers or max_workers:
+  if (scheduler_cpu or worker_cpu or scheduler_memory_gb or worker_memory_gb or
+      min_workers or max_workers):
     return _ConstructAutoscalingPatch(
         scheduler_cpu=scheduler_cpu,
         worker_cpu=worker_cpu,
+        scheduler_memory_gb=scheduler_memory_gb,
+        worker_memory_gb=worker_memory_gb,
         worker_min_count=min_workers,
         worker_max_count=max_workers,
         release_track=release_track)
@@ -473,7 +481,8 @@ def _ConstructWebServerMachineTypePatch(web_server_machine_type, release_track):
       config=config)
 
 
-def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, worker_min_count,
+def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, scheduler_memory_gb,
+                               worker_memory_gb, worker_min_count,
                                worker_max_count, release_track):
   """Constructs an environment patch for Airflow web server machine type.
 
@@ -481,6 +490,10 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, worker_min_count,
     scheduler_cpu: float or None, CPU allocated to Airflow scheduler.
         Can be specified only in Composer 2.0.0.
     worker_cpu: float or None, CPU allocated to each Airflow worker.
+        Can be specified only in Composer 2.0.0.
+    scheduler_memory_gb: float or None, memory allocated to Airflow scheduler.
+        Can be specified only in Composer 2.0.0.
+    worker_memory_gb: float or None, memory allocated to each Airflow worker.
         Can be specified only in Composer 2.0.0.
     worker_min_count: int or None, minimum number of workers
         in the Environment. Can be specified only in Composer 2.0.0.
@@ -495,26 +508,38 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, worker_min_count,
   messages = api_util.GetMessagesModule(release_track=release_track)
   config = messages.EnvironmentConfig(
       workloadsConfig=messages.WorkloadsConfig(
-          schedulerCpu=scheduler_cpu,
-          workerCpu=worker_cpu,
-          workerMinCount=worker_min_count,
-          workerMaxCount=worker_max_count))
+          scheduler=messages.SchedulerResource(
+              cpu=scheduler_cpu, memoryGb=scheduler_memory_gb),
+          worker=messages.WorkerResource(
+              cpu=worker_cpu,
+              memoryGb=worker_memory_gb,
+              minCount=worker_min_count,
+              maxCount=worker_max_count)))
   mask = ''
   if scheduler_cpu:
-    mask = mask + 'config.workloads_config.scheduler_cpu'
+    mask = mask + 'config.workloads_config.scheduler.cpu'
   if worker_cpu:
     if mask:
       mask = mask + ','
-    mask = mask + 'config.workloads_config.worker_cpu'
+    mask = mask + 'config.workloads_config.worker.cpu'
+  if scheduler_memory_gb:
+    if mask:
+      mask = mask + ','
+    mask = mask + 'config.workloads_config.scheduler.memory_gb'
+  if worker_memory_gb:
+    if mask:
+      mask = mask + ','
+    mask = mask + 'config.workloads_config.worker.memory_gb'
   if worker_min_count:
     if mask:
       mask = mask + ','
-    mask = mask + 'config.workloads_config.worker_min_count'
+    mask = mask + 'config.workloads_config.worker.min_count'
   if worker_max_count:
     if mask:
       mask = mask + ','
-    mask = mask + 'config.workloads_config.worker_max_count'
-  if scheduler_cpu and worker_cpu and worker_min_count and worker_max_count:
+    mask = mask + 'config.workloads_config.worker.max_count'
+  if (scheduler_cpu and worker_cpu and scheduler_memory_gb and
+      worker_memory_gb and worker_min_count and worker_max_count):
     mask = 'config.workloads_config'
   return mask, messages.Environment(config=config)
 

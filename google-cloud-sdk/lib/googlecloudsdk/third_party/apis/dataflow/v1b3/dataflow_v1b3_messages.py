@@ -4188,7 +4188,13 @@ class ParameterMetadata(_messages.Message):
     ParamTypeValueValuesEnum: Optional. The type of the parameter. Used for
       selecting input picker.
 
+  Messages:
+    CustomMetadataValue: Optional. Additional metadata for describing this
+      parameter.
+
   Fields:
+    customMetadata: Optional. Additional metadata for describing this
+      parameter.
     helpText: Required. The help text to display for the parameter.
     isOptional: Optional. Whether the parameter is optional. Defaults to
       false.
@@ -4231,12 +4237,38 @@ class ParameterMetadata(_messages.Message):
     PUBSUB_TOPIC = 8
     PUBSUB_SUBSCRIPTION = 9
 
-  helpText = _messages.StringField(1)
-  isOptional = _messages.BooleanField(2)
-  label = _messages.StringField(3)
-  name = _messages.StringField(4)
-  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 5)
-  regexes = _messages.StringField(6, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomMetadataValue(_messages.Message):
+    r"""Optional. Additional metadata for describing this parameter.
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type CustomMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CustomMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  customMetadata = _messages.MessageField('CustomMetadataValue', 1)
+  helpText = _messages.StringField(2)
+  isOptional = _messages.BooleanField(3)
+  label = _messages.StringField(4)
+  name = _messages.StringField(5)
+  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 6)
+  regexes = _messages.StringField(7, repeated=True)
 
 
 class PartialGroupByKeyInstruction(_messages.Message):
@@ -5108,6 +5140,7 @@ class Snapshot(_messages.Message):
     id: The unique ID of this snapshot.
     projectId: The project this snapshot belongs to.
     pubsubMetadata: PubSub snapshot metadata.
+    region: Cloud region where this snapshot lives in, e.g., "us-central1".
     sourceJobId: The job this snapshot was created from.
     state: State of the snapshot.
     ttl: The time after which this snapshot will be automatically deleted.
@@ -5138,9 +5171,10 @@ class Snapshot(_messages.Message):
   id = _messages.StringField(4)
   projectId = _messages.StringField(5)
   pubsubMetadata = _messages.MessageField('PubsubSnapshotMetadata', 6, repeated=True)
-  sourceJobId = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  ttl = _messages.StringField(9)
+  region = _messages.StringField(7)
+  sourceJobId = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  ttl = _messages.StringField(10)
 
 
 class SnapshotJobRequest(_messages.Message):

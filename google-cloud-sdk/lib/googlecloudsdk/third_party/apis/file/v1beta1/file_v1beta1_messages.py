@@ -36,6 +36,7 @@ class Backup(_messages.Message):
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the backup, in the format
       projects/{project_id}/locations/{location_id}/backups/{backup_id}.
+    satisfiesPzs: Output only. Reserved for future use.
     sourceFileShare: Name of the file share in the source Cloud Filestore
       instance that the backup is created from.
     sourceInstance: The resource name of the source Cloud Filestore instance,
@@ -122,11 +123,12 @@ class Backup(_messages.Message):
   downloadBytes = _messages.IntegerField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  sourceFileShare = _messages.StringField(7)
-  sourceInstance = _messages.StringField(8)
-  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  storageBytes = _messages.IntegerField(11)
+  satisfiesPzs = _messages.BooleanField(7)
+  sourceFileShare = _messages.StringField(8)
+  sourceInstance = _messages.StringField(9)
+  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  storageBytes = _messages.IntegerField(12)
 
 
 class CancelOperationRequest(_messages.Message):

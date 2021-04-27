@@ -609,13 +609,16 @@ class MaintenanceSchedule(_messages.Message):
       true.
     endTime: Output only. The end time of any upcoming scheduled maintenance
       for this instance.
+    scheduleDeadlineTime: Output only. The time deadline any schedule start
+      time cannot go beyond, including reschedule.
     startTime: Output only. The start time of any upcoming scheduled
       maintenance for this instance.
   """
 
   canReschedule = _messages.BooleanField(1)
   endTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
+  scheduleDeadlineTime = _messages.StringField(3)
+  startTime = _messages.StringField(4)
 
 
 class MetricHealth(_messages.Message):

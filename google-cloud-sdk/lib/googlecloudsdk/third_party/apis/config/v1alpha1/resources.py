@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://config.googleapis.com/v1alpha1/'
-DOCS_URL = ''
+DOCS_URL = 'https://cloud.google.com/'
 
 
 class Collections(enum.Enum):
@@ -37,17 +37,6 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/locations/{locationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CONFIGSETS = (
-      'projects.locations.configSets',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/configSets/'
-              '{configSetsId}',
       },
       ['name'],
       True

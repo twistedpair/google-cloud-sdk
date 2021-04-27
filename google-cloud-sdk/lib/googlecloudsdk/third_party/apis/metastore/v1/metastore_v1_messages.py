@@ -591,7 +591,7 @@ class MetadataImport(_messages.Message):
       import.
 
   Fields:
-    createTime: Output only. The time when the metadata import was created.
+    createTime: Output only. The time when the metadata import was started.
     databaseDump: Immutable. A database dump from a pre-existing metastore's
       database.
     description: The description of the metadata import.

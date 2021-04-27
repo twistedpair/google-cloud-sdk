@@ -156,140 +156,20 @@ class Blueprint(_messages.Message):
       `gs://{bucket}/{object}` URI may also specify an object version. Format:
       `gs://{bucket}/{object}#{version}`
     gitSource: Required. A set of files in a Git repository.
+    postprocessors: Optional. Functions to run after the pipeline defined in
+      the blueprint's kptfile. At most 5 postprocessors can be provided.
+    preprocessors: Optional. Functions to run before the pipeline defined in
+      the blueprint's kptfile. At most 5 preprocessors can be provided.
   """
 
   gcsSource = _messages.StringField(1)
   gitSource = _messages.MessageField('GitSource', 2)
+  postprocessors = _messages.MessageField('Function', 3, repeated=True)
+  preprocessors = _messages.MessageField('Function', 4, repeated=True)
 
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
-
-
-class CloudBuildResults(_messages.Message):
-  r"""Locations of results from a Cloud Build run (ex. hydration and
-  actuation).
-
-  Fields:
-    artifacts: Location of kpt artifacts in Google Cloud Storage. Format:
-      `gs://{bucket}/{object}`
-    content: Location of generated manifests in Google Cloud Storage (ex.
-      hydration results, deployment ResourceGroup manifests, etc.). Format:
-      `gs://{bucket}/{object}`
-    logs: Location of Cloud Build logs in Google Cloud Storage. Format:
-      `gs://{bucket}/{object}`
-  """
-
-  artifacts = _messages.StringField(1)
-  content = _messages.StringField(2)
-  logs = _messages.StringField(3)
-
-
-class ConfigProjectsLocationsConfigSetsCreateRequest(_messages.Message):
-  r"""A ConfigProjectsLocationsConfigSetsCreateRequest object.
-
-  Fields:
-    configSet: A ConfigSet resource to be passed as the request body.
-    configSetId: A string attribute.
-    parent: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  configSet = _messages.MessageField('ConfigSet', 1)
-  configSetId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class ConfigProjectsLocationsConfigSetsDeleteRequest(_messages.Message):
-  r"""A ConfigProjectsLocationsConfigSetsDeleteRequest object.
-
-  Fields:
-    name: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class ConfigProjectsLocationsConfigSetsGetRequest(_messages.Message):
-  r"""A ConfigProjectsLocationsConfigSetsGetRequest object.
-
-  Fields:
-    name: A string attribute.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ConfigProjectsLocationsConfigSetsListRequest(_messages.Message):
-  r"""A ConfigProjectsLocationsConfigSetsListRequest object.
-
-  Fields:
-    filter: A string attribute.
-    orderBy: A string attribute.
-    pageSize: A integer attribute.
-    pageToken: A string attribute.
-    parent: A string attribute.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class ConfigProjectsLocationsConfigSetsPatchRequest(_messages.Message):
-  r"""A ConfigProjectsLocationsConfigSetsPatchRequest object.
-
-  Fields:
-    configSet: A ConfigSet resource to be passed as the request body.
-    name: Resource name of the config set. Format:
-      `projects/{project}/locations/{location}/configSets/{config_set}`
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the ConfigSet resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      will be overwritten if it is in the mask. If the user does not provide a
-      mask then all fields will be overwritten.
-  """
-
-  configSet = _messages.MessageField('ConfigSet', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
 
 
 class ConfigProjectsLocationsDeploymentsCreateRequest(_messages.Message):
@@ -298,7 +178,9 @@ class ConfigProjectsLocationsDeploymentsCreateRequest(_messages.Message):
   Fields:
     deployment: A Deployment resource to be passed as the request body.
     deploymentId: A string attribute.
-    parent: A string attribute.
+    parent: Required. The parent in whose context the Deployment is created.
+      The parent value is in the format:
+      'projects/{project_id}/locations/{location}'.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -325,7 +207,8 @@ class ConfigProjectsLocationsDeploymentsDeleteRequest(_messages.Message):
     force: If set to true, any revisions for this deployment will also be
       deleted. (Otherwise, the request will only work if the deployment has no
       revisions.)
-    name: A string attribute.
+    name: Required. The name of this service resource in the format:
+      'projects/{project_id}/locations/{location}/deployments/{deployment}'.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -369,7 +252,8 @@ class ConfigProjectsLocationsDeploymentsGetRequest(_messages.Message):
   r"""A ConfigProjectsLocationsDeploymentsGetRequest object.
 
   Fields:
-    name: A string attribute.
+    name: Required. The name of this service resource in the format:
+      'projects/{project_id}/locations/{location}/deployments/{deployment}'.
   """
 
   name = _messages.StringField(1, required=True)
@@ -383,7 +267,9 @@ class ConfigProjectsLocationsDeploymentsListRequest(_messages.Message):
     orderBy: A string attribute.
     pageSize: A integer attribute.
     pageToken: A string attribute.
-    parent: A string attribute.
+    parent: Required. The parent in whose context the Deployments are listed.
+      The parent value is in the format:
+      'projects/{project_id}/locations/{location}'.
   """
 
   filter = _messages.StringField(1)
@@ -519,7 +405,7 @@ class ConfigProjectsLocationsListRequest(_messages.Message):
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -579,80 +465,6 @@ class ConfigProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class ConfigSet(_messages.Message):
-  r"""A ConfigSet object.
-
-  Enums:
-    StateValueValuesEnum: Output only. Current state of the config set.
-
-  Messages:
-    LabelsValue: User-defined metadata for the config set.
-
-  Fields:
-    buildId: Output only. Corresponding Cloud Build run. Example format:
-      340738b6-9bfe-47d8-8254-5801134368d9
-    createTime: Output only. Time the config set was created.
-    gcsSource: Required. URI of an object in Google Cloud Storage. Format:
-      `gs://{bucket}/{object}` URI may also specify an object version (https:/
-      /cloud.google.com/storage/docs/gsutil/addlhelp/ObjectVersioningandConcur
-      rencyControl). Format: `gs://{bucket}/{object}#{version}`
-    labels: User-defined metadata for the config set.
-    name: Resource name of the config set. Format:
-      `projects/{project}/locations/{location}/configSets/{config_set}`
-    results: Output only. Locations of Cloud Build outputs.
-    state: Output only. Current state of the config set.
-    updateTime: Output only. Time the config set was last modified.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current state of the config set.
-
-    Values:
-      STATE_UNSPECIFIED: The default value. This value is used if the state is
-        omitted.
-      CREATING: The config set is being created.
-      CREATED: The config set was created successfully.
-      FAILED: The config set could not be created successfully.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    CREATED = 2
-    FAILED = 3
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""User-defined metadata for the config set.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  buildId = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  gcsSource = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  results = _messages.MessageField('CloudBuildResults', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
-
-
 class Deployment(_messages.Message):
   r"""A Deployment object.
 
@@ -665,6 +477,7 @@ class Deployment(_messages.Message):
   Fields:
     blueprint: Required. Blueprint to deploy.
     createTime: Output only. Time the deployment was created.
+    deleteResults: Output only. Locations of outputs from delete operation.
     labels: User-defined metadata for the deployment.
     latestRevision: Output only. Revision that was most recently applied.
       Format:
@@ -673,6 +486,8 @@ class Deployment(_messages.Message):
     name: Resource name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
     state: Output only. Current state of the deployment.
+    stateDetail: Output only. Customer-readable message about the current
+      status.
     updateTime: Output only. Time the deployment was last modified.
   """
 
@@ -687,6 +502,8 @@ class Deployment(_messages.Message):
       UPDATING: The deployment is being updated.
       DELETING: The deployment is being deleted.
       FAILED: The deployment has encountered an unexpected error.
+      SUSPENDED: The deployment is no longer being actively reconciled. This
+        may be the result of recovering the project after deletion.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -694,6 +511,7 @@ class Deployment(_messages.Message):
     UPDATING = 3
     DELETING = 4
     FAILED = 5
+    SUSPENDED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -721,11 +539,13 @@ class Deployment(_messages.Message):
 
   blueprint = _messages.MessageField('Blueprint', 1)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  latestRevision = _messages.StringField(4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  deleteResults = _messages.MessageField('ApplyResults', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  latestRevision = _messages.StringField(5)
+  name = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  stateDetail = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class Empty(_messages.Message):
@@ -774,6 +594,49 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class Function(_messages.Message):
+  r"""A function that can be run to modify blueprint contents.
+
+  Messages:
+    ConfigValue: Optional. KRM resource passed to the function as input. The
+      entire resource must be no larger than 1 KB.
+
+  Fields:
+    config: Optional. KRM resource passed to the function as input. The entire
+      resource must be no larger than 1 KB.
+    image: Required. Container image to run. Example: `gcr.io/kpt-fn/set-
+      label`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfigValue(_messages.Message):
+    r"""Optional. KRM resource passed to the function as input. The entire
+    resource must be no larger than 1 KB.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfigValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  config = _messages.MessageField('ConfigValue', 1)
+  image = _messages.StringField(2)
+
+
 class GitSource(_messages.Message):
   r"""A set of files in a Git repository.
 
@@ -788,20 +651,6 @@ class GitSource(_messages.Message):
   directory = _messages.StringField(1)
   ref = _messages.StringField(2)
   repo = _messages.StringField(3)
-
-
-class ListConfigSetsResponse(_messages.Message):
-  r"""A ListConfigSetsResponse object.
-
-  Fields:
-    configSets: List of ConfigSets.
-    nextPageToken: A string attribute.
-    unreachable: Locations that could not be reached.
-  """
-
-  configSets = _messages.MessageField('ConfigSet', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListDeploymentsResponse(_messages.Message):
@@ -1189,6 +1038,8 @@ class Revision(_messages.Message):
     pipelineResults: Output only. Locations of outputs from kpt pipeline
       execution.
     state: Output only. Current state of the revision.
+    stateDetail: Output only. Customer-readable message about the current
+      status.
     updateTime: Output only. Time the revision was last modified.
   """
 
@@ -1229,7 +1080,8 @@ class Revision(_messages.Message):
   name = _messages.StringField(5)
   pipelineResults = _messages.MessageField('PipelineResults', 6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  stateDetail = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class SetIamPolicyRequest(_messages.Message):
