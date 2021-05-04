@@ -128,29 +128,6 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class BootstrapKubeconfig(_messages.Message):
-  r"""Kubeconfig data which may be used to bootstrap this node into its parent
-  cluster using a TLS bootstrap token. The machine consuming this data should
-  format it to a kubeconfig file, and then start the kubelet with --bootstrap-
-  kubeconfig=. See https://kubernetes.io/docs/reference/command-line-tools-
-  reference/kubelet-tls-bootstrapping/#kubelet-configuration for bootstrapping
-  and https://godoc.org/k8s.io/client-go/tools/clientcmd/api/v1#Cluster for
-  field descriptions.
-
-  Fields:
-    bootstrapToken: Bearer token for authentication and TLS bootstrapping into
-      the Kubernetes cluster.
-    certificateAuthorityData: Base64-encoded PEM certificate authority for the
-      cluster.
-    server: Address of the kubernetes cluster control plane
-      (https://hostname:port).
-  """
-
-  bootstrapToken = _messages.StringField(1)
-  certificateAuthorityData = _messages.StringField(2)
-  server = _messages.StringField(3)
-
-
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -213,10 +190,10 @@ class ClusterNetworking(_messages.Message):
 
   Fields:
     clusterIpv4CidrBlocks: All pods in the cluster are assigned an RFC1918
-      IPv4 address from these ranges. Only a single range is supported. This
+      IPv4 address from these blocks. Only a single block is supported. This
       field cannot be changed after creation.
     servicesIpv4CidrBlocks: All services in the cluster are assigned an
-      RFC1918 IPv4 address from these ranges. Only a single range is
+      RFC1918 IPv4 address from these blocks. Only a single block is
       supported. This field cannot be changed after creation.
   """
 
@@ -280,18 +257,6 @@ class Hub(_messages.Message):
   """
 
   membership = _messages.StringField(1)
-
-
-class KubeletConfig(_messages.Message):
-  r"""Kubelet configuration for this node. See
-  https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta
-
-  Fields:
-    maxPods: The number of pods that can run on this Kubelet. If unspecified,
-      the Kubernetes default will be used.
-  """
-
-  maxPods = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class KubernetesedgeProjectsLocationsClustersCreateRequest(_messages.Message):
@@ -465,17 +430,6 @@ class KubernetesedgeProjectsLocationsClustersNodePoolsListRequest(_messages.Mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class KubernetesedgeProjectsLocationsClustersNodePoolsNodesGetRequest(_messages.Message):
-  r"""A KubernetesedgeProjectsLocationsClustersNodePoolsNodesGetRequest
-  object.
-
-  Fields:
-    name: A string attribute.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class KubernetesedgeProjectsLocationsClustersNodePoolsPatchRequest(_messages.Message):
@@ -1067,55 +1021,6 @@ class Machine(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   updateTime = _messages.StringField(5)
-
-
-class Node(_messages.Message):
-  r"""A Node object.
-
-  Messages:
-    LabelsValue: A LabelsValue object.
-
-  Fields:
-    bootstrapKubeconfig: Kubeconfig data which may be used to bootstrap this
-      node into its parent cluster using a TLS bootstrap token.
-    createTime: A string attribute.
-    kubeletConfig: Kubelet configuration for this node. See
-      https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta
-    labels: A LabelsValue attribute.
-    name: A string attribute.
-    updateTime: A string attribute.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""A LabelsValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  bootstrapKubeconfig = _messages.MessageField('BootstrapKubeconfig', 1)
-  createTime = _messages.StringField(2)
-  kubeletConfig = _messages.MessageField('KubeletConfig', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
 
 
 class NodePool(_messages.Message):

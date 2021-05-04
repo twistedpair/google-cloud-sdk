@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utilities for `gcloud app` deployment.
 
 Mostly created to selectively enable Cloud Endpoints in the beta/preview release
@@ -72,7 +71,6 @@ https://console.cloud.google.com/appengine/taskqueues/cron?project={}
 ORIGINAL_RUNTIME_RE_STRING = r'[a-z][a-z0-9\-]{0,29}'
 ORIGINAL_RUNTIME_RE = re.compile(ORIGINAL_RUNTIME_RE_STRING + r'\Z')
 
-
 # Max App Engine file size; see https://cloud.google.com/appengine/docs/quotas
 _MAX_FILE_SIZE_STANDARD = 32 * 1024 * 1024
 
@@ -114,9 +112,10 @@ class InvalidRuntimeNameError(Error):
   """Error for runtime names that are not allowed in the given environment."""
 
   def __init__(self, runtime, allowed_regex):
-    super(InvalidRuntimeNameError, self).__init__(
-        'Invalid runtime name: [{}]. '
-        'Must match regular expression [{}].'.format(runtime, allowed_regex))
+    super(InvalidRuntimeNameError,
+          self).__init__('Invalid runtime name: [{}]. '
+                         'Must match regular expression [{}].'.format(
+                             runtime, allowed_regex))
 
 
 class RequiredFileMissingError(Error):
@@ -138,8 +137,8 @@ class FlexImageBuildOptions(enum.Enum):
 
 def GetFlexImageBuildOption(default_strategy=FlexImageBuildOptions.ON_CLIENT):
   """Determines where the build should be performed."""
-  trigger_build_server_side = (properties.VALUES.app.trigger_build_server_side
-                               .GetBool(required=False))
+  trigger_build_server_side = (
+      properties.VALUES.app.trigger_build_server_side.GetBool(required=False))
   if trigger_build_server_side is None:
     return default_strategy
   elif trigger_build_server_side:
@@ -179,11 +178,10 @@ class DeployOptions(object):
     self.flex_image_build_option = flex_image_build_option
 
   @classmethod
-  def FromProperties(
-      cls,
-      runtime_builder_strategy,
-      parallel_build=False,
-      flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
+  def FromProperties(cls,
+                     runtime_builder_strategy,
+                     parallel_build=False,
+                     flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     """Initialize DeloyOptions using user properties where necessary.
 
     Args:
@@ -202,9 +200,8 @@ class DeployOptions(object):
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
-    return cls(promote, stop_previous_version,
-               runtime_builder_strategy, parallel_build,
-               flex_image_build_option)
+    return cls(promote, stop_previous_version, runtime_builder_strategy,
+               parallel_build, flex_image_build_option)
 
 
 class ServiceDeployer(object):
@@ -212,9 +209,9 @@ class ServiceDeployer(object):
 
   Attributes:
     api_client: api_lib.app.appengine_api_client.AppengineClient, App Engine
-        Admin API client.
+      Admin API client.
     deploy_options: DeployOptions, the options to use for services deployed by
-        this ServiceDeployer.
+      this ServiceDeployer.
   """
 
   def __init__(self, api_client, deploy_options):
@@ -225,8 +222,7 @@ class ServiceDeployer(object):
     """Validates explicit runtime builders are not used without the feature on.
 
     Args:
-      service_info: yaml_parsing.ServiceYamlInfo, service
-        configuration to be
+      service_info: yaml_parsing.ServiceYamlInfo, service configuration to be
         deployed
 
     Raises:
@@ -246,9 +242,9 @@ class ServiceDeployer(object):
     if not use_runtime_builders and not ORIGINAL_RUNTIME_RE.match(runtime):
       raise InvalidRuntimeNameError(runtime, ORIGINAL_RUNTIME_RE_STRING)
 
-  def _PossiblyBuildAndPush(
-      self, new_version, service, upload_dir, source_files, image,
-      code_bucket_ref, gcr_domain, flex_image_build_option):
+  def _PossiblyBuildAndPush(self, new_version, service, upload_dir,
+                            source_files, image, code_bucket_ref, gcr_domain,
+                            flex_image_build_option):
     """Builds and Pushes the Docker image if necessary for this service.
 
     Args:
@@ -266,6 +262,7 @@ class ServiceDeployer(object):
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
         should upload files so that the server can build the image or build the
         image on client.
+
     Returns:
       BuildArtifact, a wrapper which contains either the build ID for
         an in-progress build, or the name of the container image for a serial
@@ -305,7 +302,7 @@ class ServiceDeployer(object):
 
     return build
 
-  def _PossiblyPromote(self, all_services, new_version):
+  def _PossiblyPromote(self, all_services, new_version, wait_for_stop_version):
     """Promotes the new version to default (if specified by the user).
 
     Args:
@@ -313,15 +310,17 @@ class ServiceDeployer(object):
         corresponding to all pre-existing services (used to determine how to
         promote this version to receive all traffic, if applicable).
       new_version: version_util.Version describing where to deploy the service
+      wait_for_stop_version: bool, indicating whether to wait for stop operation
+        to finish.
 
     Raises:
       VersionPromotionError: if the version could not successfully promoted
     """
     if self.deploy_options.promote:
       try:
-        version_util.PromoteVersion(
-            all_services, new_version, self.api_client,
-            self.deploy_options.stop_previous_version)
+        version_util.PromoteVersion(all_services, new_version, self.api_client,
+                                    self.deploy_options.stop_previous_version,
+                                    wait_for_stop_version)
       except apitools_exceptions.HttpError as err:
         err_str = six.text_type(core_api_exceptions.HttpException(err))
         raise VersionPromotionError(err_str)
@@ -329,9 +328,8 @@ class ServiceDeployer(object):
       log.info('Not stopping previous version because new version was '
                'not promoted.')
 
-  def _PossiblyUploadFiles(
-      self, image, service_info, upload_dir, source_files, code_bucket_ref,
-      flex_image_build_option):
+  def _PossiblyUploadFiles(self, image, service_info, upload_dir, source_files,
+                           code_bucket_ref, flex_image_build_option):
     """Uploads files for this deployment is required for this service.
 
     Uploads if flex_image_build_option is FlexImageBuildOptions.ON_SERVER,
@@ -382,6 +380,7 @@ class ServiceDeployer(object):
              all_services,
              gcr_domain,
              disable_build_cache,
+             wait_for_stop_version,
              flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
              ignore_file=None):
     """Deploy the given service.
@@ -409,16 +408,18 @@ class ServiceDeployer(object):
       gcr_domain: str, Cloud Registry domain, determines the physical location
         of the image. E.g. `us.gcr.io`.
       disable_build_cache: bool, disable the build cache.
+      wait_for_stop_version: bool, indicating whether to wait for stop operation
+        to finish.
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
         should upload files so that the server can build the image or build the
         image on client.
-      ignore_file: custom ignore_file name.
-                Override .gcloudignore file to customize files to be skipped.
+      ignore_file: custom ignore_file name. Override .gcloudignore file to
+        customize files to be skipped.
     """
-    log.status.Print('Beginning deployment of service [{service}]...'
-                     .format(service=new_version.service))
-    if (service.service_info.env == env.MANAGED_VMS
-        and flex_image_build_option == FlexImageBuildOptions.ON_SERVER):
+    log.status.Print('Beginning deployment of service [{service}]...'.format(
+        service=new_version.service))
+    if (service.service_info.env == env.MANAGED_VMS and
+        flex_image_build_option == FlexImageBuildOptions.ON_SERVER):
       # Server-side builds are not supported for Managed VMs.
       flex_image_build_option = FlexImageBuildOptions.ON_CLIENT
 
@@ -430,17 +431,21 @@ class ServiceDeployer(object):
         service_info.parsed.skip_files.regex,
         service_info.HasExplicitSkipFiles(),
         service_info.runtime,
-        service_info.env, service.source, ignore_file=ignore_file)
+        service_info.env,
+        service.source,
+        ignore_file=ignore_file)
 
     # Tar-based upload for flex
-    build = self._PossiblyBuildAndPush(
-        new_version, service_info, service.upload_dir, source_files,
-        image, code_bucket_ref, gcr_domain, flex_image_build_option)
+    build = self._PossiblyBuildAndPush(new_version, service_info,
+                                       service.upload_dir, source_files, image,
+                                       code_bucket_ref, gcr_domain,
+                                       flex_image_build_option)
 
     # Manifest-based incremental source upload for all envs
-    manifest = self._PossiblyUploadFiles(
-        image, service_info, service.upload_dir, source_files,
-        code_bucket_ref, flex_image_build_option)
+    manifest = self._PossiblyUploadFiles(image, service_info,
+                                         service.upload_dir, source_files,
+                                         code_bucket_ref,
+                                         flex_image_build_option)
 
     del source_files  # Free some memory
 
@@ -454,7 +459,7 @@ class ServiceDeployer(object):
                                   service_info, manifest, build,
                                   extra_config_settings)
     metrics.CustomTimedEvent(metric_names.DEPLOY_API)
-    self._PossiblyPromote(all_services, new_version)
+    self._PossiblyPromote(all_services, new_version, wait_for_stop_version)
 
 
 def ArgsDeploy(parser):
@@ -468,18 +473,21 @@ def ArgsDeploy(parser):
   flags.DOCKER_BUILD_FLAG.AddToParser(parser)
   flags.IGNORE_FILE_FLAG.AddToParser(parser)
   parser.add_argument(
-      '--version', '-v', type=flags.VERSION_TYPE,
+      '--version',
+      '-v',
+      type=flags.VERSION_TYPE,
       help='The version of the app that will be created or replaced by this '
       'deployment.  If you do not specify a version, one will be generated for '
       'you.')
   parser.add_argument(
       '--bucket',
       type=storage_util.BucketReference.FromArgument,
-      help=("The Google Cloud Storage bucket used to stage files associated "
-            "with the deployment. If this argument is not specified, the "
+      help=('The Google Cloud Storage bucket used to stage files associated '
+            'with the deployment. If this argument is not specified, the '
             "application's default code bucket is used."))
   parser.add_argument(
-      'deployables', nargs='*',
+      'deployables',
+      nargs='*',
       help="""\
       The yaml files for the services or configurations you want to deploy.
       If not given, defaults to `app.yaml` in the current directory.
@@ -526,9 +534,7 @@ def ArgsDeploy(parser):
       hidden=True,
       help='THIS ARGUMENT NEEDS HELP TEXT.')
   staging_group.add_argument(
-      '--staging-command',
-      hidden=True,
-      help='THIS ARGUMENT NEEDS HELP TEXT.')
+      '--staging-command', hidden=True, help='THIS ARGUMENT NEEDS HELP TEXT.')
 
 
 def _MakeStager(skip_staging, use_beta_stager, staging_command, staging_area):
@@ -572,11 +578,11 @@ def RunDeploy(
 
   Args:
     args: argparse.Namespace, An object that contains the values for the
-        arguments specified in the ArgsDeploy() function.
+      arguments specified in the ArgsDeploy() function.
     api_client: api_lib.app.appengine_api_client.AppengineClient, App Engine
-        Admin API client.
+      Admin API client.
     use_beta_stager: Use the stager registry defined for the beta track rather
-        than the default stager registry.
+      than the default stager registry.
     runtime_builder_strategy: runtime_builders.RuntimeBuilderStrategy, when to
       use the new CloudBuild-based runtime builders (alternative is old
       externalized runtimes).
@@ -605,14 +611,16 @@ def RunDeploy(
                          args.staging_command, staging_area)
     services, configs = deployables.GetDeployables(
         args.deployables, stager, deployables.GetPathMatchers(), args.appyaml)
+
+    wait_for_stop_version = _CheckIfConfigsContainDispatch(configs)
+
     service_infos = [d.service_info for d in services]
 
     flags.ValidateImageUrl(args.image_url, service_infos)
 
     # pylint: disable=protected-access
     log.debug('API endpoint: [{endpoint}], API version: [{version}]'.format(
-        endpoint=api_client.client.url,
-        version=api_client.client._VERSION))
+        endpoint=api_client.client.url, version=api_client.client._VERSION))
     # The legacy admin console API client.
     # The Admin Console API existed long before the App Engine Admin API, and
     # isn't being improved. We're in the process of migrating all of the calls
@@ -622,8 +630,8 @@ def RunDeploy(
     # pylint: disable=g-import-not-at-top
     from googlecloudsdk.api_lib.app import appengine_client
     # pylint: enable=g-import-not-at-top
-    ac_client = appengine_client.AppengineClient(
-        args.server, args.ignore_bad_certs)
+    ac_client = appengine_client.AppengineClient(args.server,
+                                                 args.ignore_bad_certs)
 
     app = _PossiblyCreateApp(api_client, project)
     _RaiseIfStopped(api_client, app)
@@ -671,6 +679,7 @@ def RunDeploy(
           all_services,
           app.gcrDomain,
           disable_build_cache=args.no_cache,
+          wait_for_stop_version=wait_for_stop_version,
           flex_image_build_option=flex_image_build_option,
           ignore_file=args.ignore_file)
       new_versions.append(new_version)
@@ -690,15 +699,11 @@ def RunDeploy(
           api_client.UpdateDispatchRules(config.GetRules())
         elif config.name == yaml_parsing.ConfigYamlInfo.INDEX:
           index_api.CreateMissingIndexes(project, config.parsed)
-        elif (
-            not use_legacy_apis and
-            config.name == yaml_parsing.ConfigYamlInfo.QUEUE
-        ):
+        elif (not use_legacy_apis and
+              config.name == yaml_parsing.ConfigYamlInfo.QUEUE):
           RunDeployCloudTasks(config)
-        elif (
-            not use_legacy_apis and
-            config.name == yaml_parsing.ConfigYamlInfo.CRON
-        ):
+        elif (not use_legacy_apis and
+              config.name == yaml_parsing.ConfigYamlInfo.CRON):
           RunDeployCloudScheduler(config)
         else:
           ac_client.UpdateConfig(config.name, config.parsed)
@@ -709,18 +714,15 @@ def RunDeploy(
   PrintPostDeployHints(new_versions, updated_configs)
 
   # Return all the things that were deployed.
-  return {
-      'versions': new_versions,
-      'configs': updated_configs
-  }
+  return {'versions': new_versions, 'configs': updated_configs}
 
 
 def RunDeployCloudTasks(config):
   """Perform a deployment using Cloud Tasks API based on the given args.
 
   Args:
-    config: A yaml_parsing.ConfigYamlInfo object for the parsed YAML file we
-        are going to process.
+    config: A yaml_parsing.ConfigYamlInfo object for the parsed YAML file we are
+      going to process.
 
   Returns:
     A list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
@@ -736,15 +738,15 @@ def RunDeployCloudScheduler(config):
   """Perform a deployment using Cloud Scheduler APIs based on the given args.
 
   Args:
-    config: A yaml_parsing.ConfigYamlInfo object for the parsed YAML file we
-        are going to process.
+    config: A yaml_parsing.ConfigYamlInfo object for the parsed YAML file we are
+      going to process.
 
   Returns:
     A list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
   """
   # TODO(b/169069379): Upgrade to use GA once the relevant code is promoted
-  scheduler_api = scheduler.GetApiAdapter(base.ReleaseTrack.BETA,
-                                          legacy_cron=True)
+  scheduler_api = scheduler.GetApiAdapter(
+      base.ReleaseTrack.BETA, legacy_cron=True)
   jobs_data = app_deploy_migration_util.FetchCurrentJobsData(scheduler_api)
   app_deploy_migration_util.ValidateCronYamlFileConfig(config)
   app_deploy_migration_util.DeployCronYamlFile(scheduler_api, config, jobs_data)
@@ -759,8 +761,8 @@ def PrintPostDeployHints(new_versions, updated_configs):
     if yaml_parsing.ConfigYamlInfo.QUEUE not in updated_configs:
       log.status.Print('\nVisit the Cloud Platform Console Task Queues page '
                        'to view your queues and cron jobs.')
-      log.status.Print(_TASK_CONSOLE_LINK.format(
-          properties.VALUES.core.project.Get()))
+      log.status.Print(
+          _TASK_CONSOLE_LINK.format(properties.VALUES.core.project.Get()))
   if yaml_parsing.ConfigYamlInfo.DISPATCH in updated_configs:
     log.status.Print('\nCustom routings have been updated.')
   if yaml_parsing.ConfigYamlInfo.DOS in updated_configs:
@@ -791,9 +793,8 @@ def PrintPostDeployHints(new_versions, updated_configs):
     project_hint = ' --project=' + project
   else:
     project_hint = ''
-  log.status.Print(
-      '\nYou can stream logs from the command line by running:\n'
-      '  $ gcloud app logs tail' + (service_hint or ' -s default'))
+  log.status.Print('\nYou can stream logs from the command line by running:\n'
+                   '  $ gcloud app logs tail' + (service_hint or ' -s default'))
   log.status.Print('\nTo view your application in the web browser run:\n'
                    '  $ gcloud app browse' + service_hint + project_hint)
 
@@ -878,6 +879,22 @@ def _RaiseIfStopped(api_client, app):
   """
   if api_client.IsStopped(app):
     raise StoppedApplicationError(app)
+
+
+def _CheckIfConfigsContainDispatch(configs):
+  """Checks if list of configs contains dispatch config.
+
+  Args:
+    configs: list of configs
+
+  Returns:
+    bool, indicating if configs contain dispatch config.
+  """
+  for config in configs:
+    if config.name == 'dispatch':
+      return True
+
+  return False
 
 
 def GetRuntimeBuilderStrategy(release_track):

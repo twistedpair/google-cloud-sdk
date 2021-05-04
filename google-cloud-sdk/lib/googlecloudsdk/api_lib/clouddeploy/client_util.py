@@ -24,7 +24,7 @@ from googlecloudsdk.calliope import base
 
 _API_NAME = 'clouddeploy'
 _GA_API_VERSION = 'v1'
-_ALPHA_API_VERSION = 'v1alpha1'
+_ALPHA_API_VERSION = 'v1'
 _BETA_API_VERSION = 'v1beta1'
 
 # Release-API version map.

@@ -328,6 +328,7 @@ def FormatTimestamp(timestamp):
 
   Args:
     timestamp: Raw timestamp string in RFC3339 UTC "Zulu" format.
+
   Returns:
     Formatted timestamp string.
   """

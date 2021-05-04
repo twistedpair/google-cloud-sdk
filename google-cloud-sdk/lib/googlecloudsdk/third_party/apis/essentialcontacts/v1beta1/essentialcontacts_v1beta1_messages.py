@@ -150,8 +150,8 @@ class EssentialcontactsFoldersContactsPatchRequest(_messages.Message):
       request body.
     name: The identifier for the contact. Format:
       {resource_type}/{resource_id}/contacts/{contact_id}
-    updateMask: The update mask applied to the resource. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
+    updateMask: Optional. The update mask applied to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
   """
 
@@ -316,8 +316,8 @@ class EssentialcontactsOrganizationsContactsPatchRequest(_messages.Message):
       request body.
     name: The identifier for the contact. Format:
       {resource_type}/{resource_id}/contacts/{contact_id}
-    updateMask: The update mask applied to the resource. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
+    updateMask: Optional. The update mask applied to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
   """
 
@@ -482,8 +482,8 @@ class EssentialcontactsProjectsContactsPatchRequest(_messages.Message):
       request body.
     name: The identifier for the contact. Format:
       {resource_type}/{resource_id}/contacts/{contact_id}
-    updateMask: The update mask applied to the resource. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
+    updateMask: Optional. The update mask applied to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
   """
 

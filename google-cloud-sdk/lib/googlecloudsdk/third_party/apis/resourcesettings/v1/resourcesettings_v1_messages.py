@@ -28,33 +28,10 @@ class GoogleCloudResourcesettingsV1ListSettingsResponse(_messages.Message):
   settings = _messages.MessageField('GoogleCloudResourcesettingsV1Setting', 2, repeated=True)
 
 
-class GoogleCloudResourcesettingsV1SearchSettingValuesResponse(_messages.Message):
-  r"""The response from SearchSettingValues.
-
-  Fields:
-    nextPageToken: Unused. A page token used to retrieve the next page.
-    settingValues: All setting values that exist on the specified Cloud
-      resource.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  settingValues = _messages.MessageField('GoogleCloudResourcesettingsV1SettingValue', 2, repeated=True)
-
-
 class GoogleCloudResourcesettingsV1Setting(_messages.Message):
   r"""The schema for settings.
 
-  Enums:
-    DataTypeValueValuesEnum: Output only. The data type for this setting.
-
   Fields:
-    dataType: Output only. The data type for this setting.
-    defaultValue: Output only. The value provided by Setting.effective_value
-      if no setting value is explicitly set. Note: not all settings have a
-      default value.
-    description: Output only. A detailed description of what this setting
-      does.
-    displayName: Output only. The human readable name for this setting.
     effectiveValue: Output only. The computed effective value of the setting
       at the given parent resource (based on the resource hierarchy). The
       effective value evaluates to one of the following options in the given
@@ -77,37 +54,13 @@ class GoogleCloudResourcesettingsV1Setting(_messages.Message):
       `folders/{folder_id}/settings/{setting_name}` *
       `organizations/{organization_id}/settings/{setting_name}` For example,
       "/projects/123/settings/gcp-enableMyFeature"
-    readOnly: Output only. A flag indicating that values of this setting
-      cannot be modified (see documentation of the specific setting for
-      updates and reasons).
   """
 
-  class DataTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The data type for this setting.
-
-    Values:
-      DATA_TYPE_UNSPECIFIED: Unspecified data type.
-      BOOLEAN: A boolean setting.
-      STRING: A string setting.
-      STRING_SET: A string set setting.
-      ENUM_VALUE: A Enum setting
-    """
-    DATA_TYPE_UNSPECIFIED = 0
-    BOOLEAN = 1
-    STRING = 2
-    STRING_SET = 3
-    ENUM_VALUE = 4
-
-  dataType = _messages.EnumField('DataTypeValueValuesEnum', 1)
-  defaultValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  effectiveValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 5)
-  etag = _messages.StringField(6)
-  localValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 7)
-  metadata = _messages.MessageField('GoogleCloudResourcesettingsV1SettingMetadata', 8)
-  name = _messages.StringField(9)
-  readOnly = _messages.BooleanField(10)
+  effectiveValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 1)
+  etag = _messages.StringField(2)
+  localValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 3)
+  metadata = _messages.MessageField('GoogleCloudResourcesettingsV1SettingMetadata', 4)
+  name = _messages.StringField(5)
 
 
 class GoogleCloudResourcesettingsV1SettingMetadata(_messages.Message):
@@ -147,35 +100,6 @@ class GoogleCloudResourcesettingsV1SettingMetadata(_messages.Message):
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
   readOnly = _messages.BooleanField(5)
-
-
-class GoogleCloudResourcesettingsV1SettingValue(_messages.Message):
-  r"""The instantiation of a setting. Every setting value is parented by its
-  corresponding setting.
-
-  Fields:
-    etag: A fingerprint used for optimistic concurrency. See
-      UpdateSettingValue for more details.
-    name: The resource name of the setting value. Must be in one of the
-      following forms: *
-      `projects/{project_number}/settings/{setting_name}/value` *
-      `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value` For
-      example, "/projects/123/settings/gcp-enableMyFeature/value"
-    readOnly: Output only. A flag indicating that this setting value cannot be
-      modified. This flag is inherited from its parent setting and is for
-      convenience purposes. See Setting.read_only for more details.
-    updateTime: Output only. The timestamp indicating when the setting value
-      was last updated.
-    value: The value of the setting. The data type of Value must always be
-      consistent with the data type defined by the parent setting.
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2)
-  readOnly = _messages.BooleanField(3)
-  updateTime = _messages.StringField(4)
-  value = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 5)
 
 
 class GoogleCloudResourcesettingsV1Value(_messages.Message):
@@ -218,27 +142,6 @@ class GoogleCloudResourcesettingsV1ValueStringSet(_messages.Message):
   values = _messages.StringField(1, repeated=True)
 
 
-class GoogleProtobufEmpty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
-  """
-
-
-
-class ResourcesettingsFoldersSettingsDeleteValueRequest(_messages.Message):
-  r"""A ResourcesettingsFoldersSettingsDeleteValueRequest object.
-
-  Fields:
-    name: Required. The name of the setting value to delete. See SettingValue
-      for naming requirements.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class ResourcesettingsFoldersSettingsGetRequest(_messages.Message):
   r"""A ResourcesettingsFoldersSettingsGetRequest object.
 
@@ -270,17 +173,6 @@ class ResourcesettingsFoldersSettingsGetRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
-
-
-class ResourcesettingsFoldersSettingsGetValueRequest(_messages.Message):
-  r"""A ResourcesettingsFoldersSettingsGetValueRequest object.
-
-  Fields:
-    name: Required. The name of the setting value to get. See SettingValue for
-      naming requirements.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class ResourcesettingsFoldersSettingsListRequest(_messages.Message):
@@ -340,63 +232,6 @@ class ResourcesettingsFoldersSettingsPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
-class ResourcesettingsFoldersSettingsSearchRequest(_messages.Message):
-  r"""A ResourcesettingsFoldersSettingsSearchRequest object.
-
-  Fields:
-    pageSize: Unused. The size of the page to be returned.
-    pageToken: Unused. A page token used to retrieve the next page.
-    parent: Required. The Cloud resource that parents the setting. Must be in
-      one of the following forms: * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class ResourcesettingsFoldersSettingsValueCreateRequest(_messages.Message):
-  r"""A ResourcesettingsFoldersSettingsValueCreateRequest object.
-
-  Fields:
-    googleCloudResourcesettingsV1SettingValue: A
-      GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
-      request body.
-    parent: Required. The name of the setting for which a value should be
-      created. See Setting for naming requirements.
-    settingsId: A string attribute.
-  """
-
-  googleCloudResourcesettingsV1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1SettingValue', 1)
-  parent = _messages.StringField(2, required=True)
-  settingsId = _messages.StringField(3, required=True)
-
-
-class ResourcesettingsFoldersSettingsValueLookupEffectiveValueRequest(_messages.Message):
-  r"""A ResourcesettingsFoldersSettingsValueLookupEffectiveValueRequest
-  object.
-
-  Fields:
-    name: Required. The setting value for which an effective value will be
-      evaluated. See SettingValue for naming requirements.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ResourcesettingsOrganizationsSettingsDeleteValueRequest(_messages.Message):
-  r"""A ResourcesettingsOrganizationsSettingsDeleteValueRequest object.
-
-  Fields:
-    name: Required. The name of the setting value to delete. See SettingValue
-      for naming requirements.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class ResourcesettingsOrganizationsSettingsGetRequest(_messages.Message):
   r"""A ResourcesettingsOrganizationsSettingsGetRequest object.
 
@@ -428,17 +263,6 @@ class ResourcesettingsOrganizationsSettingsGetRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
-
-
-class ResourcesettingsOrganizationsSettingsGetValueRequest(_messages.Message):
-  r"""A ResourcesettingsOrganizationsSettingsGetValueRequest object.
-
-  Fields:
-    name: Required. The name of the setting value to get. See SettingValue for
-      naming requirements.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class ResourcesettingsOrganizationsSettingsListRequest(_messages.Message):
@@ -498,63 +322,6 @@ class ResourcesettingsOrganizationsSettingsPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
-class ResourcesettingsOrganizationsSettingsSearchRequest(_messages.Message):
-  r"""A ResourcesettingsOrganizationsSettingsSearchRequest object.
-
-  Fields:
-    pageSize: Unused. The size of the page to be returned.
-    pageToken: Unused. A page token used to retrieve the next page.
-    parent: Required. The Cloud resource that parents the setting. Must be in
-      one of the following forms: * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class ResourcesettingsOrganizationsSettingsValueCreateRequest(_messages.Message):
-  r"""A ResourcesettingsOrganizationsSettingsValueCreateRequest object.
-
-  Fields:
-    googleCloudResourcesettingsV1SettingValue: A
-      GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
-      request body.
-    parent: Required. The name of the setting for which a value should be
-      created. See Setting for naming requirements.
-    settingsId: A string attribute.
-  """
-
-  googleCloudResourcesettingsV1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1SettingValue', 1)
-  parent = _messages.StringField(2, required=True)
-  settingsId = _messages.StringField(3, required=True)
-
-
-class ResourcesettingsOrganizationsSettingsValueLookupEffectiveValueRequest(_messages.Message):
-  r"""A ResourcesettingsOrganizationsSettingsValueLookupEffectiveValueRequest
-  object.
-
-  Fields:
-    name: Required. The setting value for which an effective value will be
-      evaluated. See SettingValue for naming requirements.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ResourcesettingsProjectsSettingsDeleteValueRequest(_messages.Message):
-  r"""A ResourcesettingsProjectsSettingsDeleteValueRequest object.
-
-  Fields:
-    name: Required. The name of the setting value to delete. See SettingValue
-      for naming requirements.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class ResourcesettingsProjectsSettingsGetRequest(_messages.Message):
   r"""A ResourcesettingsProjectsSettingsGetRequest object.
 
@@ -586,17 +353,6 @@ class ResourcesettingsProjectsSettingsGetRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
-
-
-class ResourcesettingsProjectsSettingsGetValueRequest(_messages.Message):
-  r"""A ResourcesettingsProjectsSettingsGetValueRequest object.
-
-  Fields:
-    name: Required. The name of the setting value to get. See SettingValue for
-      naming requirements.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class ResourcesettingsProjectsSettingsListRequest(_messages.Message):
@@ -654,52 +410,6 @@ class ResourcesettingsProjectsSettingsPatchRequest(_messages.Message):
 
   googleCloudResourcesettingsV1Setting = _messages.MessageField('GoogleCloudResourcesettingsV1Setting', 1)
   name = _messages.StringField(2, required=True)
-
-
-class ResourcesettingsProjectsSettingsSearchRequest(_messages.Message):
-  r"""A ResourcesettingsProjectsSettingsSearchRequest object.
-
-  Fields:
-    pageSize: Unused. The size of the page to be returned.
-    pageToken: Unused. A page token used to retrieve the next page.
-    parent: Required. The Cloud resource that parents the setting. Must be in
-      one of the following forms: * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class ResourcesettingsProjectsSettingsValueCreateRequest(_messages.Message):
-  r"""A ResourcesettingsProjectsSettingsValueCreateRequest object.
-
-  Fields:
-    googleCloudResourcesettingsV1SettingValue: A
-      GoogleCloudResourcesettingsV1SettingValue resource to be passed as the
-      request body.
-    parent: Required. The name of the setting for which a value should be
-      created. See Setting for naming requirements.
-    settingsId: A string attribute.
-  """
-
-  googleCloudResourcesettingsV1SettingValue = _messages.MessageField('GoogleCloudResourcesettingsV1SettingValue', 1)
-  parent = _messages.StringField(2, required=True)
-  settingsId = _messages.StringField(3, required=True)
-
-
-class ResourcesettingsProjectsSettingsValueLookupEffectiveValueRequest(_messages.Message):
-  r"""A ResourcesettingsProjectsSettingsValueLookupEffectiveValueRequest
-  object.
-
-  Fields:
-    name: Required. The setting value for which an effective value will be
-      evaluated. See SettingValue for naming requirements.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class StandardQueryParameters(_messages.Message):

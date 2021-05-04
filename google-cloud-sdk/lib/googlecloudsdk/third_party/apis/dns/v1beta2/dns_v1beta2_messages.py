@@ -1084,13 +1084,28 @@ class ManagedZonePrivateVisibilityConfig(_messages.Message):
   r"""A ManagedZonePrivateVisibilityConfig object.
 
   Fields:
+    gkeClusters: A ManagedZonePrivateVisibilityConfigGKECluster attribute.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#managedZonePrivateVisibilityConfig".
     networks: A ManagedZonePrivateVisibilityConfigNetwork attribute.
   """
 
-  kind = _messages.StringField(1, default='dns#managedZonePrivateVisibilityConfig')
-  networks = _messages.MessageField('ManagedZonePrivateVisibilityConfigNetwork', 2, repeated=True)
+  gkeClusters = _messages.MessageField('ManagedZonePrivateVisibilityConfigGKECluster', 1, repeated=True)
+  kind = _messages.StringField(2, default='dns#managedZonePrivateVisibilityConfig')
+  networks = _messages.MessageField('ManagedZonePrivateVisibilityConfigNetwork', 3, repeated=True)
+
+
+class ManagedZonePrivateVisibilityConfigGKECluster(_messages.Message):
+  r"""A ManagedZonePrivateVisibilityConfigGKECluster object.
+
+  Fields:
+    gkeClusterName: A string attribute.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#managedZonePrivateVisibilityConfigGKECluster".
+  """
+
+  gkeClusterName = _messages.StringField(1)
+  kind = _messages.StringField(2, default='dns#managedZonePrivateVisibilityConfigGKECluster')
 
 
 class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
@@ -1368,9 +1383,11 @@ class Quota(_messages.Message):
 
   Fields:
     dnsKeysPerManagedZone: A integer attribute.
+    gkeClustersPerManagedZone: A integer attribute.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#quota".
     managedZones: A integer attribute.
+    managedZonesPerGkeCluster: A integer attribute.
     managedZonesPerNetwork: A integer attribute.
     networksPerManagedZone: A integer attribute.
     networksPerPolicy: A integer attribute.
@@ -1387,21 +1404,23 @@ class Quota(_messages.Message):
   """
 
   dnsKeysPerManagedZone = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(2, default='dns#quota')
-  managedZones = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  managedZonesPerNetwork = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  networksPerManagedZone = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  networksPerPolicy = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  policies = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  resourceRecordsPerRrset = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  rrsetAdditionsPerChange = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  rrsetDeletionsPerChange = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  rrsetsPerManagedZone = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  targetNameServersPerManagedZone = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  targetNameServersPerPolicy = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  totalRrdataSizePerChange = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 16, repeated=True)
+  gkeClustersPerManagedZone = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  kind = _messages.StringField(3, default='dns#quota')
+  managedZones = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  managedZonesPerGkeCluster = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  managedZonesPerNetwork = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  networksPerManagedZone = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  networksPerPolicy = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  policies = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  resourceRecordsPerRrset = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  rrsetAdditionsPerChange = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  rrsetDeletionsPerChange = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  rrsetsPerManagedZone = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  targetNameServersPerManagedZone = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  targetNameServersPerPolicy = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  totalRrdataSizePerChange = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 18, repeated=True)
 
 
 class ResourceRecordSet(_messages.Message):
@@ -1494,6 +1513,7 @@ class ResponsePolicy(_messages.Message):
 
   Fields:
     description: A string attribute.
+    gkeClusters: A ResponsePolicyGKECluster attribute.
     id: A string attribute.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#responsePolicy".
@@ -1502,10 +1522,24 @@ class ResponsePolicy(_messages.Message):
   """
 
   description = _messages.StringField(1)
-  id = _messages.IntegerField(2)
-  kind = _messages.StringField(3, default='dns#responsePolicy')
-  networks = _messages.MessageField('ResponsePolicyNetwork', 4, repeated=True)
-  responsePolicyName = _messages.StringField(5)
+  gkeClusters = _messages.MessageField('ResponsePolicyGKECluster', 2, repeated=True)
+  id = _messages.IntegerField(3)
+  kind = _messages.StringField(4, default='dns#responsePolicy')
+  networks = _messages.MessageField('ResponsePolicyNetwork', 5, repeated=True)
+  responsePolicyName = _messages.StringField(6)
+
+
+class ResponsePolicyGKECluster(_messages.Message):
+  r"""A ResponsePolicyGKECluster object.
+
+  Fields:
+    gkeClusterName: A string attribute.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#responsePolicyGKECluster".
+  """
+
+  gkeClusterName = _messages.StringField(1)
+  kind = _messages.StringField(2, default='dns#responsePolicyGKECluster')
 
 
 class ResponsePolicyNetwork(_messages.Message):

@@ -5003,7 +5003,7 @@ class BulkInsertInstanceResource(_messages.Message):
     predefinedNames: DEPRECATED: Please use per_instance_properties instead.
     secureTags: Secure tags to apply to this instance. These can be later
       modified by the update method. Maximum number of secure tags allowed is
-      300.
+      50.
     sourceInstanceTemplate: Specifies the instance template from which to
       create instances. You may combine sourceInstanceTemplate with
       instanceProperties to override specific values from an existing instance
@@ -5303,6 +5303,12 @@ class Commitment(_messages.Message):
       accelerator optimized machines.
 
   Fields:
+    autoRenew: Specifies whether to enable automatic renewal for the
+      commitment. The default value is false if not specified. The field can
+      be updated until the day of the commitment expiration at 12:00am PST. If
+      the field is set to true, the commitment will be automatically renewed
+      for either one or three years according to the terms of the existing
+      commitment.
     category: The category of the commitment. Category MACHINE specifies
       commitments composed of machine resources such as VCPU or MEMORY, listed
       in resources. Category LICENSE specifies commitments composed of
@@ -5426,24 +5432,25 @@ class Commitment(_messages.Message):
     MEMORY_OPTIMIZED_REGIONAL_EXTENSION = 8
     TYPE_UNSPECIFIED = 9
 
-  category = _messages.EnumField('CategoryValueValuesEnum', 1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  endTimestamp = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='compute#commitment')
-  licenseResource = _messages.MessageField('LicenseResourceCommitment', 7)
-  name = _messages.StringField(8)
-  plan = _messages.EnumField('PlanValueValuesEnum', 9)
-  region = _messages.StringField(10)
-  reservations = _messages.MessageField('Reservation', 11, repeated=True)
-  resources = _messages.MessageField('ResourceCommitment', 12, repeated=True)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
-  startTimestamp = _messages.StringField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  statusMessage = _messages.StringField(17)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  autoRenew = _messages.BooleanField(1)
+  category = _messages.EnumField('CategoryValueValuesEnum', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  endTimestamp = _messages.StringField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default='compute#commitment')
+  licenseResource = _messages.MessageField('LicenseResourceCommitment', 8)
+  name = _messages.StringField(9)
+  plan = _messages.EnumField('PlanValueValuesEnum', 10)
+  region = _messages.StringField(11)
+  reservations = _messages.MessageField('Reservation', 12, repeated=True)
+  resources = _messages.MessageField('ResourceCommitment', 13, repeated=True)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
+  startTimestamp = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  statusMessage = _messages.StringField(18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -12131,7 +12138,7 @@ class ComputeInstancesInsertRequest(_messages.Message):
       supported (00000000-0000-0000-0000-000000000000).
     secureTags: Secure tags to apply to this instance. These can be later
       modified by the update method. Maximum number of secure tags allowed is
-      300.
+      50.
     sourceInstanceTemplate: Specifies instance template to create the
       instance.  This field is optional. It can be a full or partial URL. For
       example, the following are all valid URLs to an instance template:   - h
@@ -13014,7 +13021,7 @@ class ComputeInstancesUpdateRequest(_messages.Message):
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
     secureTags: Secure tags to apply to this instance. Maximum number of
-      secure tags allowed is 300.
+      secure tags allowed is 50.
     zone: The name of the zone for this request.
   """
 
@@ -17878,6 +17885,36 @@ class ComputeRegionCommitmentsTestIamPermissionsRequest(_messages.Message):
   region = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
+
+
+class ComputeRegionCommitmentsUpdateRequest(_messages.Message):
+  r"""A ComputeRegionCommitmentsUpdateRequest object.
+
+  Fields:
+    commitment: Name of the commitment for which auto renew is being updated.
+    commitmentResource: A Commitment resource to be passed as the request
+      body.
+    paths: The set of field mask paths.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  commitment = _messages.StringField(1, required=True)
+  commitmentResource = _messages.MessageField('Commitment', 2)
+  paths = _messages.StringField(3, repeated=True)
+  project = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
 
 
 class ComputeRegionCommitmentsUpdateReservationsRequest(_messages.Message):
@@ -34593,9 +34630,9 @@ class Instance(_messages.Message):
       only field.
     satisfiesPzs: [Output Only] Reserved for future use.
     scheduling: Sets the scheduling options for this instance.
-    secureTags: Secure tags to apply to this instance. These can be later
-      modified by the update method. Maximum number of secure tags allowed is
-      300.
+    secureTags: [Input Only] Secure tags to apply to this instance. These can
+      be later modified by the update method. Maximum number of secure tags
+      allowed is 50.
     selfLink: [Output Only] Server-defined URL for this resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -59482,8 +59519,8 @@ class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 
   Fields:
     sslCertificates: New set of SslCertificate resources to associate with
-      this TargetHttpsProxy resource. Currently exactly one SslCertificate
-      resource must be specified.
+      this TargetHttpsProxy resource. At least one SSL certificate must be
+      specified. Currently, you may specify up to 15 SSL certificates.
   """
 
   sslCertificates = _messages.StringField(1, repeated=True)
@@ -59593,7 +59630,8 @@ class TargetHttpsProxy(_messages.Message):
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. At least
       one SSL certificate must be specified. Currently, you may specify up to
-      15 SSL certificates.
+      15 SSL certificates. sslCertificates do not apply when the load
+      balancing scheme is set to INTERNAL_SELF_MANAGED.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource has
       no SSL policy configured.
@@ -61049,8 +61087,8 @@ class TargetSslProxiesSetSslCertificatesRequest(_messages.Message):
 
   Fields:
     sslCertificates: New set of URLs to SslCertificate resources to associate
-      with this TargetSslProxy. Currently exactly one ssl certificate must be
-      specified.
+      with this TargetSslProxy. At least one SSL certificate must be
+      specified. Currently, you may specify up to 15 SSL certificates.
   """
 
   sslCertificates = _messages.StringField(1, repeated=True)
@@ -61094,6 +61132,8 @@ class TargetSslProxy(_messages.Message):
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections to Backends. At least one SSL certificate must
       be specified. Currently, you may specify up to 15 SSL certificates.
+      sslCertificates do not apply when the load balancing scheme is set to
+      INTERNAL_SELF_MANAGED.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetSslProxy resource. If not set, the TargetSslProxy resource will
       not have any SSL policy configured.

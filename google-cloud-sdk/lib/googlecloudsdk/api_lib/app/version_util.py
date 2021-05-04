@@ -254,8 +254,8 @@ def DeleteVersions(api_client, versions):
         '\n\n'.join(list(printable_errors.values())))
 
 
-def PromoteVersion(all_services, new_version, api_client,
-                   stop_previous_version):
+def PromoteVersion(all_services, new_version, api_client, stop_previous_version,
+                   wait_for_stop_version):
   """Promote the new version to receive all traffic.
 
   First starts the new version if it is not running.
@@ -270,6 +270,8 @@ def PromoteVersion(all_services, new_version, api_client,
     api_client: appengine_api_client.AppengineApiClient to use to make requests.
     stop_previous_version: bool, True to stop the previous version which was
       receiving all traffic, if any.
+    wait_for_stop_version: bool, indicating whether to wait for stop operation
+    to finish.
   """
   old_default_version = None
   if stop_previous_version:
@@ -291,7 +293,8 @@ def PromoteVersion(all_services, new_version, api_client,
   _SetDefaultVersion(new_version, api_client)
 
   if old_default_version:
-    _StopPreviousVersionIfApplies(old_default_version, api_client)
+    _StopPreviousVersionIfApplies(old_default_version, api_client,
+                                  wait_for_stop_version)
 
 
 def GetUri(version):
@@ -354,7 +357,8 @@ def _SetDefaultVersion(new_version, api_client):
   metrics.CustomTimedEvent(metric_names.SET_DEFAULT_VERSION_API)
 
 
-def _StopPreviousVersionIfApplies(old_default_version, api_client):
+def _StopPreviousVersionIfApplies(old_default_version, api_client,
+                                  wait_for_stop_version):
   """Stop the previous default version if applicable.
 
   Cases where a version will not be stopped:
@@ -366,6 +370,8 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
   Args:
     old_default_version: Version, The old default version to stop.
     api_client: appengine_api_client.AppengineApiClient to use to make requests.
+    wait_for_stop_version: bool, indicating whether to wait for stop operation
+    to finish.
   """
   version_object = old_default_version.version
   status_enum = api_client.messages.Version.ServingStatusValueValuesEnum
@@ -386,7 +392,8 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
 
   log.status.Print('Stopping version [{0}].'.format(old_default_version))
   try:
-    # We don't block here because stopping the previous version adds a long time
+    # Block only if wait_for_stop_version is true.
+    # Waiting for stop the previous version to finish adds a long time
     # (reports of 2.5 minutes) to deployment. The risk is that if we don't wait,
     # the operation might fail and leave an old version running. But the time
     # savings is substantial.
@@ -394,7 +401,7 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
         api_client.StopVersion,
         service_name=old_default_version.service,
         version_id=old_default_version.id,
-        block=False)
+        block=wait_for_stop_version)
   except operations_util.MiscOperationError as err:
     log.warning('Error stopping version [{0}]: {1}'.format(old_default_version,
                                                            six.text_type(err)))
@@ -402,11 +409,12 @@ def _StopPreviousVersionIfApplies(old_default_version, api_client):
                 'yourself in order to turn it off. (If you do not, you may be '
                 'charged.)'.format(old_default_version))
   else:
-    # TODO(b/318248525): Switch to refer to `gcloud app operations wait` when
-    # available
-    log.status.Print(
-        'Sent request to stop version [{0}]. This operation may take some time '
-        'to complete. If you would like to verify that it succeeded, run:\n'
-        '  $ gcloud app versions describe -s {0.service} {0.id}\n'
-        'until it shows that the version has stopped.'.format(
-            old_default_version))
+    if not wait_for_stop_version:
+      # TODO(b/318248525): Switch to refer to `gcloud app operations wait` when
+      # available
+      log.status.Print(
+          'Sent request to stop version [{0}]. This operation may take some time '
+          'to complete. If you would like to verify that it succeeded, run:\n'
+          '  $ gcloud app versions describe -s {0.service} {0.id}\n'
+          'until it shows that the version has stopped.'.format(
+              old_default_version))

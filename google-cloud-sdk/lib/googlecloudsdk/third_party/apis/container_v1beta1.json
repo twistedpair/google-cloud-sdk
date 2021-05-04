@@ -571,6 +571,10 @@
         "gcfsConfig": {
           "description": "GCFS (Google Container File System) configs.",
           "$ref": "GcfsConfig"
+        },
+        "advancedMachineFeatures": {
+          "description": "Advanced features for the Compute Engine VM.",
+          "$ref": "AdvancedMachineFeatures"
         }
       }
     },
@@ -806,6 +810,18 @@
         "enabled": {
           "description": "Whether to use GCFS.",
           "type": "boolean"
+        }
+      }
+    },
+    "AdvancedMachineFeatures": {
+      "id": "AdvancedMachineFeatures",
+      "description": "Specifies options for controlling advanced machine features.",
+      "type": "object",
+      "properties": {
+        "threadsPerCore": {
+          "description": "The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

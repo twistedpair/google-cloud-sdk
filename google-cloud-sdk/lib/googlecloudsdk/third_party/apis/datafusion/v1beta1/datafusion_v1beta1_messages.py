@@ -280,6 +280,21 @@ class DatafusionProjectsLocationsInstancesNamespacesGetIamPolicyRequest(_message
   resource = _messages.StringField(2, required=True)
 
 
+class DatafusionProjectsLocationsInstancesNamespacesListRequest(_messages.Message):
+  r"""A DatafusionProjectsLocationsInstancesNamespacesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value to use if there are additional
+      results to retrieve for this list request.
+    parent: Required. The instance to list its namespaces.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class DatafusionProjectsLocationsInstancesNamespacesSetIamPolicyRequest(_messages.Message):
   r"""A DatafusionProjectsLocationsInstancesNamespacesSetIamPolicyRequest
   object.
@@ -774,6 +789,19 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListNamespacesResponse(_messages.Message):
+  r"""List namespaces response.
+
+  Fields:
+    namespaces: List of namespaces
+    nextPageToken: Token to retrieve the next page of results or empty if
+      there are no more results in the list.
+  """
+
+  namespaces = _messages.MessageField('Namespace', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -865,6 +893,16 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class Namespace(_messages.Message):
+  r"""Represents the information of a namespace
+
+  Fields:
+    name: Name of the given namespace.
+  """
+
+  name = _messages.StringField(1)
 
 
 class NetworkConfig(_messages.Message):

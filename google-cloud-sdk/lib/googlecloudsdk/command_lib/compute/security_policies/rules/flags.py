@@ -136,38 +136,46 @@ def AddRateLimitOptions(parser):
       '--enforce-on-key',
       choices=enforce_on_key,
       type=lambda x: x.lower(),
-      help=('Determines the key to enforce the threshold_rps limit on. If key '
-            'is ``ip", each IP has this limit enforced separately, whereas '
-            '``all-ips" means a single limit is applied to all requests '
-            'matching this rule.'))
+      help="""\
+      Determines the key to enforce the threshold_rps limit on. If key
+      is ``ip'', each IP has this limit enforced separately, whereas
+      ``all-ips'' means a single limit is applied to all requests
+      matching this rule.
+      """)
 
   parser.add_argument(
       '--ban-threshold-count',
       type=int,
-      help=('Number of HTTP(S) requests for calculating the threshold for '
-            'banning requests. Can only be specified if the action for the '
-            'rule is ``rate_based_ban". If specified, the key will be banned '
-            'for the configured ``banDurationSec" when the number of requests '
-            'that exceed the ``rateLimitThreshold" also exceed this '
-            '``banThreshold".'))
+      help="""\
+      Number of HTTP(S) requests for calculating the threshold for
+      banning requests. Can only be specified if the action for the
+      rule is ``rate-based-ban''. If specified, the key will be banned
+      for the configured ``BAN_DURATION_SEC'' when the number of requests
+      that exceed the ``RATE_LIMIT_THRESHOLD_COUNT'' also exceed this
+      ``BAN_THRESHOLD_COUNT''.
+      """)
 
   parser.add_argument(
       '--ban-threshold-interval-sec',
       type=int,
-      help=('Interval over which the threshold for banning requests is '
-            'computed. Can only be specified if the action for the rule is '
-            '``rate_based_ban". If specified, the key will be banned for the '
-            'configured ``banDurationSec" when the number of requests that '
-            'exceed the ``rateLimitThreshold" also exceed this '
-            '``banThreshold".'))
+      help="""\
+      Interval over which the threshold for banning requests is
+      computed. Can only be specified if the action for the rule is
+      ``rate-based-ban''. If specified, the key will be banned for the
+      configured ``BAN_DURATION_SEC'' when the number of requests that
+      exceed the ``RATE_LIMIT_THRESHOLD_COUNT'' also exceed this
+      ``BAN_THRESHOLD_COUNT''.
+      """)
 
   parser.add_argument(
       '--ban-duration-sec',
       type=int,
-      help=('Can only be specified if the action for the rule is '
-            '``rate_based_ban". If specified, determines the time (in seconds) '
-            'the traffic will continue to be banned by the rate limit after '
-            'the rate falls below the threshold.'))
+      help="""\
+      Can only be specified if the action for the rule is
+      ``rate-based-ban''. If specified, determines the time (in seconds)
+      the traffic will continue to be banned by the rate limit after
+      the rate falls below the threshold.
+      """)
 
 
 def AddRequestHeadersToAdd(parser):

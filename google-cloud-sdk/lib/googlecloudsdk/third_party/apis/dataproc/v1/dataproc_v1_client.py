@@ -40,6 +40,7 @@ class DataprocV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_autoscalingPolicies = self.ProjectsLocationsAutoscalingPoliciesService(self)
+    self.projects_locations_batches = self.ProjectsLocationsBatchesService(self)
     self.projects_locations_workflowTemplates = self.ProjectsLocationsWorkflowTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_regions_autoscalingPolicies = self.ProjectsRegionsAutoscalingPoliciesService(self)
@@ -273,6 +274,124 @@ class DataprocV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='AutoscalingPolicy',
         response_type_name='AutoscalingPolicy',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBatchesService(base_api.BaseApiService):
+    """Service class for the projects_locations_batches resource."""
+
+    _NAME = 'projects_locations_batches'
+
+    def __init__(self, client):
+      super(DataprocV1.ProjectsLocationsBatchesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a batch workload that will be executed asynchronously.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches',
+        http_method='POST',
+        method_id='dataproc.projects.locations.batches.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['batchId', 'requestId'],
+        relative_path='v1/{+parent}/batches',
+        request_field='batch',
+        request_type_name='DataprocProjectsLocationsBatchesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the batch workload resource. If the batch is not in terminal state, the delete fails, and the response returns FAILED_PRECONDITION.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}',
+        http_method='DELETE',
+        method_id='dataproc.projects.locations.batches.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the resource representation for a batch workload.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Batch) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesGetRequest',
+        response_type_name='Batch',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists batch workloads.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBatchesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/batches',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesListRequest',
+        response_type_name='ListBatchesResponse',
         supports_download=False,
     )
 

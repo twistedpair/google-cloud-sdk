@@ -356,7 +356,7 @@
           "type": "string"
         },
         "config": {
-          "description": "Optional. KRM resource passed to the function as input. The entire resource must be no larger than 1 KB.",
+          "description": "Optional. KRM resource passed to the function as input. The entire resource must be no larger than 1024 bytes.",
           "type": "object",
           "additionalProperties": {
             "type": "any",

@@ -46,7 +46,7 @@ location:
     help: |
       ID of the location of the Pub/Sub Lite resource.
 
-lite-topic:
+lite_topic:
   name: topic
   collection: pubsublite.admin.projects.locations.topics
   attributes:
@@ -56,7 +56,7 @@ lite-topic:
     help: |
       The topic name.
 
-lite-subscription:
+lite_subscription:
   name: subscription
   collection: pubsublite.admin.projects.locations.subscriptions
   attributes:

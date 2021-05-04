@@ -132,10 +132,9 @@ INSTANCE_ACTION_CHOICES_WITH_NONE = _CombineOrderedChoices(
     {'none': 'No action'}, INSTANCE_ACTION_CHOICES_WITHOUT_NONE)
 
 
-def AddMinimalActionArg(parser, with_none=True):
-  choices = (INSTANCE_ACTION_CHOICES_WITH_NONE if with_none
+def AddMinimalActionArg(parser, choices_with_none=True, default=None):
+  choices = (INSTANCE_ACTION_CHOICES_WITH_NONE if choices_with_none
              else INSTANCE_ACTION_CHOICES_WITHOUT_NONE)
-  default = 'none' if with_none else 'replace'
   parser.add_argument(
       '--minimal-action',
       choices=choices,
@@ -145,45 +144,16 @@ def AddMinimalActionArg(parser, with_none=True):
            'disruptive action is performed.')
 
 
-def AddMostDisruptiveActionArg(parser, with_none=True):
-  choices = (INSTANCE_ACTION_CHOICES_WITH_NONE if with_none
+def AddMostDisruptiveActionArg(parser, choices_with_none=True, default=None):
+  choices = (INSTANCE_ACTION_CHOICES_WITH_NONE if choices_with_none
              else INSTANCE_ACTION_CHOICES_WITHOUT_NONE)
   parser.add_argument(
       '--most-disruptive-allowed-action',
       choices=choices,
-      default='replace',
+      default=default,
       help='Perform at most this action on each instance while updating. '
            'If the update requires a more disruptive action than the one '
            'specified here, then the update fails and no changes are made.')
-
-
-def MapInstanceActionEnumValue(instance_action, messages,
-                               instance_action_enum):
-  """Map the UpdatePolicy action values to appropriate request enum.
-
-  Args:
-    instance_action: instance action to map.
-    messages: module containing message classes.
-    instance_action_enum: corresponding request class enum.
-
-  Returns:
-    Corresponding apply updates request instance action enum object.
-  """
-  enum_map = {
-      messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
-      .NONE:
-          instance_action_enum.NONE,
-      messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
-      .REFRESH:
-          instance_action_enum.REFRESH,
-      messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
-      .RESTART:
-          instance_action_enum.RESTART,
-      messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
-      .REPLACE:
-          instance_action_enum.REPLACE,
-  }
-  return enum_map[instance_action]
 
 
 def AddUpdateInstancesArgs(parser):
@@ -194,5 +164,5 @@ def AddUpdateInstancesArgs(parser):
       metavar='INSTANCE',
       required=True,
       help='Names of instances to update.')
-  AddMinimalActionArg(parser)
-  AddMostDisruptiveActionArg(parser)
+  AddMinimalActionArg(parser, True, 'none')
+  AddMostDisruptiveActionArg(parser, True, 'replace')

@@ -145,21 +145,21 @@ def _get_full_bucket_metadata_string(resource):
   ).format(
       bucket_url=resource.storage_url.versionless_url_string,
       location_constraint_line=resource_util.get_padded_metadata_key_value_line(
-          'Location constraint', resource.metadata['LocationConstraint']),
+          'Location Constraint', resource.metadata['LocationConstraint']),
       versioning_enabled_line=resource_util.get_padded_metadata_key_value_line(
-          'Versioning enabled', versioning_enabled_value),
+          'Versioning Enabled', versioning_enabled_value),
       logging_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Logging configuration', logging_enabled_value),
+          'Logging Configuration', logging_enabled_value),
       website_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Website configuration', website_value),
+          'Website Configuration', website_value),
       cors_config_line=resource_util.get_padded_metadata_key_value_line(
-          'CORS configuration', cors_value),
+          'CORS Configuration', cors_value),
       encryption_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Encryption configuration', encryption_value),
+          'Encryption Configuration', encryption_value),
       lifecycle_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Lifecycle configuration', lifecycle_configuration_value),
+          'Lifecycle Configuration', lifecycle_configuration_value),
       requester_pays_line=resource_util.get_padded_metadata_key_value_line(
-          'Requester Pays enabled', requester_pays_value),
+          'Requester Pays Enabled', requester_pays_value),
       # Remove ending newline character because this is the last list item.
       acl_section=_get_formatted_acl_section(resource.metadata['ACL'])[:-1])
 
@@ -177,13 +177,13 @@ def _get_full_object_metadata_string(resource):
   # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html
   if 'LastModified' in resource.metadata:
     optional_time_updated_line = resource_util.get_padded_metadata_time_line(
-        'Update time', resource.metadata['LastModified'])
+        'Update Time', resource.metadata['LastModified'])
   else:
     optional_time_updated_line = ''
 
   if 'StorageClass' in resource.metadata:
     optional_storage_class_line = resource_util.get_padded_metadata_key_value_line(
-        'Storage class', resource.metadata['StorageClass'])
+        'Storage Class', resource.metadata['StorageClass'])
   else:
     optional_storage_class_line = ''
 
@@ -221,7 +221,7 @@ def _get_full_object_metadata_string(resource):
   if 'SSECustomerAlgorithm' in resource.metadata:
     optional_encryption_algorithm_line = (
         resource_util.get_padded_metadata_key_value_line(
-            'Encryption algorithm', resource.metadata['SSECustomerAlgorithm']))
+            'Encryption Algorithm', resource.metadata['SSECustomerAlgorithm']))
   else:
     optional_encryption_algorithm_line = ''
 

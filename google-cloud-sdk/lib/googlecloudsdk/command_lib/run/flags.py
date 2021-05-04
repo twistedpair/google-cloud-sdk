@@ -662,17 +662,14 @@ def AddSecretsFlags(parser):
       group_help=('Specify secrets to mount or provide as environment '
                   "variables. Keys starting with a forward slash '/' are mount "
                   'paths. All other keys correspond to environment variables. '
-                  'The values associated with each of these should be in the '
-                  'form SECRET_NAME:KEY_IN_SECRET; you may omit the '
-                  'key within the secret to specify a mount of all keys '
-                  'within the secret. For example: '
-                  "'--update-secrets=/my/path=mysecret,"
-                  "ENV=othersecret:key.json' "
-                  "will create a volume with secret 'mysecret' "
-                  "and mount that volume at '/my/path'. Because no secret "
-                  "key was specified, all keys in 'mysecret' will be included. "
+                  'Values should be in the form SECRET_NAME:SECRET_VERSION. '
+                  'For example: '
+                  "'--update-secrets=/secrets/api/key=mysecret:latest,"
+                  "ENV=othersecret:1' "
+                  "will mount a volume at '/secrets/api' containing a file "
+                  "'key' with the latest version of secret 'mysecret'. "
                   'An environment variable named ENV will also be created '
-                  "whose value is the value of 'key.json' in 'othersecret'."),
+                  "whose value is version 1 of secret 'othersecret'."),
       flag_name='secrets')
 
 
@@ -1027,6 +1024,19 @@ def _IsVolumeMountKey(key):
   return key.startswith('/')
 
 
+def _ValidatedMountPoint(key):
+  if _IsVolumeMountKey(key):
+    segments = key.split('/')
+    too_short = len(segments) < 3
+    if not too_short:
+      disallowed = {'', '.', '..'}
+      all_legal_segments = all(seg not in disallowed for seg in segments[1:])
+      if all_legal_segments:
+        return key
+  raise serverless_exceptions.ConfigurationError(
+      'Mount path [{}] must be in the form /<mountPath>/<path>'.format(key))
+
+
 def _GetSecretsChanges(args):
   """Return secret env var and volume changes for given args."""
   volume_kwargs = {}
@@ -1035,7 +1045,7 @@ def _GetSecretsChanges(args):
   updates = _StripKeys(
       getattr(args, 'update_secrets', None) or args.set_secrets or {})
   volume_kwargs['updates'] = {
-      k: secrets_mapping.ReachableSecret(v, k)
+      k: secrets_mapping.ReachableSecret(v, _ValidatedMountPoint(k))
       for k, v in updates.items()
       if _IsVolumeMountKey(k)
   }

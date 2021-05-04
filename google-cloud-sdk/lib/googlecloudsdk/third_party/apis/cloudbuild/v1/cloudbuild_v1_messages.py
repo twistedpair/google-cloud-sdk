@@ -248,9 +248,9 @@ class BitbucketServerSecrets(_messages.Message):
       access token's secret version.
     readAccessTokenVersionName: Required. The resource name for the read
       access token's secret version.
-    webhookSecretVersionName: Required. Immutable. The resource name for the
-      webhook secret's secret version. Once this field has been set, it cannot
-      be changed. If you need to change it, please create another
+    webhookSecretVersionName: Immutable. The resource name for the webhook
+      secret's secret version. Once this field has been set, it cannot be
+      changed. If you need to change it, please create another
       BitbucketServerConfig.
   """
 
@@ -1736,6 +1736,20 @@ class CloudbuildProjectsTriggersWebhookRequest(_messages.Message):
   projectId = _messages.StringField(2, required=True)
   secret = _messages.StringField(3)
   trigger = _messages.StringField(4, required=True)
+
+
+class CloudbuildWebhookRequest(_messages.Message):
+  r"""A CloudbuildWebhookRequest object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    webhookKey: For GitHub Enterprise webhooks, this key is used to associate
+      the webhook request with the GitHubEnterpriseConfig to use for
+      validation.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  webhookKey = _messages.StringField(2)
 
 
 class ClusterOptions(_messages.Message):

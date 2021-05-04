@@ -36,7 +36,6 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
-
 # TODO(b/185318075): Consider leaving only re-usable flags here and moving flags
 # that are specific to a subgroup/command to their corresponding modules.
 
@@ -388,8 +387,8 @@ def GetRegionResourceSpec(prompt_func=region_util.PromptForRegion):
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def GetModelResourceSpec(
-    resource_name='model', prompt_func=region_util.PromptForRegion):
+def GetModelResourceSpec(resource_name='model',
+                         prompt_func=region_util.PromptForRegion):
   return concepts.ResourceSpec(
       'aiplatform.projects.locations.models',
       resource_name=resource_name,
@@ -407,8 +406,8 @@ def AddRegionResourceArg(parser, verb, prompt_func=region_util.PromptForRegion):
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
     prompt_func: function, the function to prompt for region from list of
-      available regions which returns a string for the region selected.
-      Default is region_util.PromptForRegion which contains three regions,
+      available regions which returns a string for the region selected. Default
+      is region_util.PromptForRegion which contains three regions,
       'us-central1', 'europe-west4', and 'asia-east1'.
   """
   concept_parsers.ConceptParser.ForResource(
@@ -446,14 +445,16 @@ def AddModelResourceArg(parser, verb, prompt_func=region_util.PromptForRegion):
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
     prompt_func: function, the function to prompt for region from list of
-      available regions which returns a string for the region selected.
-      Default is region_util.PromptForRegion which contains three regions,
+      available regions which returns a string for the region selected. Default
+      is region_util.PromptForRegion which contains three regions,
       'us-central1', 'europe-west4', and 'asia-east1'.
   """
   name = 'model'
   concept_parsers.ConceptParser.ForResource(
-      name, GetModelResourceSpec(prompt_func=prompt_func),
-      'Model {}.'.format(verb), required=True).AddToParser(parser)
+      name,
+      GetModelResourceSpec(prompt_func=prompt_func),
+      'Model {}.'.format(verb),
+      required=True).AddToParser(parser)
 
 
 def AddUploadModelFlags(parser, prompt_func=region_util.PromptForRegion):
@@ -462,8 +463,8 @@ def AddUploadModelFlags(parser, prompt_func=region_util.PromptForRegion):
   Args:
     parser: the parser for the command.
     prompt_func: function, the function to prompt for region from list of
-      available regions which returns a string for the region selected.
-      Default is region_util.PromptForRegion which contains three regions,
+      available regions which returns a string for the region selected. Default
+      is region_util.PromptForRegion which contains three regions,
       'us-central1', 'europe-west4', and 'asia-east1'.
   """
   AddRegionResourceArg(parser, 'to upload model', prompt_func=prompt_func)
@@ -611,8 +612,8 @@ def GetEndpointId():
   return base.Argument('name', help='The endpoint\'s id.')
 
 
-def GetEndpointResourceSpec(
-    resource_name='endpoint', prompt_func=region_util.PromptForRegion):
+def GetEndpointResourceSpec(resource_name='endpoint',
+                            prompt_func=region_util.PromptForRegion):
   return concepts.ResourceSpec(
       constants.ENDPOINTS_COLLECTION,
       resource_name=resource_name,
@@ -621,8 +622,9 @@ def GetEndpointResourceSpec(
       disable_auto_completers=False)
 
 
-def AddEndpointResourceArg(
-    parser, verb, prompt_func=region_util.PromptForRegion):
+def AddEndpointResourceArg(parser,
+                           verb,
+                           prompt_func=region_util.PromptForRegion):
   """Add a resource argument for a Cloud AI Platform endpoint.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -708,8 +710,7 @@ def GetTensorboardTimeSeriesResourceSpec(
       disable_auto_completers=False)
 
 
-def GetTensorboardRunResourceSpec(
-    resource_name='tensorboard_run'):
+def GetTensorboardRunResourceSpec(resource_name='tensorboard_run'):
   return concepts.ResourceSpec(
       constants.TENSORBOARD_RUNS_COLLECTION,
       resource_name=resource_name,
@@ -843,9 +844,7 @@ def AddTensorboardTimeSeriesMaxDataPointsArg():
 
 def AddFilterArg(noun):
   return base.Argument(
-      '--filter',
-      default=None,
-      help='Filter for the {noun}.'.format(noun=noun))
+      '--filter', default=None, help='Filter for the {noun}.'.format(noun=noun))
 
 
 def ParseAcceleratorFlag(accelerator, version):
@@ -865,21 +864,18 @@ The count of the accelerator must be greater than 0.
 """)
   if version == constants.ALPHA_VERSION:
     accelerator_msg = (
-        apis
-        .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                           constants.AI_PLATFORM_API_VERSION[version])
+        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                               constants.AI_PLATFORM_API_VERSION[version])
         .GoogleCloudAiplatformV1alpha1MachineSpec)
   elif version == constants.BETA_VERSION:
     accelerator_msg = (
-        apis
-        .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                           constants.AI_PLATFORM_API_VERSION[version])
+        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                               constants.AI_PLATFORM_API_VERSION[version])
         .GoogleCloudAiplatformV1beta1MachineSpec)
   else:
     accelerator_msg = (
-        apis
-        .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                           constants.AI_PLATFORM_API_VERSION[version])
+        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                               constants.AI_PLATFORM_API_VERSION[version])
         .GoogleCloudAiplatformV1MachineSpec)
   accelerator_type = arg_utils.ChoiceToEnum(
       raw_type, accelerator_msg.AcceleratorTypeValueValuesEnum)
@@ -892,32 +888,26 @@ def GetAcceleratorTypeMapper(version):
   if version == constants.ALPHA_VERSION:
     return arg_utils.ChoiceEnumMapper(
         'generic-accelerator',
-        apis
-        .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                           constants.AI_PLATFORM_API_VERSION[version])
-        .GoogleCloudAiplatformV1alpha1MachineSpec
-        .AcceleratorTypeValueValuesEnum,
+        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                               constants.AI_PLATFORM_API_VERSION[version]).
+        GoogleCloudAiplatformV1alpha1MachineSpec.AcceleratorTypeValueValuesEnum,
         help_str='The available types of accelerators.',
         include_filter=lambda x: x.startswith('NVIDIA'),
         required=False)
   elif version == constants.BETA_VERSION:
     return arg_utils.ChoiceEnumMapper(
         'generic-accelerator',
-        apis
-        .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                           constants.AI_PLATFORM_API_VERSION[version])
-        .GoogleCloudAiplatformV1beta1MachineSpec
-        .AcceleratorTypeValueValuesEnum,
+        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                               constants.AI_PLATFORM_API_VERSION[version])
+        .GoogleCloudAiplatformV1beta1MachineSpec.AcceleratorTypeValueValuesEnum,
         help_str='The available types of accelerators.',
         include_filter=lambda x: x.startswith('NVIDIA'),
         required=False)
   return arg_utils.ChoiceEnumMapper(
       'generic-accelerator',
-      apis
-      .GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                         constants.AI_PLATFORM_API_VERSION[version])
-      .GoogleCloudAiplatformV1MachineSpec
-      .AcceleratorTypeValueValuesEnum,
+      apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                             constants.AI_PLATFORM_API_VERSION[version])
+      .GoogleCloudAiplatformV1MachineSpec.AcceleratorTypeValueValuesEnum,
       help_str='The available types of accelerators.',
       include_filter=lambda x: x.startswith('NVIDIA'),
       required=False)
@@ -972,3 +962,155 @@ def AddKmsKeyResourceArg(parser, resource):
                      " permission 'Cloud KMS CryptoKey Encrypter/Decrypter'")
   kms_resource_args.AddKmsKeyResourceArg(
       parser, resource, permission_info=permission_info)
+
+
+def GetEndpointIdArg(required=True):
+  return base.Argument(
+      '--endpoint', help='Id of the endpoint.', required=required)
+
+
+def GetEmailsArg(required=True):
+  return base.Argument(
+      '--emails',
+      metavar='EMAILS',
+      type=arg_parsers.ArgList(),
+      help='Comma-separated email address list. e.g. --emails=a@gmail.com,b@gmail.com',
+      required=required)
+
+
+def GetPredictionSamplingRateArg(required=True, default=1.0):
+  return base.Argument(
+      '--prediction-sampling-rate',
+      type=float,
+      default=default,
+      help='Prediction sampling rate.',
+      required=required)
+
+
+def GetMonitoringFrequencyArg(required=False, default=24):
+  return base.Argument(
+      '--monitoring-frequency',
+      type=int,
+      default=default,
+      help='Monitoring frequency, unit is 1 hour.',
+      required=required)
+
+
+def GetPredictInstanceSchemaArg(required=False):
+  return base.Argument(
+      '--predict-instance-schema',
+      help="""
+      YAML schema file uri(Google Cloud Storage) describing the format of a
+      single instance, which are given to format this Endpoint's.
+      """,
+      required=required)
+
+
+def GetAnalysisInstanceSchemaArg(required=False):
+  return base.Argument(
+      '--analysis-instance-schema',
+      help="""
+      YAML schema file uri(Google Cloud Storage) describing the format of a
+      single instance that you want Tensorflow Data Validation (TFDV) to analyze.
+      """,
+      required=required)
+
+
+def GetSamplingPredictRequestArg(required=False):
+  return base.Argument(
+      '--sample-predict-request',
+      help="""\
+      Path to a local file containing the body of a JSON object.
+
+       An example of a JSON request:
+
+          {"x": [1, 2], "y": [3, 4]}
+
+      """,
+      required=required)
+
+
+def GetMonitoringLogTtlArg(required=False):
+  return base.Argument(
+      '--log-ttl',
+      type=int,
+      help="""
+  The TTL of BigQuery tables in user projects which stores logs(Day-based unit).
+  """,
+      required=required)
+
+
+def AddObjectiveConfigGroup(parser, required=False):
+  """Add model monitoring objective config related flags to the parser."""
+  objective_config_group = parser.add_mutually_exclusive_group(
+      required=required)
+  objective_config_group.add_argument(
+      '--drift-thresholds',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(allow_key_only=True),
+      action=arg_parsers.UpdateAction,
+      help=("""
+      List of paris of feature name and threshold value, if only feature name is set, the default threshold value would be 0.3.
+
+      Note: Only one of --drift-thresholds and --monitoring-config-from-file needs to be set.
+
+      For example: `--drift-thresholds=feat1=0.1,feat2,feat3=0.2`"""))
+  objective_config_group.add_argument(
+      '--monitoring-config-from-file',
+      help=("""
+      Path to the model monitoring objective config file. This fild shoule be a
+      YAML document containing a ModelDeploymentMonitoringJob, but only the
+      ModelDeploymentMonitoringObjectiveConfig needs to be configured.
+
+      Note: Only one of --drift-thresholds and --monitoring-config-from-file needs to be set.
+
+      Example(YAML):
+
+      modelDeploymentMonitoringObjectiveConfigs:
+      - deployedModelId: '5251549009234886656'
+        objectiveConfig:
+          trainingDataset:
+            dataFormat: csv
+            gcsSource:
+              uris:
+              - gs://fake-bucket/training_data.csv
+            targetField: price
+          trainingPredictionSkewDetectionConfig:
+            skewThresholds:
+              feat1:
+                value: 0.9
+              feat2:
+                value: 0.8
+      - deployedModelId: '2945706000021192704'
+        objectiveConfig:
+          predictionDriftDetectionConfig:
+            driftThresholds:
+              feat1:
+                value: 0.3
+              feat2:
+                value: 0.4"""))
+
+
+def GetMonitoringJobResourceSpec(resource_name='monitoring_job'):
+  return concepts.ResourceSpec(
+      constants.MODEL_MONITORING_JOBS_COLLECTION,
+      resource_name=resource_name,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      disable_auto_completers=False)
+
+
+def AddModelMonitoringJobResourceArg(parser, verb):
+  """Add a resource argument for a cloud AI Platform model deployment monitoring job.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'monitoring_job',
+      GetMonitoringJobResourceSpec(),
+      'The model deployment monitoring job {}.'.format(verb),
+      required=True).AddToParser(parser)

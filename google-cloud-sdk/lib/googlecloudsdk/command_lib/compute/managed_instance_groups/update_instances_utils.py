@@ -184,30 +184,23 @@ def ParseVersion(project, flag_name, version_map, resources, messages):
       name=name)
 
 
-def ParseInstanceActionFlag(flag_name, instance_action_str, messages):
+def ParseInstanceActionFlag(flag_name, instance_action_str,
+                            instance_action_enum):
   """Retrieves value of the instance action type.
 
   Args:
     flag_name: name of the flag associated with the parsed string.
     instance_action_str: string containing instance action value.
-    messages: module containing message classes.
+    instance_action_enum: enum type representing instance action values.
 
   Returns:
     InstanceAction enum object.
   """
   instance_actions_enum_map = {
-      'none':
-          messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
-          .NONE,
-      'refresh':
-          messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
-          .REFRESH,
-      'restart':
-          messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
-          .RESTART,
-      'replace':
-          messages.InstanceGroupManagerUpdatePolicy.MinimalActionValueValuesEnum
-          .REPLACE,
+      'none': instance_action_enum.NONE,
+      'refresh': instance_action_enum.REFRESH,
+      'restart': instance_action_enum.RESTART,
+      'replace': instance_action_enum.REPLACE,
   }
   if instance_action_str not in instance_actions_enum_map:
     raise exceptions.InvalidArgumentException(

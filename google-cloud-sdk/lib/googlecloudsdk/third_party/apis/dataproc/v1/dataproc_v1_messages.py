@@ -147,6 +147,176 @@ class BasicYarnAutoscalingConfig(_messages.Message):
   scaleUpMinWorkerFraction = _messages.FloatField(5)
 
 
+class Batch(_messages.Message):
+  r"""A representation of a batch workload in the service.
+
+  Enums:
+    StateValueValuesEnum: Output only. A state of the batch.
+
+  Messages:
+    LabelsValue: Optional. The labels to associate with this batch. Label keys
+      must contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with a batch.
+
+  Fields:
+    createTime: Output only. The time when the batch was created.
+    creator: Output only. The email address of the user who created the batch.
+    environmentConfig: Optional. Environment configuration for the batch
+      execution.
+    labels: Optional. The labels to associate with this batch. Label keys must
+      contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with a batch.
+    name: Optional. The resource name of the batch.
+    pysparkBatch: Optional. PySpark batch config.
+    runtimeConfig: Optional. Runtime configuration for the batch execution.
+    runtimeInfo: Output only. Runtime information about batch execution.
+    sparkBatch: Optional. Spark batch config.
+    sparkRBatch: Optional. SparkR batch config.
+    sparkSqlBatch: Optional. SparkSql batch config.
+    state: Output only. A state of the batch.
+    stateMessage: Output only. Batch state details, such as a failure
+      description if the state is FAILED.
+    stateTime: Output only. The time when the batch entered a current state.
+    uuid: Output only. A batch UUID (Unique Universal Identifier). The service
+      generates this value when it creates the batch.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. A state of the batch.
+
+    Values:
+      STATE_UNSPECIFIED: The batch state is unknown.
+      PENDING: The batch is created before running.
+      RUNNING: The batch is running.
+      CANCELLING: The batch is cancelling.
+      CANCELLED: The batch cancellation was successful.
+      SUCCEEDED: The batch has completed successfully.
+      FAILED: The batch has completed, but encountered a failure.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    CANCELLING = 3
+    CANCELLED = 4
+    SUCCEEDED = 5
+    FAILED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels to associate with this batch. Label keys must
+    contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but, if
+    present, must contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can be
+    associated with a batch.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  creator = _messages.StringField(2)
+  environmentConfig = _messages.MessageField('EnvironmentConfig', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  pysparkBatch = _messages.MessageField('PySparkBatch', 6)
+  runtimeConfig = _messages.MessageField('RuntimeConfig', 7)
+  runtimeInfo = _messages.MessageField('RuntimeInfo', 8)
+  sparkBatch = _messages.MessageField('SparkBatch', 9)
+  sparkRBatch = _messages.MessageField('SparkRBatch', 10)
+  sparkSqlBatch = _messages.MessageField('SparkSqlBatch', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateMessage = _messages.StringField(13)
+  stateTime = _messages.StringField(14)
+  uuid = _messages.StringField(15)
+
+
+class BatchOperationMetadata(_messages.Message):
+  r"""Metadata describing the Batch operation.
+
+  Enums:
+    OperationTypeValueValuesEnum: The operation type.
+
+  Messages:
+    LabelsValue: Labels associated with the operation.
+
+  Fields:
+    batch: Name of the batch for the operation.
+    batchUuid: Batch UUID for the operation.
+    createTime: The time when the operation was created.
+    description: Short description of the operation.
+    doneTime: The time when the operation was finished.
+    labels: Labels associated with the operation.
+    operationType: The operation type.
+    warnings: Warnings encountered during operation execution.
+  """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""The operation type.
+
+    Values:
+      BATCH_OPERATION_TYPE_UNSPECIFIED: Batch operation type is unknown.
+      BATCH: Batch operation type.
+    """
+    BATCH_OPERATION_TYPE_UNSPECIFIED = 0
+    BATCH = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels associated with the operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  batch = _messages.StringField(1)
+  batchUuid = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  doneTime = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 7)
+  warnings = _messages.StringField(8, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates members with a role.
 
@@ -758,6 +928,73 @@ class DataprocProjectsLocationsAutoscalingPoliciesTestIamPermissionsRequest(_mes
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class DataprocProjectsLocationsBatchesCreateRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesCreateRequest object.
+
+  Fields:
+    batch: A Batch resource to be passed as the request body.
+    batchId: Optional. The ID to use for the batch, which will become the
+      final component of the batch's resource name.This value should be 4-63
+      characters, and valid characters are /a-z-/.
+    parent: Required. The parent resource where this batch will be created.
+    requestId: Optional. A unique ID used to identify the request. If the
+      service receives two CreateBatchRequest (https://cloud.google.com/datapr
+      oc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1.
+      CreateBatchRequest)s with the same request_id, then the second request
+      will be ignored and the Operation that corresponds to the first Batch
+      created and stored in the backend is returned.It is recommended to
+      always set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The value
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  batch = _messages.MessageField('Batch', 1)
+  batchId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class DataprocProjectsLocationsBatchesDeleteRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the batch resource to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsBatchesGetRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesGetRequest object.
+
+  Fields:
+    name: Required. The name of the batch to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsBatchesListRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesListRequest object.
+
+  Fields:
+    filter: Optional. A filter constraining the batches to list. Filters are
+      case-sensitive and have the following syntax:field = value AND field =
+      value ...
+    pageSize: Optional. The maximum number of batches to return in each
+      response. The service may return fewer than this value.
+    pageToken: Optional. A page token, received from a previous ListBatches
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent, which owns this collection of batches.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message):
@@ -1946,6 +2183,57 @@ class EndpointConfig(_messages.Message):
   httpPorts = _messages.MessageField('HttpPortsValue', 2)
 
 
+class EnvironmentConfig(_messages.Message):
+  r"""Environment configuration for a workload.
+
+  Fields:
+    executionConfig: Optional. Execution configuration for a workload.
+    peripheralsConfig: Optional. Peripherals configuration that workload has
+      access to.
+  """
+
+  executionConfig = _messages.MessageField('ExecutionConfig', 1)
+  peripheralsConfig = _messages.MessageField('PeripheralsConfig', 2)
+
+
+class ExecutionConfig(_messages.Message):
+  r"""Execution configuration for a workload.
+
+  Enums:
+    PerformanceTierValueValuesEnum: Optional. Performance tier for workload
+      execution.
+
+  Fields:
+    networkTags: Optional. Tags used for network traffic control.
+    networkUri: Optional. Network URI to connect workload to.
+    performanceTier: Optional. Performance tier for workload execution.
+    serviceAccount: Optional. Service account that used to execute workload.
+    serviceAccountScopes: Optional. Scopes for the workload service account.
+    subnetworkUri: Optional. Subnetwork URI to connect workload to.
+  """
+
+  class PerformanceTierValueValuesEnum(_messages.Enum):
+    r"""Optional. Performance tier for workload execution.
+
+    Values:
+      PERFORMANCE_TIER_UNSPECIFIED: Performance tier unknown.
+      ECONOMY: Economy performance tier.
+      STANDARD: Standard performance tier.
+      HIGH: High performance tier.
+    """
+    PERFORMANCE_TIER_UNSPECIFIED = 0
+    ECONOMY = 1
+    STANDARD = 2
+    HIGH = 3
+
+  networkTags = _messages.StringField(1, repeated=True)
+  networkUri = _messages.StringField(2)
+  performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 3)
+  serviceAccount = _messages.StringField(4)
+  serviceAccountScopes = _messages.StringField(5)
+  subnetworkUri = _messages.StringField(6)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -2962,6 +3250,19 @@ class ListAutoscalingPoliciesResponse(_messages.Message):
   policies = _messages.MessageField('AutoscalingPolicy', 2, repeated=True)
 
 
+class ListBatchesResponse(_messages.Message):
+  r"""A list of batch workloads.
+
+  Fields:
+    batches: The batches from the specified collection.
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  batches = _messages.MessageField('Batch', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListClustersResponse(_messages.Message):
   r"""The list of all clusters in a project.
 
@@ -3434,6 +3735,17 @@ class ParameterValidation(_messages.Message):
   values = _messages.MessageField('ValueValidation', 2)
 
 
+class PeripheralsConfig(_messages.Message):
+  r"""Auxiliary services configuration for a workload.
+
+  Fields:
+    metastoreService: Optional. Dataproc Metastore service that can be used by
+      a workload.
+  """
+
+  metastoreService = _messages.StringField(1)
+
+
 class PigJob(_messages.Message):
   r"""A Dataproc job for running Apache Pig (https://pig.apache.org/) queries
   on YARN.
@@ -3656,6 +3968,35 @@ class PrestoJob(_messages.Message):
   queryList = _messages.MessageField('QueryList', 7)
 
 
+class PySparkBatch(_messages.Message):
+  r"""A configuration for running Apache PySpark (https://spark.apache.org/doc
+  s/latest/api/python/getting_started/quickstart.html) batch workload.
+
+  Fields:
+    archiveUris: Optional. HCFS URIs of archives to be extracted into the
+      working directory of each executor. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
+    args: Optional. The arguments to pass to the driver. Do not include
+      arguments, such as --conf, that can be set as batch properties, since a
+      collision may occur that causes an incorrect batch submission.
+    fileUris: Optional. HCFS URIs of files to be placed in the working
+      directory of each executor.
+    jarFileUris: Optional. HCFS URIs of jar files to add to the classpath of
+      the Spark driver and tasks.
+    mainPythonFileUri: Required. The HCFS URI of the main Python file to use
+      as the Spark driver. Must be a .py file.
+    pythonFileUris: Optional. HCFS file URIs of Python files to pass to the
+      PySpark framework. Supported file types: .py, .egg, and .zip.
+  """
+
+  archiveUris = _messages.StringField(1, repeated=True)
+  args = _messages.StringField(2, repeated=True)
+  fileUris = _messages.StringField(3, repeated=True)
+  jarFileUris = _messages.StringField(4, repeated=True)
+  mainPythonFileUri = _messages.StringField(5)
+  pythonFileUris = _messages.StringField(6, repeated=True)
+
+
 class PySparkJob(_messages.Message):
   r"""A Dataproc job for running Apache PySpark
   (https://spark.apache.org/docs/0.9.0/python-programming-guide.html)
@@ -3784,6 +4125,90 @@ class ReservationAffinity(_messages.Message):
   consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
   key = _messages.StringField(2)
   values = _messages.StringField(3, repeated=True)
+
+
+class RuntimeConfig(_messages.Message):
+  r"""Runtime configuration for a workload.
+
+  Messages:
+    PropertiesValue: Optional. A mapping of property names to values, used to
+      configure workload execution.
+
+  Fields:
+    containerImage: Optional. Container image to use for workload execution.
+    properties: Optional. A mapping of property names to values, used to
+      configure workload execution.
+    version: Optional. Version of the batch runtime.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Optional. A mapping of property names to values, used to configure
+    workload execution.
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  containerImage = _messages.StringField(1)
+  properties = _messages.MessageField('PropertiesValue', 2)
+  version = _messages.StringField(3)
+
+
+class RuntimeInfo(_messages.Message):
+  r"""Runtime information about workload execution.
+
+  Messages:
+    EndpointsValue: Map of remote access endpoints (web interfaces, APIs, etc)
+      to their URIs.
+
+  Fields:
+    endpoints: Map of remote access endpoints (web interfaces, APIs, etc) to
+      their URIs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EndpointsValue(_messages.Message):
+    r"""Map of remote access endpoints (web interfaces, APIs, etc) to their
+    URIs.
+
+    Messages:
+      AdditionalProperty: An additional property for a EndpointsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EndpointsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EndpointsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  endpoints = _messages.MessageField('EndpointsValue', 1)
 
 
 class SecurityConfig(_messages.Message):
@@ -3942,6 +4367,36 @@ class SoftwareConfig(_messages.Message):
   properties = _messages.MessageField('PropertiesValue', 3)
 
 
+class SparkBatch(_messages.Message):
+  r"""A configuration for running Apache Spark (http://spark.apache.org/)
+  batch workload.
+
+  Fields:
+    archiveUris: Optional. HCFS URIs of archives to be extracted into the
+      working directory of each executor. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
+    args: Optional. The arguments to pass to the driver. Do not include
+      arguments, such as --conf, that can be set as batch properties, since a
+      collision may occur that causes an incorrect batch submission.
+    fileUris: Optional. HCFS URIs of files to be placed in the working
+      directory of each executor.
+    jarFileUris: Optional. HCFS URIs of jar files to add to the classpath of
+      the Spark driver and tasks.
+    mainClass: Optional. The name of the driver main class. The jar file that
+      contains the class must be already in the classpath or specified in
+      jar_file_uris.
+    mainJarFileUri: Optional. The HCFS URI of the jar file that contains the
+      main class.
+  """
+
+  archiveUris = _messages.StringField(1, repeated=True)
+  args = _messages.StringField(2, repeated=True)
+  fileUris = _messages.StringField(3, repeated=True)
+  jarFileUris = _messages.StringField(4, repeated=True)
+  mainClass = _messages.StringField(5)
+  mainJarFileUri = _messages.StringField(6)
+
+
 class SparkJob(_messages.Message):
   r"""A Dataproc job for running Apache Spark (http://spark.apache.org/)
   applications on YARN.
@@ -4011,6 +4466,29 @@ class SparkJob(_messages.Message):
   properties = _messages.MessageField('PropertiesValue', 8)
 
 
+class SparkRBatch(_messages.Message):
+  r"""A configuration for running Apache SparkR
+  (https://spark.apache.org/docs/latest/sparkr.html) batch workload.
+
+  Fields:
+    archiveUris: Optional. HCFS URIs of archives to be extracted into the
+      working directory of each executor. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
+    args: Optional. The arguments to pass to the Spark driver. Do not include
+      arguments, such as --conf, that can be set as batch properties, since a
+      collision may occur that causes an incorrect batch submission.
+    fileUris: Optional. HCFS URIs of files to be placed in the working
+      directory of each executor.
+    mainRFileUri: Required. The HCFS URI of the main R file to use as the
+      driver. Must be a .R or .r file.
+  """
+
+  archiveUris = _messages.StringField(1, repeated=True)
+  args = _messages.StringField(2, repeated=True)
+  fileUris = _messages.StringField(3, repeated=True)
+  mainRFileUri = _messages.StringField(4)
+
+
 class SparkRJob(_messages.Message):
   r"""A Dataproc job for running Apache SparkR
   (https://spark.apache.org/docs/latest/sparkr.html) applications on YARN.
@@ -4072,6 +4550,54 @@ class SparkRJob(_messages.Message):
   loggingConfig = _messages.MessageField('LoggingConfig', 4)
   mainRFileUri = _messages.StringField(5)
   properties = _messages.MessageField('PropertiesValue', 6)
+
+
+class SparkSqlBatch(_messages.Message):
+  r"""A configuration for running Apache Spark SQL
+  (http://spark.apache.org/sql/) queries as a batch workload.
+
+  Messages:
+    ScriptVariablesValue: Optional. Mapping of query variable names to values
+      (equivalent to the Spark SQL command: SET name="value";).
+
+  Fields:
+    jarFileUris: Optional. HCFS URIs of jar files to be added to the Spark
+      CLASSPATH.
+    queryFileUri: Required. The HCFS URI of the script that contains Spark SQL
+      queries to execute.
+    scriptVariables: Optional. Mapping of query variable names to values
+      (equivalent to the Spark SQL command: SET name="value";).
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ScriptVariablesValue(_messages.Message):
+    r"""Optional. Mapping of query variable names to values (equivalent to the
+    Spark SQL command: SET name="value";).
+
+    Messages:
+      AdditionalProperty: An additional property for a ScriptVariablesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ScriptVariablesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ScriptVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  jarFileUris = _messages.StringField(1, repeated=True)
+  queryFileUri = _messages.StringField(2)
+  scriptVariables = _messages.MessageField('ScriptVariablesValue', 3)
 
 
 class SparkSqlJob(_messages.Message):

@@ -1776,7 +1776,7 @@
     },
     "GoogleTypeLatLng": {
       "id": "GoogleTypeLatLng",
-      "description": "An object that represents a latitude\/longitude pair. This is expressed as a pair of doubles to represent degrees latitude and degrees longitude. Unless specified otherwise, this must conform to the WGS84 standard. Values must be within normalized ranges.",
+      "description": "An object that represents a latitude\/longitude pair. This is expressed as a pair of doubles to represent degrees latitude and degrees longitude. Unless specified otherwise, this object must conform to the WGS84 standard. Values must be within normalized ranges.",
       "type": "object",
       "properties": {
         "latitude": {
@@ -3080,7 +3080,7 @@
       "type": "object",
       "properties": {
         "model": {
-          "description": "Required. Conversation model resource name. Format: `projects\/\/conversationModels\/`.",
+          "description": "Conversation model resource name. Format: `projects\/\/conversationModels\/`.",
           "type": "string"
         }
       }
@@ -3768,6 +3768,33 @@
           "description": "Uncompressed raw byte content for agent.",
           "type": "string",
           "format": "byte"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3ExportFlowResponse": {
+      "id": "GoogleCloudDialogflowCxV3ExportFlowResponse",
+      "description": "The response message for Flows.ExportFlow.",
+      "type": "object",
+      "properties": {
+        "flowUri": {
+          "description": "The URI to a file containing the exported flow. This field is populated only if `flow_uri` is specified in ExportFlowRequest.",
+          "type": "string"
+        },
+        "flowContent": {
+          "description": "Uncompressed raw byte content for flow.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3ImportFlowResponse": {
+      "id": "GoogleCloudDialogflowCxV3ImportFlowResponse",
+      "description": "The response message for Flows.ImportFlow.",
+      "type": "object",
+      "properties": {
+        "flow": {
+          "description": "The unique identifier of the new flow. Format: `projects\/\/locations\/\/agents\/\/flows\/`.",
+          "type": "string"
         }
       }
     },
@@ -5245,6 +5272,33 @@
           "description": "Uncompressed raw byte content for agent.",
           "type": "string",
           "format": "byte"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1ExportFlowResponse": {
+      "id": "GoogleCloudDialogflowCxV3beta1ExportFlowResponse",
+      "description": "The response message for Flows.ExportFlow.",
+      "type": "object",
+      "properties": {
+        "flowUri": {
+          "description": "The URI to a file containing the exported flow. This field is populated only if `flow_uri` is specified in ExportFlowRequest.",
+          "type": "string"
+        },
+        "flowContent": {
+          "description": "Uncompressed raw byte content for flow.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1ImportFlowResponse": {
+      "id": "GoogleCloudDialogflowCxV3beta1ImportFlowResponse",
+      "description": "The response message for Flows.ImportFlow.",
+      "type": "object",
+      "properties": {
+        "flow": {
+          "description": "The unique identifier of the new flow. Format: `projects\/\/locations\/\/agents\/\/flows\/`.",
+          "type": "string"
         }
       }
     },

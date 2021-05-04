@@ -1708,7 +1708,7 @@ class CloudbuildV1(base_api.BaseApiClient):
       r"""ReceiveWebhook is called when the API receives a GitHub webhook.
 
       Args:
-        request: (HttpBody) input message
+        request: (CloudbuildWebhookRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Empty) The response message.
@@ -1722,10 +1722,10 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.webhook',
         ordered_params=[],
         path_params=[],
-        query_params=[],
+        query_params=['webhookKey'],
         relative_path='v1/webhook',
-        request_field='<request>',
-        request_type_name='HttpBody',
+        request_field='httpBody',
+        request_type_name='CloudbuildWebhookRequest',
         response_type_name='Empty',
         supports_download=False,
     )

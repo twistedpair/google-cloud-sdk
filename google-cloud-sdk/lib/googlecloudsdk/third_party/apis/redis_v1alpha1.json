@@ -437,7 +437,7 @@
           "type": "string",
           "enumDescriptions": [
             "Not set.",
-            "Persistence is disabled for the instance.",
+            "Persistence is disabled for the instance, and any existing snapshots are deleted.",
             "RDB based Persistence is enabled."
           ],
           "enum": [
@@ -447,7 +447,7 @@
           ]
         },
         "rdbSnapshotPeriod": {
-          "description": "Optional. Time period for snapshot scheduling. Snapshots will be created every period starting from the provided snapshot start time. Example, start time of 00:00 and SIX_HOURS snapshort period configuration will trigger snapshots every day at 00:00, 06:00, 12:00 and 18:00. If not provided TWENTY_FOUR_HOURS will be used as default.",
+          "description": "Optional. Period between RDB snapshots. Snapshots will be attempted every period starting from the provided snapshot start time. For example, a start time of 01\/01\/2033 06:45 and SIX_HOURS snapshot period will do nothing until 01\/01\/2033, and then trigger snapshots every day at 06:45, 12:45, 18:45, and 00:45 the next day, and so on. If not provided, TWENTY_FOUR_HOURS will be used as default.",
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -469,35 +469,15 @@
           ]
         },
         "rdbSnapshotStartTime": {
-          "description": "Optional. Time of the day when the snapshots are going to be triggered. If backup is already ongoing the trigger will be skipped. If not provided the current time will be used.",
-          "$ref": "TimeOfDay"
-        }
-      }
-    },
-    "TimeOfDay": {
-      "id": "TimeOfDay",
-      "description": "Represents a time of day. The date and time zone are either not significant or are specified elsewhere. An API may choose to allow leap seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.",
-      "type": "object",
-      "properties": {
-        "hours": {
-          "description": "Hours of day in 24 hour format. Should be from 0 to 23. An API may choose to allow the value \"24:00:00\" for scenarios like business closing time.",
-          "type": "integer",
-          "format": "int32"
+          "description": "Optional. Date and time that the first snapshot was\/will be attempted, and to which future snapshots will be aligned. If not provided, the current time will be used.",
+          "type": "string",
+          "format": "google-datetime"
         },
-        "minutes": {
-          "description": "Minutes of hour of day. Must be from 0 to 59.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "seconds": {
-          "description": "Seconds of minutes of the time. Must normally be from 0 to 59. An API may allow the value 60 if it allows leap-seconds.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "nanos": {
-          "description": "Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.",
-          "type": "integer",
-          "format": "int32"
+        "rdbNextSnapshotTime": {
+          "description": "Output only. The next time that a snapshot attempt is scheduled to occur.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -569,6 +549,33 @@
           "readOnly": true,
           "type": "string",
           "format": "google-duration"
+        }
+      }
+    },
+    "TimeOfDay": {
+      "id": "TimeOfDay",
+      "description": "Represents a time of day. The date and time zone are either not significant or are specified elsewhere. An API may choose to allow leap seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.",
+      "type": "object",
+      "properties": {
+        "hours": {
+          "description": "Hours of day in 24 hour format. Should be from 0 to 23. An API may choose to allow the value \"24:00:00\" for scenarios like business closing time.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "minutes": {
+          "description": "Minutes of hour of day. Must be from 0 to 59.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "seconds": {
+          "description": "Seconds of minutes of the time. Must normally be from 0 to 59. An API may allow the value 60 if it allows leap-seconds.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "nanos": {
+          "description": "Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

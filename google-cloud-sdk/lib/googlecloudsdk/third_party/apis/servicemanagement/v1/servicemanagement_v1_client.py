@@ -753,7 +753,7 @@ class ServicemanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists managed services. Returns all public services. For authenticated users, also returns all services the calling user has "servicemanagement.services.get" permission for. **BETA:** If the caller specifies the `consumer_id`, it returns only the services enabled on the consumer. The `consumer_id` must have the format of "project:{PROJECT-ID}".
+      r"""Lists managed services. Returns all public services. For authenticated users, also returns all services the calling user has "servicemanagement.services.get" permission for.
 
       Args:
         request: (ServicemanagementServicesListRequest) input message

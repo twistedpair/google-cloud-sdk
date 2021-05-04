@@ -64,14 +64,17 @@ _WORKER_POOL_SPEC = base.Argument(
     '--worker-pool-spec',
     action='append',
     type=arg_parsers.ArgDict(
+        # TODO(b/184350069): check `machine－type` specified for non-empty spec.
         spec={
             'replica-count': int,
             'machine-type': str,
             'container-image-uri': str,
+            'executor-image-uri': str,
+            # TODO(b/185461224): remove `python-image-uri` after the public docs
+            # and demos are updated and before the promotion to GA.
             'python-image-uri': str,
             'python-module': str,
-        },
-        required_keys=['machine-type']),
+        }),
     metavar='WORKER_POOL_SPEC',
     help=textwrap.dedent("""\
       Define the worker pool configuration used by the custom job. You can
@@ -84,7 +87,8 @@ _WORKER_POOL_SPEC = base.Argument(
       *machine-type*::: (Required): machineSpec.machineType
       *replica-count*::: replicaCount
       *container-image-uri*::: containerSpec.imageUri
-      *python-image-uri*::: pythonPackageSpec.executorImageUri
+      *executor-image-uri*::: pythonPackageSpec.executorImageUri
+      *python-image-uri*::: (DEPRECATED) use `executor-image-uri` instead.
       *python-module*::: pythonPackageSpec.pythonModule
 
       For example:

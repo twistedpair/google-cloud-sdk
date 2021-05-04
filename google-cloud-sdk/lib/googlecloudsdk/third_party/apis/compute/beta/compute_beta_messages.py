@@ -53039,8 +53039,8 @@ class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
 
   Fields:
     sslCertificates: New set of SslCertificate resources to associate with
-      this TargetHttpsProxy resource. Currently exactly one SslCertificate
-      resource must be specified.
+      this TargetHttpsProxy resource. At least one SSL certificate must be
+      specified. Currently, you may specify up to 15 SSL certificates.
   """
 
   sslCertificates = _messages.StringField(1, repeated=True)
@@ -53145,7 +53145,8 @@ class TargetHttpsProxy(_messages.Message):
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. At least
       one SSL certificate must be specified. Currently, you may specify up to
-      15 SSL certificates.
+      15 SSL certificates. sslCertificates do not apply when the load
+      balancing scheme is set to INTERNAL_SELF_MANAGED.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource has
       no SSL policy configured.
@@ -54582,8 +54583,8 @@ class TargetSslProxiesSetSslCertificatesRequest(_messages.Message):
 
   Fields:
     sslCertificates: New set of URLs to SslCertificate resources to associate
-      with this TargetSslProxy. Currently exactly one ssl certificate must be
-      specified.
+      with this TargetSslProxy. At least one SSL certificate must be
+      specified. Currently, you may specify up to 15 SSL certificates.
   """
 
   sslCertificates = _messages.StringField(1, repeated=True)
@@ -54624,6 +54625,8 @@ class TargetSslProxy(_messages.Message):
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections to Backends. At least one SSL certificate must
       be specified. Currently, you may specify up to 15 SSL certificates.
+      sslCertificates do not apply when the load balancing scheme is set to
+      INTERNAL_SELF_MANAGED.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetSslProxy resource. If not set, the TargetSslProxy resource will
       not have any SSL policy configured.

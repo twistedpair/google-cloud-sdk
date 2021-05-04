@@ -1658,7 +1658,7 @@
           "type": "string"
         },
         "webhookSecretVersionName": {
-          "description": "Required. Immutable. The resource name for the webhook secret's secret version. Once this field has been set, it cannot be changed. If you need to change it, please create another BitbucketServerConfig.",
+          "description": "Immutable. The resource name for the webhook secret's secret version. Once this field has been set, it cannot be changed. If you need to change it, please create another BitbucketServerConfig.",
           "type": "string"
         }
       }
@@ -3868,6 +3868,11 @@
           "flatPath": "v1/webhook",
           "httpMethod": "POST",
           "parameters": {
+            "webhookKey": {
+              "description": "For GitHub Enterprise webhooks, this key is used to associate the webhook request with the GitHubEnterpriseConfig to use for validation.",
+              "location": "query",
+              "type": "string"
+            }
           },
           "parameterOrder": [
           ],

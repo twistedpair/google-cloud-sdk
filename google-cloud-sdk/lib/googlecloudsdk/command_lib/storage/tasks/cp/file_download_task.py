@@ -43,7 +43,7 @@ google-crc32c not installed, so hashing will be slow. Install google-crc32c or
 change the "storage/check_hashes" config setting.
 """
 _HASH_CHECK_WARNING_BASE = """
-WARNING: This download {} since the google-crc32c
+This download {} since the google-crc32c
 binary is not installed, and Python hash computation will likely
 throttle performance. You can change this by installing the binary or
 modifying the "storage/check_hashes" config setting.

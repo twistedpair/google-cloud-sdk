@@ -60,6 +60,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_developers_apps_keys = self.OrganizationsDevelopersAppsKeysService(self)
     self.organizations_developers_apps = self.OrganizationsDevelopersAppsService(self)
     self.organizations_developers_attributes = self.OrganizationsDevelopersAttributesService(self)
+    self.organizations_developers_balance = self.OrganizationsDevelopersBalanceService(self)
     self.organizations_developers_subscriptions = self.OrganizationsDevelopersSubscriptionsService(self)
     self.organizations_developers = self.OrganizationsDevelopersService(self)
     self.organizations_envgroups_attachments = self.OrganizationsEnvgroupsAttachmentsService(self)
@@ -2049,6 +2050,43 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsDevelopersBalanceService(base_api.BaseApiService):
+    """Service class for the organizations_developers_balance resource."""
+
+    _NAME = 'organizations_developers_balance'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsDevelopersBalanceService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Credit(self, request, global_params=None):
+      r"""Credit the developer balance.
+
+      Args:
+        request: (ApigeeOrganizationsDevelopersBalanceCreditRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DeveloperBalance) The response message.
+      """
+      config = self.GetMethodConfig('Credit')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Credit.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/developers/{developersId}/balance:credit',
+        http_method='POST',
+        method_id='apigee.organizations.developers.balance.credit',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:credit',
+        request_field='googleCloudApigeeV1CreditDeveloperBalanceRequest',
+        request_type_name='ApigeeOrganizationsDevelopersBalanceCreditRequest',
+        response_type_name='GoogleCloudApigeeV1DeveloperBalance',
+        supports_download=False,
+    )
+
   class OrganizationsDevelopersSubscriptionsService(base_api.BaseApiService):
     """Service class for the organizations_developers_subscriptions resource."""
 
@@ -2285,6 +2323,60 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetBalance(self, request, global_params=None):
+      r"""Get the balance associated with the developer.
+
+      Args:
+        request: (ApigeeOrganizationsDevelopersGetBalanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DeveloperBalance) The response message.
+      """
+      config = self.GetMethodConfig('GetBalance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetBalance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/developers/{developersId}/balance',
+        http_method='GET',
+        method_id='apigee.organizations.developers.getBalance',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsDevelopersGetBalanceRequest',
+        response_type_name='GoogleCloudApigeeV1DeveloperBalance',
+        supports_download=False,
+    )
+
+    def GetMonetizationConfig(self, request, global_params=None):
+      r"""Get monetization configuration for the developer.
+
+      Args:
+        request: (ApigeeOrganizationsDevelopersGetMonetizationConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DeveloperMonetizationConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetMonetizationConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetMonetizationConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/developers/{developersId}/monetizationConfig',
+        http_method='GET',
+        method_id='apigee.organizations.developers.getMonetizationConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsDevelopersGetMonetizationConfigRequest',
+        response_type_name='GoogleCloudApigeeV1DeveloperMonetizationConfig',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all developers in an organization by email address. By default, the response does not include company developers. Set the `includeCompany` query parameter to `true` to include company developers. **Note**: A maximum of 1000 developers are returned in the response. You paginate the list of developers returned using the `startKey` and `count` query parameters.
 
@@ -2363,6 +2455,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='googleCloudApigeeV1Developer',
         request_type_name='ApigeeOrganizationsDevelopersUpdateRequest',
         response_type_name='GoogleCloudApigeeV1Developer',
+        supports_download=False,
+    )
+
+    def UpdateMonetizationConfig(self, request, global_params=None):
+      r"""Update monetization configuration for the developer.
+
+      Args:
+        request: (ApigeeOrganizationsDevelopersUpdateMonetizationConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DeveloperMonetizationConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateMonetizationConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateMonetizationConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/developers/{developersId}/monetizationConfig',
+        http_method='PUT',
+        method_id='apigee.organizations.developers.updateMonetizationConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1DeveloperMonetizationConfig',
+        request_type_name='ApigeeOrganizationsDevelopersUpdateMonetizationConfigRequest',
+        response_type_name='GoogleCloudApigeeV1DeveloperMonetizationConfig',
         supports_download=False,
     )
 

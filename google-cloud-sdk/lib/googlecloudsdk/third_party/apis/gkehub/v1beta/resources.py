@@ -41,12 +41,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_GLOBAL_FEATURES = (
-      'projects.locations.global.features',
+  PROJECTS_LOCATIONS_FEATURES = (
+      'projects.locations.features',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/global/features/{featuresId}',
+              'projects/{projectsId}/locations/{locationsId}/features/'
+              '{featuresId}',
       },
       ['name'],
       True

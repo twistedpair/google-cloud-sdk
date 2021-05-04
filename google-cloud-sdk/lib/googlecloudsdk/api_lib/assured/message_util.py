@@ -70,7 +70,7 @@ def CreateAssuredWorkload(display_name=None,
       for example: folders/{FOLDER_ID}
     resource_settings: list of key=value pairs to set customized resource
       settings, which can be one of the following: consumer-project-id,
-      encryption-keys-project-id, for example:
+      encryption-keys-project-id or keyring-id, for example:
       consumer-project-id={ID1},encryption-keys-project-id={ID2}
     release_track: ReleaseTrack, gcloud release track being used
 
@@ -134,7 +134,7 @@ def CreateResourceSettings(key, value, release_track):
 
   Args:
     key: str, the setting name, which can be one of the following -
-      consumer-project-id, encryption-keys-project-id.
+      consumer-project-id, encryption-keys-project-id or keyring-id.
     value: str, the value of the resource property.
     release_track: ReleaseTrack, gcloud release track being used.
 
@@ -147,6 +147,8 @@ def CreateResourceSettings(key, value, release_track):
     resource_type = resource_settings_message.ResourceTypeValueValuesEnum.CONSUMER_PROJECT
   elif key == 'encryption-keys-project-id':
     resource_type = resource_settings_message.ResourceTypeValueValuesEnum.ENCRYPTION_KEYS_PROJECT
+  elif key == 'keyring-id':
+    resource_type = resource_settings_message.ResourceTypeValueValuesEnum.KEYRING
   return resource_settings_message(resourceType=resource_type, resourceId=value)
 
 

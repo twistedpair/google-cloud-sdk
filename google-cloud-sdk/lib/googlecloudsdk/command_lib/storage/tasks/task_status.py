@@ -62,6 +62,10 @@ class _StatusTracker(six.with_metaclass(abc.ABCMeta, object)):
     """Generates string to illustrate progress to the user."""
     pass
 
+  def _get_done_string(self):
+    """Generates string for when StatusTracker exits."""
+    return '\n'
+
   @abc.abstractmethod
   def add_message(self, status_message):
     """Processes task status message for printing and aggregation.
@@ -73,8 +77,10 @@ class _StatusTracker(six.with_metaclass(abc.ABCMeta, object)):
 
   def start(self):
     self._progress_tracker = progress_tracker.ProgressTracker(
-        message='Starting operation',
-        detail_message_callback=self._get_status_string)
+        message='  ',
+        detail_message_callback=self._get_status_string,
+        done_message_callback=self._get_done_string,
+        no_spacing=True)
     self._progress_tracker.__enter__()
     return self
 
@@ -93,14 +99,13 @@ class _CountStatusTracker(_StatusTracker):
 
   def _get_status_string(self):
     """See super class."""
-    # TODO(b/180047352) Avoid having other output print on the same line.
     if self._total_estimation:
       file_progress_string = '{}/{}'.format(self._completed,
                                             self._total_estimation)
     else:
       file_progress_string = self._completed
 
-    return '\rCompleted {}'.format(file_progress_string)
+    return 'Completed {}\r'.format(file_progress_string)
 
   def add_message(self, status_message):
     """See super class."""
@@ -137,7 +142,6 @@ class _FilesAndBytesStatusTracker(_StatusTracker):
 
   def _get_status_string(self):
     """See super class."""
-    # TODO(b/180047352) Avoid having other output print on the same line.
     scaled_processed_bytes = scaled_integer.FormatBinaryNumber(
         self._processed_bytes, decimal_places=1)
     if self._total_files_estimation:
@@ -158,7 +162,7 @@ class _FilesAndBytesStatusTracker(_StatusTracker):
     else:
       throughput_addendum_string = ''
 
-    return '\rCompleted files {} | {}{}'.format(file_progress_string,
+    return 'Completed files {} | {}{}\r'.format(file_progress_string,
                                                 bytes_progress_string,
                                                 throughput_addendum_string)
 
@@ -252,9 +256,11 @@ class _FilesAndBytesStatusTracker(_StatusTracker):
     if (self._first_operation_time is not None and
         self._last_operation_time is not None and
         self._first_operation_time != self._last_operation_time):
-      log.status.Print('\rAverage throughput: ' + _get_formatted_throughput(
-          self._processed_bytes, self._last_operation_time -
-          self._first_operation_time))
+      # Don't use get_done_string because it may cause line wrapping.
+      log.status.Print('\nAverage throughput: {}'.format(
+          _get_formatted_throughput(
+              self._processed_bytes,
+              self._last_operation_time - self._first_operation_time)))
 
 
 def status_message_handler(task_status_queue, status_tracker):

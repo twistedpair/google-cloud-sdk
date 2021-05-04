@@ -49,6 +49,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BATCHES = (
+      'projects.locations.batches',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/batches/'
+              '{batchesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_WORKFLOWTEMPLATES = (
       'projects.locations.workflowTemplates',
       '{+name}',

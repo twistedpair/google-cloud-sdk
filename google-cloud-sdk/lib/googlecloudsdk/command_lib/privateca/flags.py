@@ -212,15 +212,19 @@ def AddIgnoreActiveCertificatesFlag(parser):
       required=False).AddToParser(parser)
 
 
-def AddInlineReusableConfigFlags(parser, is_ca):
+def AddInlineReusableConfigFlags(parser, is_ca_command,
+                                 default_max_chain_length=None):
   """Adds flags for providing inline reusable config values.
 
   Args:
     parser: The parser to add the flags to.
-    is_ca: Whether the current operation is on a CA. This influences the help
-      text, and whether the --max-chain-length flag is added.
+    is_ca_command: Whether the current command is on a CA. This influences the
+      help text, and whether the --is-ca-cert flag is added.
+    default_max_chain_length: optional, The default value for maxPathLength to
+      use if an explicit value is not specified. If this is omitted or set to
+      None, no default max path length will be added.
   """
-  resource_name = 'CA' if is_ca else 'certificate'
+  resource_name = 'CA' if is_ca_command else 'certificate'
   group = base.ArgumentGroup()
   group.AddArgument(
       base.Argument(
@@ -242,9 +246,9 @@ def AddInlineReusableConfigFlags(parser, is_ca):
       base.Argument(
           '--max-chain-length',
           help='Maximum depth of subordinate CAs allowed under this CA for a CA certificate. This can only be provided if `--reusable-config` is not provided.',
-          default=0))
+          default=default_max_chain_length))
 
-  if not is_ca:
+  if not is_ca_command:
     group.AddArgument(
         base.Argument(
             '--is-ca-cert',
@@ -269,15 +273,15 @@ def ReusableConfigFlagsAreSpecified(args):
   ])
 
 
-def ParseReusableConfig(args, location, is_ca):
+def ParseReusableConfig(args, location, is_ca_command):
   """Parses the reusable config flags into an API ReusableConfigWrapper.
 
   Args:
     args: The parsed argument values.
     location: The location of the resource with which this reusable config will
       be used.
-    is_ca: Whether the current operation is on a CA. If so, certSign and crlSign
-      key usages are added.
+    is_ca_command: Whether the current command is on a CA. If so, certSign and
+      crlSign key usages are added.
 
   Returns:
     A ReusableConfigWrapper object.
@@ -309,6 +313,8 @@ def ParseReusableConfig(args, location, is_ca):
         reusableConfig=resource.RelativeName())
 
   base_key_usages = args.key_usages or []
+  is_ca = is_ca_command or (args.IsKnownAndSpecified('is_ca_cert') and
+                            args.is_ca_cert)
   if is_ca:
     # A CA should have these KeyUsages to be RFC 5280 compliant.
     base_key_usages.extend(['cert_sign', 'crl_sign'])
@@ -330,8 +336,9 @@ def ParseReusableConfig(args, location, is_ca):
                   extended_key_usage_dict, messages.ExtendedKeyUsageOptions)),
           caOptions=messages.CaOptions(
               isCa=is_ca,
-              maxIssuerPathLength=int(args.max_chain_length) if is_ca else None)
-      ))
+              # Don't include maxIssuerPathLength if it's None.
+              maxIssuerPathLength=int(args.max_chain_length)
+              if is_ca and args.max_chain_length is not None else None)))
 
 
 def ParseSubject(args):

@@ -486,6 +486,7 @@ class CreateClusterOptions(object):
       enable_private_ipv6_access=None,
       enable_intra_node_visibility=None,
       enable_vertical_pod_autoscaling=None,
+      enable_experimental_vertical_pod_autoscaling=None,
       security_profile=None,
       security_profile_runtime_rules=None,
       database_encryption_key=None,
@@ -626,6 +627,7 @@ class CreateClusterOptions(object):
     self.enable_private_ipv6_access = enable_private_ipv6_access
     self.enable_intra_node_visibility = enable_intra_node_visibility
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
+    self.enable_experimental_vertical_pod_autoscaling = enable_experimental_vertical_pod_autoscaling
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
     self.database_encryption_key = database_encryption_key
@@ -722,6 +724,7 @@ class UpdateClusterOptions(object):
                enable_pod_security_policy=None,
                enable_binauthz=None,
                enable_vertical_pod_autoscaling=None,
+               enable_experimental_vertical_pod_autoscaling=None,
                enable_intra_node_visibility=None,
                enable_l4_ilb_subsetting=None,
                security_profile=None,
@@ -804,6 +807,7 @@ class UpdateClusterOptions(object):
     self.enable_pod_security_policy = enable_pod_security_policy
     self.enable_binauthz = enable_binauthz
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
+    self.enable_experimental_vertical_pod_autoscaling = enable_experimental_vertical_pod_autoscaling
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
     self.autoscaling_profile = autoscaling_profile
@@ -2245,6 +2249,10 @@ class APIAdapter(object):
           desiredNotificationConfig=_GetNotificationConfigForClusterUpdate(
               options, self.messages))
 
+    if options.disable_autopilot is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAutopilot=self.messages.Autopilot(enabled=False))
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -3413,6 +3421,13 @@ class V1Beta1Adapter(V1Adapter):
     cluster.kubernetesObjectsExportConfig = _GetKubernetesObjectsExportConfigForClusterCreate(
         options, self.messages)
 
+    if options.enable_experimental_vertical_pod_autoscaling is not None:
+      cluster.verticalPodAutoscaling = self.messages.VerticalPodAutoscaling(
+          enableExperimentalFeatures=options
+          .enable_experimental_vertical_pod_autoscaling)
+      if options.enable_experimental_vertical_pod_autoscaling:
+        cluster.verticalPodAutoscaling.enabled = True
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -3463,10 +3478,6 @@ class V1Beta1Adapter(V1Adapter):
           desiredGkeOidcConfig=self.messages.GkeOidcConfig(
               enabled=options.enable_gke_oidc))
 
-    if options.disable_autopilot is not None:
-      update = self.messages.ClusterUpdate(
-          desiredAutopilot=self.messages.Autopilot(enabled=False))
-
     if options.enable_stackdriver_kubernetes:
       update = self.messages.ClusterUpdate(
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
@@ -3486,6 +3497,14 @@ class V1Beta1Adapter(V1Adapter):
           desiredWorkloadMonitoringEapConfig=self.messages
           .WorkloadMonitoringEapConfig(
               enabled=options.enable_workload_monitoring_eap))
+
+    if options.enable_experimental_vertical_pod_autoscaling is not None:
+      update = self.messages.ClusterUpdate(
+          desiredVerticalPodAutoscaling=self.messages.VerticalPodAutoscaling(
+              enableExperimentalFeatures=options
+              .enable_experimental_vertical_pod_autoscaling))
+      if options.enable_experimental_vertical_pod_autoscaling:
+        update.desiredVerticalPodAutoscaling.enabled = True
 
     master = _GetMasterForClusterUpdate(options, self.messages)
     if master is not None:
@@ -3895,6 +3914,13 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.networkConfig.datapathProvider = \
             self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
 
+    if options.enable_experimental_vertical_pod_autoscaling is not None:
+      cluster.verticalPodAutoscaling = self.messages.VerticalPodAutoscaling(
+          enableExperimentalFeatures=options
+          .enable_experimental_vertical_pod_autoscaling)
+      if options.enable_experimental_vertical_pod_autoscaling:
+        cluster.verticalPodAutoscaling.enabled = True
+
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
 
     cluster.kubernetesObjectsExportConfig = _GetKubernetesObjectsExportConfigForClusterCreate(
@@ -3946,10 +3972,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredReleaseChannel=_GetReleaseChannel(options, self.messages))
 
-    if options.disable_autopilot is not None:
-      update = self.messages.ClusterUpdate(
-          desiredAutopilot=self.messages.Autopilot(enabled=False))
-
     if options.enable_stackdriver_kubernetes:
       update = self.messages.ClusterUpdate(
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
@@ -3969,6 +3991,14 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredWorkloadMonitoringEapConfig=self.messages
           .WorkloadMonitoringEapConfig(
               enabled=options.enable_workload_monitoring_eap))
+
+    if options.enable_experimental_vertical_pod_autoscaling is not None:
+      update = self.messages.ClusterUpdate(
+          desiredVerticalPodAutoscaling=self.messages.VerticalPodAutoscaling(
+              enableExperimentalFeatures=options
+              .enable_experimental_vertical_pod_autoscaling))
+      if options.enable_experimental_vertical_pod_autoscaling:
+        update.desiredVerticalPodAutoscaling.enabled = True
 
     master = _GetMasterForClusterUpdate(options, self.messages)
     if master is not None:

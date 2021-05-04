@@ -39,9 +39,15 @@ import six
 
 
 def ProgressTracker(
-    message=None, autotick=True, detail_message_callback=None, tick_delay=0.2,
-    interruptable=True, screen_reader=False,
-    aborted_message=console_io.OperationCancelledError.DEFAULT_MESSAGE):
+    message=None,
+    autotick=True,
+    detail_message_callback=None,
+    done_message_callback=None,
+    tick_delay=0.2,
+    interruptable=True,
+    screen_reader=False,
+    aborted_message=console_io.OperationCancelledError.DEFAULT_MESSAGE,
+    no_spacing=False):
   """A context manager for telling the user about long-running progress.
 
   Args:
@@ -50,6 +56,8 @@ def ProgressTracker(
       need to call Tick() explicitly to move the spinner.
     detail_message_callback: func, A no argument function that will be called
       and the result appended to message each time it needs to be printed.
+    done_message_callback: func, A no argument function whose result will be
+      appended to message if the progress tracker successfully exits.
     tick_delay: float, The amount of time to wait between ticks, in second.
     interruptable: boolean, True if the user can ctrl-c the operation. If so,
       it will stop and will report as aborted. If False, a message will be
@@ -58,6 +66,7 @@ def ProgressTracker(
       toggle.
     aborted_message: str, A custom message to put in the exception when it is
       cancelled by the user.
+    no_spacing: boolean, Removes ellipses and other spacing between text.
 
   Returns:
     The progress tracker.
@@ -78,16 +87,17 @@ def ProgressTracker(
       tick_delay = 1
       spinner_override_message = 'working'
 
-    return tracker_cls(
-        message, autotick, detail_message_callback, tick_delay, interruptable,
-        aborted_message, spinner_override_message)
+    return tracker_cls(message, autotick, detail_message_callback,
+                       done_message_callback, tick_delay, interruptable,
+                       aborted_message, spinner_override_message, no_spacing)
 
 
 class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
   """A context manager for telling the user about long-running progress."""
 
-  def __init__(self, message, autotick, detail_message_callback, tick_delay,
-               interruptable, aborted_message, spinner_override_message):
+  def __init__(self, message, autotick, detail_message_callback,
+               done_message_callback, tick_delay, interruptable,
+               aborted_message, spinner_override_message, no_spacing):
     self._stream = sys.stderr
     if message is None:
       self._spinner_only = True
@@ -96,9 +106,10 @@ class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
     else:
       self._spinner_only = False
       self._message = message
-      self._prefix = message + '...'
+      self._prefix = message + ('' if no_spacing else '...')
     self._detail_message_callback = detail_message_callback
     self.spinner_override_message = spinner_override_message
+    self._done_message_callback = done_message_callback
     self._ticks = 0
     self._done = False
     self._lock = threading.Lock()
@@ -116,6 +127,7 @@ class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
     self._aborted_message = aborted_message
     self._old_signal_handler = None
     self._symbols = console_attr.GetConsoleAttr().GetProgressTrackerSymbols()
+    self._no_spacing = no_spacing
 
   @property
   def _autotick(self):
@@ -125,6 +137,8 @@ class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
     if self._detail_message_callback:
       detail_message = self._detail_message_callback()
       if detail_message:
+        if self._no_spacing:
+          return self._prefix + detail_message
         return self._prefix + ' ' + detail_message + '...'
     return self._prefix
 
@@ -180,7 +194,10 @@ class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
         else:
           self._Print('failed.\n')
       elif not self._spinner_only:
-        self._Print('done.\n')
+        if self._done_message_callback:
+          self._Print(self._done_message_callback())
+        else:
+          self._Print('done.\n')
     if self._ticker:
       self._ticker.join()
     self._TearDownSignalHandler()
@@ -214,6 +231,8 @@ class _NormalProgressTracker(_BaseProgressTracker):
       if self._detail_message_callback:
         detail_message = self._detail_message_callback()
         if detail_message:
+          if self._no_spacing:
+            return detail_message
           return ' ' + detail_message + '...'
       return None
 

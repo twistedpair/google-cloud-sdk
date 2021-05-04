@@ -166,10 +166,10 @@ class CopyLogEntriesMetadata(_messages.Message):
   Fields:
     cancellationRequested: Identifies whether the user has requested
       cancellation of the operation.
-    createTime: The create time of an operation.
     endTime: The end time of an operation.
     progress: Estimated progress of the operation (0 - 100%).
     request: CopyLogEntries RPC request.
+    startTime: The create time of an operation.
     state: State of an operation.
     writerIdentity: The IAM identity of a service account that must be granted
       access to the destination. If the service account is not granted
@@ -199,10 +199,10 @@ class CopyLogEntriesMetadata(_messages.Message):
     OPERATION_STATE_CANCELLED = 6
 
   cancellationRequested = _messages.BooleanField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  progress = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  request = _messages.MessageField('CopyLogEntriesRequest', 5)
+  endTime = _messages.StringField(2)
+  progress = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  request = _messages.MessageField('CopyLogEntriesRequest', 4)
+  startTime = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
   writerIdentity = _messages.StringField(7)
 
@@ -449,6 +449,42 @@ class HttpRequest(_messages.Message):
   serverIp = _messages.StringField(13)
   status = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   userAgent = _messages.StringField(15)
+
+
+class IndexConfig(_messages.Message):
+  r"""Configuration for an indexed field.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of data in this index.
+
+  Fields:
+    createTime: Output only. The timestamp when the index was last
+      modified.This is used to return the timestamp, and will be ignored if
+      supplied during update. It is likely that before this goes into alpha,
+      the indexconfig message will be updated with another distinct timestamp
+      in order to provide information on when the index took effect.
+    fieldPath: Required. The LogEntry field path to index.Note that some paths
+      are automatically indexed, and other paths are not candidate for
+      indexing. See indexing documentation for details.For example:
+      jsonPayload.request.status
+    type: Required. The type of data in this index.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of data in this index.
+
+    Values:
+      INDEX_TYPE_UNSPECIFIED: The index's type is unspecified.
+      INDEX_TYPE_STRING: The index is a string-type index.
+      INDEX_TYPE_INTEGER: The index is a integer-type index.
+    """
+    INDEX_TYPE_UNSPECIFIED = 0
+    INDEX_TYPE_STRING = 1
+    INDEX_TYPE_INTEGER = 2
+
+  createTime = _messages.StringField(1)
+  fieldPath = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class LabelDescriptor(_messages.Message):
@@ -813,6 +849,7 @@ class LogBucket(_messages.Message):
     createTime: Output only. The creation timestamp of the bucket. This is not
       set for any of the default buckets.
     description: Describes this bucket.
+    indexConfigs: A list of indexed fields and related configuration data.
     lifecycleState: Output only. The bucket lifecycle state.
     locked: Whether the bucket has been locked. The retention period on a
       locked bucket may not be changed. Locked buckets may only be deleted if
@@ -855,13 +892,14 @@ class LogBucket(_messages.Message):
   analyticsEnabled = _messages.BooleanField(1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 4)
-  locked = _messages.BooleanField(5)
-  logLink = _messages.MessageField('LogLink', 6)
-  name = _messages.StringField(7)
-  restrictedFields = _messages.StringField(8, repeated=True)
-  retentionDays = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(10)
+  indexConfigs = _messages.MessageField('IndexConfig', 4, repeated=True)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 5)
+  locked = _messages.BooleanField(6)
+  logLink = _messages.MessageField('LogLink', 7)
+  name = _messages.StringField(8)
+  restrictedFields = _messages.StringField(9, repeated=True)
+  retentionDays = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(11)
 
 
 class LogEntry(_messages.Message):
@@ -1919,8 +1957,9 @@ class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
       organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
       billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
       folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog".For more information about
-      log names, see LogEntry.
+      example, "projects/my-project-id/logs/syslog",
+      "organizations/123/logs/cloudaudit.googleapis.com%2Factivity".For more
+      information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -2612,8 +2651,9 @@ class LoggingFoldersLogsDeleteRequest(_messages.Message):
       organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
       billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
       folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog".For more information about
-      log names, see LogEntry.
+      example, "projects/my-project-id/logs/syslog",
+      "organizations/123/logs/cloudaudit.googleapis.com%2Factivity".For more
+      information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -3161,8 +3201,9 @@ class LoggingLogsDeleteRequest(_messages.Message):
       organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
       billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
       folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog".For more information about
-      log names, see LogEntry.
+      example, "projects/my-project-id/logs/syslog",
+      "organizations/123/logs/cloudaudit.googleapis.com%2Factivity".For more
+      information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -3632,8 +3673,9 @@ class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
       organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
       billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
       folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog".For more information about
-      log names, see LogEntry.
+      example, "projects/my-project-id/logs/syslog",
+      "organizations/123/logs/cloudaudit.googleapis.com%2Factivity".For more
+      information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)
@@ -4249,8 +4291,9 @@ class LoggingProjectsLogsDeleteRequest(_messages.Message):
       organizations/[ORGANIZATION_ID]/logs/[LOG_ID]
       billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]
       folders/[FOLDER_ID]/logs/[LOG_ID][LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog".For more information about
-      log names, see LogEntry.
+      example, "projects/my-project-id/logs/syslog",
+      "organizations/123/logs/cloudaudit.googleapis.com%2Factivity".For more
+      information about log names, see LogEntry.
   """
 
   logName = _messages.StringField(1, required=True)

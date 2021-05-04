@@ -3,7 +3,7 @@
   "discoveryVersion": "v1",
   "id": "clouddeploy:v1",
   "name": "clouddeploy",
-  "canonicalName": "clouddeploy",
+  "canonicalName": "Cloud Deploy",
   "version": "v1",
   "revision": "0",
   "title": "Cloud Deploy API",

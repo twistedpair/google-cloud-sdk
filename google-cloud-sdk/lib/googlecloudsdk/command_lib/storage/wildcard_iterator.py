@@ -97,10 +97,11 @@ class WildcardIterator(six.with_metaclass(abc.ABCMeta)):
   wildcard_iterator() static factory method, which chooses the right
   implementation depending on the base string.
   """
+  _url = None
 
   def __repr__(self):
     """Returns string representation of WildcardIterator."""
-    return 'WildcardIterator(%s)' % self.wildcard_url.url_string
+    return 'WildcardIterator(%s)' % getattr(self._url, 'url_string', None)
 
 
 class FileWildcardIterator(WildcardIterator):
@@ -113,8 +114,8 @@ class FileWildcardIterator(WildcardIterator):
       url (FileUrl): A FileUrl instance representing a file path.
     """
     super().__init__()
-    url = _compress_url_wildcards(url)
-    self._path = url.object_name
+    self._url = _compress_url_wildcards(url)
+    self._path = self._url.object_name
 
   def __iter__(self):
     recursion_needed = '**' in self._path

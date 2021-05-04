@@ -27,6 +27,7 @@ import math
 import os
 
 from googlecloudsdk.api_lib.storage import gcs_api
+from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
@@ -76,9 +77,11 @@ class FileUploadTask(task.Task):
     source_filename = self._source_resource.storage_url.object_name
     size = os.path.getsize(source_filename)
 
+    destination_provider = self._destination_resource.storage_url.scheme
     should_perform_single_transfer = (
         size < self._composite_upload_threshold or
-        not self._composite_upload_threshold
+        not self._composite_upload_threshold or
+        destination_provider == storage_url.ProviderPrefix.S3
     )
 
     if should_perform_single_transfer:

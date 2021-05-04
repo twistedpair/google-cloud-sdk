@@ -26,6 +26,11 @@ class TracingState(str, enum.Enum):
   OFF = 'OFF'
 
 
+DISCLAIMER = """DISCLAIMER:
+This service-proxy configuration format is not a public API and may change
+without notice. Please use gcloud command-line tool to run service proxy on
+Google Compute Engine."""
+
 # Don't put sudo when running service-proxy-agent-bootstrap.sh, as exported
 # variables don't get passed to the script when run with sudo. It's not a
 # problem because all commands inside service-proxy-agent-bootstrap.sh

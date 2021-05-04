@@ -230,6 +230,8 @@ class Argument(object):
   Attributes:
     api_field: The name of the field in the request that this argument values
       goes.
+    disable_unused_arg_check: Disables yaml_command_test check for unused
+      arguments in static analysis.
     arg_name: The name of the argument that will be generated. Defaults to the
       api_field if not set.
     help_text: The help text for the generated argument.
@@ -271,6 +273,7 @@ class Argument(object):
       return ArgumentGroup.FromData(group)
 
     api_field = data.get('api_field')
+    disable_unused_arg_check = data.get('disable_unused_arg_check')
     arg_name = data.get('arg_name', api_field)
     if not arg_name:
       raise util.InvalidSchemaError(
@@ -290,9 +293,9 @@ class Argument(object):
     choices = data.get('choices')
 
     return cls(
-        api_field,
-        arg_name,
-        help_text,
+        api_field=api_field,
+        arg_name=arg_name,
+        help_text=help_text,
         metavar=data.get('metavar'),
         completer=util.Hook.FromData(data, 'completer'),
         is_positional=is_positional,
@@ -305,15 +308,30 @@ class Argument(object):
         hidden=data.get('hidden', False),
         action=util.ParseAction(data.get('action'), flag_name),
         repeated=data.get('repeated'),
+        disable_unused_arg_check=disable_unused_arg_check,
     )
 
   # pylint:disable=redefined-builtin, type param needs to match the schema.
-  def __init__(self, api_field=None, arg_name=None, help_text=None,
-               metavar=None, completer=None, is_positional=None, type=None,
-               choices=None, default=arg_utils.UNSPECIFIED, fallback=None,
-               processor=None, required=False, hidden=False, action=None,
-               repeated=None, generate=True):
+  def __init__(self,
+               api_field=None,
+               arg_name=None,
+               help_text=None,
+               metavar=None,
+               completer=None,
+               is_positional=None,
+               type=None,
+               choices=None,
+               default=arg_utils.UNSPECIFIED,
+               fallback=None,
+               processor=None,
+               required=False,
+               hidden=False,
+               action=None,
+               repeated=None,
+               generate=True,
+               disable_unused_arg_check=False):
     self.api_field = api_field
+    self.disable_unused_arg_check = disable_unused_arg_check
     self.arg_name = arg_name
     self.help_text = help_text
     self.metavar = metavar

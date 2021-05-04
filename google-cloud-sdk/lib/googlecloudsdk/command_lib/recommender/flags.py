@@ -33,7 +33,7 @@ def AddParentFlagsToParser(parser):
       help='Resource that is associated with cloud entity type. Currently four mutually exclusive flags are supported, --project, --billing-account, --folder, --organization.'
   )
   common_args.ProjectArgument(
-      help_text_to_prepend='The Google Cloud Platform Project Number to use for this invocation.'
+      help_text_to_overwrite='The Google Cloud Platform project ID.'
   ).AddToParser(resource_group)
   resource_group.add_argument(
       '--billing-account',

@@ -1030,8 +1030,8 @@ class TransferJob(_messages.Message):
     lastModificationTime: Output only. The time that the transfer job was last
       modified.
     latestOperationName: The name of the most recently started
-      TransferOperation of this JobConfig. Present if and only if at least one
-      TransferOperation has been created for this JobConfig.
+      TransferOperation of this JobConfig. Present if a TransferOperation has
+      been created for this JobConfig.
     name: A unique name (within the transfer project) assigned when the job is
       created. If this field is empty in a CreateTransferJobRequest, Storage
       Transfer Service will assign a unique name. Otherwise, the specified

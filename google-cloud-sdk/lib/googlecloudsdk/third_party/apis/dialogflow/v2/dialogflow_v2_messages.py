@@ -3834,6 +3834,19 @@ class GoogleCloudDialogflowCxV3ExportAgentResponse(_messages.Message):
   agentUri = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowCxV3ExportFlowResponse(_messages.Message):
+  r"""The response message for Flows.ExportFlow.
+
+  Fields:
+    flowContent: Uncompressed raw byte content for flow.
+    flowUri: The URI to a file containing the exported flow. This field is
+      populated only if `flow_uri` is specified in ExportFlowRequest.
+  """
+
+  flowContent = _messages.BytesField(1)
+  flowUri = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowCxV3ExportTestCasesMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.ExportTestCases long running
   operation.
@@ -4059,6 +4072,17 @@ class GoogleCloudDialogflowCxV3ImportDocumentsResponse(_messages.Message):
   """
 
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3ImportFlowResponse(_messages.Message):
+  r"""The response message for Flows.ImportFlow.
+
+  Fields:
+    flow: The unique identifier of the new flow. Format:
+      `projects//locations//agents//flows/`.
+  """
+
+  flow = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3ImportTestCasesMetadata(_messages.Message):
@@ -5622,6 +5646,19 @@ class GoogleCloudDialogflowCxV3beta1ExportAgentResponse(_messages.Message):
   agentUri = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowCxV3beta1ExportFlowResponse(_messages.Message):
+  r"""The response message for Flows.ExportFlow.
+
+  Fields:
+    flowContent: Uncompressed raw byte content for flow.
+    flowUri: The URI to a file containing the exported flow. This field is
+      populated only if `flow_uri` is specified in ExportFlowRequest.
+  """
+
+  flowContent = _messages.BytesField(1)
+  flowUri = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowCxV3beta1ExportTestCasesMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.ExportTestCases long running
   operation.
@@ -5847,6 +5884,17 @@ class GoogleCloudDialogflowCxV3beta1ImportDocumentsResponse(_messages.Message):
   """
 
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1ImportFlowResponse(_messages.Message):
+  r"""The response message for Flows.ImportFlow.
+
+  Fields:
+    flow: The unique identifier of the new flow. Format:
+      `projects//locations//agents//flows/`.
+  """
+
+  flow = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3beta1ImportTestCasesMetadata(_messages.Message):
@@ -8701,7 +8749,7 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig(_m
   feature: ARTICLE_SUGGESTION, SMART_COMPOSE, SMART_REPLY.
 
   Fields:
-    model: Required. Conversation model resource name. Format:
+    model: Conversation model resource name. Format:
       `projects//conversationModels/`.
   """
 
@@ -14180,8 +14228,8 @@ class GoogleRpcStatus(_messages.Message):
 class GoogleTypeLatLng(_messages.Message):
   r"""An object that represents a latitude/longitude pair. This is expressed
   as a pair of doubles to represent degrees latitude and degrees longitude.
-  Unless specified otherwise, this must conform to the WGS84 standard. Values
-  must be within normalized ranges.
+  Unless specified otherwise, this object must conform to the WGS84 standard.
+  Values must be within normalized ranges.
 
   Fields:
     latitude: The latitude in degrees. It must be in the range [-90.0, +90.0].

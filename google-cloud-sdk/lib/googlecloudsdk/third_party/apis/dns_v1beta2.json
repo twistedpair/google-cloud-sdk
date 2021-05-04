@@ -4,7 +4,7 @@
  "id": "dns:v1beta2",
  "name": "dns",
  "version": "v1beta2",
- "revision": "20210419",
+ "revision": "20210423",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -521,6 +521,12 @@
    "id": "ManagedZonePrivateVisibilityConfig",
    "type": "object",
    "properties": {
+    "gkeClusters": {
+     "type": "array",
+     "items": {
+      "$ref": "ManagedZonePrivateVisibilityConfigGKECluster"
+     }
+    },
     "kind": {
      "type": "string",
      "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZonePrivateVisibilityConfig\".",
@@ -531,6 +537,20 @@
      "items": {
       "$ref": "ManagedZonePrivateVisibilityConfigNetwork"
      }
+    }
+   }
+  },
+  "ManagedZonePrivateVisibilityConfigGKECluster": {
+   "id": "ManagedZonePrivateVisibilityConfigGKECluster",
+   "type": "object",
+   "properties": {
+    "gkeClusterName": {
+     "type": "string"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZonePrivateVisibilityConfigGKECluster\".",
+     "default": "dns#managedZonePrivateVisibilityConfigGKECluster"
     }
    }
   },
@@ -848,12 +868,20 @@
      "type": "integer",
      "format": "int32"
     },
+    "gkeClustersPerManagedZone": {
+     "type": "integer",
+     "format": "int32"
+    },
     "kind": {
      "type": "string",
      "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#quota\".",
      "default": "dns#quota"
     },
     "managedZones": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "managedZonesPerGkeCluster": {
      "type": "integer",
      "format": "int32"
     },
@@ -1027,6 +1055,12 @@
     "description": {
      "type": "string"
     },
+    "gkeClusters": {
+     "type": "array",
+     "items": {
+      "$ref": "ResponsePolicyGKECluster"
+     }
+    },
     "id": {
      "type": "string",
      "format": "int64"
@@ -1044,6 +1078,20 @@
     },
     "responsePolicyName": {
      "type": "string"
+    }
+   }
+  },
+  "ResponsePolicyGKECluster": {
+   "id": "ResponsePolicyGKECluster",
+   "type": "object",
+   "properties": {
+    "gkeClusterName": {
+     "type": "string"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#responsePolicyGKECluster\".",
+     "default": "dns#responsePolicyGKECluster"
     }
    }
   },

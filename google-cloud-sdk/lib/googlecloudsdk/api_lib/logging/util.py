@@ -68,6 +68,17 @@ def GetSinkReference(sink_name, args):
       collection=GetCollectionFromArgs(args, 'sinks'))
 
 
+def GetOperationReference(operation_name, args):
+  """Returns the appropriate operation resource based on args."""
+  return resources.REGISTRY.Parse(
+      operation_name,
+      params={
+          GetIdFromArgs(args): GetParentResourceFromArgs(args).Name(),
+          'locationsId': args.location,
+      },
+      collection=GetCollectionFromArgs(args, 'locations.operations'))
+
+
 def FormatTimestamp(timestamp):
   """Returns a string representing timestamp in RFC3339 format.
 

@@ -935,6 +935,22 @@ class ApigeeOrganizationsDevelopersAttributesRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsDevelopersBalanceCreditRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDevelopersBalanceCreditRequest object.
+
+  Fields:
+    googleCloudApigeeV1CreditDeveloperBalanceRequest: A
+      GoogleCloudApigeeV1CreditDeveloperBalanceRequest resource to be passed
+      as the request body.
+    name: Required. Resource name of the DeveloperBalance. Use the following
+      structure in your request:
+      `organizations/{org}/developers/{developer}/balance`
+  """
+
+  googleCloudApigeeV1CreditDeveloperBalanceRequest = _messages.MessageField('GoogleCloudApigeeV1CreditDeveloperBalanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ApigeeOrganizationsDevelopersCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsDevelopersCreateRequest object.
 
@@ -957,6 +973,30 @@ class ApigeeOrganizationsDevelopersDeleteRequest(_messages.Message):
     name: Required. Email address of the developer. Use the following
       structure in your request:
       `organizations/{org}/developers/{developer_email}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsDevelopersGetBalanceRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDevelopersGetBalanceRequest object.
+
+  Fields:
+    name: Required. Resource name of the DeveloperBalance. Use the following
+      structure in your request:
+      `organizations/{org}/developers/{developer}/balance`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsDevelopersGetMonetizationConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDevelopersGetMonetizationConfigRequest object.
+
+  Fields:
+    name: Required. Resource name of the DeveloperMonetizationConfig. Use the
+      following structure in your request:
+      `organizations/{org}/developers/{developer}/monetizationConfig`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1088,6 +1128,22 @@ class ApigeeOrganizationsDevelopersSubscriptionsListRequest(_messages.Message):
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   parent = _messages.StringField(2, required=True)
   startKey = _messages.StringField(3)
+
+
+class ApigeeOrganizationsDevelopersUpdateMonetizationConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDevelopersUpdateMonetizationConfigRequest object.
+
+  Fields:
+    googleCloudApigeeV1DeveloperMonetizationConfig: A
+      GoogleCloudApigeeV1DeveloperMonetizationConfig resource to be passed as
+      the request body.
+    name: Required. Resource name of the DeveloperMonetizationConfig. Use the
+      following structure in your request:
+      `organizations/{org}/developers/{developer}/monetizationConfig`
+  """
+
+  googleCloudApigeeV1DeveloperMonetizationConfig = _messages.MessageField('GoogleCloudApigeeV1DeveloperMonetizationConfig', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ApigeeOrganizationsDevelopersUpdateRequest(_messages.Message):
@@ -2805,8 +2861,8 @@ class ApigeeOrganizationsInstancesCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsInstancesCreateRequest object.
 
   Fields:
-    environments: Optional. List of environments that will be attached to the
-      instance during creation.
+    environments: Optional. DEPRECATED: DO NOT USE. List of environments that
+      will be attached to the instance during creation.
     googleCloudApigeeV1Instance: A GoogleCloudApigeeV1Instance resource to be
       passed as the request body.
     parent: Required. Name of the organization. Use the following structure in
@@ -4269,6 +4325,21 @@ class GoogleCloudApigeeV1Credential(_messages.Message):
   status = _messages.StringField(8)
 
 
+class GoogleCloudApigeeV1CreditDeveloperBalanceRequest(_messages.Message):
+  r"""Request for CreditDeveloperBalance.
+
+  Fields:
+    transactionAmount: The amount of money to be credited. The wallet
+      corresponding to the currency specified within `transaction_amount` will
+      be updated. For example, if you specified `currency_code` within
+      `transaction_amount` as "USD", then the amount would be added to the
+      wallet which has the "USD" currency or if no such wallet exists, a new
+      wallet will be created with the "USD" currency.
+  """
+
+  transactionAmount = _messages.MessageField('GoogleTypeMoney', 1)
+
+
 class GoogleCloudApigeeV1CustomReport(_messages.Message):
   r"""A GoogleCloudApigeeV1CustomReport object.
 
@@ -4909,6 +4980,61 @@ class GoogleCloudApigeeV1DeveloperAppKey(_messages.Message):
   issuedAt = _messages.IntegerField(7)
   scopes = _messages.StringField(8, repeated=True)
   status = _messages.StringField(9)
+
+
+class GoogleCloudApigeeV1DeveloperBalance(_messages.Message):
+  r"""Monetization balance associated with the developer
+
+  Fields:
+    wallets: Output only. List of all the wallets. Each individual wallet
+      stores the balance for a particular type of currency
+  """
+
+  wallets = _messages.MessageField('GoogleCloudApigeeV1DeveloperBalanceWallet', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1DeveloperBalanceWallet(_messages.Message):
+  r"""A wallet will hold a balance for a particular currency
+
+  Fields:
+    balance: Current remaining balance of the developer for a particular
+      currency.
+    lastCreditTime: Output only. The time when the developer last credited an
+      amount into this wallet.
+  """
+
+  balance = _messages.MessageField('GoogleTypeMoney', 1)
+  lastCreditTime = _messages.IntegerField(2)
+
+
+class GoogleCloudApigeeV1DeveloperMonetizationConfig(_messages.Message):
+  r"""Monetization related configuration for the developer.
+
+  Enums:
+    BillingTypeValueValuesEnum: `billing_type` specifies whether the developer
+      is PREPAID or POSTPAID.
+
+  Fields:
+    billingType: `billing_type` specifies whether the developer is PREPAID or
+      POSTPAID.
+  """
+
+  class BillingTypeValueValuesEnum(_messages.Enum):
+    r"""`billing_type` specifies whether the developer is PREPAID or POSTPAID.
+
+    Values:
+      BILLING_TYPE_UNSPECIFIED: The default/unset value.
+      PREPAID: This means that the developer will maintain a balance the
+        charged amount will be deducted from their balance.
+      POSTPAID: This means that no balance will be maintained by the
+        developer. The API provider will take care of retrieving the money
+        from the developer.
+    """
+    BILLING_TYPE_UNSPECIFIED = 0
+    PREPAID = 1
+    POSTPAID = 2
+
+  billingType = _messages.EnumField('BillingTypeValueValuesEnum', 1)
 
 
 class GoogleCloudApigeeV1DeveloperSubscription(_messages.Message):
@@ -6650,7 +6776,9 @@ class GoogleCloudApigeeV1ProvisionOrganizationRequest(_messages.Message):
       none is provided, the organization will have access only to the public
       internet.
     runtimeLocation: Cloud Platform location for the runtime instance.
-      Defaults to `us-west1-a`.
+      Defaults to zone `us-west1-a`. If a region is provided, `EVAL`
+      organizations will use the region for automatically selecting a zone for
+      the runtime instance.
   """
 
   analyticsRegion = _messages.StringField(1)
@@ -7233,11 +7361,14 @@ class GoogleCloudApigeeV1RuntimeConfig(_messages.Message):
   Fields:
     analyticsBucket: Cloud Storage bucket used for uploading Analytics
       records.
+    name: Name of the resource in the following format:
+      `organizations/{org}/runtimeConfig`.
     traceBucket: Cloud Storage bucket used for uploading Trace records.
   """
 
   analyticsBucket = _messages.StringField(1)
-  traceBucket = _messages.StringField(2)
+  name = _messages.StringField(2)
+  traceBucket = _messages.StringField(3)
 
 
 class GoogleCloudApigeeV1RuntimeTraceConfig(_messages.Message):

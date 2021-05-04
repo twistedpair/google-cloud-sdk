@@ -40,8 +40,6 @@ class GkehubV1beta(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_features = self.ProjectsLocationsFeaturesService(self)
-    self.projects_locations_global_features = self.ProjectsLocationsGlobalFeaturesService(self)
-    self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_memberships = self.ProjectsLocationsMembershipsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -56,6 +54,87 @@ class GkehubV1beta(base_api.BaseApiClient):
       super(GkehubV1beta.ProjectsLocationsFeaturesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Adds a new Feature.
+
+      Args:
+        request: (GkehubProjectsLocationsFeaturesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/features',
+        http_method='POST',
+        method_id='gkehub.projects.locations.features.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['featureId', 'requestId'],
+        relative_path='v1beta/{+parent}/features',
+        request_field='feature',
+        request_type_name='GkehubProjectsLocationsFeaturesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Removes a Feature.
+
+      Args:
+        request: (GkehubProjectsLocationsFeaturesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/features/{featuresId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.features.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force', 'requestId'],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsFeaturesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Feature.
+
+      Args:
+        request: (GkehubProjectsLocationsFeaturesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Feature) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/features/{featuresId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.features.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsFeaturesGetRequest',
+        response_type_name='Feature',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
@@ -81,6 +160,60 @@ class GkehubV1beta(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkehubProjectsLocationsFeaturesGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Features in a given project and location.
+
+      Args:
+        request: (GkehubProjectsLocationsFeaturesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFeaturesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/features',
+        http_method='GET',
+        method_id='gkehub.projects.locations.features.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/features',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsFeaturesListRequest',
+        response_type_name='ListFeaturesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing Feature.
+
+      Args:
+        request: (GkehubProjectsLocationsFeaturesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/features/{featuresId}',
+        http_method='PATCH',
+        method_id='gkehub.projects.locations.features.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='feature',
+        request_type_name='GkehubProjectsLocationsFeaturesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -137,161 +270,6 @@ class GkehubV1beta(base_api.BaseApiClient):
         response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
-
-  class ProjectsLocationsGlobalFeaturesService(base_api.BaseApiService):
-    """Service class for the projects_locations_global_features resource."""
-
-    _NAME = 'projects_locations_global_features'
-
-    def __init__(self, client):
-      super(GkehubV1beta.ProjectsLocationsGlobalFeaturesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Adds a new Feature.
-
-      Args:
-        request: (GkehubProjectsLocationsGlobalFeaturesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/global/features',
-        http_method='POST',
-        method_id='gkehub.projects.locations.global.features.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['featureId', 'requestId'],
-        relative_path='v1beta/{+parent}/features',
-        request_field='feature',
-        request_type_name='GkehubProjectsLocationsGlobalFeaturesCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Removes a Feature.
-
-      Args:
-        request: (GkehubProjectsLocationsGlobalFeaturesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/global/features/{featuresId}',
-        http_method='DELETE',
-        method_id='gkehub.projects.locations.global.features.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['force', 'requestId'],
-        relative_path='v1beta/{+name}',
-        request_field='',
-        request_type_name='GkehubProjectsLocationsGlobalFeaturesDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Feature.
-
-      Args:
-        request: (GkehubProjectsLocationsGlobalFeaturesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Feature) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/global/features/{featuresId}',
-        http_method='GET',
-        method_id='gkehub.projects.locations.global.features.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta/{+name}',
-        request_field='',
-        request_type_name='GkehubProjectsLocationsGlobalFeaturesGetRequest',
-        response_type_name='Feature',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists Features in a given project and location.
-
-      Args:
-        request: (GkehubProjectsLocationsGlobalFeaturesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListFeaturesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/global/features',
-        http_method='GET',
-        method_id='gkehub.projects.locations.global.features.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1beta/{+parent}/features',
-        request_field='',
-        request_type_name='GkehubProjectsLocationsGlobalFeaturesListRequest',
-        response_type_name='ListFeaturesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates an existing Feature.
-
-      Args:
-        request: (GkehubProjectsLocationsGlobalFeaturesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/global/features/{featuresId}',
-        http_method='PATCH',
-        method_id='gkehub.projects.locations.global.features.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1beta/{+name}',
-        request_field='feature',
-        request_type_name='GkehubProjectsLocationsGlobalFeaturesPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsGlobalService(base_api.BaseApiService):
-    """Service class for the projects_locations_global resource."""
-
-    _NAME = 'projects_locations_global'
-
-    def __init__(self, client):
-      super(GkehubV1beta.ProjectsLocationsGlobalService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class ProjectsLocationsMembershipsService(base_api.BaseApiService):
     """Service class for the projects_locations_memberships resource."""

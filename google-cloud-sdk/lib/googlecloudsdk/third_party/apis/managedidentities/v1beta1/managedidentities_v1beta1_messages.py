@@ -442,7 +442,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       instance.
     name: Unique name of the resource. It uses the form: `projects/{project_id
       |project_number}/locations/{location_id}/instances/{instance_id}` Note:
-      Either project_id or project_number and be used, but keep it consistent
+      Either project_id or project_number can be used, but keep it consistent
       with other APIs (e.g. RescheduleUpdate)
     producerMetadata: Output only. Custom string attributes used primarily to
       expose producer-specific information in monitoring dashboards. See

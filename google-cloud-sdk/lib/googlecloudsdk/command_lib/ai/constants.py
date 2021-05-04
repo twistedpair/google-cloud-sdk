@@ -77,6 +77,8 @@ TENSORBOARD_RUNS_COLLECTION = 'aiplatform.projects.locations.tensorboards.experi
 
 TENSORBOARD_TIME_SERIES_COLLECTION = 'aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries'
 
+MODEL_MONITORING_JOBS_COLLECTION = 'aiplatform.projects.locations.modelDeploymentMonitoringJobs'
+
 HPTUNING_JOB_CREATION_DISPLAY_MESSAGE = """\
 Hyperparameter tuning job [{id}] submitted successfully.
 
@@ -103,3 +105,29 @@ OP_AUTOSCALING_METRIC_NAME_MAPPER = {
     'gpu-duty-cycle':
         'aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle',
 }
+
+MODEL_MONITORING_JOB_CREATION_DISPLAY_MESSAGE = """\
+Model monitoring Job [{id}] submitted successfully.
+
+Your job is still active. You may view the status of your job with the command
+
+  $ gcloud beta ai model-monitoring-jobs describe {id}
+
+Job State: {state}\
+"""
+
+MODEL_MONITORING_JOB_PAUSE_DISPLAY_MESSAGE = """\
+Request to pause model deployment monitoring job [{id}] has been sent
+
+You may view the status of your job with the command
+
+  $ gcloud beta ai model-monitoring-jobs describe {id}
+"""
+
+MODEL_MONITORING_JOB_RESUME_DISPLAY_MESSAGE = """\
+Request to resume model deployment monitoring job [{id}] has been sent
+
+You may view the status of your job with the command
+
+  $ gcloud beta ai model-monitoring-jobs describe {id}
+"""

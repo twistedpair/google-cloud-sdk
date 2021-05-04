@@ -271,10 +271,14 @@ def _ExecuteBinary(cmd, in_str=None):
 
 
 def _ExecuteBinaryWithStreaming(cmd, in_str=None):
-  exit_code = execution_utils.ExecWithStreamingOutput(args=cmd, in_str=in_str)
+  exit_code = execution_utils.ExecWithStreamingOutput(args=cmd,
+                                                      no_exit=True,
+                                                      in_str=in_str)
   if exit_code != 0:
     raise client_base.ClientException(
         'The bulk-export command could not finish correctly.')
+  log.status.Print('\nExport complete.')
+  return exit_code
 
 
 def _BulkExportPostStatus(preexisting_file_count, path):
@@ -455,7 +459,7 @@ class KccClient(client_base.DeclarativeClient):
       return exit_code
 
     else:
-      log.status.write('Exporting resource configurations...\n')
+      log.status.write('Exporting resource configurations to stdout...\n')
       return _ExecuteBinaryWithStreaming(cmd=cmd, in_str=asset_list_input)
 
   def BulkExport(self, args):
@@ -475,11 +479,16 @@ class KccClient(client_base.DeclarativeClient):
     CheckForAssetInventoryEnablementWithPrompt(
         getattr(args, 'project', None))
     args.all = True  # Remove scope (e.g. project, org & folder) from cmd.
-    kind_filters = (
+    kind_args = (
         getattr(args, 'resource_types', None) or self._ParseKindTypesFileData(
             getattr(args, 'resource_types_file', None)))
-    if kind_filters:
-      kind_filters = self._GetKrmResourceTypeTable(filter_kinds=kind_filters)
+    kind_filters = []
+    if kind_args:
+      kind_filters = self._GetKrmResourceTypeTable(filter_kinds=kind_args)
+      if not kind_filters:
+        raise ResourceNotFoundException(
+            'No matching resource types found for {}'.format(kind_args))
+
     asset_list_input = _GetAssetInventoryListInput(
         folder=getattr(args, 'folder', None),
         project=getattr(args, 'project', None),

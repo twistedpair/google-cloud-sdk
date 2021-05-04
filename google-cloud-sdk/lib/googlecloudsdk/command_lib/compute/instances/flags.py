@@ -1330,31 +1330,58 @@ def AddAddressArgs(parser,
 
       if support_subinterface:
         network_interface_file_help_text = """\
-            Same as --network_interface except that the value for the entry will be
-            read from a local file. This is used in case subinterfaces need to be
-            specified.
+          Same as --network-interface except that the value for the entry will
+          be read from a local file. This is used in case subinterfaces need to
+          be specified. All field names in the json follow lowerCamelCase.
 
-            The following additional key is allowed:
-            *subinterfaces*::: Specifies the list of subinterfaces assigned to this
-            network interface of the instance.
+          The following additional key is allowed:
+           subinterfaces
+              Specifies the list of subinterfaces assigned to this network
+              interface of the instance.
 
-                The following keys are allowed:
-                subnet: Specifies the subnet that the subinterface will be
-                part of. The subnet should have l2-enable set and VLAN tagged.
+                  The following keys are allowed:
+                  subnet: Specifies the subnet that the subinterface will be
+                  part of. The subnet should have l2-enable set and VLAN tagged.
 
-                vlan: Specifies the VLAN of the subinterface. Can have a value
-                between 2-4094. This should be the same VLAN as the subnet. VLAN tag
-                within a network interface is unique.
+                  vlan: Specifies the VLAN of the subinterface. Can have a value
+                  between 2-4094. This should be the same VLAN as the subnet. VLAN tag
+                  within a network interface is unique.
 
-                ip-address: Optional. Specifies the ip address of the
-                subinterface. If not specified, an ip address will be allocated from
-                subnet ip range.
+                  ipAddress: Optional. Specifies the ip address of the
+                  subinterface. If not specified, an ip address will be allocated from
+                  subnet ip range.
+
+          An example json looks like:
+          [
+           {
+            "network":"global/networks/network-example",
+            "subnet":"projects/example-project/regions/us-central1/subnetworks/untagged-subnet",
+            "subinterfaces":[
+               {
+                "subnet":"projects/example-project/regions/us-central1/subnetworks/tagged-subnet",
+                "vlan":2,
+                "ipAddress":"111.11.11.1"
+             }
+            ]
+           }
+          ]
             """
         network_interfaces.add_argument(
             '--network-interface-from-file',
             type=arg_parsers.FileContents(),
             metavar='KEY=LOCAL_FILE_PATH',
             help=network_interface_file_help_text)
+
+        network_interface_json_help_text = """\
+          Same as --network-interface-from-file except that the value for the
+          entry will be a json string. This can also be used in case
+          subinterfaces need to be specified. All field names in the json follow
+          lowerCamelCase."""
+
+        network_interfaces.add_argument(
+            '--network-interface-from-json-string',
+            metavar='NETWORK_INTERFACE_JSON_STRING',
+            help=network_interface_json_help_text)
     else:
       parser.add_argument(
           '--network-interface',
@@ -1529,8 +1556,9 @@ def AddServiceAccountAndScopeArgs(parser,
   can be accessed through the instance metadata server and are used to
   authenticate applications on the instance. The account can be set using an
   email address corresponding to the required service account. {extra_help}
-  """.format(extra_help=sa_exists if instance_exists else sa_not_exists,
-             resource=resource)
+  """.format(
+      extra_help=sa_exists if instance_exists else sa_not_exists,
+      resource=resource)
   service_account_group.add_argument(
       '--service-account', help=service_account_help)
 
@@ -2048,7 +2076,11 @@ def ValidateNicFlags(args):
   network_interface = getattr(args, 'network_interface', None)
   network_interface_from_file = getattr(args, 'network_interface_from_file',
                                         None)
-  if network_interface is None and network_interface_from_file is None:
+  network_interface_from_json = getattr(args,
+                                        'network_interface_from_json_string',
+                                        None)
+  if (network_interface is None and network_interface_from_file is None and
+      network_interface_from_json is None):
     return
   elif network_interface is not None:
     for ni in network_interface:
@@ -2071,9 +2103,13 @@ def ValidateNicFlags(args):
     raise exceptions.ConflictingArgumentsException(
         '--network-interface',
         'all of the following: ' + ', '.join(conflicting_args))
-  else:
+  elif network_interface_from_file is not None:
     raise exceptions.ConflictingArgumentsException(
         '--network-interface-from-file',
+        'all of the following: ' + ', '.join(conflicting_args))
+  else:
+    raise exceptions.ConflictingArgumentsException(
+        '--network-interface-from-json-string',
         'all of the following: ' + ', '.join(conflicting_args))
 
 

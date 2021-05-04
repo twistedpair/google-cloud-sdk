@@ -249,6 +249,10 @@
             "type": "string"
           }
         },
+        "encryptedEnvironment": {
+          "description": "The encrypted environment to pass into every action. Each action can also specify its own encrypted environment. The secret must decrypt to a JSON-encoded dictionary where key-value pairs serve as environment variable names and their values. The decoded environment variables can overwrite the values specified by the `environment` field.",
+          "$ref": "Secret"
+        },
         "timeout": {
           "description": "The maximum amount of time to give the pipeline to complete. This includes the time spent waiting for a worker to be allocated. If the pipeline fails to complete before the timeout, it will be cancelled and the error code will be set to DEADLINE_EXCEEDED. If unspecified, it will default to 7 days.",
           "type": "string",
@@ -286,6 +290,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "encryptedEnvironment": {
+          "description": "The encrypted environment to pass into the container. This environment is merged with values specified in the google.cloud.lifesciences.v2beta.Pipeline message, overwriting any duplicate values. The secret must decrypt to a JSON-encoded dictionary where key-value pairs serve as environment variable names and their values. The decoded environment variables can overwrite the values specified by the `environment` field.",
+          "$ref": "Secret"
         },
         "pidNamespace": {
           "description": "An optional identifier for a PID namespace to run the action inside. Multiple actions should use the same string to share a namespace. If unspecified, a separate isolated namespace is used.",
@@ -356,6 +364,21 @@
         }
       }
     },
+    "Secret": {
+      "id": "Secret",
+      "description": "Holds encrypted information that is only decrypted and stored in RAM by the worker VM when running the pipeline.",
+      "type": "object",
+      "properties": {
+        "keyName": {
+          "description": "The name of the Cloud KMS key that will be used to decrypt the secret value. The VM service account must have the required permissions and authentication scopes to invoke the `decrypt` method on the specified key.",
+          "type": "string"
+        },
+        "cipherText": {
+          "description": "The value of the cipherText response from the `encrypt` method. This field is intentionally unaudited.",
+          "type": "string"
+        }
+      }
+    },
     "Mount": {
       "id": "Mount",
       "description": "Carries information about a particular disk mount inside a container.",
@@ -372,21 +395,6 @@
         "readOnly": {
           "description": "If true, the disk is mounted read-only inside the container.",
           "type": "boolean"
-        }
-      }
-    },
-    "Secret": {
-      "id": "Secret",
-      "description": "Holds encrypted information that is only decrypted and stored in RAM by the worker VM when running the pipeline.",
-      "type": "object",
-      "properties": {
-        "keyName": {
-          "description": "The name of the Cloud KMS key that will be used to decrypt the secret value. The VM service account must have the required permissions and authentication scopes to invoke the `decrypt` method on the specified key.",
-          "type": "string"
-        },
-        "cipherText": {
-          "description": "The value of the cipherText response from the `encrypt` method. This field is intentionally unaudited.",
-          "type": "string"
         }
       }
     },

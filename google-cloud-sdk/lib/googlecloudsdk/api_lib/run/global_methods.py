@@ -226,13 +226,15 @@ def _MultiTenantProjectIds(project):
 
   messages = resourcesettings_service.ResourceSettingsMessages()
 
-  get_request = messages.ResourcesettingsProjectsSettingsValueLookupEffectiveValueRequest(
-      name=setting_name)
+  get_request = messages.ResourcesettingsProjectsSettingsGetRequest(
+      name=setting_name,
+      view=messages.ResourcesettingsProjectsSettingsGetRequest.
+      ViewValueValuesEnum.SETTING_VIEW_EFFECTIVE_VALUE)
   settings_service = resourcesettings_service.ProjectsSettingsService()
   service_value = settings_service.LookupEffectiveValue(get_request)
   return [
       _MulitTenantProjectId(project)
-      for project in service_value.value.stringSetValue.values
+      for project in service_value.localValue.stringSetValue.values
   ]
 
 

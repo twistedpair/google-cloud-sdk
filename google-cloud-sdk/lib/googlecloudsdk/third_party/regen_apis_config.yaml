@@ -1,4 +1,4 @@
-# Copyright 2016 Google LLC. All Rights Reserved.
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -502,6 +502,10 @@ apis:
           path: projects/{projectId}
         projects.indexes:
           path: projects/{projectId}/indexes/{indexId}
+  datastream:
+    v1alpha1:
+      discovery_doc: datastream_v1alpha1.json
+      default: true
 
   deploymentmanager:
     alpha:
@@ -829,6 +833,10 @@ apis:
         iam:
           path: iam
       discovery_doc: policytroubleshooter_v2alpha1.json
+  policyanalyzer:
+    v1beta1:
+      default: true
+      discovery_doc: policyanalyzer_v1beta1.json
   policysimulator:
     v1beta1:
       resources:

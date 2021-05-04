@@ -661,16 +661,17 @@ def AddPortName(parser):
 def AddProtocol(parser,
                 default='HTTP',
                 support_grpc_protocol=False,
-                support_all_protocol=False):
+                support_unspecified_protocol=False):
   """Adds --protocol flag to the argparse.
 
   Args:
     parser: An argparse.ArgumentParser instance.
     default: The default protocol if this flag is unspecified.
     support_grpc_protocol: Indicates if GRPC is a valid protocol.
-    support_all_protocol: Indicates if ALL is a valid protocol option.
+    support_unspecified_protocol: Indicates if UNSPECIFIED is a valid protocol.
   """
-  ilb_protocols = ('TCP, UDP, ALL' if support_all_protocol else 'TCP, UDP')
+  ilb_protocols = ('TCP, UDP, UNSPECIFIED'
+                   if support_unspecified_protocol else 'TCP, UDP')
   td_protocols = ('HTTP, HTTPS, HTTP2, GRPC'
                   if support_grpc_protocol else 'HTTP, HTTPS, HTTP2')
   parser.add_argument(

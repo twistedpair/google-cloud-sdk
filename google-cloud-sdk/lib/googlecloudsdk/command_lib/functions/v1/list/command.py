@@ -36,7 +36,7 @@ def _GetFunctionsAndLogUnreachable(message, attribute):
   return getattr(message, attribute)
 
 
-def _YieldFromLocations(locations, project, limit, messages, client):
+def YieldFromLocations(locations, project, limit, messages, client):
   """Yield the functions from the given locations."""
   for location in locations:
     location_ref = resources.REGISTRY.Parse(
@@ -80,4 +80,4 @@ def Run(args):
   project = properties.VALUES.core.project.GetOrFail()
   limit = args.limit
 
-  return _YieldFromLocations(args.regions, project, limit, messages, client)
+  return YieldFromLocations(args.regions, project, limit, messages, client)

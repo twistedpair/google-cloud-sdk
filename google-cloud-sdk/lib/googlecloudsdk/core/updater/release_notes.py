@@ -22,12 +22,14 @@ from __future__ import unicode_literals
 
 import re
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.document_renderers import render_document
 from googlecloudsdk.core.updater import installers
 from googlecloudsdk.core.util import encoding
 
+import requests
 from six.moves import StringIO
 
 
@@ -88,6 +90,37 @@ class ReleaseNotes(object):
       text = response.read()
       text = encoding.Decode(text)
       return cls(text)
+    # pylint: disable=broad-except, We don't want any failure to download or
+    # parse the release notes to block an update.  Returning None here will
+    # print a generic message of where the user can go to view the release
+    # notes online.
+    except Exception:
+      log.debug('Failed to download [{url}]'.format(url=url), exc_info=True)
+    return None
+
+  @classmethod
+  def FromURLViaRequests(cls, url, command_path=None):
+    """Parses release notes from the given URL using the requests library.
+
+    Any error in downloading or parsing release notes is logged and swallowed
+    and None is returned.
+
+    Args:
+      url: str, The URL to download and parse.
+      command_path: str, The command that is calling this for instrumenting the
+        user agent for the download.
+
+    Returns:
+      ReleaseNotes, the parsed release notes or None if an error occurred.
+    """
+    try:
+      response = installers.MakeRequestViaRequests(url, command_path)
+      if response is None:
+        return None
+      code = response.status_code
+      if code != requests.codes.ok:
+        return None
+      return cls(response.text)
     # pylint: disable=broad-except, We don't want any failure to download or
     # parse the release notes to block an update.  Returning None here will
     # print a generic message of where the user can go to view the release
@@ -194,7 +227,10 @@ def PrintReleaseNotesDiff(release_notes_url, current_version, latest_version):
     latest_version: str, The version you are about to update to.
   """
   if release_notes_url and current_version and latest_version:
-    notes = ReleaseNotes.FromURL(release_notes_url)
+    if base.UseRequests():
+      notes = ReleaseNotes.FromURLViaRequests(release_notes_url)
+    else:
+      notes = ReleaseNotes.FromURL(release_notes_url)
     if notes:
       release_notes_diff = notes.Diff(latest_version, current_version)
     else:

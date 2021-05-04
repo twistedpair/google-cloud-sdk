@@ -173,32 +173,38 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
 class CloudListTask(task.Task):
   """Represents an ls command operation."""
 
-  def __init__(
-      self,
-      cloud_url,
-      all_versions=False,
-      display_detail=DisplayDetail.SHORT,
-      include_etag=False,
-      recursion_flag=False):
+  def __init__(self,
+               cloud_url,
+               all_versions=False,
+               buckets_flag=False,
+               display_detail=DisplayDetail.SHORT,
+               include_etag=False,
+               recursion_flag=False):
     """Initializes task.
 
     Args:
       cloud_url (storage_url.CloudUrl): Object for a non-local filesystem URL.
       all_versions (bool): Determine whether or not to return all versions of
-          listed objects.
+        listed objects.
+      buckets_flag (bool): If given a bucket URL, only return matching buckets
+        ignoring normal recursion rules.
       display_detail (DisplayDetail): Determines level of metadata printed.
       include_etag (bool): Print etag string of resource, depending on other
-          settings.
+        settings.
       recursion_flag (bool): Recurse through all containers and format all
-          container headers.
+        container headers.
     """
     super().__init__()
 
     self._cloud_url = cloud_url
     self._all_versions = all_versions
+    self._buckets_flag = buckets_flag
     self._display_detail = display_detail
     self._include_etag = include_etag
     self._recursion_flag = recursion_flag
+
+    self._only_display_buckets = self._cloud_url.is_provider() or (
+        self._buckets_flag and self._cloud_url.is_bucket())
 
   def _get_container_iterator(
       self, cloud_url, recursion_level):
@@ -295,8 +301,8 @@ class CloudListTask(task.Task):
         object_count += 1
         total_bytes += resource_wrapper.resource.size or 0
 
-    if (self._display_detail in (DisplayDetail.LONG, DisplayDetail.FULL)
-        and not self._cloud_url.is_provider()):
+    if (self._display_detail in (DisplayDetail.LONG, DisplayDetail.FULL) and
+        not self._only_display_buckets):
       # Long listing needs summary line.
       print('TOTAL: {} objects, {} bytes ({})'.format(
           object_count, int(total_bytes),
@@ -317,11 +323,13 @@ class CloudListTask(task.Task):
 
     if resources.is_empty():
       raise errors.InvalidUrlError('One or more URLs matched no objects.')
-    if self._cloud_url.is_provider():
-      # Received a provider URL ("gs://"). List bucket names with no formatting.
+    if self._only_display_buckets:
+      # Received a provider URL ("gs://") -> List all buckets.
+      # Received buckets flag and bucket URL -> List matching buckets, ignoring
+      #   recursion.
       resources_wrappers = self._recursion_helper(resources, recursion_level=0)
-    # "**" overrides recursive flag.
     elif self._recursion_flag and '**' not in self._cloud_url.url_string:
+      # "**" overrides recursive flag.
       resources_wrappers = self._recursion_helper(resources, float('inf'))
     elif not resources.is_plural() and resources.peek().is_container():
       # One container was returned by the query, in which case we show

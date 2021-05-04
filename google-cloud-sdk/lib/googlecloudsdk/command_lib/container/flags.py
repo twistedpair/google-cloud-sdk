@@ -2727,22 +2727,39 @@ master and the cluster nodes to restart, which might cause a disruption.
 """)
 
 
-def AddVerticalPodAutoscalingFlag(parser, hidden=False):
-  """Adds vertical pod autoscaling related flag to the parser.
+def AddVerticalPodAutoscalingFlags(parser, hidden=False, experimental=False):
+  """Adds vertical pod autoscaling related flags to the parser.
 
-  VerticalPodAutoscaling related flag is: --enable-vertical-pod-autoscaling
+  VerticalPodAutoscaling related flags are:
+  --enable-vertical-pod-autoscaling
+  --enable-experimental-vertical-pod-autoscaling
 
   Args:
     parser: A given parser.
     hidden: If true, suppress help text for added options.
+    experimental: It true, add experimental vertical pod autoscaling flag
   """
 
-  parser.add_argument(
+  group = parser.add_group(
+      mutex=True, help='Flags for vertical pod autoscaling:')
+  group.add_argument(
       '--enable-vertical-pod-autoscaling',
       default=None,
       help='Enable vertical pod autoscaling for a cluster.',
       hidden=hidden,
       action='store_true')
+  if experimental:
+    group.add_argument(
+        '--enable-experimental-vertical-pod-autoscaling',
+        default=None,
+        help=('Enable experimental vertical pod autoscaling features'
+              'for a cluster.'),
+        hidden=True,
+        action='store_true')
+
+
+def AddVerticalPodAutoscalingFlagsExperimental(parser, hidden=False):
+  return AddVerticalPodAutoscalingFlags(parser, hidden, experimental=True)
 
 
 def AddSandboxFlag(parser, hidden=False):
@@ -3535,15 +3552,15 @@ Specifies whether to enable GCFS on {}.""".format(target)
       action='store_true')
 
 
-def AddDisableAutopilotFlag(parser, hidden=True):
-  """Adds the argument to convert cluster from autopilot mode to standard mode."""
+def AddDisableAutopilotFlag(parser):
+  """Adds the argument to convert cluster from Autopilot mode to Standard mode."""
   help_text = """\
-Convert an cluster from autopilot mode to standard mode."""
+Converts a cluster from Autopilot mode to Standard mode."""
   parser.add_argument(
       '--disable-autopilot',
       help=help_text,
       default=None,
-      hidden=hidden,
+      hidden=False,
       action='store_true')
 
 

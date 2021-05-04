@@ -615,8 +615,9 @@ class S3Api(cloud_api.CloudApi):
           request_config.predefined_acl_string)
 
     if request_config.md5_hash:
-      # The upload_fileobj method does not perform any MD5 validation.
-      # Hence we use the put_object API method if MD5 validation is requested.
+      # The upload_fileobj method can perform multipart uploads, so it cannot
+      # validate with user-provided MD5 hashes. Hence we use the put_object API
+      # method if MD5 validation is requested.
       if request_config.size > MAX_PUT_OBJECT_SIZE:
         raise errors.S3ApiError(
             'Cannot upload to destination: {url} because MD5 validation can'

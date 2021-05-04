@@ -159,8 +159,9 @@ class ClientTlsPolicy(_messages.Message):
     name: Required. Name of the ClientTlsPolicy resource. It matches the
       pattern
       `projects/*/locations/{location}/clientTlsPolicies/{client_tls_policy}`
-    serverValidationCa: Required. Defines the mechanism to obtain the
-      Certificate Authority certificate to validate the server certificate.
+    serverValidationCa: Optional. Defines the mechanism to obtain the
+      Certificate Authority certificate to validate the server certificate. If
+      empty, client does not validate the server certificate.
     sni: Optional. Server Name Indication string to present to the server
       during TLS handshake. E.g: "secure.example.com".
     updateTime: Output only. The timestamp when the resource was updated.

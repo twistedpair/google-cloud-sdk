@@ -537,7 +537,7 @@ class EdgeCacheOrigin(_messages.Message):
       four. The total time allowed for cache fill attempts across this and
       failover origins can be controlled with max_attempts_timeout. The last
       valid response from an origin will be returned to the client. If no
-      origin returns a valid response, an HTTP 503 will be returned to the
+      origin returns a valid response, an HTTP 502 will be returned to the
       client. Defaults to 1. Must be a value greater than 0 and less than 4.
     name: Required. Name of the resource; provided by the client when the
       resource is created. The name must be 1-64 characters long, and match
@@ -887,6 +887,112 @@ class EndpointMatcher(_messages.Message):
   """
 
   metadataLabelMatcher = _messages.MessageField('MetadataLabelMatcher', 1)
+
+
+class EndpointPolicy(_messages.Message):
+  r"""EndpointPolicy is a resource that helps apply desired configuration on
+  the endpoints that match specific criteria. For example, this resource can
+  be used to apply "authentication config" an all endpoints that serve on port
+  8080.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of endpoint policy. This is
+      primarily used to validate the configuration.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      EndpointPolicy resource.
+
+  Fields:
+    authorizationPolicy: Optional. This field specifies the URL of
+      AuthorizationPolicy resource that applies authorization policies to the
+      inbound traffic at the matched endpoints. Refer to Authorization. If
+      this field is not specified, authorization is disabled(no authz checks)
+      for this endpoint. Applicable only when EndpointPolicyType is
+      SIDECAR_PROXY.
+    clientTlsPolicy: Optional. A URL referring to a ClientTlsPolicy resource.
+      ClientTlsPolicy can be set to specify the authentication for traffic
+      from the proxy to the actual endpoints. More specifically, it is applied
+      to the outgoing traffic from the proxy to the endpoint. This is
+      typically used for sidecar model where the proxy identifies itself as
+      endpoint to the control plane, with the connection between sidecar and
+      endpoint requiring authentication. If this field is not set,
+      authentication is disabled(open). Applicable only when
+      EndpointPolicyType is SIDECAR_PROXY.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    endpointMatcher: Required. A matcher that selects endpoints to which the
+      policies should be applied.
+    httpFilters: Optional. HTTP filters configuration for the endpoint.
+      Applicable only when EndpointPolicyType is SIDECAR_PROXY.
+    labels: Optional. Set of label tags associated with the EndpointPolicy
+      resource.
+    name: Required. Name of the EndpointPolicy resource. It matches pattern
+      `projects/*/locations/global/endpointPolicies/`.
+    serverTlsPolicy: Optional. A URL referring to ServerTlsPolicy resource.
+      ServerTlsPolicy is used to determine the authentication policy to be
+      applied to terminate the inbound traffic at the identified backends. If
+      this field is not set, authentication is disabled(open) for this
+      endpoint.
+    trafficPortSelector: Optional. Port selector for the (matched) endpoints.
+      If no port selector is provided, the matched config is applied to all
+      ports.
+    type: Required. The type of endpoint policy. This is primarily used to
+      validate the configuration.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of endpoint policy. This is primarily used to
+    validate the configuration.
+
+    Values:
+      ENDPOINT_POLICY_TYPE_UNSPECIFIED: Default value. Must not be used.
+      SIDECAR_PROXY: Represents a proxy deployed as a sidecar.
+      GRPC_SERVER: Represents a proxyless gRPC backend.
+    """
+    ENDPOINT_POLICY_TYPE_UNSPECIFIED = 0
+    SIDECAR_PROXY = 1
+    GRPC_SERVER = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the EndpointPolicy
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authorizationPolicy = _messages.StringField(1)
+  clientTlsPolicy = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  endpointMatcher = _messages.MessageField('EndpointMatcher', 5)
+  httpFilters = _messages.MessageField('HttpFilters', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  serverTlsPolicy = _messages.StringField(9)
+  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class Expr(_messages.Message):
@@ -1369,6 +1475,21 @@ class ListEndpointConfigSelectorsResponse(_messages.Message):
   """
 
   endpointConfigSelectors = _messages.MessageField('EndpointConfigSelector', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListEndpointPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListEndpointPolicies method.
+
+  Fields:
+    endpointPolicies: List of EndpointPolicy resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  endpointPolicies = _messages.MessageField('EndpointPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2197,6 +2318,137 @@ class NetworkservicesProjectsLocationsEndpointConfigSelectorsSetIamPolicyRequest
 class NetworkservicesProjectsLocationsEndpointConfigSelectorsTestIamPermissionsRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsEndpointConfigSelectorsTestIamPermissi
   onsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesCreateRequest object.
+
+  Fields:
+    endpointPolicy: A EndpointPolicy resource to be passed as the request
+      body.
+    endpointPolicyId: Required. Short name of the EndpointPolicy resource to
+      be created. E.g. "CustomECS".
+    parent: Required. The parent resource of the EndpointPolicy. Must be in
+      the format `projects/*/locations/global`.
+  """
+
+  endpointPolicy = _messages.MessageField('EndpointPolicy', 1)
+  endpointPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the EndpointPolicy to delete. Must be in the
+      format `projects/*/locations/global/endpointPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesGetRequest object.
+
+  Fields:
+    name: Required. A name of the EndpointPolicy to get. Must be in the format
+      `projects/*/locations/global/endpointPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of EndpointPolicies to return per call.
+    pageToken: The value returned by the last `ListEndpointPoliciesResponse`
+      Indicates that this is a continuation of a prior `ListEndpointPolicies`
+      call, and that the system should return the next page of data.
+    parent: Required. The project and location from which the EndpointPolicies
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest object.
+
+  Fields:
+    endpointPolicy: A EndpointPolicy resource to be passed as the request
+      body.
+    name: Required. Name of the EndpointPolicy resource. It matches pattern
+      `projects/*/locations/global/endpointPolicies/`.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the EndpointPolicy resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  endpointPolicy = _messages.MessageField('EndpointPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest
+  object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -3157,7 +3409,8 @@ class RouteRule(_messages.Message):
       request to this routeRule. This list has OR semantics: the request
       matches this routeRule when any of the matchRules are satisfied. However
       predicates within a given matchRule have AND semantics. All predicates
-      within a matchRule must match for the request to match the rule.
+      within a matchRule must match for the request to match the rule. You may
+      specify up to 5 match rules.
     origin: Optional. The Origin resource that requests to this route should
       fetch from when a matching response is not in cache. Origins can be
       defined as short names ("my-origin") or fully-qualified resource URLs -
@@ -3455,31 +3708,43 @@ class Timeout(_messages.Message):
   r"""The timeout configuration for this origin.
 
   Fields:
-    connectTimeout: Optional. The maximum duration to wait for the origin
+    connectTimeout: Optional. The maximum duration to wait for a single origin
       connection to be established, including DNS lookup, TLS handshake and
       TCP/QUIC connection establishment. Defaults to 5 seconds. The timeout
-      must be a value between 1s and 15s.
+      must be a value between 1s and 15s. The connectTimeout capped by the
+      deadline set by the request's maxAttemptsTimeout. The last connection
+      attempt may have a smaller connectTimeout in order to adhere to the
+      overall maxAttemptsTimeout.
     maxAttemptsTimeout: Optional. The maximum time across all connection
-      attempts to the origin, including failover origins, before returning an
-      error to the client. A HTTP 503 will be returned if the timeout is
-      reached before a response is returned. Defaults to 5 seconds. The
-      timeout must be a value between 1s and 15s. If a failoverOrigin is
-      specified, the maxAttemptsTimeout of the first configured origin takes
-      precedence and determines the timeout for all requests.
-    responseTimeout: Optional. The maximum duration to wait for data to arrive
-      when reading from the HTTP connection/stream. Defaults to 5 seconds. The
-      timeout must be a value between 1s and 30s. This also applies to HTTP
-      Chunked Transfer Encoding responses, and/or when an open-ended Range
-      request is made to the origin. Origins that take longer to write
-      additional bytes to the response than the configured responseTimeout
-      will result in an error being returned to the client. If the response
+      attempts to all origins, including failover origins, before returning an
+      error to the client. A HTTP 502 will be returned if the timeout is
+      reached before a response is returned. Defaults to 15 seconds. The
+      timeout must be a value between 1s and 30s. If a failoverOrigin is
+      specified, the maxAttemptsTimeout of the first configured origin sets
+      the deadline for all connection attempts across all failoverOrigins.
+    readTimeout: Optional. The maximum duration to wait between reads of a
+      single HTTP connection/stream. Defaults to 15 seconds. The timeout must
+      be a value between 1s and 30s. The readTimeout is capped by the
+      responseTimeout. All reads of the HTTP connection/stream must be
+      completed by the deadline set by the responseTimeout. If the response
       headers have already been written to the connection, the response will
       be truncated and logged.
+    responseTimeout: Optional. The maximum duration to wait for the last byte
+      of a response to arrive when reading from the HTTP connection/stream.
+      Defaults to 30 seconds. The timeout must be a value between 1s and 120s.
+      The responseTimeout starts after the connection has been established.
+      This also applies to HTTP Chunked Transfer Encoding responses, and/or
+      when an open-ended Range request is made to the origin. Origins that
+      take longer to write additional bytes to the response than the
+      configured responseTimeout will result in an error being returned to the
+      client. If the response headers have already been written to the
+      connection, the response will be truncated and logged.
   """
 
   connectTimeout = _messages.StringField(1)
   maxAttemptsTimeout = _messages.StringField(2)
-  responseTimeout = _messages.StringField(3)
+  readTimeout = _messages.StringField(3)
+  responseTimeout = _messages.StringField(4)
 
 
 class TrafficPortSelector(_messages.Message):

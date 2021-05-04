@@ -615,7 +615,7 @@
           "$ref": "GoogleCloudNetworksecurityV1beta1CertificateProvider"
         },
         "serverValidationCa": {
-          "description": "Required. Defines the mechanism to obtain the Certificate Authority certificate to validate the server certificate.",
+          "description": "Optional. Defines the mechanism to obtain the Certificate Authority certificate to validate the server certificate. If empty, client does not validate the server certificate.",
           "type": "array",
           "items": {
             "$ref": "ValidationCA"

@@ -300,7 +300,7 @@ class Empty(_messages.Message):
 
 
 class EncryptionConfig(_messages.Message):
-  r"""The encryption options for the Composer environment and its
+  r"""The encryption options for the Cloud Composer environment and its
   dependencies.
 
   Fields:
@@ -419,7 +419,7 @@ class EnvironmentConfig(_messages.Message):
       directory with the given prefix.
     databaseConfig: Optional. The configuration settings for Cloud SQL
       instance used internally by Apache Airflow software.
-    encryptionConfig: Optional. The encryption options for the Composer
+    encryptionConfig: Optional. The encryption options for the Cloud Composer
       environment and its dependencies. Cannot be updated.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
@@ -653,8 +653,8 @@ class NodeConfig(_messages.Message):
       on all node VMs. If `oauth_scopes` is empty, defaults to
       ["https://www.googleapis.com/auth/cloud-platform"]. Cannot be updated.
     serviceAccount: Optional. The Google Cloud Platform Service Account to be
-      used by the node VMs. If a service account is not specified, the
-      "default" Compute Engine service account is used. Cannot be updated.
+      used by the workloads. If a service account is not specified, the
+      "default" Compute Engine service account is used. Cannot be updated .
     subnetwork: Optional. The Compute Engine subnetwork to be used for machine
       communications, specified as a [relative resource
       name](/apis/design/resource_names#relative_resource_name). For example:
@@ -880,7 +880,7 @@ class PrivateEnvironmentConfig(_messages.Message):
       web_server_ipv4_cidr_block
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
       environment is created. If this field is set to true,
-      `IPAllocationPolicy.use_ip_aliases` must be set to true.
+      `IPAllocationPolicy.use_ip_aliases` must be set to true .
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
     webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for

@@ -105,19 +105,21 @@ def _get_full_bucket_metadata_string(resource):
         'Default ACL', '[]')
 
   # Optional lines. Include all formatting since their presence is conditional.
-  if resource.metadata.locationType:
-    optional_location_type_line = resource_util.get_padded_metadata_key_value_line(
-        'Location type', resource.metadata.locationType)
+  if resource.metadata.locationType is not None:
+    optional_location_type_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Location Type', resource.metadata.locationType))
   else:
     optional_location_type_line = ''
 
-  if resource.metadata.retentionPolicy:
-    optional_retention_policy_line = resource_util.get_padded_metadata_key_value_line(
-        'Retention Policy', 'Present')
+  if resource.metadata.retentionPolicy is not None:
+    optional_retention_policy_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Retention Policy', 'Present'))
   else:
     optional_retention_policy_line = ''
 
-  if resource.metadata.defaultEventBasedHold:
+  if resource.metadata.defaultEventBasedHold is not None:
     optional_default_event_based_hold_line = (
         resource_util.get_padded_metadata_key_value_line(
             'Default Event-Based Hold',
@@ -125,32 +127,40 @@ def _get_full_bucket_metadata_string(resource):
   else:
     optional_default_event_based_hold_line = ''
 
-  if resource.metadata.timeCreated:
+  if resource.metadata.timeCreated is not None:
     optional_time_created_line = resource_util.get_padded_metadata_time_line(
-        'Time created', resource.metadata.timeCreated)
+        'Time Created', resource.metadata.timeCreated)
   else:
     optional_time_created_line = ''
 
-  if resource.metadata.updated:
+  if resource.metadata.updated is not None:
     optional_time_updated_line = resource_util.get_padded_metadata_time_line(
-        'Time updated', resource.metadata.updated)
+        'Time Updated', resource.metadata.updated)
   else:
     optional_time_updated_line = ''
 
-  if resource.metadata.metageneration:
-    optional_metageneration_line = resource_util.get_padded_metadata_key_value_line(
-        'Metageneration', resource.metadata.metageneration)
+  if resource.metadata.metageneration is not None:
+    optional_metageneration_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Metageneration', resource.metadata.metageneration))
   else:
     optional_metageneration_line = ''
 
   bucket_policy_only_object = getattr(resource.metadata.iamConfiguration,
                                       'bucketPolicyOnly', None)
-  if bucket_policy_only_object:
+  if bucket_policy_only_object is not None:
     optional_bucket_policy_only_enabled_line = (
         resource_util.get_padded_metadata_key_value_line(
-            'Bucket Policy Only enabled', bucket_policy_only_object.enabled))
+            'Bucket Policy Only Enabled', bucket_policy_only_object.enabled))
   else:
     optional_bucket_policy_only_enabled_line = ''
+
+  if resource.metadata.satisfiesPZS is not None:
+    optional_satisfies_pzs_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Satisfies PZS', resource.metadata.satisfiesPZS))
+  else:
+    optional_satisfies_pzs_line = ''
 
   return (
       '{bucket_url}:\n'
@@ -171,39 +181,40 @@ def _get_full_bucket_metadata_string(resource):
       '{optional_time_updated_line}'
       '{optional_metageneration_line}'
       '{optional_bucket_policy_only_enabled_line}'
+      '{optional_satisfies_pzs_line}'
       '{acl_section}'
       '{default_acl_section}'
   ).format(
       bucket_url=resource.storage_url.versionless_url_string,
       storage_class_line=resource_util.get_padded_metadata_key_value_line(
-          'Storage class', resource.metadata.storageClass),
+          'Storage Class', resource.metadata.storageClass),
       optional_location_type_line=optional_location_type_line,
       location_constraint_line=resource_util.get_padded_metadata_key_value_line(
-          'Location constraint', resource.metadata.location),
+          'Location Constraint', resource.metadata.location),
       versioning_enabled_line=resource_util.get_padded_metadata_key_value_line(
-          'Versioning enabled', (resource.metadata.versioning and
+          'Versioning Enabled', (resource.metadata.versioning and
                                  resource.metadata.versioning.enabled)),
       logging_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Logging configuration',
+          'Logging Configuration',
           resource_util.get_exists_string(resource.metadata.logging)),
       website_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Website configuration',
+          'Website Configuration',
           resource_util.get_exists_string(resource.metadata.website)),
       cors_config_line=resource_util.get_padded_metadata_key_value_line(
-          'CORS configuration',
+          'CORS Configuration',
           resource_util.get_exists_string(resource.metadata.cors)),
       lifecycle_config_line=resource_util.get_padded_metadata_key_value_line(
-          'Lifecycle configuration',
+          'Lifecycle Configuration',
           resource_util.get_exists_string(resource.metadata.lifecycle)),
       requester_pays_line=resource_util.get_padded_metadata_key_value_line(
-          'Requester Pays enabled', (resource.metadata.billing and
+          'Requester Pays Enabled', (resource.metadata.billing and
                                      resource.metadata.billing.requesterPays)),
       optional_retention_policy_line=optional_retention_policy_line,
       optional_default_event_based_hold_line=(
           optional_default_event_based_hold_line),
       labels_section=labels_section,
       default_kms_key_line=resource_util.get_padded_metadata_key_value_line(
-          'Default KMS key',
+          'Default KMS Key',
           resource_util.get_exists_string(
               getattr(resource.metadata.encryption, 'defaultKmsKeyName',
                       None))),
@@ -212,6 +223,7 @@ def _get_full_bucket_metadata_string(resource):
       optional_metageneration_line=optional_metageneration_line,
       optional_bucket_policy_only_enabled_line=(
           optional_bucket_policy_only_enabled_line),
+      optional_satisfies_pzs_line=optional_satisfies_pzs_line,
       acl_section=acl_section,
       # Remove ending newline character because this is the last list item.
       default_acl_section=default_acl_section[:-1])
@@ -234,96 +246,108 @@ def _get_full_object_metadata_string(resource):
     acl_section = resource_util.get_padded_metadata_key_value_line('ACL', '[]')
 
   # Optional items that will conditionally display.
-  if resource.creation_time:
+  if resource.creation_time is not None:
     optional_time_created_line = resource_util.get_padded_metadata_time_line(
-        'Creation time', resource.creation_time)
+        'Creation Time', resource.creation_time)
   else:
     optional_time_created_line = ''
 
-  if resource.metadata.updated:
+  if resource.metadata.updated is not None:
     optional_time_updated_line = resource_util.get_padded_metadata_time_line(
-        'Update time', resource.metadata.updated)
+        'Update Time', resource.metadata.updated)
   else:
     optional_time_updated_line = ''
 
-  if resource.metadata.timeStorageClassUpdated and (
+  if resource.metadata.timeStorageClassUpdated is not None and (
       resource.metadata.timeStorageClassUpdated !=
       resource.metadata.timeCreated):
-    optional_time_storage_class_created_line = resource_util.get_padded_metadata_time_line(
-        'Storage class update time', resource.metadata.timeStorageClassUpdated)
+    optional_time_storage_class_created_line = (
+        resource_util.get_padded_metadata_time_line(
+            'Storage Class Update Time',
+            resource.metadata.timeStorageClassUpdated))
   else:
     optional_time_storage_class_created_line = ''
 
-  if resource.metadata.storageClass:
-    optional_storage_class_line = resource_util.get_padded_metadata_key_value_line(
-        'Storage class', resource.metadata.storageClass)
+  if resource.metadata.storageClass is not None:
+    optional_storage_class_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Storage Class', resource.metadata.storageClass))
   else:
     optional_storage_class_line = ''
 
-  if resource.metadata.temporaryHold:
-    optional_temporary_hold_line = resource_util.get_padded_metadata_key_value_line(
-        'Temporary Hold', 'Enabled')
+  if resource.metadata.temporaryHold is not None:
+    optional_temporary_hold_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Temporary Hold', resource.metadata.temporaryHold))
   else:
     optional_temporary_hold_line = ''
 
-  if resource.metadata.eventBasedHold:
-    optional_event_based_hold_line = resource_util.get_padded_metadata_key_value_line(
-        'Event-Based Hold', 'Enabled')
+  if resource.metadata.eventBasedHold is not None:
+    optional_event_based_hold_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Event-Based Hold', resource.metadata.eventBasedHold))
   else:
     optional_event_based_hold_line = ''
 
-  if resource.metadata.retentionExpirationTime:
+  if resource.metadata.retentionExpirationTime is not None:
     optional_retention_expiration_time_line = (
-        resource_util.get_padded_metadata_key_value_line(
-            'Retention Expiration', 'Enabled'))
+        resource_util.get_padded_metadata_time_line(
+            'Retention Expiration', resource.metadata.retentionExpirationTime))
   else:
     optional_retention_expiration_time_line = ''
 
-  if resource.metadata.kmsKeyName:
-    optional_kms_key_name_line = resource_util.get_padded_metadata_key_value_line(
-        'KMS key', resource.metadata.kmsKeyName)
+  if resource.metadata.kmsKeyName is not None:
+    optional_kms_key_name_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'KMS Key', resource.metadata.kmsKeyName))
   else:
     optional_kms_key_name_line = ''
 
-  if resource.metadata.cacheControl:
-    optional_cache_control_line = resource_util.get_padded_metadata_key_value_line(
-        'Cache-Control', resource.metadata.cacheControl)
+  if resource.metadata.cacheControl is not None:
+    optional_cache_control_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Cache-Control', resource.metadata.cacheControl))
   else:
     optional_cache_control_line = ''
 
-  if resource.metadata.contentDisposition:
-    optional_content_disposition_line = resource_util.get_padded_metadata_key_value_line(
-        'Cache-Disposition', resource.metadata.contentDisposition)
+  if resource.metadata.contentDisposition is not None:
+    optional_content_disposition_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Cache-Disposition', resource.metadata.contentDisposition))
   else:
     optional_content_disposition_line = ''
 
-  if resource.metadata.contentEncoding:
-    optional_content_encoding_line = resource_util.get_padded_metadata_key_value_line(
-        'Cache-Encoding', resource.metadata.contentEncoding)
+  if resource.metadata.contentEncoding is not None:
+    optional_content_encoding_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Cache-Encoding', resource.metadata.contentEncoding))
   else:
     optional_content_encoding_line = ''
 
-  if resource.metadata.contentLanguage:
-    optional_content_language_line = resource_util.get_padded_metadata_key_value_line(
-        'Cache-Language', resource.metadata.contentLanguage)
+  if resource.metadata.contentLanguage is not None:
+    optional_content_language_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Cache-Language', resource.metadata.contentLanguage))
   else:
     optional_content_language_line = ''
 
-  if resource.metadata.componentCount:
-    optional_component_count_line = resource_util.get_padded_metadata_key_value_line(
-        'Component-Count', resource.metadata.componentCount)
+  if resource.metadata.componentCount is not None:
+    optional_component_count_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Component-Count', resource.metadata.componentCount))
   else:
     optional_component_count_line = ''
 
-  if resource.metadata.customTime:
-    optional_custom_time_line = resource_util.get_padded_metadata_key_value_line(
-        'Custom-Time', resource.metadata.customTime)
+  if resource.metadata.customTime is not None:
+    optional_custom_time_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Custom-Time', resource.metadata.customTime))
   else:
     optional_custom_time_line = ''
 
-  if resource.metadata.timeDeleted:
+  if resource.metadata.timeDeleted is not None:
     optional_noncurrent_time_line = resource_util.get_padded_metadata_time_line(
-        'Noncurrent time', resource.metadata.timeDeleted)
+        'Noncurrent Time', resource.metadata.timeDeleted)
   else:
     optional_noncurrent_time_line = ''
 
@@ -335,7 +359,7 @@ def _get_full_object_metadata_string(resource):
   else:
     optional_metadata_section = ''
 
-  if resource.metadata.crc32c:
+  if resource.metadata.crc32c is not None:
     optional_crc32c_line = resource_util.get_padded_metadata_key_value_line(
         'Hash (crc32c)', resource.metadata.crc32c)
   else:
@@ -345,38 +369,42 @@ def _get_full_object_metadata_string(resource):
     else:
       optional_crc32c_line = ''
 
-  if resource.metadata.md5Hash:
+  if resource.metadata.md5Hash is not None:
     optional_md5_line = resource_util.get_padded_metadata_key_value_line(
         'Hash (md5)', resource.metadata.md5Hash)
   else:
-    if resource.metadata.customerEncryption:
+    if resource.metadata.customerEncryption is not None:
       optional_md5_line = resource_util.get_padded_metadata_key_value_line(
           'Hash (md5)', 'encrypted')
     else:
       optional_md5_line = ''
 
   if getattr(resource.metadata.customerEncryption, 'encryptionAlgorithm', None):
-    optional_encryption_algorithm_line = resource_util.get_padded_metadata_key_value_line(
-        'Encryption algorithm',
-        resource.metadata.customerEncryption.encryptionAlgorithm)
+    optional_encryption_algorithm_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Encryption Algorithm',
+            resource.metadata.customerEncryption.encryptionAlgorithm))
   else:
     optional_encryption_algorithm_line = ''
 
   if getattr(resource.metadata.customerEncryption, 'keySha256', None):
-    optional_encryption_key_sha_256_line = resource_util.get_padded_metadata_key_value_line(
-        'Encryption key SHA256', resource.metadata.customerEncryption.keySha256)
+    optional_encryption_key_sha_256_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Encryption Key SHA256',
+            resource.metadata.customerEncryption.keySha256))
   else:
     optional_encryption_key_sha_256_line = ''
 
-  if resource.generation:
+  if resource.generation is not None:
     optional_generation_line = resource_util.get_padded_metadata_key_value_line(
         'Generation', resource.generation)
   else:
     optional_generation_line = ''
 
-  if resource.metageneration:
-    optional_metageneration_line = resource_util.get_padded_metadata_key_value_line(
-        'Metageneration', resource.metageneration)
+  if resource.metageneration is not None:
+    optional_metageneration_line = (
+        resource_util.get_padded_metadata_key_value_line(
+            'Metageneration', resource.metageneration))
   else:
     optional_metageneration_line = ''
 

@@ -5,6 +5,73 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 339.0.0 (2021-05-04)
+
+### Breaking Changes
+
+*   **(Certificate Authority Service)** Updated default value for `--max-chain-length` flag of
+   `gcloud beta privateca roots create`. Now, no max chain length will be added
+   to newly created root CAs unless they are explicitly specified through
+   `--max-chain-length`, or (indirectly) through a `--reusable-config` resource
+   argument.
+
+
+### AI
+
+* Added `executor-image-uri` field to `--worker-pool-spec` flag of `gcloud beta ai custom-jobs create`, as an alias of `python-image-uri` field. `python-image-uri` will be deprecated soon.
+* Accepted empty value for `--worker-pool-spec` flag, which means to create an empty worker pool.
+
+### Assured Workloads
+
+*   Added option to specify custom keyring name in `--resource-settings` by using `keyring-id` key in `gcloud assured workloads create` command.
+
+### Cloud Composer
+
+*   Added links to the documentation pages when the request fails on missing
+    required permissions.
+
+### Cloud On Demand Scanning
+
+*   Upgrade `local-extract` to version 1.0.0. This version replaces
+    memory-intensive extraction with disk-based extraction.
+
+### Cloud SQL
+
+* The output of `gcloud sql backups list --instance="my-instance-1"` will now
+include the instance name.
+
+### Compute Engine
+
+* Added `--request-coalescing` to `gcloud compute backend-services create`,  `gcloud compute backend-services update`,
+  `gcloud compute backend-buckets create` and `gcloud compute backend-buckets update`.
+* Added `cdnPolicy.requestCoalescing` field support to `gcloud compute backend-services import`.
+* Added `--minimal-action` and `--most-disruptive-allowed-action` flags to `gcloud beta compute instance-groups managed rolling-action start-update`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.48.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kpt
+
+* Updated kpt from v0.39.0 to v0.39.2.
+* Updated import of cli-utils from v0.24.0 to v0.25.0.
+* Updated import of kyaml from v0.10.15 to v0.10.17.
+* Updated import of cmd/config from v0.9.7 to v0.9.10.
+
+### Kubernetes Engine
+
+* Added `--disable-autopilot` flag of `gcloud container clusters update` to convert cluster from Autopilot mode to Standard mode.
+
+### Network Security
+
+* Modified `gcloud network-security client-tls-policies` to accept empty
+  serverValidationCa which signals to the client to do un-authenticated TLS.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 338.0.0 (2021-04-27)
 
 ### Breaking Changes

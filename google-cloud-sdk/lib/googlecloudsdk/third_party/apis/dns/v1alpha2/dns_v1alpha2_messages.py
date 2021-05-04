@@ -1788,8 +1788,12 @@ class Quota(_messages.Message):
 
   Fields:
     dnsKeysPerManagedZone: Maximum allowed number of DnsKeys per ManagedZone.
+    gkeClustersPerManagedZone: Maximum allowed number of GKE clusters to which
+      a privately scoped zone can be attached.
     kind: A string attribute.
     managedZones: Maximum allowed number of managed zones in the project.
+    managedZonesPerGkeCluster: Maximum allowed number of managed zones which
+      can be attached to a GKE cluster.
     managedZonesPerNetwork: Maximum allowed number of managed zones which can
       be attached to a network.
     networksPerManagedZone: Maximum allowed number of networks to which a
@@ -1817,21 +1821,23 @@ class Quota(_messages.Message):
   """
 
   dnsKeysPerManagedZone = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(2, default='dns#quota')
-  managedZones = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  managedZonesPerNetwork = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  networksPerManagedZone = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  networksPerPolicy = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  policies = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  resourceRecordsPerRrset = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  rrsetAdditionsPerChange = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  rrsetDeletionsPerChange = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  rrsetsPerManagedZone = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  targetNameServersPerManagedZone = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  targetNameServersPerPolicy = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  totalRrdataSizePerChange = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 16, repeated=True)
+  gkeClustersPerManagedZone = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  kind = _messages.StringField(3, default='dns#quota')
+  managedZones = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  managedZonesPerGkeCluster = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  managedZonesPerNetwork = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  networksPerManagedZone = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  networksPerPolicy = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  policies = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  resourceRecordsPerRrset = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  rrsetAdditionsPerChange = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  rrsetDeletionsPerChange = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  rrsetsPerManagedZone = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  targetNameServersPerManagedZone = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  targetNameServersPerPolicy = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  totalRrdataSizePerChange = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 18, repeated=True)
 
 
 class ResourceRecordSet(_messages.Message):
@@ -1945,6 +1951,8 @@ class ResponsePolicy(_messages.Message):
 
   Fields:
     description: User-provided description for this Response Policy.
+    gkeClusters: The list of Google Kubernetes Engine clusters to which this
+      response policy is applied.
     id: Unique identifier for the resource; defined by the server (output
       only).
     kind: A string attribute.
@@ -1954,10 +1962,28 @@ class ResponsePolicy(_messages.Message):
   """
 
   description = _messages.StringField(1)
-  id = _messages.IntegerField(2)
-  kind = _messages.StringField(3, default='dns#responsePolicy')
-  networks = _messages.MessageField('ResponsePolicyNetwork', 4, repeated=True)
-  responsePolicyName = _messages.StringField(5)
+  gkeClusters = _messages.MessageField('ResponsePolicyGKECluster', 2, repeated=True)
+  id = _messages.IntegerField(3)
+  kind = _messages.StringField(4, default='dns#responsePolicy')
+  networks = _messages.MessageField('ResponsePolicyNetwork', 5, repeated=True)
+  responsePolicyName = _messages.StringField(6)
+
+
+class ResponsePolicyGKECluster(_messages.Message):
+  r"""A ResponsePolicyGKECluster object.
+
+  Fields:
+    gkeClusterName: The resource name of the cluster to bind this response
+      policy to. This should be specified in the format like:
+      projects/*/locations/*/clusters/*. This is referenced from GKE
+      projects.locations.clusters.get API:
+      https://cloud.google.com/kubernetes-
+      engine/docs/reference/rest/v1/projects.locations.clusters/get
+    kind: A string attribute.
+  """
+
+  gkeClusterName = _messages.StringField(1)
+  kind = _messages.StringField(2, default='dns#responsePolicyGKECluster')
 
 
 class ResponsePolicyNetwork(_messages.Message):

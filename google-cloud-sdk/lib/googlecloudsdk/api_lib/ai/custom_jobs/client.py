@@ -20,10 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.ai import constants
-from googlecloudsdk.command_lib.ai import validation
-from googlecloudsdk.core import yaml
 
 
 class CustomJobsClient(object):
@@ -35,104 +32,30 @@ class CustomJobsClient(object):
         constants.AI_PLATFORM_API_VERSION[version])
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_customJobs
+    self._message_prefix = constants.AI_PLATFORM_MESSAGE_PREFIX[version]
 
-  def GetShortMessage(self, short_message_name):
+  def GetMessage(self, message_name):
+    """Returns the API messsages class by name."""
+
     return getattr(
-        self.messages, '{prefix}{name}'.format(
-            prefix=self._short_message_prefix, name=short_message_name), None)
+        self.messages,
+        '{prefix}{name}'.format(prefix=self._message_prefix,
+                                name=message_name), None)
 
-  def Create(self,
-             parent,
-             specs=None,
-             config_path=None,
-             display_name=None,
-             python_package_uri=None,
-             args=None,
-             command=None,
-             kms_key_name=None,
-             network=None,
-             service_account=None):
+  def Create(self, parent, job_spec, display_name=None, kms_key_name=None):
     """Constructs a request and sends it to the endpoint to create a custom job instance.
 
     Args:
-      parent: str, The proje resource path of the custom job to create.
-      specs: ArgDict, A dictionary of worker pool specification for the custom
-        job to create.
-      config_path: str, Local path of a yaml file which contains the worker pool
-        specification.
+      parent: str, The project resource path of the custom job to create.
+      job_spec: The CustomJobSpec message instance for the job creation request.
       display_name: str, The display name of the custom job to create.
-      python_package_uri: str, The common python package uris that will be used
-        by python image.
-      args: ArgList, A list of argument that passed to containers or python
-        packge.
-      command: ArgList, A list of command that passed to containers.
       kms_key_name: A customer-managed encryption key to use for the custom job.
-      network: user network to which the job should be peered with (overrides
-        yaml file)
-      service_account: A service account (email address string) to use for the
-          job.
 
     Returns:
       (GoogleCloudAiplatformV1alpha1CustomJob) The created custom job.
     """
-    if not python_package_uri:
-      python_package_uri = []
-
-    job_spec = self.messages.GoogleCloudAiplatformV1beta1CustomJobSpec()
-    job_spec.network = network
-    job_spec.serviceAccount = service_account
-    if config_path:
-      data = yaml.load_path(config_path)
-      if data:
-        job_spec = messages_util.DictToMessageWithErrorCheck(
-            data, self.messages.GoogleCloudAiplatformV1beta1CustomJobSpec)
-
-    worker_pool_specs = []
-    if specs is not None:
-      for spec in specs:
-        machine_type = spec.get('machine-type')
-        if not spec.get('replica-count'):
-          replica_count = 1
-        else:
-          replica_count = int(spec.get('replica-count'))
-        container_image_uri = spec.get('container-image-uri')
-        python_image_uri = spec.get('python-image-uri')
-        python_module = spec.get('python-module')
-        machine_spec = (
-            self.messages.GoogleCloudAiplatformV1beta1MachineSpec(
-                machineType=machine_type))
-
-        worker_pool_spec = (
-            self.messages.GoogleCloudAiplatformV1beta1WorkerPoolSpec(
-                replicaCount=replica_count, machineSpec=machine_spec))
-        if container_image_uri:
-          worker_pool_spec.containerSpec = (
-              self.messages.GoogleCloudAiplatformV1beta1ContainerSpec(
-                  imageUri=container_image_uri))
-          if args is not None:
-            worker_pool_spec.containerSpec.args = args
-          if command is not None:
-            worker_pool_spec.containerSpec.command = command
-
-        if python_package_uri or python_image_uri or python_module:
-          worker_pool_spec.pythonPackageSpec = (
-              self.messages.GoogleCloudAiplatformV1beta1PythonPackageSpec(
-                  executorImageUri=python_image_uri,
-                  packageUris=python_package_uri,
-                  pythonModule=python_module))
-          if args is not None:
-            worker_pool_spec.pythonPackageSpec.args = args
-
-        worker_pool_specs.append(worker_pool_spec)
-
-    if worker_pool_specs:
-      job_spec.workerPoolSpecs = worker_pool_specs
-    validation.ValidateWorkerPoolSpec(job_spec.workerPoolSpecs)
-
-    custom_job = (
-        self.messages.GoogleCloudAiplatformV1beta1CustomJob(
-            displayName=display_name,
-            jobSpec=job_spec))
+    custom_job = self.messages.GoogleCloudAiplatformV1beta1CustomJob(
+        displayName=display_name, jobSpec=job_spec)
 
     if kms_key_name is not None:
       custom_job.encryptionSpec = self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(

@@ -115,7 +115,7 @@ def CreateCAFromArgs(args, is_subordinate):
     issuance_policy = source_ca.certificatePolicy
 
   reusable_config_wrapper = flags.ParseReusableConfig(
-      args, ca_ref.locationsId, is_ca=True)
+      args, ca_ref.locationsId, is_ca_command=True)
   if source_ca and not flags.ReusableConfigFlagsAreSpecified(args):
     reusable_config_wrapper = source_ca.config.reusableConfig
 

@@ -18,7 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.composer import util as api_util
+from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.calliope import base
 
 
@@ -338,11 +340,21 @@ def Create(environment_ref, flags):
     environment.labels = api_util.DictToMessage(
         flags.labels, messages.Environment.LabelsValue)
 
-  return GetService(release_track=flags.release_track).Create(
-      api_util.GetMessagesModule(release_track=flags.release_track)
-      .ComposerProjectsLocationsEnvironmentsCreateRequest(
-          environment=environment,
-          parent=environment_ref.Parent().RelativeName()))
+  try:
+    return GetService(release_track=flags.release_track).Create(
+        api_util.GetMessagesModule(release_track=flags.release_track)
+        .ComposerProjectsLocationsEnvironmentsCreateRequest(
+            environment=environment,
+            parent=environment_ref.Parent().RelativeName()))
+  except apitools_exceptions.HttpForbiddenError as e:
+    raise exceptions.HttpException(
+        e,
+        error_format=(
+            'Creation operation failed because of lack of proper '
+            'permissions. Please, refer to '
+            'https://cloud.google.com/composer/docs/how-to/managing/creating '
+            'and Composer Creation Troubleshooting pages to resolve this issue.'
+        ))
 
 
 def ConvertToTypeEnum(type_enum, airflow_executor_type):
@@ -461,12 +473,21 @@ def Patch(environment_ref,
   Returns:
     Operation: the operation corresponding to the environment update
   """
-  return GetService(release_track=release_track).Patch(
-      api_util.GetMessagesModule(release_track=release_track)
-      .ComposerProjectsLocationsEnvironmentsPatchRequest(
-          name=environment_ref.RelativeName(),
-          environment=environment_patch,
-          updateMask=update_mask))
+  try:
+    return GetService(release_track=release_track).Patch(
+        api_util.GetMessagesModule(release_track=release_track)
+        .ComposerProjectsLocationsEnvironmentsPatchRequest(
+            name=environment_ref.RelativeName(),
+            environment=environment_patch,
+            updateMask=update_mask))
+  except apitools_exceptions.HttpForbiddenError as e:
+    raise exceptions.HttpException(
+        e,
+        error_format=(
+            'Update operation failed because of lack of proper '
+            'permissions. Please, refer to '
+            'https://cloud.google.com/composer/docs/how-to/managing/updating '
+            'and Composer Update Troubleshooting pages to resolve this issue.'))
 
 
 def BuildWebServerNetworkAccessControl(web_server_access_control,

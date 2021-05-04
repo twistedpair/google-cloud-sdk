@@ -74,6 +74,13 @@ class Action(_messages.Message):
       image must be specified here as an encrypted secret. The secret must
       decrypt to a JSON-encoded dictionary containing both `username` and
       `password` keys.
+    encryptedEnvironment: The encrypted environment to pass into the
+      container. This environment is merged with values specified in the
+      google.genomics.v2alpha1.Pipeline message, overwriting any duplicate
+      values. The secret must decrypt to a JSON-encoded dictionary where key-
+      value pairs serve as environment variable names and their values. The
+      decoded environment variables can overwrite the values specified by the
+      `environment` field.
     entrypoint: If specified, overrides the `ENTRYPOINT` specified in the
       container.
     environment: The environment to pass into the container. This environment
@@ -277,16 +284,17 @@ class Action(_messages.Message):
 
   commands = _messages.StringField(1, repeated=True)
   credentials = _messages.MessageField('Secret', 2)
-  entrypoint = _messages.StringField(3)
-  environment = _messages.MessageField('EnvironmentValue', 4)
-  flags = _messages.EnumField('FlagsValueListEntryValuesEnum', 5, repeated=True)
-  imageUri = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  mounts = _messages.MessageField('Mount', 8, repeated=True)
-  name = _messages.StringField(9)
-  pidNamespace = _messages.StringField(10)
-  portMappings = _messages.MessageField('PortMappingsValue', 11)
-  timeout = _messages.StringField(12)
+  encryptedEnvironment = _messages.MessageField('Secret', 3)
+  entrypoint = _messages.StringField(4)
+  environment = _messages.MessageField('EnvironmentValue', 5)
+  flags = _messages.EnumField('FlagsValueListEntryValuesEnum', 6, repeated=True)
+  imageUri = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  mounts = _messages.MessageField('Mount', 9, repeated=True)
+  name = _messages.StringField(10)
+  pidNamespace = _messages.StringField(11)
+  portMappings = _messages.MessageField('PortMappingsValue', 12)
+  timeout = _messages.StringField(13)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1226,6 +1234,11 @@ class Pipeline(_messages.Message):
 
   Fields:
     actions: The list of actions to execute, in the order they are specified.
+    encryptedEnvironment: The encrypted environment to pass into every action.
+      Each action can also specify its own encrypted environment. The secret
+      must decrypt to a JSON-encoded dictionary where key-value pairs serve as
+      environment variable names and their values. The decoded environment
+      variables can overwrite the values specified by the `environment` field.
     environment: The environment to pass into every action. Each action can
       also specify additional environment variables but cannot delete an entry
       from this map (though they can overwrite it with a different value).
@@ -1265,9 +1278,10 @@ class Pipeline(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   actions = _messages.MessageField('Action', 1, repeated=True)
-  environment = _messages.MessageField('EnvironmentValue', 2)
-  resources = _messages.MessageField('Resources', 3)
-  timeout = _messages.StringField(4)
+  encryptedEnvironment = _messages.MessageField('Secret', 2)
+  environment = _messages.MessageField('EnvironmentValue', 3)
+  resources = _messages.MessageField('Resources', 4)
+  timeout = _messages.StringField(5)
 
 
 class PullStartedEvent(_messages.Message):

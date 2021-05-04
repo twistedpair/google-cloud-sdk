@@ -41,11 +41,13 @@ PROJECT_PROPERTY_FALLTHROUGH = deps.PropertyFallthrough(
     properties.VALUES.core.project)
 
 
+# TODO(b/177604350): Remove Beta code paths
 def ReusableConfigAttributeConfig():
   # ReusableConfig is always an anchor attribute so help_text is unused.
   return concepts.ResourceParameterAttributeConfig(name='reusable_config')
 
 
+# TODO(b/177604350): Remove Beta code paths
 def CertificateAttributeConfig(fallthroughs=None):
   # Certificate is always an anchor attribute so help_text is unused.
   return concepts.ResourceParameterAttributeConfig(
@@ -54,6 +56,31 @@ def CertificateAttributeConfig(fallthroughs=None):
       fallthroughs=fallthroughs or [])
 
 
+def CaPoolAtrributeConfig(display_name='ca_pool', fallthroughs=None):
+  # TODO(b/186143764): GA Autocompleters
+  return concepts.ResourceParameterAttributeConfig(
+      name=display_name,
+      help_text='The issuing ca pool of the {resource}',
+      fallthroughs=fallthroughs or [])
+
+
+def CertAttributeConfig(fallthroughs=None):
+  # TODO(b/186143764): GA Autocompleters
+  # Certificate is always an anchor attribute so help_text is unused.
+  return concepts.ResourceParameterAttributeConfig(
+      name='certificate', fallthroughs=fallthroughs or [])
+
+
+def CertAuthorityAttributeConfig(arg_name='certificate_authority',
+                                 fallthroughs=None):
+  fallthroughs = fallthroughs or []
+  return concepts.ResourceParameterAttributeConfig(
+      name=arg_name,
+      help_text='The issuing certificate authority of the {resource}.',
+      fallthroughs=fallthroughs)
+
+
+# TODO(b/177604350): Remove Beta code paths
 def CertificateAuthorityAttributeConfig(arg_name='certificate_authority',
                                         fallthroughs=None):
   fallthroughs = fallthroughs or []
@@ -115,6 +142,7 @@ def CreateKmsKeyVersionResourceSpec():
           [deps.ArgFallthrough('project'), PROJECT_PROPERTY_FALLTHROUGH]))
 
 
+# TODO(b/177604350): Remove Beta code paths
 def CreateReusableConfigResourceSpec(location_fallthroughs=None):
   """Create a resource spec for a ReusableConfig.
 
@@ -143,6 +171,7 @@ def CreateReusableConfigResourceSpec(location_fallthroughs=None):
       disable_auto_completers=False)
 
 
+# TODO(b/177604350): Remove Beta code paths
 def CreateCertificateAuthorityResourceSpec(
     display_name,
     certificate_authority_attribute='certificate_authority',
@@ -159,6 +188,52 @@ def CreateCertificateAuthorityResourceSpec(
       disable_auto_completers=False)
 
 
+def CreateCertAuthorityResourceSpec(
+    display_name,
+    certificate_authority_attribute='certificate_authority',
+    location_attribute='location',
+    ca_id_fallthroughs=None):
+  # TODO(b/186143764): GA Autocompleters
+  return concepts.ResourceSpec(
+      'privateca.projects.locations.caPools.certificateAuthorities',
+      api_version='v1',
+      # This will be formatted and used as {resource} in the help text.
+      resource_name=display_name,
+      certificateAuthoritiesId=CertAuthorityAttributeConfig(
+          certificate_authority_attribute, fallthroughs=ca_id_fallthroughs),
+      caPoolsId=CaPoolAtrributeConfig(),
+      locationsId=LocationAttributeConfig(location_attribute),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=True)
+
+
+def CreateCaPoolResourceSpec(display_name, location_attribute='location'):
+  # TODO(b/186143764): GA Autocompleters
+  return concepts.ResourceSpec(
+      'privateca.projects.locations.caPools',
+      api_version='v1',
+      # This will be formatted and used as {resource} in the help text.
+      resource_name=display_name,
+      caPoolsId=CaPoolAtrributeConfig(),
+      locationsId=LocationAttributeConfig(location_attribute),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=True)
+
+
+def CreateCertResourceSpec(display_name, id_fallthroughs=None):
+  return concepts.ResourceSpec(
+      'privateca.projects.locations.caPools.certificates',
+      # This will be formatted and used as {resource} in the help text.
+      api_version='v1',
+      resource_name=display_name,
+      certificatesId=CertAttributeConfig(fallthroughs=id_fallthroughs or []),
+      caPoolsId=CaPoolAtrributeConfig('issuer-pool'),
+      locationsId=LocationAttributeConfig('issuer-location'),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
+# TODO(b/177604350): Remove Beta code paths
 def CreateCertificateResourceSpec(display_name, id_fallthroughs=None):
   return concepts.ResourceSpec(
       'privateca.projects.locations.certificateAuthorities.certificates',
@@ -172,6 +247,7 @@ def CreateCertificateResourceSpec(display_name, id_fallthroughs=None):
       disable_auto_completers=False)
 
 
+# TODO(b/177604350): Remove Beta code paths
 def AddCertificateAuthorityPositionalResourceArg(parser, verb):
   """Add a positional resource argument for a Certificate Authority.
 
@@ -189,6 +265,24 @@ def AddCertificateAuthorityPositionalResourceArg(parser, verb):
       required=True).AddToParser(parser)
 
 
+def AddCertAuthorityPositionalResourceArg(parser, verb):
+  """Add a positional resource argument for a GA Certificate Authority.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  arg_name = 'CERTIFICATE_AUTHORITY'
+  concept_parsers.ConceptParser.ForResource(
+      arg_name,
+      CreateCertAuthorityResourceSpec(arg_name),
+      'The certificate authority {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+# TODO(b/177604350): Remove Beta code paths
 def AddCertificatePositionalResourceArg(parser, verb):
   """Add a positional resource argument for a Certificate.
 
@@ -202,6 +296,23 @@ def AddCertificatePositionalResourceArg(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       arg_name,
       CreateCertificateResourceSpec(arg_name),
+      'The certificate {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddCertPositionalResourceArg(parser, verb):
+  """Add a positional resource argument for a GA Certificate.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  arg_name = 'CERTIFICATE'
+  concept_parsers.ConceptParser.ForResource(
+      arg_name,
+      CreateCertResourceSpec(arg_name),
       'The certificate {}.'.format(verb),
       required=True).AddToParser(parser)
 

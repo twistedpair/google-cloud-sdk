@@ -3141,6 +3141,10 @@
       "description": "Runtime configuration for the organization. Response for GetRuntimeConfig.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Name of the resource in the following format: `organizations\/{org}\/runtimeConfig`.",
+          "type": "string"
+        },
         "analyticsBucket": {
           "description": "Cloud Storage bucket used for uploading Analytics records.",
           "type": "string"
@@ -4826,6 +4830,91 @@
         }
       }
     },
+    "GoogleCloudApigeeV1DeveloperMonetizationConfig": {
+      "id": "GoogleCloudApigeeV1DeveloperMonetizationConfig",
+      "description": "Monetization related configuration for the developer.",
+      "type": "object",
+      "properties": {
+        "billingType": {
+          "description": "`billing_type` specifies whether the developer is PREPAID or POSTPAID.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default\/unset value.",
+            "This means that the developer will maintain a balance the charged amount will be deducted from their balance.",
+            "This means that no balance will be maintained by the developer. The API provider will take care of retrieving the money from the developer."
+          ],
+          "enum": [
+            "BILLING_TYPE_UNSPECIFIED",
+            "PREPAID",
+            "POSTPAID"
+          ]
+        }
+      }
+    },
+    "GoogleCloudApigeeV1DeveloperBalance": {
+      "id": "GoogleCloudApigeeV1DeveloperBalance",
+      "description": "Monetization balance associated with the developer",
+      "type": "object",
+      "properties": {
+        "wallets": {
+          "description": "Output only. List of all the wallets. Each individual wallet stores the balance for a particular type of currency",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1DeveloperBalanceWallet"
+          }
+        }
+      }
+    },
+    "GoogleCloudApigeeV1DeveloperBalanceWallet": {
+      "id": "GoogleCloudApigeeV1DeveloperBalanceWallet",
+      "description": "A wallet will hold a balance for a particular currency",
+      "type": "object",
+      "properties": {
+        "balance": {
+          "description": "Current remaining balance of the developer for a particular currency.",
+          "$ref": "GoogleTypeMoney"
+        },
+        "lastCreditTime": {
+          "description": "Output only. The time when the developer last credited an amount into this wallet.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleTypeMoney": {
+      "id": "GoogleTypeMoney",
+      "description": "Represents an amount of money with its currency type.",
+      "type": "object",
+      "properties": {
+        "currencyCode": {
+          "description": "The three-letter currency code defined in ISO 4217.",
+          "type": "string"
+        },
+        "units": {
+          "description": "The whole units of the amount. For example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar.",
+          "type": "string",
+          "format": "int64"
+        },
+        "nanos": {
+          "description": "Number of nano (10^-9) units of the amount. The value must be between -999,999,999 and +999,999,999 inclusive. If `units` is positive, `nanos` must be positive or zero. If `units` is zero, `nanos` can be positive, zero, or negative. If `units` is negative, `nanos` must be negative or zero. For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1CreditDeveloperBalanceRequest": {
+      "id": "GoogleCloudApigeeV1CreditDeveloperBalanceRequest",
+      "description": "Request for CreditDeveloperBalance.",
+      "type": "object",
+      "properties": {
+        "transactionAmount": {
+          "description": "The amount of money to be credited. The wallet corresponding to the currency specified within `transaction_amount` will be updated. For example, if you specified `currency_code` within `transaction_amount` as \"USD\", then the amount would be added to the wallet which has the \"USD\" currency or if no such wallet exists, a new wallet will be created with the \"USD\" currency.",
+          "$ref": "GoogleTypeMoney"
+        }
+      }
+    },
     "GoogleCloudApigeeV1DeveloperSubscription": {
       "id": "GoogleCloudApigeeV1DeveloperSubscription",
       "description": "Structure of a DeveloperSubscription.",
@@ -5052,27 +5141,6 @@
           "readOnly": true,
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "GoogleTypeMoney": {
-      "id": "GoogleTypeMoney",
-      "description": "Represents an amount of money with its currency type.",
-      "type": "object",
-      "properties": {
-        "currencyCode": {
-          "description": "The three-letter currency code defined in ISO 4217.",
-          "type": "string"
-        },
-        "units": {
-          "description": "The whole units of the amount. For example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar.",
-          "type": "string",
-          "format": "int64"
-        },
-        "nanos": {
-          "description": "Number of nano (10^-9) units of the amount. The value must be between -999,999,999 and +999,999,999 inclusive. If `units` is positive, `nanos` must be positive or zero. If `units` is zero, `nanos` can be positive, zero, or negative. If `units` is negative, `nanos` must be negative or zero. For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -5527,7 +5595,7 @@
           "type": "string"
         },
         "runtimeLocation": {
-          "description": "Cloud Platform location for the runtime instance. Defaults to `us-west1-a`.",
+          "description": "Cloud Platform location for the runtime instance. Defaults to zone `us-west1-a`. If a region is provided, `EVAL` organizations will use the region for automatically selecting a zone for the runtime instance.",
           "type": "string"
         }
       }
@@ -9505,7 +9573,7 @@
                   "type": "string"
                 },
                 "environments": {
-                  "description": "Optional. List of environments that will be attached to the instance during creation.",
+                  "description": "Optional. DEPRECATED: DO NOT USE. List of environments that will be attached to the instance during creation.",
                   "location": "query",
                   "repeated": true,
                   "type": "string"
@@ -11755,6 +11823,84 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Updates developer attributes. This API replaces the existing attributes with those specified in the request. Add new attributes, and include or exclude any existing attributes that you want to retain or remove, respectively. The custom attribute limit is 18. **Note**: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (default). Any custom attributes associated with these entities are cached for at least 180 seconds after the entity is accessed at runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds."
+            },
+            "getMonetizationConfig": {
+              "id": "apigee.organizations.developers.getMonetizationConfig",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/developers/{developersId}/monetizationConfig",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name of the DeveloperMonetizationConfig. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/monetizationConfig`",
+                  "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+\/monetizationConfig$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudApigeeV1DeveloperMonetizationConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get monetization configuration for the developer."
+            },
+            "updateMonetizationConfig": {
+              "id": "apigee.organizations.developers.updateMonetizationConfig",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/developers/{developersId}/monetizationConfig",
+              "httpMethod": "PUT",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name of the DeveloperMonetizationConfig. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/monetizationConfig`",
+                  "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+\/monetizationConfig$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudApigeeV1DeveloperMonetizationConfig"
+              },
+              "response": {
+                "$ref": "GoogleCloudApigeeV1DeveloperMonetizationConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Update monetization configuration for the developer."
+            },
+            "getBalance": {
+              "id": "apigee.organizations.developers.getBalance",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/developers/{developersId}/balance",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name of the DeveloperBalance. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/balance`",
+                  "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+\/balance$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudApigeeV1DeveloperBalance"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get the balance associated with the developer"
             }
           }
           ,
@@ -12437,6 +12583,38 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns a list of all developer attributes."
+                }
+              }
+            },
+            "balance": {
+              "methods": {
+                "credit": {
+                  "id": "apigee.organizations.developers.balance.credit",
+                  "path": "v1/{+name}:credit",
+                  "flatPath": "v1/organizations/{organizationsId}/developers/{developersId}/balance:credit",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Resource name of the DeveloperBalance. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/balance`",
+                      "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+\/balance$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudApigeeV1CreditDeveloperBalanceRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1DeveloperBalance"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Credit the developer balance"
                 }
               }
             },

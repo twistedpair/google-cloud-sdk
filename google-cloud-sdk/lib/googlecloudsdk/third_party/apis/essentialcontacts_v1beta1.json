@@ -308,7 +308,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "The update mask applied to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                  "description": "Optional. The update mask applied to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -556,7 +556,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "The update mask applied to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                  "description": "Optional. The update mask applied to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -804,7 +804,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "The update mask applied to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                  "description": "Optional. The update mask applied to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"

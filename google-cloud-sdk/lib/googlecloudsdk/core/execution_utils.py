@@ -262,6 +262,18 @@ class _ProcessHolder(object):
 
 
 @contextlib.contextmanager
+def _ReplaceEnv(**env_vars):
+  """Temporarily set process environment variables."""
+  old_environ = dict(os.environ)
+  os.environ.update(env_vars)
+  try:
+    yield
+  finally:
+    os.environ.clear()
+    os.environ.update(old_environ)
+
+
+@contextlib.contextmanager
 def _ReplaceSignal(signo, handler):
   old_handler = signal.signal(signo, handler)
   try:
@@ -398,10 +410,45 @@ def _ProcessStreamHandler(proc, err=False, handler=log.Print):
       handler(line_str)
 
 
+def _StreamSubprocessOutput(proc,
+                            raw=False,
+                            stdout_handler=log.Print,
+                            stderr_handler=log.status.Print,
+                            capture=False):
+  """Log stdout and stderr output from running sub-process."""
+  stdout = []
+  stderr = []
+  with _ReplaceEnv(PYTHONUNBUFFERED='1'):
+    while True:
+      out_line = proc.stdout.readline() or b''
+      err_line = proc.stderr.readline() or b''
+      if not (err_line or out_line) and proc.poll() is not None:
+        break
+      if out_line:
+        if capture:
+          stdout.append(out_line)
+        out_str = out_line.decode('utf-8')
+        out_str = out_str.rstrip('\r\n') if not raw else out_str
+        stdout_handler(out_str)
+
+      if err_line:
+        if capture:
+          stderr.append(err_line)
+        err_str = err_line.decode('utf-8')
+        err_str = err_str.rstrip('\r\n') if not raw else err_str
+        stderr_handler(err_str)
+  return proc.returncode, stdout, stderr
+
+
 def _KillProcIfRunning(proc):
   """Kill process and close open streams."""
   if proc:
-    if proc.poll() is None:
+    code = None
+    if hasattr(proc, 'returncode'):
+      code = proc.returncode
+    elif hasattr(proc, 'exitcode'):
+      code = proc.exitcode
+    if code is None or proc.poll() is None:
       proc.terminate()
     try:
       if not proc.stdin.closed:
@@ -500,6 +547,111 @@ def ExecWithStreamingOutput(args,
           _KillProcIfRunning(p)
           raise  OutputStreamProcessingException(e)
 
+      except OSError as err:
+        if err.errno == errno.EACCES:
+          raise PermissionError(err.strerror)
+        elif err.errno == errno.ENOENT:
+          raise InvalidCommandError(args[0])
+        raise
+      process_holder.process = p
+
+      if process_holder.signum is not None:
+        # This covers the small possibility that process_holder handled a
+        # signal when the process was starting but not yet set to
+        # process_holder.process.
+        _KillProcIfRunning(p)
+
+      ret_val = p.returncode
+
+  if no_exit and process_holder.signum is None:
+    return ret_val
+  sys.exit(ret_val)
+
+
+def ExecWithStreamingOutputNonThreaded(args,
+                                       env=None,
+                                       no_exit=False,
+                                       out_func=None,
+                                       err_func=None,
+                                       in_str=None,
+                                       raw_output=False,
+                                       **extra_popen_kwargs):
+  """Emulates the os.exec* set of commands, but uses subprocess.
+
+  This executes the given command, waits for it to finish, and then exits this
+  process with the exit code of the child process. Allows realtime processing of
+  stderr and stdout from subprocess without threads.
+
+  Args:
+    args: [str], The arguments to execute.  The first argument is the command.
+    env: {str: str}, An optional environment for the child process.
+    no_exit: bool, True to just return the exit code of the child instead of
+      exiting.
+    out_func: str->None, a function to call with each line of the stdout of the
+      executed process. This can be e.g. log.file_only_logger.debug or
+      log.out.write.
+    err_func: str->None, a function to call with each line of the stderr of
+      the executed process. This can be e.g. log.file_only_logger.debug or
+      log.err.write.
+    in_str: bytes or str, input to send to the subprocess' stdin.
+    raw_output: bool, stream raw lines of output perserving line
+      endings/formatting.
+    **extra_popen_kwargs: Any additional kwargs will be passed through directly
+      to subprocess.Popen
+
+  Returns:
+    int, The exit code of the child if no_exit is True, else this method does
+    not return.
+
+  Raises:
+    PermissionError: if user does not have execute permission for cloud sdk bin
+    files.
+    InvalidCommandError: if the command entered cannot be found.
+  """
+  log.debug('Executing command: %s', args)
+  # We use subprocess instead of execv because windows does not support process
+  # replacement.  The result of execv on windows is that a new processes is
+  # started and the original is killed.  When running in a shell, the prompt
+  # returns as soon as the parent is killed even though the child is still
+  # running.  subprocess waits for the new process to finish before returning.
+  env = _GetToolEnv(env=env)
+  process_holder = _ProcessHolder()
+  with _ReplaceSignal(signal.SIGTERM, process_holder.Handler):
+    with _ReplaceSignal(signal.SIGINT, process_holder.Handler):
+      out_handler_func = out_func or log.Print
+      err_handler_func = err_func or log.status.Print
+      if in_str:
+        extra_popen_kwargs['stdin'] = subprocess.PIPE
+      try:
+        if args and isinstance(args, list):
+          # On Python 2.x on Windows, the first arg can't be unicode. We encode
+          # encode it anyway because there is really nothing else we can do if
+          # that happens.
+          # https://bugs.python.org/issue19264
+          args = [encoding.Encode(a) for a in args]
+        p = subprocess.Popen(args, env=env, stderr=subprocess.PIPE,
+                             stdout=subprocess.PIPE, **extra_popen_kwargs)
+
+        if in_str:
+          in_str = six.text_type(in_str).encode('utf-8')
+          try:
+            p.stdin.write(in_str)
+            p.stdin.close()
+          except OSError as exc:
+            if (exc.errno == errno.EPIPE or
+                exc.errno == errno.EINVAL):
+              pass  # Obey same conventions as subprocess.communicate()
+            else:
+              _KillProcIfRunning(p)
+              raise OutputStreamProcessingException(exc)
+
+        try:
+          _StreamSubprocessOutput(p, stdout_handler=out_handler_func,
+                                  stderr_handler=err_handler_func,
+                                  raw=raw_output)
+        except Exception as e:
+          _KillProcIfRunning(p)
+          raise OutputStreamProcessingException(e)
       except OSError as err:
         if err.errno == errno.EACCES:
           raise PermissionError(err.strerror)

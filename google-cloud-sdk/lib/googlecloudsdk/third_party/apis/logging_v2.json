@@ -298,6 +298,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "indexConfigs": {
+          "description": "A list of indexed fields and related configuration data.",
+          "type": "array",
+          "items": {
+            "$ref": "IndexConfig"
+          }
         }
       }
     },
@@ -319,6 +326,37 @@
           "description": "Output only. An IAM service account used by Cloud Logging to create views on the destination dataset.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "IndexConfig": {
+      "id": "IndexConfig",
+      "description": "Configuration for an indexed field.",
+      "type": "object",
+      "properties": {
+        "fieldPath": {
+          "description": "Required. The LogEntry field path to index.Note that some paths are automatically indexed, and other paths are not candidate for indexing. See indexing documentation for details.For example: jsonPayload.request.status",
+          "type": "string"
+        },
+        "type": {
+          "description": "Required. The type of data in this index.",
+          "type": "string",
+          "enumDescriptions": [
+            "The index's type is unspecified.",
+            "The index is a string-type index.",
+            "The index is a integer-type index."
+          ],
+          "enum": [
+            "INDEX_TYPE_UNSPECIFIED",
+            "INDEX_TYPE_STRING",
+            "INDEX_TYPE_INTEGER"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the index was last modified.This is used to return the timestamp, and will be ignored if supplied during update. It is likely that before this goes into alpha, the indexconfig message will be updated with another distinct timestamp in order to provide information on when the index took effect.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -2023,7 +2061,7 @@
       "description": "Unimplemented. Do not use.Metadata for CopyLogEntries long running operations.",
       "type": "object",
       "properties": {
-        "createTime": {
+        "startTime": {
           "description": "The create time of an operation.",
           "type": "string",
           "format": "google-datetime"
@@ -3142,7 +3180,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "logName": {
-                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\".For more information about log names, see LogEntry.",
+                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/123\/logs\/cloudaudit.googleapis.com%2Factivity\".For more information about log names, see LogEntry.",
                   "pattern": "^projects\/[^\/]+\/logs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4336,7 +4374,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "logName": {
-                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\".For more information about log names, see LogEntry.",
+                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/123\/logs\/cloudaudit.googleapis.com%2Factivity\".For more information about log names, see LogEntry.",
                   "pattern": "^folders\/[^\/]+\/logs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5387,7 +5425,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "logName": {
-                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\".For more information about log names, see LogEntry.",
+                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/123\/logs\/cloudaudit.googleapis.com%2Factivity\".For more information about log names, see LogEntry.",
                   "pattern": "^billingAccounts\/[^\/]+\/logs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6905,7 +6943,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "logName": {
-                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\".For more information about log names, see LogEntry.",
+                  "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/123\/logs\/cloudaudit.googleapis.com%2Factivity\".For more information about log names, see LogEntry.",
                   "pattern": "^organizations\/[^\/]+\/logs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7725,7 +7763,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "logName": {
-              "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\".For more information about log names, see LogEntry.",
+              "description": "Required. The resource name of the log to delete: projects\/[PROJECT_ID]\/logs\/[LOG_ID] organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID] billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID] folders\/[FOLDER_ID]\/logs\/[LOG_ID][LOG_ID] must be URL-encoded. For example, \"projects\/my-project-id\/logs\/syslog\", \"organizations\/123\/logs\/cloudaudit.googleapis.com%2Factivity\".For more information about log names, see LogEntry.",
               "pattern": "^[^\/]+\/[^\/]+\/logs\/[^\/]+$",
               "location": "path",
               "required": true,

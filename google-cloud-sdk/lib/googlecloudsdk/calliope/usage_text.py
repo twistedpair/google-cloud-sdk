@@ -313,10 +313,14 @@ def GetArgDetails(arg, depth=0):
         choices_iteritems = six.iteritems(choices)
         if not isinstance(choices, collections.OrderedDict):
           choices_iteritems = sorted(choices_iteritems)
-        choices = [
-            '*{name}*{depth} {desc}'.format(
-                name=name, desc=desc, depth=':' * (depth + _CHOICE_OFFSET))
-            for name, desc in choices_iteritems]
+        choices = []
+        for name, desc in choices_iteritems:
+          dedented_desc = textwrap.dedent(desc)
+          choice_help = '*{name}*{depth} {desc}'.format(
+              name=name,
+              desc=dedented_desc,
+              depth=':' * (depth + _CHOICE_OFFSET))
+          choices.append(choice_help)
         # Append marker to indicate end of list.
         choices.append(':' * (depth + _CHOICE_OFFSET))
         extra_help.append(

@@ -116,8 +116,7 @@ class CopyTaskIterator:
       if self._custom_md5_digest:
         source.resource.md5_hash = self._custom_md5_digest
 
-      # \r prevents output from getting mixed with progress_tracker.
-      log.status.Print('\rCopying {} to {}'.format(
+      log.status.Print('Copying {} to {}'.format(
           source_url_string,
           destination_resource.storage_url.versionless_url_string))
       if self._task_status_queue:

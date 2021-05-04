@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base as calliope_base
@@ -80,3 +82,15 @@ def WaitForOperation(client, messages, operation, description):
     except retry.WaitException:
       raise exceptions.FunctionsError('Operation {0} is taking too long'.format(
           request.name))
+
+
+def FormatTimestamp(timestamp):
+  """Formats a timestamp which will be presented to a user.
+
+  Args:
+    timestamp: Raw timestamp string in RFC3339 UTC "Zulu" format.
+
+  Returns:
+    Formatted timestamp string.
+  """
+  return re.sub(r'(\.\d{3})\d*Z$', r'\1', timestamp.replace('T', ' '))

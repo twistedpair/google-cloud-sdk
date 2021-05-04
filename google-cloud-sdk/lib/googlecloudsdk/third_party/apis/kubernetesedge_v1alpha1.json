@@ -284,14 +284,14 @@
       "type": "object",
       "properties": {
         "clusterIpv4CidrBlocks": {
-          "description": "All pods in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
+          "description": "All pods in the cluster are assigned an RFC1918 IPv4 address from these blocks. Only a single block is supported. This field cannot be changed after creation.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "servicesIpv4CidrBlocks": {
-          "description": "All services in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
+          "description": "All services in the cluster are assigned an RFC1918 IPv4 address from these blocks. Only a single block is supported. This field cannot be changed after creation.",
           "type": "array",
           "items": {
             "type": "string"
@@ -350,70 +350,6 @@
         },
         "nodeCount": {
           "description": "The number of nodes in the pool.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "Node": {
-      "id": "Node",
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "createTime": {
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "bootstrapKubeconfig": {
-          "description": "Kubeconfig data which may be used to bootstrap this node into its parent cluster using a TLS bootstrap token.",
-          "$ref": "BootstrapKubeconfig"
-        },
-        "kubeletConfig": {
-          "description": "Kubelet configuration for this node. See https:\/\/kubernetes.io\/docs\/reference\/config-api\/kubelet-config.v1beta",
-          "$ref": "KubeletConfig"
-        }
-      }
-    },
-    "BootstrapKubeconfig": {
-      "id": "BootstrapKubeconfig",
-      "description": "Kubeconfig data which may be used to bootstrap this node into its parent cluster using a TLS bootstrap token. The machine consuming this data should format it to a kubeconfig file, and then start the kubelet with --bootstrap-kubeconfig=. See https:\/\/kubernetes.io\/docs\/reference\/command-line-tools-reference\/kubelet-tls-bootstrapping\/#kubelet-configuration for bootstrapping and https:\/\/godoc.org\/k8s.io\/client-go\/tools\/clientcmd\/api\/v1#Cluster for field descriptions.",
-      "type": "object",
-      "properties": {
-        "certificateAuthorityData": {
-          "description": "Base64-encoded PEM certificate authority for the cluster.",
-          "type": "string"
-        },
-        "server": {
-          "description": "Address of the kubernetes cluster control plane (https:\/\/hostname:port).",
-          "type": "string"
-        },
-        "bootstrapToken": {
-          "description": "Bearer token for authentication and TLS bootstrapping into the Kubernetes cluster.",
-          "type": "string"
-        }
-      }
-    },
-    "KubeletConfig": {
-      "id": "KubeletConfig",
-      "description": "Kubelet configuration for this node. See https:\/\/kubernetes.io\/docs\/reference\/config-api\/kubelet-config.v1beta",
-      "type": "object",
-      "properties": {
-        "maxPods": {
-          "description": "The number of pods that can run on this Kubelet. If unspecified, the Kubernetes default will be used.",
           "type": "integer",
           "format": "int32"
         }
@@ -1401,37 +1337,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a single NodePool."
-                    }
-                  }
-                  ,
-                  "resources": {
-                    "nodes": {
-                      "methods": {
-                        "get": {
-                          "id": "kubernetesedge.projects.locations.clusters.nodePools.nodes.get",
-                          "path": "v1alpha1/{+name}",
-                          "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}/nodes/{nodesId}",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "name": {
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+\/nodes\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "Node"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Gets details of a single Node."
-                        }
-                      }
                     }
                   }
                 }

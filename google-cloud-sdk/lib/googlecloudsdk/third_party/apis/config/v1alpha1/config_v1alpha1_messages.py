@@ -599,11 +599,11 @@ class Function(_messages.Message):
 
   Messages:
     ConfigValue: Optional. KRM resource passed to the function as input. The
-      entire resource must be no larger than 1 KB.
+      entire resource must be no larger than 1024 bytes.
 
   Fields:
     config: Optional. KRM resource passed to the function as input. The entire
-      resource must be no larger than 1 KB.
+      resource must be no larger than 1024 bytes.
     image: Required. Container image to run. Example: `gcr.io/kpt-fn/set-
       label`
   """
@@ -611,7 +611,7 @@ class Function(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ConfigValue(_messages.Message):
     r"""Optional. KRM resource passed to the function as input. The entire
-    resource must be no larger than 1 KB.
+    resource must be no larger than 1024 bytes.
 
     Messages:
       AdditionalProperty: An additional property for a ConfigValue object.

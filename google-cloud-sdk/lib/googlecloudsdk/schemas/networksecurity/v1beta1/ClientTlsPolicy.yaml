@@ -5,7 +5,6 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - name
-- serverValidationCa
 additionalProperties: false
 properties:
   COMMENT:
@@ -47,7 +46,8 @@ properties:
   serverValidationCa:
     description: |-
       Defines the mechanism to obtain the Certificate Authority certificate to
-      validate the server certificate.
+      validate the server certificate. If empty, client does not validate the
+      server certificate.
     type: array
     items:
       $ref: ValidationCA.yaml

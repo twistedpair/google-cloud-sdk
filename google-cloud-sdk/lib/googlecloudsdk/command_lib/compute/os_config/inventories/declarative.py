@@ -119,3 +119,52 @@ def CreateTableViewResponseHook(inventory_list, args):
             update_time=inventory.updateTime,
             osconfig_agent_version=inventory.osInfo.osconfigAgentVersion))
   return {view: rows}
+
+
+class DescribeTableView:
+  """View model for inventories describe."""
+
+  def __init__(self, installed_packages, updatedable_packages,
+               system_information):
+    self.installed_packages = installed_packages
+    self.updatedable_packages = updatedable_packages
+    self.system_information = system_information
+
+
+def CreateDescribeTableViewResponseHook(response, args):
+  """Create DescribeTableView from GetInventory response.
+
+  Args:
+    response: Response from GetInventory
+    args: gcloud invocation args
+
+  Returns:
+    DescribeTableView
+  """
+  installed = {}
+  available = {}
+  if response.osInfo:
+    system_information = encoding.MessageToDict(response.osInfo)
+  else:
+    system_information = {}
+  system_information['updateTime'] = response.updateTime
+  if args.view == 'full' and response.items:
+    for v in six.itervalues(encoding.MessageToDict(response.items)):
+      if 'installedPackage' in v:
+        dest = installed
+        pkg = v['installedPackage']
+      elif 'availablePackage' in v:
+        dest = available
+        pkg = v['availablePackage']
+      else:
+        continue
+      for pkg_type in [
+          'yumPackage', 'aptPackage', 'zypperPackage', 'googetPackage',
+          'zypperPatch', 'wuaPackage', 'qfePackage', 'cosPackage'
+      ]:
+        if pkg_type in pkg:
+          if pkg_type not in dest:
+            dest[pkg_type] = []
+          dest[pkg_type].append(pkg[pkg_type])
+          break
+  return DescribeTableView(installed, available, system_information)

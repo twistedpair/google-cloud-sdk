@@ -188,6 +188,9 @@ definitions:
       # The name of the API field the value of this argument goes into.
       # At least one of [api_field, arg_name] must be given.
       api_field: {type: string}
+      # Disables yaml_command_test check for unused arguments. Some arguments get used
+      # in such a way that static analysis can't catch it.
+      disable_unused_arg_check: {type: boolean}
       # The help text for this individual flag.
       help_text: {type: string}
       # The name of the argument as it should appear in the CLI. If

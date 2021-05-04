@@ -67,8 +67,37 @@ def TransformTrigger(r, undefined=''):
     return 'Event Trigger'
   return undefined
 
+
+def _TransformVersionId(r, undefined='-'):
+  """Returns Cloud Functions product version.
+
+  Args:
+    r: JSON-serializable object.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    str containing inferred product version.
+  """
+
+  # r.get returns None if entry doesn't exist
+  entry_point = r.get('entryPoint')
+  build_id = r.get('buildId')
+  runtime = r.get('runtime')
+  if any([entry_point, build_id, runtime]):
+    return '1'
+
+  build_config = r.get('buildConfig')
+  service_config = r.get('serviceConfig')
+
+  if any([build_config, service_config]):
+    return '2'
+
+  return undefined
+
+
 _TRANSFORMS = {
     'trigger': TransformTrigger,
+    'versionId': _TransformVersionId,
 }
 
 

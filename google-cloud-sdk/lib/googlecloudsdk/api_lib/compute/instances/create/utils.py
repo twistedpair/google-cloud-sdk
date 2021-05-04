@@ -854,7 +854,7 @@ def CreateNetworkInterfaceMessages(resources,
                                    project,
                                    location,
                                    scope,
-                                   network_interface_file=None):
+                                   network_interface_json=None):
   """Create network interface messages.
 
   Args:
@@ -866,8 +866,8 @@ def CreateNetworkInterfaceMessages(resources,
     location: Location of the instance that will own the new network interfaces.
     scope: Location type of the instance that will own the new network
       interfaces.
-    network_interface_file: CLI argument specifying network interfaces in a YAML
-      file.
+    network_interface_json: CLI argument value specifying network interfaces in
+      a JSON string directly in the command or in a file.
 
   Returns:
     list, items are NetworkInterfaceMessages.
@@ -894,11 +894,11 @@ def CreateNetworkInterfaceMessages(resources,
               scope=scope,
               alias_ip_ranges_string=interface.get('aliases', None),
               network_tier=network_tier))
-  elif network_interface_file is not None:
-    network_interface_yaml = yaml.load(network_interface_file)
-    if not network_interface_yaml:  # Empty files/lists.
+  elif network_interface_json is not None:
+    network_interfaces = yaml.load(network_interface_json)
+    if not network_interfaces:  # Empty json.
       return result
-    for interface in network_interface_yaml:
+    for interface in network_interfaces:
       if not interface:  # Empty dicts.
         continue
       network_interface = messages_util.DictToMessageWithErrorCheck(
@@ -923,12 +923,17 @@ def GetNetworkInterfacesWithValidation(args,
   """Validates and retrieves the network interface message."""
   network_interface_from_file = getattr(args, 'network_interface_from_file',
                                         None)
-  if args.network_interface or network_interface_from_file:
+  network_interface_from_json_string = getattr(
+      args, 'network_interface_from_json_string', None)
+  if (args.network_interface or network_interface_from_file or
+      network_interface_from_json_string):
     return CreateNetworkInterfaceMessages(
         resources=resource_parser,
         compute_client=compute_client,
         network_interface_arg=args.network_interface,
-        network_interface_file=network_interface_from_file,
+        network_interface_json=network_interface_from_file
+        if network_interface_from_file is not None else
+        network_interface_from_json_string,
         project=project,
         location=location,
         scope=scope)

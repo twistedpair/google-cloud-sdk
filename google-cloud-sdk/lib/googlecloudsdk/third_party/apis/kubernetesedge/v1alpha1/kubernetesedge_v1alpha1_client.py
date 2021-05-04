@@ -39,7 +39,6 @@ class KubernetesedgeV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_clusters_nodePools_nodes = self.ProjectsLocationsClustersNodePoolsNodesService(self)
     self.projects_locations_clusters_nodePools = self.ProjectsLocationsClustersNodePoolsService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_machines = self.ProjectsLocationsMachinesService(self)
@@ -49,43 +48,6 @@ class KubernetesedgeV1alpha1(base_api.BaseApiClient):
     self.projects_locations_sites = self.ProjectsLocationsSitesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsLocationsClustersNodePoolsNodesService(base_api.BaseApiService):
-    """Service class for the projects_locations_clusters_nodePools_nodes resource."""
-
-    _NAME = 'projects_locations_clusters_nodePools_nodes'
-
-    def __init__(self, client):
-      super(KubernetesedgeV1alpha1.ProjectsLocationsClustersNodePoolsNodesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Node.
-
-      Args:
-        request: (KubernetesedgeProjectsLocationsClustersNodePoolsNodesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Node) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}/nodes/{nodesId}',
-        http_method='GET',
-        method_id='kubernetesedge.projects.locations.clusters.nodePools.nodes.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='KubernetesedgeProjectsLocationsClustersNodePoolsNodesGetRequest',
-        response_type_name='Node',
-        supports_download=False,
-    )
 
   class ProjectsLocationsClustersNodePoolsService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters_nodePools resource."""

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20210419",
+ "revision": "20210423",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3849,7 +3849,7 @@
     },
     "secureTags": {
      "type": "array",
-     "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 300.",
+     "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 50.",
      "items": {
       "type": "string"
      }
@@ -4060,6 +4060,10 @@
    "type": "object",
    "description": "Represents a regional Commitment resource.\n\nCreating a commitment resource means that you are purchasing a committed use contract with an explicit start and end time. You can create commitments based on vCPUs and memory usage and receive discounted rates. For full details, read Signing Up for Committed Use Discounts. (== resource_for {$api_version}.regionCommitments ==)",
    "properties": {
+    "autoRenew": {
+     "type": "boolean",
+     "description": "Specifies whether to enable automatic renewal for the commitment. The default value is false if not specified. The field can be updated until the day of the commitment expiration at 12:00am PST. If the field is set to true, the commitment will be automatically renewed for either one or three years according to the terms of the existing commitment."
+    },
     "category": {
      "type": "string",
      "description": "The category of the commitment. Category MACHINE specifies commitments composed of machine resources such as VCPU or MEMORY, listed in resources. Category LICENSE specifies commitments composed of software licenses, listed in licenseResources. Note that only MACHINE commitments should have a Type specified.",
@@ -10685,7 +10689,7 @@
     },
     "secureTags": {
      "type": "array",
-     "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 300.",
+     "description": "[Input Only] Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 50.",
      "items": {
       "type": "string"
      }
@@ -32129,7 +32133,7 @@
    "properties": {
     "sslCertificates": {
      "type": "array",
-     "description": "New set of SslCertificate resources to associate with this TargetHttpsProxy resource. Currently exactly one SslCertificate resource must be specified.",
+     "description": "New set of SslCertificate resources to associate with this TargetHttpsProxy resource. At least one SSL certificate must be specified. Currently, you may specify up to 15 SSL certificates.",
      "items": {
       "type": "string"
      }
@@ -32228,7 +32232,7 @@
     },
     "sslCertificates": {
      "type": "array",
-     "description": "URLs to SslCertificate resources that are used to authenticate connections between users and the load balancer. At least one SSL certificate must be specified. Currently, you may specify up to 15 SSL certificates.",
+     "description": "URLs to SslCertificate resources that are used to authenticate connections between users and the load balancer. At least one SSL certificate must be specified. Currently, you may specify up to 15 SSL certificates. sslCertificates do not apply when the load balancing scheme is set to INTERNAL_SELF_MANAGED.",
      "items": {
       "type": "string"
      }
@@ -33427,7 +33431,7 @@
    "properties": {
     "sslCertificates": {
      "type": "array",
-     "description": "New set of URLs to SslCertificate resources to associate with this TargetSslProxy. Currently exactly one ssl certificate must be specified.",
+     "description": "New set of URLs to SslCertificate resources to associate with this TargetSslProxy. At least one SSL certificate must be specified. Currently, you may specify up to 15 SSL certificates.",
      "items": {
       "type": "string"
      }
@@ -33488,7 +33492,7 @@
     },
     "sslCertificates": {
      "type": "array",
-     "description": "URLs to SslCertificate resources that are used to authenticate connections to Backends. At least one SSL certificate must be specified. Currently, you may specify up to 15 SSL certificates.",
+     "description": "URLs to SslCertificate resources that are used to authenticate connections to Backends. At least one SSL certificate must be specified. Currently, you may specify up to 15 SSL certificates. sslCertificates do not apply when the load balancing scheme is set to INTERNAL_SELF_MANAGED.",
      "items": {
       "type": "string"
      }
@@ -47009,7 +47013,7 @@
       },
       "secureTags": {
        "type": "string",
-       "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 300.",
+       "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 50.",
        "repeated": true,
        "location": "query"
       },
@@ -48405,7 +48409,7 @@
       },
       "secureTags": {
        "type": "string",
-       "description": "Secure tags to apply to this instance. Maximum number of secure tags allowed is 300.",
+       "description": "Secure tags to apply to this instance. Maximum number of secure tags allowed is 50.",
        "repeated": true,
        "location": "query"
       },
@@ -56415,6 +56419,61 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "update": {
+     "id": "compute.regionCommitments.update",
+     "path": "projects/{project}/regions/{region}/commitments/{commitment}",
+     "httpMethod": "PATCH",
+     "description": "Updates the specified commitment with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: auto_renew.",
+     "parameters": {
+      "commitment": {
+       "type": "string",
+       "description": "Name of the commitment for which auto renew is being updated.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "paths": {
+       "type": "string",
+       "description": "The set of field mask paths.",
+       "repeated": true,
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "commitment"
+     ],
+     "request": {
+      "$ref": "Commitment"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "updateReservations": {

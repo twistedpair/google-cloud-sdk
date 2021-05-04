@@ -317,6 +317,33 @@ class TranslateV3beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def BatchTranslateDocument(self, request, global_params=None):
+      r"""Translates a large volume of document in asynchronous batch mode. This function provides real-time output as the inputs are being processed. If caller cancels a request, the partial results (for an input file, it's all or nothing) may still be available on the specified output location. This call returns immediately and you can use google.longrunning.Operation.name to poll the status of the call.
+
+      Args:
+        request: (TranslateProjectsLocationsBatchTranslateDocumentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('BatchTranslateDocument')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchTranslateDocument.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3beta1/projects/{projectsId}/locations/{locationsId}:batchTranslateDocument',
+        http_method='POST',
+        method_id='translate.projects.locations.batchTranslateDocument',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3beta1/{+parent}:batchTranslateDocument',
+        request_field='batchTranslateDocumentRequest',
+        request_type_name='TranslateProjectsLocationsBatchTranslateDocumentRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def BatchTranslateText(self, request, global_params=None):
       r"""Translates a large volume of text in asynchronous batch mode. This function provides real-time output as the inputs are being processed. If caller cancels a request, the partial results (for an input file, it's all or nothing) may still be available on the specified output location. This call returns immediately and you can use google.longrunning.Operation.name to poll the status of the call.
 
@@ -449,6 +476,33 @@ class TranslateV3beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='TranslateProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def TranslateDocument(self, request, global_params=None):
+      r"""Translates documents in synchronous mode.
+
+      Args:
+        request: (TranslateProjectsLocationsTranslateDocumentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TranslateDocumentResponse) The response message.
+      """
+      config = self.GetMethodConfig('TranslateDocument')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TranslateDocument.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3beta1/projects/{projectsId}/locations/{locationsId}:translateDocument',
+        http_method='POST',
+        method_id='translate.projects.locations.translateDocument',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3beta1/{+parent}:translateDocument',
+        request_field='translateDocumentRequest',
+        request_type_name='TranslateProjectsLocationsTranslateDocumentRequest',
+        response_type_name='TranslateDocumentResponse',
         supports_download=False,
     )
 

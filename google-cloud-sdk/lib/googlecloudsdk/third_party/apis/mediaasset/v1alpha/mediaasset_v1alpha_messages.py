@@ -164,7 +164,11 @@ class AnnotationSet(_messages.Message):
       value pair.
     name: A user-specified resource name of the annotationSet `projects/{proje
       ct}/locations/{location}/assetTypes/{asset_type}/assets/{asset}/annotati
-      onSets/{annotation_set}`.
+      onSets/{annotation_set}`. Here {annotation_set} is a resource id.
+      Detailed rules for a resource id are: 1. 1 character minimum, 63
+      characters maximum 2. only contains letters, digits, underscore and
+      hyphen 3. starts with a letter if length == 1, starts with a letter or
+      underscore if length > 1
     updateTime: Output only. The latest update time of the annotationSet.
   """
 
@@ -256,6 +260,7 @@ class Asset(_messages.Message):
   Messages:
     LabelsValue: The labels associated with this resource. Each label is a
       key-value pair.
+    LinkInfoValue: Information about the links.
     LinkSetsValue: Named collections of Link Sets, each having qualified
       links.
     LinksValue: Links to other assets.
@@ -263,17 +268,23 @@ class Asset(_messages.Message):
     MetadataInfoValue: Information about the metadata fields.
 
   Fields:
-    createTime: The creation time.
+    createTime: Output only. The creation time.
     etag: Etag of the resource used in output and update requests.
     labels: The labels associated with this resource. Each label is a key-
       value pair.
+    linkInfo: Information about the links.
     linkSets: Named collections of Link Sets, each having qualified links.
     links: Links to other assets.
     metadata: List of metadata for this asset.
     metadataInfo: Information about the metadata fields.
     name: The resource name of the asset, in the following form: `projects/{pr
-      oject}/locations/{location}/assetTypes/{type}/assets/{asset}`.
+      oject}/locations/{location}/assetTypes/{type}/assets/{asset}`. Here
+      {asset} is a resource id. Detailed rules for a resource id are: 1. 1
+      character minimum, 63 characters maximum 2. only contains letters,
+      digits, underscore and hyphen 3. starts with a letter if length == 1,
+      starts with a letter or underscore if length > 1
     state: State of the asset
+    updateTime: Output only. Last update time.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -312,6 +323,30 @@ class Asset(_messages.Message):
 
       key = _messages.StringField(1)
       value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LinkInfoValue(_messages.Message):
+    r"""Information about the links.
+
+    Messages:
+      AdditionalProperty: An additional property for a LinkInfoValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LinkInfoValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LinkInfoValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A LinkInfo attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('LinkInfo', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -442,12 +477,14 @@ class Asset(_messages.Message):
   createTime = _messages.StringField(1)
   etag = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
-  linkSets = _messages.MessageField('LinkSetsValue', 4)
-  links = _messages.MessageField('LinksValue', 5)
-  metadata = _messages.MessageField('MetadataValue', 6)
-  metadataInfo = _messages.MessageField('MetadataInfoValue', 7)
-  name = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  linkInfo = _messages.MessageField('LinkInfoValue', 4)
+  linkSets = _messages.MessageField('LinkSetsValue', 5)
+  links = _messages.MessageField('LinksValue', 6)
+  metadata = _messages.MessageField('MetadataValue', 7)
+  metadataInfo = _messages.MessageField('MetadataInfoValue', 8)
+  name = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class AssetTransformation(_messages.Message):
@@ -556,7 +593,11 @@ class AssetType(_messages.Message):
       configuration.
     metadataConfigs: Mapping of field name to its configuration.
     name: The resource name of the asset type, in the following form:
-      `projects/{project}/locations/{location}/assetTypes/{type}`.
+      `projects/{project}/locations/{location}/assetTypes/{type}`. Here {type}
+      is a resource id. Detailed rules for a resource id are: 1. 1 character
+      minimum, 63 characters maximum 2. only contains letters, digits,
+      underscore and hyphen 3. starts with a letter if length == 1, starts
+      with a letter or underscore if length > 1
     sortOrder: Specifies sort order for all assets of the type. If not
       specified, assets are sorted in reverse create_time order (newest
       first).
@@ -854,7 +895,11 @@ class ComplexType(_messages.Message):
     labels: The labels associated with this resource. Each label is a key-
       value pair.
     name: The resource name of the complex type, in the following form:
-      `projects/{project}/locations/{location}/complexTypes/{type}`.
+      `projects/{project}/locations/{location}/complexTypes/{type}`. Here
+      {type} is a resource id. Detailed rules for a resource id are: 1. 1
+      character minimum, 63 characters maximum 2. only contains letters,
+      digits, underscore and hyphen 3. starts with a letter if length == 1,
+      starts with a letter or underscore if length > 1
     updateTime: The last-modified time.
   """
 
@@ -1522,6 +1567,16 @@ class LinkConfig(_messages.Message):
   required = _messages.BooleanField(2)
 
 
+class LinkInfo(_messages.Message):
+  r"""Additional link information.
+
+  Fields:
+    owner: Output only. The owner of the link, if it's updated by the system.
+  """
+
+  owner = _messages.StringField(1)
+
+
 class LinkSet(_messages.Message):
   r"""A LinkSet object.
 
@@ -1924,7 +1979,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsListRe
   stRequest object.
 
   Fields:
-    filter: The filter to apply to list results.
+    filter: The filter to apply to list results. Valid field expressions are
+      defined in assetType.annotationSetConfig.indexedFieldConfig. Format:
+      https://cloud.google.com/logging/docs/view/advanced-queries
     pageSize: The maximum number of annotations to return. The service may
       return fewer than this value. If unspecified, at most 50 annotations
       will be returned. The maximum value is 100; values above 100 will be
@@ -2042,7 +2099,11 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsPatchRequest(_mes
     annotationSet: A AnnotationSet resource to be passed as the request body.
     name: A user-specified resource name of the annotationSet `projects/{proje
       ct}/locations/{location}/assetTypes/{asset_type}/assets/{asset}/annotati
-      onSets/{annotation_set}`.
+      onSets/{annotation_set}`. Here {annotation_set} is a resource id.
+      Detailed rules for a resource id are: 1. 1 character minimum, 63
+      characters maximum 2. only contains letters, digits, underscore and
+      hyphen 3. starts with a letter if length == 1, starts with a letter or
+      underscore if length > 1
     updateMask: Required. The list of fields to be updated.
   """
 
@@ -2133,7 +2194,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsListRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsListRequest object.
 
   Fields:
-    filter: The filter to apply to list results.
+    filter: The filter to apply to list results. Valid field expressions are
+      defined in assetType.indexedFieldConfig. Format:
+      https://cloud.google.com/logging/docs/view/advanced-queries
     pageSize: The maximum number of items to return. If unspecified, server
       will pick an appropriate default. Server may return fewer items than
       requested. A caller should only rely on response's next_page_token to
@@ -2202,7 +2265,11 @@ class MediaassetProjectsLocationsAssetTypesAssetsLroUpdateRequest(_messages.Mess
   Fields:
     asset: A Asset resource to be passed as the request body.
     name: The resource name of the asset, in the following form: `projects/{pr
-      oject}/locations/{location}/assetTypes/{type}/assets/{asset}`.
+      oject}/locations/{location}/assetTypes/{type}/assets/{asset}`. Here
+      {asset} is a resource id. Detailed rules for a resource id are: 1. 1
+      character minimum, 63 characters maximum 2. only contains letters,
+      digits, underscore and hyphen 3. starts with a letter if length == 1,
+      starts with a letter or underscore if length > 1
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2233,7 +2300,11 @@ class MediaassetProjectsLocationsAssetTypesAssetsPatchRequest(_messages.Message)
   Fields:
     asset: A Asset resource to be passed as the request body.
     name: The resource name of the asset, in the following form: `projects/{pr
-      oject}/locations/{location}/assetTypes/{type}/assets/{asset}`.
+      oject}/locations/{location}/assetTypes/{type}/assets/{asset}`. Here
+      {asset} is a resource id. Detailed rules for a resource id are: 1. 1
+      character minimum, 63 characters maximum 2. only contains letters,
+      digits, underscore and hyphen 3. starts with a letter if length == 1,
+      starts with a letter or underscore if length > 1
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2495,7 +2566,11 @@ class MediaassetProjectsLocationsAssetTypesPatchRequest(_messages.Message):
   Fields:
     assetType: A AssetType resource to be passed as the request body.
     name: The resource name of the asset type, in the following form:
-      `projects/{project}/locations/{location}/assetTypes/{type}`.
+      `projects/{project}/locations/{location}/assetTypes/{type}`. Here {type}
+      is a resource id. Detailed rules for a resource id are: 1. 1 character
+      minimum, 63 characters maximum 2. only contains letters, digits,
+      underscore and hyphen 3. starts with a letter if length == 1, starts
+      with a letter or underscore if length > 1
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2590,7 +2665,10 @@ class MediaassetProjectsLocationsAssetTypesRulesPatchRequest(_messages.Message):
   Fields:
     name: A user-specified resource name of the rule
       `projects/{project}/locations/{location}/assetTypes/{type}/rules/{rule}`
-      .
+      . Here {rule} is a resource id. Detailed rules for a resource id are: 1.
+      1 character minimum, 63 characters maximum 2. only contains letters,
+      digits, underscore and hyphen 3. starts with a letter if length == 1,
+      starts with a letter or underscore if length > 1
     rule: A Rule resource to be passed as the request body.
     updateMask: Required. The list of fields to be updated.
   """
@@ -2743,7 +2821,11 @@ class MediaassetProjectsLocationsComplexTypesPatchRequest(_messages.Message):
   Fields:
     complexType: A ComplexType resource to be passed as the request body.
     name: The resource name of the complex type, in the following form:
-      `projects/{project}/locations/{location}/complexTypes/{type}`.
+      `projects/{project}/locations/{location}/complexTypes/{type}`. Here
+      {type} is a resource id. Detailed rules for a resource id are: 1. 1
+      character minimum, 63 characters maximum 2. only contains letters,
+      digits, underscore and hyphen 3. starts with a letter if length == 1,
+      starts with a letter or underscore if length > 1
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2994,6 +3076,10 @@ class MediaassetProjectsLocationsTransformersPatchRequest(_messages.Message):
   Fields:
     name: The resource name of the transformer, in the following form:
       `projects/{project}/locations/{location}/transformer/{transformer}`.
+      Here {transformer} is a resource id. Detailed rules for a resource id
+      are: 1. 1 character minimum, 63 characters maximum 2. only contains
+      letters, digits, underscore and hyphen 3. starts with a letter if length
+      == 1, starts with a letter or underscore if length > 1
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -3069,10 +3155,13 @@ class MetadataInfo(_messages.Message):
   r"""A MetadataInfo object.
 
   Fields:
+    owner: Output only. The owner of the metadata, if it's updated by the
+      system.
     updateTime: Time at which this field was updated.
   """
 
-  updateTime = _messages.StringField(1)
+  owner = _messages.StringField(1)
+  updateTime = _messages.StringField(2)
 
 
 class Operation(_messages.Message):
@@ -3224,7 +3313,10 @@ class Rule(_messages.Message):
       value pair.
     name: A user-specified resource name of the rule
       `projects/{project}/locations/{location}/assetTypes/{type}/rules/{rule}`
-      .
+      . Here {rule} is a resource id. Detailed rules for a resource id are: 1.
+      1 character minimum, 63 characters maximum 2. only contains letters,
+      digits, underscore and hyphen 3. starts with a letter if length == 1,
+      starts with a letter or underscore if length > 1
     pubsubNotification: https://cloud.google.com/pubsub/docs/overview
       Configure the associated AssetType to publish event messages using
       Pub/Sub.
@@ -3626,6 +3718,10 @@ class Transformer(_messages.Message):
       value pair.
     name: The resource name of the transformer, in the following form:
       `projects/{project}/locations/{location}/transformer/{transformer}`.
+      Here {transformer} is a resource id. Detailed rules for a resource id
+      are: 1. 1 character minimum, 63 characters maximum 2. only contains
+      letters, digits, underscore and hyphen 3. starts with a letter if length
+      == 1, starts with a letter or underscore if length > 1
     outputs: Mapping of the output parameter name to its type. The type could
       be one of: - Primitive types ("string", "number", "bool") - Custom
       complex type. Format: "p/p/l/l/complexTypes/*" - Collections of the

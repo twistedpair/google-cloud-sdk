@@ -818,6 +818,10 @@ class SecretmanagerProjectsSecretsListRequest(_messages.Message):
   r"""A SecretmanagerProjectsSecretsListRequest object.
 
   Fields:
+    filter: Optional. Filter string, adhering to the rules in [List-operation
+      filtering](https://cloud.google.com/secret-manager/docs/filtering). List
+      only secrets matching the filter. If filter is empty, all secrets are
+      listed.
     pageSize: Optional. The maximum number of results to be returned in a
       single page. If set to 0, the server decides the number of results to
       return. If the number is greater than 25000, it is capped at 25000.
@@ -827,9 +831,10 @@ class SecretmanagerProjectsSecretsListRequest(_messages.Message):
       Secrets, in the format `projects/*`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class SecretmanagerProjectsSecretsPatchRequest(_messages.Message):
@@ -949,6 +954,10 @@ class SecretmanagerProjectsSecretsVersionsListRequest(_messages.Message):
   r"""A SecretmanagerProjectsSecretsVersionsListRequest object.
 
   Fields:
+    filter: Optional. Filter string, adhering to the rules in [List-operation
+      filtering](https://cloud.google.com/secret-manager/docs/filtering). List
+      only secret versions matching the filter. If filter is empty, all secret
+      versions are listed.
     pageSize: Optional. The maximum number of results to be returned in a
       single page. If set to 0, the server decides the number of results to
       return. If the number is greater than 25000, it is capped at 25000.
@@ -958,9 +967,10 @@ class SecretmanagerProjectsSecretsVersionsListRequest(_messages.Message):
       SecretVersions to list, in the format `projects/*/secrets/*`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class SetIamPolicyRequest(_messages.Message):

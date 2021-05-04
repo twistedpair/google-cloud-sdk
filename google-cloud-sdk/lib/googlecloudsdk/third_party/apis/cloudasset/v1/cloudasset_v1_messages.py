@@ -83,7 +83,8 @@ class Asset(_messages.Message):
   Cloud [resource hierarchy](https://cloud.google.com/resource-
   manager/docs/cloud-platform-resource-hierarchy), a resource outside the
   Google Cloud resource hierarchy (such as Google Kubernetes Engine clusters
-  and objects), or a policy (e.g. Cloud IAM policy). See [Supported asset
+  and objects), or a policy (e.g. Cloud IAM policy), or a relationship (e.g.
+  an INSTANCE_TO_INSTANCEGROUP relationship). See [Supported asset
   types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
   for more information.
 

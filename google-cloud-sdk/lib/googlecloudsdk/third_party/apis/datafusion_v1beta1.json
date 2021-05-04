@@ -505,6 +505,35 @@
       "properties": {
       }
     },
+    "ListNamespacesResponse": {
+      "id": "ListNamespacesResponse",
+      "description": "List namespaces response.",
+      "type": "object",
+      "properties": {
+        "namespaces": {
+          "description": "List of namespaces",
+          "type": "array",
+          "items": {
+            "$ref": "Namespace"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "Namespace": {
+      "id": "Namespace",
+      "description": "Represents the information of a namespace",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the given namespace.",
+          "type": "string"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1351,6 +1380,42 @@
               "resources": {
                 "namespaces": {
                   "methods": {
+                    "list": {
+                      "id": "datafusion.projects.locations.instances.namespaces.list",
+                      "path": "v1beta1/{+parent}/namespaces",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/namespaces",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The instance to list its namespaces.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of items to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListNamespacesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List namespaces in a given instance"
+                    },
                     "setIamPolicy": {
                       "id": "datafusion.projects.locations.instances.namespaces.setIamPolicy",
                       "path": "v1beta1/{+resource}:setIamPolicy",

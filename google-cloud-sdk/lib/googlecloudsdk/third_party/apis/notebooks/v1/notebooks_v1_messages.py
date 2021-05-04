@@ -1279,7 +1279,8 @@ class NotebooksProjectsLocationsExecutionsListRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsExecutionsListRequest object.
 
   Fields:
-    filter: Filter applied to resulting executions.
+    filter: Filter applied to resulting executions. Currently only supports
+      filtering executions by a specified schedule_id. Format: "schedule_id="
     orderBy: Sort by field.
     pageSize: Maximum return size of the list call.
     pageToken: A previous returned page token that can be used to continue

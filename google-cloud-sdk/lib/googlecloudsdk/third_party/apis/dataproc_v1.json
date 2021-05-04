@@ -313,6 +313,375 @@
         }
       }
     },
+    "Batch": {
+      "id": "Batch",
+      "description": "A representation of a batch workload in the service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Optional. The resource name of the batch.",
+          "type": "string"
+        },
+        "uuid": {
+          "description": "Output only. A batch UUID (Unique Universal Identifier). The service generates this value when it creates the batch.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the batch was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "pysparkBatch": {
+          "description": "Optional. PySpark batch config.",
+          "$ref": "PySparkBatch"
+        },
+        "sparkBatch": {
+          "description": "Optional. Spark batch config.",
+          "$ref": "SparkBatch"
+        },
+        "sparkRBatch": {
+          "description": "Optional. SparkR batch config.",
+          "$ref": "SparkRBatch"
+        },
+        "sparkSqlBatch": {
+          "description": "Optional. SparkSql batch config.",
+          "$ref": "SparkSqlBatch"
+        },
+        "runtimeInfo": {
+          "description": "Output only. Runtime information about batch execution.",
+          "readOnly": true,
+          "$ref": "RuntimeInfo"
+        },
+        "state": {
+          "description": "Output only. A state of the batch.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The batch state is unknown.",
+            "The batch is created before running.",
+            "The batch is running.",
+            "The batch is cancelling.",
+            "The batch cancellation was successful.",
+            "The batch has completed successfully.",
+            "The batch has completed, but encountered a failure."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "RUNNING",
+            "CANCELLING",
+            "CANCELLED",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "stateMessage": {
+          "description": "Output only. Batch state details, such as a failure description if the state is FAILED.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "stateTime": {
+          "description": "Output only. The time when the batch entered a current state.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "creator": {
+          "description": "Output only. The email address of the user who created the batch.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. The labels to associate with this batch. Label keys must contain 1 to 63 characters, and must conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Label values may be empty, but, if present, must contain 1 to 63 characters, and must conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). No more than 32 labels can be associated with a batch.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "runtimeConfig": {
+          "description": "Optional. Runtime configuration for the batch execution.",
+          "$ref": "RuntimeConfig"
+        },
+        "environmentConfig": {
+          "description": "Optional. Environment configuration for the batch execution.",
+          "$ref": "EnvironmentConfig"
+        }
+      }
+    },
+    "PySparkBatch": {
+      "id": "PySparkBatch",
+      "description": "A configuration for running Apache PySpark (https:\/\/spark.apache.org\/docs\/latest\/api\/python\/getting_started\/quickstart.html) batch workload.",
+      "type": "object",
+      "properties": {
+        "mainPythonFileUri": {
+          "description": "Required. The HCFS URI of the main Python file to use as the Spark driver. Must be a .py file.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Optional. The arguments to pass to the driver. Do not include arguments, such as --conf, that can be set as batch properties, since a collision may occur that causes an incorrect batch submission.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pythonFileUris": {
+          "description": "Optional. HCFS file URIs of Python files to pass to the PySpark framework. Supported file types: .py, .egg, and .zip.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "jarFileUris": {
+          "description": "Optional. HCFS URIs of jar files to add to the classpath of the Spark driver and tasks.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fileUris": {
+          "description": "Optional. HCFS URIs of files to be placed in the working directory of each executor.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "archiveUris": {
+          "description": "Optional. HCFS URIs of archives to be extracted into the working directory of each executor. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SparkBatch": {
+      "id": "SparkBatch",
+      "description": "A configuration for running Apache Spark (http:\/\/spark.apache.org\/) batch workload.",
+      "type": "object",
+      "properties": {
+        "mainJarFileUri": {
+          "description": "Optional. The HCFS URI of the jar file that contains the main class.",
+          "type": "string"
+        },
+        "mainClass": {
+          "description": "Optional. The name of the driver main class. The jar file that contains the class must be already in the classpath or specified in jar_file_uris.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Optional. The arguments to pass to the driver. Do not include arguments, such as --conf, that can be set as batch properties, since a collision may occur that causes an incorrect batch submission.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "jarFileUris": {
+          "description": "Optional. HCFS URIs of jar files to add to the classpath of the Spark driver and tasks.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fileUris": {
+          "description": "Optional. HCFS URIs of files to be placed in the working directory of each executor.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "archiveUris": {
+          "description": "Optional. HCFS URIs of archives to be extracted into the working directory of each executor. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SparkRBatch": {
+      "id": "SparkRBatch",
+      "description": "A configuration for running Apache SparkR (https:\/\/spark.apache.org\/docs\/latest\/sparkr.html) batch workload.",
+      "type": "object",
+      "properties": {
+        "mainRFileUri": {
+          "description": "Required. The HCFS URI of the main R file to use as the driver. Must be a .R or .r file.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Optional. The arguments to pass to the Spark driver. Do not include arguments, such as --conf, that can be set as batch properties, since a collision may occur that causes an incorrect batch submission.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fileUris": {
+          "description": "Optional. HCFS URIs of files to be placed in the working directory of each executor.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "archiveUris": {
+          "description": "Optional. HCFS URIs of archives to be extracted into the working directory of each executor. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SparkSqlBatch": {
+      "id": "SparkSqlBatch",
+      "description": "A configuration for running Apache Spark SQL (http:\/\/spark.apache.org\/sql\/) queries as a batch workload.",
+      "type": "object",
+      "properties": {
+        "queryFileUri": {
+          "description": "Required. The HCFS URI of the script that contains Spark SQL queries to execute.",
+          "type": "string"
+        },
+        "scriptVariables": {
+          "description": "Optional. Mapping of query variable names to values (equivalent to the Spark SQL command: SET name=\"value\";).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "jarFileUris": {
+          "description": "Optional. HCFS URIs of jar files to be added to the Spark CLASSPATH.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RuntimeInfo": {
+      "id": "RuntimeInfo",
+      "description": "Runtime information about workload execution.",
+      "type": "object",
+      "properties": {
+        "endpoints": {
+          "description": "Map of remote access endpoints (web interfaces, APIs, etc) to their URIs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RuntimeConfig": {
+      "id": "RuntimeConfig",
+      "description": "Runtime configuration for a workload.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Optional. Version of the batch runtime.",
+          "type": "string"
+        },
+        "containerImage": {
+          "description": "Optional. Container image to use for workload execution.",
+          "type": "string"
+        },
+        "properties": {
+          "description": "Optional. A mapping of property names to values, used to configure workload execution.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "EnvironmentConfig": {
+      "id": "EnvironmentConfig",
+      "description": "Environment configuration for a workload.",
+      "type": "object",
+      "properties": {
+        "executionConfig": {
+          "description": "Optional. Execution configuration for a workload.",
+          "$ref": "ExecutionConfig"
+        },
+        "peripheralsConfig": {
+          "description": "Optional. Peripherals configuration that workload has access to.",
+          "$ref": "PeripheralsConfig"
+        }
+      }
+    },
+    "ExecutionConfig": {
+      "id": "ExecutionConfig",
+      "description": "Execution configuration for a workload.",
+      "type": "object",
+      "properties": {
+        "performanceTier": {
+          "description": "Optional. Performance tier for workload execution.",
+          "type": "string",
+          "enumDescriptions": [
+            "Performance tier unknown.",
+            "Economy performance tier.",
+            "Standard performance tier.",
+            "High performance tier."
+          ],
+          "enum": [
+            "PERFORMANCE_TIER_UNSPECIFIED",
+            "ECONOMY",
+            "STANDARD",
+            "HIGH"
+          ]
+        },
+        "serviceAccount": {
+          "description": "Optional. Service account that used to execute workload.",
+          "type": "string"
+        },
+        "serviceAccountScopes": {
+          "description": "Optional. Scopes for the workload service account.",
+          "type": "string"
+        },
+        "networkUri": {
+          "description": "Optional. Network URI to connect workload to.",
+          "type": "string"
+        },
+        "subnetworkUri": {
+          "description": "Optional. Subnetwork URI to connect workload to.",
+          "type": "string"
+        },
+        "networkTags": {
+          "description": "Optional. Tags used for network traffic control.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PeripheralsConfig": {
+      "id": "PeripheralsConfig",
+      "description": "Auxiliary services configuration for a workload.",
+      "type": "object",
+      "properties": {
+        "metastoreService": {
+          "description": "Optional. Dataproc Metastore service that can be used by a workload.",
+          "type": "string"
+        }
+      }
+    },
+    "ListBatchesResponse": {
+      "id": "ListBatchesResponse",
+      "description": "A list of batch workloads.",
+      "type": "object",
+      "properties": {
+        "batches": {
+          "description": "The batches from the specified collection.",
+          "type": "array",
+          "items": {
+            "$ref": "Batch"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
     "Cluster": {
       "id": "Cluster",
       "description": "Describes the identifying information, config, and status of a cluster of Compute Engine instances.",
@@ -2360,6 +2729,61 @@
         }
       }
     },
+    "BatchOperationMetadata": {
+      "id": "BatchOperationMetadata",
+      "description": "Metadata describing the Batch operation.",
+      "type": "object",
+      "properties": {
+        "batch": {
+          "description": "Name of the batch for the operation.",
+          "type": "string"
+        },
+        "batchUuid": {
+          "description": "Batch UUID for the operation.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "The time when the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "doneTime": {
+          "description": "The time when the operation was finished.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "operationType": {
+          "description": "The operation type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Batch operation type is unknown.",
+            "Batch operation type."
+          ],
+          "enum": [
+            "BATCH_OPERATION_TYPE_UNSPECIFIED",
+            "BATCH"
+          ]
+        },
+        "description": {
+          "description": "Short description of the operation.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels associated with the operation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "description": "Warnings encountered during operation execution.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ClusterOperationMetadata": {
       "id": "ClusterOperationMetadata",
       "description": "Metadata describing the operation.",
@@ -2914,6 +3338,139 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "batches": {
+              "methods": {
+                "create": {
+                  "id": "dataproc.projects.locations.batches.create",
+                  "path": "v1/{+parent}/batches",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/batches",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource where this batch will be created.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "batchId": {
+                      "description": "Optional. The ID to use for the batch, which will become the final component of the batch's resource name.This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A unique ID used to identify the request. If the service receives two CreateBatchRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.CreateBatchRequest)s with the same request_id, then the second request will be ignored and the Operation that corresponds to the first Batch created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The value must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Batch"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a batch workload that will be executed asynchronously."
+                },
+                "get": {
+                  "id": "dataproc.projects.locations.batches.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the batch to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/batches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Batch"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the resource representation for a batch workload."
+                },
+                "list": {
+                  "id": "dataproc.projects.locations.batches.list",
+                  "path": "v1/{+parent}/batches",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/batches",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent, which owns this collection of batches.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of batches to return in each response. The service may return fewer than this value.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A page token, received from a previous ListBatches call. Provide this to retrieve the subsequent page.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. A filter constraining the batches to list. Filters are case-sensitive and have the following syntax:field = value AND field = value ...",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListBatchesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists batch workloads."
+                },
+                "delete": {
+                  "id": "dataproc.projects.locations.batches.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the batch resource to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/batches\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes the batch workload resource. If the batch is not in terminal state, the delete fails, and the response returns FAILED_PRECONDITION."
                 }
               }
             },

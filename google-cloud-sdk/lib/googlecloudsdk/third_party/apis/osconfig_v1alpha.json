@@ -226,10 +226,6 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "etag": {
-          "description": "The etag for this OS policy assignment. If this is provided on update, it must match the server's etag.",
-          "type": "string"
-        },
         "rolloutState": {
           "description": "Output only. OS policy assignment rollout state",
           "readOnly": true,
@@ -1545,7 +1541,7 @@
             "Invalid value.",
             "The vulnerable component is bound to the network stack and the set of possible attackers extends beyond the other options listed below, up to and including the entire Internet.",
             "The vulnerable component is bound to the network stack, but the attack is limited at the protocol level to a logically adjacent topology.",
-            "The vulnerable component is not bound to the network stack and the attacker\u2019s path is via read\/write\/execute capabilities.",
+            "The vulnerable component is not bound to the network stack and the attacker's path is via read\/write\/execute capabilities.",
             "The attack requires the attacker to physically touch or manipulate the vulnerable component."
           ],
           "enum": [
@@ -1557,7 +1553,7 @@
           ]
         },
         "attackComplexity": {
-          "description": "This metric describes the conditions beyond the attacker\u2019s control that must exist in order to exploit the vulnerability.",
+          "description": "This metric describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability.",
           "type": "string",
           "enumDescriptions": [
             "Invalid value.",

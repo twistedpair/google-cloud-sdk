@@ -855,7 +855,7 @@ class Feature(_messages.Message):
       number, {l} is a valid location and {m} is a valid Membership in this
       project at that location. {p} MUST match the Feature's project number.
     name: Output only. The full, unique name of this Feature resource in the
-      format `projects/*/locations/global/features/*`.
+      format `projects/*/locations/*/features/*`.
     resourceState: Output only. State of the Feature resource itself.
     spec: Optional. Hub-wide Feature configuration. If this Feature does not
       support any Hub-wide configuration, this field may be unused.
@@ -1046,6 +1046,60 @@ class FeatureState(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class GkehubProjectsLocationsFeaturesCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesCreateRequest object.
+
+  Fields:
+    feature: A Feature resource to be passed as the request body.
+    featureId: The ID of the feature to create.
+    parent: The parent (project and location) where the Feature will be
+      created. Specified in the format `projects/*/locations/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  feature = _messages.MessageField('Feature', 1)
+  featureId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class GkehubProjectsLocationsFeaturesDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesDeleteRequest object.
+
+  Fields:
+    force: If set to true, the delete will ignore any outstanding resources
+      for this Feature (that is, `FeatureState.has_resources` is set to true).
+      These resources will NOT be cleaned up or modified in any way.
+    name: The Feature resource name in the format
+      `projects/*/locations/*/features/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
 class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):
   r"""A GkehubProjectsLocationsFeaturesGetIamPolicyRequest object.
 
@@ -1065,6 +1119,73 @@ class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class GkehubProjectsLocationsFeaturesGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesGetRequest object.
+
+  Fields:
+    name: The Feature resource name in the format
+      `projects/*/locations/*/features/*`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsFeaturesListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesListRequest object.
+
+  Fields:
+    filter: Lists Features that match the filter expression, following the
+      syntax outlined in https://google.aip.dev/160. Examples: - Feature with
+      the name "servicemesh" in project "foo-proj": name = "projects/foo-
+      proj/locations/global/features/servicemesh" - Features that have a label
+      called `foo`: labels.foo:* - Features that have a label called `foo`
+      whose value is `bar`: labels.foo = bar
+    orderBy: One or more fields to compare and use to sort the output. See
+      https://google.aip.dev/132#ordering.
+    pageSize: When requesting a 'page' of resources, `page_size` specifies
+      number of resources to return. If unspecified or set to 0, all resources
+      will be returned.
+    pageToken: Token returned by previous call to `ListFeatures` which
+      specifies the position in the list from where to continue listing the
+      resources.
+    parent: The parent (project and location) where the Features will be
+      listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class GkehubProjectsLocationsFeaturesPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesPatchRequest object.
+
+  Fields:
+    feature: A Feature resource to be passed as the request body.
+    name: The Feature resource name in the format
+      `projects/*/locations/*/features/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Mask of fields to update.
+  """
+
+  feature = _messages.MessageField('Feature', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class GkehubProjectsLocationsFeaturesSetIamPolicyRequest(_messages.Message):
@@ -1105,127 +1226,6 @@ class GkehubProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsGlobalFeaturesCreateRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsGlobalFeaturesCreateRequest object.
-
-  Fields:
-    feature: A Feature resource to be passed as the request body.
-    featureId: The ID of the feature to create.
-    parent: The parent (project and location) where the Feature will be
-      created. Specified in the format `projects/*/locations/global`.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  feature = _messages.MessageField('Feature', 1)
-  featureId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class GkehubProjectsLocationsGlobalFeaturesDeleteRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsGlobalFeaturesDeleteRequest object.
-
-  Fields:
-    force: If set to true, the delete will ignore any outstanding resources
-      for this Feature (that is, `FeatureState.has_resources` is set to true).
-      These resources will NOT be cleaned up or modified in any way.
-    name: The Feature resource name in the format
-      `projects/*/locations/global/features/*`.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  force = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-
-
-class GkehubProjectsLocationsGlobalFeaturesGetRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsGlobalFeaturesGetRequest object.
-
-  Fields:
-    name: The Feature resource name in the format
-      `projects/*/locations/global/features/*`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GkehubProjectsLocationsGlobalFeaturesListRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsGlobalFeaturesListRequest object.
-
-  Fields:
-    filter: Lists Features that match the filter expression, following the
-      syntax outlined in https://google.aip.dev/160. Examples: - Feature with
-      the name "servicemesh" in project "foo-proj": name = "projects/foo-
-      proj/locations/global/features/servicemesh" - Features that have a label
-      called `foo`: labels.foo:* - Features that have a label called `foo`
-      whose value is `bar`: labels.foo = bar
-    orderBy: One or more fields to compare and use to sort the output. See
-      https://google.aip.dev/132#ordering.
-    pageSize: When requesting a 'page' of resources, `page_size` specifies
-      number of resources to return. If unspecified or set to 0, all resources
-      will be returned.
-    pageToken: Token returned by previous call to `ListFeatures` which
-      specifies the position in the list from where to continue listing the
-      resources.
-    parent: The parent (project and location) where the Features will be
-      listed. Specified in the format `projects/*/locations/global`.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class GkehubProjectsLocationsGlobalFeaturesPatchRequest(_messages.Message):
-  r"""A GkehubProjectsLocationsGlobalFeaturesPatchRequest object.
-
-  Fields:
-    feature: A Feature resource to be passed as the request body.
-    name: The Feature resource name in the format
-      `projects/*/locations/global/features/*`.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    updateMask: Mask of fields to update.
-  """
-
-  feature = _messages.MessageField('Feature', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
 
 
 class GkehubProjectsLocationsListRequest(_messages.Message):
@@ -1562,13 +1562,30 @@ class MeteringMembershipState(_messages.Message):
 class MultiClusterIngressFeatureSpec(_messages.Message):
   r"""FeatureSpec contains the input for the MultiClusterIngress feature.
 
+  Enums:
+    BillingValueValuesEnum: Customer's billing structure
+
   Fields:
+    billing: Customer's billing structure
     configMembership: Fully-qualified Membership name which hosts the
       MultiClusterIngress CRD. Example: `projects/foo-
       proj/locations/global/memberships/bar`
   """
 
-  configMembership = _messages.StringField(1)
+  class BillingValueValuesEnum(_messages.Enum):
+    r"""Customer's billing structure
+
+    Values:
+      BILLING_UNSPECIFIED: Unknown
+      PAY_AS_YOU_GO: User pays a fee per-endpoint.
+      ANTHOS_LICENSE: User is paying for Anthos as a whole.
+    """
+    BILLING_UNSPECIFIED = 0
+    PAY_AS_YOU_GO = 1
+    ANTHOS_LICENSE = 2
+
+  billing = _messages.EnumField('BillingValueValuesEnum', 1)
+  configMembership = _messages.StringField(2)
 
 
 class Operation(_messages.Message):

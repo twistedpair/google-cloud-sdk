@@ -162,7 +162,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest(_messages.Messa
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -196,7 +196,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(_messages.Messa
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -290,7 +290,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -329,7 +329,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messag
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -364,7 +364,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest(_messag
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -469,7 +469,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -591,7 +591,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsCreateRequest(_message
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -628,7 +628,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsDeleteRequest(_message
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -702,7 +702,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(_messages
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -1481,7 +1481,7 @@ class Release(_messages.Message):
       and size limitations.
     buildArtifacts: List of artifacts to pass through to Skaffold command.
     createTime: Output only. Time at which the `Release` was created.
-    deliveryPipelineSnapshot: Output only. Snapshot of the parent pipelint
+    deliveryPipelineSnapshot: Output only. Snapshot of the parent pipeline
       taken at release creation time.
     description: Description of the `Release`. Max length is 255 characters.
     etag: This checksum is computed by the server based on the value of other

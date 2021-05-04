@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2015 Google LLC. All Rights Reserved.
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -962,6 +962,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'datastream': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.datastream.v1alpha1',
+                client_classpath='datastream_v1alpha1_client.DatastreamV1alpha1',
+                messages_modulepath='datastream_v1alpha1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'deploymentmanager': {
         'alpha':
             APIDef(
@@ -1715,6 +1725,16 @@ MAP = {
                 client_classpath='oslogin_v1beta_client.OsloginV1beta',
                 messages_modulepath='oslogin_v1beta_messages',
                 default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'policyanalyzer': {
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.policyanalyzer.v1beta1',
+                client_classpath='policyanalyzer_v1beta1_client.PolicyanalyzerV1beta1',
+                messages_modulepath='policyanalyzer_v1beta1_messages',
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

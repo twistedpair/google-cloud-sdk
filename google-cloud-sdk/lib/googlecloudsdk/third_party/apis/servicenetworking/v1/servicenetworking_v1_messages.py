@@ -887,6 +887,10 @@ class Endpoint(_messages.Message):
   example.googleapis.com allow_cors: true
 
   Fields:
+    aliases: Unimplemented. Dot not use. DEPRECATED: This field is no longer
+      supported. Instead of using aliases, please specify multiple
+      google.api.Endpoint for each of the intended aliases. Additional names
+      that this endpoint will be hosted on.
     allowCors: Allowing [CORS](https://en.wikipedia.org/wiki/Cross-
       origin_resource_sharing), aka cross-domain traffic, would allow the
       backends served from this endpoint to receive and respond to HTTP
@@ -900,9 +904,10 @@ class Endpoint(_messages.Message):
       example, "8.8.8.8" or "myservice.appspot.com".
   """
 
-  allowCors = _messages.BooleanField(1)
-  name = _messages.StringField(2)
-  target = _messages.StringField(3)
+  aliases = _messages.StringField(1, repeated=True)
+  allowCors = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  target = _messages.StringField(4)
 
 
 class Enum(_messages.Message):

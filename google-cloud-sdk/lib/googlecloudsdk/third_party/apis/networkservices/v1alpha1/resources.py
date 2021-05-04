@@ -85,6 +85,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ENDPOINTPOLICIES = (
+      'projects.locations.endpointPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'endpointPolicies/{endpointPoliciesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GRPCROUTES = (
       'projects.locations.grpcRoutes',
       '{+name}',
