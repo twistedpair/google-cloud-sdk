@@ -1,0 +1,34 @@
+region:
+  name: region
+  collection: gkemulticloud.projects.locations
+  attributes:
+  - &region
+  - parameter_name: locationsId
+    attribute_name: region
+    help: |
+      The GKE Multi-cloud region.
+
+cluster:
+  name: cluster
+  collection: gkemulticloud.projects.locations.awsClusters
+  request_id_field: awsClusterId
+  attributes:
+  - *region
+  - &cluster
+  - parameter_name: awsClustersId
+    attribute_name: cluster
+    help: |
+      The name of the AWS cluster.
+
+
+node_pool:
+  name: node_pool
+  collection: gkemulticloud.projects.locations.awsClusters.awsNodePools
+  request_id_field: awsNodePoolId
+  attributes:
+  - *cluster
+  - &node_pool
+  - parameter_name: awsNodePoolsId
+    attribute_name: node_pool
+    help: |
+      The name of the AWS node pool.

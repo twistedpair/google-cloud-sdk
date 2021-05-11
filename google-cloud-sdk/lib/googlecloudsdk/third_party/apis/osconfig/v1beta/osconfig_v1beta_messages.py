@@ -529,8 +529,8 @@ class OSPolicyAssignmentOperationMetadata(_messages.Message):
   Fields:
     apiMethod: The OS policy assignment API method.
     osPolicyAssignment: Reference to the `OSPolicyAssignment` API resource.
-      Format: projects/{project_number}/locations/{location}/osPolicyAssignmen
-      ts/{os_policy_assignment_id@revision_id}
+      Format: `projects/{project_number}/locations/{location}/osPolicyAssignme
+      nts/{os_policy_assignment_id@revision_id}`
     rolloutStartTime: Rollout start time
     rolloutState: State of the rollout
     rolloutUpdateTime: Rollout update time

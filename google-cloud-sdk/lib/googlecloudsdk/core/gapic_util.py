@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from google.auth import credentials
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store
 
@@ -55,20 +54,26 @@ class StoredCredentials(credentials.Credentials):
     pass
 
 
-class NoGRPCInstalledError(exceptions.ToolException):
-  """Unable to import grpc-based modules."""
-
-  def __init__(self):
-    super(NoGRPCInstalledError, self).__init__(
-        'Please ensure the grpc module is installed.  Run:\n'
-        'pip install grpcio')
-
-
 def MakeClient(transport_class, client_class, address=None):
-  """Instantiates a gapic API client with gcloud defaults and configuration."""
+  """Instantiates a gapic API client with gcloud defaults and configuration.
+
+  grpc cannot be packaged like our other Python dependencies, due to platform
+  differences and must be installed by the user. googlecloudsdk.core.gapic
+  depends on grpc and must be imported lazily here so that this module can be
+  imported safely anywhere.
+
+  Args:
+    transport_class: A gapic transport class.
+    client_class: a gapic client class.
+    address: str, API endpoint override.
+
+  Returns:
+    requests.Response object
+  """
+  from googlecloudsdk.core import gapic  # pylint: disable=g-import-not-at-top
+
   if not address:
     address = client_class.SERVICE_ADDRESS
 
-  transport = transport_class(credentials=StoredCredentials(),
-                              address=address)
+  transport = gapic.MakeTransport(transport_class, address, StoredCredentials())
   return client_class(transport=transport)

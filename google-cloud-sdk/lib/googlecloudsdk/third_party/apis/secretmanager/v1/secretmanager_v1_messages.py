@@ -587,7 +587,7 @@ class Secret(_messages.Message):
 
   Fields:
     createTime: Output only. The time at which the Secret was created.
-    etag: Etag of the currently stored Secret.
+    etag: Optional. Etag of the currently stored Secret.
     expireTime: Optional. Timestamp in UTC when the Secret is scheduled to
       expire. This is always provided on output, regardless of what was sent
       on input.
@@ -673,7 +673,7 @@ class SecretVersion(_messages.Message):
     createTime: Output only. The time at which the SecretVersion was created.
     destroyTime: Output only. The time this SecretVersion was destroyed. Only
       present if state is DESTROYED.
-    etag: Etag of the currently stored SecretVersion.
+    etag: Output only. Etag of the currently stored SecretVersion.
     name: Output only. The resource name of the SecretVersion in the format
       `projects/*/secrets/*/versions/*`. SecretVersion IDs in a Secret start
       at 1 and are incremented for each subsequent version of the secret.

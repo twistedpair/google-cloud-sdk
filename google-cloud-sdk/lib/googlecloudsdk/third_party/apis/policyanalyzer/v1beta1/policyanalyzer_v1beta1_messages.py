@@ -16,9 +16,6 @@ package = 'policyanalyzer'
 class GoogleCloudPolicyanalyzerV1beta1Activity(_messages.Message):
   r"""A GoogleCloudPolicyanalyzerV1beta1Activity object.
 
-  Enums:
-    ActivityTypeValueValuesEnum: The type of the activity.
-
   Messages:
     ActivityValue: A struct of custom fields to explain the activity.
 
@@ -30,20 +27,6 @@ class GoogleCloudPolicyanalyzerV1beta1Activity(_messages.Message):
       https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
     observationPeriod: The data observation period to build the activity.
   """
-
-  class ActivityTypeValueValuesEnum(_messages.Enum):
-    r"""The type of the activity.
-
-    Values:
-      ACTIVITY_TYPE_UNSPECIFIED: <no description>
-      SERVICE_ACCOUNT_LAST_AUTHENTICATION: The last authentication activity of
-        the service account.
-      SERVICE_ACCOUNT_KEY_LAST_AUTHENTICATION: The last authentication
-        activity of the service account key.
-    """
-    ACTIVITY_TYPE_UNSPECIFIED = 0
-    SERVICE_ACCOUNT_LAST_AUTHENTICATION = 1
-    SERVICE_ACCOUNT_KEY_LAST_AUTHENTICATION = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ActivityValue(_messages.Message):
@@ -70,7 +53,7 @@ class GoogleCloudPolicyanalyzerV1beta1Activity(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   activity = _messages.MessageField('ActivityValue', 1)
-  activityType = _messages.EnumField('ActivityTypeValueValuesEnum', 2)
+  activityType = _messages.StringField(2)
   fullResourceName = _messages.StringField(3)
   observationPeriod = _messages.MessageField('GoogleCloudPolicyanalyzerV1beta1ObservationPeriod', 4)
 

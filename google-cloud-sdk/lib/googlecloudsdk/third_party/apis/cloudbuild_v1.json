@@ -1416,6 +1416,10 @@
         "displayName": {
           "description": "Optional. Name to display for this config.",
           "type": "string"
+        },
+        "sslCa": {
+          "description": "Optional. SSL certificate to use for requests to GitHub Enterprise.",
+          "type": "string"
         }
       }
     },
@@ -1658,7 +1662,7 @@
           "type": "string"
         },
         "webhookSecretVersionName": {
-          "description": "Immutable. The resource name for the webhook secret's secret version. Once this field has been set, it cannot be changed. If you need to change it, please create another BitbucketServerConfig.",
+          "description": "Required. Immutable. The resource name for the webhook secret's secret version. Once this field has been set, it cannot be changed. If you need to change it, please create another BitbucketServerConfig.",
           "type": "string"
         }
       }

@@ -814,7 +814,6 @@ def AddCmekKeyFlag(parser):
   """Add CMEK key flag."""
   parser.add_argument(
       '--key',
-      hidden=True,
       help=('KMS key reference to encrypt the container with.'))
 
 
@@ -852,29 +851,29 @@ def AddParallelismFlag(parser):
       '--parallelism',
       type=arg_parsers.BoundedInt(lower_bound=1),
       default=1,
-      help='Number of instances that may run concurrently. '
+      help='Number of tasks that may run concurrently. '
       'Must be less than or equal to the number of completions.')
 
 
-def AddCompletionsFlag(parser):
-  """Add job number of completions flag."""
+def AddTasksFlag(parser):
+  """Add job number of tasks flag which maps to job.spec.completions."""
   parser.add_argument(
-      '--completions',
+      '--tasks',
       type=arg_parsers.BoundedInt(lower_bound=1),
       default=1,
-      help='Number of instances that must run to completion for the job to be '
+      help='Number of tasks that must run to completion for the job to be '
       'considered done. Use this flag to trigger multiple runs of the job.')
 
 
 def AddMaxRetriesFlag(parser):
-  """Add job max retries flag to specify number of instance restarts."""
+  """Add job max retries flag to specify number of task restarts."""
   parser.add_argument(
       '--max-retries',
       type=arg_parsers.BoundedInt(lower_bound=0),
       default=6,
-      help='Number of times an instance is allowed to restart in case of '
-      'failure before being failed permanently. This applies per-instance, not '
-      'per-job. If set to 0, instances will only run once and never be '
+      help='Number of times an task is allowed to restart in case of '
+      'failure before being failed permanently. This applies per-task, not '
+      'per-job. If set to 0, tasks will only run once and never be '
       'retried on failure.')
 
 
@@ -1292,8 +1291,8 @@ def GetConfigurationChanges(args):
     changes.append(config_changes.TagOnDeployChange(args.tag))
   if FlagIsExplicitlySet(args, 'parallelism'):
     changes.append(config_changes.SpecChange('parallelism', args.parallelism))
-  if FlagIsExplicitlySet(args, 'completions'):
-    changes.append(config_changes.SpecChange('completions', args.completions))
+  if FlagIsExplicitlySet(args, 'tasks'):
+    changes.append(config_changes.SpecChange('completions', args.tasks))
   if FlagIsExplicitlySet(args, 'max_retries'):
     changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
   if FlagIsExplicitlySet(args, 'binary_authorization'):
@@ -1506,11 +1505,11 @@ def VerifyManagedFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_GKE]))
 
-  if _HasSecretsChanges(args) and release_track != base.ReleaseTrack.ALPHA:
+  if _HasSecretsChanges(args) and release_track == base.ReleaseTrack.GA:
     raise serverless_exceptions.ConfigurationError(
         'The `--[update|set|remove|clear]-secrets` flags are only supported '
-        'in the alpha release track on the fully managed version of Cloud '
-        'Run. Use `gcloud alpha` to enable these flags.')
+        'in the beta release track on the fully managed version of Cloud '
+        'Run. Use `gcloud beta` to enable these flags.')
 
   if _HasConfigMapsChanges(args):
     raise serverless_exceptions.ConfigurationError(

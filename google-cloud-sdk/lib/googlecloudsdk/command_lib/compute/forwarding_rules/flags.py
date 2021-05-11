@@ -279,7 +279,7 @@ def TargetServiceAttachmentArg():
       regional_collection='compute.serviceAttachments',
       short_help='Target service attachment that receives the traffic.',
       detailed_help=(
-          'Reference of target service attachment that receives the traffic. '
+          'Target service attachment that receives the traffic. '
           'The target service attachment must be in the same region as the '
           'forwarding rule.'),
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
@@ -516,36 +516,61 @@ def AddAllowGlobalAccess(parser):
       """)
 
 
-def AddIPProtocols(parser, support_all_protocol):
+def AddIPProtocols(parser, support_all_protocol, support_l3_default):
   """Adds IP protocols flag, with values available in the given version.
 
   Args:
     parser: The parser that parses args from user input.
     support_all_protocol: Whether to include "ALL" in the protocols list.
+    support_l3_default: Whether to include "L3_DEFAULT" in the protocols list.
   """
 
   protocols = ['AH', 'ESP', 'ICMP', 'SCTP', 'TCP', 'UDP']
+  if support_l3_default:
+    protocols.append('L3_DEFAULT')
   if support_all_protocol:
     protocols.append('ALL')
-    help_str = """\
-      IP protocol that the rule will serve. The default is `TCP`.
+    if support_l3_default:
+      help_str = """\
+        IP protocol that the rule will serve. The default is `TCP`.
 
-      Note that if the load-balancing scheme is `INTERNAL`, the protocol must
-      be one of: `TCP`, `UDP`, `ALL`.
+        Note that if the load-balancing scheme is `INTERNAL`, the protocol must
+        be one of: `TCP`, `UDP`, `ALL`, `L3_DEFAULT`.
 
-      For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
-      options other than `ALL` are valid.
-      """
+        For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
+        options other than `ALL` are valid.
+        """
+    else:
+      help_str = """\
+        IP protocol that the rule will serve. The default is `TCP`.
+
+        Note that if the load-balancing scheme is `INTERNAL`, the protocol must
+        be one of: `TCP`, `UDP`, `ALL`.
+
+        For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
+        options other than `ALL` are valid.
+        """
   else:
-    help_str = """\
-      IP protocol that the rule will serve. The default is `TCP`.
+    if support_l3_default:
+      help_str = """\
+        IP protocol that the rule will serve. The default is `TCP`.
 
-      Note that if the load-balancing scheme is `INTERNAL`, the protocol must
-      be one of: `TCP`, `UDP`.
+        Note that if the load-balancing scheme is `INTERNAL`, the protocol must
+        be one of: `TCP`, `UDP`, `L3_DEFAULT`.
 
-      For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
-      options are valid.
-      """
+        For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
+        options are valid.
+        """
+    else:
+      help_str = """\
+        IP protocol that the rule will serve. The default is `TCP`.
+
+        Note that if the load-balancing scheme is `INTERNAL`, the protocol must
+        be one of: `TCP`, `UDP`.
+
+        For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
+        options are valid.
+        """
 
   parser.add_argument(
       '--ip-protocol',

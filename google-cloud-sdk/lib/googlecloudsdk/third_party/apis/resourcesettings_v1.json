@@ -143,11 +143,11 @@
           "$ref": "GoogleCloudResourcesettingsV1SettingMetadata"
         },
         "localValue": {
-          "description": "The configured value of the setting at the given parent resource (ignoring the resource hierarchy). The data type of Value must always be consistent with the data type defined in Setting.metadata.",
+          "description": "The configured value of the setting at the given parent resource, ignoring the resource hierarchy. The data type of Value must always be consistent with the data type defined in Setting.metadata.",
           "$ref": "GoogleCloudResourcesettingsV1Value"
         },
         "effectiveValue": {
-          "description": "Output only. The computed effective value of the setting at the given parent resource (based on the resource hierarchy). The effective value evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the local setting value on the given resource: Setting.local_value 2. if one of the given resource's ancestors have a local setting value, the local value at the nearest such ancestor 3. the setting's default value: SettingMetadata.default_value 4. an empty value (defined as a `Value` with all fields unset) The data type of Value must always be consistent with the data type defined in Setting.metadata.",
+          "description": "Output only. The effective value of the setting at the given parent resource, evaluated based on the resource hierarchy The effective value evaluates to one of the following options, in this order. If an option is not valid or doesn't exist, then the next option is used: 1. The local setting value on the given resource: Setting.local_value 2. If one of the given resource's ancestors in the resource hierarchy have a local setting value, the local value at the nearest such ancestor. 3. The setting's default value: SettingMetadata.default_value 4. An empty value, defined as a `Value` with all fields unset. The data type of Value must always be consistent with the data type defined in Setting.metadata.",
           "readOnly": true,
           "$ref": "GoogleCloudResourcesettingsV1Value"
         },
@@ -171,7 +171,7 @@
           "type": "string"
         },
         "readOnly": {
-          "description": "A flag indicating that values of this setting cannot be modified (see documentation of the specific setting for updates and reasons).",
+          "description": "A flag indicating that values of this setting cannot be modified. See documentation for the specific setting for updates and reasons.",
           "type": "boolean"
         },
         "dataType": {
@@ -259,7 +259,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "description": "Required. The project, folder, or organization that is the parent resource for this setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
                   "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -345,7 +345,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
+              "description": "Returns a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
             },
             "patch": {
               "id": "resourcesettings.organizations.settings.patch",
@@ -373,7 +373,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field."
+              "description": "Updates a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field."
             }
           }
         }
@@ -390,7 +390,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "description": "Required. The project, folder, or organization that is the parent resource for this setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
                   "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -476,7 +476,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
+              "description": "Returns a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
             },
             "patch": {
               "id": "resourcesettings.folders.settings.patch",
@@ -504,7 +504,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field."
+              "description": "Updates a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field."
             }
           }
         }
@@ -521,7 +521,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
+                  "description": "Required. The project, folder, or organization that is the parent resource for this setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -607,7 +607,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
+              "description": "Returns a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
             },
             "patch": {
               "id": "resourcesettings.projects.settings.patch",
@@ -635,7 +635,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field."
+              "description": "Updates a specified setting. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. On success, the response will contain only `name`, `local_value` and `etag`. The `metadata` and `effective_value` cannot be updated through this API. Note: the supplied setting will perform a full overwrite of the `local_value` field."
             }
           }
         }

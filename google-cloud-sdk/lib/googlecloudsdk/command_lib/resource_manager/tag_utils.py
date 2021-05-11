@@ -21,9 +21,11 @@ from __future__ import unicode_literals
 import re
 
 from apitools.base.py.exceptions import HttpForbiddenError
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.resource_manager import tags
 from googlecloudsdk.api_lib.resource_manager.exceptions import ResourceManagerError
+from googlecloudsdk.command_lib.projects import util as command_lib_util
 from googlecloudsdk.command_lib.resource_manager import endpoint_utils as endpoints
 from googlecloudsdk.core import exceptions as core_exceptions
 
@@ -183,42 +185,67 @@ def GetCanonicalResourceName(resource_name, location, release_track):
   # [a-z]([-a-z0-9]*[a-z0-9] is the instance name regex, as per
   # https://cloud.google.com/compute/docs/reference/rest/v1/instances
 
-  gce_compute_instance_name_pattern = r'.*projects/([^/]+)/.*instances/([a-z]([-a-z0-9]*[a-z0-9])?)'
+  gce_compute_instance_name_pattern = r'compute.googleapis.com/projects/([^/]+)/.*instances/([^/]+)'
   gce_search = re.search(gce_compute_instance_name_pattern, resource_name)
 
   if gce_search:
-    project, instance_name = gce_search.group(1), gce_search.group(2)
+    project_identifier, instance_identifier = gce_search.group(
+        1), gce_search.group(2)
     # call compute instance's describe api to get canonical resource name
     # use that instead of the instance name that's in the parent
-    return _GetGceInstanceCanonicalName(project, instance_name, location,
-                                        release_track, resource_name)
 
+    if not project_identifier.isdigit():
+      # if we have a project id, translate it to project number by calling
+      # project's describe endpoint.
+      project_name = project_identifier
+      project_identifier = _GetProjectCanonicalName(project_name)
+      resource_name = resource_name.replace('projects/%s' % project_name,
+                                            'projects/%s' % project_identifier)
+    if re.search('([a-z]([-a-z0-9]*[a-z0-9])?)', instance_identifier):
+      resource_name = resource_name.replace(
+          'instances/%s' % instance_identifier,
+          'instances/%s' % _GetGceInstanceCanonicalName(
+              project_identifier, instance_identifier, location, release_track))
   return resource_name
 
 
-def _GetGceInstanceCanonicalName(project, instance_name, location,
-                                 release_track, resource_name):
+def _GetProjectCanonicalName(project_identifier):
+  """Returns the correct canonical name for the given project.
+
+  Args:
+    project_identifier: project id
+
+  Returns:
+    projectNumber: returns the projectNumber
+  """
+  project_ref = command_lib_util.ParseProject(project_identifier)
+  response = projects_api.Get(project_ref)
+  return str(response.projectNumber)
+
+
+def _GetGceInstanceCanonicalName(project_identifier, instance_identifier,
+                                 location, release_track):
   """Returns the correct canonical name for the given gce compute instance.
 
   Args:
-    project: project number of the compute instance
-    instance_name: name of the instance
+    project_identifier: project number of the compute instance
+    instance_identifier: name of the instance
     location: location in which the resource lives
     release_track: release stage of current endpoint
-    resource_name: full name of the resource
 
   Returns:
-    resource_name: either the original resource name, or correct canonical name
+    instance_id: returns the canonical instance id
   """
   compute_holder = base_classes.ComputeApiHolder(release_track)
   client = compute_holder.client
   request = (client.apitools_client.instances, 'Get',
              client.messages.ComputeInstancesGetRequest(
-                 instance=instance_name, project=project, zone=location))
+                 instance=instance_identifier,
+                 project=project_identifier,
+                 zone=location))
   errors_to_collect = []
   instances = client.MakeRequests([request],
                                   errors_to_collect=errors_to_collect)
   if errors_to_collect:
     raise core_exceptions.MultiError(errors_to_collect)
-  return resource_name.replace('instances/' + instance_name,
-                               'instances/' + str(instances[0].id))
+  return str(instances[0].id)

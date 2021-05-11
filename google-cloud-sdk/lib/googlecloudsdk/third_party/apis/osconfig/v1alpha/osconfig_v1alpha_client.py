@@ -59,7 +59,7 @@ class OsconfigV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Get OS policies compliance data for the specified Compute Engine instance.
+      r"""Get OS policies compliance data for the specified Compute Engine VM instance.
 
       Args:
         request: (OsconfigProjectsLocationsInstanceOSPoliciesCompliancesGetRequest) input message
@@ -86,7 +86,7 @@ class OsconfigV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List OS policies compliance data for all Compute Engine instances in the specified zone.
+      r"""List OS policies compliance data for all Compute Engine VM instances in the specified zone.
 
       Args:
         request: (OsconfigProjectsLocationsInstanceOSPoliciesCompliancesListRequest) input message
@@ -121,6 +121,33 @@ class OsconfigV1alpha(base_api.BaseApiClient):
       super(OsconfigV1alpha.ProjectsLocationsInstancesInventoriesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Get(self, request, global_params=None):
+      r"""Get inventory data for the specified VM instance. If the VM has no associated inventory, the message `NOT_FOUND` is returned.
+
+      Args:
+        request: (OsconfigProjectsLocationsInstancesInventoriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Inventory) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/inventory',
+        http_method='GET',
+        method_id='osconfig.projects.locations.instances.inventories.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsInstancesInventoriesGetRequest',
+        response_type_name='Inventory',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       r"""List inventory data for all VM instances in the specified zone.
@@ -159,6 +186,33 @@ class OsconfigV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Get(self, request, global_params=None):
+      r"""Gets the vulnerability report for the specified VM instance. Only VMs with inventory data have vulnerability reports associated with them.
+
+      Args:
+        request: (OsconfigProjectsLocationsInstancesVulnerabilityReportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VulnerabilityReport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/vulnerabilityReport',
+        http_method='GET',
+        method_id='osconfig.projects.locations.instances.vulnerabilityReports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsInstancesVulnerabilityReportsGetRequest',
+        response_type_name='VulnerabilityReport',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""List vulnerability reports for all VM instances in the specified zone.
 
@@ -195,60 +249,6 @@ class OsconfigV1alpha(base_api.BaseApiClient):
       super(OsconfigV1alpha.ProjectsLocationsInstancesService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def GetInventory(self, request, global_params=None):
-      r"""Get inventory data for the specified VM instance. If the VM has no associated inventory, the message `NOT_FOUND` is returned.
-
-      Args:
-        request: (OsconfigProjectsLocationsInstancesGetInventoryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Inventory) The response message.
-      """
-      config = self.GetMethodConfig('GetInventory')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetInventory.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/inventory',
-        http_method='GET',
-        method_id='osconfig.projects.locations.instances.getInventory',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['view'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='OsconfigProjectsLocationsInstancesGetInventoryRequest',
-        response_type_name='Inventory',
-        supports_download=False,
-    )
-
-    def GetVulnerabilityReport(self, request, global_params=None):
-      r"""Gets the vulnerability report for the specified VM instance. Only VMs with inventory data have vulnerability reports associated with them.
-
-      Args:
-        request: (OsconfigProjectsLocationsInstancesGetVulnerabilityReportRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (VulnerabilityReport) The response message.
-      """
-      config = self.GetMethodConfig('GetVulnerabilityReport')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetVulnerabilityReport.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/vulnerabilityReport',
-        http_method='GET',
-        method_id='osconfig.projects.locations.instances.getVulnerabilityReport',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='OsconfigProjectsLocationsInstancesGetVulnerabilityReportRequest',
-        response_type_name='VulnerabilityReport',
-        supports_download=False,
-    )
 
   class ProjectsLocationsOsPolicyAssignmentsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_osPolicyAssignments_operations resource."""
@@ -325,7 +325,7 @@ class OsconfigV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a new OS policy assignment. This also creates the first revision of the OS policy assignment. This method returns a long running operation(LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO.
+      r"""Create an OS policy assignment. This method also creates the first revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
 
       Args:
         request: (OsconfigProjectsLocationsOsPolicyAssignmentsCreateRequest) input message
@@ -352,7 +352,7 @@ class OsconfigV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete the OS policy assignment. This creates a new revision of the OS policy assignment. This method returns a long running operation(LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. If the LRO completes and is not cancelled, all revisions associated with the OS policy assignment are deleted.
+      r"""Delete the OS policy assignment. This method creates a new revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. If the LRO completes and is not cancelled, all revisions associated with the OS policy assignment are deleted. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
 
       Args:
         request: (OsconfigProjectsLocationsOsPolicyAssignmentsDeleteRequest) input message
@@ -379,7 +379,7 @@ class OsconfigV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieve an existing OS policy assignment. This always returns the latest revision. In order to retrieve a previous revision of the assignment, also provide the revision ID. Format: projects/{project}/locations/{location}/osPolicyAssignments/{os_policy_assignment}@{revisionId}.
+      r"""Retrieve an existing OS policy assignment. This method always returns the latest revision. In order to retrieve a previous revision of the assignment, also provide the revision ID in the `name` parameter.
 
       Args:
         request: (OsconfigProjectsLocationsOsPolicyAssignmentsGetRequest) input message
@@ -460,7 +460,7 @@ class OsconfigV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an existing OS policy assignment. This creates a new revision of the OS policy assignment. This method returns a long running operation(LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO.
+      r"""Update an existing OS policy assignment. This method creates a new revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
 
       Args:
         request: (OsconfigProjectsLocationsOsPolicyAssignmentsPatchRequest) input message

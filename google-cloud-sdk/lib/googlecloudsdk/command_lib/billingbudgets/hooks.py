@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-
 import re
 
 from apitools.base.py import extra_types
@@ -27,6 +26,7 @@ from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import times
 
 import six
 
@@ -87,14 +87,39 @@ def UpdateParseToMoneyTypeV1(money):
   return ParseMoney(money, messages)
 
 
+def CreateParseToDateTypeV1Beta1(date):
+  """Convert the input to Date Type for v1beta1 Create method."""
+  messages = GetMessagesModuleForVersion('v1beta1')
+  return ParseDate(date, messages)
+
+
+def CreateParseToDateTypeV1(date):
+  """Convert the input to Date Type for v1 Create method."""
+  messages = GetMessagesModuleForVersion('v1')
+  return ParseDate(date, messages)
+
+
+def UpdateParseToDateTypeV1Beta1(date):
+  """Convert the input to Date Type for v1beta1 Update method."""
+  messages = GetMessagesModuleForVersion('v1beta1')
+  return ParseDate(date, messages)
+
+
+def UpdateParseToDateTypeV1(date):
+  """Convert the input to Date Type for v1 Update method."""
+  messages = GetMessagesModuleForVersion('v1')
+  return ParseDate(date, messages)
+
+
 def ParseMoney(money, messages):
   """Validate input and convert to Money Type."""
   CheckMoneyRegex(money)
   currency_code = ''
   if re.match(r'[A-Za-z]{3}', money[-3:]):
     currency_code = money[-3:]
-  money_array = (re.split(r'\.', money[:-3], 1) if currency_code
-                 else re.split(r'\.', money))
+  money_array = (
+      re.split(r'\.', money[:-3], 1) if currency_code else re.split(
+          r'\.', money))
   units = int(money_array[0]) if money_array[0] else 0
   if len(money_array) > 1:
     nanos = int(money_array[1])
@@ -102,6 +127,13 @@ def ParseMoney(money, messages):
     nanos = 0
   return messages.GoogleTypeMoney(
       units=units, nanos=nanos, currencyCode=currency_code)
+
+
+def ParseDate(date, messages, fmt='%Y-%m-%d'):
+  """Convert to Date Type."""
+  datetime_obj = times.ParseDateTime(date, fmt=fmt)
+  return messages.GoogleTypeDate(
+      year=datetime_obj.year, month=datetime_obj.month, day=datetime_obj.day)
 
 
 def UpdateThresholdRules(ref, args, req):
@@ -141,8 +173,8 @@ def UpdateThresholdRules(ref, args, req):
       # update the request with the new threshold rules
     req.googleCloudBillingBudgetsV1beta1UpdateBudgetRequest.updateMask += ',thresholdRules'
 
-    GetVersionedUpdateBillingBudget(
-        args, req).thresholdRules = budget.thresholdRules
+    GetVersionedUpdateBillingBudget(args,
+                                    req).thresholdRules = budget.thresholdRules
 
   return req
 

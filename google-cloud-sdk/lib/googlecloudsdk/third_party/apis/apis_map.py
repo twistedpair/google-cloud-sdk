@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2021 Google LLC. All Rights Reserved.
+# Copyright 2015 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -223,6 +223,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'apikeys': {
+        'v2':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.apikeys.v2',
+                client_classpath='apikeys_v2_client.ApikeysV2',
+                messages_modulepath='apikeys_v2_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v2alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.apikeys.v2alpha1',
@@ -1271,6 +1279,16 @@ MAP = {
                 client_classpath='gkehub_v1beta1_client.GkehubV1beta1',
                 messages_modulepath='gkehub_v1beta1_messages',
                 default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'gkemulticloud': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.gkemulticloud.v1',
+                client_classpath='gkemulticloud_v1_client.GkemulticloudV1',
+                messages_modulepath='gkemulticloud_v1_messages',
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

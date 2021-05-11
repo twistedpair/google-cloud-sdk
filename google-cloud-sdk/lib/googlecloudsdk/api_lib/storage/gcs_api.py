@@ -234,6 +234,7 @@ class GcsApi(cloud_api.CloudApi):
 
   def __init__(self):
     self.client = core_apis.GetClientInstance('storage', 'v1')
+    self.client.overwrite_transfer_urls_with_client_base = True
     self.messages = core_apis.GetMessagesModule('storage', 'v1')
     self._stream_response_handler = _StorageStreamResponseHandler()
     self._download_http_client = None
@@ -779,7 +780,8 @@ class GcsApi(cloud_api.CloudApi):
       apitools_download = apitools_transfer.Download.FromData(
           download_stream,
           serialization_data,
-          num_retries=properties.VALUES.storage.max_retries.GetInt())
+          num_retries=properties.VALUES.storage.max_retries.GetInt(),
+          client=self.client)
     else:
       # New download.
       serialization_data = None

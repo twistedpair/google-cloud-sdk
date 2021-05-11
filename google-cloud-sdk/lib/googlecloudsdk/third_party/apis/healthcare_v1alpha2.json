@@ -1038,7 +1038,7 @@
       "type": "object",
       "properties": {
         "gcsDestination": {
-          "description": "The Cloud Storage destination. The Cloud Healthcare API service account must have the `roles\/storage.objectAdmin` Cloud IAM role for this Cloud Storage location.",
+          "description": "The Cloud Storage destination. The Cloud Healthcare API service account must have the `roles\/storage.objectAdmin` Cloud IAM role for this Cloud Storage location. The object name is in the following format: query-accessible-data-result-{operation_id}.txt where each line contains a single data_id.",
           "$ref": "GoogleCloudHealthcareV1alpha2ConsentGcsDestination"
         },
         "resourceAttributes": {
@@ -2106,6 +2106,23 @@
         "documentContent": {
           "description": "document_content is a document to be annotated.",
           "type": "string"
+        },
+        "licensedVocabularies": {
+          "description": "A list of licensed vocabularies to use in the request, in addition to the default unlicensed vocabularies.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "No licensed vocabulary specified.",
+              "ICD-10-CM vocabulary",
+              "SNOMED CT (US version) vocabulary"
+            ],
+            "enum": [
+              "LICENSED_VOCABULARY_UNSPECIFIED",
+              "ICD10CM",
+              "SNOMEDCT_US"
+            ]
+          }
         }
       }
     },
@@ -2423,6 +2440,13 @@
     "ImportAnnotationsResponse": {
       "id": "ImportAnnotationsResponse",
       "description": "Final response of importing Annotations in successful case. This structure is included in the response. It is only included when the operation finishes.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "QueryAccessibleDataResponse": {
+      "id": "QueryAccessibleDataResponse",
+      "description": "Response for successful QueryAccessibleData operations. This structure is included in the response upon operation completion.",
       "type": "object",
       "properties": {
       }

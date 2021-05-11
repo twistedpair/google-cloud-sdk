@@ -1548,12 +1548,12 @@ def ValidateIgmReadyForStatefulness(igm_resource, client):
   if type_is_proactive and replacement_method_is_substitute:
     raise exceptions.Error(
         'Stateful IGMs cannot use SUBSTITUTE replacement method. '
-        'Try `gcloud alpha compute instance-groups managed '
+        'Try `gcloud compute instance-groups managed '
         'rolling-update stop-proactive-update')
   if instance_redistribution_type_is_proactive:
     raise exceptions.Error(
         'Stateful regional IGMs cannot use proactive instance redistribution. '
-        'Try `gcloud alpha compute instance-groups managed '
+        'Try `gcloud compute instance-groups managed '
         'update --instance-redistribution-type=NONE')
 
 

@@ -29,14 +29,10 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.core import gapic_util
 
-try:
-  # pylint: disable=g-import-not-at-top
-  from googlecloudsdk.third_party import logging_v2
-  from googlecloudsdk.third_party.logging_v2.gapic.transports.config_service_v2_grpc_transport import ConfigServiceV2GrpcTransport
-  from googlecloudsdk.third_party.logging_v2.gapic.transports.logging_service_v2_grpc_transport import LoggingServiceV2GrpcTransport
-  from googlecloudsdk.third_party.logging_v2.gapic.transports.metrics_service_v2_grpc_transport import MetricsServiceV2GrpcTransport
-except ImportError:
-  raise gapic_util.NoGRPCInstalledError()
+from googlecloudsdk.third_party import logging_v2
+from googlecloudsdk.third_party.logging_v2.gapic.transports.config_service_v2_grpc_transport import ConfigServiceV2GrpcTransport
+from googlecloudsdk.third_party.logging_v2.gapic.transports.logging_service_v2_grpc_transport import LoggingServiceV2GrpcTransport
+from googlecloudsdk.third_party.logging_v2.gapic.transports.metrics_service_v2_grpc_transport import MetricsServiceV2GrpcTransport
 
 
 class LoggingClient(object):

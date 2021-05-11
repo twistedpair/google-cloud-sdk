@@ -25,6 +25,7 @@ import ssl
 import stat
 import tarfile
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import local_file_adapter
 from googlecloudsdk.core import log
@@ -312,35 +313,49 @@ def DownloadAndExtractTar(url, download_dir, extract_dir,
   (download_callback, install_callback) = (
       console_io.SplitProgressBar(progress_callback, [1, 1]))
 
-  try:
-    req = MakeRequest(url, command_path)
+  if base.UseRequests():
     try:
-      total_size = float(req.info().get('Content-length', '0'))
-    # pylint: disable=broad-except, We never want progress bars to block an
-    # update.
-    except Exception:
-      total_size = 0
-
-    with file_utils.BinaryFileWriter(download_file_path) as fp:
-      # This is the buffer size that shutil.copyfileobj uses.
-      buf_size = WRITE_BUFFER_SIZE
-      total_written = 0
-
-      while True:
-        buf = req.read(buf_size)
-        if not buf:
-          break
-        fp.write(buf)
-        total_written += len(buf)
-        if total_size:
+      response = MakeRequestViaRequests(url, command_path)
+      with file_utils.BinaryFileWriter(download_file_path) as fp:
+        total_written = 0
+        total_size = len(response.content)
+        for chunk in response.iter_content(chunk_size=WRITE_BUFFER_SIZE):
+          fp.write(chunk)
+          total_written += len(chunk)
           download_callback(total_written / total_size)
+      download_callback(1)
+    except (requests.exceptions.HTTPError, OSError) as e:
+      raise URLFetchError(e)
+  else:
+    try:
+      req = MakeRequest(url, command_path)
+      try:
+        total_size = float(req.info().get('Content-length', '0'))
+      # pylint: disable=broad-except, We never want progress bars to block an
+      # update.
+      except Exception:
+        total_size = 0
 
-    download_callback(1)
+      with file_utils.BinaryFileWriter(download_file_path) as fp:
+        # This is the buffer size that shutil.copyfileobj uses.
+        buf_size = WRITE_BUFFER_SIZE
+        total_written = 0
 
-  except (urllib.error.HTTPError,
-          urllib.error.URLError,
-          ssl.SSLError) as e:
-    raise URLFetchError(e)
+        while True:
+          buf = req.read(buf_size)
+          if not buf:
+            break
+          fp.write(buf)
+          total_written += len(buf)
+          if total_size:
+            download_callback(total_written / total_size)
+
+      download_callback(1)
+
+    except (urllib.error.HTTPError,
+            urllib.error.URLError,
+            ssl.SSLError) as e:
+      raise URLFetchError(e)
 
   with tarfile.open(name=download_file_path) as tar:
     members = tar.getmembers()

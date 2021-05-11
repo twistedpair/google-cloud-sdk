@@ -384,11 +384,11 @@ def DeriveRegionalEndpoint(endpoint, region):
   return urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
 
 
-class _RegionalConnectionContext(ConnectionInfo):
+class RegionalConnectionContext(ConnectionInfo):
   """Context manager to connect a particular Cloud Run region."""
 
   def __init__(self, region, api_name, version):
-    super(_RegionalConnectionContext, self).__init__(api_name, version)
+    super(RegionalConnectionContext, self).__init__(api_name, version)
     self.region = region
 
   @property
@@ -512,4 +512,4 @@ def GetConnectionContext(args,
     api_name = _GetApiName(product, release_track)
     api_version = _GetApiVersion(
         product, release_track, version_override=version_override)
-    return _RegionalConnectionContext(region, api_name, api_version)
+    return RegionalConnectionContext(region, api_name, api_version)

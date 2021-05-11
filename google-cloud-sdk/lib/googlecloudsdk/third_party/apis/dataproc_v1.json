@@ -584,7 +584,7 @@
           "type": "string"
         },
         "properties": {
-          "description": "Optional. A mapping of property names to values, used to configure workload execution.",
+          "description": "Optional. A mapping of property names to values, which are used to configure workload execution.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -634,7 +634,10 @@
         },
         "serviceAccountScopes": {
           "description": "Optional. Scopes for the workload service account.",
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "networkUri": {
           "description": "Optional. Network URI to connect workload to.",
@@ -659,7 +662,22 @@
       "type": "object",
       "properties": {
         "metastoreService": {
-          "description": "Optional. Dataproc Metastore service that can be used by a workload.",
+          "description": "Optional. Resource name of an existing Dataproc Metastore service.Example: projects\/[project_id]\/locations\/[region]\/services\/[service_id]",
+          "type": "string"
+        },
+        "sparkHistoryServerConfig": {
+          "description": "Optional. The Spark History Server configuration for the workload.",
+          "$ref": "SparkHistoryServerConfig"
+        }
+      }
+    },
+    "SparkHistoryServerConfig": {
+      "id": "SparkHistoryServerConfig",
+      "description": "Spark History Server configuration for the workload.",
+      "type": "object",
+      "properties": {
+        "dataprocCluster": {
+          "description": "Optional. Resource name of an existing Dataproc Cluster to act as a Spark History Server for the workload.Example: projects\/[project_id]\/regions\/[region]\/clusters\/[cluster_name]",
           "type": "string"
         }
       }
@@ -876,7 +894,7 @@
           "$ref": "ShieldedInstanceConfig"
         },
         "confidentialInstanceConfig": {
-          "description": "Optional. Confidential Instance Config for clusters using Confidential VMs (https:\/\/cloud.google.com\/compute\/confidential-vm\/docs)",
+          "description": "Optional. Confidential Instance Config for clusters using Confidential VMs (https:\/\/cloud.google.com\/compute\/confidential-vm\/docs).",
           "$ref": "ConfidentialInstanceConfig"
         }
       }
@@ -947,7 +965,7 @@
     },
     "ConfidentialInstanceConfig": {
       "id": "ConfidentialInstanceConfig",
-      "description": "Confidential Instance Config for clusters using Confidential VMs (https:\/\/cloud.google.com\/compute\/confidential-vm\/docs) NEXT ID: 2",
+      "description": "Confidential Instance Config for clusters using Confidential VMs (https:\/\/cloud.google.com\/compute\/confidential-vm\/docs)",
       "type": "object",
       "properties": {
         "enableConfidentialCompute": {
@@ -3420,7 +3438,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Optional. The maximum number of batches to return in each response. The service may return fewer than this value.",
+                      "description": "Optional. The maximum number of batches to return in each response. The service may return fewer than this value. The default page size is 20, the maximum page size is 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"

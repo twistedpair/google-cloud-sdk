@@ -21,14 +21,19 @@ from __future__ import unicode_literals
 import collections
 import datetime
 
+from google.api_core import bidi
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.logging_v2.proto import logging_pb2
+from googlecloudsdk.third_party.gapic_apis.logging.v2 import client
+
 import grpc
 
+_SUPPRESSION_INFO = (
+    client.LoggingClient.types.TailLogEntriesResponse.SuppressionInfo)
+
 _SUPPRESSION_REASON_STRINGS = {
-    logging_pb2.TailLogEntriesResponse.SuppressionInfo.Reason.RATE_LIMIT:
+    _SUPPRESSION_INFO.Reason.RATE_LIMIT:
         'Logging API backend rate limit',
-    logging_pb2.TailLogEntriesResponse.SuppressionInfo.Reason.NOT_CONSUMED:
+    _SUPPRESSION_INFO.Reason.NOT_CONSUMED:
         'client not consuming messages quickly enough',
 }
 
@@ -161,37 +166,47 @@ def _StreamEntries(get_now, output_warning, output_error, output_debug,
   tail_stub.close()
 
 
-def TailLogs(tail_stub,
-             resource_names,
-             logs_filter,
-             buffer_window_seconds=None,
-             output_warning=log.err.Print,
-             output_error=log.error,
-             output_debug=log.debug,
-             get_now=datetime.datetime.now):
-  """Tails log entries from the Cloud Logging API.
+class LogTailer(object):
+  """Streams logs using gRPC."""
 
-  Args:
-    tail_stub: The `BidiRpc` tail stub to use.
-    resource_names: The resource names to tail.
-    logs_filter: The Cloud Logging filter identifying entries to include in the
-      session.
-    buffer_window_seconds: The amount of time that Cloud Logging should buffer
-      entries to get correct ordering, or None if the backend should use its
-      default.
-    output_warning: A callable that outputs the argument as a warning.
-    output_error: A callable that outputs the argument as an error.
-    output_debug: A callable that outputs the argument as debug.
-    get_now: A callable that returns the current time.
+  def __init__(self):
+    self.client = client.LoggingClient()
+    self.tail_stub = bidi.BidiRpc(
+        self.client.logging.transport.tail_log_entries)
 
-  Yields:
-    Entries for the tail session.
-  """
-  request = logging_pb2.TailLogEntriesRequest()
-  request.resource_names.extend(resource_names)
-  request.filter = logs_filter
-  if buffer_window_seconds:
-    request.buffer_window.FromSeconds(buffer_window_seconds)
-  for entry in _StreamEntries(get_now, output_warning, output_error,
-                              output_debug, tail_stub, request):
-    yield entry
+  def TailLogs(self,
+               resource_names,
+               logs_filter,
+               buffer_window_seconds=None,
+               output_warning=log.err.Print,
+               output_error=log.error,
+               output_debug=log.debug,
+               get_now=datetime.datetime.now):
+    """Tails log entries from the Cloud Logging API.
+
+    Args:
+      resource_names: The resource names to tail.
+      logs_filter: The Cloud Logging filter identifying entries to include in
+        the session.
+      buffer_window_seconds: The amount of time that Cloud Logging should buffer
+        entries to get correct ordering, or None if the backend should use its
+        default.
+      output_warning: A callable that outputs the argument as a warning.
+      output_error: A callable that outputs the argument as an error.
+      output_debug: A callable that outputs the argument as debug.
+      get_now: A callable that returns the current time.
+
+    Yields:
+      Entries for the tail session.
+    """
+    request = client.LoggingClient.types.TailLogEntriesRequest()
+    request.resource_names.extend(resource_names)
+    request.filter = logs_filter
+    if buffer_window_seconds:
+      request.buffer_window.FromSeconds(buffer_window_seconds)
+    for entry in _StreamEntries(get_now, output_warning, output_error,
+                                output_debug, self.tail_stub, request):
+      yield entry
+
+  def Stop(self):
+    self.tail_stub.close()

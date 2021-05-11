@@ -396,13 +396,7 @@ class AppLocationResolver(object):
       locations = list(list_pager.YieldFromList(
           client.projects_locations, request, batch_size=2, field='locations',
           batch_size_attribute='pageSize'))
-
-      if len(locations) > 1:
-        # Projects currently can only use Cloud Scheduler in single region, so
-        # this should never happen for now, but that will change in the future.
-        raise RegionResolvingError('Multiple locations found for this project. '
-                                   'Please specify an exact location.')
-      if len(locations) == 1:
+      if len(locations) >= 1:
         return locations[0].labels.additionalProperties[0].value
       return None
     except apitools_exceptions.HttpNotFoundError:

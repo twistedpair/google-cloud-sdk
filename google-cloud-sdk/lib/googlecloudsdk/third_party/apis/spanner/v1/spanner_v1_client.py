@@ -50,6 +50,7 @@ class SpannerV1(base_api.BaseApiClient):
     self.projects_instances_operations = self.ProjectsInstancesOperationsService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
     self.projects = self.ProjectsService(self)
+    self.scans = self.ScansService(self)
 
   class ProjectsInstanceConfigsService(base_api.BaseApiService):
     """Service class for the projects_instanceConfigs resource."""
@@ -1211,6 +1212,33 @@ class SpannerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetScans(self, request, global_params=None):
+      r"""Request a specific scan with Database-specific data for Cloud Key Visualizer.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesGetScansRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Scan) The response message.
+      """
+      config = self.GetMethodConfig('GetScans')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetScans.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/scans',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.getScans',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['endTime', 'startTime', 'view'],
+        relative_path='v1/{+name}/scans',
+        request_field='',
+        request_type_name='SpannerProjectsInstancesDatabasesGetScansRequest',
+        response_type_name='Scan',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Cloud Spanner databases.
 
@@ -1699,3 +1727,40 @@ class SpannerV1(base_api.BaseApiClient):
       super(SpannerV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ScansService(base_api.BaseApiService):
+    """Service class for the scans resource."""
+
+    _NAME = 'scans'
+
+    def __init__(self, client):
+      super(SpannerV1.ScansService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Return available scans given a Database-specific resource name.
+
+      Args:
+        request: (SpannerScansListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListScansResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/scans',
+        http_method='GET',
+        method_id='spanner.scans.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1/{+parent}',
+        request_field='',
+        request_type_name='SpannerScansListRequest',
+        response_type_name='ListScansResponse',
+        supports_download=False,
+    )

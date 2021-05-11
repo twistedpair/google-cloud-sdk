@@ -18,35 +18,38 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import encoding
-from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.api_lib.clouddeploy import release
+from googlecloudsdk.command_lib.deploy import release_util
 from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
+_LAST_TARGET_IN_SEQUENCE = (
+    'Release {} is already deployed to the last target '
+    '({}) in the promotion sequence.\n- Release: {}\n- Target: {}\n')
 
-def Promote(release_ref, to_target, rollout_id=None):
+
+def Promote(release_ref, release_obj, to_target, rollout_id=None):
   """Calls promote API and waits for the operation to finish.
 
   Args:
     release_ref: release resource object.
+    release_obj: release message object.
     to_target: the target to promote the release to.
     rollout_id: ID to assign to the generated rollout.
   """
   resp = release.ReleaseClient().Promote(release_ref, to_target, rollout_id)
-  operation_ref = resources.REGISTRY.ParseRelativeName(
-      resp.rollout.operation,
-      collection='clouddeploy.projects.locations.operations')
-  op_client = client_util.OperationsClient()
-  response_msg = op_client.WaitForOperation(
-      op_client.Get(operation_ref), operation_ref).response
-  if response_msg is not None:
-    response = encoding.MessageToPyValue(response_msg)
-    if 'name' in response:
-      log.status.Print('Created Cloud Deploy rollout {} in target {}.'.format(
-          response['name'], resp.rollout.target))
+  if resp:
+    output = 'Created Cloud Deploy rollout {} in target {}. '.format(
+        resp.rollout.rollout, resp.rollout.target)
+
+    # Check if it requires approval.
+    target_obj = release_util.GetSnappedTarget(release_obj, resp.rollout.target)
+    if target_obj and target_obj.approvalRequired:
+      output += 'The rollout is pending approval.'
+
+    log.status.Print(output)
 
 
 def GetToTargetID(release_obj):
@@ -65,7 +68,12 @@ def GetToTargetID(release_obj):
   if not release_obj.targetSnapshots:
     raise exceptions.Error('No snapped targets in the release {}.'.format(
         release_obj.name))
-
+  # Use release short name to avoid the issue by mixed use of
+  # the project number and id.
+  release_ref = resources.REGISTRY.ParseRelativeName(
+      release_obj.name,
+      collection='clouddeploy.projects.locations.deliveryPipelines.releases',
+  )
   to_target = release_obj.targetSnapshots[0].name
   # The order of target snapshots represents the promotion sequence.
   # E.g. test->stage->prod. Here we start with the last stage.
@@ -83,13 +91,17 @@ def GetToTargetID(release_obj):
       )
       # Promotes the release from the target that is farthest along in the
       # promotion sequence to its next stage in the promotion sequence.
-      if current_rollout_ref.Parent().RelativeName() == release_obj.name:
+      if current_rollout_ref.Parent().Name() == release_ref.Name():
         if i > 0:
           to_target = reversed_snapshots[i - 1].name
         else:
           log.status.Print(
-              'Release {} is already deployed to the last target {} in the promotion sequence.'
-              .format(release_obj.name, target_ref.RelativeName()))
+              _LAST_TARGET_IN_SEQUENCE.format(
+                  release_ref.Name(), target_ref.Name(),
+                  release_util.ResourceNameProjectNumberToId(
+                      release_ref.RelativeName()),
+                  release_util.ResourceNameProjectNumberToId(
+                      target_ref.RelativeName())))
           to_target = target_ref.RelativeName()
         break
 

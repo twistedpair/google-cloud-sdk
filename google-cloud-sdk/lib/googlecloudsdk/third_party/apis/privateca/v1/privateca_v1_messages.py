@@ -679,11 +679,11 @@ class CertificateIdentityConstraints(_messages.Message):
   r"""Describes constraints on a Certificate's Subject and SubjectAltNames.
 
   Fields:
-    allowSubjectAltNamesPassthrough: Optional. If this is set, the
+    allowSubjectAltNamesPassthrough: Required. If this is true, the
       SubjectAltNames extension may be copied from a certificate request into
       the signed certificate. Otherwise, the requested SubjectAltNames will be
       discarded.
-    allowSubjectPassthrough: Optional. If this is set, the Subject field may
+    allowSubjectPassthrough: Required. If this is true, the Subject field may
       be copied from a certificate request into the signed certificate.
       Otherwise, the requested Subject will be discarded.
     celExpression: Optional. A CEL expression that may be used to validate the

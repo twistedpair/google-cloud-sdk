@@ -386,6 +386,21 @@ def SanFlagsAreSpecified(args):
   ])
 
 
+def ParseIssuancePolicy(args):
+  """Parses an IssuancePolicy proto message from the args."""
+  if not args.IsSpecified('issuance_policy'):
+    return None
+  try:
+    return messages_util.DictToMessageWithErrorCheck(
+        args.issuance_policy,
+        privateca_base.GetMessagesModule('v1').IssuancePolicy)
+  # TODO(b/77547931): Catch `AttributeError` until upstream library takes the
+  # fix.
+  except (messages_util.DecodeError, AttributeError):
+    raise exceptions.InvalidArgumentException(
+        '--issuance-policy', 'Unrecognized field in the Issuance Policy.')
+
+
 def ParsePublishingOptions(args):
   """Parses the PublshingOptions proto message from the args."""
   messages = privateca_base.GetMessagesModule('v1')

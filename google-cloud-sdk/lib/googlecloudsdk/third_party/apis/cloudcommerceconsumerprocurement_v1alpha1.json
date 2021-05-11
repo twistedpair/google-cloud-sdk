@@ -650,7 +650,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange",
-      "description": "A change made on a line item.",
+      "description": "A change made on a line item. Next Id: 11",
       "type": "object",
       "properties": {
         "changeId": {
@@ -712,6 +712,23 @@
           "description": "Output only. Provider supplied message explanation for the LineItemChange's state. Mainly used to communicate progress and ETA for provisioning in the case of `PENDING_APPROVAL`, and to explain why the change request was denied or canceled in the case of `REJECTED` and `CANCELED` states.",
           "readOnly": true,
           "type": "string"
+        },
+        "changeStateReasonType": {
+          "description": "Output only. Predefined enum types for why this line item change is in current type. For example, cancellation line item change could be completed because of expired at the end of term, user explicit immediate cancellation or system triggered cancellation.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, indicating there is no predefined type for change state reason.",
+            "Change is in current state due to term expiration.",
+            "Change is in current state due to user explicit cancellation.",
+            "Change is in current state due to system cancellation."
+          ],
+          "enum": [
+            "LINE_ITEM_CHANGE_STATE_REASON_TYPE_UNSPECIFIED",
+            "LINE_ITEM_CHANGE_STATE_REASON_TYPE_EXPIRED",
+            "LINE_ITEM_CHANGE_STATE_REASON_TYPE_USER_CANCELLED",
+            "LINE_ITEM_CHANGE_STATE_REASON_TYPE_SYSTEM_CANCELLED"
+          ]
         },
         "changeEffectiveTime": {
           "description": "Output only. A time at which the change became or will become (in case of pending change) effective.",

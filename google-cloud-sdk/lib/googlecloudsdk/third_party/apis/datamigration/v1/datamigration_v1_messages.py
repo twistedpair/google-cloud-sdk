@@ -1794,7 +1794,7 @@ class SqlIpConfig(_messages.Message):
       not.
     privateNetwork: The resource link for the VPC network from which the Cloud
       SQL instance is accessible for private IP. For example,
-      `/projects/myProject/global/networks/default`. This setting can be
+      `projects/myProject/global/networks/default`. This setting can be
       updated, but it cannot be removed after it is set.
     requireSsl: Whether SSL connections over IP should be enforced or not.
   """

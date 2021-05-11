@@ -636,11 +636,12 @@ def AddStorageSize(parser):
 
 def AddTier(parser, is_patch=False):
   """Adds the '--tier' flag to the parser."""
-  help_text = ('The tier for this instance. For Second Generation instances, '
-               'TIER is the instance\'s machine type (e.g., db-n1-standard-1). '
-               'For PostgreSQL instances, only shared-core machine types '
-               '(e.g., db-f1-micro) apply. A complete list of tiers is '
-               'available here: https://cloud.google.com/sql/pricing.')
+  help_text = ("Machine type for a shared-core instance e.g. ``db-g1-small''. "
+               'For all other instances, instead of using tiers, customize '
+               'your instance by specifying its CPU and memory. You can do so '
+               'with the `--cpu` and `--memory` flags. Learn more about how '
+               'CPU and memory affects pricing: '
+               'https://cloud.google.com/sql/pricing.')
   if is_patch:
     help_text += ' WARNING: Instance will be restarted.'
 

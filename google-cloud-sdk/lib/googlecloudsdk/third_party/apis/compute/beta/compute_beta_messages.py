@@ -492,6 +492,13 @@ class AccessConfig(_messages.Message):
       option is ONE_TO_ONE_NAT.
 
   Fields:
+    externalIpv6: [Output Only] The first IPv6 address of the external IPv6
+      range associated with this instance, prefix length is stored in
+      externalIpv6PrefixLength in ipv6AccessConfig. The field is output only,
+      an IPv6 address from a subnetwork associated with the instance will be
+      allocated dynamically.
+    externalIpv6PrefixLength: [Output Only] The prefix length of the external
+      IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
     name: The name of this access configuration. The default and recommended
@@ -538,17 +545,21 @@ class AccessConfig(_messages.Message):
     ONE_TO_ONE_NAT.
 
     Values:
+      DIRECT_IPV6: <no description>
       ONE_TO_ONE_NAT: <no description>
     """
-    ONE_TO_ONE_NAT = 0
+    DIRECT_IPV6 = 0
+    ONE_TO_ONE_NAT = 1
 
-  kind = _messages.StringField(1, default='compute#accessConfig')
-  name = _messages.StringField(2)
-  natIP = _messages.StringField(3)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 4)
-  publicPtrDomainName = _messages.StringField(5)
-  setPublicPtr = _messages.BooleanField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7, default='ONE_TO_ONE_NAT')
+  externalIpv6 = _messages.StringField(1)
+  externalIpv6PrefixLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  kind = _messages.StringField(3, default='compute#accessConfig')
+  name = _messages.StringField(4)
+  natIP = _messages.StringField(5)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 6)
+  publicPtrDomainName = _messages.StringField(7)
+  setPublicPtr = _messages.BooleanField(8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9, default='ONE_TO_ONE_NAT')
 
 
 class Address(_messages.Message):
@@ -3534,6 +3545,7 @@ class BackendService(_messages.Message):
       SSL: <no description>
       TCP: <no description>
       UDP: <no description>
+      UNSPECIFIED: <no description>
     """
     GRPC = 0
     HTTP = 1
@@ -3542,6 +3554,7 @@ class BackendService(_messages.Message):
     SSL = 4
     TCP = 5
     UDP = 6
+    UNSPECIFIED = 7
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     r"""Type of session affinity to use. The default is NONE.  When the
@@ -4730,7 +4743,10 @@ class Binding(_messages.Message):
 
 
 class BulkInsertInstanceResource(_messages.Message):
-  r"""A BulkInsertInstanceResource object.
+  r"""A transient resource used in compute.instances.bulkInsert and
+  compute.regionInstances.bulkInsert and
+  compute.regionInstances.recommendLocations. This resource is not persisted
+  anywhere, it is used only for processing the requests.
 
   Messages:
     PerInstancePropertiesValue: Per-instance properties to be set on
@@ -27587,6 +27603,7 @@ class ForwardingRule(_messages.Message):
       AH: <no description>
       ESP: <no description>
       ICMP: <no description>
+      L3_DEFAULT: <no description>
       SCTP: <no description>
       TCP: <no description>
       UDP: <no description>
@@ -27594,9 +27611,10 @@ class ForwardingRule(_messages.Message):
     AH = 0
     ESP = 1
     ICMP = 2
-    SCTP = 3
-    TCP = 4
-    UDP = 5
+    L3_DEFAULT = 3
+    SCTP = 4
+    TCP = 5
+    UDP = 6
 
   class IpVersionValueValuesEnum(_messages.Enum):
     r"""The IP Version that will be used by this forwarding rule. Valid
@@ -38594,8 +38612,16 @@ class NetworkInterface(_messages.Message):
   r"""A network interface resource attached to an instance.
 
   Enums:
+    Ipv6AccessTypeValueValuesEnum: [Output Only] One of EXTERNAL, INTERNAL to
+      indicate whether the IP can be accessed from the Internet. This field is
+      always inherited from its subnetwork.  Valid only if stackType is
+      IPV4_IPV6.
     NicTypeValueValuesEnum: The type of vNIC to be used on this interface.
       This may be gVNIC or VirtioNet.
+    StackTypeValueValuesEnum: The stack type for this network interface to
+      identify whether the IPv6 feature is enabled or not. If not specified,
+      IPV4_ONLY will be used.  This field can be both set at instance creation
+      and update network interface operations.
 
   Fields:
     accessConfigs: An array of configurations for this interface. Currently,
@@ -38610,6 +38636,13 @@ class NetworkInterface(_messages.Message):
       order to update the NetworkInterface. The request will fail with error
       400 Bad Request if the fingerprint is not provided, or 412 Precondition
       Failed if the fingerprint is out of date.
+    ipv6AccessConfigs: An array of IPv6 access configurations for this
+      interface. Currently, only one IPv6 access config, DIRECT_IPV6, is
+      supported. If there is no ipv6AccessConfig specified, then this instance
+      will have no external IPv6 Internet access.
+    ipv6AccessType: [Output Only] One of EXTERNAL, INTERNAL to indicate
+      whether the IP can be accessed from the Internet. This field is always
+      inherited from its subnetwork.  Valid only if stackType is IPV4_IPV6.
     ipv6Address: [Output Only] An IPv6 internal network address for this
       network interface.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
@@ -38629,6 +38662,10 @@ class NetworkInterface(_messages.Message):
       is assigned by the system.
     nicType: The type of vNIC to be used on this interface. This may be gVNIC
       or VirtioNet.
+    stackType: The stack type for this network interface to identify whether
+      the IPv6 feature is enabled or not. If not specified, IPV4_ONLY will be
+      used.  This field can be both set at instance creation and update
+      network interface operations.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
       network resource is in legacy mode, do not specify this field. If the
       network is in auto subnet mode, specifying the subnetwork is optional.
@@ -38638,6 +38675,18 @@ class NetworkInterface(_messages.Message):
       https://www.googleapis.com/compute/v1/projects/project/regions/region/su
       bnetworks/subnetwork  - regions/region/subnetworks/subnetwork
   """
+
+  class Ipv6AccessTypeValueValuesEnum(_messages.Enum):
+    r"""[Output Only] One of EXTERNAL, INTERNAL to indicate whether the IP can
+    be accessed from the Internet. This field is always inherited from its
+    subnetwork.  Valid only if stackType is IPV4_IPV6.
+
+    Values:
+      EXTERNAL: <no description>
+      UNSPECIFIED_IPV6_ACCESS_TYPE: <no description>
+    """
+    EXTERNAL = 0
+    UNSPECIFIED_IPV6_ACCESS_TYPE = 1
 
   class NicTypeValueValuesEnum(_messages.Enum):
     r"""The type of vNIC to be used on this interface. This may be gVNIC or
@@ -38652,16 +38701,34 @@ class NetworkInterface(_messages.Message):
     UNSPECIFIED_NIC_TYPE = 1
     VIRTIO_NET = 2
 
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""The stack type for this network interface to identify whether the IPv6
+    feature is enabled or not. If not specified, IPV4_ONLY will be used.  This
+    field can be both set at instance creation and update network interface
+    operations.
+
+    Values:
+      IPV4_IPV6: <no description>
+      IPV4_ONLY: <no description>
+      UNSPECIFIED_STACK_TYPE: <no description>
+    """
+    IPV4_IPV6 = 0
+    IPV4_ONLY = 1
+    UNSPECIFIED_STACK_TYPE = 2
+
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
   fingerprint = _messages.BytesField(3)
-  ipv6Address = _messages.StringField(4)
-  kind = _messages.StringField(5, default='compute#networkInterface')
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  networkIP = _messages.StringField(8)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 9)
-  subnetwork = _messages.StringField(10)
+  ipv6AccessConfigs = _messages.MessageField('AccessConfig', 4, repeated=True)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 5)
+  ipv6Address = _messages.StringField(6)
+  kind = _messages.StringField(7, default='compute#networkInterface')
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  networkIP = _messages.StringField(10)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 11)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 12)
+  subnetwork = _messages.StringField(13)
 
 
 class NetworkList(_messages.Message):
@@ -43792,8 +43859,10 @@ class Quota(_messages.Message):
       ROUTERS: <no description>
       ROUTES: <no description>
       SECURITY_POLICIES: <no description>
+      SECURITY_POLICIES_PER_REGION: <no description>
       SECURITY_POLICY_CEVAL_RULES: <no description>
       SECURITY_POLICY_RULES: <no description>
+      SECURITY_POLICY_RULES_PER_REGION: <no description>
       SNAPSHOTS: <no description>
       SSD_TOTAL_GB: <no description>
       SSL_CERTIFICATES: <no description>
@@ -43909,25 +43978,27 @@ class Quota(_messages.Message):
     ROUTERS = 94
     ROUTES = 95
     SECURITY_POLICIES = 96
-    SECURITY_POLICY_CEVAL_RULES = 97
-    SECURITY_POLICY_RULES = 98
-    SNAPSHOTS = 99
-    SSD_TOTAL_GB = 100
-    SSL_CERTIFICATES = 101
-    STATIC_ADDRESSES = 102
-    STATIC_BYOIP_ADDRESSES = 103
-    SUBNETWORKS = 104
-    TARGET_HTTPS_PROXIES = 105
-    TARGET_HTTP_PROXIES = 106
-    TARGET_INSTANCES = 107
-    TARGET_POOLS = 108
-    TARGET_SSL_PROXIES = 109
-    TARGET_TCP_PROXIES = 110
-    TARGET_VPN_GATEWAYS = 111
-    URL_MAPS = 112
-    VPN_GATEWAYS = 113
-    VPN_TUNNELS = 114
-    XPN_SERVICE_PROJECTS = 115
+    SECURITY_POLICIES_PER_REGION = 97
+    SECURITY_POLICY_CEVAL_RULES = 98
+    SECURITY_POLICY_RULES = 99
+    SECURITY_POLICY_RULES_PER_REGION = 100
+    SNAPSHOTS = 101
+    SSD_TOTAL_GB = 102
+    SSL_CERTIFICATES = 103
+    STATIC_ADDRESSES = 104
+    STATIC_BYOIP_ADDRESSES = 105
+    SUBNETWORKS = 106
+    TARGET_HTTPS_PROXIES = 107
+    TARGET_HTTP_PROXIES = 108
+    TARGET_INSTANCES = 109
+    TARGET_POOLS = 110
+    TARGET_SSL_PROXIES = 111
+    TARGET_TCP_PROXIES = 112
+    TARGET_VPN_GATEWAYS = 113
+    URL_MAPS = 114
+    VPN_GATEWAYS = 115
+    VPN_TUNNELS = 116
+    XPN_SERVICE_PROJECTS = 117
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -51362,6 +51433,10 @@ class Subnetwork(_messages.Message):
   {$api_version}.subnetworks ==)
 
   Enums:
+    Ipv6AccessTypeValueValuesEnum: The access type of IPv6 address this subnet
+      holds. It's immutable and can only be specified during creation or the
+      first time the subnet is updated into IPV4_IPV6 dual stack. If the
+      ipv6_type is EXTERNAL then this subnet cannot enable direct path.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for the VMs in this subnet. This is an expanded field of
       enablePrivateV6Access. If both fields are set, privateIpv6GoogleAccess
@@ -51380,6 +51455,10 @@ class Subnetwork(_messages.Message):
       used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one
       that is ready to be promoted to ACTIVE or is currently draining. This
       field can be updated with a patch request.
+    StackTypeValueValuesEnum: The stack type for this subnet to identify
+      whether the IPv6 feature is enabled or not. If not specified IPV4_ONLY
+      will be used.  This field can be both set at resource creation time and
+      updated using patch.
     StateValueValuesEnum: [Output Only] The state of the subnetwork, which can
       be one of the following values: READY: Subnetwork is created and ready
       to use DRAINING: only applicable to subnetworks that have the purpose
@@ -51409,6 +51488,8 @@ class Subnetwork(_messages.Message):
       not set the default behavior is to disable flow logging. This field
       isn't supported with the purpose field set to
       INTERNAL_HTTPS_LOAD_BALANCER.
+    externalIpv6Prefix: [Output Only] The range of external IPv6 addresses
+      that are owned by this subnetwork.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
@@ -51426,6 +51507,10 @@ class Subnetwork(_messages.Message):
       at resource creation time. The range can be any range listed in the
       Valid ranges list. The range can be expanded after creation using
       expandIpCidrRange.
+    ipv6AccessType: The access type of IPv6 address this subnet holds. It's
+      immutable and can only be specified during creation or the first time
+      the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is
+      EXTERNAL then this subnet cannot enable direct path.
     ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
       owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
@@ -51471,6 +51556,10 @@ class Subnetwork(_messages.Message):
       may belong to either primary or secondary ranges. This field can be
       updated with a patch request.
     selfLink: [Output Only] Server-defined URL for the resource.
+    stackType: The stack type for this subnet to identify whether the IPv6
+      feature is enabled or not. If not specified IPV4_ONLY will be used.
+      This field can be both set at resource creation time and updated using
+      patch.
     state: [Output Only] The state of the subnetwork, which can be one of the
       following values: READY: Subnetwork is created and ready to use
       DRAINING: only applicable to subnetworks that have the purpose set to
@@ -51478,6 +51567,19 @@ class Subnetwork(_messages.Message):
       balancer are being drained. A subnetwork that is draining cannot be used
       or modified until it reaches a status of READY
   """
+
+  class Ipv6AccessTypeValueValuesEnum(_messages.Enum):
+    r"""The access type of IPv6 address this subnet holds. It's immutable and
+    can only be specified during creation or the first time the subnet is
+    updated into IPV4_IPV6 dual stack. If the ipv6_type is EXTERNAL then this
+    subnet cannot enable direct path.
+
+    Values:
+      EXTERNAL: <no description>
+      UNSPECIFIED_IPV6_ACCESS_TYPE: <no description>
+    """
+    EXTERNAL = 0
+    UNSPECIFIED_IPV6_ACCESS_TYPE = 1
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for the VMs in this subnet. This
@@ -51528,6 +51630,20 @@ class Subnetwork(_messages.Message):
     ACTIVE = 0
     BACKUP = 1
 
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""The stack type for this subnet to identify whether the IPv6 feature is
+    enabled or not. If not specified IPV4_ONLY will be used.  This field can
+    be both set at resource creation time and updated using patch.
+
+    Values:
+      IPV4_IPV6: <no description>
+      IPV4_ONLY: <no description>
+      UNSPECIFIED_STACK_TYPE: <no description>
+    """
+    IPV4_IPV6 = 0
+    IPV4_ONLY = 1
+    UNSPECIFIED_STACK_TYPE = 2
+
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The state of the subnetwork, which can be one of the
     following values: READY: Subnetwork is created and ready to use DRAINING:
@@ -51547,23 +51663,26 @@ class Subnetwork(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
   enableFlowLogs = _messages.BooleanField(4)
-  fingerprint = _messages.BytesField(5)
-  gatewayAddress = _messages.StringField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(8)
-  ipv6CidrRange = _messages.StringField(9)
-  kind = _messages.StringField(10, default='compute#subnetwork')
-  logConfig = _messages.MessageField('SubnetworkLogConfig', 11)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  privateIpGoogleAccess = _messages.BooleanField(14)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 15)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 16)
-  region = _messages.StringField(17)
-  role = _messages.EnumField('RoleValueValuesEnum', 18)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 19, repeated=True)
-  selfLink = _messages.StringField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
+  externalIpv6Prefix = _messages.StringField(5)
+  fingerprint = _messages.BytesField(6)
+  gatewayAddress = _messages.StringField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(9)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 10)
+  ipv6CidrRange = _messages.StringField(11)
+  kind = _messages.StringField(12, default='compute#subnetwork')
+  logConfig = _messages.MessageField('SubnetworkLogConfig', 13)
+  name = _messages.StringField(14)
+  network = _messages.StringField(15)
+  privateIpGoogleAccess = _messages.BooleanField(16)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 17)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 18)
+  region = _messages.StringField(19)
+  role = _messages.EnumField('RoleValueValuesEnum', 20)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 21, repeated=True)
+  selfLink = _messages.StringField(22)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
 
 
 class SubnetworkAggregatedList(_messages.Message):

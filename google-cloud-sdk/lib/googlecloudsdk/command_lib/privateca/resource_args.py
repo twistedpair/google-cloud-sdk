@@ -56,7 +56,7 @@ def CertificateAttributeConfig(fallthroughs=None):
       fallthroughs=fallthroughs or [])
 
 
-def CaPoolAtrributeConfig(display_name='ca_pool', fallthroughs=None):
+def CaPoolAttributeConfig(display_name='pool', fallthroughs=None):
   # TODO(b/186143764): GA Autocompleters
   return concepts.ResourceParameterAttributeConfig(
       name=display_name,
@@ -201,7 +201,7 @@ def CreateCertAuthorityResourceSpec(
       resource_name=display_name,
       certificateAuthoritiesId=CertAuthorityAttributeConfig(
           certificate_authority_attribute, fallthroughs=ca_id_fallthroughs),
-      caPoolsId=CaPoolAtrributeConfig(),
+      caPoolsId=CaPoolAttributeConfig(),
       locationsId=LocationAttributeConfig(location_attribute),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=True)
@@ -214,7 +214,7 @@ def CreateCaPoolResourceSpec(display_name, location_attribute='location'):
       api_version='v1',
       # This will be formatted and used as {resource} in the help text.
       resource_name=display_name,
-      caPoolsId=CaPoolAtrributeConfig(),
+      caPoolsId=CaPoolAttributeConfig(),
       locationsId=LocationAttributeConfig(location_attribute),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=True)
@@ -227,7 +227,7 @@ def CreateCertResourceSpec(display_name, id_fallthroughs=None):
       api_version='v1',
       resource_name=display_name,
       certificatesId=CertAttributeConfig(fallthroughs=id_fallthroughs or []),
-      caPoolsId=CaPoolAtrributeConfig('issuer-pool'),
+      caPoolsId=CaPoolAttributeConfig('issuer-pool'),
       locationsId=LocationAttributeConfig('issuer-location'),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
@@ -282,6 +282,23 @@ def AddCertAuthorityPositionalResourceArg(parser, verb):
       required=True).AddToParser(parser)
 
 
+def AddCaPoolPositionalResourceArg(parser, verb):
+  """Add a positional resource argument for a CA Pool.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  arg_name = 'CA_POOL'
+  concept_parsers.ConceptParser.ForResource(
+      arg_name,
+      CreateCaPoolResourceSpec(arg_name),
+      'The ca pool {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
 # TODO(b/177604350): Remove Beta code paths
 def AddCertificatePositionalResourceArg(parser, verb):
   """Add a positional resource argument for a Certificate.
@@ -330,15 +347,16 @@ def ValidateResourceLocation(resource_ref, arg_name):
         .format(', '.join(sorted(supported_locations))))
 
 
-def CheckExpectedCAType(expected_type, ca):
+def CheckExpectedCAType(expected_type, ca, api_version='v1beta1'):
   """Raises an exception if the Certificate Authority type is not expected_type.
 
   Args:
     expected_type: The expected type.
     ca: The ca object to check.
+    api_version: The api version.
   """
   ca_type_enum = base.GetMessagesModule(
-  ).CertificateAuthority.TypeValueValuesEnum
+      api_version).CertificateAuthority.TypeValueValuesEnum
   if expected_type == ca_type_enum.SUBORDINATE and ca.type != expected_type:
     raise privateca_exceptions.InvalidCertificateAuthorityTypeError(
         'Cannot perform subordinates command on Root CA. Please use the `privateca roots` command group instead.'

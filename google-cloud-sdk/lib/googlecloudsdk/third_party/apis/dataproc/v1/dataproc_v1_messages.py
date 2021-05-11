@@ -797,7 +797,7 @@ class ClusterStatus(_messages.Message):
 
 class ConfidentialInstanceConfig(_messages.Message):
   r"""Confidential Instance Config for clusters using Confidential VMs
-  (https://cloud.google.com/compute/confidential-vm/docs) NEXT ID: 2
+  (https://cloud.google.com/compute/confidential-vm/docs)
 
   Fields:
     enableConfidentialCompute: Optional. Defines whether the instance should
@@ -985,7 +985,8 @@ class DataprocProjectsLocationsBatchesListRequest(_messages.Message):
       case-sensitive and have the following syntax:field = value AND field =
       value ...
     pageSize: Optional. The maximum number of batches to return in each
-      response. The service may return fewer than this value.
+      response. The service may return fewer than this value. The default page
+      size is 20, the maximum page size is 1000.
     pageToken: Optional. A page token, received from a previous ListBatches
       call. Provide this to retrieve the subsequent page.
     parent: Required. The parent, which owns this collection of batches.
@@ -2230,7 +2231,7 @@ class ExecutionConfig(_messages.Message):
   networkUri = _messages.StringField(2)
   performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 3)
   serviceAccount = _messages.StringField(4)
-  serviceAccountScopes = _messages.StringField(5)
+  serviceAccountScopes = _messages.StringField(5, repeated=True)
   subnetworkUri = _messages.StringField(6)
 
 
@@ -2287,7 +2288,7 @@ class GceClusterConfig(_messages.Message):
   Fields:
     confidentialInstanceConfig: Optional. Confidential Instance Config for
       clusters using Confidential VMs
-      (https://cloud.google.com/compute/confidential-vm/docs)
+      (https://cloud.google.com/compute/confidential-vm/docs).
     internalIpOnly: Optional. If true, all instances in the cluster will only
       have internal IP addresses. By default, clusters are not restricted to
       internal IP addresses, and will have ephemeral external IP addresses
@@ -3739,11 +3740,15 @@ class PeripheralsConfig(_messages.Message):
   r"""Auxiliary services configuration for a workload.
 
   Fields:
-    metastoreService: Optional. Dataproc Metastore service that can be used by
-      a workload.
+    metastoreService: Optional. Resource name of an existing Dataproc
+      Metastore service.Example:
+      projects/[project_id]/locations/[region]/services/[service_id]
+    sparkHistoryServerConfig: Optional. The Spark History Server configuration
+      for the workload.
   """
 
   metastoreService = _messages.StringField(1)
+  sparkHistoryServerConfig = _messages.MessageField('SparkHistoryServerConfig', 2)
 
 
 class PigJob(_messages.Message):
@@ -4131,20 +4136,20 @@ class RuntimeConfig(_messages.Message):
   r"""Runtime configuration for a workload.
 
   Messages:
-    PropertiesValue: Optional. A mapping of property names to values, used to
-      configure workload execution.
+    PropertiesValue: Optional. A mapping of property names to values, which
+      are used to configure workload execution.
 
   Fields:
     containerImage: Optional. Container image to use for workload execution.
-    properties: Optional. A mapping of property names to values, used to
-      configure workload execution.
+    properties: Optional. A mapping of property names to values, which are
+      used to configure workload execution.
     version: Optional. Version of the batch runtime.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    r"""Optional. A mapping of property names to values, used to configure
-    workload execution.
+    r"""Optional. A mapping of property names to values, which are used to
+    configure workload execution.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -4395,6 +4400,18 @@ class SparkBatch(_messages.Message):
   jarFileUris = _messages.StringField(4, repeated=True)
   mainClass = _messages.StringField(5)
   mainJarFileUri = _messages.StringField(6)
+
+
+class SparkHistoryServerConfig(_messages.Message):
+  r"""Spark History Server configuration for the workload.
+
+  Fields:
+    dataprocCluster: Optional. Resource name of an existing Dataproc Cluster
+      to act as a Spark History Server for the workload.Example:
+      projects/[project_id]/regions/[region]/clusters/[cluster_name]
+  """
+
+  dataprocCluster = _messages.StringField(1)
 
 
 class SparkJob(_messages.Message):

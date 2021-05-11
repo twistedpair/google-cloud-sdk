@@ -248,9 +248,9 @@ class BitbucketServerSecrets(_messages.Message):
       access token's secret version.
     readAccessTokenVersionName: Required. The resource name for the read
       access token's secret version.
-    webhookSecretVersionName: Immutable. The resource name for the webhook
-      secret's secret version. Once this field has been set, it cannot be
-      changed. If you need to change it, please create another
+    webhookSecretVersionName: Required. Immutable. The resource name for the
+      webhook secret's secret version. Once this field has been set, it cannot
+      be changed. If you need to change it, please create another
       BitbucketServerConfig.
   """
 
@@ -1911,6 +1911,7 @@ class GitHubEnterpriseConfig(_messages.Message):
       {project} is a project number or id and {network} is the name of a VPC
       network in the project.
     secrets: Optional. Names of secrets in Secret Manager.
+    sslCa: Optional. SSL certificate to use for requests to GitHub Enterprise.
     webhookKey: Optional. The key that should be attached to webhook calls to
       the ReceiveWebhook endpoint.
   """
@@ -1923,7 +1924,8 @@ class GitHubEnterpriseConfig(_messages.Message):
   name = _messages.StringField(6)
   peeredNetwork = _messages.StringField(7)
   secrets = _messages.MessageField('GitHubEnterpriseSecrets', 8)
-  webhookKey = _messages.StringField(9)
+  sslCa = _messages.StringField(9)
+  webhookKey = _messages.StringField(10)
 
 
 class GitHubEnterpriseSecrets(_messages.Message):

@@ -633,6 +633,8 @@ class InstallationState(object):
                                    '|third_party/google/oauth2'
                                    '|third_party/overrides'
                                    '|third_party/proto'
+                                   '|dulwich'
+                                   '|pubsublite'
                                    '|pubsub_v1/services)')
     else:
       # Do not compile anything on python 3.4.x

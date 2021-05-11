@@ -201,6 +201,33 @@ class TpuV2alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetGuestAttributes(self, request, global_params=None):
+      r"""Retrieves the guest attributes for the node.
+
+      Args:
+        request: (TpuProjectsLocationsNodesGetGuestAttributesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetGuestAttributesResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetGuestAttributes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetGuestAttributes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:getGuestAttributes',
+        http_method='POST',
+        method_id='tpu.projects.locations.nodes.getGuestAttributes',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2alpha1/{+name}:getGuestAttributes',
+        request_field='getGuestAttributesRequest',
+        request_type_name='TpuProjectsLocationsNodesGetGuestAttributesRequest',
+        response_type_name='GetGuestAttributesResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists nodes.
 
@@ -500,6 +527,33 @@ class TpuV2alpha1(base_api.BaseApiClient):
       super(TpuV2alpha1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GenerateServiceIdentity(self, request, global_params=None):
+      r"""Generates the Cloud TPU service identity for the project.
+
+      Args:
+        request: (TpuProjectsLocationsGenerateServiceIdentityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateServiceIdentityResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateServiceIdentity')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateServiceIdentity.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}:generateServiceIdentity',
+        http_method='POST',
+        method_id='tpu.projects.locations.generateServiceIdentity',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2alpha1/{+parent}:generateServiceIdentity',
+        request_field='generateServiceIdentityRequest',
+        request_type_name='TpuProjectsLocationsGenerateServiceIdentityRequest',
+        response_type_name='GenerateServiceIdentityResponse',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets information about a location.

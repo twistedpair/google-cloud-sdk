@@ -650,7 +650,9 @@ class Hub(_messages.Message):
     description: Short description of the hub resource.
     labels: User-defined labels.
     name: Immutable. The name of a Hub resource.
-    spokes: Output only. A list of the URIs of all attached spokes
+    spokes: Output only. A list of the URIs of all attached spokes. This field
+      is deprecated and will not be included in future API versions. Call
+      ListSpokes on each region instead.
     state: Output only. The current lifecycle state of this Hub.
     uniqueId: Output only. Google-generated UUID for this resource. This is
       unique across all Hub resources. If a Hub resource is deleted and

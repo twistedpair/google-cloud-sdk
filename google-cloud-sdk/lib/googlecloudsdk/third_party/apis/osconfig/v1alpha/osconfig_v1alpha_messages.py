@@ -260,45 +260,47 @@ class FixedOrPercent(_messages.Message):
 
 
 class InstanceOSPoliciesCompliance(_messages.Message):
-  r"""This API resource provides the OS policies compliance data for a Compute
-  Engine virtual machine (VM) instance at a given point in time. A Compute
-  Engine VM can have multiple OS policy assignments, and each assignment can
-  have multiple OS policies. As a result, multiple OS policies could be
-  applied to a single VM. You can use this API resource to determine both the
-  compliance state of your VM as well as the compliance state of an individual
-  OS policy.
+  r"""This API resource represents the OS policies compliance data for a
+  Compute Engine virtual machine (VM) instance at a given point in time. A
+  Compute Engine VM can have multiple OS policy assignments, and each
+  assignment can have multiple OS policies. As a result, multiple OS policies
+  could be applied to a single VM. You can use this API resource to determine
+  both the compliance state of your VM as well as the compliance state of an
+  individual OS policy. For more information, see [View
+  compliance](/compute/docs/os-configuration-management/view-compliance).
 
   Enums:
-    StateValueValuesEnum: Output only. Compliance state of the instance.
+    StateValueValuesEnum: Output only. Compliance state of the VM.
 
   Fields:
-    detailedState: Output only. Detailed compliance state of the instance.
-      This field is non-empty only when compliance state == UNKNOWN Supported
-      values are: - no-compliance-data: Compliance data does not exist for
-      this instance. - no-agent-detected: OS Config agent is not detected for
-      this instance. - config-not-supported-by-agent: The OS Config agent
-      running on this instance does not support configuration management. -
-      inactive: The instance is not running. - internal-service-errors:
-      Internal service errors encountered while enforcing compliance. - agent-
-      errors: OS config agent encountered errors while enforcing compliance.
+    detailedState: Output only. Detailed compliance state of the VM. This
+      field is populated only when compliance state is `UNKNOWN`. It may
+      contain one of the following values: * `no-compliance-data`: Compliance
+      data is not available for this VM. * `no-agent-detected`: OS Config
+      agent is not detected for this VM. * `config-not-supported-by-agent`:
+      The version of the OS Config agent running on this VM does not support
+      configuration management. * `inactive`: VM is not running. * `internal-
+      service-errors`: There were internal service errors encountered while
+      enforcing compliance. * `agent-errors`: OS config agent encountered
+      errors while enforcing compliance.
     detailedStateReason: Output only. The reason for the `detailed_state` of
-      the instance (if any).
-    instance: Output only. The Compute Engine instance name.
+      the VM (if any).
+    instance: Output only. The Compute Engine VM instance name.
     lastComplianceCheckTime: Output only. Timestamp of the last compliance
-      check for the instance.
+      check for the VM.
     lastComplianceRunId: Output only. Unique identifier for the last
       compliance run. This id will be logged by the OS config agent during a
       compliance run and can be used for debugging and tracing purpose.
     name: Output only. The `InstanceOSPoliciesCompliance` API resource name.
-      Format: projects/{project_number}/locations/{location}/instanceOSPolicie
-      sCompliances/{instance_id}
+      Format: `projects/{project_number}/locations/{location}/instanceOSPolici
+      esCompliances/{instance_id}`
     osPolicyCompliances: Output only. Compliance data for each `OSPolicy` that
-      is applied to the instance.
-    state: Output only. Compliance state of the instance.
+      is applied to the VM.
+    state: Output only. Compliance state of the VM.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Compliance state of the instance.
+    r"""Output only. Compliance state of the VM.
 
     Values:
       OS_POLICY_COMPLIANCE_STATE_UNSPECIFIED: Default value. This value is
@@ -333,11 +335,12 @@ class InstanceOSPoliciesComplianceOSPolicyCompliance(_messages.Message):
 
   Fields:
     osPolicyAssignment: Reference to the `OSPolicyAssignment` API resource
-      that the `OSPolicy` belongs to. Format: projects/{project_number}/locati
-      ons/{location}/osPolicyAssignments/{os_policy_assignment_id@revision_id}
+      that the `OSPolicy` belongs to. Format: `projects/{project_number}/locat
+      ions/{location}/osPolicyAssignments/{os_policy_assignment_id@revision_id
+      }`
     osPolicyId: The OS policy id
     osPolicyResourceCompliances: Compliance data for each `OSPolicyResource`
-      that is applied to the instance.
+      that is applied to the VM.
     state: Compliance state of the OS policy.
   """
 
@@ -366,9 +369,11 @@ class InstanceOSPoliciesComplianceOSPolicyCompliance(_messages.Message):
 
 
 class Inventory(_messages.Message):
-  r"""This API resource provides the inventory data for a Compute Engine
-  virtual machine (VM) instance at a given point in time. You can use this API
-  resource to determine the inventory data of your VM.
+  r"""This API resource represents the available inventory data for a Compute
+  Engine virtual machine (VM) instance at a given point in time. You can use
+  this API resource to determine the inventory data of your VM. For more
+  information, see [Information provided by OS inventory
+  management](/compute/docs/instances/os-inventory-management#data-collected).
 
   Messages:
     ItemsValue: Output only. Inventory items related to the VM keyed by an
@@ -381,11 +386,11 @@ class Inventory(_messages.Message):
       unique identifier for each inventory item. The identifier is unique to
       each distinct and addressable inventory item and will change, when there
       is a new package version.
-    name: Output only. The `Inventory` API resource name. Format: projects/{pr
-      oject_number}/locations/{location}/instances/{instance_id}/inventory
+    name: Output only. The `Inventory` API resource name. Format: `projects/{p
+      roject_number}/locations/{location}/instances/{instance_id}/inventory`
     osInfo: Output only. Base level operating system information for the VM.
     updateTime: Output only. Timestamp of the last reported inventory for the
-      instance.
+      VM.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -636,7 +641,7 @@ class InventoryZypperPatch(_messages.Message):
 
 class ListInstanceOSPoliciesCompliancesResponse(_messages.Message):
   r"""A response message for listing OS policies compliance data for all
-  Compute Engine instances in the given location.
+  Compute Engine VMs in the given location.
 
   Fields:
     instanceOsPoliciesCompliances: List of instance OS policies compliance
@@ -704,16 +709,16 @@ class ListVulnerabilityReportsResponse(_messages.Message):
 
 
 class OSPolicy(_messages.Message):
-  r"""An OS policy defines the desired state configuration for an instance.
+  r"""An OS policy defines the desired state configuration for a VM.
 
   Enums:
     ModeValueValuesEnum: Required. Policy mode
 
   Fields:
-    allowNoResourceGroupMatch: This flag determines the policy compliance
+    allowNoResourceGroupMatch: This flag determines the OS policy compliance
       status when none of the resource groups within the policy are applicable
-      for an instance. Set this value to `true` if the policy needs to
-      reported as compliant in this case.
+      for a VM. Set this value to `true` if the policy needs to be reported as
+      compliant even if the policy has nothing to validate or enforce.
     description: Policy description. Length of the description is limited to
       1024 characters.
     id: Required. The id of the OS policy with the following restrictions: *
@@ -722,12 +727,11 @@ class OSPolicy(_messages.Message):
       number or a letter. * Must be unique within the assignment.
     mode: Required. Policy mode
     resourceGroups: Required. List of resource groups for the policy. For a
-      particular instance, resource groups are evaluated in the order
-      specified and the first resource group that is applicable is selected
-      and the rest are ignored. If none of the resource groups are applicable
-      for an instance, the instance is considered to be non-compliant w.r.t
-      this policy. This behavior can be toggled by the flag
-      `allow_no_resource_group_match`
+      particular VM, resource groups are evaluated in the order specified and
+      the first resource group that is applicable is selected and the rest are
+      ignored. If none of the resource groups are applicable for a VM, the VM
+      is considered to be non-compliant w.r.t this policy. This behavior can
+      be toggled by the flag `allow_no_resource_group_match`
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -755,15 +759,14 @@ class OSPolicy(_messages.Message):
 
 
 class OSPolicyAssignment(_messages.Message):
-  r"""OS policy assignment is an API resource provided by OS Config service to
-  apply a set of OS policies to a dynamically targeted group of Compute Engine
-  VM instances. An OS policy is used to define the desired state configuration
-  for a Compute Engine instance through a set of configuration resources that
-  provide capabilities such as installing or removing software packages,
-  executing a script. The Compute Engine instances are selected via the
-  instance filter that supports filtering by labels and OS families. Changes
-  to OS policy assignments are gradually rolled out to the targeted instances
-  gradually according to the rollout options specified within the assignment.
+  r"""OS policy assignment is an API resource that is used to apply a set of
+  OS policies to a dynamically targeted group of Compute Engine VM instances.
+  An OS policy is used to define the desired state configuration for a Compute
+  Engine VM instance through a set of configuration resources that provide
+  capabilities such as installing or removing software packages, or executing
+  a script. For more information, see [OS policy and OS policy
+  assignment](/compute/docs/os-configuration-management/working-with-os-
+  policies).
 
   Enums:
     RolloutStateValueValuesEnum: Output only. OS policy assignment rollout
@@ -778,10 +781,11 @@ class OSPolicyAssignment(_messages.Message):
       assignment.
     description: OS policy assignment description. Length of the description
       is limited to 1024 characters.
-    instanceFilter: Required. Filter to select instances.
-    name: Output only. Resource name projects/{project_number}/locations/{loca
-      tion}/osPolicyAssignments/{os_policy_assignment_id}
-    osPolicies: Required. List of OS policies to be applied to the instances.
+    instanceFilter: Required. Filter to select VMs.
+    name: Resource name. Format: `projects/{project_number}/locations/{locatio
+      n}/osPolicyAssignments/{os_policy_assignment_id}` This field is ignored
+      when you create an OS policy assignment.
+    osPolicies: Required. List of OS policies to be applied to the VMs.
     reconciling: Output only. Indicates that reconciliation is in progress for
       the revision. This value is `true` when the `rollout_state` is one of: *
       IN_PROGRESS * CANCELLING
@@ -830,21 +834,21 @@ class OSPolicyAssignment(_messages.Message):
 
 
 class OSPolicyAssignmentInstanceFilter(_messages.Message):
-  r"""Message to represent the filters to select instances for an assignment
+  r"""Message to represent the filters to select VMs for an assignment
 
   Fields:
-    all: Target all VM instances in the project. If true, no other criteria is
+    all: Target all VMs in the project. If true, no other criteria is
       permitted.
-    exclusionLabels: List of label sets used for instance exclusion. If the
-      list has more than one label set, the instance is excluded if any of the
-      label sets are applicable for the instance. This filter is applied last
-      in the filtering chain and therefore an instance is guaranteed to be
-      excluded if it satisfies one of the below label sets.
-    inclusionLabels: List of label sets used for instance inclusion. If the
-      list has more than one `LabelSet`, the instance is included if any of
-      the label sets are applicable for the instance.
-    osShortNames: An instance is included if it's OS short name matches with
-      any of the values provided in this list.
+    exclusionLabels: List of label sets used for VM exclusion. If the list has
+      more than one label set, the VM is excluded if any of the label sets are
+      applicable for the VM. This filter is applied last in the filtering
+      chain and therefore a VM is guaranteed to be excluded if it satisfies
+      one of the below label sets.
+    inclusionLabels: List of label sets used for VM inclusion. If the list has
+      more than one `LabelSet`, the VM is included if any of the label sets
+      are applicable for the VM.
+    osShortNames: A VM is included if it's OS short name matches with any of
+      the values provided in this list.
   """
 
   all = _messages.BooleanField(1)
@@ -854,29 +858,27 @@ class OSPolicyAssignmentInstanceFilter(_messages.Message):
 
 
 class OSPolicyAssignmentLabelSet(_messages.Message):
-  r"""Message representing label set. * A label is a key value pair set for an
-  instance. * A LabelSet is a set of labels. * Labels within a LabelSet are
-  ANDed. In other words, a LabelSet is applicable for an instance only if it
-  matches all the labels in the LabelSet. * Example: A LabelSet with 2 labels:
-  `env=prod` and `type=webserver` will only be applicable for those instances
-  with both labels present.
+  r"""Message representing label set. * A label is a key value pair set for a
+  VM. * A LabelSet is a set of labels. * Labels within a LabelSet are ANDed.
+  In other words, a LabelSet is applicable for a VM only if it matches all the
+  labels in the LabelSet. * Example: A LabelSet with 2 labels: `env=prod` and
+  `type=webserver` will only be applicable for those VMs with both labels
+  present.
 
   Messages:
-    LabelsValue: Labels are identified by key/value pairs in this map. An
-      instance should contain all the key/value pairs specified in this map to
-      be selected.
-
-  Fields:
-    labels: Labels are identified by key/value pairs in this map. An instance
+    LabelsValue: Labels are identified by key/value pairs in this map. A VM
       should contain all the key/value pairs specified in this map to be
       selected.
+
+  Fields:
+    labels: Labels are identified by key/value pairs in this map. A VM should
+      contain all the key/value pairs specified in this map to be selected.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are identified by key/value pairs in this map. An instance
-    should contain all the key/value pairs specified in this map to be
-    selected.
+    r"""Labels are identified by key/value pairs in this map. A VM should
+    contain all the key/value pairs specified in this map to be selected.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -912,8 +914,8 @@ class OSPolicyAssignmentOperationMetadata(_messages.Message):
   Fields:
     apiMethod: The OS policy assignment API method.
     osPolicyAssignment: Reference to the `OSPolicyAssignment` API resource.
-      Format: projects/{project_number}/locations/{location}/osPolicyAssignmen
-      ts/{os_policy_assignment_id@revision_id}
+      Format: `projects/{project_number}/locations/{location}/osPolicyAssignme
+      nts/{os_policy_assignment_id@revision_id}`
     rolloutStartTime: Rollout start time
     rolloutState: State of the rollout
     rolloutUpdateTime: Rollout update time
@@ -961,13 +963,13 @@ class OSPolicyAssignmentRollout(_messages.Message):
   assignment.
 
   Fields:
-    disruptionBudget: Required. The maximum number (or percentage) of
-      instances per zone to disrupt at any given moment.
+    disruptionBudget: Required. The maximum number (or percentage) of VMs per
+      zone to disrupt at any given moment.
     minWaitDuration: Required. This determines the minimum duration of time to
       wait after the configuration changes are applied through the current
-      rollout. An instance continues to count towards the `disruption_budget`
-      at least until this duration of time has passed after configuration
-      changes are applied.
+      rollout. A VM continues to count towards the `disruption_budget` at
+      least until this duration of time has passed after configuration changes
+      are applied.
   """
 
   disruptionBudget = _messages.MessageField('FixedOrPercent', 1)
@@ -1105,12 +1107,30 @@ class OSPolicyResourceConfigStep(_messages.Message):
 
 
 class OSPolicyResourceExecResource(_messages.Message):
-  r"""A resource that contains custom validation and enforcement steps.
+  r"""A resource that allows executing scripts on the VM. The `ExecResource`
+  has 2 stages: `validate` and `enforce` and both stages accept a script as an
+  argument to execute. When the `ExecResource` is applied by the agent, it
+  first executes the script in the `validate` stage. The `validate` stage can
+  signal that the `ExecResource` is already in the desired state by returning
+  an exit code of `100`. If the `ExecResource` is not in the desired state, it
+  should return an exit code of `101`. Any other exit code returned by this
+  stage is considered an error. If the `ExecResource` is not in the desired
+  state based on the exit code from the `validate` stage, the agent proceeds
+  to execute the script from the `enforce` stage. If the `ExecResource` is
+  already in the desired state, the `enforce` stage will not be run. Similar
+  to `validate` stage, the `enforce` stage should return an exit code of `100`
+  to indicate that the resource in now in its desired state. Any other exit
+  code is considered an error. NOTE: An exit code of `100` was chosen over `0`
+  (and `101` vs `1`) to have an explicit indicator of `in desired state`, `not
+  in desired state` and errors. Because, for example, Powershell will always
+  return an exit code of `0` unless an `exit` statement is provided in the
+  script. So, for reasons of consistency and being explicit, exit codes `100`
+  and `101` were chosen.
 
   Fields:
-    enforce: What to run to bring this resource into the desired state. A exit
-      code of 100 indicates "success", any other exit code idicates a failure
-      running enforce.
+    enforce: What to run to bring this resource into the desired state. An
+      exit code of 100 indicates "success", any other exit code indicates a
+      failure running enforce.
     validate: Required. What to run to validate this resource is in the
       desired state. An exit code of 100 indicates "in desired state", and
       exit code of 101 indicates "not in desired state". Any other exit code
@@ -1131,7 +1151,8 @@ class OSPolicyResourceExecResourceExec(_messages.Message):
     args: Optional arguments to pass to the source during execution.
     file: A remote or local file.
     interpreter: Required. The script interpreter to use.
-    script: An inline script.
+    script: An inline script. The size of the script is limited to 1024
+      characters.
   """
 
   class InterpreterValueValuesEnum(_messages.Enum):
@@ -1166,7 +1187,7 @@ class OSPolicyResourceFile(_messages.Message):
       validations based on the file type: Remote: A checksum must be
       specified. Cloud Storage: An object generation number must be specified.
     gcs: A Cloud Storage object.
-    localPath: A local path to use.
+    localPath: A local path within the VM to use.
     remote: A generic remote file.
   """
 
@@ -1210,9 +1231,10 @@ class OSPolicyResourceFileResource(_messages.Message):
     StateValueValuesEnum: Required. Desired state of the file.
 
   Fields:
-    content: A a file with this content.
+    content: A a file with this content. The size of the content is limited to
+      1024 characters.
     file: A remote or local source.
-    path: Required. The absolute path of the file.
+    path: Required. The absolute path of the file within the VM.
     permissions: Consists of three octal digits which represent, in order, the
       permissions of the owner, group, and other users for the file (similarly
       to the numeric mode used in the linux chmod utility). Each digit
@@ -1250,13 +1272,13 @@ class OSPolicyResourceGroup(_messages.Message):
   r"""Resource groups provide a mechanism to group OS policy resources.
   Resource groups enable OS policy authors to create a single OS policy to be
   applied to VMs running different operating Systems. When the OS policy is
-  applied to a target VM instance, the appropriate resource group within the
-  OS policy is selected based on the `OSFilter` specified within the resource
-  group.
+  applied to a target VM, the appropriate resource group within the OS policy
+  is selected based on the `OSFilter` specified within the resource group.
 
   Fields:
     osFilter: Used to specify the OS filter for a resource group
-    resources: Required. List of resources configured for this resource group
+    resources: Required. List of resources configured for this resource group.
+      The resources are executed in the exact order specified here.
   """
 
   osFilter = _messages.MessageField('OSPolicyOSFilter', 1)
@@ -1268,14 +1290,13 @@ class OSPolicyResourcePackageResource(_messages.Message):
 
   Enums:
     DesiredStateValueValuesEnum: Required. The desired state the agent should
-      maintain for this package. The default is to ensure the package is
-      installed.
+      maintain for this package.
 
   Fields:
     apt: A package managed by Apt.
     deb: A deb package file.
     desiredState: Required. The desired state the agent should maintain for
-      this package. The default is to ensure the package is installed.
+      this package.
     googet: A package managed by GooGet.
     msi: An MSI package.
     rpm: An rpm package file.
@@ -1285,7 +1306,7 @@ class OSPolicyResourcePackageResource(_messages.Message):
 
   class DesiredStateValueValuesEnum(_messages.Enum):
     r"""Required. The desired state the agent should maintain for this
-    package. The default is to ensure the package is installed.
+    package.
 
     Values:
       DESIRED_STATE_UNSPECIFIED: Unspecified is invalid.
@@ -1416,11 +1437,10 @@ class OSPolicyResourceRepositoryResourceAptRepository(_messages.Message):
 
   Enums:
     ArchiveTypeValueValuesEnum: Required. Type of archive files in this
-      repository. The default behavior is DEB.
+      repository.
 
   Fields:
-    archiveType: Required. Type of archive files in this repository. The
-      default behavior is DEB.
+    archiveType: Required. Type of archive files in this repository.
     components: Required. List of components for this repository. Must contain
       at least one item.
     distribution: Required. Distribution of this repository.
@@ -1430,8 +1450,7 @@ class OSPolicyResourceRepositoryResourceAptRepository(_messages.Message):
   """
 
   class ArchiveTypeValueValuesEnum(_messages.Enum):
-    r"""Required. Type of archive files in this repository. The default
-    behavior is DEB.
+    r"""Required. Type of archive files in this repository.
 
     Values:
       ARCHIVE_TYPE_UNSPECIFIED: Unspecified is invalid.
@@ -1616,10 +1635,10 @@ class OsconfigProjectsLocationsInstanceOSPoliciesCompliancesGetRequest(_messages
 
   Fields:
     name: Required. API resource name for instance OS policies compliance
-      resource. Format: projects/{project}/locations/{location}/instanceOSPoli
-      ciesCompliances/{instance} For `{project}`, either Compute Engine
+      resource. Format: `projects/{project}/locations/{location}/instanceOSPol
+      iciesCompliances/{instance}` For `{project}`, either Compute Engine
       project-number or project-id can be provided. For `{instance}`, either
-      Compute Engine instance-id or instance-name can be provided.
+      Compute Engine VM instance-id or instance-name can be provided.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1638,8 +1657,8 @@ class OsconfigProjectsLocationsInstanceOSPoliciesCompliancesListRequest(_message
       `ListInstanceOSPoliciesCompliances` that indicates where this listing
       should continue from.
     parent: Required. The parent resource name. Format:
-      projects/{project}/locations/{location} For `{project}`, either Compute
-      Engine project-number or project-id can be provided.
+      `projects/{project}/locations/{location}` For `{project}`, either
+      Compute Engine project-number or project-id can be provided.
   """
 
   filter = _messages.StringField(1)
@@ -1648,8 +1667,8 @@ class OsconfigProjectsLocationsInstanceOSPoliciesCompliancesListRequest(_message
   parent = _messages.StringField(4, required=True)
 
 
-class OsconfigProjectsLocationsInstancesGetInventoryRequest(_messages.Message):
-  r"""A OsconfigProjectsLocationsInstancesGetInventoryRequest object.
+class OsconfigProjectsLocationsInstancesInventoriesGetRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsInstancesInventoriesGetRequest object.
 
   Enums:
     ViewValueValuesEnum: Inventory view indicating what information should be
@@ -1658,7 +1677,7 @@ class OsconfigProjectsLocationsInstancesGetInventoryRequest(_messages.Message):
 
   Fields:
     name: Required. API resource name for inventory resource. Format:
-      projects/{project}/locations/{location}/instances/{instance}/inventory
+      `projects/{project}/locations/{location}/instances/{instance}/inventory`
       For `{project}`, either `project-number` or `project-id` can be
       provided. For `{instance}`, either Compute Engine `instance-id` or
       `instance-name` can be provided.
@@ -1684,21 +1703,6 @@ class OsconfigProjectsLocationsInstancesGetInventoryRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
-class OsconfigProjectsLocationsInstancesGetVulnerabilityReportRequest(_messages.Message):
-  r"""A OsconfigProjectsLocationsInstancesGetVulnerabilityReportRequest
-  object.
-
-  Fields:
-    name: Required. API resource name for vulnerability resource. Format: proj
-      ects/{project}/locations/{location}/instances/{instance}/vulnerabilityRe
-      port For `{project}`, either `project-number` or `project-id` can be
-      provided. For `{instance}`, either Compute Engine `instance-id` or
-      `instance-name` can be provided.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class OsconfigProjectsLocationsInstancesInventoriesListRequest(_messages.Message):
   r"""A OsconfigProjectsLocationsInstancesInventoriesListRequest object.
 
@@ -1715,7 +1719,7 @@ class OsconfigProjectsLocationsInstancesInventoriesListRequest(_messages.Message
       `ListInventories` that indicates where this listing should continue
       from.
     parent: Required. The parent resource name. Format:
-      projects/{project}/locations/{location}/instances/{instance} For
+      `projects/{project}/locations/{location}/instances/{instance}` For
       `{project}`, either `project-number` or `project-id` can be provided.
       For `{instance}`, only hyphen or dash character is supported to list
       inventories across VMs.
@@ -1744,6 +1748,21 @@ class OsconfigProjectsLocationsInstancesInventoriesListRequest(_messages.Message
   view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
+class OsconfigProjectsLocationsInstancesVulnerabilityReportsGetRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsInstancesVulnerabilityReportsGetRequest
+  object.
+
+  Fields:
+    name: Required. API resource name for vulnerability resource. Format: `pro
+      jects/{project}/locations/{location}/instances/{instance}/vulnerabilityR
+      eport` For `{project}`, either `project-number` or `project-id` can be
+      provided. For `{instance}`, either Compute Engine `instance-id` or
+      `instance-name` can be provided.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class OsconfigProjectsLocationsInstancesVulnerabilityReportsListRequest(_messages.Message):
   r"""A OsconfigProjectsLocationsInstancesVulnerabilityReportsListRequest
   object.
@@ -1756,7 +1775,7 @@ class OsconfigProjectsLocationsInstancesVulnerabilityReportsListRequest(_message
       `ListVulnerabilityReports` that indicates where this listing should
       continue from.
     parent: Required. The parent resource name. Format:
-      projects/{project}/locations/{location}/instances/{instance} For
+      `projects/{project}/locations/{location}/instances/{instance}` For
       `{project}`, either `project-number` or `project-id` can be provided.
       For `{instance}`, only `-` character is supported to list vulnerability
       reports across VMs.
@@ -1802,7 +1821,9 @@ class OsconfigProjectsLocationsOsPolicyAssignmentsGetRequest(_messages.Message):
   r"""A OsconfigProjectsLocationsOsPolicyAssignmentsGetRequest object.
 
   Fields:
-    name: Required. The resource name of OS policy assignment.
+    name: Required. The resource name of OS policy assignment. Format: `projec
+      ts/{project}/locations/{location}/osPolicyAssignments/{os_policy_assignm
+      ent}@{revisionId}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1871,8 +1892,9 @@ class OsconfigProjectsLocationsOsPolicyAssignmentsPatchRequest(_messages.Message
   r"""A OsconfigProjectsLocationsOsPolicyAssignmentsPatchRequest object.
 
   Fields:
-    name: Output only. Resource name projects/{project_number}/locations/{loca
-      tion}/osPolicyAssignments/{os_policy_assignment_id}
+    name: Resource name. Format: `projects/{project_number}/locations/{locatio
+      n}/osPolicyAssignments/{os_policy_assignment_id}` This field is ignored
+      when you create an OS policy assignment.
     oSPolicyAssignment: A OSPolicyAssignment resource to be passed as the
       request body.
     updateMask: Optional. Field mask that controls which fields of the
@@ -1999,13 +2021,15 @@ class Status(_messages.Message):
 
 
 class VulnerabilityReport(_messages.Message):
-  r"""This API resource provides the vulnerability report for a Compute Engine
-  virtual machine (VM) instance at a given point in time.
+  r"""This API resource represents the vulnerability report for a specified
+  Compute Engine virtual machine (VM) instance at a given point in time. For
+  more information, see [Vulnerability reports](/compute/docs/instances/os-
+  inventory-management#vulnerability-reports).
 
   Fields:
-    name: Output only. The `vulnerabilityReport` API resource name. Format: pr
-      ojects/{project_number}/locations/{location}/instances/{instance_id}/vul
-      nerabilityReport
+    name: Output only. The `vulnerabilityReport` API resource name. Format: `p
+      rojects/{project_number}/locations/{location}/instances/{instance_id}/vu
+      lnerabilityReport`
     updateTime: Output only. The timestamp for when the last vulnerability
       report was generated for the VM.
     vulnerabilities: Output only. List of vulnerabilities affecting the VM.
@@ -2028,7 +2052,7 @@ class VulnerabilityReportVulnerability(_messages.Message):
       to the VM that fixes the vulnerability.
     createTime: The timestamp for when the vulnerability was first detected.
     details: Contains metadata as per the upstream feed of the operating
-      system.
+      system and NVD.
     installedInventoryItemIds: Corresponds to the `INSTALLED_PACKAGE`
       inventory item on the VM. This field displays the inventory items
       affected by this vulnerability. If the vulnerability report was not
@@ -2054,11 +2078,13 @@ class VulnerabilityReportVulnerabilityDetails(_messages.Message):
     cvssV2Score: The CVSS V2 score of this vulnerability. CVSS V2 score is on
       a scale of 0 - 10 where 0 indicates low severity and 10 indicates high
       severity.
-    cvssV3: The full description of the CVSSv3 for this vulnerability.
-    description: The note or description describing the vulnerability.
+    cvssV3: The full description of the CVSSv3 for this vulnerability from
+      NVD.
+    description: The note or description describing the vulnerability from the
+      distro.
     references: Corresponds to the references attached to the
       `VulnerabilityDetails`.
-    severity: Assigned severity/impact ranking.
+    severity: Assigned severity/impact ranking from the distro.
   """
 
   cve = _messages.StringField(1)

@@ -23,6 +23,7 @@ from googlecloudsdk.api_lib.privateca import base as privateca_base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.privateca import exceptions as privateca_exceptions
 from googlecloudsdk.command_lib.privateca import flags
+from googlecloudsdk.command_lib.privateca import flags_v1
 from googlecloudsdk.command_lib.privateca import pem_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core.util import files
@@ -96,3 +97,48 @@ def UpdateCAFromArgs(args, current_labels):
         'No updates found for the requested CA.')
 
   return ca_to_update, update_mask
+
+
+def UpdateCaPoolFromArgs(args, current_labels):
+  """Creates a CA pool object and update mask from CA pool update flags.
+
+  Requires that args has 'publish-crl', 'publish-ca-cert', and
+  update labels flags registered.
+
+  Args:
+    args: The parser that contains the flag values.
+    current_labels: The current set of labels for the CA pool.
+
+  Returns:
+    A tuple with the CA pool object to update with and the list of strings
+    representing the update mask, respectively.
+  """
+  messages = privateca_base.GetMessagesModule('v1')
+  pool_to_update = messages.CaPool()
+  update_mask = []
+
+  if args.IsSpecified('publish_crl') or args.IsSpecified('publish_ca_cert'):
+    pool_to_update.publishingOptions = messages.PublishingOptions()
+    if args.IsSpecified('publish_crl'):
+      pool_to_update.publishingOptions.publishCrl = args.publish_crl
+      update_mask.append('publishing_options.publish_crl')
+    if args.IsSpecified('publish_ca_cert'):
+      pool_to_update.publishingOptions.publishCaCert = args.publish_ca_cert
+      update_mask.append('publishing_options.publish_ca_cert')
+
+  labels_diff = labels_util.Diff.FromUpdateArgs(args)
+  labels_update = labels_diff.Apply(messages.CaPool.LabelsValue,
+                                    current_labels)
+  if labels_update.needs_update:
+    pool_to_update.labels = labels_update.labels
+    update_mask.append('labels')
+
+  if args.IsSpecified('issuance_policy'):
+    pool_to_update.issuancePolicy = flags_v1.ParseIssuancePolicy(args)
+    update_mask.append('issuance_policy')
+
+  if not update_mask:
+    raise privateca_exceptions.NoUpdateExceptions(
+        'No updates found for the requested CA pool.')
+
+  return pool_to_update, update_mask

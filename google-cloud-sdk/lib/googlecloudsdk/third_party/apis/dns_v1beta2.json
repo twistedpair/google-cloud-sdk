@@ -4,7 +4,7 @@
  "id": "dns:v1beta2",
  "name": "dns",
  "version": "v1beta2",
- "revision": "20210423",
+ "revision": "20210430",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -869,6 +869,10 @@
      "format": "int32"
     },
     "gkeClustersPerManagedZone": {
+     "type": "integer",
+     "format": "int32"
+    },
+    "gkeClustersPerResponsePolicy": {
      "type": "integer",
      "format": "int32"
     },

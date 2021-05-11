@@ -70,8 +70,8 @@ class AnalyzeMoveResponse(_messages.Message):
   r"""The response message for resource move analysis.
 
   Fields:
-    moveAnalysis: The list of analysis returned from performing the intended
-      resource move analysis. The analysis is grouped by different cloud
+    moveAnalysis: The list of analyses returned from performing the intended
+      resource move analysis. The analysis is grouped by different Cloud
       services.
   """
 
@@ -2753,7 +2753,7 @@ class MoveAnalysisResult(_messages.Message):
 
   Fields:
     blockers: Blocking information that would prevent the target resource from
-      moving to resource to the specified destination at runtime.
+      moving to the specified destination at runtime.
     warnings: Warning information indicating that moving the target resource
       to the specified destination might be unsafe. This can include important
       policy information and configuration changes, but will not block moves

@@ -1190,6 +1190,7 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
       this field is optional and defaults to an empty timestamp.
     type: The type of the entry. Only used for Entries with types in the
       EntryType enum.
+    usageSignal: Output only. Statistics on the usage level of the resource.
     userSpecifiedSystem: This field indicates the entry's source system that
       Data Catalog does not integrate with. `user_specified_system` strings
       must begin with a letter or underscore and can only contain letters,
@@ -1251,8 +1252,9 @@ class GoogleCloudDatacatalogV1beta1Entry(_messages.Message):
   schema = _messages.MessageField('GoogleCloudDatacatalogV1beta1Schema', 9)
   sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1beta1SystemTimestamps', 10)
   type = _messages.EnumField('TypeValueValuesEnum', 11)
-  userSpecifiedSystem = _messages.StringField(12)
-  userSpecifiedType = _messages.StringField(13)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1beta1UsageSignal', 12)
+  userSpecifiedSystem = _messages.StringField(13)
+  userSpecifiedType = _messages.StringField(14)
 
 
 class GoogleCloudDatacatalogV1beta1EntryGroup(_messages.Message):
@@ -2022,6 +2024,74 @@ class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):
   name = _messages.StringField(4)
   policyTagCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   taxonomyTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1beta1SystemTimestamps', 6)
+
+
+class GoogleCloudDatacatalogV1beta1UsageSignal(_messages.Message):
+  r"""The set of all usage signals that we store in Data Catalog.
+
+  Messages:
+    UsageWithinTimeRangeValue: Usage statistics over each of the pre-defined
+      time ranges, supported strings for time ranges are {"24H", "7D", "30D"}.
+
+  Fields:
+    updateTime: The timestamp of the end of the usage statistics duration.
+    usageWithinTimeRange: Usage statistics over each of the pre-defined time
+      ranges, supported strings for time ranges are {"24H", "7D", "30D"}.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UsageWithinTimeRangeValue(_messages.Message):
+    r"""Usage statistics over each of the pre-defined time ranges, supported
+    strings for time ranges are {"24H", "7D", "30D"}.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        UsageWithinTimeRangeValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        UsageWithinTimeRangeValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UsageWithinTimeRangeValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDatacatalogV1beta1UsageStats attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDatacatalogV1beta1UsageStats', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  updateTime = _messages.StringField(1)
+  usageWithinTimeRange = _messages.MessageField('UsageWithinTimeRangeValue', 2)
+
+
+class GoogleCloudDatacatalogV1beta1UsageStats(_messages.Message):
+  r"""Detailed counts on the entry's usage. Caveats: - Only BigQuery tables
+  have usage stats - The usage stats only inlude BigQuery query jobs - The
+  usage stats might be underestimated, e.g. wildcard table references are not
+  yet counted in usage computation
+  https://cloud.google.com/bigquery/docs/querying-wildcard-tables
+
+  Fields:
+    totalCancellations: The number of times that the underlying entry was
+      attempted to be used but was cancelled by the user.
+    totalCompletions: The number of times that the underlying entry was
+      successfully used.
+    totalExecutionTimeForCompletionsMillis: Total time spent (in milliseconds)
+      during uses the resulted in completions.
+    totalFailures: The number of times that the underlying entry was attempted
+      to be used but failed.
+  """
+
+  totalCancellations = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  totalCompletions = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  totalExecutionTimeForCompletionsMillis = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  totalFailures = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDatacatalogV1beta1ViewSpec(_messages.Message):

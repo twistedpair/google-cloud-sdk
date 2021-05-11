@@ -32,20 +32,21 @@ class GoogleCloudResourcesettingsV1Setting(_messages.Message):
   r"""The schema for settings.
 
   Fields:
-    effectiveValue: Output only. The computed effective value of the setting
-      at the given parent resource (based on the resource hierarchy). The
-      effective value evaluates to one of the following options in the given
-      order (the next option is used if the previous one does not exist): 1.
-      the local setting value on the given resource: Setting.local_value 2. if
-      one of the given resource's ancestors have a local setting value, the
-      local value at the nearest such ancestor 3. the setting's default value:
-      SettingMetadata.default_value 4. an empty value (defined as a `Value`
-      with all fields unset) The data type of Value must always be consistent
+    effectiveValue: Output only. The effective value of the setting at the
+      given parent resource, evaluated based on the resource hierarchy The
+      effective value evaluates to one of the following options, in this
+      order. If an option is not valid or doesn't exist, then the next option
+      is used: 1. The local setting value on the given resource:
+      Setting.local_value 2. If one of the given resource's ancestors in the
+      resource hierarchy have a local setting value, the local value at the
+      nearest such ancestor. 3. The setting's default value:
+      SettingMetadata.default_value 4. An empty value, defined as a `Value`
+      with all fields unset. The data type of Value must always be consistent
       with the data type defined in Setting.metadata.
     etag: A fingerprint used for optimistic concurrency. See UpdateSetting for
       more details.
     localValue: The configured value of the setting at the given parent
-      resource (ignoring the resource hierarchy). The data type of Value must
+      resource, ignoring the resource hierarchy. The data type of Value must
       always be consistent with the data type defined in Setting.metadata.
     metadata: Output only. Metadata about a setting which is not editable by
       the end user.
@@ -75,8 +76,9 @@ class GoogleCloudResourcesettingsV1SettingMetadata(_messages.Message):
       value is explicitly set. Note: not all settings have a default value.
     description: A detailed description of what this setting does.
     displayName: The human readable name for this setting.
-    readOnly: A flag indicating that values of this setting cannot be modified
-      (see documentation of the specific setting for updates and reasons).
+    readOnly: A flag indicating that values of this setting cannot be
+      modified. See documentation for the specific setting for updates and
+      reasons.
   """
 
   class DataTypeValueValuesEnum(_messages.Enum):
@@ -184,10 +186,10 @@ class ResourcesettingsFoldersSettingsListRequest(_messages.Message):
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
-    parent: Required. The Cloud resource that parents the setting. Must be in
-      one of the following forms: * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+    parent: Required. The project, folder, or organization that is the parent
+      resource for this setting. Must be in one of the following forms: *
+      `projects/{project_number}` * `projects/{project_id}` *
+      `folders/{folder_id}` * `organizations/{organization_id}`
     view: The SettingView for this request.
   """
 
@@ -274,10 +276,10 @@ class ResourcesettingsOrganizationsSettingsListRequest(_messages.Message):
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
-    parent: Required. The Cloud resource that parents the setting. Must be in
-      one of the following forms: * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+    parent: Required. The project, folder, or organization that is the parent
+      resource for this setting. Must be in one of the following forms: *
+      `projects/{project_number}` * `projects/{project_id}` *
+      `folders/{folder_id}` * `organizations/{organization_id}`
     view: The SettingView for this request.
   """
 
@@ -364,10 +366,10 @@ class ResourcesettingsProjectsSettingsListRequest(_messages.Message):
   Fields:
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
-    parent: Required. The Cloud resource that parents the setting. Must be in
-      one of the following forms: * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+    parent: Required. The project, folder, or organization that is the parent
+      resource for this setting. Must be in one of the following forms: *
+      `projects/{project_number}` * `projects/{project_id}` *
+      `folders/{folder_id}` * `organizations/{organization_id}`
     view: The SettingView for this request.
   """
 

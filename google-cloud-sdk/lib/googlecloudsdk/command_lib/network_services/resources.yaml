@@ -43,3 +43,15 @@ endpointConfigSelector:
     parameter_name: endpointConfigSelectorsId
     attribute_name: endpoint_config_selector
     help: Id of the endpoint config selector.
+
+endpointPolicy:
+  name: endpoint policy
+  collection: networkservices.projects.locations.endpointPolicies
+  request_id_field: endpointPolicyId
+  attributes:
+  - *project
+  - *location
+  - &endpointPolicy
+    parameter_name: endpointPoliciesId
+    attribute_name: endpoint_policy
+    help: Id of the endpoint policy.

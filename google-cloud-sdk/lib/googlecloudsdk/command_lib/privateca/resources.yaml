@@ -73,3 +73,16 @@ certificate_template:
     attribute_name: certificate_template
     help: The ID of the certificate template.
   disable_auto_completers: true
+
+ca_pool:
+  name: CA_POOL
+  collection: privateca.projects.locations.caPools
+  request_id_field: ca_pool.name
+  attributes:
+  - *project
+  - *location
+  - &ca_pool
+    parameter_name: caPoolsId
+    attribute_name: ca_pool
+    help: The ID of the CA pool.
+  disable_auto_completers: true

@@ -75,21 +75,21 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
       `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For
       regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOU
       RCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:
-      project_id.location_id.instance_id.database_id.table_id`
+      {PROJECT_ID}.{LOCATION_ID}.{INSTANCE_ID}.{DATABASE_ID}.{TABLE_ID}`
     linkedResource: The full name of the Google Cloud Platform resource the
-      Data Catalog entry represents. See:
-      https://cloud.google.com/apis/design/resource_names#full_resource_name.
-      Full names are case-sensitive. Examples: * //bigquery.googleapis.com/pro
-      jects/projectId/datasets/datasetId/tables/tableId *
-      //pubsub.googleapis.com/projects/projectId/topics/topicId
+      Data Catalog entry represents. For more information, see [Full Resource
+      Name] (https://cloud.google.com/apis/design/resource_names#full_resource
+      _name). Full names are case-sensitive. For example: * `//bigquery.google
+      apis.com/projects/{PROJECT_ID}/datasets/{DATASET_ID}/tables/{TABLE_ID}`
+      * `//pubsub.googleapis.com/projects/{PROJECT_ID}/topics/{TOPIC_ID}`
     sqlResource: The SQL name of the entry. SQL names are case-sensitive.
-      Examples: * `pubsub.project_id.topic_id` *
-      ``pubsub.project_id.`topic.id.with.dots` `` *
-      `bigquery.table.project_id.dataset_id.table_id` *
-      `bigquery.dataset.project_id.dataset_id` *
-      `datacatalog.entry.project_id.location_id.entry_group_id.entry_id`
-      `*_id`s should satisfy the standard SQL rules for identifiers.
-      https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical.
+      Examples: * `pubsub.{PROJECT_ID}.{TOPIC_ID}` *
+      `pubsub.{PROJECT_ID}.{TOPIC.ID.SEPARATED.WITH.DOTS}` *
+      `bigquery.table.{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}` *
+      `bigquery.dataset.{PROJECT_ID}.{DATASET_ID}` * `datacatalog.entry.{PROJE
+      CT_ID}.{LOCATION_ID}.{ENTRY_GROUP_ID}.{ENTRY_ID}` Identifiers (`*_ID`)
+      should comply with the [Lexical structure in Standard SQL]
+      (https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical).
   """
 
   fullyQualifiedName = _messages.StringField(1)
@@ -107,10 +107,9 @@ class DatacatalogProjectsLocationsEntryGroupsCreateRequest(_messages.Message):
       when encoded in UTF-8.
     googleCloudDatacatalogV1EntryGroup: A GoogleCloudDatacatalogV1EntryGroup
       resource to be passed as the request body.
-    parent: Required. The name of the project this entry group belongs to.
-      Example: `projects/{project_id}/locations/{location}` Note: The entry
-      group itself and its child resources might not be stored in the location
-      specified in its name.
+    parent: Required. The names of the project and location that the new entry
+      group belongs to. Note: The entry group itself and its child resources
+      might not be stored in the location specified in its name.
   """
 
   entryGroupId = _messages.StringField(1)
@@ -123,9 +122,7 @@ class DatacatalogProjectsLocationsEntryGroupsDeleteRequest(_messages.Message):
 
   Fields:
     force: Optional. If true, deletes all entries in the entry group.
-    name: Required. The name of the entry group. For example,
-      `projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
-      `.
+    name: Required. The name of the entry group to delete.
   """
 
   force = _messages.BooleanField(1)
@@ -141,10 +138,9 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest(_messages.Mess
       is 64 bytes when encoded in UTF-8.
     googleCloudDatacatalogV1Entry: A GoogleCloudDatacatalogV1Entry resource to
       be passed as the request body.
-    parent: Required. The name of the entry group this entry belongs to.
-      Example: `projects/{project_id}/locations/{location}/entryGroups/{entry_
-      group_id}` Note: The entry itself and its child resources might not be
-      stored in the location specified in its name.
+    parent: Required. The name of the entry group this entry belongs to. Note:
+      The entry itself and its child resources might not be stored in the
+      location specified in its name.
   """
 
   entryId = _messages.StringField(1)
@@ -156,8 +152,7 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesDeleteRequest(_messages.Mess
   r"""A DatacatalogProjectsLocationsEntryGroupsEntriesDeleteRequest object.
 
   Fields:
-    name: Required. The name of the entry. Example: * projects/{project_id}/lo
-      cations/{location}/entryGroups/{entry_group_id}/entries/{entry_id}
+    name: Required. The name of the entry to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -183,8 +178,7 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesGetRequest(_messages.Message
   r"""A DatacatalogProjectsLocationsEntryGroupsEntriesGetRequest object.
 
   Fields:
-    name: Required. The name of the entry. Example: * projects/{project_id}/lo
-      cations/{location}/entryGroups/{entry_group_id}/entries/{entry_id}
+    name: Required. The name of the entry to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -194,17 +188,17 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesListRequest(_messages.Messag
   r"""A DatacatalogProjectsLocationsEntryGroupsEntriesListRequest object.
 
   Fields:
-    pageSize: The maximum number of items to return. Default is 10. Max limit
-      is 1000. Throws an invalid argument for `page_size > 1000`.
-    pageToken: Token that specifies which page is requested. If empty, the
-      first page is returned.
-    parent: Required. The name of the entry group that contains the entries,
-      which can be provided in URL format. Example: *
-      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
-    readMask: The fields to return for each Entry. If not set or empty, all
-      fields are returned. For example, setting read_mask to contain only one
-      path "name" will cause ListEntries to return a list of Entries with only
-      "name" field.
+    pageSize: The maximum number of items to return. Default is 10. Maximum
+      limit is 1000. Throws an invalid argument if `page_size` is more than
+      1000.
+    pageToken: Pagination token that specifies the next page to return. If
+      empty, the first page is returned.
+    parent: Required. The name of the entry group that contains the entries to
+      list. Can be provided in URL format.
+    readMask: The fields to return for each entry. If empty or omitted, all
+      fields are returned. For example, to return a list of entries with only
+      the `name` field, set `read_mask` to only one path with the `name`
+      value.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -219,17 +213,16 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
   Fields:
     googleCloudDatacatalogV1Entry: A GoogleCloudDatacatalogV1Entry resource to
       be passed as the request body.
-    name: Output only. The resource name of an entry in URL format. Example: `
-      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}/
-      entries/{entry_id}` Note: The entry itself and its child resources might
-      not be stored in the location specified in its name.
+    name: Output only. The resource name of an entry in URL format. Note: The
+      entry itself and its child resources might not be stored in the location
+      specified in its name.
     updateMask: Names of fields whose values to overwrite on an entry. If this
       parameter is absent or empty, all modifiable fields are overwritten. If
       such fields are non-required and omitted in the request body, their
-      values are emptied. The following fields are modifiable: * For entries
-      with type `DATA_STREAM`: * `schema` * For entries with type `FILESET`: *
-      `schema` * `display_name` * `description` * `gcs_fileset_spec` *
-      `gcs_fileset_spec.file_patterns` * For entries with
+      values are emptied. You can modify only the fields listed below. For
+      entries with type `DATA_STREAM`: * `schema` For entries with type
+      `FILESET`: * `schema` * `display_name` * `description` *
+      `gcs_fileset_spec` * `gcs_fileset_spec.file_patterns` For entries with
       `user_specified_type`: * `schema` * `display_name` * `description` *
       `user_specified_type` * `user_specified_system` * `linked_resource` *
       `source_system_timestamps`
@@ -248,10 +241,9 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsCreateRequest(_messages.
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
     parent: Required. The name of the resource to attach this tag to. Tags can
-      be attached to entries. An entry can have up to 1000 attached tags.
-      Example: `projects/{project_id}/locations/{location}/entryGroups/{entry_
-      group_id}/entries/{entry_id}` Note: The tag and its child resources
-      might not be stored in the location specified in its name.
+      be attached to entries or entry groups. An entry can have up to 1000
+      attached tags. Note: The tag and its child resources might not be stored
+      in the location specified in its name.
   """
 
   googleCloudDatacatalogV1Tag = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 1)
@@ -263,9 +255,7 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsDeleteRequest(_messages.
   object.
 
   Fields:
-    name: Required. The name of the tag to delete. Example: * projects/{projec
-      t_id}/locations/{location}/entryGroups/{entry_group_id}/entries/{entry_i
-      d}/tags/{tag_id}
+    name: Required. The name of the tag to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -275,15 +265,13 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsListRequest(_messages.Me
   r"""A DatacatalogProjectsLocationsEntryGroupsEntriesTagsListRequest object.
 
   Fields:
-    pageSize: The maximum number of tags to return. Default is 10. Max limit
-      is 1000.
-    pageToken: Token that specifies which page is requested. If empty, the
-      first page is returned.
+    pageSize: The maximum number of tags to return. Default is 10. Maximum
+      limit is 1000.
+    pageToken: Pagination token that specifies the next page to return. If
+      empty, the first page is returned.
     parent: Required. The name of the Data Catalog resource to list the tags
-      of. The resource could be an Entry or an EntryGroup. Examples: *
-      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
-      * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
-      }/entries/{entry_id}
+      of. The resource can be an Entry or an EntryGroup (without
+      `/entries/{entries}` at the end).
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -297,11 +285,9 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsPatchRequest(_messages.M
   Fields:
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
-    name: The resource name of the tag in URL format. Example: `projects/{proj
-      ect_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entry
-      _id}/tags/{tag_id}` where `tag_id` is a system-generated identifier.
-      Note: The tag itself might not be stored in the location specified in
-      its name.
+    name: The resource name of the tag in URL format where tag ID is a system-
+      generated identifier. Note: The tag itself might not be stored in the
+      location specified in its name.
     updateMask: Names of fields whose values to overwrite on a tag. Currently,
       a tag has the only modifiable field with the name `fields`. In general,
       if this parameter is absent or empty, all modifiable fields are
@@ -350,10 +336,8 @@ class DatacatalogProjectsLocationsEntryGroupsGetRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsGetRequest object.
 
   Fields:
-    name: Required. The name of the entry group. For example,
-      `projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
-      `.
-    readMask: The fields to return. If not set or empty, all fields are
+    name: Required. The name of the entry group to get.
+    readMask: The fields to return. If empty or omitted, all fields are
       returned.
   """
 
@@ -366,12 +350,12 @@ class DatacatalogProjectsLocationsEntryGroupsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of items to return. Default is 10.
-      Max limit is 1000. Throws an invalid argument for `page_size > 1000`.
-    pageToken: Optional. Token that specifies which page is requested. If
-      empty, the first page is returned.
-    parent: Required. The name of the location that contains the entry groups,
-      which can be provided in URL format. Example: *
-      projects/{project_id}/locations/{location}
+      Maximum limit is 1000. Throws an invalid argument if `page_size` is
+      greater than 1000.
+    pageToken: Optional. Pagination token that specifies the next page to
+      return. If empty, returns the first page.
+    parent: Required. The name of the location that contains the entry groups
+      to list. Can be provided as a URL.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -385,10 +369,9 @@ class DatacatalogProjectsLocationsEntryGroupsPatchRequest(_messages.Message):
   Fields:
     googleCloudDatacatalogV1EntryGroup: A GoogleCloudDatacatalogV1EntryGroup
       resource to be passed as the request body.
-    name: The resource name of the entry group in URL format. Example:
-      `projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
-      ` Note: The entry group itself and its child resources might not be
-      stored in the location specified in its name.
+    name: The resource name of the entry group in URL format. Note: The entry
+      group itself and its child resources might not be stored in the location
+      specified in its name.
     updateMask: Names of fields whose values to overwrite on an entry group.
       If this parameter is absent or empty, all modifiable fields are
       overwritten. If such fields are non-required and omitted in the request
@@ -422,10 +405,9 @@ class DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest(_messages.Message
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
     parent: Required. The name of the resource to attach this tag to. Tags can
-      be attached to entries. An entry can have up to 1000 attached tags.
-      Example: `projects/{project_id}/locations/{location}/entryGroups/{entry_
-      group_id}/entries/{entry_id}` Note: The tag and its child resources
-      might not be stored in the location specified in its name.
+      be attached to entries or entry groups. An entry can have up to 1000
+      attached tags. Note: The tag and its child resources might not be stored
+      in the location specified in its name.
   """
 
   googleCloudDatacatalogV1Tag = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 1)
@@ -436,9 +418,7 @@ class DatacatalogProjectsLocationsEntryGroupsTagsDeleteRequest(_messages.Message
   r"""A DatacatalogProjectsLocationsEntryGroupsTagsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the tag to delete. Example: * projects/{projec
-      t_id}/locations/{location}/entryGroups/{entry_group_id}/entries/{entry_i
-      d}/tags/{tag_id}
+    name: Required. The name of the tag to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -448,15 +428,13 @@ class DatacatalogProjectsLocationsEntryGroupsTagsListRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsEntryGroupsTagsListRequest object.
 
   Fields:
-    pageSize: The maximum number of tags to return. Default is 10. Max limit
-      is 1000.
-    pageToken: Token that specifies which page is requested. If empty, the
-      first page is returned.
+    pageSize: The maximum number of tags to return. Default is 10. Maximum
+      limit is 1000.
+    pageToken: Pagination token that specifies the next page to return. If
+      empty, the first page is returned.
     parent: Required. The name of the Data Catalog resource to list the tags
-      of. The resource could be an Entry or an EntryGroup. Examples: *
-      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
-      * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
-      }/entries/{entry_id}
+      of. The resource can be an Entry or an EntryGroup (without
+      `/entries/{entries}` at the end).
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -470,11 +448,9 @@ class DatacatalogProjectsLocationsEntryGroupsTagsPatchRequest(_messages.Message)
   Fields:
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
-    name: The resource name of the tag in URL format. Example: `projects/{proj
-      ect_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entry
-      _id}/tags/{tag_id}` where `tag_id` is a system-generated identifier.
-      Note: The tag itself might not be stored in the location specified in
-      its name.
+    name: The resource name of the tag in URL format where tag ID is a system-
+      generated identifier. Note: The tag itself might not be stored in the
+      location specified in its name.
     updateMask: Names of fields whose values to overwrite on a tag. Currently,
       a tag has the only modifiable field with the name `fields`. In general,
       if this parameter is absent or empty, all modifiable fields are
@@ -511,7 +487,6 @@ class DatacatalogProjectsLocationsTagTemplatesCreateRequest(_messages.Message):
       resource to be passed as the request body.
     parent: Required. The name of the project and the template location
       [region](https://cloud.google.com/data-catalog/docs/concepts/regions).
-      Example: * projects/{project_id}/locations/us-central1
     tagTemplateId: Required. The ID of the tag template to create. The ID must
       contain only lowercase letters (a-z), numbers (0-9), or underscores (_),
       and must start with a letter or underscore. The maximum size is 64 bytes
@@ -527,12 +502,9 @@ class DatacatalogProjectsLocationsTagTemplatesDeleteRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsTagTemplatesDeleteRequest object.
 
   Fields:
-    force: Required. Currently, this field must always be set to `true`. This
-      confirms the deletion of any possible tags using this template. `force =
-      false` will be supported in the future.
-    name: Required. The name of the tag template to delete. Example: *
-      projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
-      }
+    force: Required. If true, deletes all tags that use this template.
+      Currently, `true` is the only supported value.
+    name: Required. The name of the tag template to delete.
   """
 
   force = _messages.BooleanField(1)
@@ -548,8 +520,6 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest(_messages.Mess
       request body.
     parent: Required. The name of the project and the template location
       [region](https://cloud.google.com/data-catalog/docs/concepts/regions).
-      Example: * projects/{project_id}/locations/us-
-      central1/tagTemplates/{tag_template_id}
     tagTemplateFieldId: Required. The ID of the tag template field to create.
       Note: Adding a required field to an existing template is *not* allowed.
       Field IDs can contain letters (both uppercase and lowercase), numbers
@@ -567,12 +537,9 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsDeleteRequest(_messages.Mess
   r"""A DatacatalogProjectsLocationsTagTemplatesFieldsDeleteRequest object.
 
   Fields:
-    force: Required. Currently, this field must always be set to `true`. This
-      confirms the deletion of this field from any tags using this field.
-      `force = false` will be supported in the future.
-    name: Required. The name of the tag template field to delete. Example: * p
-      rojects/{project_id}/locations/{location}/tagTemplates/{tag_template_id}
-      /fields/{tag_template_field_id}
+    force: Required. If true, deletes this field from any tags that use it.
+      Currently, `true` is the only supported value.
+    name: Required. The name of the tag template field to delete.
   """
 
   force = _messages.BooleanField(1)
@@ -587,9 +554,7 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsEnumValuesRenameRequest(_mes
     googleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest: A
       GoogleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest resource
       to be passed as the request body.
-    name: Required. The name of the enum field value. Example: * projects/{pro
-      ject_id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{tag
-      _template_field_id}/enumValues/{enum_value_display_name}
+    name: Required. The name of the enum field value.
   """
 
   googleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest = _messages.MessageField('GoogleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest', 1)
@@ -603,9 +568,7 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest(_messages.Messa
     googleCloudDatacatalogV1TagTemplateField: A
       GoogleCloudDatacatalogV1TagTemplateField resource to be passed as the
       request body.
-    name: Required. The name of the tag template field. Example: * projects/{p
-      roject_id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{t
-      ag_template_field_id}
+    name: Required. The name of the tag template field.
     updateMask: Optional. Names of fields whose values to overwrite on an
       individual field of a tag template. The following fields are modifiable:
       * `display_name` * `type.enum_type` * `is_required` If this parameter is
@@ -630,9 +593,7 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsRenameRequest(_messages.Mess
     googleCloudDatacatalogV1RenameTagTemplateFieldRequest: A
       GoogleCloudDatacatalogV1RenameTagTemplateFieldRequest resource to be
       passed as the request body.
-    name: Required. The name of the tag template. Example: * projects/{project
-      _id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{tag_tem
-      plate_field_id}
+    name: Required. The name of the tag template.
   """
 
   googleCloudDatacatalogV1RenameTagTemplateFieldRequest = _messages.MessageField('GoogleCloudDatacatalogV1RenameTagTemplateFieldRequest', 1)
@@ -658,9 +619,7 @@ class DatacatalogProjectsLocationsTagTemplatesGetRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsTagTemplatesGetRequest object.
 
   Fields:
-    name: Required. The name of the tag template. Example: *
-      projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
-      }
+    name: Required. The name of the tag template to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -672,15 +631,14 @@ class DatacatalogProjectsLocationsTagTemplatesPatchRequest(_messages.Message):
   Fields:
     googleCloudDatacatalogV1TagTemplate: A GoogleCloudDatacatalogV1TagTemplate
       resource to be passed as the request body.
-    name: The resource name of the tag template in URL format. Example: `proje
-      cts/{project_id}/locations/{location}/tagTemplates/{tag_template_id}`
-      Note: The tag template itself and its child resources might not be
-      stored in the location specified in its name.
+    name: The resource name of the tag template in URL format. Note: The tag
+      template itself and its child resources might not be stored in the
+      location specified in its name.
     updateMask: Names of fields whose values to overwrite on a tag template.
-      Currently, only `display_name` can be overwritten. In general, if this
-      parameter is absent or empty, all modifiable fields are overwritten. If
-      such fields are non-required and omitted in the request body, their
-      values are emptied.
+      Currently, only `display_name` can be overwritten. If this parameter is
+      absent or empty, all modifiable fields are overwritten. If such fields
+      are non-required and omitted in the request body, their values are
+      emptied.
   """
 
   googleCloudDatacatalogV1TagTemplate = _messages.MessageField('GoogleCloudDatacatalogV1TagTemplate', 1)
@@ -737,8 +695,8 @@ class DatacatalogProjectsLocationsTaxonomiesDeleteRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsTaxonomiesDeleteRequest object.
 
   Fields:
-    name: Required. Resource name of the taxonomy to be deleted. All policy
-      tags in this taxonomy will also be deleted.
+    name: Required. Resource name of the taxonomy to delete. Note: All policy
+      tags in this taxonomy are also deleted.
   """
 
   name = _messages.StringField(1, required=True)
@@ -750,9 +708,9 @@ class DatacatalogProjectsLocationsTaxonomiesExportRequest(_messages.Message):
   Fields:
     parent: Required. Resource name of the project that the exported
       taxonomies belong to.
-    serializedTaxonomies: Export taxonomies as serialized taxonomies, which
-      contain all the policy tags as nested protos.
-    taxonomies: Required. Resource names of the taxonomies to be exported.
+    serializedTaxonomies: Serialized export taxonomies that contain all the
+      policy tags as nested protocol buffers.
+    taxonomies: Required. Resource names of the taxonomies to export.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -779,7 +737,7 @@ class DatacatalogProjectsLocationsTaxonomiesGetRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsTaxonomiesGetRequest object.
 
   Fields:
-    name: Required. Resource name of the requested taxonomy.
+    name: Required. Resource name of the taxonomy to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -805,9 +763,10 @@ class DatacatalogProjectsLocationsTaxonomiesListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of items to return. Must be a value between 1
-      and 1000. If not set, defaults to 50.
-    pageToken: The next_page_token value returned from a previous list
-      request, if any. If not set, defaults to an empty string.
+      and 1000 inclusively. If not set, defaults to 50.
+    pageToken: The pagination token of the next results page. If not set, the
+      first page is returned. The token is returned in the response to a
+      previous list request.
     parent: Required. Resource name of the project to list the taxonomies of.
   """
 
@@ -822,13 +781,12 @@ class DatacatalogProjectsLocationsTaxonomiesPatchRequest(_messages.Message):
   Fields:
     googleCloudDatacatalogV1Taxonomy: A GoogleCloudDatacatalogV1Taxonomy
       resource to be passed as the request body.
-    name: Output only. Resource name of this taxonomy in format: "projects/{pr
-      oject_number}/locations/{location_id}/taxonomies/{taxonomy_id}". Note
-      that taxonomy_id's are unique and generated by Policy Tag Manager.
-    updateMask: The update mask applies to the resource. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask If not set, defaults to
-      all of the fields that are allowed to update.
+    name: Output only. Resource name of this taxonomy in URL format. Note:
+      Policy tag manager generates unique taxonomy IDs.
+    updateMask: Specifies fields to update. If not set, defaults to all fields
+      you can update. For more information, see [FieldMask]
+      (https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask).
   """
 
   googleCloudDatacatalogV1Taxonomy = _messages.MessageField('GoogleCloudDatacatalogV1Taxonomy', 1)
@@ -854,8 +812,8 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest(_messages.Me
   r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest object.
 
   Fields:
-    name: Required. Resource name of the policy tag to be deleted. All of its
-      descendant policy tags will also be deleted.
+    name: Required. Resource name of the policy tag to delete. Note: All of
+      its descendant policy tags are also deleted.
   """
 
   name = _messages.StringField(1, required=True)
@@ -881,7 +839,7 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetRequest(_messages.Messa
   r"""A DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetRequest object.
 
   Fields:
-    name: Required. Resource name of the requested policy tag.
+    name: Required. Resource name of the policy tag.
   """
 
   name = _messages.StringField(1, required=True)
@@ -892,9 +850,10 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsListRequest(_messages.Mess
 
   Fields:
     pageSize: The maximum number of items to return. Must be a value between 1
-      and 1000. If not set, defaults to 50.
-    pageToken: The next_page_token value returned from a previous List
-      request, if any. If not set, defaults to an empty string.
+      and 1000 inclusively. If not set, defaults to 50.
+    pageToken: The pagination token of the next results page. If not set,
+      returns the first page. The token is returned in the response to a
+      previous list request.
     parent: Required. Resource name of the taxonomy to list the policy tags
       of.
   """
@@ -910,18 +869,13 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsPatchRequest(_messages.Mes
   Fields:
     googleCloudDatacatalogV1PolicyTag: A GoogleCloudDatacatalogV1PolicyTag
       resource to be passed as the request body.
-    name: Output only. Resource name of this policy tag in format: "projects/{
-      project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/policyT
-      ags/{policy_tag_id}". Both taxonomy_ids and policy_tag_ids are unique
-      and generated by Policy Tag Manager.
-    updateMask: The update mask applies to the resource. Only display_name,
-      description and parent_policy_tag can be updated and thus can be listed
-      in the mask. If update_mask is not provided, all allowed fields (i.e.
-      display_name, description and parent) will be updated. For more
-      information including the `FieldMask` definition, see
-      https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask If not set, defaults to
-      all of the fields that are allowed to update.
+    name: Output only. Resource name of this policy tag in the URL format. The
+      policy tag manager generates unique taxonomy IDs and policy tag IDs.
+    updateMask: Specifies the fields to update. You can update only display
+      name, description, and parent policy tag. If not set, defaults to all
+      updatable fields. For more information, see [FieldMask]
+      (https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask).
   """
 
   googleCloudDatacatalogV1PolicyTag = _messages.MessageField('GoogleCloudDatacatalogV1PolicyTag', 1)
@@ -969,7 +923,7 @@ class DatacatalogProjectsLocationsTaxonomiesReplaceRequest(_messages.Message):
     googleCloudDatacatalogV1ReplaceTaxonomyRequest: A
       GoogleCloudDatacatalogV1ReplaceTaxonomyRequest resource to be passed as
       the request body.
-    name: Required. Resource name of the taxonomy to be updated.
+    name: Required. Resource name of the taxonomy to update.
   """
 
   googleCloudDatacatalogV1ReplaceTaxonomyRequest = _messages.MessageField('GoogleCloudDatacatalogV1ReplaceTaxonomyRequest', 1)
@@ -1082,19 +1036,19 @@ class GetPolicyOptions(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1BigQueryDateShardedSpec(_messages.Message):
-  r"""Spec for a group of BigQuery tables with name pattern
-  `[prefix]YYYYMMDD`. Context:
-  https://cloud.google.com/bigquery/docs/partitioned-
-  tables#partitioning_versus_sharding
+  r"""Specification for a group of BigQuery tables with the `[prefix]YYYYMMDD`
+  name pattern. For more information, see [Introduction to partitioned tables]
+  (https://cloud.google.com/bigquery/docs/partitioned-
+  tables#partitioning_versus_sharding).
 
   Fields:
     dataset: Output only. The Data Catalog resource name of the dataset entry
-      the current table belongs to, for example, `projects/{project_id}/locati
-      ons/{location}/entrygroups/{entry_group_id}/entries/{entry_id}`.
+      the current table belongs to. For example: `projects/{PROJECT_ID}/locati
+      ons/{LOCATION}/entrygroups/{ENTRY_GROUP_ID}/entries/{ENTRY_ID}`.
     shardCount: Output only. Total number of shards.
     tablePrefix: Output only. The table name prefix of the shards. The name of
-      any given shard is `[table_prefix]YYYYMMDD`, for example, for shard
-      `MyTable20180101`, the `table_prefix` is `MyTable`.
+      any given shard is `[table_prefix]YYYYMMDD`. For example, for the
+      `MyTable20180101` shard, the `table_prefix` is `MyTable`.
   """
 
   dataset = _messages.StringField(1)
@@ -1110,9 +1064,9 @@ class GoogleCloudDatacatalogV1BigQueryTableSpec(_messages.Message):
 
   Fields:
     tableSourceType: Output only. The table source type.
-    tableSpec: Spec of a BigQuery table. This field should only be populated
-      if `table_source_type` is `BIGQUERY_TABLE`.
-    viewSpec: Table view specification. This field should only be populated if
+    tableSpec: Specification of a BigQuery table. Populated only if the
+      `table_source_type` is `BIGQUERY_TABLE`.
+    viewSpec: Table view specification. Populated only if the
       `table_source_type` is `BIGQUERY_VIEW`.
   """
 
@@ -1139,16 +1093,15 @@ class GoogleCloudDatacatalogV1ClusterSpec(_messages.Message):
   r"""Additional specification of a cluster.
 
   Fields:
-    kafkaCluster: Fields specific to a Kafka cluster. Present only on entries
-      representing Kafka clusters.
+    kafkaCluster: Fields specific to a Kafka cluster. Present only on
+      corresponding Kafka cluster entries.
   """
 
   kafkaCluster = _messages.MessageField('GoogleCloudDatacatalogV1KafkaClusterSpec', 1)
 
 
 class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
-  r"""Representation of a column within a schema. Columns could be nested
-  inside other columns.
+  r"""A column within a schema. Columns can be nested inside other columns.
 
   Fields:
     column: Required. Name of the column. Must be a UTF-8 string without dots
@@ -1156,8 +1109,8 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
     description: Optional. Description of the column. Default value is an
       empty string. The description must be a UTF-8 string with the maximum
       size of 2000 bytes.
-    mode: Optional. A column's mode indicates if values in this column are
-      required, nullable, or repeated. Only `NULLABLE`, `REQUIRED`, and
+    mode: Optional. A column's mode indicates whether values in this column
+      are required, nullable, or repeated. Only `NULLABLE`, `REQUIRED`, and
       `REPEATED` values are supported. Default mode is `NULLABLE`.
     subcolumns: Optional. Schema of sub-columns. A column can have zero or
       more sub-columns.
@@ -1177,28 +1130,27 @@ class GoogleCloudDatacatalogV1CrossRegionalSource(_messages.Message):
   different region.
 
   Fields:
-    taxonomy: Required. The resource name of the source taxonomy to be
-      imported.
+    taxonomy: Required. The resource name of the source taxonomy to import.
   """
 
   taxonomy = _messages.StringField(1)
 
 
 class GoogleCloudDatacatalogV1DataSource(_messages.Message):
-  r"""Describes the physical location of an entry.
+  r"""Physical location of an entry.
 
   Enums:
-    ServiceValueValuesEnum: Service in which the data is physically stored.
+    ServiceValueValuesEnum: Service that physically stores the data.
 
   Fields:
-    resource: Full name of the resource as defined by the service, e.g. //bigq
-      uery.googleapis.com/projects/{project_id}/locations/{location}/datasets/
-      {dataset_id}/tables/{table_id}
-    service: Service in which the data is physically stored.
+    resource: Full name of a resource as defined by the service. For example:
+      `//bigquery.googleapis.com/projects/{PROJECT_ID}/locations/{LOCATION}/da
+      tasets/{DATASET_ID}/tables/{TABLE_ID}`
+    service: Service that physically stores the data.
   """
 
   class ServiceValueValuesEnum(_messages.Enum):
-    r"""Service in which the data is physically stored.
+    r"""Service that physically stores the data.
 
     Values:
       SERVICE_UNSPECIFIED: Default unknown service.
@@ -1217,16 +1169,16 @@ class GoogleCloudDatacatalogV1DataStreamSpec(_messages.Message):
   r"""Additional specification of a data stream.
 
   Fields:
-    kafkaTopic: Fields specific to a Kafka topic. Present only on entries
-      representing Kafka topics.
+    kafkaTopic: Fields specific to a Kafka topic. Present only on
+      corresponding Kafka topic entries.
   """
 
   kafkaTopic = _messages.MessageField('GoogleCloudDatacatalogV1KafkaTopicSpec', 1)
 
 
 class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
-  r"""Specification that applies to a table resource. Only valid for entries
-  of `TABLE` type.
+  r"""Specification that applies to a table resource. Valid only for entries
+  with the `TABLE` type.
 
   Enums:
     TypeValueValuesEnum: Type of this table.
@@ -1251,35 +1203,36 @@ class GoogleCloudDatacatalogV1DatabaseTableSpec(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1Entry(_messages.Message):
-  r"""Entry Metadata. A Data Catalog Entry resource represents another
-  resource in Google Cloud Platform (such as a BigQuery dataset or a Pub/Sub
-  topic) or outside of Google Cloud Platform. Clients can use the
-  `linked_resource` field in the Entry resource to refer to the original
-  resource ID of the source system. An Entry resource contains resource
-  details, such as its schema. An Entry can also be used to attach flexible
-  metadata, such as a Tag.
+  r"""Entry metadata. A Data Catalog entry represents another resource in
+  Google Cloud Platform (such as a BigQuery dataset or a Pub/Sub topic) or
+  outside of it. You can use the `linked_resource` field in the entry resource
+  to refer to the original resource ID of the source system. An entry resource
+  contains resource details, for example, its schema. Additionally, you can
+  attach flexible metadata to an entry in the form of a Tag.
 
   Enums:
-    IntegratedSystemValueValuesEnum: Output only. This field indicates the
-      entry's source system that Data Catalog integrates with, such as
-      BigQuery or Pub/Sub.
-    TypeValueValuesEnum: The type of the entry. Only used for Entries with
-      types in the EntryType enum.
+    IntegratedSystemValueValuesEnum: Output only. Indicates the entry's source
+      system that Data Catalog integrates with, such as BigQuery, Pub/Sub, or
+      Dataproc Metastore.
+    TypeValueValuesEnum: The type of the entry. Only used for entries with
+      types listed in the `EntryType` enum. Currently, only `FILESET` enum
+      value is allowed. All other entries created in Data Catalog must use the
+      `user_specified_type`.
 
   Fields:
     bigqueryDateShardedSpec: Specification for a group of BigQuery tables with
-      name pattern `[prefix]YYYYMMDD`. Context:
-      https://cloud.google.com/bigquery/docs/partitioned-
-      tables#partitioning_versus_sharding.
-    bigqueryTableSpec: Specification that applies to a BigQuery table. This is
-      only valid on entries of type `TABLE`.
-    clusterSpec: Additional specification of a cluster. Present on entries
-      representing clusters.
+      the `[prefix]YYYYMMDD` name pattern. For more information, see
+      [Introduction to partitioned tables]
+      (https://cloud.google.com/bigquery/docs/partitioned-
+      tables#partitioning_versus_sharding).
+    bigqueryTableSpec: Specification that applies to a BigQuery table. Valid
+      only for entries with the `TABLE` type.
+    clusterSpec: Additional specification of a cluster. Present only on the
+      entries that represent clusters.
     dataSource: Output only. Physical location of the entry.
-    dataStreamSpec: Additional specification of a data stream. Present on
-      entries representing non-pubsub data streams.
-    databaseTableSpec: Specification that applies to a table resource. Only
-      valid for entries of `TABLE` type.
+    dataStreamSpec: Additional specification of a non-Pub/Sub data stream.
+    databaseTableSpec: Specification that applies to a table resource. Valid
+      only for entries with the `TABLE` type.
     description: Entry description that can consist of several sentences or
       paragraphs that describe entry contents. The description must not
       contain Unicode non-characters as well as C0 and C1 control codes except
@@ -1298,53 +1251,56 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For
       regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOU
       RCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:
-      project_id.location_id.instance_id.database_id.table_id`
+      {PROJECT_ID}.{LOCATION_ID}.{INSTANCE_ID}.{DATABASE_ID}.{TABLE_ID}`
     gcsFilesetSpec: Specification that applies to a Cloud Storage fileset.
-      This is only valid on entries of type FILESET.
-    integratedSystem: Output only. This field indicates the entry's source
-      system that Data Catalog integrates with, such as BigQuery or Pub/Sub.
+      Valid only for entries with the `FILESET` type.
+    integratedSystem: Output only. Indicates the entry's source system that
+      Data Catalog integrates with, such as BigQuery, Pub/Sub, or Dataproc
+      Metastore.
     linkedResource: The resource this metadata entry refers to. For Google
-      Cloud Platform resources, `linked_resource` is the [full name of the res
-      ource](https://cloud.google.com/apis/design/resource_names#full_resource
-      _name). For example, the `linked_resource` for a table resource from
-      BigQuery is: `//bigquery.googleapis.com/projects/{projectId}/datasets/{d
-      atasetId}/tables/{tableId}` Output only when entry is one of the types
-      in the `EntryType` enum. For entries with a `user_specified_type`, this
+      Cloud Platform resources, `linked_resource` is the [Full Resource Name]
+      (https://cloud.google.com/apis/design/resource_names#full_resource_name)
+      . For example, the `linked_resource` for a table resource from BigQuery
+      is: `//bigquery.googleapis.com/projects/{PROJECT_ID}/datasets/{DATASET_I
+      D}/tables/{TABLE_ID}` Output only when the entry is one of the types in
+      the `EntryType` enum. For entries with a `user_specified_type`, this
       field is optional and defaults to an empty string. The resource string
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       periods (.), colons (:), slashes (/), dashes (-), and hashes (#). The
       maximum size is 200 bytes when encoded in UTF-8.
-    name: Output only. The resource name of an entry in URL format. Example: `
-      projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}/
-      entries/{entry_id}` Note: The entry itself and its child resources might
-      not be stored in the location specified in its name.
+    name: Output only. The resource name of an entry in URL format. Note: The
+      entry itself and its child resources might not be stored in the location
+      specified in its name.
     schema: Schema of the entry. An entry might not have any schema attached
       to it.
-    sourceSystemTimestamps: Timestamps about the underlying resource, not
-      about this Data Catalog entry. Output only when Entry is of type in the
-      EntryType enum. For entries with user_specified_type, this field is
-      optional and defaults to an empty timestamp.
-    type: The type of the entry. Only used for Entries with types in the
-      EntryType enum.
-    userSpecifiedSystem: This field indicates the entry's source system that
-      Data Catalog does not integrate with. `user_specified_system` strings
-      must begin with a letter or underscore and can only contain letters,
-      numbers, and underscores; are case insensitive; must be at least 1
-      character and at most 64 characters long.
-    userSpecifiedType: Entry type if it does not fit any of the input-allowed
-      values listed in `EntryType` enum above. When creating an entry, users
-      should check the enum values first, if nothing matches the entry to be
-      created, then provide a custom value, for example "my_special_type".
-      `user_specified_type` strings must begin with a letter or underscore and
-      can only contain letters, numbers, and underscores; are case
-      insensitive; must be at least 1 character and at most 64 characters
-      long. Currently, only FILESET enum value is allowed. All other entries
-      created through Data Catalog must use `user_specified_type`.
+    sourceSystemTimestamps: Timestamps from the underlying resource, not from
+      the Data Catalog entry. Output only when the entry has a type listed in
+      the `EntryType` enum. For entries with `user_specified_type`, this field
+      is optional and defaults to an empty timestamp.
+    type: The type of the entry. Only used for entries with types listed in
+      the `EntryType` enum. Currently, only `FILESET` enum value is allowed.
+      All other entries created in Data Catalog must use the
+      `user_specified_type`.
+    usageSignal: Output only. Resource usage statistics.
+    userSpecifiedSystem: Indicates the entry's source system that Data Catalog
+      doesn't automatically integrate with. The `user_specified_system` string
+      has the following limitations: * Is case insensitive. * Must begin with
+      a letter or underscore. * Can only contain letters, numbers, and
+      underscores. * Must be at least 1 character and at most 64 characters
+      long.
+    userSpecifiedType: Custom entry type that doesn't match any of the values
+      allowed for input and listed in the `EntryType` enum. When creating an
+      entry, first check the type values in the enum. If there are no
+      appropriate types for the new entry, provide a custom value, for
+      example, `my_special_type`. The `user_specified_type` string has the
+      following limitations: * Is case insensitive. * Must begin with a letter
+      or underscore. * Can only contain letters, numbers, and underscores. *
+      Must be at least 1 character and at most 64 characters long.
   """
 
   class IntegratedSystemValueValuesEnum(_messages.Enum):
-    r"""Output only. This field indicates the entry's source system that Data
-    Catalog integrates with, such as BigQuery or Pub/Sub.
+    r"""Output only. Indicates the entry's source system that Data Catalog
+    integrates with, such as BigQuery, Pub/Sub, or Dataproc Metastore.
 
     Values:
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
@@ -1358,20 +1314,23 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     DATAPROC_METASTORE = 3
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of the entry. Only used for Entries with types in the
-    EntryType enum.
+    r"""The type of the entry. Only used for entries with types listed in the
+    `EntryType` enum. Currently, only `FILESET` enum value is allowed. All
+    other entries created in Data Catalog must use the `user_specified_type`.
 
     Values:
       ENTRY_TYPE_UNSPECIFIED: Default unknown type.
-      TABLE: Output only. The type of entry that has a GoogleSQL schema,
+      TABLE: Output only. The entry type that has a GoogleSQL schema,
         including logical views.
-      MODEL: Output only. The type of models, examples include
-        https://cloud.google.com/bigquery-ml/docs/bigqueryml-intro
-      DATA_STREAM: An entry type which is used for streaming entries. Example:
-        Pub/Sub topic.
-      FILESET: An entry type which is a set of files or objects. Example:
+      MODEL: Output only. The type of models. For more information, see
+        [Supported models in BigQuery ML] (https://cloud.google.com/bigquery-
+        ml/docs/introduction#supported_models_in).
+      DATA_STREAM: An entry type for streaming entries. For example, a Pub/Sub
+        topic.
+      FILESET: An entry type for a set of files or objects. For example, a
         Cloud Storage fileset.
-      CLUSTER: A group of servers that work together. Example: Kafka cluster.
+      CLUSTER: A group of servers that work together. For example, a Kafka
+        cluster.
       DATABASE: A database.
       SERVICE: A service, for example, a Dataproc Metastore service.
     """
@@ -1400,26 +1359,26 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
   schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 14)
   sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 15)
   type = _messages.EnumField('TypeValueValuesEnum', 16)
-  userSpecifiedSystem = _messages.StringField(17)
-  userSpecifiedType = _messages.StringField(18)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 17)
+  userSpecifiedSystem = _messages.StringField(18)
+  userSpecifiedType = _messages.StringField(19)
 
 
 class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
-  r"""EntryGroup Metadata. An EntryGroup resource represents a logical
+  r"""Entry group metadata. An `EntryGroup` resource represents a logical
   grouping of zero or more Data Catalog Entry resources.
 
   Fields:
-    dataCatalogTimestamps: Output only. Timestamps about this EntryGroup.
-      Default value is empty timestamps.
-    description: Entry group description, which can consist of several
-      sentences or paragraphs that describe entry group contents. Default
-      value is an empty string.
+    dataCatalogTimestamps: Output only. Timestamps of the entry group. Default
+      value is empty.
+    description: Entry group description. Can consist of several sentences or
+      paragraphs that describe the entry group contents. Default value is an
+      empty string.
     displayName: A short name to identify the entry group, for example,
       "analytics data - jan 2011". Default value is an empty string.
-    name: The resource name of the entry group in URL format. Example:
-      `projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
-      ` Note: The entry group itself and its child resources might not be
-      stored in the location specified in its name.
+    name: The resource name of the entry group in URL format. Note: The entry
+      group itself and its child resources might not be stored in the location
+      specified in its name.
   """
 
   dataCatalogTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 1)
@@ -1432,7 +1391,7 @@ class GoogleCloudDatacatalogV1ExportTaxonomiesResponse(_messages.Message):
   r"""Response message for ExportTaxonomies.
 
   Fields:
-    taxonomies: List of taxonomies and policy tags as nested protos.
+    taxonomies: List of taxonomies and policy tags as nested protocol buffers.
   """
 
   taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1SerializedTaxonomy', 1, repeated=True)
@@ -1442,20 +1401,19 @@ class GoogleCloudDatacatalogV1FieldType(_messages.Message):
   r"""A GoogleCloudDatacatalogV1FieldType object.
 
   Enums:
-    PrimitiveTypeValueValuesEnum: Represents primitive types - string, bool
+    PrimitiveTypeValueValuesEnum: Primitive types, such as string, boolean,
       etc.
 
   Fields:
-    enumType: Represents an enum type.
-    primitiveType: Represents primitive types - string, bool etc.
+    enumType: An enum type.
+    primitiveType: Primitive types, such as string, boolean, etc.
   """
 
   class PrimitiveTypeValueValuesEnum(_messages.Enum):
-    r"""Represents primitive types - string, bool etc.
+    r"""Primitive types, such as string, boolean, etc.
 
     Values:
-      PRIMITIVE_TYPE_UNSPECIFIED: This is the default invalid value for a
-        type.
+      PRIMITIVE_TYPE_UNSPECIFIED: The default invalid value for a type.
       DOUBLE: A double precision number.
       STRING: An UTF-8 string.
       BOOL: A boolean value.
@@ -1479,7 +1437,7 @@ class GoogleCloudDatacatalogV1FieldTypeEnumType(_messages.Message):
       be empty and can include up to 100 allowed values. The display names of
       the values in this set must not be empty and must be case-insensitively
       unique within this set. The order of items in this set is preserved.
-      This field can be used to create, remove and reorder enum values. To
+      This field can be used to create, remove, and reorder enum values. To
       rename enum values, use the `RenameTagTemplateFieldEnumValue` method.
   """
 
@@ -1500,13 +1458,13 @@ class GoogleCloudDatacatalogV1FieldTypeEnumTypeEnumValue(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1GcsFileSpec(_messages.Message):
-  r"""Specifications of a single file in Cloud Storage.
+  r"""Specification of a single file in Cloud Storage.
 
   Fields:
-    filePath: Required. The full file path. Example:
-      `gs://bucket_name/a/b.txt`.
-    gcsTimestamps: Output only. Timestamps about the Cloud Storage file.
-    sizeBytes: Output only. The size of the file, in bytes.
+    filePath: Required. Full file path. Example: `gs://bucket_name/a/b.txt`.
+    gcsTimestamps: Output only. Creation, modification, and expiration
+      timestamps of a Cloud Storage file.
+    sizeBytes: Output only. File size in bytes.
   """
 
   filePath = _messages.StringField(1)
@@ -1519,12 +1477,12 @@ class GoogleCloudDatacatalogV1GcsFilesetSpec(_messages.Message):
 
   Fields:
     filePatterns: Required. Patterns to identify a set of files in Google
-      Cloud Storage. See [Cloud Storage documentation](https://cloud.google.co
-      m/storage/docs/gsutil/addlhelp/WildcardNames) for more information. Note
-      that bucket wildcards are currently not supported. Examples of valid
-      file_patterns: * `gs://bucket_name/dir/*`: matches all files within
-      `bucket_name/dir` directory. * `gs://bucket_name/dir/**`: matches all
-      files in `bucket_name/dir` spanning all subdirectories. *
+      Cloud Storage. For more information, see [Wildcard Names]
+      (https://cloud.google.com/storage/docs/gsutil/addlhelp/WildcardNames).
+      Note: Currently, bucket wildcards are not supported. Examples of valid
+      `file_patterns`: * `gs://bucket_name/dir/*`: matches all files in
+      `bucket_name/dir` directory * `gs://bucket_name/dir/**`: matches all
+      files in `bucket_name/dir` and all subdirectories *
       `gs://bucket_name/file*`: matches files prefixed by `file` in
       `bucket_name` * `gs://bucket_name/??.txt`: matches files with two
       characters followed by `.txt` in `bucket_name` *
@@ -1532,10 +1490,10 @@ class GoogleCloudDatacatalogV1GcsFilesetSpec(_messages.Message):
       vowel character followed by `.txt` in `bucket_name` *
       `gs://bucket_name/[a-m].txt`: matches files that contain `a`, `b`, ...
       or `m` followed by `.txt` in `bucket_name` * `gs://bucket_name/a/*/b`:
-      matches all files in `bucket_name` that match `a/*/b` pattern, such as
-      `a/c/b`, `a/d/b` * `gs://another_bucket/a.txt`: matches
-      `gs://another_bucket/a.txt` You can combine wildcards to provide more
-      powerful matches, for example: * `gs://bucket_name/[a-m]??.j*g`
+      matches all files in `bucket_name` that match the `a/*/b` pattern, such
+      as `a/c/b`, `a/d/b` * `gs://another_bucket/a.txt`: matches
+      `gs://another_bucket/a.txt` You can combine wildcards to match complex
+      sets of files, for example: `gs://bucket_name/[a-m]??.j*g`
     sampleGcsFileSpecs: Output only. Sample files contained in this fileset,
       not all files contained in this fileset are represented here.
   """
@@ -1548,8 +1506,8 @@ class GoogleCloudDatacatalogV1ImportTaxonomiesRequest(_messages.Message):
   r"""Request message for ImportTaxonomies.
 
   Fields:
-    crossRegionalSource: Cross-regional source taxonomy to be imported.
-    inlineSource: Inline source used for taxonomies import.
+    crossRegionalSource: Cross-regional source taxonomy to import.
+    inlineSource: Inline source taxonomy to import.
   """
 
   crossRegionalSource = _messages.MessageField('GoogleCloudDatacatalogV1CrossRegionalSource', 1)
@@ -1560,7 +1518,7 @@ class GoogleCloudDatacatalogV1ImportTaxonomiesResponse(_messages.Message):
   r"""Response message for ImportTaxonomies.
 
   Fields:
-    taxonomies: Taxonomies that were imported.
+    taxonomies: Imported taxonomies.
   """
 
   taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1Taxonomy', 1, repeated=True)
@@ -1570,7 +1528,7 @@ class GoogleCloudDatacatalogV1InlineSource(_messages.Message):
   r"""Inline source containing taxonomies to import.
 
   Fields:
-    taxonomies: Required. Taxonomies to be imported.
+    taxonomies: Required. Taxonomies to import.
   """
 
   taxonomies = _messages.MessageField('GoogleCloudDatacatalogV1SerializedTaxonomy', 1, repeated=True)
@@ -1580,23 +1538,24 @@ class GoogleCloudDatacatalogV1KafkaClusterSpec(_messages.Message):
   r"""Entry spec describing a Kafka cluster.
 
   Fields:
-    bootstrapServers: Required. A comma-separated list of host and port pairs
-      that are the addresses of the Kafka brokers in a "bootstrap" Kafka
-      cluster that a Kafka client connects to initially to bootstrap itself.
-      Format is the same that is used for bootstrap.servers configuration
-      property for Kafka clients. Example:
-      host1:port1,host2:port2,host3:port3. See
-      https://kafka.apache.org/documentation/#bootstrap.servers
-    propertiesGcsUri: URI to Google Cloud Storage properties file with
-      additional properties needed to connect to the cluster represented by
-      this Entry. Properties stored in the file are passed to Kafka Consumer
-      by query engines wishing to connect to the cluster. The full range of
-      properties supported by query engines is dependant on the engine. The
-      properties file should be a valid Kafka consumer config file, see
-      https://kafka.apache.org/documentation/#consumerconfigs. For SSL
+    bootstrapServers: Required. A comma-separated list of host and port pairs-
+      addresses of Kafka brokers in a "bootstrap" Kafka cluster. Kafka clients
+      connect to this cluster to bootstrap themselves. The list has the same
+      format as the `bootstrap.servers` configuration property for Kafka
+      clients. For example: `host1:port1,host2:port2,host3:port3`. For more
+      information, see [bootstrap.servers property]
+      (https://kafka.apache.org/documentation/#bootstrap.servers).
+    propertiesGcsUri: URI of the Google Cloud Storage properties file with
+      additional properties represented by this entry that are required to
+      connect to a Kafka cluster. To connect to the cluster, query engines
+      pass the properties in this file to Kafka consumers. The full list of
+      supported properties depends on the engine. The properties file should
+      be a valid Kafka consumer configuration file. For more information, see
+      [Consumer Configs]
+      (https://kafka.apache.org/documentation/#consumerconfigs). For SSL
       authorization, if supported by the query engine, keystore and truststore
-      paths will be interpreted relative to the properties file. Example:
-      gs://my_bucket/kafka/consumer.properties
+      paths are interpreted relative to the properties file. Example:
+      `gs://my_bucket/kafka/consumer.properties`.
   """
 
   bootstrapServers = _messages.StringField(1)
@@ -1604,14 +1563,14 @@ class GoogleCloudDatacatalogV1KafkaClusterSpec(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1KafkaTopicSpec(_messages.Message):
-  r"""Entry spec describing a Kafka topic.
+  r"""Entry specification of a Kafka topic.
 
   Fields:
-    clusterEntry: Required. Name of the entry representing Kafka cluster this
-      topic is a part of. Example:
-      'projects/my_project/locations/us/entryGroups/kafka/entries/my_cluster'.
-    topic: Required. Name of the Kafka topic this Entry represents. Example:
-      'my_topic'.
+    clusterEntry: Required. Name of the Kafka cluster entry this topic is a
+      part of. Example:
+      `projects/my_project/locations/us/entryGroups/kafka/entries/my_cluster`.
+    topic: Required. Name of the Kafka topic this entry represents. Example:
+      `my_topic`.
   """
 
   clusterEntry = _messages.StringField(1)
@@ -1623,8 +1582,8 @@ class GoogleCloudDatacatalogV1ListEntriesResponse(_messages.Message):
 
   Fields:
     entries: Entry details.
-    nextPageToken: Token to retrieve the next page of results. It is set to
-      empty if no items remain in results.
+    nextPageToken: Pagination token of the next results page. Empty if there
+      are no more items in results.
   """
 
   entries = _messages.MessageField('GoogleCloudDatacatalogV1Entry', 1, repeated=True)
@@ -1635,9 +1594,9 @@ class GoogleCloudDatacatalogV1ListEntryGroupsResponse(_messages.Message):
   r"""Response message for ListEntryGroups.
 
   Fields:
-    entryGroups: EntryGroup details.
-    nextPageToken: Token to retrieve the next page of results. It is set to
-      empty if no items remain in results.
+    entryGroups: Entry group details.
+    nextPageToken: Pagination token to specify in the next call to retrieve
+      the next page of results. Empty if there are no more items.
   """
 
   entryGroups = _messages.MessageField('GoogleCloudDatacatalogV1EntryGroup', 1, repeated=True)
@@ -1648,9 +1607,9 @@ class GoogleCloudDatacatalogV1ListPolicyTagsResponse(_messages.Message):
   r"""Response message for ListPolicyTags.
 
   Fields:
-    nextPageToken: Token used to retrieve the next page of results, or empty
-      if there are no more results in the list.
-    policyTags: The policy tags that are in the requested taxonomy.
+    nextPageToken: Pagination token of the next results page. Empty if there
+      are no more results in the list.
+    policyTags: The policy tags that belong to the taxonomy.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1661,8 +1620,8 @@ class GoogleCloudDatacatalogV1ListTagsResponse(_messages.Message):
   r"""Response message for ListTags.
 
   Fields:
-    nextPageToken: Token to retrieve the next page of results. It is set to
-      empty if no items remain in results.
+    nextPageToken: Pagination token of the next results page. Empty if there
+      are no more items in results.
     tags: Tag details.
   """
 
@@ -1674,8 +1633,8 @@ class GoogleCloudDatacatalogV1ListTaxonomiesResponse(_messages.Message):
   r"""Response message for ListTaxonomies.
 
   Fields:
-    nextPageToken: Token used to retrieve the next page of results, or empty
-      if there are no more results in the list.
+    nextPageToken: Pagination token of the next results page. Empty if there
+      are no more results in the list.
     taxonomies: Taxonomies that the project contains.
   """
 
@@ -1692,7 +1651,7 @@ class GoogleCloudDatacatalogV1PhysicalSchema(_messages.Message):
     csv: Marks a CSV-encoded data source.
     orc: Marks an ORC-encoded data source.
     parquet: Marks a Parquet-encoded data source.
-    protobuf: Schema in Protobuf format.
+    protobuf: Schema in protocol buffer format.
     thrift: Schema in Thrift format.
   """
 
@@ -1727,10 +1686,10 @@ class GoogleCloudDatacatalogV1PhysicalSchemaParquetSchema(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema(_messages.Message):
-  r"""Schema in Protobuf format.
+  r"""Schema in protocol buffer format.
 
   Fields:
-    text: Required. proto source of the schema.
+    text: Required. Protocol buffer source of the schema.
   """
 
   text = _messages.StringField(1)
@@ -1747,32 +1706,28 @@ class GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1PolicyTag(_messages.Message):
-  r"""Denotes one policy tag in a taxonomy (e.g. ssn). Policy tags can be
-  defined in a hierarchy. For example, consider the following hierarchy: ``` +
-  Geolocation + LatLong + City + ZipCode ``` Policy tag "Geolocation" contains
-  3 child policy tags: "LatLong", "City", and "ZipCode".
+  r"""Denotes one policy tag in a taxonomy, for example, SSN. Policy tags can
+  be defined in a hierarchy. For example: ``` + Geolocation + LatLong + City +
+  ZipCode ``` Where the "Geolocation" policy tag contains three children.
 
   Fields:
     childPolicyTags: Output only. Resource names of child policy tags of this
       policy tag.
-    description: Description of this policy tag. It must: contain only unicode
-      characters, tabs, newlines, carriage returns and page breaks; and be at
-      most 2000 bytes long when encoded in UTF-8. If not set, defaults to an
-      empty description. If not set, defaults to an empty description.
-    displayName: Required. User-defined name of this policy tag. It must: be
-      unique within the parent taxonomy; contain only unicode letters,
-      numbers, underscores, dashes and spaces; not start or end with spaces;
-      and be at most 200 bytes long when encoded in UTF-8.
-    name: Output only. Resource name of this policy tag in format: "projects/{
-      project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/policyT
-      ags/{policy_tag_id}". Both taxonomy_ids and policy_tag_ids are unique
-      and generated by Policy Tag Manager.
-    parentPolicyTag: Resource name of this policy tag's parent policy tag
-      (e.g. for the "LatLong" policy tag in the example above, this field
-      contains the resource name of the "Geolocation" policy tag). If empty,
-      it means this policy tag is a top level policy tag (e.g. this field is
-      empty for the "Geolocation" policy tag in the example above). If not
-      set, defaults to an empty string.
+    description: Description of this policy tag. If not set, defaults to
+      empty. The description must contain only Unicode characters, tabs,
+      newlines, carriage returns and page breaks, and be at most 2000 bytes
+      long when encoded in UTF-8.
+    displayName: Required. User-defined name of this policy tag. The name
+      can't start or end with spaces and must be unique within the parent
+      taxonomy, contain only Unicode letters, numbers, underscores, dashes and
+      spaces, and be at most 200 bytes long when encoded in UTF-8.
+    name: Output only. Resource name of this policy tag in the URL format. The
+      policy tag manager generates unique taxonomy IDs and policy tag IDs.
+    parentPolicyTag: Resource name of this policy tag's parent policy tag. If
+      empty, this is a top level tag. If not set, defaults to an empty string.
+      For example, for the "LatLong" policy tag in the example above, this
+      field contains the resource name of the "Geolocation" policy tag, and,
+      for "Geolocation", this field is empty.
   """
 
   childPolicyTags = _messages.StringField(1, repeated=True)
@@ -1816,14 +1771,14 @@ class GoogleCloudDatacatalogV1ReplaceTaxonomyRequest(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1Schema(_messages.Message):
-  r"""Represents a schema (e.g. BigQuery, GoogleSQL, Avro schema).
+  r"""Represents a schema, for example, a BigQuery, GoogleSQL, or Avro schema.
 
   Fields:
     columns: The unified GoogleSQL-like schema of columns. The overall maximum
       number of columns and nested columns is 10,000. The maximum nested depth
       is 15 levels.
-    physicalSchema: Physical Schema is the native schema used to encode the
-      data represented by this entry.
+    physicalSchema: Physical schema that encodes the data represented by this
+      entry.
   """
 
   columns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 1, repeated=True)
@@ -1834,29 +1789,27 @@ class GoogleCloudDatacatalogV1SearchCatalogRequest(_messages.Message):
   r"""Request message for SearchCatalog.
 
   Fields:
-    orderBy: Specifies the ordering of results, currently supported case-
-      sensitive choices are: * `relevance`, only supports descending *
-      `last_modified_timestamp [asc|desc]`, defaults to descending if not
-      specified If not specified, defaults to `relevance` descending.
-    pageSize: Number of results in the search page. If <=0 then defaults to
-      10. Max limit for page_size is 1000. Throws an invalid argument for
-      page_size > 1000.
-    pageToken: Optional. Pagination token returned in an earlier
-      SearchCatalogResponse.next_page_token, which indicates that this is a
-      continuation of a prior SearchCatalogRequest call, and that the system
-      should return the next page of data. If empty, the first page is
-      returned.
-    query: Optional. The query string in search query syntax. An empty query
-      string will result in all data assets (in the specified scope) that the
-      user has access to. Query strings can be simple as "x" or more qualified
-      as: * name:x * column:x * description:y Note: Query tokens need to have
-      a minimum of 3 characters for substring matching to work correctly. See
-      [Data Catalog Search Syntax](https://cloud.google.com/data-
-      catalog/docs/how-to/search-reference) for more information.
-    scope: Required. The scope of this search request. A `scope` that has
-      empty `include_org_ids`, `include_project_ids` AND false
-      `include_gcp_public_datasets` is considered invalid. Data Catalog will
-      return an error in such a case.
+    orderBy: Specifies the order of results. Currently supported case-
+      sensitive values are: * `relevance` that can only be descending *
+      `last_modified_timestamp [asc|desc]` with descending (`desc`) as default
+      If this parameter is omitted, it defaults to the descending `relevance`.
+    pageSize: Number of results to return in a single search page. Can't be
+      negative or 0, defaults to 10 in this case. The maximum number is 1000.
+      If exceeded, throws an "invalid argument" exception.
+    pageToken: Optional. Pagination token that, if specified, returns the next
+      page of search results. If empty, returns the first page. This token is
+      returned in the SearchCatalogResponse.next_page_token field of the
+      response to a previous SearchCatalogRequest call.
+    query: Optional. The query string with a minimum of 3 characters and
+      specific syntax. For more information, see [Data Catalog search
+      syntax](/data-catalog/docs/how-to/search-reference). An empty query
+      string returns all data assets (in the specified scope) that you have
+      access to. A query string can be a simple `xyz` or qualified by
+      predicates: * `name:x` * `column:y` * `description:z`
+    scope: Required. The scope of this search request. The `scope` is invalid
+      if `include_org_ids`, `include_project_ids` are empty AND
+      `include_gcp_public_datasets` is set to `false`. In this case, the
+      request returns an error.
   """
 
   orderBy = _messages.StringField(1)
@@ -1871,25 +1824,23 @@ class GoogleCloudDatacatalogV1SearchCatalogRequestScope(_messages.Message):
 
   Fields:
     includeGcpPublicDatasets: If `true`, include Google Cloud Platform (GCP)
-      public datasets in the search results. Info on GCP public datasets is
-      available at https://cloud.google.com/public-datasets/. By default, GCP
-      public datasets are excluded.
+      public datasets in search results. By default, they are excluded. See
+      [Google Cloud Public Datasets](/public-datasets) for more information.
     includeOrgIds: The list of organization IDs to search within. To find your
-      organization ID, follow instructions in
-      https://cloud.google.com/resource-manager/docs/creating-managing-
-      organization.
-    includeProjectIds: The list of project IDs to search within. To learn more
-      about the distinction between project names/IDs/numbers, go to
-      https://cloud.google.com/docs/overview/#projects.
-    restrictedLocations: Optional. The list of locations to search within. 1.
-      If empty, search will be performed in all locations; 2. If any of the
-      locations are NOT [supported regions](https://cloud.google.com/data-
-      catalog/docs/concepts/regions#supported_regions), error will be
-      returned; 3. Otherwise, search only the given locations for matching
-      results. Typical usage is to leave this field empty. When a location is
-      unreachable as returned in the `SearchCatalogResponse.unreachable`
-      field, users can repeat the search request with this parameter set to
-      get additional information on the error.
+      organization ID, follow the steps from [Creating and managing
+      organizations] (/resource-manager/docs/creating-managing-organization).
+    includeProjectIds: The list of project IDs to search within. For more
+      information on the distinction between project names, IDs, and numbers,
+      see [Projects](/docs/overview/#projects).
+    restrictedLocations: Optional. The list of locations to search within. If
+      empty, all locations are searched. Returns an error if any location in
+      the list isn't one of the [Supported
+      regions](https://cloud.google.com/data-
+      catalog/docs/concepts/regions#supported_regions). If a location is
+      unreachable, its name is returned in the
+      `SearchCatalogResponse.unreachable` field. To get additional information
+      on the error, repeat the search request and set the location name as the
+      value of this parameter.
   """
 
   includeGcpPublicDatasets = _messages.BooleanField(1)
@@ -1902,14 +1853,13 @@ class GoogleCloudDatacatalogV1SearchCatalogResponse(_messages.Message):
   r"""Response message for SearchCatalog.
 
   Fields:
-    nextPageToken: The token that can be used to retrieve the next page of
-      results.
+    nextPageToken: Pagination token that can be used in subsequent calls to
+      retrieve the next page of results.
     results: Search results.
-    unreachable: Unreachable locations. Search result does not include data
-      from those locations. Users can get additional information on the error
-      by repeating the search request with a more restrictive parameter --
-      setting the value for
-      `SearchDataCatalogRequest.scope.restricted_locations`.
+    unreachable: Unreachable locations. Search results don't include data from
+      those locations. To get additional information on an error, repeat the
+      search request and restrict it to specific locations by setting the
+      `SearchCatalogRequest.scope.restricted_locations` parameter.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1918,50 +1868,49 @@ class GoogleCloudDatacatalogV1SearchCatalogResponse(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
-  r"""A result that appears in the response of a search request. Each result
-  captures details of one entry that matches the search.
+  r"""Result in the response to a search request. Each result captures details
+  of one entry that matches the search.
 
   Enums:
-    IntegratedSystemValueValuesEnum: Output only. This field indicates the
-      entry's source system that Data Catalog integrates with, such as
-      BigQuery or Cloud Pub/Sub.
-    SearchResultTypeValueValuesEnum: Type of the search result. This field can
-      be used to determine which Get method to call to fetch the full
+    IntegratedSystemValueValuesEnum: Output only. The source system that Data
+      Catalog automatically integrates with, such as BigQuery, Cloud Pub/Sub,
+      or Dataproc Metastore.
+    SearchResultTypeValueValuesEnum: Type of the search result. You can use
+      this field to determine which get method to call to fetch the full
       resource.
 
   Fields:
-    fullyQualifiedName: Fully Qualified Name of the resource. There are two
-      main forms of FQNs: {system}:{project}.{dot-separated path to resource}
-      for non-regionalized resources {system}:{project}.{location id}.{dot-
-      separated path to resource} for regionalized resources Examples: *
-      dataproc_metastore:projectId.locationId.instanceId.databaseId.tableId *
-      bigquery:table.project_id.dataset_id.table_id
-    integratedSystem: Output only. This field indicates the entry's source
-      system that Data Catalog integrates with, such as BigQuery or Cloud
-      Pub/Sub.
-    linkedResource: The full name of the cloud resource the entry belongs to.
-      See:
-      https://cloud.google.com/apis/design/resource_names#full_resource_name.
-      Example: * `//bigquery.googleapis.com/projects/projectId/datasets/datase
-      tId/tables/tableId`
-    modifyTime: Last-modified timestamp of the entry from the managing system.
-    relativeResourceName: The relative resource name of the resource in URL
-      format. Examples: * `projects/{project_id}/locations/{location_id}/entry
-      Groups/{entry_group_id}/entries/{entry_id}` *
-      `projects/{project_id}/tagTemplates/{tag_template_id}`
-    searchResultSubtype: Sub-type of the search result. This is a dot-
-      delimited description of the resource's full type, and is the same as
-      the value callers would provide in the "type" search facet. Examples:
-      `entry.table`, `entry.dataStream`, `tagTemplate`.
-    searchResultType: Type of the search result. This field can be used to
-      determine which Get method to call to fetch the full resource.
-    userSpecifiedSystem: This field indicates the entry's source system that
-      Data Catalog does not integrate with.
+    fullyQualifiedName: Fully qualified name (FQN) of the resource. FQNs take
+      two forms: * For non-regionalized resources:
+      `{SYSTEM}:{PROJECT}.{PATH_TO_RESOURCE_SEPARATED_WITH_DOTS}` * For
+      regionalized resources: `{SYSTEM}:{PROJECT}.{LOCATION_ID}.{PATH_TO_RESOU
+      RCE_SEPARATED_WITH_DOTS}` Example for a DPMS table: `dataproc_metastore:
+      PROJECT_ID.LOCATION_ID.INSTANCE_ID.DATABASE_ID.TABLE_ID`
+    integratedSystem: Output only. The source system that Data Catalog
+      automatically integrates with, such as BigQuery, Cloud Pub/Sub, or
+      Dataproc Metastore.
+    linkedResource: The full name of the Google Cloud resource the entry
+      belongs to. For more information, see [Full Resource Name]
+      (/apis/design/resource_names#full_resource_name). Example: `//bigquery.g
+      oogleapis.com/projects/PROJECT_ID/datasets/DATASET_ID/tables/TABLE_ID`
+    modifyTime: The last modification timestamp of the entry in the source
+      system.
+    relativeResourceName: The relative name of the resource in URL format.
+      Examples: * `projects/{PROJECT_ID}/locations/{LOCATION_ID}/entryGroups/{
+      ENTRY_GROUP_ID}/entries/{ENTRY_ID}` *
+      `projects/{PROJECT_ID}/tagTemplates/{TAG_TEMPLATE_ID}`
+    searchResultSubtype: Sub-type of the search result. A dot-delimited full
+      type of the resource. The same type you specify in the `type` search
+      predicate. Examples: `entry.table`, `entry.dataStream`, `tagTemplate`.
+    searchResultType: Type of the search result. You can use this field to
+      determine which get method to call to fetch the full resource.
+    userSpecifiedSystem: Custom source system that you can manually integrate
+      Data Catalog with.
   """
 
   class IntegratedSystemValueValuesEnum(_messages.Enum):
-    r"""Output only. This field indicates the entry's source system that Data
-    Catalog integrates with, such as BigQuery or Cloud Pub/Sub.
+    r"""Output only. The source system that Data Catalog automatically
+    integrates with, such as BigQuery, Cloud Pub/Sub, or Dataproc Metastore.
 
     Values:
       INTEGRATED_SYSTEM_UNSPECIFIED: Default unknown system.
@@ -1975,8 +1924,8 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
     DATAPROC_METASTORE = 3
 
   class SearchResultTypeValueValuesEnum(_messages.Enum):
-    r"""Type of the search result. This field can be used to determine which
-    Get method to call to fetch the full resource.
+    r"""Type of the search result. You can use this field to determine which
+    get method to call to fetch the full resource.
 
     Values:
       SEARCH_RESULT_TYPE_UNSPECIFIED: Default unknown type.
@@ -2000,18 +1949,17 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1SerializedPolicyTag(_messages.Message):
-  r"""Message representing one policy tag, including all its descendant policy
-  tags, as a nested proto.
+  r"""A nested protocol buffer that represents a policy tag and all its
+  descendants.
 
   Fields:
     childPolicyTags: Children of the policy tag, if any.
-    description: Description of the serialized policy tag. The length of the
-      description is limited to 2000 bytes when encoded in UTF-8. If not set,
-      defaults to an empty description.
+    description: Description of the serialized policy tag. At most 2000 bytes
+      when encoded in UTF-8. If not set, defaults to an empty description.
     displayName: Required. Display name of the policy tag. At most 200 bytes
       when encoded in UTF-8.
-    policyTag: Resource name of the policy tag. This field will be ignored
-      when calling ImportTaxonomies.
+    policyTag: Resource name of the policy tag. This field is ignored when
+      calling `ImportTaxonomies`.
   """
 
   childPolicyTags = _messages.MessageField('GoogleCloudDatacatalogV1SerializedPolicyTag', 1, repeated=True)
@@ -2021,8 +1969,8 @@ class GoogleCloudDatacatalogV1SerializedPolicyTag(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1SerializedTaxonomy(_messages.Message):
-  r"""Message representing a taxonomy, including its policy tags in hierarchy,
-  as a nested proto. Used for taxonomy replacement, import, and export.
+  r"""A nested protocol buffer that represents a taxonomy and the hierarchy of
+  its policy tags. Used for taxonomy replacement, import, and export.
 
   Enums:
     ActivatedPolicyTypesValueListEntryValuesEnum:
@@ -2042,7 +1990,7 @@ class GoogleCloudDatacatalogV1SerializedTaxonomy(_messages.Message):
 
     Values:
       POLICY_TYPE_UNSPECIFIED: Unspecified policy type.
-      FINE_GRAINED_ACCESS_CONTROL: Fine-grained access control policy, which
+      FINE_GRAINED_ACCESS_CONTROL: Fine-grained access control policy that
         enables access control on tagged sub-resources.
     """
     POLICY_TYPE_UNSPECIFIED = 0
@@ -2055,14 +2003,17 @@ class GoogleCloudDatacatalogV1SerializedTaxonomy(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1SystemTimestamps(_messages.Message):
-  r"""Timestamps about this resource according to a particular system.
+  r"""Timestamps associated with this resource in a particular system.
 
   Fields:
-    createTime: The creation time of the resource within the given system.
-    expireTime: Output only. The expiration time of the resource within the
-      given system. Currently only apllicable to BigQuery resources.
-    updateTime: The last-modified time of the resource within the given
-      system.
+    createTime: Creation timestamp of the resource within the given system.
+    expireTime: Output only. Expiration timestamp of the resource within the
+      given system. Currently only applicable to BigQuery resources.
+    updateTime: Timestamp of the last modification of the resource or its
+      metadata within a given system. Note: Depending on the source system,
+      not every modification updates this timestamp. For example, BigQuery
+      timestamps every metadata modification but not data or permission
+      changes.
   """
 
   createTime = _messages.StringField(1)
@@ -2071,57 +2022,52 @@ class GoogleCloudDatacatalogV1SystemTimestamps(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1TableSpec(_messages.Message):
-  r"""Normal BigQuery table spec.
+  r"""Normal BigQuery table specification.
 
   Fields:
-    groupedEntry: Output only. If the table is a dated shard, i.e., with name
-      pattern `[prefix]YYYYMMDD`, `grouped_entry` is the Data Catalog resource
-      name of the date sharded grouped entry, for example, `projects/{project_
-      id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entry_id}
-      `. Otherwise, `grouped_entry` is empty.
+    groupedEntry: Output only. If the table is date-sharded, that is, it
+      matches the `[prefix]YYYYMMDD` name pattern, this field is the Data
+      Catalog resource name of the date-sharded grouped entry. For example: `p
+      rojects/{PROJECT_ID}/locations/{LOCATION}/entrygroups/{ENTRY_GROUP_ID}/e
+      ntries/{ENTRY_ID}`. Otherwise, `grouped_entry` is empty.
   """
 
   groupedEntry = _messages.StringField(1)
 
 
 class GoogleCloudDatacatalogV1Tag(_messages.Message):
-  r"""Tags are used to attach custom metadata to Data Catalog resources. Tags
-  conform to the specifications within their tag template. See [Data Catalog
+  r"""Tags contain custom metadata and are attached to Data Catalog resources.
+  Tags conform with the specification of their tag template. See [Data Catalog
   IAM](https://cloud.google.com/data-catalog/docs/concepts/iam) for
   information on the permissions needed to create or view tags.
 
   Messages:
-    FieldsValue: Required. This maps the ID of a tag field to the value of and
-      additional information about that field. Valid field IDs are defined by
-      the tag's template. A tag must have at least 1 field and at most 500
-      fields.
+    FieldsValue: Required. Maps the ID of a tag field to its value and
+      additional information about that field. Tag template defines valid
+      field IDs. A tag must have at least 1 field and at most 500 fields.
 
   Fields:
     column: Resources like entry can have schemas associated with them. This
-      scope allows users to attach tags to an individual column based on that
+      scope allows you to attach tags to an individual column based on that
       schema. To attach a tag to a nested column, separate column names with a
       dot (`.`). Example: `column.nested_column`.
-    fields: Required. This maps the ID of a tag field to the value of and
-      additional information about that field. Valid field IDs are defined by
-      the tag's template. A tag must have at least 1 field and at most 500
-      fields.
-    name: The resource name of the tag in URL format. Example: `projects/{proj
-      ect_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entry
-      _id}/tags/{tag_id}` where `tag_id` is a system-generated identifier.
-      Note: The tag itself might not be stored in the location specified in
-      its name.
-    template: Required. The resource name of the tag template that this tag
-      uses. Example: `projects/{project_id}/locations/{location}/tagTemplates/
-      {tag_template_id}` This field cannot be modified after creation.
+    fields: Required. Maps the ID of a tag field to its value and additional
+      information about that field. Tag template defines valid field IDs. A
+      tag must have at least 1 field and at most 500 fields.
+    name: The resource name of the tag in URL format where tag ID is a system-
+      generated identifier. Note: The tag itself might not be stored in the
+      location specified in its name.
+    template: Required. The resource name of the tag template this tag uses.
+      Example: `projects/{PROJECT_ID}/locations/{LOCATION}/tagTemplates/{TAG_T
+      EMPLATE_ID}` This field cannot be modified after creation.
     templateDisplayName: Output only. The display name of the tag template.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FieldsValue(_messages.Message):
-    r"""Required. This maps the ID of a tag field to the value of and
-    additional information about that field. Valid field IDs are defined by
-    the tag's template. A tag must have at least 1 field and at most 500
-    fields.
+    r"""Required. Maps the ID of a tag field to its value and additional
+    information about that field. Tag template defines valid field IDs. A tag
+    must have at least 1 field and at most 500 fields.
 
     Messages:
       AdditionalProperty: An additional property for a FieldsValue object.
@@ -2151,22 +2097,22 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1TagField(_messages.Message):
-  r"""Contains the value and supporting information for a field within a Tag.
+  r"""Contains the value and additional information on a field within a Tag.
 
   Fields:
-    boolValue: Holds the value for a tag field with boolean type.
+    boolValue: The value of a tag field with a boolean type.
     displayName: Output only. The display name of this field.
-    doubleValue: Holds the value for a tag field with double type.
-    enumValue: Holds the value for a tag field with enum type. This value must
-      be one of the allowed values in the definition of this enum.
+    doubleValue: The value of a tag field with a double type.
+    enumValue: The value of a tag field with an enum type. This value must be
+      one of the allowed values listed in this enum.
     order: Output only. The order of this field with respect to other fields
-      in this tag. It can be set in Tag. For example, a higher value can
-      indicate a more important field. The value can be negative. Multiple
-      fields can have the same order, and field orders within a tag do not
-      have to be sequential.
-    stringValue: Holds the value for a tag field with string type. The maximum
+      in this tag. Can be set by Tag. For example, a higher value can indicate
+      a more important field. The value can be negative. Multiple fields can
+      have the same order, and field orders within a tag don't have to be
+      sequential.
+    stringValue: The value of a tag field with a string type. The maximum
       length is 2000 UTF-8 characters.
-    timestampValue: Holds the value for a tag field with timestamp type.
+    timestampValue: The value of a tag field with a timestamp type.
   """
 
   boolValue = _messages.BooleanField(1)
@@ -2179,7 +2125,7 @@ class GoogleCloudDatacatalogV1TagField(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1TagFieldEnumValue(_messages.Message):
-  r"""Holds an enum value.
+  r"""An enum value.
 
   Fields:
     displayName: The display name of the enum value.
@@ -2189,22 +2135,22 @@ class GoogleCloudDatacatalogV1TagFieldEnumValue(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
-  r"""A tag template defines a tag, which can have one or more typed fields.
-  The template is used to create and attach the tag to GCP resources. [Tag
-  template roles](https://cloud.google.com/iam/docs/understanding-roles#data-
+  r"""A tag template defines a tag that can have one or more typed fields. The
+  template is used to create tags that are attached to GCP resources. [Tag
+  template roles] (https://cloud.google.com/iam/docs/understanding-roles#data-
   catalog-roles) provide permissions to create, edit, and use the template.
-  See, for example, the [TagTemplate User](https://cloud.google.com/data-
-  catalog/docs/how-to/template-user) role, which includes permission to use
+  For example, see the [TagTemplate User] (https://cloud.google.com/data-
+  catalog/docs/how-to/template-user) role that includes a permission to use
   the tag template to tag resources.
 
   Messages:
     FieldsValue: Required. Map of tag template field IDs to the settings for
-      the field. This map is an exhaustive list of the allowed fields. This
-      map must contain at least one field and at most 500 fields. The keys to
-      this map are tag template field IDs. Field IDs can contain letters (both
-      uppercase and lowercase), numbers (0-9) and underscores (_). Field IDs
-      must be at least 1 character long and at most 64 characters long. Field
-      IDs must start with a letter or underscore.
+      the field. This map is an exhaustive list of the allowed fields. The map
+      must contain at least one field and at most 500 fields. The keys to this
+      map are tag template field IDs. The IDs have the following limitations:
+      * Can contain uppercase and lowercase letters, numbers (0-9) and
+      underscores (_). * Must be at least 1 character and at most 64
+      characters long. * Must start with a letter or underscore.
 
   Fields:
     displayName: Display name for this template. Defaults to an empty string.
@@ -2212,27 +2158,26 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
       (_), dashes (-), spaces ( ), and can't start or end with spaces. The
       maximum length is 200 characters.
     fields: Required. Map of tag template field IDs to the settings for the
-      field. This map is an exhaustive list of the allowed fields. This map
+      field. This map is an exhaustive list of the allowed fields. The map
       must contain at least one field and at most 500 fields. The keys to this
-      map are tag template field IDs. Field IDs can contain letters (both
-      uppercase and lowercase), numbers (0-9) and underscores (_). Field IDs
-      must be at least 1 character long and at most 64 characters long. Field
-      IDs must start with a letter or underscore.
-    name: The resource name of the tag template in URL format. Example: `proje
-      cts/{project_id}/locations/{location}/tagTemplates/{tag_template_id}`
-      Note: The tag template itself and its child resources might not be
-      stored in the location specified in its name.
+      map are tag template field IDs. The IDs have the following limitations:
+      * Can contain uppercase and lowercase letters, numbers (0-9) and
+      underscores (_). * Must be at least 1 character and at most 64
+      characters long. * Must start with a letter or underscore.
+    name: The resource name of the tag template in URL format. Note: The tag
+      template itself and its child resources might not be stored in the
+      location specified in its name.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FieldsValue(_messages.Message):
     r"""Required. Map of tag template field IDs to the settings for the field.
-    This map is an exhaustive list of the allowed fields. This map must
-    contain at least one field and at most 500 fields. The keys to this map
-    are tag template field IDs. Field IDs can contain letters (both uppercase
-    and lowercase), numbers (0-9) and underscores (_). Field IDs must be at
-    least 1 character long and at most 64 characters long. Field IDs must
-    start with a letter or underscore.
+    This map is an exhaustive list of the allowed fields. The map must contain
+    at least one field and at most 500 fields. The keys to this map are tag
+    template field IDs. The IDs have the following limitations: * Can contain
+    uppercase and lowercase letters, numbers (0-9) and underscores (_). * Must
+    be at least 1 character and at most 64 characters long. * Must start with
+    a letter or underscore.
 
     Messages:
       AdditionalProperty: An additional property for a FieldsValue object.
@@ -2268,10 +2213,10 @@ class GoogleCloudDatacatalogV1TagTemplateField(_messages.Message):
       The name must contain only Unicode letters, numbers (0-9), underscores
       (_), dashes (-), spaces ( ), and can't start or end with spaces. The
       maximum length is 200 characters.
-    isRequired: Whether this is a required field. Defaults to false.
+    isRequired: If true, this field is required. Defaults to false.
     name: Output only. The resource name of the tag template field in URL
-      format. Example: `projects/{project_id}/locations/{location}/tagTemplate
-      s/{tag_template}/fields/{field}` Note: The `TagTemplateField` itself
+      format. Example: `projects/{PROJECT_ID}/locations/{LOCATION}/tagTemplate
+      s/{TAG_TEMPLATE}/fields/{FIELD}` Note: The tag template field itself
       might not be stored in the location specified in its name. The name must
       contain only letters (a-z, A-Z), numbers (0-9), or underscores (_), and
       must start with a letter or underscore. The maximum length is 64
@@ -2279,7 +2224,7 @@ class GoogleCloudDatacatalogV1TagTemplateField(_messages.Message):
     order: The order of this field with respect to other fields in this tag
       template. For example, a higher value can indicate a more important
       field. The value can be negative. Multiple fields can have the same
-      order, and field orders within a tag do not have to be sequential.
+      order and field orders within a tag don't have to be sequential.
     type: Required. The type of value this tag field can contain.
   """
 
@@ -2293,9 +2238,9 @@ class GoogleCloudDatacatalogV1TagTemplateField(_messages.Message):
 
 class GoogleCloudDatacatalogV1Taxonomy(_messages.Message):
   r"""A taxonomy is a collection of hierarchical policy tags that classify
-  data along a common axis. For instance a "data sensitivity" taxonomy could
+  data along a common axis. For example, a "data sensitivity" taxonomy might
   contain the following policy tags: ``` + PII + Account number + Age + SSN +
-  Zipcode + Financials + Revenue ``` A "data origin" taxonomy could contain
+  Zipcode + Financials + Revenue ``` A "data origin" taxonomy might contain
   the following policy tags: ``` + User data + Employee data + Partner data +
   Public data ```
 
@@ -2305,21 +2250,19 @@ class GoogleCloudDatacatalogV1Taxonomy(_messages.Message):
   Fields:
     activatedPolicyTypes: Optional. A list of policy types that are activated
       for this taxonomy. If not set, defaults to an empty list.
-    description: Optional. Description of this taxonomy. It must: contain only
-      unicode characters, tabs, newlines, carriage returns and page breaks;
-      and be at most 2000 bytes long when encoded in UTF-8. If not set,
-      defaults to an empty description.
-    displayName: Required. User-defined name of this taxonomy. It must:
-      contain only unicode letters, numbers, underscores, dashes and spaces;
-      not start or end with spaces; and be at most 200 bytes long when encoded
-      in UTF-8.
-    name: Output only. Resource name of this taxonomy in format: "projects/{pr
-      oject_number}/locations/{location_id}/taxonomies/{taxonomy_id}". Note
-      that taxonomy_id's are unique and generated by Policy Tag Manager.
-    policyTagCount: Output only. Number of policy tags contained in this
-      taxonomy.
-    taxonomyTimestamps: Output only. Timestamps about this taxonomy. Only
-      create_time and update_time are used.
+    description: Optional. Description of this taxonomy. If not set, defaults
+      to empty. The description must contain only Unicode characters, tabs,
+      newlines, carriage returns, and page breaks, and be at most 2000 bytes
+      long when encoded in UTF-8.
+    displayName: Required. User-defined name of this taxonomy. The name can't
+      start or end with spaces, must contain only Unicode letters, numbers,
+      underscores, dashes, and spaces, and be at most 200 bytes long when
+      encoded in UTF-8.
+    name: Output only. Resource name of this taxonomy in URL format. Note:
+      Policy tag manager generates unique taxonomy IDs.
+    policyTagCount: Output only. Number of policy tags in this taxonomy.
+    taxonomyTimestamps: Output only. Creation and modification timestamps of
+      this taxonomy.
   """
 
   class ActivatedPolicyTypesValueListEntryValuesEnum(_messages.Enum):
@@ -2327,7 +2270,7 @@ class GoogleCloudDatacatalogV1Taxonomy(_messages.Message):
 
     Values:
       POLICY_TYPE_UNSPECIFIED: Unspecified policy type.
-      FINE_GRAINED_ACCESS_CONTROL: Fine-grained access control policy, which
+      FINE_GRAINED_ACCESS_CONTROL: Fine-grained access control policy that
         enables access control on tagged sub-resources.
     """
     POLICY_TYPE_UNSPECIFIED = 0
@@ -2339,6 +2282,75 @@ class GoogleCloudDatacatalogV1Taxonomy(_messages.Message):
   name = _messages.StringField(4)
   policyTagCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   taxonomyTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 6)
+
+
+class GoogleCloudDatacatalogV1UsageSignal(_messages.Message):
+  r"""The set of all usage signals that Data Catalog stores. Note: Usually,
+  these signals are updated daily. In rare cases, an update may fail but will
+  be performed again on the next day.
+
+  Messages:
+    UsageWithinTimeRangeValue: Usage statistics over each of the predefined
+      time ranges. Supported time ranges are `{"24H", "7D", "30D"}`.
+
+  Fields:
+    updateTime: The end timestamp of the duration of usage statistics.
+    usageWithinTimeRange: Usage statistics over each of the predefined time
+      ranges. Supported time ranges are `{"24H", "7D", "30D"}`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UsageWithinTimeRangeValue(_messages.Message):
+    r"""Usage statistics over each of the predefined time ranges. Supported
+    time ranges are `{"24H", "7D", "30D"}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        UsageWithinTimeRangeValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        UsageWithinTimeRangeValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UsageWithinTimeRangeValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudDatacatalogV1UsageStats attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudDatacatalogV1UsageStats', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  updateTime = _messages.StringField(1)
+  usageWithinTimeRange = _messages.MessageField('UsageWithinTimeRangeValue', 2)
+
+
+class GoogleCloudDatacatalogV1UsageStats(_messages.Message):
+  r"""Detailed statistics on the entry's usage. Usage statistics have the
+  following limitations: - Only BigQuery tables have them. - They only include
+  BigQuery query jobs. - They might be underestimated because wildcard table
+  references are not yet counted. For more information, see [Querying multiple
+  tables using a wildcard table]
+  (https://cloud.google.com/bigquery/docs/querying-wildcard-tables)
+
+  Fields:
+    totalCancellations: The number of cancelled attempts to use the underlying
+      entry.
+    totalCompletions: The number of successful uses of the underlying entry.
+    totalExecutionTimeForCompletionsMillis: Total time spent only on
+      successful uses, in milliseconds.
+    totalFailures: The number of failed attempts to use the underlying entry.
+  """
+
+  totalCancellations = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  totalCompletions = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  totalExecutionTimeForCompletionsMillis = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  totalFailures = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDatacatalogV1ViewSpec(_messages.Message):

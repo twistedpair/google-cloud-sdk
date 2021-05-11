@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.resource_manager import completers
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import common_args
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log as sdk_log
@@ -325,6 +326,24 @@ def ExtractLogId(log_resource):
   """
   log_id = log_resource.split('/logs/', 1)[1]
   return log_id.replace('%2F', '/')
+
+
+def IndexTypeToEnum(index_type):
+  """Converts an Index Type String Literal to an Enum.
+
+  Args:
+    index_type: The index type e.g INDEX_TYPE_STRING.
+
+  Returns:
+    A IndexConfig.TypeValueValuesEnum mapped e.g
+    TypeValueValuesEnum(INDEX_TYPE_INTEGER, 2) .
+
+    Will return a Parser error if an incorrect value is provided.
+  """
+  return arg_utils.ChoiceToEnum(
+      index_type,
+      GetMessages().IndexConfig.TypeValueValuesEnum,
+      valid_choices=['INDEX_TYPE_STRING', 'INDEX_TYPE_INTEGER'])
 
 
 def PrintPermissionInstructions(destination, writer_identity):

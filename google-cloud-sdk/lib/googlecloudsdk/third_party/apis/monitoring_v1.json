@@ -1093,6 +1093,11 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "validateOnly": {
+                  "description": "If set, validate the request and preview the review, but do not actually save it.",
+                  "location": "query",
+                  "type": "boolean"
                 }
               },
               "parameterOrder": [
@@ -1215,6 +1220,11 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "validateOnly": {
+                  "description": "If set, validate the request and preview the review, but do not actually save it.",
+                  "location": "query",
+                  "type": "boolean"
                 }
               },
               "parameterOrder": [

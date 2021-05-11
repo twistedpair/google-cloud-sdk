@@ -17,11 +17,29 @@ package = 'healthcare'
 class AnalyzeEntitiesRequest(_messages.Message):
   r"""The request to analyze healthcare entities in a document.
 
+  Enums:
+    LicensedVocabulariesValueListEntryValuesEnum:
+
   Fields:
     documentContent: document_content is a document to be annotated.
+    licensedVocabularies: A list of licensed vocabularies to use in the
+      request, in addition to the default unlicensed vocabularies.
   """
 
+  class LicensedVocabulariesValueListEntryValuesEnum(_messages.Enum):
+    r"""LicensedVocabulariesValueListEntryValuesEnum enum type.
+
+    Values:
+      LICENSED_VOCABULARY_UNSPECIFIED: No licensed vocabulary specified.
+      ICD10CM: ICD-10-CM vocabulary
+      SNOMEDCT_US: SNOMED CT (US version) vocabulary
+    """
+    LICENSED_VOCABULARY_UNSPECIFIED = 0
+    ICD10CM = 1
+    SNOMEDCT_US = 2
+
   documentContent = _messages.StringField(1)
+  licensedVocabularies = _messages.EnumField('LicensedVocabulariesValueListEntryValuesEnum', 2, repeated=True)
 
 
 class AnalyzeEntitiesResponse(_messages.Message):
@@ -4809,7 +4827,9 @@ class QueryAccessibleDataRequest(_messages.Message):
   Fields:
     gcsDestination: The Cloud Storage destination. The Cloud Healthcare API
       service account must have the `roles/storage.objectAdmin` Cloud IAM role
-      for this Cloud Storage location.
+      for this Cloud Storage location. The object name is in the following
+      format: query-accessible-data-result-{operation_id}.txt where each line
+      contains a single data_id.
     requestAttributes: The values of request attributes associated with this
       access request.
     resourceAttributes: Optional. The values of resource attributes associated
@@ -4874,6 +4894,13 @@ class QueryAccessibleDataRequest(_messages.Message):
   gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2ConsentGcsDestination', 1)
   requestAttributes = _messages.MessageField('RequestAttributesValue', 2)
   resourceAttributes = _messages.MessageField('ResourceAttributesValue', 3)
+
+
+class QueryAccessibleDataResponse(_messages.Message):
+  r"""Response for successful QueryAccessibleData operations. This structure
+  is included in the response upon operation completion.
+  """
+
 
 
 class RedactConfig(_messages.Message):

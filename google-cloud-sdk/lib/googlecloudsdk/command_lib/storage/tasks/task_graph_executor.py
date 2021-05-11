@@ -28,6 +28,7 @@ from googlecloudsdk.command_lib import crash_handling
 from googlecloudsdk.command_lib.storage.tasks import task_buffer
 from googlecloudsdk.command_lib.storage.tasks import task_graph as task_graph_module
 from googlecloudsdk.core import log
+from googlecloudsdk.core.credentials import creds_context_managers
 
 from six.moves import queue
 
@@ -71,7 +72,6 @@ def _thread_worker(task_queue, task_output_queue, task_status_queue,
     # If any exception is raised, it will prevent the executor from exiting.
     except Exception as exception:
       log.error(exception)
-      # TODO(b/174488717): Skip parent tasks when a child task raises an error.
       additional_task_iterators = None
     # pylint: enable=broad-except
 
@@ -94,18 +94,17 @@ def _process_worker(task_queue, task_output_queue, task_status_queue,
     idle_thread_count (multiprocessing.Semaphore): Passed on to worker threads.
   """
   threads = []
-  # TODO(b/171299704): Add logic from gcloud_main.py to initialize GCE and
-  # DevShell credentials in processes started with spawn.
-  for _ in range(thread_count):
-    thread = threading.Thread(
-        target=_thread_worker,
-        args=(task_queue, task_output_queue, task_status_queue,
-              idle_thread_count))
-    thread.start()
-    threads.append(thread)
+  with creds_context_managers.CredentialProvidersManager():
+    for _ in range(thread_count):
+      thread = threading.Thread(
+          target=_thread_worker,
+          args=(task_queue, task_output_queue, task_status_queue,
+                idle_thread_count))
+      thread.start()
+      threads.append(thread)
 
-  for thread in threads:
-    thread.join()
+    for thread in threads:
+      thread.join()
 
 
 class TaskGraphExecutor:

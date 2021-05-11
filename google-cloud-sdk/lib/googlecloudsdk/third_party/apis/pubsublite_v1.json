@@ -297,6 +297,41 @@
         }
       }
     },
+    "CommitCursorRequest": {
+      "id": "CommitCursorRequest",
+      "description": "Request for CommitCursor.",
+      "type": "object",
+      "properties": {
+        "partition": {
+          "description": "The partition for which to update the cursor. Partitions are zero indexed, so `partition` must be in the range [0, topic.num_partitions).",
+          "type": "string",
+          "format": "int64"
+        },
+        "cursor": {
+          "description": "The new value for the committed cursor.",
+          "$ref": "Cursor"
+        }
+      }
+    },
+    "Cursor": {
+      "id": "Cursor",
+      "description": "A cursor that describes the position of a message within a topic partition.",
+      "type": "object",
+      "properties": {
+        "offset": {
+          "description": "The offset of a message within a topic partition. Must be greater than or equal 0.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "CommitCursorResponse": {
+      "id": "CommitCursorResponse",
+      "description": "Response for CommitCursor.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListPartitionCursorsResponse": {
       "id": "ListPartitionCursorsResponse",
       "description": "Response for ListPartitionCursors",
@@ -328,18 +363,6 @@
         "cursor": {
           "description": "The value of the cursor.",
           "$ref": "Cursor"
-        }
-      }
-    },
-    "Cursor": {
-      "id": "Cursor",
-      "description": "A cursor that describes the position of a message within a topic partition.",
-      "type": "object",
-      "properties": {
-        "offset": {
-          "description": "The offset of a message within a topic partition. Must be greater than or equal 0.",
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -821,6 +844,37 @@
             "locations": {
               "resources": {
                 "subscriptions": {
+                  "methods": {
+                    "commitCursor": {
+                      "id": "pubsublite.cursor.projects.locations.subscriptions.commitCursor",
+                      "path": "v1/cursor/{+subscription}:commitCursor",
+                      "flatPath": "v1/cursor/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}:commitCursor",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "subscription": {
+                          "description": "The subscription for which to update the cursor.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/subscriptions\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "subscription"
+                      ],
+                      "request": {
+                        "$ref": "CommitCursorRequest"
+                      },
+                      "response": {
+                        "$ref": "CommitCursorResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the committed cursor."
+                    }
+                  }
+                  ,
                   "resources": {
                     "cursors": {
                       "methods": {

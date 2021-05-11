@@ -52,8 +52,8 @@ class PromptFallthrough(deps.Fallthrough):
     return self._Prompt(parsed_args)
 
 
-def GenerateServiceName(image):
-  """Produce a valid default service name.
+def _GenerateServiceName(image):
+  """Produce a valid default service name from a container image path.
 
   Converts a file path or image path into a reasonable default service name by
   stripping file path delimeters, image tags, and image hashes.
@@ -73,6 +73,29 @@ def GenerateServiceName(image):
   return re.sub(r'[^a-zA-Z0-9-]', '', base_name).strip('-').lower()
 
 
+def _GenerateServiceNameFromLocalPath(source):
+  """Produce a valid default service name from a local file or directory path.
+
+  Converts a file or directory path into a reasonable default service name by
+  resolving relative paths to absolute paths, removing any extensions, and then
+  removing any invalid characters.
+
+  For example, the paths /tmp/foo/bar/.. and /tmp/foo.tar.gz would both produce
+  the service name 'foo'. A source path of "." will be expanded to the current
+  directory name."
+
+  Args:
+    source: str, The file or directory path.
+
+  Returns:
+    A valid Cloud Run service name.
+  """
+  path, ext = os.path.splitext(os.path.abspath(source))
+  while ext:
+    path, ext = os.path.splitext(path)
+  return _GenerateServiceName(path)
+
+
 class ResourcePromptFallthrough(PromptFallthrough):
   """Fall through to reading the resource name from an interactive prompt."""
 
@@ -83,17 +106,17 @@ class ResourcePromptFallthrough(PromptFallthrough):
     self.resource_type_lower = resource_type_lower
 
   def _Prompt(self, parsed_args):
-    image = None
-    if hasattr(parsed_args, 'image'):
-      image = parsed_args.image
     message = self.resource_type_lower.capitalize() + ' name'
-    if image:
-      default_name = GenerateServiceName(image)
-      service_name = console_io.PromptWithDefault(
-          message=message, default=default_name)
-    else:
-      service_name = console_io.PromptResponse(message='{}: '.format(message))
-    return service_name
+    default_name = self._DefaultNameFromArgs(parsed_args)
+    return console_io.PromptWithDefault(
+        message=message, default=default_name)
+
+  def _DefaultNameFromArgs(self, parsed_args):
+    if getattr(parsed_args, 'image', None):
+      return _GenerateServiceName(parsed_args.image)
+    elif getattr(parsed_args, 'source', None):
+      return _GenerateServiceNameFromLocalPath(parsed_args.source)
+    return ''
 
 
 class ServicePromptFallthrough(ResourcePromptFallthrough):

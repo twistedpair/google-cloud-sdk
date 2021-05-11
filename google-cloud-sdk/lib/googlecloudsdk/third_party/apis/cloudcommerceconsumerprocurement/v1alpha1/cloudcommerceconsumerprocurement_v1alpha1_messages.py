@@ -972,10 +972,15 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItem(_messages.Message):
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Message):
-  r"""A change made on a line item.
+  r"""A change made on a line item. Next Id: 11
 
   Enums:
     ChangeStateValueValuesEnum: Output only. State of the change.
+    ChangeStateReasonTypeValueValuesEnum: Output only. Predefined enum types
+      for why this line item change is in current type. For example,
+      cancellation line item change could be completed because of expired at
+      the end of term, user explicit immediate cancellation or system
+      triggered cancellation.
     ChangeTypeValueValuesEnum: Required. Type of the change to make.
 
   Fields:
@@ -984,6 +989,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
     changeId: Output only. Change ID. All changes made within one order update
       operation have the same change_id.
     changeState: Output only. State of the change.
+    changeStateReasonType: Output only. Predefined enum types for why this
+      line item change is in current type. For example, cancellation line item
+      change could be completed because of expired at the end of term, user
+      explicit immediate cancellation or system triggered cancellation.
     changeType: Required. Type of the change to make.
     createTime: Output only. The time when change was initiated.
     newLineItemInfo: Line item info after the change.
@@ -996,6 +1005,27 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
     updateTime: Output only. The time when change was updated, e.g.
       approved/rejected by partners or cancelled by the user.
   """
+
+  class ChangeStateReasonTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Predefined enum types for why this line item change is in
+    current type. For example, cancellation line item change could be
+    completed because of expired at the end of term, user explicit immediate
+    cancellation or system triggered cancellation.
+
+    Values:
+      LINE_ITEM_CHANGE_STATE_REASON_TYPE_UNSPECIFIED: Default value,
+        indicating there is no predefined type for change state reason.
+      LINE_ITEM_CHANGE_STATE_REASON_TYPE_EXPIRED: Change is in current state
+        due to term expiration.
+      LINE_ITEM_CHANGE_STATE_REASON_TYPE_USER_CANCELLED: Change is in current
+        state due to user explicit cancellation.
+      LINE_ITEM_CHANGE_STATE_REASON_TYPE_SYSTEM_CANCELLED: Change is in
+        current state due to system cancellation.
+    """
+    LINE_ITEM_CHANGE_STATE_REASON_TYPE_UNSPECIFIED = 0
+    LINE_ITEM_CHANGE_STATE_REASON_TYPE_EXPIRED = 1
+    LINE_ITEM_CHANGE_STATE_REASON_TYPE_USER_CANCELLED = 2
+    LINE_ITEM_CHANGE_STATE_REASON_TYPE_SYSTEM_CANCELLED = 3
 
   class ChangeStateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the change.
@@ -1049,12 +1079,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
   changeEffectiveTime = _messages.StringField(1)
   changeId = _messages.StringField(2)
   changeState = _messages.EnumField('ChangeStateValueValuesEnum', 3)
-  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 4)
-  createTime = _messages.StringField(5)
-  newLineItemInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo', 6)
-  oldLineItemInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo', 7)
-  stateReason = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  changeStateReasonType = _messages.EnumField('ChangeStateReasonTypeValueValuesEnum', 4)
+  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 5)
+  createTime = _messages.StringField(6)
+  newLineItemInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo', 7)
+  oldLineItemInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo', 8)
+  stateReason = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo(_messages.Message):

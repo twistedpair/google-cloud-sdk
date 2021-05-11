@@ -2268,7 +2268,7 @@
       "type": "object",
       "properties": {
         "moveAnalysis": {
-          "description": "The list of analysis returned from performing the intended resource move analysis. The analysis is grouped by different cloud services.",
+          "description": "The list of analyses returned from performing the intended resource move analysis. The analysis is grouped by different Cloud services.",
           "type": "array",
           "items": {
             "$ref": "MoveAnalysis"
@@ -2301,7 +2301,7 @@
       "type": "object",
       "properties": {
         "blockers": {
-          "description": "Blocking information that would prevent the target resource from moving to resource to the specified destination at runtime.",
+          "description": "Blocking information that would prevent the target resource from moving to the specified destination at runtime.",
           "type": "array",
           "items": {
             "$ref": "MoveImpact"

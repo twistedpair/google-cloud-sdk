@@ -2844,7 +2844,7 @@
                           "format": "google-datetime"
                         },
                         "view": {
-                          "description": "Optional. View for the returned GameServerCluster objects. When `FULL` is specified, the `cluster_state` field is also returned in the GameServerCluster object, which includes the state of the referenced Kubernetes cluster such as versions and provider info. The default\/unset value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does not return the `cluster_state` field.",
+                          "description": "Optional. This field is deprecated, preview will always return KubernetesClusterState.",
                           "location": "query",
                           "type": "string",
                           "enumDescriptions": [

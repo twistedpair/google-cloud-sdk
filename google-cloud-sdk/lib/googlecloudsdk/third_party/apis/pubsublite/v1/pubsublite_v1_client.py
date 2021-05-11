@@ -486,6 +486,33 @@ class PubsubliteV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CommitCursor(self, request, global_params=None):
+      r"""Updates the committed cursor.
+
+      Args:
+        request: (PubsubliteCursorProjectsLocationsSubscriptionsCommitCursorRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CommitCursorResponse) The response message.
+      """
+      config = self.GetMethodConfig('CommitCursor')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CommitCursor.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/cursor/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}:commitCursor',
+        http_method='POST',
+        method_id='pubsublite.cursor.projects.locations.subscriptions.commitCursor',
+        ordered_params=['subscription'],
+        path_params=['subscription'],
+        query_params=[],
+        relative_path='v1/cursor/{+subscription}:commitCursor',
+        request_field='commitCursorRequest',
+        request_type_name='PubsubliteCursorProjectsLocationsSubscriptionsCommitCursorRequest',
+        response_type_name='CommitCursorResponse',
+        supports_download=False,
+    )
+
   class CursorProjectsLocationsService(base_api.BaseApiService):
     """Service class for the cursor_projects_locations resource."""
 

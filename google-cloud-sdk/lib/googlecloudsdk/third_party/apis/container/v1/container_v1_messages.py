@@ -574,17 +574,22 @@ class ClusterUpdate(_messages.Message):
   provided.
 
   Enums:
+    DesiredDatapathProviderValueValuesEnum: The desired datapath provider for
+      the cluster.
     DesiredPrivateIpv6GoogleAccessValueValuesEnum: The desired state of IPv6
       connectivity to Google Services.
 
   Fields:
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
+    desiredAuthenticatorGroupsConfig: The desired authenticator groups config
+      for the cluster.
     desiredAutopilot: The desired Autopilot configuration for the cluster.
     desiredBinaryAuthorization: The desired configuration options for the
       Binary Authorization feature.
     desiredClusterAutoscaling: Cluster-level autoscaling configuration.
     desiredDatabaseEncryption: Configuration of etcd encryption.
+    desiredDatapathProvider: The desired datapath provider for the cluster.
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
     desiredImage: The desired name of the image to use for this node. This is
@@ -657,6 +662,21 @@ class ClusterUpdate(_messages.Message):
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
   """
 
+  class DesiredDatapathProviderValueValuesEnum(_messages.Enum):
+    r"""The desired datapath provider for the cluster.
+
+    Values:
+      DATAPATH_PROVIDER_UNSPECIFIED: Default value.
+      LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
+      ADVANCED_DATAPATH: Use the eBPF based GKE Dataplane V2 with additional
+        features. See the [GKE Dataplane V2
+        documentation](https://cloud.google.com/kubernetes-engine/docs/how-
+        to/dataplane-v2) for more.
+    """
+    DATAPATH_PROVIDER_UNSPECIFIED = 0
+    LEGACY_DATAPATH = 1
+    ADVANCED_DATAPATH = 2
+
   class DesiredPrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The desired state of IPv6 connectivity to Google Services.
 
@@ -675,31 +695,33 @@ class ClusterUpdate(_messages.Message):
     PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL = 3
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
-  desiredAutopilot = _messages.MessageField('Autopilot', 2)
-  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
-  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 4)
-  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 5)
-  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 6)
-  desiredImage = _messages.StringField(7)
-  desiredImageProject = _messages.StringField(8)
-  desiredImageType = _messages.StringField(9)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 10)
-  desiredLocations = _messages.StringField(11, repeated=True)
-  desiredLoggingService = _messages.StringField(12)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 13)
-  desiredMasterVersion = _messages.StringField(14)
-  desiredMonitoringService = _messages.StringField(15)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 16)
-  desiredNodePoolId = _messages.StringField(17)
-  desiredNodeVersion = _messages.StringField(18)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 19)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 20)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 21)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 22)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 23)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 24)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 25)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 26)
+  desiredAuthenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 2)
+  desiredAutopilot = _messages.MessageField('Autopilot', 3)
+  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 4)
+  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 5)
+  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 6)
+  desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 7)
+  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 8)
+  desiredImage = _messages.StringField(9)
+  desiredImageProject = _messages.StringField(10)
+  desiredImageType = _messages.StringField(11)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 12)
+  desiredLocations = _messages.StringField(13, repeated=True)
+  desiredLoggingService = _messages.StringField(14)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 15)
+  desiredMasterVersion = _messages.StringField(16)
+  desiredMonitoringService = _messages.StringField(17)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 18)
+  desiredNodePoolId = _messages.StringField(19)
+  desiredNodeVersion = _messages.StringField(20)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 21)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 22)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 23)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 24)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 25)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 26)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 27)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 28)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1878,11 +1900,15 @@ class NetworkConfig(_messages.Message):
   r"""NetworkConfig reports the relative names of network & subnetwork.
 
   Enums:
+    DatapathProviderValueValuesEnum: The desired datapath provider for this
+      cluster. By default, uses the IPTables-based kube-proxy implementation.
     PrivateIpv6GoogleAccessValueValuesEnum: The desired state of IPv6
       connectivity to Google Services. By default, no private IPv6 access to
       or from Google Services (all access will be via IPv4)
 
   Fields:
+    datapathProvider: The desired datapath provider for this cluster. By
+      default, uses the IPTables-based kube-proxy implementation.
     defaultSnatStatus: Whether the cluster disables default in-node sNAT
       rules. In-node sNAT rules will be disabled when default_snat_status is
       disabled. When disabled is set to false, default IP masquerade rules
@@ -1904,6 +1930,22 @@ class NetworkConfig(_messages.Message):
       central1/subnetworks/my-subnet
   """
 
+  class DatapathProviderValueValuesEnum(_messages.Enum):
+    r"""The desired datapath provider for this cluster. By default, uses the
+    IPTables-based kube-proxy implementation.
+
+    Values:
+      DATAPATH_PROVIDER_UNSPECIFIED: Default value.
+      LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
+      ADVANCED_DATAPATH: Use the eBPF based GKE Dataplane V2 with additional
+        features. See the [GKE Dataplane V2
+        documentation](https://cloud.google.com/kubernetes-engine/docs/how-
+        to/dataplane-v2) for more.
+    """
+    DATAPATH_PROVIDER_UNSPECIFIED = 0
+    LEGACY_DATAPATH = 1
+    ADVANCED_DATAPATH = 2
+
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The desired state of IPv6 connectivity to Google Services. By default,
     no private IPv6 access to or from Google Services (all access will be via
@@ -1923,11 +1965,12 @@ class NetworkConfig(_messages.Message):
     PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE = 2
     PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL = 3
 
-  defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 1)
-  enableIntraNodeVisibility = _messages.BooleanField(2)
-  network = _messages.StringField(3)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 4)
-  subnetwork = _messages.StringField(5)
+  datapathProvider = _messages.EnumField('DatapathProviderValueValuesEnum', 1)
+  defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 2)
+  enableIntraNodeVisibility = _messages.BooleanField(3)
+  network = _messages.StringField(4)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 5)
+  subnetwork = _messages.StringField(6)
 
 
 class NetworkPolicy(_messages.Message):
@@ -3706,6 +3749,41 @@ class UpdateNodePoolRequest(_messages.Message):
   upgradeSettings = _messages.MessageField('UpgradeSettings', 12)
   workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 13)
   zone = _messages.StringField(14)
+
+
+class UpgradeAvailableEvent(_messages.Message):
+  r"""UpgradeAvailableEvent is a notification sent to customers when a new
+  available version is released.
+
+  Enums:
+    ResourceTypeValueValuesEnum: The resource type of the release version.
+
+  Fields:
+    releaseChannel: The release channel of the version. If empty, it means a
+      non-channel release.
+    resource: Optional relative path to the resource. For example, the
+      relative path of the node pool.
+    resourceType: The resource type of the release version.
+    version: The release version available for upgrade.
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""The resource type of the release version.
+
+    Values:
+      UPGRADE_RESOURCE_TYPE_UNSPECIFIED: Default value. This shouldn't be
+        used.
+      MASTER: Master / control plane
+      NODE_POOL: Node pool
+    """
+    UPGRADE_RESOURCE_TYPE_UNSPECIFIED = 0
+    MASTER = 1
+    NODE_POOL = 2
+
+  releaseChannel = _messages.MessageField('ReleaseChannel', 1)
+  resource = _messages.StringField(2)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 3)
+  version = _messages.StringField(4)
 
 
 class UpgradeEvent(_messages.Message):

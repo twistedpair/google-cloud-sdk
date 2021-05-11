@@ -1550,6 +1550,10 @@
           "description": "Required. An advanced logs filter (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced_filters) which is used to match log entries. Example: \"resource.type=gae_app AND severity>=ERROR\" The maximum length of the filter is 20000 characters.",
           "type": "string"
         },
+        "disabled": {
+          "description": "Optional. If set to True, then this metric is disabled and it does not generate any points.",
+          "type": "boolean"
+        },
         "metricDescriptor": {
           "description": "Optional. The metric descriptor associated with the logs-based metric. If unspecified, it uses a default metric descriptor with a DELTA metric kind, INT64 value type, with no labels and a unit of \"1\". Such a metric counts the number of log entries matching the filter expression.The name, type, and description fields in the metric_descriptor are output only, and is constructed using the name and description field in the LogMetric.To create a logs-based metric that records a distribution of log values, a DELTA metric kind with a DISTRIBUTION value type must be used along with a value_extractor expression in the LogMetric.Each label in the metric descriptor must have a matching label name as the key and an extractor expression as the value in the label_extractors map.The metric_kind and value_type fields in the metric_descriptor cannot be updated once initially configured. New labels can be added in the metric_descriptor, but existing labels cannot be modified except for their description.",
           "$ref": "MetricDescriptor"

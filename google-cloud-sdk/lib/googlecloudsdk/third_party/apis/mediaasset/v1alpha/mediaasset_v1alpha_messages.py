@@ -148,6 +148,17 @@ class Annotation(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
+class AnnotationChange(_messages.Message):
+  r"""Specifies the annotation changes that should trigger notifications.
+
+  Fields:
+    annotationSetId: Required. Notifies for changes to any annotation nested
+      under the given annotationSet of the parent AssetType.
+  """
+
+  annotationSetId = _messages.StringField(1)
+
+
 class AnnotationSet(_messages.Message):
   r"""An annotationSet resource is associated with an Asset and is a
   collection of timed-metadata that can be modified and searched at a high
@@ -3164,6 +3175,39 @@ class MetadataInfo(_messages.Message):
   updateTime = _messages.StringField(2)
 
 
+class NotificationConfig(_messages.Message):
+  r"""Configures what, when and where notifications should be sent.
+
+  Fields:
+    criteria: Required. Specifies what and when notifications should be sent.
+    destination: Required. Specifies where notifications should be sent to.
+  """
+
+  criteria = _messages.MessageField('NotificationCriteria', 1)
+  destination = _messages.MessageField('NotificationDestination', 2)
+
+
+class NotificationCriteria(_messages.Message):
+  r"""Specifies when a notification should be sent.
+
+  Fields:
+    annotationChange: Specifies the annotations nested under the parent
+      AssetType that should trigger notifications.
+  """
+
+  annotationChange = _messages.MessageField('AnnotationChange', 1)
+
+
+class NotificationDestination(_messages.Message):
+  r"""Specifies the destination to send the notifications to.
+
+  Fields:
+    pubsub: Specifies the pub/sub destination notifications should be sent to.
+  """
+
+  pubsub = _messages.MessageField('PubSubDestination', 1)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -3299,6 +3343,17 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PubSubDestination(_messages.Message):
+  r"""Specifies the pub/sub destination to send the notifications to.
+
+  Fields:
+    pubsubTopic: Required. A Pub/Sub topic to which messages are sent by GCMA.
+      https://cloud.google.com/pubsub/docs/overview
+  """
+
+  pubsubTopic = _messages.StringField(1)
+
+
 class Rule(_messages.Message):
   r"""A rule resource is associated with an AssetType and manages the workflow
   pipelines of a collection of Assets under that AssetType.
@@ -3317,6 +3372,8 @@ class Rule(_messages.Message):
       1 character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
+    notification: Configures notifications for changes to resources nested
+      under the parent AssetType (e.g., assets, actions, and annotations).
     pubsubNotification: https://cloud.google.com/pubsub/docs/overview
       Configure the associated AssetType to publish event messages using
       Pub/Sub.
@@ -3352,9 +3409,10 @@ class Rule(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  pubsubNotification = _messages.MessageField('CloudPubSubNotificationConfig', 4)
-  transformation = _messages.MessageField('RuleTransformationConfig', 5)
-  updateTime = _messages.StringField(6)
+  notification = _messages.MessageField('NotificationConfig', 4)
+  pubsubNotification = _messages.MessageField('CloudPubSubNotificationConfig', 5)
+  transformation = _messages.MessageField('RuleTransformationConfig', 6)
+  updateTime = _messages.StringField(7)
 
 
 class RuleTransformationConfig(_messages.Message):

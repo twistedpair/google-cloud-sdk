@@ -67,6 +67,7 @@ class GoogleCloudRecommenderV1Insight(_messages.Message):
 
   Enums:
     CategoryValueValuesEnum: Category being targeted by the insight.
+    SeverityValueValuesEnum: Insight's severity.
 
   Messages:
     ContentValue: A struct of custom fields to explain the insight. Example:
@@ -89,6 +90,7 @@ class GoogleCloudRecommenderV1Insight(_messages.Message):
     observationPeriod: Observation period that led to the insight. The source
       data used to generate the insight ends at last_refresh_time and begins
       at (last_refresh_time - observation_period).
+    severity: Insight's severity.
     stateInfo: Information state and metadata.
     targetResources: Fully qualified resource names that this insight is
       targeting.
@@ -109,6 +111,22 @@ class GoogleCloudRecommenderV1Insight(_messages.Message):
     SECURITY = 2
     PERFORMANCE = 3
     MANAGEABILITY = 4
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Insight's severity.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Insight has unspecified severity.
+      LOW: Insight has low severity.
+      MEDIUM: Insight has medium severity.
+      HIGH: Insight has high severity.
+      CRITICAL: Insight has critical severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ContentValue(_messages.Message):
@@ -144,8 +162,9 @@ class GoogleCloudRecommenderV1Insight(_messages.Message):
   lastRefreshTime = _messages.StringField(7)
   name = _messages.StringField(8)
   observationPeriod = _messages.StringField(9)
-  stateInfo = _messages.MessageField('GoogleCloudRecommenderV1InsightStateInfo', 10)
-  targetResources = _messages.StringField(11, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
+  stateInfo = _messages.MessageField('GoogleCloudRecommenderV1InsightStateInfo', 11)
+  targetResources = _messages.StringField(12, repeated=True)
 
 
 class GoogleCloudRecommenderV1InsightRecommendationReference(_messages.Message):
@@ -601,6 +620,9 @@ class GoogleCloudRecommenderV1Recommendation(_messages.Message):
   r"""A recommendation along with a suggested action. E.g., a rightsizing
   recommendation for an underutilized VM, IAM role recommendations, etc
 
+  Enums:
+    PriorityValueValuesEnum: Recommendation's priority.
+
   Fields:
     additionalImpact: Optional set of additional impact that this
       recommendation may have when trying to optimize for the primary
@@ -617,6 +639,7 @@ class GoogleCloudRecommenderV1Recommendation(_messages.Message):
     name: Name of recommendation.
     primaryImpact: The primary impact that this recommendation can have while
       trying to optimize for one category.
+    priority: Recommendation's priority.
     recommenderSubtype: Contains an identifier for a subtype of
       recommendations produced for the same recommender. Subtype is a function
       of content and impact, meaning a new subtype might be added when
@@ -628,6 +651,22 @@ class GoogleCloudRecommenderV1Recommendation(_messages.Message):
     stateInfo: Information for state. Contains state and metadata.
   """
 
+  class PriorityValueValuesEnum(_messages.Enum):
+    r"""Recommendation's priority.
+
+    Values:
+      PRIORITY_UNSPECIFIED: Recommendation has unspecified priority.
+      P4: Recommendation has P4 priority (lowest priority).
+      P3: Recommendation has P3 priority (second lowest priority).
+      P2: Recommendation has P2 priority (second highest priority).
+      P1: Recommendation has P1 priority (highest priority).
+    """
+    PRIORITY_UNSPECIFIED = 0
+    P4 = 1
+    P3 = 2
+    P2 = 3
+    P1 = 4
+
   additionalImpact = _messages.MessageField('GoogleCloudRecommenderV1Impact', 1, repeated=True)
   associatedInsights = _messages.MessageField('GoogleCloudRecommenderV1RecommendationInsightReference', 2, repeated=True)
   content = _messages.MessageField('GoogleCloudRecommenderV1RecommendationContent', 3)
@@ -636,8 +675,9 @@ class GoogleCloudRecommenderV1Recommendation(_messages.Message):
   lastRefreshTime = _messages.StringField(6)
   name = _messages.StringField(7)
   primaryImpact = _messages.MessageField('GoogleCloudRecommenderV1Impact', 8)
-  recommenderSubtype = _messages.StringField(9)
-  stateInfo = _messages.MessageField('GoogleCloudRecommenderV1RecommendationStateInfo', 10)
+  priority = _messages.EnumField('PriorityValueValuesEnum', 9)
+  recommenderSubtype = _messages.StringField(10)
+  stateInfo = _messages.MessageField('GoogleCloudRecommenderV1RecommendationStateInfo', 11)
 
 
 class GoogleCloudRecommenderV1RecommendationContent(_messages.Message):

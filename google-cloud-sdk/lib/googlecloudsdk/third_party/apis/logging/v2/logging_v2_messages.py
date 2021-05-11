@@ -1328,6 +1328,8 @@ class LogMetric(_messages.Message):
       may not be present for older metrics.
     description: Optional. A description of this metric, which is used in
       documentation. The maximum length of the description is 8000 characters.
+    disabled: Optional. If set to True, then this metric is disabled and it
+      does not generate any points.
     filter: Required. An advanced logs filter
       (https://cloud.google.com/logging/docs/view/advanced_filters) which is
       used to match log entries. Example: "resource.type=gae_app AND
@@ -1439,13 +1441,14 @@ class LogMetric(_messages.Message):
   bucketOptions = _messages.MessageField('BucketOptions', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  filter = _messages.StringField(4)
-  labelExtractors = _messages.MessageField('LabelExtractorsValue', 5)
-  metricDescriptor = _messages.MessageField('MetricDescriptor', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  valueExtractor = _messages.StringField(9)
-  version = _messages.EnumField('VersionValueValuesEnum', 10)
+  disabled = _messages.BooleanField(4)
+  filter = _messages.StringField(5)
+  labelExtractors = _messages.MessageField('LabelExtractorsValue', 6)
+  metricDescriptor = _messages.MessageField('MetricDescriptor', 7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  valueExtractor = _messages.StringField(10)
+  version = _messages.EnumField('VersionValueValuesEnum', 11)
 
 
 class LogSink(_messages.Message):

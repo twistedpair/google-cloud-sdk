@@ -138,17 +138,7 @@
         },
         "activityType": {
           "description": "The type of the activity.",
-          "type": "string",
-          "enumDescriptions": [
-            "",
-            "The last authentication activity of the service account.",
-            "The last authentication activity of the service account key."
-          ],
-          "enum": [
-            "ACTIVITY_TYPE_UNSPECIFIED",
-            "SERVICE_ACCOUNT_LAST_AUTHENTICATION",
-            "SERVICE_ACCOUNT_KEY_LAST_AUTHENTICATION"
-          ]
+          "type": "string"
         },
         "observationPeriod": {
           "description": "The data observation period to build the activity.",

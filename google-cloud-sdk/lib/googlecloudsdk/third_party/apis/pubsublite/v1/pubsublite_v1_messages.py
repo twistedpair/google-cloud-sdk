@@ -26,6 +26,24 @@ class Capacity(_messages.Message):
   subscribeMibPerSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class CommitCursorRequest(_messages.Message):
+  r"""Request for CommitCursor.
+
+  Fields:
+    cursor: The new value for the committed cursor.
+    partition: The partition for which to update the cursor. Partitions are
+      zero indexed, so `partition` must be in the range [0,
+      topic.num_partitions).
+  """
+
+  cursor = _messages.MessageField('Cursor', 1)
+  partition = _messages.IntegerField(2)
+
+
+class CommitCursorResponse(_messages.Message):
+  r"""Response for CommitCursor."""
+
+
 class ComputeHeadCursorRequest(_messages.Message):
   r"""Compute the current head cursor for a partition.
 
@@ -412,6 +430,20 @@ class PubsubliteAdminProjectsLocationsTopicsSubscriptionsListRequest(_messages.M
   name = _messages.StringField(1, required=True)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
+
+
+class PubsubliteCursorProjectsLocationsSubscriptionsCommitCursorRequest(_messages.Message):
+  r"""A PubsubliteCursorProjectsLocationsSubscriptionsCommitCursorRequest
+  object.
+
+  Fields:
+    commitCursorRequest: A CommitCursorRequest resource to be passed as the
+      request body.
+    subscription: The subscription for which to update the cursor.
+  """
+
+  commitCursorRequest = _messages.MessageField('CommitCursorRequest', 1)
+  subscription = _messages.StringField(2, required=True)
 
 
 class PubsubliteCursorProjectsLocationsSubscriptionsCursorsListRequest(_messages.Message):

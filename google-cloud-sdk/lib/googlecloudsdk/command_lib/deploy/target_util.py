@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.clouddeploy import release
 from googlecloudsdk.api_lib.clouddeploy import rollout
-
 from googlecloudsdk.core import log
 
 

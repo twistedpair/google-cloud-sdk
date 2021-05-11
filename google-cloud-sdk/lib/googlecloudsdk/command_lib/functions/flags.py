@@ -157,6 +157,7 @@ def AddV2Flag(parser):
       '--v2',
       default=False,
       action=actions.StoreBooleanProperty(properties.VALUES.functions.v2),
+      hidden=True,
       help=('If enabled, this command will use Cloud Functions V2. If '
             'disabled, Cloud Functions V1 will be used. If not specified, the '
             'value of this flag will be taken from the `functions/v2` '
@@ -485,6 +486,7 @@ def AddTriggerLocationFlag(parser):
   """Add flag for specifying trigger location to the parser."""
   parser.add_argument(
       '--trigger-location',
+      hidden=True,
       help=('The location of the trigger, which must be a region or multi-'
             'region where the relevant events originate. This is only '
             'relevant when `--v2` is provided.'),
@@ -498,6 +500,7 @@ def AddTriggerEventFiltersFlag(parser):
       '--trigger-event-filters',
       type=arg_parsers.ArgList(),
       metavar='FILTERS',
+      hidden=True,
       help=('The comma-separated Eventarc matching criteria for the trigger. '
             'This is only relevant when `--v2` is provided.'),
   )
@@ -557,6 +560,7 @@ def AddServiceAccountFlag(parser):
 def AddRunServiceAccountFlag(parser):
   parser.add_argument(
       '--run-service-account',
+      hidden=True,
       help="""\
       The email address of the IAM service account associated with the Cloud
       Run service for the function. The service account represents the identity
@@ -573,6 +577,7 @@ def AddRunServiceAccountFlag(parser):
 def AddTriggerServiceAccountFlag(parser):
   parser.add_argument(
       '--trigger-service-account',
+      hidden=True,
       help="""\
       The email address of the IAM service account associated with the Eventarc
       trigger for the function. This is used for authenticated invocation.
@@ -603,6 +608,7 @@ def AddSignatureTypeFlag(parser):
   base.ChoiceArgument(
       '--signature-type',
       choices=SIGNATURE_TYPES,
+      hidden=True,
       help_str=('The type of event signature for the function. `http` '
                 'indicates that the function is triggered by HTTP requests. '
                 '`event` indicates that the function consumes legacy events. '

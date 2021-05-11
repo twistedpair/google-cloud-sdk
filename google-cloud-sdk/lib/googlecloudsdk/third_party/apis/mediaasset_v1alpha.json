@@ -970,6 +970,10 @@
           "description": "Configure the associated AssetType to invoke transformers.",
           "$ref": "RuleTransformationConfig"
         },
+        "notification": {
+          "description": "Configures notifications for changes to resources nested under the parent AssetType (e.g., assets, actions, and annotations).",
+          "$ref": "NotificationConfig"
+        },
         "name": {
           "description": "A user-specified resource name of the rule `projects\/{project}\/locations\/{location}\/assetTypes\/{type}\/rules\/{rule}`. Here {rule} is a resource id. Detailed rules for a resource id are: 1. 1 character minimum, 63 characters maximum 2. only contains letters, digits, underscore and hyphen 3. starts with a letter if length == 1, starts with a letter or underscore if length > 1",
           "type": "string"
@@ -1029,6 +1033,65 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "NotificationConfig": {
+      "id": "NotificationConfig",
+      "description": "Configures what, when and where notifications should be sent.",
+      "type": "object",
+      "properties": {
+        "criteria": {
+          "description": "Required. Specifies what and when notifications should be sent.",
+          "$ref": "NotificationCriteria"
+        },
+        "destination": {
+          "description": "Required. Specifies where notifications should be sent to.",
+          "$ref": "NotificationDestination"
+        }
+      }
+    },
+    "NotificationCriteria": {
+      "id": "NotificationCriteria",
+      "description": "Specifies when a notification should be sent.",
+      "type": "object",
+      "properties": {
+        "annotationChange": {
+          "description": "Specifies the annotations nested under the parent AssetType that should trigger notifications.",
+          "$ref": "AnnotationChange"
+        }
+      }
+    },
+    "AnnotationChange": {
+      "id": "AnnotationChange",
+      "description": "Specifies the annotation changes that should trigger notifications.",
+      "type": "object",
+      "properties": {
+        "annotationSetId": {
+          "description": "Required. Notifies for changes to any annotation nested under the given annotationSet of the parent AssetType.",
+          "type": "string"
+        }
+      }
+    },
+    "NotificationDestination": {
+      "id": "NotificationDestination",
+      "description": "Specifies the destination to send the notifications to.",
+      "type": "object",
+      "properties": {
+        "pubsub": {
+          "description": "Specifies the pub\/sub destination notifications should be sent to.",
+          "$ref": "PubSubDestination"
+        }
+      }
+    },
+    "PubSubDestination": {
+      "id": "PubSubDestination",
+      "description": "Specifies the pub\/sub destination to send the notifications to.",
+      "type": "object",
+      "properties": {
+        "pubsubTopic": {
+          "description": "Required. A Pub\/Sub topic to which messages are sent by GCMA. https:\/\/cloud.google.com\/pubsub\/docs\/overview",
+          "type": "string"
         }
       }
     },

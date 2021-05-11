@@ -5,6 +5,66 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 340.0.0 (2021-05-11)
+
+### Cloud Asset Inventory
+
+*   Updated `gcloud asset search-all-resources` to support date-time string in
+    queries on timestamp fields (createTime and updateTime).
+
+### Cloud Bigtable
+
+*   Promoted the IAM Conditions flags  `--condition` and  `--condition-from` to GA.
+
+### Cloud Billing
+
+* Added optional `--calendar-period`,  `--start-date`, and `--end-date` flags to
+ `gcloud billing budgets [create | update]` to support a wider array of options
+ for the budget's timeframe, which was previously always one month.
+
+### Cloud Memorystore
+
+*   Promoted `gcloud beta redis reschedule-maintenance` to beta.
+*   Added `--maintenance-window-day` flag and `--maintenance-window-hour` flag to
+    `gcloud beta redis instances create` to allow specifying a maintenance policy
+    when creating a new instance.
+*   Added `--maintenance-window-day` flag, `--maintenance-window-hour` flag and
+    `--maintenance-window-any` flag to `gcloud beta redis instances update` to
+    allow updating a maintenance policy when updating an instance.
+
+### Cloud Run
+
+* Modified `gcloud beta run deploy --source` to suggest a default service name
+  based on the source path when one isn't provided.
+
+### Compute Engine
+
+* Promoted `gcloud compute service-attachments` to beta.
+* Added `--target-service-attachment` flag to `gcloud beta compute forwarding-rules create`.
+* Added `--purpose=private-service-connect` to `gcloud beta compute networks subnets create`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.49.1.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Database Migration
+
+* Added `MYSQL_8_0`, `POSTGRES_10`, `POSTGRES_12`, and `POSTGRES_13` database version options for `--database-version` flag to `database-migration connection-profiles create cloudsql`.
+
+### Kubernetes Engine
+
+* Promoted `--enable-dataplane-v2` to GA.
+
+### Notebooks
+
+* Added `gcloud notebooks instances rollback` to rollback a notebook's boot disk.
+* Added `gcloud notebooks instances get-health` to verify instance health.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 339.0.0 (2021-05-04)
 
 ### Breaking Changes

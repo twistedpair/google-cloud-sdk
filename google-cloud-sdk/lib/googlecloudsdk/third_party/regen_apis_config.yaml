@@ -102,6 +102,8 @@ apis:
     v1beta1:
       discovery_doc: anthosevents_v1beta1.json
   apikeys:
+    v2:
+      discovery_doc: apikeys_v2.json
     v2alpha1:
       discovery_doc: apikeys_v2alpha1.json
       default: true
@@ -606,6 +608,9 @@ apis:
       resources:
         projects.locations.memberships:
           path: projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}
+  gkemulticloud:
+    v1:
+      discovery_doc: gkemulticloud_v1.json
   gsuiteaddons:
     v1:
       discovery_doc: gsuiteaddons_v1.json

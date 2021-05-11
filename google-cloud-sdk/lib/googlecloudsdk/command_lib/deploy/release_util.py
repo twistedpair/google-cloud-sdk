@@ -21,20 +21,29 @@ from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.clouddeploy import delivery_pipeline
 from googlecloudsdk.api_lib.clouddeploy import target
+from googlecloudsdk.command_lib.projects import util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
+
 import six
 
-RESOURCE_NOT_FOUND = (
-    'The following resources [{}] are snapped in the release, '
-    'but no longer exist.\n')
-RESOURCE_CREATED = ('The following targets [{}] are not snapped in the '
-                    'release.\n')
-RESOURCE_CHANGED = ('The following resources [{}] have been changed after the '
-                    'release was created.\n')
+RESOURCE_NOT_FOUND = ('The following resources are snapped in the release, '
+                      'but no longer exist:\n{}\n\nThese resources were cached '
+                      'when the release was created, but their source '
+                      'may have been deleted.\n\n')
+RESOURCE_CREATED = (
+    'The following target is not snapped in the release:\n{}\n\n'
+    'You may have specified a target that wasn\'t '
+    'cached when the release was created.\n\n')
+RESOURCE_CHANGED = ('The following snapped releases resources differ from '
+                    'their current definition:\n{}\n\nThe pipeline or targets '
+                    'were cached when the release was created, but the source '
+                    'has changed since then. You should review the differences '
+                    'before proceeding.\n')
 
 
 class ParserError(exceptions.Error):
@@ -134,21 +143,24 @@ def DiffSnappedPipeline(release_ref, release_obj, to_target=None):
             'deliveryPipelinesId': ref_dict['deliveryPipelinesId'],
             'targetsId': to_target,
         })
-    if target_ref.RelativeName() not in [
-        obj.name for obj in release_obj.targetSnapshots
+    if target_ref.Name() not in [
+        GetResourceName(obj.name) for obj in release_obj.targetSnapshots
     ]:
       resource_created.append(target_ref.RelativeName())
+
   for obj in release_obj.targetSnapshots:
+    target_name = ResourceNameProjectNumberToId(obj.name)
     # Check if the snapped targets still exist.
     try:
-      target_obj = target.TargetsClient().Get(obj.name)
+      target_obj = target.TargetsClient().Get(target_name)
       # Checks if the snapped targets have been changed.
       if target_obj.etag != obj.etag:
-        resource_changed.append(target_obj.name)
+        resource_changed.append(target_name)
     except apitools_exceptions.HttpError as error:
-      log.debug('Failed to get target {}: {}'.format(obj.name, error.content))
-      log.status.Print('Unable to get target {}'.format(obj.name))
-      resource_not_found.append(obj.name)
+      log.debug('Failed to get target {}: {}'.format(target_name,
+                                                     error.content))
+      log.status.Print('Unable to get target {}\n'.format(target_name))
+      resource_not_found.append(ResourceNameProjectNumberToId(target_name))
 
   name = release_obj.deliveryPipelineSnapshot.name
   # Checks if the pipeline exists.
@@ -156,7 +168,7 @@ def DiffSnappedPipeline(release_ref, release_obj, to_target=None):
     pipeline_obj = delivery_pipeline.DeliveryPipelinesClient().Get(name)
     # Checks if the pipeline has been changed.
     if pipeline_obj.etag != release_obj.deliveryPipelineSnapshot.etag:
-      resource_changed.append(name)
+      resource_changed.append(release_ref.Parent().RelativeName())
   except apitools_exceptions.HttpError as error:
     log.debug('Failed to get pipeline {}: {}'.format(name, error.content))
     log.status.Print('Unable to get delivery pipeline {}'.format(name))
@@ -178,10 +190,92 @@ def PrintDiff(release_ref, release_obj, target_id=None, prompt=''):
       release_ref, release_obj, target_id)
 
   if resource_created:
-    prompt = RESOURCE_CREATED.format(', '.join(resource_created))
+    prompt += RESOURCE_CREATED.format('\n'.join(
+        BulletedList(resource_created, ResourceNameProjectNumberToId)))
   if resource_not_found:
-    prompt += RESOURCE_NOT_FOUND.format(', '.join(resource_not_found))
+    prompt += RESOURCE_NOT_FOUND.format('\n'.join(
+        BulletedList(resource_not_found, ResourceNameProjectNumberToId)))
   if resource_changed:
-    prompt += RESOURCE_CHANGED.format(', '.join(resource_changed))
+    prompt += RESOURCE_CHANGED.format('\n'.join(
+        BulletedList(resource_changed, ResourceNameProjectNumberToId)))
 
   log.status.Print(prompt)
+
+
+def ResourceNameProjectNumberToId(name):
+  """Replaces the project number in resource name with project ID.
+
+  e.g. projects/my-project/locations/ will become projects/12321/locations/
+
+  Args:
+    name: resource name.
+
+  Returns:
+    transformed resource name.
+  """
+  template = 'projects/{}/locations/'
+  project_id = properties.VALUES.core.project.GetOrFail()
+  project_num = util.GetProjectNumber(project_id)
+  project_id_str = template.format(project_id)
+  project_num_str = template.format(project_num)
+  return name.replace(project_num_str, project_id_str)
+
+
+def GetResourceName(name, resource_type='targets'):
+  """Gets resource ID from a resource name.
+
+  This will return "pipeline" for a given name
+  "projects/my-project/locations/us-central1/deliveryPipelines/pipeline".
+
+  Args:
+    name: resource name.
+    resource_type: one of [pipelines,targets,releases,rollouts]
+
+  Returns:
+    resource ID.
+  """
+  return resources.REGISTRY.ParseRelativeName(
+      name,
+      collection='clouddeploy.projects.locations.deliveryPipelines.' +
+      resource_type,
+  ).Name()
+
+
+def BulletedList(str_list, trans_func=None):
+  """Converts a list of string to a bulleted list.
+
+  The returned list looks like ['- string1','- string2'].
+
+  Args:
+    str_list: list to be converted.
+    trans_func: string transformation function.
+
+  Returns:
+    list of the transformed strings.
+  """
+  for i in range(len(str_list)):
+    if trans_func:
+      str_list[i] = trans_func(str_list[i])
+    str_list[i] = '- ' + str_list[i]
+
+  return str_list
+
+
+def GetSnappedTarget(release_obj, target_id):
+  """Get the snapped target in a release by target ID.
+
+  Args:
+    release_obj: release message object.
+    target_id: target ID.
+
+  Returns:
+    target message object.
+  """
+  target_obj = None
+
+  for snapshot in release_obj.targetSnapshots:
+    if GetResourceName(snapshot.name) == target_id:
+      target_obj = snapshot
+      break
+
+  return target_obj

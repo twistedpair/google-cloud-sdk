@@ -1423,12 +1423,8 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest(
   object.
 
   Enums:
-    ViewValueValuesEnum: Optional. View for the returned GameServerCluster
-      objects. When `FULL` is specified, the `cluster_state` field is also
-      returned in the GameServerCluster object, which includes the state of
-      the referenced Kubernetes cluster such as versions and provider info.
-      The default/unset value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as
-      BASIC, which does not return the `cluster_state` field.
+    ViewValueValuesEnum: Optional. This field is deprecated, preview will
+      always return KubernetesClusterState.
 
   Fields:
     gameServerCluster: A GameServerCluster resource to be passed as the
@@ -1438,21 +1434,13 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest(
     parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}/realms/{realm}`.
     previewTime: Optional. The target timestamp to compute the preview.
-    view: Optional. View for the returned GameServerCluster objects. When
-      `FULL` is specified, the `cluster_state` field is also returned in the
-      GameServerCluster object, which includes the state of the referenced
-      Kubernetes cluster such as versions and provider info. The default/unset
-      value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
-      not return the `cluster_state` field.
+    view: Optional. This field is deprecated, preview will always return
+      KubernetesClusterState.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. View for the returned GameServerCluster objects. When `FULL`
-    is specified, the `cluster_state` field is also returned in the
-    GameServerCluster object, which includes the state of the referenced
-    Kubernetes cluster such as versions and provider info. The default/unset
-    value is GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED, same as BASIC, which does
-    not return the `cluster_state` field.
+    r"""Optional. This field is deprecated, preview will always return
+    KubernetesClusterState.
 
     Values:
       GAME_SERVER_CLUSTER_VIEW_UNSPECIFIED: The default / unset value. The API

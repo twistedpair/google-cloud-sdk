@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20210423",
+ "revision": "20210430",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -495,6 +495,15 @@
    "type": "object",
    "description": "An access configuration attached to an instance's network interface. Only one access config per instance is supported.",
    "properties": {
+    "externalIpv6": {
+     "type": "string",
+     "description": "[Output Only] The first IPv6 address of the external IPv6 range associated with this instance, prefix length is stored in externalIpv6PrefixLength in ipv6AccessConfig. The field is output only, an IPv6 address from a subnetwork associated with the instance will be allocated dynamically."
+    },
+    "externalIpv6PrefixLength": {
+     "type": "integer",
+     "description": "[Output Only] The prefix length of the external IPv6 range.",
+     "format": "int32"
+    },
     "kind": {
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#accessConfig for access configs.",
@@ -533,9 +542,11 @@
      "description": "The type of configuration. The default and only option is ONE_TO_ONE_NAT.",
      "default": "ONE_TO_ONE_NAT",
      "enum": [
+      "DIRECT_IPV6",
       "ONE_TO_ONE_NAT"
      ],
      "enumDescriptions": [
+      "",
       ""
      ]
     }
@@ -2659,9 +2670,11 @@
       "HTTPS",
       "SSL",
       "TCP",
-      "UDP"
+      "UDP",
+      "UNSPECIFIED"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -3574,6 +3587,7 @@
   "BulkInsertInstanceResource": {
    "id": "BulkInsertInstanceResource",
    "type": "object",
+   "description": "A transient resource used in compute.instances.bulkInsert and compute.regionInstances.bulkInsert and compute.regionInstances.recommendLocations. This resource is not persisted anywhere, it is used only for processing the requests.",
    "properties": {
     "count": {
      "type": "string",
@@ -6673,11 +6687,13 @@
       "AH",
       "ESP",
       "ICMP",
+      "L3_DEFAULT",
       "SCTP",
       "TCP",
       "UDP"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -16064,6 +16080,25 @@
      "description": "Fingerprint hash of contents stored in this network interface. This field will be ignored when inserting an Instance or adding a NetworkInterface. An up-to-date fingerprint must be provided in order to update the NetworkInterface. The request will fail with error 400 Bad Request if the fingerprint is not provided, or 412 Precondition Failed if the fingerprint is out of date.",
      "format": "byte"
     },
+    "ipv6AccessConfigs": {
+     "type": "array",
+     "description": "An array of IPv6 access configurations for this interface. Currently, only one IPv6 access config, DIRECT_IPV6, is supported. If there is no ipv6AccessConfig specified, then this instance will have no external IPv6 Internet access.",
+     "items": {
+      "$ref": "AccessConfig"
+     }
+    },
+    "ipv6AccessType": {
+     "type": "string",
+     "description": "[Output Only] One of EXTERNAL, INTERNAL to indicate whether the IP can be accessed from the Internet. This field is always inherited from its subnetwork.\n\nValid only if stackType is IPV4_IPV6.",
+     "enum": [
+      "EXTERNAL",
+      "UNSPECIFIED_IPV6_ACCESS_TYPE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "ipv6Address": {
      "type": "string",
      "description": "[Output Only] An IPv6 internal network address for this network interface."
@@ -16092,6 +16127,20 @@
       "GVNIC",
       "UNSPECIFIED_NIC_TYPE",
       "VIRTIO_NET"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "stackType": {
+     "type": "string",
+     "description": "The stack type for this network interface to identify whether the IPv6 feature is enabled or not. If not specified, IPV4_ONLY will be used.\n\nThis field can be both set at instance creation and update network interface operations.",
+     "enum": [
+      "IPV4_IPV6",
+      "IPV4_ONLY",
+      "UNSPECIFIED_STACK_TYPE"
      ],
      "enumDescriptions": [
       "",
@@ -20594,8 +20643,10 @@
       "ROUTERS",
       "ROUTES",
       "SECURITY_POLICIES",
+      "SECURITY_POLICIES_PER_REGION",
       "SECURITY_POLICY_CEVAL_RULES",
       "SECURITY_POLICY_RULES",
+      "SECURITY_POLICY_RULES_PER_REGION",
       "SNAPSHOTS",
       "SSD_TOTAL_GB",
       "SSL_CERTIFICATES",
@@ -20615,6 +20666,8 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -27357,6 +27410,10 @@
      "type": "boolean",
      "description": "Whether to enable flow logging for this subnetwork. If this field is not explicitly set, it will not appear in get listings. If not set the default behavior is to disable flow logging. This field isn't supported with the purpose field set to INTERNAL_HTTPS_LOAD_BALANCER."
     },
+    "externalIpv6Prefix": {
+     "type": "string",
+     "description": "[Output Only] The range of external IPv6 addresses that are owned by this subnetwork."
+    },
     "fingerprint": {
      "type": "string",
      "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a Subnetwork. An up-to-date fingerprint must be provided in order to update the Subnetwork, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve a Subnetwork.",
@@ -27374,6 +27431,18 @@
     "ipCidrRange": {
      "type": "string",
      "description": "The range of internal addresses that are owned by this subnetwork. Provide this property when you create the subnetwork. For example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-overlapping within a network. Only IPv4 is supported. This field is set at resource creation time. The range can be any range listed in the Valid ranges list. The range can be expanded after creation using expandIpCidrRange."
+    },
+    "ipv6AccessType": {
+     "type": "string",
+     "description": "The access type of IPv6 address this subnet holds. It's immutable and can only be specified during creation or the first time the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is EXTERNAL then this subnet cannot enable direct path.",
+     "enum": [
+      "EXTERNAL",
+      "UNSPECIFIED_IPV6_ACCESS_TYPE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     },
     "ipv6CidrRange": {
      "type": "string",
@@ -27457,6 +27526,20 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "stackType": {
+     "type": "string",
+     "description": "The stack type for this subnet to identify whether the IPv6 feature is enabled or not. If not specified IPV4_ONLY will be used.\n\nThis field can be both set at resource creation time and updated using patch.",
+     "enum": [
+      "IPV4_IPV6",
+      "IPV4_ONLY",
+      "UNSPECIFIED_STACK_TYPE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     },
     "state": {
      "type": "string",

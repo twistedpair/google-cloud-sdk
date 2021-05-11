@@ -1894,7 +1894,7 @@
       "type": "object",
       "properties": {
         "fields": {
-          "description": "Required. Input field(s) to apply the transformation to.",
+          "description": "Required. Input field(s) to apply the transformation to. When you have columns that reference their position within a list, omit the index from the FieldId. FieldId name matching ignores the index. For example, instead of \"contact.nums[0].type\", use \"contact.nums.type\".",
           "type": "array",
           "items": {
             "$ref": "GooglePrivacyDlpV2FieldId"

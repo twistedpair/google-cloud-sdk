@@ -37,6 +37,56 @@ class AccessConfig(_messages.Message):
   externalIp = _messages.StringField(1)
 
 
+class AttachedDisk(_messages.Message):
+  r"""A node-attached disk resource. Next ID: 8;
+
+  Enums:
+    ModeValueValuesEnum: The mode in which to attach this disk. If not
+      specified, the default is READ_WRITE mode. Only applicable to
+      data_disks.
+
+  Fields:
+    diskSizeGb: Specifies the size of the disk in base-2 GB. The size must be
+      at least 10 GB.
+    index: Output only. A one-based index to this disk.
+    initializeParams: Specifies the parameters for a new disk that will be
+      created alongside the new TPU node. You can only specify source_disk or
+      this.
+    mode: The mode in which to attach this disk. If not specified, the default
+      is READ_WRITE mode. Only applicable to data_disks.
+    sourceDisk: Specifies the full path to an existing disk. For example:
+      "projects/my-project/zones/us-central1-c/disks/my-disk".
+    sourceImage: Specifies the image full path of the disk. For example:
+      "projects/my-project/global/images/my-image".
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The mode in which to attach this disk. If not specified, the default
+    is READ_WRITE mode. Only applicable to data_disks.
+
+    Values:
+      DISK_MODE_UNSPECIFIED: The disk mode is not known/set.
+      READ_WRITE: Attaches the disk in read-write mode. Only one TPU node can
+        attach a disk in read-write mode at a time.
+      READ_ONLY: Attaches the disk in read-only mode. Multiple TPU nodes can
+        attach a disk in read-only mode at a time.
+    """
+    DISK_MODE_UNSPECIFIED = 0
+    READ_WRITE = 1
+    READ_ONLY = 2
+
+  diskSizeGb = _messages.IntegerField(1)
+  index = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('DiskInitializeParams', 3)
+  mode = _messages.EnumField('ModeValueValuesEnum', 4)
+  sourceDisk = _messages.StringField(5)
+  sourceImage = _messages.StringField(6)
+
+
+class DiskInitializeParams(_messages.Message):
+  r"""DiskInitializeParams contains information to create new disks."""
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -45,6 +95,77 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class GenerateServiceIdentityRequest(_messages.Message):
+  r"""Request for GenerateServiceIdentity."""
+
+
+class GenerateServiceIdentityResponse(_messages.Message):
+  r"""Response for GenerateServiceIdentity.
+
+  Fields:
+    identity: ServiceIdentity that was created or retrieved.
+  """
+
+  identity = _messages.MessageField('ServiceIdentity', 1)
+
+
+class GetGuestAttributesRequest(_messages.Message):
+  r"""Request for GetGuestAttributes.
+
+  Fields:
+    queryPath: The guest attributes path to be queried.
+  """
+
+  queryPath = _messages.StringField(1)
+
+
+class GetGuestAttributesResponse(_messages.Message):
+  r"""Response for GetGuestAttributes.
+
+  Fields:
+    guestAttributes: The guest attributes for the TPU workers.
+  """
+
+  guestAttributes = _messages.MessageField('GuestAttributes', 1, repeated=True)
+
+
+class GuestAttributes(_messages.Message):
+  r"""A guest attributes.
+
+  Fields:
+    queryPath: The path to be queried. This can be the default namespace ('/')
+      or a nested namespace ('/\/') or a specified key ('/\/\')
+    queryValue: The value of the requested queried path.
+  """
+
+  queryPath = _messages.StringField(1)
+  queryValue = _messages.MessageField('GuestAttributesValue', 2)
+
+
+class GuestAttributesEntry(_messages.Message):
+  r"""A guest attributes namespace/key/value entry.
+
+  Fields:
+    key: Key for the guest attribute entry.
+    namespace: Namespace for the guest attribute entry.
+    value: Value for the guest attribute entry.
+  """
+
+  key = _messages.StringField(1)
+  namespace = _messages.StringField(2)
+  value = _messages.StringField(3)
+
+
+class GuestAttributesValue(_messages.Message):
+  r"""Array of guest attribute namespace/key/value tuples.
+
+  Fields:
+    items: The list of guest attributes entries.
+  """
+
+  items = _messages.MessageField('GuestAttributesEntry', 1, repeated=True)
 
 
 class ListAcceleratorTypesResponse(_messages.Message):
@@ -256,6 +377,7 @@ class Node(_messages.Message):
       network, or the provided network is peered with another network that is
       using that CIDR block.
     createTime: Output only. The time when the node was created.
+    dataDisks: The additional data disks for the Node.
     description: The user-supplied description of the TPU. Maximum of 512
       characters.
     health: The health status of the TPU node.
@@ -406,22 +528,23 @@ class Node(_messages.Message):
   apiVersion = _messages.EnumField('ApiVersionValueValuesEnum', 2)
   cidrBlock = _messages.StringField(3)
   createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  health = _messages.EnumField('HealthValueValuesEnum', 6)
-  healthDescription = _messages.StringField(7)
-  id = _messages.IntegerField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  metadata = _messages.MessageField('MetadataValue', 10)
-  name = _messages.StringField(11)
-  networkConfig = _messages.MessageField('NetworkConfig', 12)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 13, repeated=True)
-  runtimeVersion = _messages.StringField(14)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 15)
-  serviceAccount = _messages.MessageField('ServiceAccount', 16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  symptoms = _messages.MessageField('Symptom', 18, repeated=True)
-  tags = _messages.StringField(19, repeated=True)
-  useTpuVm = _messages.BooleanField(20)
+  dataDisks = _messages.MessageField('AttachedDisk', 5, repeated=True)
+  description = _messages.StringField(6)
+  health = _messages.EnumField('HealthValueValuesEnum', 7)
+  healthDescription = _messages.StringField(8)
+  id = _messages.IntegerField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  metadata = _messages.MessageField('MetadataValue', 11)
+  name = _messages.StringField(12)
+  networkConfig = _messages.MessageField('NetworkConfig', 13)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 14, repeated=True)
+  runtimeVersion = _messages.StringField(15)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 16)
+  serviceAccount = _messages.MessageField('ServiceAccount', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  symptoms = _messages.MessageField('Symptom', 19, repeated=True)
+  tags = _messages.StringField(20, repeated=True)
+  useTpuVm = _messages.BooleanField(21)
 
 
 class Operation(_messages.Message):
@@ -595,6 +718,16 @@ class ServiceAccount(_messages.Message):
 
   email = _messages.StringField(1)
   scope = _messages.StringField(2, repeated=True)
+
+
+class ServiceIdentity(_messages.Message):
+  r"""The per-product per-project service identity for Cloud TPU service.
+
+  Fields:
+    email: The email address of the service identity.
+  """
+
+  email = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -790,6 +923,19 @@ class TpuProjectsLocationsAcceleratorTypesListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class TpuProjectsLocationsGenerateServiceIdentityRequest(_messages.Message):
+  r"""A TpuProjectsLocationsGenerateServiceIdentityRequest object.
+
+  Fields:
+    generateServiceIdentityRequest: A GenerateServiceIdentityRequest resource
+      to be passed as the request body.
+    parent: Required. The parent resource name.
+  """
+
+  generateServiceIdentityRequest = _messages.MessageField('GenerateServiceIdentityRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class TpuProjectsLocationsGetRequest(_messages.Message):
   r"""A TpuProjectsLocationsGetRequest object.
 
@@ -842,6 +988,19 @@ class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class TpuProjectsLocationsNodesGetGuestAttributesRequest(_messages.Message):
+  r"""A TpuProjectsLocationsNodesGetGuestAttributesRequest object.
+
+  Fields:
+    getGuestAttributesRequest: A GetGuestAttributesRequest resource to be
+      passed as the request body.
+    name: Required. The resource name.
+  """
+
+  getGuestAttributesRequest = _messages.MessageField('GetGuestAttributesRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class TpuProjectsLocationsNodesGetRequest(_messages.Message):

@@ -69,6 +69,7 @@ class LinterRenderer(text_renderer.TextRenderer):
       self._Analyze(self._prev_heading, self._buffer.getvalue())
       # refresh the StringIO()
       self._buffer = io.StringIO()
+    self.check_indentation_for_examples()
     self._out = self._buffer
     # save heading so can get it in next section
     self._prev_heading = self._heading
@@ -105,9 +106,18 @@ class LinterRenderer(text_renderer.TextRenderer):
         return False
     return True
 
+  def check_indentation_for_examples(self):
+    if self._prev_heading == "EXAMPLES" and not self._buffer.getvalue():
+      key_object = "# EXAMPLE_SECTION_FORMAT_CHECK FAILED"
+      value_object = ("The examples section is not formatted properly. This is "
+                      "likely due to indentation. Please make sure the section "
+                      "is aligned with the heading and not indented.")
+      self.json_object[key_object] = value_object
+
   def Finish(self):
     if self._buffer.getvalue() and self._prev_heading:
       self._Analyze(self._prev_heading, self._buffer.getvalue())
+    self.check_indentation_for_examples()
     self._buffer.close()
     self._null_out.close()
     if self.needs_example() and not self.example:
@@ -148,7 +158,6 @@ class LinterRenderer(text_renderer.TextRenderer):
         if self.command_text.startswith(self.command_name):
           self.example = True
           self.json_object["# EXAMPLE_PRESENT_CHECK SUCCESS"] = ""
-          # self._file_out.write("# EXAMPLE_PRESENT_CHECK SUCCESS\n")
           rest_of_command = self.command_text[self.command_name_length:].split()
           flag_names = []
           for word in rest_of_command:

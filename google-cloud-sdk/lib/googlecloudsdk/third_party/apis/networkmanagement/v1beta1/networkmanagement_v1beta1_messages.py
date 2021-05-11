@@ -210,9 +210,9 @@ class CloudSQLInstanceInfo(_messages.Message):
 
   Fields:
     displayName: Name of a Cloud SQL instance.
-    externalIp: External IP address of Cloud SQL instance.
-    internalIp: Internal IP address of Cloud SQL instance.
-    networkUri: URI of a Cloud SQL instance network or empty string if
+    externalIp: External IP address of a Cloud SQL instance.
+    internalIp: Internal IP address of a Cloud SQL instance.
+    networkUri: URI of a Cloud SQL instance network or empty string if the
       instance does not have one.
     region: Region in which the Cloud SQL instance is running.
     uri: URI of a Cloud SQL instance.
@@ -335,7 +335,7 @@ class DeliverInfo(_messages.Message):
     Values:
       TARGET_UNSPECIFIED: Target not specified.
       INSTANCE: Target is a Compute Engine instance.
-      INTERNET: Target is the Internet.
+      INTERNET: Target is the internet.
       GOOGLE_API: Target is a Google API.
       GKE_MASTER: Target is a Google Kubernetes Engine cluster master.
       CLOUD_SQL_INSTANCE: Target is a Cloud SQL instance.
@@ -368,10 +368,10 @@ class DropInfo(_messages.Message):
     Values:
       CAUSE_UNSPECIFIED: Cause is unspecified.
       UNKNOWN_EXTERNAL_ADDRESS: Destination external address cannot be
-        resolved to a known target. If the address is used in a GCP project,
-        provide the project ID as test input.
+        resolved to a known target. If the address is used in a Google Cloud
+        project, provide the project ID as test input.
       FOREIGN_IP_DISALLOWED: a Compute Engine instance can only send or
-        receive a packet with a foreign IP if ip_forward is enabled.
+        receive a packet with a foreign IP address if ip_forward is enabled.
       FIREWALL_RULE: Dropped due to a firewall rule, unless allowed due to
         connection tracking.
       NO_ROUTE: Dropped due to no routes.
@@ -382,16 +382,15 @@ class DropInfo(_messages.Message):
         however, the route configured in Network1 sends the packet destined
         for VM2's IP addresss to Network3.
       PRIVATE_TRAFFIC_TO_INTERNET: Packet with internal destination address
-        sent to Internet gateway.
+        sent to the internet gateway.
       PRIVATE_GOOGLE_ACCESS_DISALLOWED: Instance with only an internal IP
-        tries to access Google API and Services, but private Google access is
-        not enabled.
-      NO_EXTERNAL_ADDRESS: Instance with only internal IP tries to access
-        external hosts, but Cloud NAT is not enabled in the subnet, unless
-        special configurations on a VM allows this connection. See [Special
-        Configurations for VM
-        instances](https://cloud.google.com/vpc/docs/special-configurations)
-        for more details.
+        address tries to access Google API and services, but private Google
+        access is not enabled.
+      NO_EXTERNAL_ADDRESS: Instance with only an internal IP address tries to
+        access external hosts, but Cloud NAT is not enabled in the subnet,
+        unless special configurations on a VM allow this connection. For more
+        details, see [Special configurations for VM
+        instances](https://cloud.google.com/vpc/docs/special-configurations).
       UNKNOWN_INTERNAL_ADDRESS: Destination internal address cannot be
         resolved to a known target. If this is a shared VPC scenario, verify
         if the service project ID is provided as test input. Otherwise, verify
@@ -402,9 +401,9 @@ class DropInfo(_messages.Message):
         configured.
       FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK: Firewalls block
         the health check probes to the backends and cause the backends to be
-        unavailable for traffic from the load balancer. See [Health check
-        firewall rules](https://cloud.google.com/load-balancing/docs/health-
-        checks#firewall_rules) for more details.
+        unavailable for traffic from the load balancer. For more details, see
+        [Health check firewall rules](https://cloud.google.com/load-
+        balancing/docs/health-checks#firewall_rules).
       INSTANCE_NOT_RUNNING: Packet is sent from or to a Compute Engine
         instance that is not in a running state.
       TRAFFIC_TYPE_BLOCKED: The type of traffic is blocked and the user cannot
@@ -670,7 +669,7 @@ class ForwardInfo(_messages.Message):
         master.
       IMPORTED_CUSTOM_ROUTE_NEXT_HOP: Forwarded to the next hop of a custom
         route imported from a peering VPC.
-      CLOUD_SQL_INSTANCE: Forwarded to a Cloud SQL Instance.
+      CLOUD_SQL_INSTANCE: Forwarded to a Cloud SQL instance.
     """
     TARGET_UNSPECIFIED = 0
     PEERING_VPC = 1
@@ -711,15 +710,13 @@ class ForwardingRuleInfo(_messages.Message):
 
 class GKEMasterInfo(_messages.Message):
   r"""For display only. Metadata associated with a Google Kubernetes Engine
-  cluster master.
+  (GKE) cluster master.
 
   Fields:
-    clusterNetworkUri: URI of a Google Kubernetes Engine cluster network.
-    clusterUri: URI of a Google Kubernetes Engine cluster.
-    externalIp: External IP address of a Google Kubernetes Engine cluster
-      master.
-    internalIp: Internal IP address of a Google Kubernetes Engine cluster
-      master.
+    clusterNetworkUri: URI of a GKE cluster network.
+    clusterUri: URI of a GKE cluster.
+    externalIp: External IP address of a GKE cluster master.
+    internalIp: Internal IP address of a GKE cluster master.
   """
 
   clusterNetworkUri = _messages.StringField(1)
@@ -1611,11 +1608,11 @@ class RouteInfo(_messages.Message):
       NEXT_HOP_PEERING: Next hop is a peering VPC.
       NEXT_HOP_INTERCONNECT: Next hop is an interconnect.
       NEXT_HOP_VPN_TUNNEL: Next hop is a VPN tunnel.
-      NEXT_HOP_VPN_GATEWAY: Next hop is a VPN Gateway. This scenario only
-        happens when tracing connectivity from an on-premises network to GCP
-        through a VPN. The analysis simulates a packet departing from the on-
-        premises network through a VPN tunnel and arriving at a Cloud VPN
-        gateway.
+      NEXT_HOP_VPN_GATEWAY: Next hop is a VPN gateway. This scenario only
+        happens when tracing connectivity from an on-premises network to
+        Google Cloud through a VPN. The analysis simulates a packet departing
+        from the on-premises network through a VPN tunnel and arriving at a
+        Cloud VPN gateway.
       NEXT_HOP_INTERNET_GATEWAY: Next hop is an internet gateway.
       NEXT_HOP_BLACKHOLE: Next hop is blackhole; that is, the next hop either
         does not exist or is not running.
@@ -1640,8 +1637,8 @@ class RouteInfo(_messages.Message):
     Values:
       ROUTE_TYPE_UNSPECIFIED: Unspecified type. Default value.
       SUBNET: Route is a subnet route automatically created by the system.
-      STATIC: Static route created by the user including the default route to
-        the Internet.
+      STATIC: Static route created by the user, including the default route to
+        the internet.
       DYNAMIC: Dynamic route exchanged between BGP peers.
       PEERING_SUBNET: A subnet route received from peering network.
       PEERING_STATIC: A static route received from peering network.
@@ -1805,29 +1802,31 @@ class Step(_messages.Message):
     StateValueValuesEnum: Each step is in one of the pre-defined states.
 
   Fields:
-    abort: Display info of the final state "abort" and reason.
+    abort: Display information of the final state "abort" and reason.
     causesDrop: This is a step that leads to the final state Drop.
-    cloudSqlInstance: Display info of a Cloud SQL instance.
-    deliver: Display info of the final state "deliver" and reason.
+    cloudSqlInstance: Display information of a Cloud SQL instance.
+    deliver: Display information of the final state "deliver" and reason.
     description: A description of the step. Usually this is a summary of the
       state.
-    drop: Display info of the final state "drop" and reason.
-    endpoint: Display info of the source and destination under analysis. The
-      endpoint info in an intermediate state may differ with the initial
-      input, as it might be modified by state like NAT, or Connection Proxy.
-    firewall: Display info of a Compute Engine firewall rule.
-    forward: Display info of the final state "forward" and reason.
-    forwardingRule: Display info of a Compute Engine forwarding rule.
-    gkeMaster: Display info of a Google Kubernetes Engine cluster master.
-    instance: Display info of a Compute Engine instance.
-    loadBalancer: Display info of the load balancers.
-    network: Display info of a GCP network.
+    drop: Display information of the final state "drop" and reason.
+    endpoint: Display information of the source and destination under
+      analysis. The endpoint information in an intermediate state may differ
+      with the initial input, as it might be modified by state like NAT, or
+      Connection Proxy.
+    firewall: Display information of a Compute Engine firewall rule.
+    forward: Display information of the final state "forward" and reason.
+    forwardingRule: Display information of a Compute Engine forwarding rule.
+    gkeMaster: Display information of a Google Kubernetes Engine cluster
+      master.
+    instance: Display information of a Compute Engine instance.
+    loadBalancer: Display information of the load balancers.
+    network: Display information of a Google Cloud network.
     projectId: Project ID that contains the configuration this step is
       validating.
-    route: Display info of a Compute Engine route.
+    route: Display information of a Compute Engine route.
     state: Each step is in one of the pre-defined states.
-    vpnGateway: Display info of a Compute Engine VPN gateway.
-    vpnTunnel: Display info of a Compute Engine VPN tunnel.
+    vpnGateway: Display information of a Compute Engine VPN gateway.
+    vpnTunnel: Display information of a Compute Engine VPN tunnel.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1836,20 +1835,20 @@ class Step(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Unspecified state.
       START_FROM_INSTANCE: Initial state: packet originating from a Compute
-        Engine instance. An InstanceInfo will be populated with starting
-        instance info.
-      START_FROM_INTERNET: Initial state: packet originating from Internet.
-        The endpoint info will be populated.
+        Engine instance. An InstanceInfo is populated with starting instance
+        information.
+      START_FROM_INTERNET: Initial state: packet originating from the
+        internet. The endpoint information is populated.
       START_FROM_PRIVATE_NETWORK: Initial state: packet originating from a VPC
         or on-premises network with internal source IP. If the source is a VPC
-        network visible to the user, a NetworkInfo will be populated with
-        details of the network.
+        network visible to the user, a NetworkInfo is populated with details
+        of the network.
       START_FROM_GKE_MASTER: Initial state: packet originating from a Google
-        Kubernetes Engine cluster master. A GKEMasterInfo will be populated
-        with starting instance info.
+        Kubernetes Engine cluster master. A GKEMasterInfo is populated with
+        starting instance information.
       START_FROM_CLOUD_SQL_INSTANCE: Initial state: packet originating from a
-        Cloud SQL instance. A CloudSQLInstanceInfo will be populated with
-        starting instance info.
+        Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting
+        instance information.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.
       APPLY_EGRESS_FIREWALL_RULE: Config checking state: verify egress
@@ -1980,7 +1979,8 @@ class VpnGatewayInfo(_messages.Message):
     ipAddress: IP address of the VPN gateway.
     networkUri: URI of a Compute Engine network where the VPN gateway is
       configured.
-    region: Name of a GCP region where this VPN gateway is configured.
+    region: Name of a Google Cloud region where this VPN gateway is
+      configured.
     uri: URI of a VPN gateway.
     vpnTunnelUri: A VPN tunnel that is associated with this VPN gateway. There
       may be multiple VPN tunnels configured on a VPN gateway, and only the
@@ -2005,7 +2005,7 @@ class VpnTunnelInfo(_messages.Message):
     displayName: Name of a VPN tunnel.
     networkUri: URI of a Compute Engine network where the VPN tunnel is
       configured.
-    region: Name of a GCP region where this VPN tunnel is configured.
+    region: Name of a Google Cloud region where this VPN tunnel is configured.
     remoteGateway: URI of a VPN gateway at remote end of the tunnel.
     remoteGatewayIp: Remote VPN gateway's IP address.
     routingType: Type of the routing policy.

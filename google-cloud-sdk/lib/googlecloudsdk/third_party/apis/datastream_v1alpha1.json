@@ -1059,6 +1059,56 @@
           "items": {
             "$ref": "Error"
           }
+        },
+        "backfillJob": {
+          "description": "The latest backfill job that was initiated for the stream object.",
+          "$ref": "BackfillJob"
+        }
+      }
+    },
+    "BackfillJob": {
+      "id": "BackfillJob",
+      "description": "Represents a backfill job on a specific stream object.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Backfill Job state.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Backfill disabled for the object.",
+            "Backfill job created and queued but not yet running.",
+            "Backfill job is running.",
+            "Backfill job stopped (next job run will start from beginning).",
+            "Backfill job failed (due to an error).",
+            "Backfill completed successfully."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "NOT_STARTED",
+            "QUEUED",
+            "ACTIVE",
+            "STOPPED",
+            "FAILED",
+            "COMPLETED"
+          ]
+        },
+        "lastStartTime": {
+          "description": "Output only. Backfill job's start time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastEndTime": {
+          "description": "Output only. Backfill job's end time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "error": {
+          "description": "Output only. Error which caused the backfill job to fail.",
+          "readOnly": true,
+          "$ref": "Error"
         }
       }
     },
@@ -1107,7 +1157,7 @@
     },
     "PrivateConnection": {
       "id": "PrivateConnection",
-      "description": "The PrivateConnection resource is used to establish private connectivity between DataStream and a customer's network.",
+      "description": "The PrivateConnection resource is used to establish private connectivity between Datastream and a customer's network.",
       "type": "object",
       "properties": {
         "name": {
@@ -1168,11 +1218,11 @@
     },
     "VpcPeeringConfig": {
       "id": "VpcPeeringConfig",
-      "description": "The VPC Peering configuration is used to create VPC peering between DataStream and the consumer's VPC.",
+      "description": "The VPC Peering configuration is used to create VPC peering between Datastream and the consumer's VPC.",
       "type": "object",
       "properties": {
         "vpcName": {
-          "description": "Required. fully qualified name of the VPC DataStream will peer to.",
+          "description": "Required. fully qualified name of the VPC Datastream will peer to.",
           "type": "string"
         },
         "subnet": {
@@ -2249,7 +2299,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the Route resource to get.",
+                          "description": "Required. The name of the stream object resource to get.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/streams\/[^\/]+\/objects\/[^\/]+$",
                           "location": "path",
                           "required": true,

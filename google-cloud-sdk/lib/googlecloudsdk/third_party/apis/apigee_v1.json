@@ -1519,13 +1519,27 @@
           "type": "string",
           "enumDescriptions": [
             "Deployment type not specified.",
-            "Proxy deployment enables you to develop and deploy API proxies using Apigee on Google Cloud.",
+            "Proxy deployment enables you to develop and deploy API proxies using Apigee on Google Cloud. This cannot currently be combined with the CONFIGURABLE API proxy type.",
             "Archive deployment enables you to develop API proxies locally then deploy an archive of your API proxy configuration to an environment in Apigee on Google Cloud. You will be prevented from performing a [subset of actions](\/apigee\/docs\/api-platform\/local-development\/overview#prevented-actions) within the environment."
           ],
           "enum": [
             "DEPLOYMENT_TYPE_UNSPECIFIED",
             "PROXY",
             "ARCHIVE"
+          ]
+        },
+        "apiProxyType": {
+          "description": "Optional. API Proxy type supported by the environment. The type can be set when creating the Environment and cannot be changed.",
+          "type": "string",
+          "enumDescriptions": [
+            "API proxy type not specified.",
+            "Programmable API Proxies enable you to develop APIs with highly flexible behavior using bundled policy configuration and one or more programming languages to describe complex sequential and\/or conditional flows of logic.",
+            "Configurable API Proxies enable you to develop efficient APIs using simple configuration while complex execution control flow logic is handled by Apigee. This type only works with the ARCHIVE deployment type and cannot be combined with the PROXY deployment type."
+          ],
+          "enum": [
+            "API_PROXY_TYPE_UNSPECIFIED",
+            "PROGRAMMABLE",
+            "CONFIGURABLE"
           ]
         }
       }
@@ -1657,6 +1671,14 @@
         "traceConfig": {
           "description": "Trace configurations. Contains config for the environment and config overrides for specific API proxies.",
           "$ref": "GoogleCloudApigeeV1RuntimeTraceConfig"
+        },
+        "gatewayConfigLocation": {
+          "description": "The location for the gateway config blob as a URI, e.g. a Cloud Storage URI. This is only used by Envoy-based gateways.",
+          "type": "string"
+        },
+        "arcConfigLocation": {
+          "description": "The location for the config blob of API Runtime Control, aka Envoy Adapter, for op-based authentication as a URI, e.g. a Cloud Storage URI. This is only used by Envoy-based gateways.",
+          "type": "string"
         }
       }
     },
@@ -2347,63 +2369,6 @@
         }
       }
     },
-    "GoogleCloudApigeeV1InstanceAttachment": {
-      "id": "GoogleCloudApigeeV1InstanceAttachment",
-      "description": "InstanceAttachment represents the installation of an environment onto an instance.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. ID of the attachment.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "environment": {
-          "description": "ID of the attached environment.",
-          "type": "string"
-        },
-        "createdAt": {
-          "description": "Output only. Time the attachment was created in milliseconds since epoch.",
-          "readOnly": true,
-          "type": "string",
-          "format": "int64"
-        },
-        "state": {
-          "description": "Output only. State of the instance attachment. Values other than ACTIVE means the resource is not ready to use.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Resource is in an unspecified state.",
-            "Resource is being created.",
-            "Resource is provisioned and ready to use.",
-            "The resource is being deleted."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "CREATING",
-            "ACTIVE",
-            "DELETING"
-          ]
-        }
-      }
-    },
-    "GoogleCloudApigeeV1ListInstanceAttachmentsResponse": {
-      "id": "GoogleCloudApigeeV1ListInstanceAttachmentsResponse",
-      "description": "Response for ListInstanceAttachments.",
-      "type": "object",
-      "properties": {
-        "attachments": {
-          "description": "Attachments for the instance.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudApigeeV1InstanceAttachment"
-          }
-        },
-        "nextPageToken": {
-          "description": "Page token that you can include in a ListInstanceAttachments request to retrieve the next page of content. If omitted, no subsequent pages exist.",
-          "type": "string"
-        }
-      }
-    },
     "GoogleCloudApigeeV1ListOrganizationsResponse": {
       "id": "GoogleCloudApigeeV1ListOrganizationsResponse",
       "type": "object",
@@ -2720,18 +2685,29 @@
             "$ref": "GoogleCloudApigeeV1Environment"
           }
         },
-        "instances": {
-          "description": "Apigee X instances modeled after the Apigee Edge organization resources.",
+        "instanceAndAttachments": {
+          "description": "Apigee X instance and attachments modeled after Apigee Edge organization and environment resources.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudApigeeV1Instance"
+            "$ref": "GoogleCloudApigeeV1InfraMigrationPlanInstanceAndAttachments"
           }
+        }
+      }
+    },
+    "GoogleCloudApigeeV1InfraMigrationPlanInstanceAndAttachments": {
+      "id": "GoogleCloudApigeeV1InfraMigrationPlanInstanceAndAttachments",
+      "description": "InstanceAndAttachments represents the one to many relationship between instance and instance attachments.",
+      "type": "object",
+      "properties": {
+        "instance": {
+          "description": "Apigee X instance modeled after the Apigee Edge organization resources.",
+          "$ref": "GoogleCloudApigeeV1Instance"
         },
-        "instanceAttachments": {
-          "description": "Apigee X instance attachments modeled after Apigee Edge environment resources.",
+        "environments": {
+          "description": "List of environments that will be attached to the parent instance during creation.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudApigeeV1InstanceAttachment"
+            "type": "string"
           }
         }
       }
@@ -5517,6 +5493,63 @@
         },
         "errorCode": {
           "description": "ID that can be used to find errors in the log files.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1InstanceAttachment": {
+      "id": "GoogleCloudApigeeV1InstanceAttachment",
+      "description": "InstanceAttachment represents the installation of an environment onto an instance.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. ID of the attachment.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "environment": {
+          "description": "ID of the attached environment.",
+          "type": "string"
+        },
+        "createdAt": {
+          "description": "Output only. Time the attachment was created in milliseconds since epoch.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "state": {
+          "description": "Output only. State of the instance attachment. Values other than ACTIVE means the resource is not ready to use.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Resource is in an unspecified state.",
+            "Resource is being created.",
+            "Resource is provisioned and ready to use.",
+            "The resource is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING"
+          ]
+        }
+      }
+    },
+    "GoogleCloudApigeeV1ListInstanceAttachmentsResponse": {
+      "id": "GoogleCloudApigeeV1ListInstanceAttachmentsResponse",
+      "description": "Response for ListInstanceAttachments.",
+      "type": "object",
+      "properties": {
+        "attachments": {
+          "description": "Attachments for the instance.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1InstanceAttachment"
+          }
+        },
+        "nextPageToken": {
+          "description": "Page token that you can include in a ListInstanceAttachments request to retrieve the next page of content. If omitted, no subsequent pages exist.",
           "type": "string"
         }
       }
@@ -9744,6 +9777,63 @@
           }
           ,
           "resources": {
+            "canaryevaluations": {
+              "methods": {
+                "create": {
+                  "id": "apigee.organizations.instances.canaryevaluations.create",
+                  "path": "v1/{+parent}/canaryevaluations",
+                  "flatPath": "v1/organizations/{organizationsId}/instances/{instancesId}/canaryevaluations",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Name of the organization. Use the following structure in your request: `organizations\/{org}\/instances\/{instance}`.",
+                      "pattern": "^organizations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudApigeeV1CanaryEvaluation"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new canary evaluation for an organization."
+                },
+                "get": {
+                  "id": "apigee.organizations.instances.canaryevaluations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/organizations/{organizationsId}/instances/{instancesId}/canaryevaluations/{canaryevaluationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the CanaryEvaluation. Use the following structure in your request: `organizations\/{org}\/instances\/*\/canaryevaluations\/{evaluation}`",
+                      "pattern": "^organizations\/[^\/]+\/instances\/[^\/]+\/canaryevaluations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1CanaryEvaluation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a CanaryEvaluation for an organization."
+                }
+              }
+            },
             "attachments": {
               "methods": {
                 "create": {
@@ -9859,63 +9949,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes an attachment. **Note:** Not supported for Apigee hybrid."
-                }
-              }
-            },
-            "canaryevaluations": {
-              "methods": {
-                "create": {
-                  "id": "apigee.organizations.instances.canaryevaluations.create",
-                  "path": "v1/{+parent}/canaryevaluations",
-                  "flatPath": "v1/organizations/{organizationsId}/instances/{instancesId}/canaryevaluations",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. Name of the organization. Use the following structure in your request: `organizations\/{org}\/instances\/{instance}`.",
-                      "pattern": "^organizations\/[^\/]+\/instances\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "GoogleCloudApigeeV1CanaryEvaluation"
-                  },
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new canary evaluation for an organization."
-                },
-                "get": {
-                  "id": "apigee.organizations.instances.canaryevaluations.get",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/organizations/{organizationsId}/instances/{instancesId}/canaryevaluations/{canaryevaluationsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. Name of the CanaryEvaluation. Use the following structure in your request: `organizations\/{org}\/instances\/*\/canaryevaluations\/{evaluation}`",
-                      "pattern": "^organizations\/[^\/]+\/instances\/[^\/]+\/canaryevaluations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "GoogleCloudApigeeV1CanaryEvaluation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets a CanaryEvaluation for an organization."
                 }
               }
             },

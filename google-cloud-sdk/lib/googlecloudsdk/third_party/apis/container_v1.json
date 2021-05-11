@@ -1484,6 +1484,20 @@
           "description": "Whether the cluster disables default in-node sNAT rules. In-node sNAT rules will be disabled when default_snat_status is disabled. When disabled is set to false, default IP masquerade rules will be applied to the nodes to prevent sNAT on cluster internal traffic.",
           "$ref": "DefaultSnatStatus"
         },
+        "datapathProvider": {
+          "description": "The desired datapath provider for this cluster. By default, uses the IPTables-based kube-proxy implementation.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Use the IPTables implementation based on kube-proxy.",
+            "Use the eBPF based GKE Dataplane V2 with additional features. See the [GKE Dataplane V2 documentation](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/dataplane-v2) for more."
+          ],
+          "enum": [
+            "DATAPATH_PROVIDER_UNSPECIFIED",
+            "LEGACY_DATAPATH",
+            "ADVANCED_DATAPATH"
+          ]
+        },
         "privateIpv6GoogleAccess": {
           "description": "The desired state of IPv6 connectivity to Google Services. By default, no private IPv6 access to or from Google Services (all access will be via IPv4)",
           "type": "string",
@@ -2112,6 +2126,20 @@
           "description": "The desired release channel configuration.",
           "$ref": "ReleaseChannel"
         },
+        "desiredDatapathProvider": {
+          "description": "The desired datapath provider for the cluster.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Use the IPTables implementation based on kube-proxy.",
+            "Use the eBPF based GKE Dataplane V2 with additional features. See the [GKE Dataplane V2 documentation](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/dataplane-v2) for more."
+          ],
+          "enum": [
+            "DATAPATH_PROVIDER_UNSPECIFIED",
+            "LEGACY_DATAPATH",
+            "ADVANCED_DATAPATH"
+          ]
+        },
         "desiredPrivateIpv6GoogleAccess": {
           "description": "The desired state of IPv6 connectivity to Google Services.",
           "type": "string",
@@ -2131,6 +2159,10 @@
         "desiredNotificationConfig": {
           "description": "The desired notification configuration.",
           "$ref": "NotificationConfig"
+        },
+        "desiredAuthenticatorGroupsConfig": {
+          "description": "The desired authenticator groups config for the cluster.",
+          "$ref": "AuthenticatorGroupsConfig"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. Users may specify either explicit versions offered by Kubernetes Engine or version aliases, which have the following behavior: - \"latest\": picks the highest valid Kubernetes version - \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version - \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version - \"1.X.Y-gke.N\": picks an explicit Kubernetes version - \"-\": picks the default Kubernetes version",
@@ -3109,6 +3141,39 @@
         },
         "resource": {
           "description": "Optional relative path to the resource. For example in node pool upgrades, the relative path of the node pool.",
+          "type": "string"
+        }
+      }
+    },
+    "UpgradeAvailableEvent": {
+      "id": "UpgradeAvailableEvent",
+      "description": "UpgradeAvailableEvent is a notification sent to customers when a new available version is released.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The release version available for upgrade.",
+          "type": "string"
+        },
+        "resourceType": {
+          "description": "The resource type of the release version.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This shouldn't be used.",
+            "Master \/ control plane",
+            "Node pool"
+          ],
+          "enum": [
+            "UPGRADE_RESOURCE_TYPE_UNSPECIFIED",
+            "MASTER",
+            "NODE_POOL"
+          ]
+        },
+        "releaseChannel": {
+          "description": "The release channel of the version. If empty, it means a non-channel release.",
+          "$ref": "ReleaseChannel"
+        },
+        "resource": {
+          "description": "Optional relative path to the resource. For example, the relative path of the node pool.",
           "type": "string"
         }
       }

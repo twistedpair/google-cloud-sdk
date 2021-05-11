@@ -1487,6 +1487,11 @@
                       "location": "query",
                       "type": "boolean"
                     },
+                    "force": {
+                      "description": "If set to true, all child resources under this pipeline will also be deleted. Otherwise, the request will only work if the pipeline has no child resources.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
                     "etag": {
                       "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
                       "location": "query",
@@ -1674,7 +1679,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent collection in which the `Target` should be created. Format should be projects\/{projectID}\/locations\/{locationName}\/deliverPiplines\/{pipelineName}.",
+                          "description": "Required. The parent collection in which the `Target` should be created. Format should be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                           "location": "path",
                           "required": true,

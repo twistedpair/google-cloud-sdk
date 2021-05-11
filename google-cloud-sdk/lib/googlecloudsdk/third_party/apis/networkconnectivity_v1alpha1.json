@@ -312,7 +312,7 @@
           "type": "string"
         },
         "spokes": {
-          "description": "Output only. A list of the URIs of all attached spokes",
+          "description": "Output only. A list of the URIs of all attached spokes. This field is deprecated and will not be included in future API versions. Call ListSpokes on each region instead.",
           "readOnly": true,
           "type": "array",
           "items": {

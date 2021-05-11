@@ -30,6 +30,45 @@ class BackfillAllStrategy(_messages.Message):
   oracleExcludedObjects = _messages.MessageField('OracleRdbms', 2)
 
 
+class BackfillJob(_messages.Message):
+  r"""Represents a backfill job on a specific stream object.
+
+  Enums:
+    StateValueValuesEnum: Backfill Job state.
+
+  Fields:
+    error: Output only. Error which caused the backfill job to fail.
+    lastEndTime: Output only. Backfill job's end time.
+    lastStartTime: Output only. Backfill job's start time.
+    state: Backfill Job state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Backfill Job state.
+
+    Values:
+      STATE_UNSPECIFIED: Default value.
+      NOT_STARTED: Backfill disabled for the object.
+      QUEUED: Backfill job created and queued but not yet running.
+      ACTIVE: Backfill job is running.
+      STOPPED: Backfill job stopped (next job run will start from beginning).
+      FAILED: Backfill job failed (due to an error).
+      COMPLETED: Backfill completed successfully.
+    """
+    STATE_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    QUEUED = 2
+    ACTIVE = 3
+    STOPPED = 4
+    FAILED = 5
+    COMPLETED = 6
+
+  error = _messages.MessageField('Error', 1)
+  lastEndTime = _messages.StringField(2)
+  lastStartTime = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
 class BackfillNoneStrategy(_messages.Message):
   r"""Backfill strategy to disable automatic backfill for the Stream's
   objects.
@@ -602,7 +641,7 @@ class DatastreamProjectsLocationsStreamsObjectsGetRequest(_messages.Message):
   r"""A DatastreamProjectsLocationsStreamsObjectsGetRequest object.
 
   Fields:
-    name: Required. The name of the Route resource to get.
+    name: Required. The name of the stream object resource to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1541,7 +1580,7 @@ class PauseStreamRequest(_messages.Message):
 
 class PrivateConnection(_messages.Message):
   r"""The PrivateConnection resource is used to establish private connectivity
-  between DataStream and a customer's network.
+  between Datastream and a customer's network.
 
   Enums:
     StateValueValuesEnum: Output only. The state of the Private Connection.
@@ -1907,6 +1946,8 @@ class StreamObject(_messages.Message):
     LabelsValue: Labels.
 
   Fields:
+    backfillJob: The latest backfill job that was initiated for the stream
+      object.
     createTime: Output only. The creation time of the object.
     displayName: Required. Display name.
     errors: Output only. Active errors on the object.
@@ -1939,12 +1980,13 @@ class StreamObject(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  errors = _messages.MessageField('Error', 3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  backfillJob = _messages.MessageField('BackfillJob', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  errors = _messages.MessageField('Error', 4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class Validation(_messages.Message):
@@ -2051,12 +2093,12 @@ class ValidationResult(_messages.Message):
 
 class VpcPeeringConfig(_messages.Message):
   r"""The VPC Peering configuration is used to create VPC peering between
-  DataStream and the consumer's VPC.
+  Datastream and the consumer's VPC.
 
   Fields:
     subnet: Required. A free subnet for peering. (CIDR of /29)
       TODO(b/172995841) add validators.
-    vpcName: Required. fully qualified name of the VPC DataStream will peer
+    vpcName: Required. fully qualified name of the VPC Datastream will peer
       to.
   """
 

@@ -23,10 +23,15 @@ import re
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
+from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.command_lib.functions import flags
+from googlecloudsdk.command_lib.run import connection_context
+from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import console_io
 
 SOURCE_REGEX = re.compile('gs://([^/]+)/(.*)')
 SOURCE_ERROR_MESSAGE = (
@@ -52,6 +57,9 @@ LEGACY_V1_FLAGS = [
 LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
 
 EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED = 'google.cloud.pubsub.topic.v1.messagePublished'
+
+CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
+CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
 
 
 def _GetSource(source_arg):
@@ -214,6 +222,32 @@ def _GetLabels(args, messages):
   ])
 
 
+def _SetInvokerPermissions(args, service_ref):
+  """Add the IAM binding for the invoker role on the Cloud Run service, if applicable."""
+  if args.trigger_http:
+    allow_unauthenticated = flags.ShouldEnsureAllUsersInvoke(args)
+    if not allow_unauthenticated and not flags.ShouldDenyAllUsersInvoke(args):
+      allow_unauthenticated = console_io.PromptContinue(
+          prompt_string=(
+              'Allow unauthenticated invocations of new function [{}]?'.format(
+                  args.NAME)),
+          default=False)
+
+    if allow_unauthenticated:
+      run_connection_context = connection_context.RegionalConnectionContext(
+          service_ref.locationsId, global_methods.SERVERLESS_API_NAME,
+          global_methods.SERVERLESS_API_VERSION)
+      with serverless_operations.Connect(run_connection_context) as operations:
+        service_ref_k8s = resources.REGISTRY.ParseRelativeName(
+            'namespaces/{}/services/{}'.format(
+                properties.VALUES.core.project.GetOrFail(), service_ref.Name()),
+            CLOUD_RUN_SERVICE_COLLECTION_K8S)
+        operations.AddOrRemoveIamPolicyBinding(
+            service_ref_k8s,
+            member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
+            role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE)
+
+
 def Run(args, release_track):
   """Runs a function deployment with the given args."""
   client = api_util.GetClientInstance(release_track=release_track)
@@ -243,6 +277,13 @@ def Run(args, release_track):
   api_util.WaitForOperation(client, messages, operation,
                             'Deploying function (may take a while)')
 
-  return client.projects_locations_functions.Get(
+  function = client.projects_locations_functions.Get(
       messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
           name=function_ref.RelativeName()))
+
+  service_ref_one_platform = resources.REGISTRY.ParseRelativeName(
+      function.serviceConfig.service, CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
+
+  _SetInvokerPermissions(args, service_ref_one_platform)
+
+  return function

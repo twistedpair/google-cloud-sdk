@@ -123,3 +123,13 @@ def AddRolloutID(parser, hidden=False):
 def AddRelease(parser, help_text, hidden=False):
   """Adds release flag."""
   parser.add_argument('--release', hidden=hidden, help=help_text)
+
+
+def AddForce(parser, help_text, hidden=False):
+  """Adds force flag."""
+  parser.add_argument(
+      '--force',
+      hidden=hidden,
+      action='store_true',
+      help=help_text,
+  )

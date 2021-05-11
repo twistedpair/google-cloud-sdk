@@ -887,10 +887,6 @@ class Endpoint(_messages.Message):
   example.googleapis.com allow_cors: true
 
   Fields:
-    aliases: Unimplemented. Dot not use. DEPRECATED: This field is no longer
-      supported. Instead of using aliases, please specify multiple
-      google.api.Endpoint for each of the intended aliases. Additional names
-      that this endpoint will be hosted on.
     allowCors: Allowing [CORS](https://en.wikipedia.org/wiki/Cross-
       origin_resource_sharing), aka cross-domain traffic, would allow the
       backends served from this endpoint to receive and respond to HTTP
@@ -904,10 +900,9 @@ class Endpoint(_messages.Message):
       example, "8.8.8.8" or "myservice.appspot.com".
   """
 
-  aliases = _messages.StringField(1, repeated=True)
-  allowCors = _messages.BooleanField(2)
-  name = _messages.StringField(3)
-  target = _messages.StringField(4)
+  allowCors = _messages.BooleanField(1)
+  name = _messages.StringField(2)
+  target = _messages.StringField(3)
 
 
 class Enum(_messages.Message):
@@ -2584,15 +2579,19 @@ class SecondaryIpRangeSpec(_messages.Message):
 
 
 class Service(_messages.Message):
-  r"""`Service` is the root object of Google service configuration schema. It
-  describes basic information about a service, such as the name and the title,
-  and delegates other aspects to sub-sections. Each sub-section is either a
-  proto message or a repeated proto message that configures a specific aspect,
-  such as auth. See each proto message definition for details. Example: type:
+  r"""`Service` is the root object of Google API service configuration
+  (service config). It describes the basic information about a logical
+  service, such as the service name and the user-facing title, and delegates
+  other aspects to sub-sections. Each sub-section is either a proto message or
+  a repeated proto message that configures a specific aspect, such as auth.
+  For more information, see each proto message definition. Example: type:
   google.api.Service name: calendar.googleapis.com title: Google Calendar API
-  apis: - name: google.calendar.v3.Calendar authentication: providers: - id:
-  google_calendar_auth jwks_uri: https://www.googleapis.com/oauth2/v1/certs
-  issuer: https://securetoken.google.com rules: - selector: "*" requirements:
+  apis: - name: google.calendar.v3.Calendar visibility: rules: - selector:
+  "google.calendar.v3.*" restriction: PREVIEW backend: rules: - selector:
+  "google.calendar.v3.*" address: calendar.example.com authentication:
+  providers: - id: google_calendar_auth jwks_uri:
+  https://www.googleapis.com/oauth2/v1/certs issuer:
+  https://securetoken.google.com rules: - selector: "*" requirements:
   provider_id: google_calendar_auth
 
   Fields:

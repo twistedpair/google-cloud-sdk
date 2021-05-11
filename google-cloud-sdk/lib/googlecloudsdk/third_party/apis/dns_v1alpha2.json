@@ -904,6 +904,11 @@
           "type": "integer",
           "format": "int32"
         },
+        "gkeClustersPerResponsePolicy": {
+          "description": "Maximum allowed number of GKE clusters per response policy.",
+          "type": "integer",
+          "format": "int32"
+        },
         "kind": {
           "default": "dns#quota",
           "type": "string"

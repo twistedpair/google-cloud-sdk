@@ -59,18 +59,24 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_INSTANCES_INVENTORIES = (
       'projects.locations.instances.inventories',
-      'projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/'
-      'inventory',
-      {},
-      ['projectsId', 'locationsId', 'instancesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/instances/'
+              '{instancesId}/inventory',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_INSTANCES_VULNERABILITYREPORTS = (
       'projects.locations.instances.vulnerabilityReports',
-      'projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/'
-      'vulnerabilityReport',
-      {},
-      ['projectsId', 'locationsId', 'instancesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/instances/'
+              '{instancesId}/vulnerabilityReport',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OSPOLICYASSIGNMENTS = (

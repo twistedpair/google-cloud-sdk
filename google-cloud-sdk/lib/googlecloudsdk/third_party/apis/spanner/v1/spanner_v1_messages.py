@@ -276,6 +276,42 @@ class CommitStats(_messages.Message):
   mutationCount = _messages.IntegerField(1)
 
 
+class ContextValue(_messages.Message):
+  r"""A message representing context for a KeyRangeInfo, including a label,
+  value, unit, and severity.
+
+  Enums:
+    SeverityValueValuesEnum: The severity of this context.
+
+  Fields:
+    label: The label for the context value. e.g. "latency".
+    severity: The severity of this context.
+    unit: The unit of the context value.
+    value: The value for the context.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of this context.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Required default value.
+      INFO: Lowest severity level "Info".
+      WARNING: Middle severity level "Warning".
+      ERROR: Severity level signaling an error "Error"
+      FATAL: Severity level signaling a non recoverable error "Fatal"
+    """
+    SEVERITY_UNSPECIFIED = 0
+    INFO = 1
+    WARNING = 2
+    ERROR = 3
+    FATAL = 4
+
+  label = _messages.MessageField('LocalizedString', 1)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 2)
+  unit = _messages.StringField(3)
+  value = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
 class CreateBackupMetadata(_messages.Message):
   r"""Metadata type for the operation returned by CreateBackup.
 
@@ -460,6 +496,61 @@ class Delete(_messages.Message):
 
   keySet = _messages.MessageField('KeySet', 1)
   table = _messages.StringField(2)
+
+
+class DerivedMetric(_messages.Message):
+  r"""A message representing a derived metric.
+
+  Fields:
+    denominator: The name of the denominator metric. e.g. "rows".
+    numerator: The name of the numerator metric. e.g. "latency".
+  """
+
+  denominator = _messages.MessageField('LocalizedString', 1)
+  numerator = _messages.MessageField('LocalizedString', 2)
+
+
+class DiagnosticMessage(_messages.Message):
+  r"""A message representing the key visualizer diagnostic messages.
+
+  Enums:
+    SeverityValueValuesEnum: The severity of the diagnostic message.
+
+  Fields:
+    info: Information about this diagnostic information.
+    metric: The metric.
+    metricSpecific: Whether this message is specific only for the current
+      metric. By default Diagnostics are shown for all metrics, regardless
+      which metric is the currently selected metric in the UI. However
+      occasionally a metric will generate so many messages that the resulting
+      visual clutter becomes overwhelming. In this case setting this to true,
+      will show the diagnostic messages for that metric only if it is the
+      currently selected metric.
+    severity: The severity of the diagnostic message.
+    shortMessage: The short message.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of the diagnostic message.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Required default value.
+      INFO: Lowest severity level "Info".
+      WARNING: Middle severity level "Warning".
+      ERROR: Severity level signaling an error "Error"
+      FATAL: Severity level signaling a non recoverable error "Fatal"
+    """
+    SEVERITY_UNSPECIFIED = 0
+    INFO = 1
+    WARNING = 2
+    ERROR = 3
+    FATAL = 4
+
+  info = _messages.MessageField('LocalizedString', 1)
+  metric = _messages.MessageField('LocalizedString', 2)
+  metricSpecific = _messages.BooleanField(3)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
+  shortMessage = _messages.MessageField('LocalizedString', 5)
 
 
 class Empty(_messages.Message):
@@ -837,6 +928,96 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class IndexedHotKey(_messages.Message):
+  r"""A message representing a (sparse) collection of hot keys for specific
+  key buckets.
+
+  Messages:
+    SparseHotKeysValue: A (sparse) mapping from key bucket index to the index
+      of the specific hot row key for that key bucket. The index of the hot
+      row key can be translated to the actual row key via the
+      ScanData.VisualizationData.indexed_keys repeated field.
+
+  Fields:
+    sparseHotKeys: A (sparse) mapping from key bucket index to the index of
+      the specific hot row key for that key bucket. The index of the hot row
+      key can be translated to the actual row key via the
+      ScanData.VisualizationData.indexed_keys repeated field.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SparseHotKeysValue(_messages.Message):
+    r"""A (sparse) mapping from key bucket index to the index of the specific
+    hot row key for that key bucket. The index of the hot row key can be
+    translated to the actual row key via the
+    ScanData.VisualizationData.indexed_keys repeated field.
+
+    Messages:
+      AdditionalProperty: An additional property for a SparseHotKeysValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SparseHotKeysValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SparseHotKeysValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A integer attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  sparseHotKeys = _messages.MessageField('SparseHotKeysValue', 1)
+
+
+class IndexedKeyRangeInfos(_messages.Message):
+  r"""A message representing a (sparse) collection of KeyRangeInfos for
+  specific key buckets.
+
+  Messages:
+    KeyRangeInfosValue: A (sparse) mapping from key bucket index to the
+      KeyRangeInfos for that key bucket.
+
+  Fields:
+    keyRangeInfos: A (sparse) mapping from key bucket index to the
+      KeyRangeInfos for that key bucket.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class KeyRangeInfosValue(_messages.Message):
+    r"""A (sparse) mapping from key bucket index to the KeyRangeInfos for that
+    key bucket.
+
+    Messages:
+      AdditionalProperty: An additional property for a KeyRangeInfosValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type KeyRangeInfosValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a KeyRangeInfosValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A KeyRangeInfos attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('KeyRangeInfos', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  keyRangeInfos = _messages.MessageField('KeyRangeInfosValue', 1)
+
+
 class Instance(_messages.Message):
   r"""An isolated set of Cloud Spanner resources on which databases can be
   hosted.
@@ -1046,6 +1227,46 @@ class KeyRange(_messages.Message):
   startOpen = _messages.MessageField('extra_types.JsonValue', 4, repeated=True)
 
 
+class KeyRangeInfo(_messages.Message):
+  r"""A message representing information for a key range (possibly one key).
+
+  Fields:
+    contextValues: The list of context values for this key range.
+    endKeyIndex: The index of the end key in indexed_keys.
+    info: Information about this key range, for all metrics.
+    keysCount: The number of keys this range covers.
+    metric: The name of the metric. e.g. "latency".
+    startKeyIndex: The index of the start key in indexed_keys.
+    unit: The unit of the metric. This is an unstructured field and will be
+      mapped as is to the user.
+    value: The value of the metric.
+  """
+
+  contextValues = _messages.MessageField('ContextValue', 1, repeated=True)
+  endKeyIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  info = _messages.MessageField('LocalizedString', 3)
+  keysCount = _messages.IntegerField(4)
+  metric = _messages.MessageField('LocalizedString', 5)
+  startKeyIndex = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  unit = _messages.MessageField('LocalizedString', 7)
+  value = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+
+
+class KeyRangeInfos(_messages.Message):
+  r"""A message representing a list of specific information for multiple key
+  ranges.
+
+  Fields:
+    infos: The list individual KeyRangeInfos.
+    totalSize: The total size of the list of all KeyRangeInfos. This may be
+      larger than the number of repeated messages above. If that is the case,
+      this number may be used to determine how many are not being shown.
+  """
+
+  infos = _messages.MessageField('KeyRangeInfo', 1, repeated=True)
+  totalSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class KeySet(_messages.Message):
   r"""`KeySet` defines a collection of Cloud Spanner keys and/or key ranges.
   All the keys are expected to be in the same table or index. The keys need
@@ -1189,6 +1410,19 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListScansResponse(_messages.Message):
+  r"""Response method from the ListScans method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    scans: Available scans based on the list query parameters.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  scans = _messages.MessageField('Scan', 2, repeated=True)
+
+
 class ListSessionsResponse(_messages.Message):
   r"""The response for ListSessions.
 
@@ -1200,6 +1434,196 @@ class ListSessionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   sessions = _messages.MessageField('Session', 2, repeated=True)
+
+
+class LocalizedString(_messages.Message):
+  r"""A message representing a user-facing string whose value may need to be
+  translated before being displayed.
+
+  Messages:
+    ArgsValue: A map of arguments used when creating the localized message.
+      Keys represent parameter names which may be used by the localized
+      version when substituting dynamic values.
+
+  Fields:
+    args: A map of arguments used when creating the localized message. Keys
+      represent parameter names which may be used by the localized version
+      when substituting dynamic values.
+    message: The canonical English version of this message. If no token is
+      provided or the front-end has no message associated with the token, this
+      text will be displayed as-is.
+    token: The token identifying the message, e.g. 'METRIC_READ_CPU'. This
+      should be unique within the service.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ArgsValue(_messages.Message):
+    r"""A map of arguments used when creating the localized message. Keys
+    represent parameter names which may be used by the localized version when
+    substituting dynamic values.
+
+    Messages:
+      AdditionalProperty: An additional property for a ArgsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ArgsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ArgsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  args = _messages.MessageField('ArgsValue', 1)
+  message = _messages.StringField(2)
+  token = _messages.StringField(3)
+
+
+class Metric(_messages.Message):
+  r"""A message representing the actual monitoring data, values for each key
+  bucket over time, of a metric.
+
+  Enums:
+    AggregationValueValuesEnum: The aggregation function used to aggregate
+      each key bucket
+
+  Messages:
+    IndexedHotKeysValue: The (sparse) mapping from time index to an
+      IndexedHotKey message, representing those time intervals for which there
+      are hot keys.
+    IndexedKeyRangeInfosValue: The (sparse) mapping from time interval index
+      to an IndexedKeyRangeInfos message, representing those time intervals
+      for which there are informational messages concerning key ranges.
+
+  Fields:
+    aggregation: The aggregation function used to aggregate each key bucket
+    category: The category of the metric, e.g. "Activity", "Alerts", "Reads",
+      etc.
+    derived: The references to numerator and denominator metrics for a derived
+      metric.
+    displayLabel: The displayed label of the metric.
+    hasNonzeroData: Whether the metric has any non-zero data.
+    hotValue: The value that is considered hot for the metric. On a per metric
+      basis hotness signals high utilization and something that might
+      potentially be a cause for concern by the end user. hot_value is used to
+      calibrate and scale visual color scales.
+    indexedHotKeys: The (sparse) mapping from time index to an IndexedHotKey
+      message, representing those time intervals for which there are hot keys.
+    indexedKeyRangeInfos: The (sparse) mapping from time interval index to an
+      IndexedKeyRangeInfos message, representing those time intervals for
+      which there are informational messages concerning key ranges.
+    info: Information about the metric.
+    matrix: The data for the metric as a matrix.
+    unit: The unit of the metric.
+    visible: Whether the metric is visible to the end user.
+  """
+
+  class AggregationValueValuesEnum(_messages.Enum):
+    r"""The aggregation function used to aggregate each key bucket
+
+    Values:
+      AGGREGATION_UNSPECIFIED: Required default value.
+      MAX: Use the maximum of all values.
+      SUM: Use the sum of all values.
+    """
+    AGGREGATION_UNSPECIFIED = 0
+    MAX = 1
+    SUM = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IndexedHotKeysValue(_messages.Message):
+    r"""The (sparse) mapping from time index to an IndexedHotKey message,
+    representing those time intervals for which there are hot keys.
+
+    Messages:
+      AdditionalProperty: An additional property for a IndexedHotKeysValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type IndexedHotKeysValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IndexedHotKeysValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A IndexedHotKey attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('IndexedHotKey', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IndexedKeyRangeInfosValue(_messages.Message):
+    r"""The (sparse) mapping from time interval index to an
+    IndexedKeyRangeInfos message, representing those time intervals for which
+    there are informational messages concerning key ranges.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        IndexedKeyRangeInfosValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        IndexedKeyRangeInfosValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IndexedKeyRangeInfosValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A IndexedKeyRangeInfos attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('IndexedKeyRangeInfos', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  aggregation = _messages.EnumField('AggregationValueValuesEnum', 1)
+  category = _messages.MessageField('LocalizedString', 2)
+  derived = _messages.MessageField('DerivedMetric', 3)
+  displayLabel = _messages.MessageField('LocalizedString', 4)
+  hasNonzeroData = _messages.BooleanField(5)
+  hotValue = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  indexedHotKeys = _messages.MessageField('IndexedHotKeysValue', 7)
+  indexedKeyRangeInfos = _messages.MessageField('IndexedKeyRangeInfosValue', 8)
+  info = _messages.MessageField('LocalizedString', 9)
+  matrix = _messages.MessageField('MetricMatrix', 10)
+  unit = _messages.MessageField('LocalizedString', 11)
+  visible = _messages.BooleanField(12)
+
+
+class MetricMatrix(_messages.Message):
+  r"""A message representing a matrix of floats.
+
+  Fields:
+    rows: The rows of the matrix.
+  """
+
+  rows = _messages.MessageField('MetricMatrixRow', 1, repeated=True)
+
+
+class MetricMatrixRow(_messages.Message):
+  r"""A message representing a row of a matrix of floats.
+
+  Fields:
+    cols: The columns of the row.
+  """
+
+  cols = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
 
 
 class Mutation(_messages.Message):
@@ -1826,6 +2250,31 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class PrefixNode(_messages.Message):
+  r"""A message representing a key prefix node in the key prefix hierarchy.
+  for eg. Bigtable keyspaces are lexicographically ordered mappings of keys to
+  values. Keys often have a shared prefix structure where users use the keys
+  to organize data. Eg ///employee In this case Keysight will possibly use one
+  node for a company and reuse it for all employees that fall under the
+  company. Doing so improves legibility in the UI.
+
+  Fields:
+    dataSourceNode: Whether this corresponds to a data_source name.
+    depth: The depth in the prefix hierarchy.
+    endIndex: The index of the end key bucket of the range that this node
+      spans.
+    startIndex: The index of the start key bucket of the range that this node
+      spans.
+    word: The string represented by the prefix node.
+  """
+
+  dataSourceNode = _messages.BooleanField(1)
+  depth = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  endIndex = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startIndex = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  word = _messages.StringField(5)
+
+
 class QueryOptions(_messages.Message):
   r"""Query optimizer configuration.
 
@@ -2315,6 +2764,74 @@ class RollbackRequest(_messages.Message):
   """
 
   transactionId = _messages.BytesField(1)
+
+
+class Scan(_messages.Message):
+  r"""Scan is a structure which describes Cloud Key Visualizer scan
+  information.
+
+  Messages:
+    DetailsValue: Additional information provided by the implementer.
+
+  Fields:
+    details: Additional information provided by the implementer.
+    endTime: The upper bound for when the scan is defined.
+    name: The unique name of the scan, specific to the Database service
+      implementing this interface.
+    scanData: Output only. Cloud Key Visualizer scan data. Note, this field is
+      not available to the ListScans method.
+    startTime: A range of time (inclusive) for when the scan is defined. The
+      lower bound for when the scan is defined.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValue(_messages.Message):
+    r"""Additional information provided by the implementer.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  details = _messages.MessageField('DetailsValue', 1)
+  endTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  scanData = _messages.MessageField('ScanData', 4)
+  startTime = _messages.StringField(5)
+
+
+class ScanData(_messages.Message):
+  r"""ScanData contains Cloud Key Visualizer scan data used by the caller to
+  construct a visualization.
+
+  Fields:
+    data: Cloud Key Visualizer scan data. The range of time this information
+      covers is captured via the above time range fields. Note, this field is
+      not available to the ListScans method.
+    endTime: The upper bound for when the contained data is defined.
+    startTime: A range of time (inclusive) for when the contained data is
+      defined. The lower bound for when the contained data is defined.
+  """
+
+  data = _messages.MessageField('VisualizationData', 1)
+  endTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class Session(_messages.Message):
@@ -2870,6 +3387,49 @@ class SpannerProjectsInstancesDatabasesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class SpannerProjectsInstancesDatabasesGetScansRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesGetScansRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Specifies which parts of the Scan should be returned
+      in the response. Note, if left unspecified, the FULL view is assumed.
+
+  Fields:
+    endTime: The upper bound for the time range to retrieve Scan data for.
+    name: Required. The unique name of the scan containing the requested
+      information, specific to the Database service implementing this
+      interface.
+    startTime: These fields restrict the Database-specific information
+      returned in the `Scan.data` field. If a `View` is provided that does not
+      include the `Scan.data` field, these are ignored. This range of time
+      must be entirely contained within the defined time range of the targeted
+      scan. The lower bound for the time range to retrieve Scan data for.
+    view: Specifies which parts of the Scan should be returned in the
+      response. Note, if left unspecified, the FULL view is assumed.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Specifies which parts of the Scan should be returned in the response.
+    Note, if left unspecified, the FULL view is assumed.
+
+    Values:
+      VIEW_UNSPECIFIED: Not specified, equivalent to SUMMARY.
+      SUMMARY: Server responses only include `name`, `details`, `start_time`
+        and `end_time`. The default value. Note, the ListScans method may only
+        use this view type, others view types are not supported.
+      FULL: Full representation of the scan is returned in the server
+        response, including `data`.
+    """
+    VIEW_UNSPECIFIED = 0
+    SUMMARY = 1
+    FULL = 2
+
+  endTime = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  startTime = _messages.StringField(3)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
 class SpannerProjectsInstancesDatabasesListRequest(_messages.Message):
   r"""A SpannerProjectsInstancesDatabasesListRequest object.
 
@@ -3358,6 +3918,52 @@ class SpannerProjectsInstancesTestIamPermissionsRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class SpannerScansListRequest(_messages.Message):
+  r"""A SpannerScansListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Specifies which parts of the Scan should be returned
+      in the response. Note, only the SUMMARY view (the default) is currently
+      supported for ListScans.
+
+  Fields:
+    filter: A filter expression to restrict the results based on information
+      present in the available Scan collection. The filter applies to all
+      fields within the Scan message except for `data`.
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The unique name of the parent resource, specific to the
+      Database service implementing this interface.
+    view: Specifies which parts of the Scan should be returned in the
+      response. Note, only the SUMMARY view (the default) is currently
+      supported for ListScans.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Specifies which parts of the Scan should be returned in the response.
+    Note, only the SUMMARY view (the default) is currently supported for
+    ListScans.
+
+    Values:
+      VIEW_UNSPECIFIED: Not specified, equivalent to SUMMARY.
+      SUMMARY: Server responses only include `name`, `details`, `start_time`
+        and `end_time`. The default value. Note, the ListScans method may only
+        use this view type, others view types are not supported.
+      FULL: Full representation of the scan is returned in the server
+        response, including `data`.
+    """
+    VIEW_UNSPECIFIED = 0
+    SUMMARY = 1
+    FULL = 2
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -3993,6 +4599,55 @@ class UpdateInstanceRequest(_messages.Message):
 
   fieldMask = _messages.StringField(1)
   instance = _messages.MessageField('Instance', 2)
+
+
+class VisualizationData(_messages.Message):
+  r"""A VisualizationData object.
+
+  Enums:
+    KeyUnitValueValuesEnum: The unit for the key: e.g. 'key' or 'chunk'.
+
+  Fields:
+    dataSourceEndToken: The token signifying the end of a data_source.
+    dataSourceSeparatorToken: The token delimiting a datasource name from the
+      rest of a key in a data_source.
+    diagnosticMessages: The list of messages (info, alerts, ...)
+    endKeyStrings: We discretize the entire keyspace into buckets. Assuming
+      each bucket has an inclusive keyrange and covers keys from k(i) ...
+      k(n). In this case k(n) would be an end key for a given range.
+      end_key_string is the collection of all such end keys
+    hasPii: Whether this scan contains PII.
+    indexedKeys: Keys of key ranges that contribute significantly to a given
+      metric Can be thought of as heavy hitters.
+    keySeparator: The token delimiting the key prefixes.
+    keyUnit: The unit for the key: e.g. 'key' or 'chunk'.
+    metrics: The list of data objects for each metric.
+    prefixNodes: The list of extracted key prefix nodes used in the key prefix
+      hierarchy.
+  """
+
+  class KeyUnitValueValuesEnum(_messages.Enum):
+    r"""The unit for the key: e.g. 'key' or 'chunk'.
+
+    Values:
+      KEY_UNIT_UNSPECIFIED: Required default value
+      KEY: Each entry corresponds to one key
+      CHUNK: Each entry corresponds to a chunk of keys
+    """
+    KEY_UNIT_UNSPECIFIED = 0
+    KEY = 1
+    CHUNK = 2
+
+  dataSourceEndToken = _messages.StringField(1)
+  dataSourceSeparatorToken = _messages.StringField(2)
+  diagnosticMessages = _messages.MessageField('DiagnosticMessage', 3, repeated=True)
+  endKeyStrings = _messages.StringField(4, repeated=True)
+  hasPii = _messages.BooleanField(5)
+  indexedKeys = _messages.StringField(6, repeated=True)
+  keySeparator = _messages.StringField(7)
+  keyUnit = _messages.EnumField('KeyUnitValueValuesEnum', 8)
+  metrics = _messages.MessageField('Metric', 9, repeated=True)
+  prefixNodes = _messages.MessageField('PrefixNode', 10, repeated=True)
 
 
 class Write(_messages.Message):

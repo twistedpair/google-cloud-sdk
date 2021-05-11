@@ -415,6 +415,13 @@
           "type": "string",
           "format": "int64"
         },
+        "dataDisks": {
+          "description": "The additional data disks for the Node.",
+          "type": "array",
+          "items": {
+            "$ref": "AttachedDisk"
+          }
+        },
         "apiVersion": {
           "description": "Output only. The API version that created this Node.",
           "readOnly": true,
@@ -531,6 +538,57 @@
         }
       }
     },
+    "AttachedDisk": {
+      "id": "AttachedDisk",
+      "description": "A node-attached disk resource. Next ID: 8;",
+      "type": "object",
+      "properties": {
+        "sourceImage": {
+          "description": "Specifies the image full path of the disk. For example: \"projects\/my-project\/global\/images\/my-image\".",
+          "type": "string"
+        },
+        "diskSizeGb": {
+          "description": "Specifies the size of the disk in base-2 GB. The size must be at least 10 GB.",
+          "type": "string",
+          "format": "int64"
+        },
+        "sourceDisk": {
+          "description": "Specifies the full path to an existing disk. For example: \"projects\/my-project\/zones\/us-central1-c\/disks\/my-disk\".",
+          "type": "string"
+        },
+        "mode": {
+          "description": "The mode in which to attach this disk. If not specified, the default is READ_WRITE mode. Only applicable to data_disks.",
+          "type": "string",
+          "enumDescriptions": [
+            "The disk mode is not known\/set.",
+            "Attaches the disk in read-write mode. Only one TPU node can attach a disk in read-write mode at a time.",
+            "Attaches the disk in read-only mode. Multiple TPU nodes can attach a disk in read-only mode at a time."
+          ],
+          "enum": [
+            "DISK_MODE_UNSPECIFIED",
+            "READ_WRITE",
+            "READ_ONLY"
+          ]
+        },
+        "initializeParams": {
+          "description": "Specifies the parameters for a new disk that will be created alongside the new TPU node. You can only specify source_disk or this.",
+          "$ref": "DiskInitializeParams"
+        },
+        "index": {
+          "description": "Output only. A one-based index to this disk.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "DiskInitializeParams": {
+      "id": "DiskInitializeParams",
+      "description": "DiskInitializeParams contains information to create new disks.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "Symptom": {
       "id": "Symptom",
       "description": "A Symptom instance.",
@@ -585,6 +643,35 @@
       "description": "Request for StartNode.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GenerateServiceIdentityRequest": {
+      "id": "GenerateServiceIdentityRequest",
+      "description": "Request for GenerateServiceIdentity.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GenerateServiceIdentityResponse": {
+      "id": "GenerateServiceIdentityResponse",
+      "description": "Response for GenerateServiceIdentity.",
+      "type": "object",
+      "properties": {
+        "identity": {
+          "description": "ServiceIdentity that was created or retrieved.",
+          "$ref": "ServiceIdentity"
+        }
+      }
+    },
+    "ServiceIdentity": {
+      "id": "ServiceIdentity",
+      "description": "The per-product per-project service identity for Cloud TPU service.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "description": "The email address of the service identity.",
+          "type": "string"
+        }
       }
     },
     "ListAcceleratorTypesResponse": {
@@ -663,6 +750,79 @@
         },
         "version": {
           "description": "The runtime version.",
+          "type": "string"
+        }
+      }
+    },
+    "GetGuestAttributesRequest": {
+      "id": "GetGuestAttributesRequest",
+      "description": "Request for GetGuestAttributes.",
+      "type": "object",
+      "properties": {
+        "queryPath": {
+          "description": "The guest attributes path to be queried.",
+          "type": "string"
+        }
+      }
+    },
+    "GetGuestAttributesResponse": {
+      "id": "GetGuestAttributesResponse",
+      "description": "Response for GetGuestAttributes.",
+      "type": "object",
+      "properties": {
+        "guestAttributes": {
+          "description": "The guest attributes for the TPU workers.",
+          "type": "array",
+          "items": {
+            "$ref": "GuestAttributes"
+          }
+        }
+      }
+    },
+    "GuestAttributes": {
+      "id": "GuestAttributes",
+      "description": "A guest attributes.",
+      "type": "object",
+      "properties": {
+        "queryPath": {
+          "description": "The path to be queried. This can be the default namespace ('\/') or a nested namespace ('\/\\\/') or a specified key ('\/\\\/\\')",
+          "type": "string"
+        },
+        "queryValue": {
+          "description": "The value of the requested queried path.",
+          "$ref": "GuestAttributesValue"
+        }
+      }
+    },
+    "GuestAttributesValue": {
+      "id": "GuestAttributesValue",
+      "description": "Array of guest attribute namespace\/key\/value tuples.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "description": "The list of guest attributes entries.",
+          "type": "array",
+          "items": {
+            "$ref": "GuestAttributesEntry"
+          }
+        }
+      }
+    },
+    "GuestAttributesEntry": {
+      "id": "GuestAttributesEntry",
+      "description": "A guest attributes namespace\/key\/value entry.",
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "description": "Namespace for the guest attribute entry.",
+          "type": "string"
+        },
+        "key": {
+          "description": "Key for the guest attribute entry.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value for the guest attribute entry.",
           "type": "string"
         }
       }
@@ -775,6 +935,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Gets information about a location."
+            },
+            "generateServiceIdentity": {
+              "id": "tpu.projects.locations.generateServiceIdentity",
+              "path": "v2alpha1/{+parent}:generateServiceIdentity",
+              "flatPath": "v2alpha1/projects/{projectsId}/locations/{locationsId}:generateServiceIdentity",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The parent resource name.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GenerateServiceIdentityRequest"
+              },
+              "response": {
+                "$ref": "GenerateServiceIdentityResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Generates the Cloud TPU service identity for the project."
             }
           }
           ,
@@ -1109,6 +1297,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates the configurations of a node."
+                },
+                "getGuestAttributes": {
+                  "id": "tpu.projects.locations.nodes.getGuestAttributes",
+                  "path": "v2alpha1/{+name}:getGuestAttributes",
+                  "flatPath": "v2alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:getGuestAttributes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GetGuestAttributesRequest"
+                  },
+                  "response": {
+                    "$ref": "GetGuestAttributesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieves the guest attributes for the node."
                 }
               }
             },

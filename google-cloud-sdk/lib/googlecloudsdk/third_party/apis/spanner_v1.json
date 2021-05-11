@@ -116,6 +116,491 @@
     }
   },
   "schemas": {
+    "ListScansResponse": {
+      "id": "ListScansResponse",
+      "description": "Response method from the ListScans method.",
+      "type": "object",
+      "properties": {
+        "scans": {
+          "description": "Available scans based on the list query parameters.",
+          "type": "array",
+          "items": {
+            "$ref": "Scan"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "Scan": {
+      "id": "Scan",
+      "description": "Scan is a structure which describes Cloud Key Visualizer scan information.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The unique name of the scan, specific to the Database service implementing this interface.",
+          "type": "string"
+        },
+        "details": {
+          "description": "Additional information provided by the implementer.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "startTime": {
+          "description": "A range of time (inclusive) for when the scan is defined. The lower bound for when the scan is defined.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The upper bound for when the scan is defined.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "scanData": {
+          "description": "Output only. Cloud Key Visualizer scan data. Note, this field is not available to the ListScans method.",
+          "readOnly": true,
+          "$ref": "ScanData"
+        }
+      }
+    },
+    "ScanData": {
+      "id": "ScanData",
+      "description": "ScanData contains Cloud Key Visualizer scan data used by the caller to construct a visualization.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "A range of time (inclusive) for when the contained data is defined. The lower bound for when the contained data is defined.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The upper bound for when the contained data is defined.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "data": {
+          "description": "Cloud Key Visualizer scan data. The range of time this information covers is captured via the above time range fields. Note, this field is not available to the ListScans method.",
+          "$ref": "VisualizationData"
+        }
+      }
+    },
+    "VisualizationData": {
+      "id": "VisualizationData",
+      "type": "object",
+      "properties": {
+        "dataSourceSeparatorToken": {
+          "description": "The token delimiting a datasource name from the rest of a key in a data_source.",
+          "type": "string"
+        },
+        "dataSourceEndToken": {
+          "description": "The token signifying the end of a data_source.",
+          "type": "string"
+        },
+        "endKeyStrings": {
+          "description": "We discretize the entire keyspace into buckets. Assuming each bucket has an inclusive keyrange and covers keys from k(i) ... k(n). In this case k(n) would be an end key for a given range. end_key_string is the collection of all such end keys",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "indexedKeys": {
+          "description": "Keys of key ranges that contribute significantly to a given metric Can be thought of as heavy hitters.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "prefixNodes": {
+          "description": "The list of extracted key prefix nodes used in the key prefix hierarchy.",
+          "type": "array",
+          "items": {
+            "$ref": "PrefixNode"
+          }
+        },
+        "metrics": {
+          "description": "The list of data objects for each metric.",
+          "type": "array",
+          "items": {
+            "$ref": "Metric"
+          }
+        },
+        "diagnosticMessages": {
+          "description": "The list of messages (info, alerts, ...)",
+          "type": "array",
+          "items": {
+            "$ref": "DiagnosticMessage"
+          }
+        },
+        "keySeparator": {
+          "description": "The token delimiting the key prefixes.",
+          "type": "string"
+        },
+        "keyUnit": {
+          "description": "The unit for the key: e.g. 'key' or 'chunk'.",
+          "type": "string",
+          "enumDescriptions": [
+            "Required default value",
+            "Each entry corresponds to one key",
+            "Each entry corresponds to a chunk of keys"
+          ],
+          "enum": [
+            "KEY_UNIT_UNSPECIFIED",
+            "KEY",
+            "CHUNK"
+          ]
+        },
+        "hasPii": {
+          "description": "Whether this scan contains PII.",
+          "type": "boolean"
+        }
+      }
+    },
+    "PrefixNode": {
+      "id": "PrefixNode",
+      "description": "A message representing a key prefix node in the key prefix hierarchy. for eg. Bigtable keyspaces are lexicographically ordered mappings of keys to values. Keys often have a shared prefix structure where users use the keys to organize data. Eg \/\/\/employee In this case Keysight will possibly use one node for a company and reuse it for all employees that fall under the company. Doing so improves legibility in the UI.",
+      "type": "object",
+      "properties": {
+        "word": {
+          "description": "The string represented by the prefix node.",
+          "type": "string"
+        },
+        "startIndex": {
+          "description": "The index of the start key bucket of the range that this node spans.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "endIndex": {
+          "description": "The index of the end key bucket of the range that this node spans.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "depth": {
+          "description": "The depth in the prefix hierarchy.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "dataSourceNode": {
+          "description": "Whether this corresponds to a data_source name.",
+          "type": "boolean"
+        }
+      }
+    },
+    "Metric": {
+      "id": "Metric",
+      "description": "A message representing the actual monitoring data, values for each key bucket over time, of a metric.",
+      "type": "object",
+      "properties": {
+        "visible": {
+          "description": "Whether the metric is visible to the end user.",
+          "type": "boolean"
+        },
+        "displayLabel": {
+          "description": "The displayed label of the metric.",
+          "$ref": "LocalizedString"
+        },
+        "unit": {
+          "description": "The unit of the metric.",
+          "$ref": "LocalizedString"
+        },
+        "info": {
+          "description": "Information about the metric.",
+          "$ref": "LocalizedString"
+        },
+        "category": {
+          "description": "The category of the metric, e.g. \"Activity\", \"Alerts\", \"Reads\", etc.",
+          "$ref": "LocalizedString"
+        },
+        "hasNonzeroData": {
+          "description": "Whether the metric has any non-zero data.",
+          "type": "boolean"
+        },
+        "hotValue": {
+          "description": "The value that is considered hot for the metric. On a per metric basis hotness signals high utilization and something that might potentially be a cause for concern by the end user. hot_value is used to calibrate and scale visual color scales.",
+          "type": "number",
+          "format": "float"
+        },
+        "aggregation": {
+          "description": "The aggregation function used to aggregate each key bucket",
+          "type": "string",
+          "enumDescriptions": [
+            "Required default value.",
+            "Use the maximum of all values.",
+            "Use the sum of all values."
+          ],
+          "enum": [
+            "AGGREGATION_UNSPECIFIED",
+            "MAX",
+            "SUM"
+          ]
+        },
+        "matrix": {
+          "description": "The data for the metric as a matrix.",
+          "$ref": "MetricMatrix"
+        },
+        "derived": {
+          "description": "The references to numerator and denominator metrics for a derived metric.",
+          "$ref": "DerivedMetric"
+        },
+        "indexedHotKeys": {
+          "description": "The (sparse) mapping from time index to an IndexedHotKey message, representing those time intervals for which there are hot keys.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "IndexedHotKey"
+          }
+        },
+        "indexedKeyRangeInfos": {
+          "description": "The (sparse) mapping from time interval index to an IndexedKeyRangeInfos message, representing those time intervals for which there are informational messages concerning key ranges.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "IndexedKeyRangeInfos"
+          }
+        }
+      }
+    },
+    "LocalizedString": {
+      "id": "LocalizedString",
+      "description": "A message representing a user-facing string whose value may need to be translated before being displayed.",
+      "type": "object",
+      "properties": {
+        "token": {
+          "description": "The token identifying the message, e.g. 'METRIC_READ_CPU'. This should be unique within the service.",
+          "type": "string"
+        },
+        "message": {
+          "description": "The canonical English version of this message. If no token is provided or the front-end has no message associated with the token, this text will be displayed as-is.",
+          "type": "string"
+        },
+        "args": {
+          "description": "A map of arguments used when creating the localized message. Keys represent parameter names which may be used by the localized version when substituting dynamic values.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "MetricMatrix": {
+      "id": "MetricMatrix",
+      "description": "A message representing a matrix of floats.",
+      "type": "object",
+      "properties": {
+        "rows": {
+          "description": "The rows of the matrix.",
+          "type": "array",
+          "items": {
+            "$ref": "MetricMatrixRow"
+          }
+        }
+      }
+    },
+    "MetricMatrixRow": {
+      "id": "MetricMatrixRow",
+      "description": "A message representing a row of a matrix of floats.",
+      "type": "object",
+      "properties": {
+        "cols": {
+          "description": "The columns of the row.",
+          "type": "array",
+          "items": {
+            "type": "number",
+            "format": "float"
+          }
+        }
+      }
+    },
+    "DerivedMetric": {
+      "id": "DerivedMetric",
+      "description": "A message representing a derived metric.",
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "description": "The name of the numerator metric. e.g. \"latency\".",
+          "$ref": "LocalizedString"
+        },
+        "denominator": {
+          "description": "The name of the denominator metric. e.g. \"rows\".",
+          "$ref": "LocalizedString"
+        }
+      }
+    },
+    "IndexedHotKey": {
+      "id": "IndexedHotKey",
+      "description": "A message representing a (sparse) collection of hot keys for specific key buckets.",
+      "type": "object",
+      "properties": {
+        "sparseHotKeys": {
+          "description": "A (sparse) mapping from key bucket index to the index of the specific hot row key for that key bucket. The index of the hot row key can be translated to the actual row key via the ScanData.VisualizationData.indexed_keys repeated field.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "IndexedKeyRangeInfos": {
+      "id": "IndexedKeyRangeInfos",
+      "description": "A message representing a (sparse) collection of KeyRangeInfos for specific key buckets.",
+      "type": "object",
+      "properties": {
+        "keyRangeInfos": {
+          "description": "A (sparse) mapping from key bucket index to the KeyRangeInfos for that key bucket.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "KeyRangeInfos"
+          }
+        }
+      }
+    },
+    "KeyRangeInfos": {
+      "id": "KeyRangeInfos",
+      "description": "A message representing a list of specific information for multiple key ranges.",
+      "type": "object",
+      "properties": {
+        "infos": {
+          "description": "The list individual KeyRangeInfos.",
+          "type": "array",
+          "items": {
+            "$ref": "KeyRangeInfo"
+          }
+        },
+        "totalSize": {
+          "description": "The total size of the list of all KeyRangeInfos. This may be larger than the number of repeated messages above. If that is the case, this number may be used to determine how many are not being shown.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "KeyRangeInfo": {
+      "id": "KeyRangeInfo",
+      "description": "A message representing information for a key range (possibly one key).",
+      "type": "object",
+      "properties": {
+        "startKeyIndex": {
+          "description": "The index of the start key in indexed_keys.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "endKeyIndex": {
+          "description": "The index of the end key in indexed_keys.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "keysCount": {
+          "description": "The number of keys this range covers.",
+          "type": "string",
+          "format": "int64"
+        },
+        "metric": {
+          "description": "The name of the metric. e.g. \"latency\".",
+          "$ref": "LocalizedString"
+        },
+        "value": {
+          "description": "The value of the metric.",
+          "type": "number",
+          "format": "float"
+        },
+        "unit": {
+          "description": "The unit of the metric. This is an unstructured field and will be mapped as is to the user.",
+          "$ref": "LocalizedString"
+        },
+        "info": {
+          "description": "Information about this key range, for all metrics.",
+          "$ref": "LocalizedString"
+        },
+        "contextValues": {
+          "description": "The list of context values for this key range.",
+          "type": "array",
+          "items": {
+            "$ref": "ContextValue"
+          }
+        }
+      }
+    },
+    "ContextValue": {
+      "id": "ContextValue",
+      "description": "A message representing context for a KeyRangeInfo, including a label, value, unit, and severity.",
+      "type": "object",
+      "properties": {
+        "label": {
+          "description": "The label for the context value. e.g. \"latency\".",
+          "$ref": "LocalizedString"
+        },
+        "value": {
+          "description": "The value for the context.",
+          "type": "number",
+          "format": "float"
+        },
+        "unit": {
+          "description": "The unit of the context value.",
+          "type": "string"
+        },
+        "severity": {
+          "description": "The severity of this context.",
+          "type": "string",
+          "enumDescriptions": [
+            "Required default value.",
+            "Lowest severity level \"Info\".",
+            "Middle severity level \"Warning\".",
+            "Severity level signaling an error \"Error\"",
+            "Severity level signaling a non recoverable error \"Fatal\""
+          ],
+          "enum": [
+            "SEVERITY_UNSPECIFIED",
+            "INFO",
+            "WARNING",
+            "ERROR",
+            "FATAL"
+          ]
+        }
+      }
+    },
+    "DiagnosticMessage": {
+      "id": "DiagnosticMessage",
+      "description": "A message representing the key visualizer diagnostic messages.",
+      "type": "object",
+      "properties": {
+        "severity": {
+          "description": "The severity of the diagnostic message.",
+          "type": "string",
+          "enumDescriptions": [
+            "Required default value.",
+            "Lowest severity level \"Info\".",
+            "Middle severity level \"Warning\".",
+            "Severity level signaling an error \"Error\"",
+            "Severity level signaling a non recoverable error \"Fatal\""
+          ],
+          "enum": [
+            "SEVERITY_UNSPECIFIED",
+            "INFO",
+            "WARNING",
+            "ERROR",
+            "FATAL"
+          ]
+        },
+        "metric": {
+          "description": "The metric.",
+          "$ref": "LocalizedString"
+        },
+        "shortMessage": {
+          "description": "The short message.",
+          "$ref": "LocalizedString"
+        },
+        "info": {
+          "description": "Information about this diagnostic information.",
+          "$ref": "LocalizedString"
+        },
+        "metricSpecific": {
+          "description": "Whether this message is specific only for the current metric. By default Diagnostics are shown for all metrics, regardless which metric is the currently selected metric in the UI. However occasionally a metric will generate so many messages that the resulting visual clutter becomes overwhelming. In this case setting this to true, will show the diagnostic messages for that metric only if it is the currently selected metric.",
+          "type": "boolean"
+        }
+      }
+    },
     "ListOperationsResponse": {
       "id": "ListOperationsResponse",
       "description": "The response message for Operations.ListOperations.",
@@ -2159,6 +2644,67 @@
     }
   },
   "resources": {
+    "scans": {
+      "methods": {
+        "list": {
+          "id": "spanner.scans.list",
+          "path": "v1/{+parent}",
+          "flatPath": "v1/scans",
+          "httpMethod": "GET",
+          "parameters": {
+            "parent": {
+              "description": "Required. The unique name of the parent resource, specific to the Database service implementing this interface.",
+              "pattern": "^scans$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "view": {
+              "description": "Specifies which parts of the Scan should be returned in the response. Note, only the SUMMARY view (the default) is currently supported for ListScans.",
+              "location": "query",
+              "type": "string",
+              "enumDescriptions": [
+                "Not specified, equivalent to SUMMARY.",
+                "Server responses only include `name`, `details`, `start_time` and `end_time`. The default value. Note, the ListScans method may only use this view type, others view types are not supported.",
+                "Full representation of the scan is returned in the server response, including `data`."
+              ],
+              "enum": [
+                "VIEW_UNSPECIFIED",
+                "SUMMARY",
+                "FULL"
+              ]
+            },
+            "filter": {
+              "description": "A filter expression to restrict the results based on information present in the available Scan collection. The filter applies to all fields within the Scan message except for `data`.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The maximum number of items to return.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The next_page_token value returned from a previous List request, if any.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "response": {
+            "$ref": "ListScansResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/spanner.data"
+          ],
+          "description": "Return available scans given a Database-specific resource name."
+        }
+      }
+    },
     "projects": {
       "resources": {
         "instanceConfigs": {
@@ -2484,132 +3030,61 @@
           }
           ,
           "resources": {
-            "operations": {
-              "methods": {
-                "list": {
-                  "id": "spanner.projects.instances.operations.list",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation's parent resource.",
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "The standard list filter.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The standard list page size.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "The standard list page token.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "ListOperationsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/spanner.admin"
-                  ],
-                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-                },
-                "get": {
-                  "id": "spanner.projects.instances.operations.get",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation resource.",
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/spanner.admin"
-                  ],
-                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-                },
-                "delete": {
-                  "id": "spanner.projects.instances.operations.delete",
-                  "path": "v1/{+name}",
-                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation resource to be deleted.",
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Empty"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/spanner.admin"
-                  ],
-                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                },
-                "cancel": {
-                  "id": "spanner.projects.instances.operations.cancel",
-                  "path": "v1/{+name}:cancel",
-                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}:cancel",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation resource to be cancelled.",
-                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Empty"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform",
-                    "https://www.googleapis.com/auth/spanner.admin"
-                  ],
-                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                }
-              }
-            },
             "databases": {
               "methods": {
+                "getScans": {
+                  "id": "spanner.projects.instances.databases.getScans",
+                  "path": "v1/{+name}/scans",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/scans",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The unique name of the scan containing the requested information, specific to the Database service implementing this interface.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "view": {
+                      "description": "Specifies which parts of the Scan should be returned in the response. Note, if left unspecified, the FULL view is assumed.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "Not specified, equivalent to SUMMARY.",
+                        "Server responses only include `name`, `details`, `start_time` and `end_time`. The default value. Note, the ListScans method may only use this view type, others view types are not supported.",
+                        "Full representation of the scan is returned in the server response, including `data`."
+                      ],
+                      "enum": [
+                        "VIEW_UNSPECIFIED",
+                        "SUMMARY",
+                        "FULL"
+                      ]
+                    },
+                    "startTime": {
+                      "description": "These fields restrict the Database-specific information returned in the `Scan.data` field. If a `View` is provided that does not include the `Scan.data` field, these are ignored. This range of time must be entirely contained within the defined time range of the targeted scan. The lower bound for the time range to retrieve Scan data for.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    },
+                    "endTime": {
+                      "description": "The upper bound for the time range to retrieve Scan data for.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Scan"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.data"
+                  ],
+                  "description": "Request a specific scan with Database-specific data for Cloud Key Visualizer."
+                },
                 "list": {
                   "id": "spanner.projects.instances.databases.list",
                   "path": "v1/{+parent}/databases",
@@ -3471,6 +3946,130 @@
                       "description": "Creates a set of partition tokens that can be used to execute a read operation in parallel. Each of the returned partition tokens can be used by StreamingRead to specify a subset of the read result to read. The same session and read-only transaction must be used by the PartitionReadRequest used to create the partition tokens and the ReadRequests that use the partition tokens. There are no ordering guarantees on rows returned among the returned partition tokens, or even within each individual StreamingRead call issued with a partition_token. Partition tokens become invalid when the session used to create them is deleted, is idle for too long, begins a new transaction, or becomes too old. When any of these happen, it is not possible to resume the read, and the whole operation must be restarted from the beginning."
                     }
                   }
+                }
+              }
+            },
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "spanner.projects.instances.operations.list",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "spanner.projects.instances.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "spanner.projects.instances.operations.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "spanner.projects.instances.operations.cancel",
+                  "path": "v1/{+name}:cancel",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
                 }
               }
             },

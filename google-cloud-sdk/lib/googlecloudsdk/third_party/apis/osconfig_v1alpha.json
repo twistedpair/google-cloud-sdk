@@ -188,12 +188,11 @@
     },
     "OSPolicyAssignment": {
       "id": "OSPolicyAssignment",
-      "description": "OS policy assignment is an API resource provided by OS Config service to apply a set of OS policies to a dynamically targeted group of Compute Engine VM instances. An OS policy is used to define the desired state configuration for a Compute Engine instance through a set of configuration resources that provide capabilities such as installing or removing software packages, executing a script. The Compute Engine instances are selected via the instance filter that supports filtering by labels and OS families. Changes to OS policy assignments are gradually rolled out to the targeted instances gradually according to the rollout options specified within the assignment.",
+      "description": "OS policy assignment is an API resource that is used to apply a set of OS policies to a dynamically targeted group of Compute Engine VM instances. An OS policy is used to define the desired state configuration for a Compute Engine VM instance through a set of configuration resources that provide capabilities such as installing or removing software packages, or executing a script. For more information, see [OS policy and OS policy assignment](\/compute\/docs\/os-configuration-management\/working-with-os-policies).",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id}",
-          "readOnly": true,
+          "description": "Resource name. Format: `projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id}` This field is ignored when you create an OS policy assignment.",
           "type": "string"
         },
         "description": {
@@ -201,14 +200,14 @@
           "type": "string"
         },
         "osPolicies": {
-          "description": "Required. List of OS policies to be applied to the instances.",
+          "description": "Required. List of OS policies to be applied to the VMs.",
           "type": "array",
           "items": {
             "$ref": "OSPolicy"
           }
         },
         "instanceFilter": {
-          "description": "Required. Filter to select instances.",
+          "description": "Required. Filter to select VMs.",
           "$ref": "OSPolicyAssignmentInstanceFilter"
         },
         "rollout": {
@@ -269,7 +268,7 @@
     },
     "OSPolicy": {
       "id": "OSPolicy",
-      "description": "An OS policy defines the desired state configuration for an instance.",
+      "description": "An OS policy defines the desired state configuration for a VM.",
       "type": "object",
       "properties": {
         "id": {
@@ -295,21 +294,21 @@
           ]
         },
         "resourceGroups": {
-          "description": "Required. List of resource groups for the policy. For a particular instance, resource groups are evaluated in the order specified and the first resource group that is applicable is selected and the rest are ignored. If none of the resource groups are applicable for an instance, the instance is considered to be non-compliant w.r.t this policy. This behavior can be toggled by the flag `allow_no_resource_group_match`",
+          "description": "Required. List of resource groups for the policy. For a particular VM, resource groups are evaluated in the order specified and the first resource group that is applicable is selected and the rest are ignored. If none of the resource groups are applicable for a VM, the VM is considered to be non-compliant w.r.t this policy. This behavior can be toggled by the flag `allow_no_resource_group_match`",
           "type": "array",
           "items": {
             "$ref": "OSPolicyResourceGroup"
           }
         },
         "allowNoResourceGroupMatch": {
-          "description": "This flag determines the policy compliance status when none of the resource groups within the policy are applicable for an instance. Set this value to `true` if the policy needs to reported as compliant in this case.",
+          "description": "This flag determines the OS policy compliance status when none of the resource groups within the policy are applicable for a VM. Set this value to `true` if the policy needs to be reported as compliant even if the policy has nothing to validate or enforce.",
           "type": "boolean"
         }
       }
     },
     "OSPolicyResourceGroup": {
       "id": "OSPolicyResourceGroup",
-      "description": "Resource groups provide a mechanism to group OS policy resources. Resource groups enable OS policy authors to create a single OS policy to be applied to VMs running different operating Systems. When the OS policy is applied to a target VM instance, the appropriate resource group within the OS policy is selected based on the `OSFilter` specified within the resource group.",
+      "description": "Resource groups provide a mechanism to group OS policy resources. Resource groups enable OS policy authors to create a single OS policy to be applied to VMs running different operating Systems. When the OS policy is applied to a target VM, the appropriate resource group within the OS policy is selected based on the `OSFilter` specified within the resource group.",
       "type": "object",
       "properties": {
         "osFilter": {
@@ -317,7 +316,7 @@
           "$ref": "OSPolicyOSFilter"
         },
         "resources": {
-          "description": "Required. List of resources configured for this resource group",
+          "description": "Required. List of resources configured for this resource group. The resources are executed in the exact order specified here.",
           "type": "array",
           "items": {
             "$ref": "OSPolicyResource"
@@ -373,7 +372,7 @@
       "type": "object",
       "properties": {
         "desiredState": {
-          "description": "Required. The desired state the agent should maintain for this package. The default is to ensure the package is installed.",
+          "description": "Required. The desired state the agent should maintain for this package.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified is invalid.",
@@ -456,7 +455,7 @@
           "$ref": "OSPolicyResourceFileGcs"
         },
         "localPath": {
-          "description": "A local path to use.",
+          "description": "A local path within the VM to use.",
           "type": "string"
         },
         "allowInsecure": {
@@ -595,7 +594,7 @@
       "type": "object",
       "properties": {
         "archiveType": {
-          "description": "Required. Type of archive files in this repository. The default behavior is DEB.",
+          "description": "Required. Type of archive files in this repository.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified is invalid.",
@@ -698,7 +697,7 @@
     },
     "OSPolicyResourceExecResource": {
       "id": "OSPolicyResourceExecResource",
-      "description": "A resource that contains custom validation and enforcement steps.",
+      "description": "A resource that allows executing scripts on the VM. The `ExecResource` has 2 stages: `validate` and `enforce` and both stages accept a script as an argument to execute. When the `ExecResource` is applied by the agent, it first executes the script in the `validate` stage. The `validate` stage can signal that the `ExecResource` is already in the desired state by returning an exit code of `100`. If the `ExecResource` is not in the desired state, it should return an exit code of `101`. Any other exit code returned by this stage is considered an error. If the `ExecResource` is not in the desired state based on the exit code from the `validate` stage, the agent proceeds to execute the script from the `enforce` stage. If the `ExecResource` is already in the desired state, the `enforce` stage will not be run. Similar to `validate` stage, the `enforce` stage should return an exit code of `100` to indicate that the resource in now in its desired state. Any other exit code is considered an error. NOTE: An exit code of `100` was chosen over `0` (and `101` vs `1`) to have an explicit indicator of `in desired state`, `not in desired state` and errors. Because, for example, Powershell will always return an exit code of `0` unless an `exit` statement is provided in the script. So, for reasons of consistency and being explicit, exit codes `100` and `101` were chosen.",
       "type": "object",
       "properties": {
         "validate": {
@@ -706,7 +705,7 @@
           "$ref": "OSPolicyResourceExecResourceExec"
         },
         "enforce": {
-          "description": "What to run to bring this resource into the desired state. A exit code of 100 indicates \"success\", any other exit code idicates a failure running enforce.",
+          "description": "What to run to bring this resource into the desired state. An exit code of 100 indicates \"success\", any other exit code indicates a failure running enforce.",
           "$ref": "OSPolicyResourceExecResourceExec"
         }
       }
@@ -721,7 +720,7 @@
           "$ref": "OSPolicyResourceFile"
         },
         "script": {
-          "description": "An inline script.",
+          "description": "An inline script. The size of the script is limited to 1024 characters.",
           "type": "string"
         },
         "args": {
@@ -759,11 +758,11 @@
           "$ref": "OSPolicyResourceFile"
         },
         "content": {
-          "description": "A a file with this content.",
+          "description": "A a file with this content. The size of the content is limited to 1024 characters.",
           "type": "string"
         },
         "path": {
-          "description": "Required. The absolute path of the file.",
+          "description": "Required. The absolute path of the file within the VM.",
           "type": "string"
         },
         "state": {
@@ -790,29 +789,29 @@
     },
     "OSPolicyAssignmentInstanceFilter": {
       "id": "OSPolicyAssignmentInstanceFilter",
-      "description": "Message to represent the filters to select instances for an assignment",
+      "description": "Message to represent the filters to select VMs for an assignment",
       "type": "object",
       "properties": {
         "all": {
-          "description": "Target all VM instances in the project. If true, no other criteria is permitted.",
+          "description": "Target all VMs in the project. If true, no other criteria is permitted.",
           "type": "boolean"
         },
         "osShortNames": {
-          "description": "An instance is included if it's OS short name matches with any of the values provided in this list.",
+          "description": "A VM is included if it's OS short name matches with any of the values provided in this list.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "inclusionLabels": {
-          "description": "List of label sets used for instance inclusion. If the list has more than one `LabelSet`, the instance is included if any of the label sets are applicable for the instance.",
+          "description": "List of label sets used for VM inclusion. If the list has more than one `LabelSet`, the VM is included if any of the label sets are applicable for the VM.",
           "type": "array",
           "items": {
             "$ref": "OSPolicyAssignmentLabelSet"
           }
         },
         "exclusionLabels": {
-          "description": "List of label sets used for instance exclusion. If the list has more than one label set, the instance is excluded if any of the label sets are applicable for the instance. This filter is applied last in the filtering chain and therefore an instance is guaranteed to be excluded if it satisfies one of the below label sets.",
+          "description": "List of label sets used for VM exclusion. If the list has more than one label set, the VM is excluded if any of the label sets are applicable for the VM. This filter is applied last in the filtering chain and therefore a VM is guaranteed to be excluded if it satisfies one of the below label sets.",
           "type": "array",
           "items": {
             "$ref": "OSPolicyAssignmentLabelSet"
@@ -822,11 +821,11 @@
     },
     "OSPolicyAssignmentLabelSet": {
       "id": "OSPolicyAssignmentLabelSet",
-      "description": "Message representing label set. * A label is a key value pair set for an instance. * A LabelSet is a set of labels. * Labels within a LabelSet are ANDed. In other words, a LabelSet is applicable for an instance only if it matches all the labels in the LabelSet. * Example: A LabelSet with 2 labels: `env=prod` and `type=webserver` will only be applicable for those instances with both labels present.",
+      "description": "Message representing label set. * A label is a key value pair set for a VM. * A LabelSet is a set of labels. * Labels within a LabelSet are ANDed. In other words, a LabelSet is applicable for a VM only if it matches all the labels in the LabelSet. * Example: A LabelSet with 2 labels: `env=prod` and `type=webserver` will only be applicable for those VMs with both labels present.",
       "type": "object",
       "properties": {
         "labels": {
-          "description": "Labels are identified by key\/value pairs in this map. An instance should contain all the key\/value pairs specified in this map to be selected.",
+          "description": "Labels are identified by key\/value pairs in this map. A VM should contain all the key\/value pairs specified in this map to be selected.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -840,11 +839,11 @@
       "type": "object",
       "properties": {
         "disruptionBudget": {
-          "description": "Required. The maximum number (or percentage) of instances per zone to disrupt at any given moment.",
+          "description": "Required. The maximum number (or percentage) of VMs per zone to disrupt at any given moment.",
           "$ref": "FixedOrPercent"
         },
         "minWaitDuration": {
-          "description": "Required. This determines the minimum duration of time to wait after the configuration changes are applied through the current rollout. An instance continues to count towards the `disruption_budget` at least until this duration of time has passed after configuration changes are applied.",
+          "description": "Required. This determines the minimum duration of time to wait after the configuration changes are applied through the current rollout. A VM continues to count towards the `disruption_budget` at least until this duration of time has passed after configuration changes are applied.",
           "type": "string",
           "format": "google-duration"
         }
@@ -905,21 +904,21 @@
     },
     "InstanceOSPoliciesCompliance": {
       "id": "InstanceOSPoliciesCompliance",
-      "description": "This API resource provides the OS policies compliance data for a Compute Engine virtual machine (VM) instance at a given point in time. A Compute Engine VM can have multiple OS policy assignments, and each assignment can have multiple OS policies. As a result, multiple OS policies could be applied to a single VM. You can use this API resource to determine both the compliance state of your VM as well as the compliance state of an individual OS policy.",
+      "description": "This API resource represents the OS policies compliance data for a Compute Engine virtual machine (VM) instance at a given point in time. A Compute Engine VM can have multiple OS policy assignments, and each assignment can have multiple OS policies. As a result, multiple OS policies could be applied to a single VM. You can use this API resource to determine both the compliance state of your VM as well as the compliance state of an individual OS policy. For more information, see [View compliance](\/compute\/docs\/os-configuration-management\/view-compliance).",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The `InstanceOSPoliciesCompliance` API resource name. Format: projects\/{project_number}\/locations\/{location}\/instanceOSPoliciesCompliances\/{instance_id}",
+          "description": "Output only. The `InstanceOSPoliciesCompliance` API resource name. Format: `projects\/{project_number}\/locations\/{location}\/instanceOSPoliciesCompliances\/{instance_id}`",
           "readOnly": true,
           "type": "string"
         },
         "instance": {
-          "description": "Output only. The Compute Engine instance name.",
+          "description": "Output only. The Compute Engine VM instance name.",
           "readOnly": true,
           "type": "string"
         },
         "state": {
-          "description": "Output only. Compliance state of the instance.",
+          "description": "Output only. Compliance state of the VM.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -938,17 +937,17 @@
           ]
         },
         "detailedState": {
-          "description": "Output only. Detailed compliance state of the instance. This field is non-empty only when compliance state == UNKNOWN Supported values are: - no-compliance-data: Compliance data does not exist for this instance. - no-agent-detected: OS Config agent is not detected for this instance. - config-not-supported-by-agent: The OS Config agent running on this instance does not support configuration management. - inactive: The instance is not running. - internal-service-errors: Internal service errors encountered while enforcing compliance. - agent-errors: OS config agent encountered errors while enforcing compliance.",
+          "description": "Output only. Detailed compliance state of the VM. This field is populated only when compliance state is `UNKNOWN`. It may contain one of the following values: * `no-compliance-data`: Compliance data is not available for this VM. * `no-agent-detected`: OS Config agent is not detected for this VM. * `config-not-supported-by-agent`: The version of the OS Config agent running on this VM does not support configuration management. * `inactive`: VM is not running. * `internal-service-errors`: There were internal service errors encountered while enforcing compliance. * `agent-errors`: OS config agent encountered errors while enforcing compliance.",
           "readOnly": true,
           "type": "string"
         },
         "detailedStateReason": {
-          "description": "Output only. The reason for the `detailed_state` of the instance (if any).",
+          "description": "Output only. The reason for the `detailed_state` of the VM (if any).",
           "readOnly": true,
           "type": "string"
         },
         "osPolicyCompliances": {
-          "description": "Output only. Compliance data for each `OSPolicy` that is applied to the instance.",
+          "description": "Output only. Compliance data for each `OSPolicy` that is applied to the VM.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -956,7 +955,7 @@
           }
         },
         "lastComplianceCheckTime": {
-          "description": "Output only. Timestamp of the last compliance check for the instance.",
+          "description": "Output only. Timestamp of the last compliance check for the VM.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -978,7 +977,7 @@
           "type": "string"
         },
         "osPolicyAssignment": {
-          "description": "Reference to the `OSPolicyAssignment` API resource that the `OSPolicy` belongs to. Format: projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id@revision_id}",
+          "description": "Reference to the `OSPolicyAssignment` API resource that the `OSPolicy` belongs to. Format: `projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id@revision_id}`",
           "type": "string"
         },
         "state": {
@@ -1000,7 +999,7 @@
           ]
         },
         "osPolicyResourceCompliances": {
-          "description": "Compliance data for each `OSPolicyResource` that is applied to the instance.",
+          "description": "Compliance data for each `OSPolicyResource` that is applied to the VM.",
           "type": "array",
           "items": {
             "$ref": "OSPolicyResourceCompliance"
@@ -1085,7 +1084,7 @@
     },
     "ListInstanceOSPoliciesCompliancesResponse": {
       "id": "ListInstanceOSPoliciesCompliancesResponse",
-      "description": "A response message for listing OS policies compliance data for all Compute Engine instances in the given location.",
+      "description": "A response message for listing OS policies compliance data for all Compute Engine VMs in the given location.",
       "type": "object",
       "properties": {
         "instanceOsPoliciesCompliances": {
@@ -1103,11 +1102,11 @@
     },
     "Inventory": {
       "id": "Inventory",
-      "description": "This API resource provides the inventory data for a Compute Engine virtual machine (VM) instance at a given point in time. You can use this API resource to determine the inventory data of your VM.",
+      "description": "This API resource represents the available inventory data for a Compute Engine virtual machine (VM) instance at a given point in time. You can use this API resource to determine the inventory data of your VM. For more information, see [Information provided by OS inventory management](\/compute\/docs\/instances\/os-inventory-management#data-collected).",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The `Inventory` API resource name. Format: projects\/{project_number}\/locations\/{location}\/instances\/{instance_id}\/inventory",
+          "description": "Output only. The `Inventory` API resource name. Format: `projects\/{project_number}\/locations\/{location}\/instances\/{instance_id}\/inventory`",
           "readOnly": true,
           "type": "string"
         },
@@ -1125,7 +1124,7 @@
           }
         },
         "updateTime": {
-          "description": "Output only. Timestamp of the last reported inventory for the instance.",
+          "description": "Output only. Timestamp of the last reported inventory for the VM.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -1420,11 +1419,11 @@
     },
     "VulnerabilityReport": {
       "id": "VulnerabilityReport",
-      "description": "This API resource provides the vulnerability report for a Compute Engine virtual machine (VM) instance at a given point in time.",
+      "description": "This API resource represents the vulnerability report for a specified Compute Engine virtual machine (VM) instance at a given point in time. For more information, see [Vulnerability reports](\/compute\/docs\/instances\/os-inventory-management#vulnerability-reports).",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The `vulnerabilityReport` API resource name. Format: projects\/{project_number}\/locations\/{location}\/instances\/{instance_id}\/vulnerabilityReport",
+          "description": "Output only. The `vulnerabilityReport` API resource name. Format: `projects\/{project_number}\/locations\/{location}\/instances\/{instance_id}\/vulnerabilityReport`",
           "readOnly": true,
           "type": "string"
         },
@@ -1450,7 +1449,7 @@
       "type": "object",
       "properties": {
         "details": {
-          "description": "Contains metadata as per the upstream feed of the operating system.",
+          "description": "Contains metadata as per the upstream feed of the operating system and NVD.",
           "$ref": "VulnerabilityReportVulnerabilityDetails"
         },
         "installedInventoryItemIds": {
@@ -1494,15 +1493,15 @@
           "format": "float"
         },
         "cvssV3": {
-          "description": "The full description of the CVSSv3 for this vulnerability.",
+          "description": "The full description of the CVSSv3 for this vulnerability from NVD.",
           "$ref": "CVSSv3"
         },
         "severity": {
-          "description": "Assigned severity\/impact ranking.",
+          "description": "Assigned severity\/impact ranking from the distro.",
           "type": "string"
         },
         "description": {
-          "description": "The note or description describing the vulnerability.",
+          "description": "The note or description describing the vulnerability from the distro.",
           "type": "string"
         },
         "references": {
@@ -1695,7 +1694,7 @@
       "type": "object",
       "properties": {
         "osPolicyAssignment": {
-          "description": "Reference to the `OSPolicyAssignment` API resource. Format: projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id@revision_id}",
+          "description": "Reference to the `OSPolicyAssignment` API resource. Format: `projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id@revision_id}`",
           "type": "string"
         },
         "apiMethod": {
@@ -1783,7 +1782,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Create a new OS policy assignment. This also creates the first revision of the OS policy assignment. This method returns a long running operation(LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO."
+                  "description": "Create an OS policy assignment. This method also creates the first revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](\/compute\/docs\/osconfig\/rest\/v1alpha\/projects.locations.osPolicyAssignments.operations\/cancel)."
                 },
                 "patch": {
                   "id": "osconfig.projects.locations.osPolicyAssignments.patch",
@@ -1792,7 +1791,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. Resource name projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id}",
+                      "description": "Resource name. Format: `projects\/{project_number}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment_id}` This field is ignored when you create an OS policy assignment.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/osPolicyAssignments\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1817,7 +1816,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Update an existing OS policy assignment. This creates a new revision of the OS policy assignment. This method returns a long running operation(LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO."
+                  "description": "Update an existing OS policy assignment. This method creates a new revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](\/compute\/docs\/osconfig\/rest\/v1alpha\/projects.locations.osPolicyAssignments.operations\/cancel)."
                 },
                 "get": {
                   "id": "osconfig.projects.locations.osPolicyAssignments.get",
@@ -1826,7 +1825,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of OS policy assignment.",
+                      "description": "Required. The resource name of OS policy assignment. Format: `projects\/{project}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment}@{revisionId}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/osPolicyAssignments\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1842,7 +1841,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Retrieve an existing OS policy assignment. This always returns the latest revision. In order to retrieve a previous revision of the assignment, also provide the revision ID. Format: projects\/{project}\/locations\/{location}\/osPolicyAssignments\/{os_policy_assignment}@{revisionId}"
+                  "description": "Retrieve an existing OS policy assignment. This method always returns the latest revision. In order to retrieve a previous revision of the assignment, also provide the revision ID in the `name` parameter."
                 },
                 "list": {
                   "id": "osconfig.projects.locations.osPolicyAssignments.list",
@@ -1939,7 +1938,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Delete the OS policy assignment. This creates a new revision of the OS policy assignment. This method returns a long running operation(LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. If the LRO completes and is not cancelled, all revisions associated with the OS policy assignment are deleted."
+                  "description": "Delete the OS policy assignment. This method creates a new revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. If the LRO completes and is not cancelled, all revisions associated with the OS policy assignment are deleted. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](\/compute\/docs\/osconfig\/rest\/v1alpha\/projects.locations.osPolicyAssignments.operations\/cancel)."
                 }
               }
               ,
@@ -2012,7 +2011,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. API resource name for instance OS policies compliance resource. Format: projects\/{project}\/locations\/{location}\/instanceOSPoliciesCompliances\/{instance} For `{project}`, either Compute Engine project-number or project-id can be provided. For `{instance}`, either Compute Engine instance-id or instance-name can be provided.",
+                      "description": "Required. API resource name for instance OS policies compliance resource. Format: `projects\/{project}\/locations\/{location}\/instanceOSPoliciesCompliances\/{instance}` For `{project}`, either Compute Engine project-number or project-id can be provided. For `{instance}`, either Compute Engine VM instance-id or instance-name can be provided.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instanceOSPoliciesCompliances\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2028,7 +2027,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Get OS policies compliance data for the specified Compute Engine instance."
+                  "description": "Get OS policies compliance data for the specified Compute Engine VM instance."
                 },
                 "list": {
                   "id": "osconfig.projects.locations.instanceOSPoliciesCompliances.list",
@@ -2037,7 +2036,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource name. Format: projects\/{project}\/locations\/{location} For `{project}`, either Compute Engine project-number or project-id can be provided.",
+                      "description": "Required. The parent resource name. Format: `projects\/{project}\/locations\/{location}` For `{project}`, either Compute Engine project-number or project-id can be provided.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2069,82 +2068,54 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "List OS policies compliance data for all Compute Engine instances in the specified zone."
+                  "description": "List OS policies compliance data for all Compute Engine VM instances in the specified zone."
                 }
               }
             },
             "instances": {
-              "methods": {
-                "getInventory": {
-                  "id": "osconfig.projects.locations.instances.getInventory",
-                  "path": "v1alpha/{+name}",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/inventory",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. API resource name for inventory resource. Format: projects\/{project}\/locations\/{location}\/instances\/{instance}\/inventory For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, either Compute Engine `instance-id` or `instance-name` can be provided.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/inventory$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "view": {
-                      "description": "Inventory view indicating what information should be included in the inventory resource. If unspecified, the default view is BASIC.",
-                      "location": "query",
-                      "type": "string",
-                      "enumDescriptions": [
-                        "The default value. The API defaults to the BASIC view.",
-                        "Returns the basic inventory information that includes `os_info`.",
-                        "Returns all fields."
-                      ],
-                      "enum": [
-                        "INVENTORY_VIEW_UNSPECIFIED",
-                        "BASIC",
-                        "FULL"
-                      ]
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Inventory"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Get inventory data for the specified VM instance. If the VM has no associated inventory, the message `NOT_FOUND` is returned."
-                },
-                "getVulnerabilityReport": {
-                  "id": "osconfig.projects.locations.instances.getVulnerabilityReport",
-                  "path": "v1alpha/{+name}",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/vulnerabilityReport",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. API resource name for vulnerability resource. Format: projects\/{project}\/locations\/{location}\/instances\/{instance}\/vulnerabilityReport For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, either Compute Engine `instance-id` or `instance-name` can be provided.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/vulnerabilityReport$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "VulnerabilityReport"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the vulnerability report for the specified VM instance. Only VMs with inventory data have vulnerability reports associated with them."
-                }
-              }
-              ,
               "resources": {
                 "inventories": {
                   "methods": {
+                    "get": {
+                      "id": "osconfig.projects.locations.instances.inventories.get",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/inventory",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. API resource name for inventory resource. Format: `projects\/{project}\/locations\/{location}\/instances\/{instance}\/inventory` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, either Compute Engine `instance-id` or `instance-name` can be provided.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/inventory$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "view": {
+                          "description": "Inventory view indicating what information should be included in the inventory resource. If unspecified, the default view is BASIC.",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "The default value. The API defaults to the BASIC view.",
+                            "Returns the basic inventory information that includes `os_info`.",
+                            "Returns all fields."
+                          ],
+                          "enum": [
+                            "INVENTORY_VIEW_UNSPECIFIED",
+                            "BASIC",
+                            "FULL"
+                          ]
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Inventory"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get inventory data for the specified VM instance. If the VM has no associated inventory, the message `NOT_FOUND` is returned."
+                    },
                     "list": {
                       "id": "osconfig.projects.locations.instances.inventories.list",
                       "path": "v1alpha/{+parent}/inventories",
@@ -2152,7 +2123,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource name. Format: projects\/{project}\/locations\/{location}\/instances\/{instance} For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, only hyphen or dash character is supported to list inventories across VMs.",
+                          "description": "Required. The parent resource name. Format: `projects\/{project}\/locations\/{location}\/instances\/{instance}` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, only hyphen or dash character is supported to list inventories across VMs.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2205,6 +2176,31 @@
                 },
                 "vulnerabilityReports": {
                   "methods": {
+                    "get": {
+                      "id": "osconfig.projects.locations.instances.vulnerabilityReports.get",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/vulnerabilityReport",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. API resource name for vulnerability resource. Format: `projects\/{project}\/locations\/{location}\/instances\/{instance}\/vulnerabilityReport` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, either Compute Engine `instance-id` or `instance-name` can be provided.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/vulnerabilityReport$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "VulnerabilityReport"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the vulnerability report for the specified VM instance. Only VMs with inventory data have vulnerability reports associated with them."
+                    },
                     "list": {
                       "id": "osconfig.projects.locations.instances.vulnerabilityReports.list",
                       "path": "v1alpha/{+parent}/vulnerabilityReports",
@@ -2212,7 +2208,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource name. Format: projects\/{project}\/locations\/{location}\/instances\/{instance} For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, only `-` character is supported to list vulnerability reports across VMs.",
+                          "description": "Required. The parent resource name. Format: `projects\/{project}\/locations\/{location}\/instances\/{instance}` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, only `-` character is supported to list vulnerability reports across VMs.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,

@@ -71,7 +71,7 @@ def GetTensorboardTimeSeriesTypeArg(noun):
   return arg_utils.ChoiceEnumMapper(
       '--type',
       client.GetMessagesModule(
-      ).GoogleCloudAiplatformV1alpha1TensorboardTimeSeries
+      ).GoogleCloudAiplatformV1beta1TensorboardTimeSeries
       .ValueTypeValueValuesEnum,
       required=True,
       custom_mappings=_TYPE_CHOICES,

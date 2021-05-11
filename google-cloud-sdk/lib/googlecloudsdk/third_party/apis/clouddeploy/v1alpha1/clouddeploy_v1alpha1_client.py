@@ -592,7 +592,7 @@ class ClouddeployV1alpha1(base_api.BaseApiClient):
         method_id='clouddeploy.projects.locations.deliveryPipelines.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'requestId', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'force', 'requestId', 'validateOnly'],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest',

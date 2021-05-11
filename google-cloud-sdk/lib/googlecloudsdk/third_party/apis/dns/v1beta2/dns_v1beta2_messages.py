@@ -1384,6 +1384,7 @@ class Quota(_messages.Message):
   Fields:
     dnsKeysPerManagedZone: A integer attribute.
     gkeClustersPerManagedZone: A integer attribute.
+    gkeClustersPerResponsePolicy: A integer attribute.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#quota".
     managedZones: A integer attribute.
@@ -1405,22 +1406,23 @@ class Quota(_messages.Message):
 
   dnsKeysPerManagedZone = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   gkeClustersPerManagedZone = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  kind = _messages.StringField(3, default='dns#quota')
-  managedZones = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  managedZonesPerGkeCluster = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  managedZonesPerNetwork = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  networksPerManagedZone = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  networksPerPolicy = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  policies = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  resourceRecordsPerRrset = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  rrsetAdditionsPerChange = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  rrsetDeletionsPerChange = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  rrsetsPerManagedZone = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  targetNameServersPerManagedZone = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  targetNameServersPerPolicy = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  totalRrdataSizePerChange = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 18, repeated=True)
+  gkeClustersPerResponsePolicy = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  kind = _messages.StringField(4, default='dns#quota')
+  managedZones = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  managedZonesPerGkeCluster = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  managedZonesPerNetwork = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  networksPerManagedZone = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  networksPerPolicy = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  policies = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  resourceRecordsPerRrset = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  responsePolicyRulesPerResponsePolicy = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  rrsetAdditionsPerChange = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  rrsetDeletionsPerChange = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  rrsetsPerManagedZone = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  targetNameServersPerManagedZone = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  targetNameServersPerPolicy = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  totalRrdataSizePerChange = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 19, repeated=True)
 
 
 class ResourceRecordSet(_messages.Message):

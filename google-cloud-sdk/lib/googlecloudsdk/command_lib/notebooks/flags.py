@@ -242,9 +242,10 @@ def AddInstanceResource(parser, add_async_flag=True):
 def AddCreateInstanceFlags(parser):
   """Construct groups and arguments specific to the instance creation."""
   accelerator_choices = [
-      'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100', 'NVIDIA_TESLA_V100',
-      'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4', 'NVIDIA_TESLA_T4_VWS',
-      'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS', 'TPU_V2', 'TPU_V3'
+      'NVIDIA_TESLA_A100', 'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100',
+      'NVIDIA_TESLA_V100', 'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4',
+      'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS',
+      'TPU_V2', 'TPU_V3'
   ]
   boot_disk_choices = ['PD_STANDARD', 'PD_SSD', 'PD_BALANCED']
   encryption_choices = ['GMEK', 'CMEK']
@@ -427,6 +428,10 @@ def AddStopInstanceFlags(parser):
   AddInstanceResource(parser)
 
 
+def AddGetHealthInstanceFlags(parser):
+  AddInstanceResource(parser, add_async_flag=False)
+
+
 def AddIsUpgradeableInstanceFlags(parser):
   AddInstanceResource(parser, add_async_flag=False)
 
@@ -435,12 +440,21 @@ def AddUpgradeInstanceFlags(parser):
   AddInstanceResource(parser)
 
 
+def AddRollbackInstanceFlags(parser):
+  AddInstanceResource(parser)
+  parser.add_argument(
+      '--target-snapshot',
+      help='The saved snapshot to rollback to',
+      required=True)
+
+
 def AddUpdateInstanceFlags(parser):
   """Adds accelerator, labels and machine type flags to the parser for update."""
   accelerator_choices = [
-      'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100', 'NVIDIA_TESLA_V100',
-      'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4', 'NVIDIA_TESLA_T4_VWS',
-      'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS', 'TPU_V2', 'TPU_V3'
+      'NVIDIA_TESLA_A100', 'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100',
+      'NVIDIA_TESLA_V100', 'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4',
+      'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS',
+      'TPU_V2', 'TPU_V3'
   ]
   AddInstanceResource(parser)
   update_group = parser.add_group(required=True)

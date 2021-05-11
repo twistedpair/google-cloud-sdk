@@ -262,6 +262,7 @@ class _Sections(object):
       override properties for the Cloud SDK.
     app: Section, The section containing app properties for the Cloud SDK.
     auth: Section, The section containing auth properties for the Cloud SDK.
+    aws: Section, The section containing properties for GKE on AWS.
     billing: Section, The section containing billing properties for the Cloud
       SDK.
     blueprints: Section, the section containing blueprints properties for the
@@ -376,6 +377,7 @@ class _Sections(object):
     self.app = _SectionApp()
     self.artifacts = _SectionArtifacts()
     self.auth = _SectionAuth()
+    self.aws = _SectionAws()
     self.billing = _SectionBilling()
     self.blueprints = _SectionBlueprints()
     self.builds = _SectionBuilds()
@@ -438,6 +440,7 @@ class _Sections(object):
         self.api_endpoint_overrides,
         self.app,
         self.auth,
+        self.aws,
         self.billing,
         self.blueprints,
         self.builds,
@@ -1635,6 +1638,23 @@ class _SectionAuth(_Section):
         'execute against oauth2client library.')
 
 
+class _SectionAws(_Section):
+  """Contains the properties for the 'aws' section."""
+
+  def __init__(self):
+    super(_SectionAws, self).__init__('aws', hidden=True)
+    self.region = self._Add(
+        'region',
+        help_text='Default Google Cloud region `gcloud` should use for '
+        'container aws surface.',
+        hidden=True)
+    self.aws_region = self._Add(
+        'aws_region',
+        help_text='Default AWS region `gcloud` should use for '
+        'container aws surface.',
+        hidden=True)
+
+
 class _SectionBilling(_Section):
   """Contains the properties for the 'auth' section."""
 
@@ -2117,6 +2137,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.gameservices = self._Add('gameservices')
     self.genomics = self._Add('genomics')
     self.gkehub = self._Add('gkehub')
+    self.gkemulticloud = self._Add('gkemulticloud')
     self.healthcare = self._Add('healthcare')
     self.iam = self._Add('iam')
     self.iamassist = self._Add('iamassist')

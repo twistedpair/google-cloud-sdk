@@ -475,6 +475,13 @@
       "properties": {
       }
     },
+    "GoogleCloudRecaptchaenterpriseV1MigrateKeyRequest": {
+      "id": "GoogleCloudRecaptchaenterpriseV1MigrateKeyRequest",
+      "description": "The migrate key request message.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudRecaptchaenterpriseV1Metrics": {
       "id": "GoogleCloudRecaptchaenterpriseV1Metrics",
       "description": "Metrics for a single Key.",
@@ -774,6 +781,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes the specified key."
+            },
+            "migrate": {
+              "id": "recaptchaenterprise.projects.keys.migrate",
+              "path": "v1/{+name}:migrate",
+              "flatPath": "v1/projects/{projectsId}/keys/{keysId}:migrate",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the key to be migrated, in the format \"projects\/{project}\/keys\/{key}\".",
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudRecaptchaenterpriseV1MigrateKeyRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudRecaptchaenterpriseV1Key"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Migrates an existing key from reCAPTCHA to reCAPTCHA Enterprise. Once a key is migrated, it can be used from either product. SiteVerify requests will be billed as CreateAssessment calls."
             },
             "getMetrics": {
               "id": "recaptchaenterprise.projects.keys.getMetrics",

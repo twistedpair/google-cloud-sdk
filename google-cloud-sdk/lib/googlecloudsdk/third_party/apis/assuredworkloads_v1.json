@@ -342,6 +342,10 @@
             "ENCRYPTION_KEYS_PROJECT",
             "KEYRING"
           ]
+        },
+        "displayName": {
+          "description": "User-assigned resource display name. If not empty it will be used to create a resource with the specified name.",
+          "type": "string"
         }
       }
     },
@@ -670,6 +674,10 @@
             "ENCRYPTION_KEYS_PROJECT",
             "KEYRING"
           ]
+        },
+        "displayName": {
+          "description": "User-assigned resource display name. If not empty it will be used to create a resource with the specified name.",
+          "type": "string"
         }
       }
     }

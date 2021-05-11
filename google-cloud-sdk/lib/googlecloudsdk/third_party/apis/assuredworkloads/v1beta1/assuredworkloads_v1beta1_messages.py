@@ -335,6 +335,8 @@ class GoogleCloudAssuredworkloadsV1WorkloadResourceSettings(_messages.Message):
       (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)
 
   Fields:
+    displayName: User-assigned resource display name. If not empty it will be
+      used to create a resource with the specified name.
     resourceId: Resource identifier. For a project this represents project_id.
       If the project is already taken, the workload creation will fail.
     resourceType: Indicates the type of resource. This field should be
@@ -358,8 +360,9 @@ class GoogleCloudAssuredworkloadsV1WorkloadResourceSettings(_messages.Message):
     ENCRYPTION_KEYS_PROJECT = 2
     KEYRING = 3
 
-  resourceId = _messages.StringField(1)
-  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
+  displayName = _messages.StringField(1)
+  resourceId = _messages.StringField(2)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 3)
 
 
 class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_messages.Message):
@@ -640,6 +643,8 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings(_messages.Messa
       (CONSUMER_PROJECT or ENCRYPTION_KEYS_PROJECT)
 
   Fields:
+    displayName: User-assigned resource display name. If not empty it will be
+      used to create a resource with the specified name.
     resourceId: Resource identifier. For a project this represents project_id.
       If the project is already taken, the workload creation will fail.
     resourceType: Indicates the type of resource. This field should be
@@ -663,8 +668,9 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings(_messages.Messa
     ENCRYPTION_KEYS_PROJECT = 2
     KEYRING = 3
 
-  resourceId = _messages.StringField(1)
-  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
+  displayName = _messages.StringField(1)
+  resourceId = _messages.StringField(2)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 3)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

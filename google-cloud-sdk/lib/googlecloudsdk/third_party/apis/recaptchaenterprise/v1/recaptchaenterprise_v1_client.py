@@ -252,6 +252,33 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Migrate(self, request, global_params=None):
+      r"""Migrates an existing key from reCAPTCHA to reCAPTCHA Enterprise. Once a key is migrated, it can be used from either product. SiteVerify requests will be billed as CreateAssessment calls.
+
+      Args:
+        request: (RecaptchaenterpriseProjectsKeysMigrateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecaptchaenterpriseV1Key) The response message.
+      """
+      config = self.GetMethodConfig('Migrate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Migrate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/keys/{keysId}:migrate',
+        http_method='POST',
+        method_id='recaptchaenterprise.projects.keys.migrate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:migrate',
+        request_field='googleCloudRecaptchaenterpriseV1MigrateKeyRequest',
+        request_type_name='RecaptchaenterpriseProjectsKeysMigrateRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1Key',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates the specified key.
 

@@ -1139,7 +1139,8 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
       build_tags,
       output_filter,
       backoff=backoff,
-      log_location=args.log_location)
+      log_location=args.log_location,
+      build_region=builder_region)
 
 
 def _GetInstanceImportRegion(args):  # pylint:disable=unused-argument

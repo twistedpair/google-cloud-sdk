@@ -80,10 +80,9 @@ class DeployClient(object):
             })
         resource.name = resource_ref.RelativeName()
       elif kind == TARGET_KIND:
-        if ('delivery-pipeline' not in config or
-            not config['delivery-pipeline']):
+        if ('deliveryPipeline' not in config or not config['deliveryPipeline']):
           raise exceptions.Error(
-              'missing required field .delivery-pipeline in target {}'.format(
+              'missing required field .deliveryPipeline in target {}'.format(
                   config['name']))
         resource = self.messages.Target()
         resource_ref = resources.REGISTRY.Parse(
@@ -92,7 +91,7 @@ class DeployClient(object):
             params={
                 'projectsId': project,
                 'locationsId': region,
-                'deliveryPipelinesId': config['delivery-pipeline'],
+                'deliveryPipelinesId': config['deliveryPipeline'],
                 'targetsId': config['name']
             })
         resource.name = resource_ref.RelativeName()
@@ -103,36 +102,63 @@ class DeployClient(object):
             resource_ref.Name()))
 
       for field in config.keys():
-        if field not in ['apiVersion', 'kind', 'delivery-pipeline', 'name']:
+        if field not in ['apiVersion', 'kind', 'deliveryPipeline', 'name']:
           setattr(resource, field, config[field])
 
       resource_dict[kind].append(resource)
 
     return resource_dict
 
-  def UpdateResources(self, resource_dict, pipeline_func, target_func,
-                      msg_template):
+  def CreateResources(self, resource_dict):
     """Creates Cloud Deploy resources.
 
     Asynchronously calls the API then iterate the operations
     to check the status.
 
     Args:
-     resource_dict: dictionary of kind and resource.
-     pipeline_func: function used to update the delivery pipeline resource.
-     target_func: function used to update the target resource.
-     msg_template: output string template.
+     resource_dict: dict[str, optional[list], dictionary of kind
+       (delivery-pipeline|target) and its resources. The resource list can be
+       empty.
     """
-    # creates delivery pipeline first
+    msg_template = 'Created Cloud Deploy resource: {}.'
+    # Create delivery pipeline first.
     if resource_dict[DELIVERY_PIPELINE_KIND]:
       operation_dict = {}
       for resource in resource_dict[DELIVERY_PIPELINE_KIND]:
-        operation_dict[resource.name] = pipeline_func(resource)
+        operation_dict[resource.name] = self.CreateDeliveryPipeline(resource)
       self._CheckOperationStatus(operation_dict, msg_template)
     if resource_dict[TARGET_KIND]:
       operation_dict = {}
       for resource in resource_dict[TARGET_KIND]:
-        operation_dict[resource.name] = target_func(resource)
+        operation_dict[resource.name] = self.CreateTarget(resource)
+      self._CheckOperationStatus(operation_dict, msg_template)
+
+  def DeleteResources(self, resource_dict, force):
+    """Delete Cloud Deploy resources.
+
+    Asynchronously calls the API then iterate the operations
+    to check the status.
+
+    Args:
+     resource_dict: dict[str, optional[list], dictionary of kind
+       (delivery-pipeline|target) and its resources. The resource list can be
+       empty.
+     force: bool, if true, the delivery pipeline with sub-resources will be
+       deleted and its sub-resources will also be deleted.
+    """
+
+    msg_template = 'Deleted Cloud Deploy resource: {}.'
+    # Delete targets first.
+    if resource_dict[TARGET_KIND]:
+      operation_dict = {}
+      for resource in resource_dict[TARGET_KIND]:
+        operation_dict[resource.name] = self.DeleteTarget(resource)
+      self._CheckOperationStatus(operation_dict, msg_template)
+    if resource_dict[DELIVERY_PIPELINE_KIND]:
+      operation_dict = {}
+      for resource in resource_dict[DELIVERY_PIPELINE_KIND]:
+        operation_dict[resource.name] = self.DeleteDeliveryPipeline(
+            resource, force)
       self._CheckOperationStatus(operation_dict, msg_template)
 
   def _CheckOperationStatus(self, operation_dict, msg_template):
@@ -141,17 +167,21 @@ class DeployClient(object):
     Only logs the errors instead of re-throwing them.
 
     Args:
-     operation_dict: dictionary of resource kind and operations.
+     operation_dict: dict[str, oOptional[clouddeploy_messages.Operation],
+       dictionary of resource name and clouddeploy_messages.Operation. The
+       operation can be None if the operation isn't executed.
      msg_template: output string template.
     """
     for resource_name, operation in operation_dict.items():
+      if not operation or not operation.name:
+        continue
       try:
         operation_ref = resources.REGISTRY.ParseRelativeName(
             operation.name,
             collection='clouddeploy.projects.locations.operations')
         response_msg = self.operation_client.WaitForOperation(
             operation, operation_ref,
-            'Waiting for resource {} to be created'.format(
+            'Waiting for the operation on resource {}'.format(
                 resource_name)).response
         if response_msg is not None:
           response = encoding.MessageToPyValue(response_msg)
@@ -171,7 +201,7 @@ class DeployClient(object):
     Returns:
       The operation message.
     """
-    log.debug('creating delivery pipeline: ' + repr(pipeline_config))
+    log.debug('Creating delivery pipeline: ' + repr(pipeline_config))
     return self._pipeline_service.Patch(
         self.messages.ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(
             deliveryPipeline=pipeline_config,
@@ -189,7 +219,7 @@ class DeployClient(object):
     Returns:
       The operation message.
     """
-    log.debug('creating target: ' + repr(target_config))
+    log.debug('Creating target: ' + repr(target_config))
     return self._target_service.Patch(
         self.messages
         .ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(
@@ -198,21 +228,23 @@ class DeployClient(object):
             name=target_config.name,
             updateMask=TARGET_UPDATE_MASK))
 
-  def DeleteDeliveryPipeline(self, pipeline_config):
+  def DeleteDeliveryPipeline(self, pipeline_config, force):
     """Deletes a delivery pipeline resource.
 
     Args:
       pipeline_config: apitools.base.protorpclite.messages.Message, delivery
         pipeline message.
+      force: if true, the delivery pipeline with sub-resources will be deleted
+        and its sub-resources will also be deleted.
 
     Returns:
-      The operation message.
+      The operation message. It could be none if the resource doesn't exist.
     """
-    log.debug('deleting delivery pipeline: ' + repr(pipeline_config))
+    log.debug('Deleting delivery pipeline: ' + repr(pipeline_config))
     return self._pipeline_service.Delete(
         self.messages
         .ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(
-            allowMissing=True, name=pipeline_config.name))
+            allowMissing=True, name=pipeline_config.name, force=force))
 
   def DeleteTarget(self, target_config):
     """Deletes a target resource.
@@ -222,9 +254,9 @@ class DeployClient(object):
         message.
 
     Returns:
-      The operation message.
+      The operation message. It could be none if the resource doesn't exist.
     """
-    log.debug('deleting target: ' + repr(target_config))
+    log.debug('Deleting target: ' + repr(target_config))
     return self._target_service.Delete(
         self.messages
         .ClouddeployProjectsLocationsDeliveryPipelinesTargetsDeleteRequest(

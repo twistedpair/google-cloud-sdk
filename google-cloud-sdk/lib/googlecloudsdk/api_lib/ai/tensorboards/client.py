@@ -22,6 +22,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.command_lib.ai import constants
+from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.util.args import labels_util
 
 
@@ -93,3 +94,36 @@ class TensorboardsClient(object):
     request = self.messages.AiplatformProjectsLocationsTensorboardsDeleteRequest(
         name=tensorboard_ref.RelativeName())
     return self._service.Delete(request)
+
+  def Patch(self, tensorboard_ref, args):
+    """Update a Tensorboard."""
+    tensorboard = self.messages.GoogleCloudAiplatformV1alpha1Tensorboard()
+    update_mask = []
+
+    def GetLabels():
+      return self.Get(tensorboard_ref).labels
+
+    labels_update = labels_util.ProcessUpdateArgsLazy(
+        args,
+        self.messages.GoogleCloudAiplatformV1alpha1Tensorboard.LabelsValue,
+        GetLabels)
+    if labels_update.needs_update:
+      tensorboard.labels = labels_update.labels
+      update_mask.append('labels')
+
+    if args.display_name is not None:
+      tensorboard.displayName = args.display_name
+      update_mask.append('display_name')
+
+    if args.description is not None:
+      tensorboard.description = args.description
+      update_mask.append('description')
+
+    if not update_mask:
+      raise errors.NoFieldsSpecifiedError('No updates requested.')
+
+    req = self.messages.AiplatformProjectsLocationsTensorboardsPatchRequest(
+        name=tensorboard_ref.RelativeName(),
+        googleCloudAiplatformV1alpha1Tensorboard=tensorboard,
+        updateMask=','.join(update_mask))
+    return self._service.Patch(req)

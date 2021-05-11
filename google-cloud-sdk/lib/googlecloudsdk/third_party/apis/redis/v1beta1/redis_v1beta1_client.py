@@ -297,6 +297,33 @@ class RedisV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RescheduleMaintenance(self, request, global_params=None):
+      r"""Reschedule maintenance for a given instance in a given project and location.
+
+      Args:
+        request: (RedisProjectsLocationsInstancesRescheduleMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RescheduleMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RescheduleMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:rescheduleMaintenance',
+        http_method='POST',
+        method_id='redis.projects.locations.instances.rescheduleMaintenance',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:rescheduleMaintenance',
+        request_field='rescheduleMaintenanceRequest',
+        request_type_name='RedisProjectsLocationsInstancesRescheduleMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Upgrade(self, request, global_params=None):
       r"""Upgrades Redis instance to the newer Redis version specified in the request.
 

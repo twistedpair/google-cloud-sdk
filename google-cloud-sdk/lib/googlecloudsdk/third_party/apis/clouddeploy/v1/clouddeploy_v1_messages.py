@@ -189,6 +189,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(_messages.Messa
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
+    force: If set to true, all child resources under this pipeline will also
+      be deleted. Otherwise, the request will only work if the pipeline has no
+      child resources.
     name: Required. The name of the `DeliveryPipeline` to delete. Format
       should be projects/{projectID}/locations/{locationName}/deliveryPipeline
       s/{pipelineName}.
@@ -209,9 +212,10 @@ class ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(_messages.Messa
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
+  force = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesGetIamPolicyRequest(_messages.Message):
@@ -586,7 +590,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsCreateRequest(_message
   Fields:
     parent: Required. The parent collection in which the `Target` should be
       created. Format should be projects/{projectID}/locations/{locationName}/
-      deliverPiplines/{pipelineName}.
+      deliveryPipelines/{pipelineName}.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will

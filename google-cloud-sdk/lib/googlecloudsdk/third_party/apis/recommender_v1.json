@@ -192,6 +192,24 @@
             "MANAGEABILITY"
           ]
         },
+        "severity": {
+          "description": "Insight's severity.",
+          "type": "string",
+          "enumDescriptions": [
+            "Insight has unspecified severity.",
+            "Insight has low severity.",
+            "Insight has medium severity.",
+            "Insight has high severity.",
+            "Insight has critical severity."
+          ],
+          "enum": [
+            "SEVERITY_UNSPECIFIED",
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
         "etag": {
           "description": "Fingerprint of the Insight. Provides optimistic locking when updating states.",
           "type": "string"
@@ -314,6 +332,24 @@
           "items": {
             "$ref": "GoogleCloudRecommenderV1Impact"
           }
+        },
+        "priority": {
+          "description": "Recommendation's priority.",
+          "type": "string",
+          "enumDescriptions": [
+            "Recommendation has unspecified priority.",
+            "Recommendation has P4 priority (lowest priority).",
+            "Recommendation has P3 priority (second lowest priority).",
+            "Recommendation has P2 priority (second highest priority).",
+            "Recommendation has P1 priority (highest priority)."
+          ],
+          "enum": [
+            "PRIORITY_UNSPECIFIED",
+            "P4",
+            "P3",
+            "P2",
+            "P1"
+          ]
         },
         "content": {
           "description": "Content of the recommendation describing recommended changes to resources.",

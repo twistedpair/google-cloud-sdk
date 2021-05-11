@@ -343,8 +343,9 @@ FLATTEN_FLAG = Argument(
         This also flattens keys for *--format* and *--filter*. For example,
         *--flatten=abc.def* flattens *abc.def[].ghi* references to
         *abc.def.ghi*. A resource record containing *abc.def[]* with N elements
-        will expand to N records in the flattened output. This flag interacts
-        with other flags that are applied in this order: *--flatten*,
+        will expand to N records in the flattened output. This allows us to
+        specify what `resource-key` the `filter` will operate on. This flag
+        interacts with other flags that are applied in this order: *--flatten*,
         *--sort-by*, *--filter*, *--limit*.""")
 
 FORMAT_FLAG = Argument(

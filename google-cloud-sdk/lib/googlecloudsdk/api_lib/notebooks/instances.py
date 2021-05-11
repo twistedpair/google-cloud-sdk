@@ -258,6 +258,12 @@ def CreateSetMachineTypeRequest(args, messages):
       name=instance, setInstanceMachineTypeRequest=set_machine_request)
 
 
+def CreateInstanceGetHealthRequest(args, messages):
+  instance = GetInstanceResource(args).RelativeName()
+  return messages.NotebooksProjectsLocationsInstancesGetInstanceHealthRequest(
+      name=instance)
+
+
 def CreateInstanceIsUpgradeableRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
   return messages.NotebooksProjectsLocationsInstancesIsUpgradeableRequest(
@@ -269,6 +275,14 @@ def CreateInstanceUpgradeRequest(args, messages):
   upgrade_request = messages.UpgradeInstanceRequest()
   return messages.NotebooksProjectsLocationsInstancesUpgradeRequest(
       name=instance, upgradeInstanceRequest=upgrade_request)
+
+
+def CreateInstanceRollbackRequest(args, messages):
+  instance = GetInstanceResource(args).RelativeName()
+  rollback_request = messages.RollbackInstanceRequest(
+      targetSnapshot=args.target_snapshot)
+  return messages.NotebooksProjectsLocationsInstancesRollbackRequest(
+      name=instance, rollbackInstanceRequest=rollback_request)
 
 
 def GetInstanceResource(args):
@@ -285,6 +299,7 @@ class OperationType(enum.Enum):
   CREATE = (log.CreatedResource, 'created')
   UPDATE = (log.UpdatedResource, 'updated')
   UPGRADE = (log.UpdatedResource, 'upgraded')
+  ROLLBACK = (log.UpdatedResource, 'rolled back')
   DELETE = (log.DeletedResource, 'deleted')
   RESET = (log.ResetResource, 'reset')
 

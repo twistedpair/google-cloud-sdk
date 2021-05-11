@@ -932,16 +932,6 @@ class DeviceUser(_messages.Message):
   userEmail = _messages.StringField(10)
 
 
-class DsaPublicKeyInfo(_messages.Message):
-  r"""DSA public key information.
-
-  Fields:
-    keySize: Key size in bits (size of parameter P)
-  """
-
-  keySize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
 class DynamicGroupMetadata(_messages.Message):
   r"""Dynamic group metadata like queries and status.
 
@@ -1764,44 +1754,6 @@ class GroupRelation(_messages.Message):
   roles = _messages.MessageField('TransitiveMembershipRole', 6, repeated=True)
 
 
-class IdpSigningKey(_messages.Message):
-  r"""Signing validation key.
-
-  Fields:
-    dsaKeyInfo: Output only. DSA public key information.
-    name: Output only. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the key.
-    rsaKeyInfo: Output only. RSA public key information.
-    updateTime: Output only. When the key data was last updated.
-  """
-
-  dsaKeyInfo = _messages.MessageField('DsaPublicKeyInfo', 1)
-  name = _messages.StringField(2)
-  rsaKeyInfo = _messages.MessageField('RsaPublicKeyInfo', 3)
-  updateTime = _messages.StringField(4)
-
-
-class InboundSamlSsoProfile(_messages.Message):
-  r"""A SAML 2.0 (https://www.oasis-open.org/standards#samlv2.0) federation
-  between a Google enterprise customer and a SAML IDP.
-
-  Fields:
-    displayName: Human-readable name of the SAML SSO profile.
-    idpConfig: SAML IDP configuration.
-    name: Output only. [Resource
-      name](https://cloud.google.com/apis/design/resource_names) of the SAML
-      SSO profile.
-    spConfig: SAML SP configuration for this SAML SSO profile. These are the
-      SP details provided by Google that should be configured on the
-      corresponding IDP.
-  """
-
-  displayName = _messages.StringField(1)
-  idpConfig = _messages.MessageField('SamlIdpConfig', 2)
-  name = _messages.StringField(3)
-  spConfig = _messages.MessageField('SamlSpConfig', 4)
-
-
 class ListClientStatesResponse(_messages.Message):
   r"""Response message that is returned in LRO result of ListClientStates
   Operation.
@@ -2200,54 +2152,6 @@ class PosixGroup(_messages.Message):
   gid = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
   name = _messages.StringField(2)
   systemId = _messages.StringField(3)
-
-
-class RsaPublicKeyInfo(_messages.Message):
-  r"""RSA public key information.
-
-  Fields:
-    keySize: Key size in bits (size of the modulus).
-  """
-
-  keySize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
-class SamlIdpConfig(_messages.Message):
-  r"""SAML IDP configuration.
-
-  Fields:
-    changePasswordUri: Change password URL. Users will be sent to this URL
-      when changing their passwords at myaccount.google.com. This takes
-      precedence over the customer-level change password URL. Must use HTTPS.
-    entityId: Required. The SAML Entity ID of the IDP.
-    logoutRedirectUri: Logout redirect URL/Sign-out page URL. When a user
-      clicks the sign out link on a Google page, they will be redirected to
-      this URL. This is pure redirect with no attached SAML LogoutRequest
-      (SAML Single Logout is currently not supported). Must use HTTPS.
-    singleSignOnServiceUri: Required. SingleSignOnService endpoint
-      location/Sign-in page URL. This is the URL where the AuthnRequest will
-      be sent. Must use HTTPS. Currently assumed to accept the HTTP-Redirect
-      binding.
-  """
-
-  changePasswordUri = _messages.StringField(1)
-  entityId = _messages.StringField(2)
-  logoutRedirectUri = _messages.StringField(3)
-  singleSignOnServiceUri = _messages.StringField(4)
-
-
-class SamlSpConfig(_messages.Message):
-  r"""SAML SP configuration.
-
-  Fields:
-    assertionConsumerServiceUri: Output only. The SAML Assertion Consumer
-      Service (ACS) URL to be used for IDP-initiated login. Currently assumed
-      to accept Response messages via the HTTP-POST binding.
-    entityId: Output only. The SAML Entity ID for this SP.
-  """
-
-  assertionConsumerServiceUri = _messages.StringField(1)
-  entityId = _messages.StringField(2)
 
 
 class SearchGroupsResponse(_messages.Message):

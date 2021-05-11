@@ -112,20 +112,17 @@ def GetGCSLogTailerTransport():
   return Httplib2LogTailer()
 
 
-def GetGCLLogTailerTransport():
-  """Return a GCL LogTailer transport."""
+def GetGCLLogTailer():
+  """Return a GCL LogTailer."""
   try:
     # pylint: disable=g-import-not-at-top
-    from googlecloudsdk.core import gapic_util
-    from googlecloudsdk.third_party.logging_v2.gapic.transports.logging_service_v2_grpc_transport import LoggingServiceV2GrpcTransport
+    from googlecloudsdk.api_lib.logging import tailing
     # pylint: enable=g-import-not-at-top
   except ImportError:
     log.out.Print(LOG_STREAM_HELP_TEXT)
     return None
 
-  return LoggingServiceV2GrpcTransport(
-      credentials=gapic_util.StoredCredentials(),
-      address='logging.googleapis.com:443')
+  return tailing.LogTailer()
 
 
 class TailerBase(object):
@@ -166,14 +163,13 @@ class GCLLogTailer(TailerBase):
                timestamp,
                logUrl=None,
                out=log.status):
-    self.transport = GetGCLLogTailerTransport()
+    self.tailer = GetGCLLogTailer()
     self.build_id = buildId
     self.project_id = projectId
     self.timestamp = timestamp
     self.out = out
     self.buffer_window_seconds = 2
     self.log_url = logUrl
-    self.tail_stub = None
     self.stop = False
 
   @classmethod
@@ -196,6 +192,13 @@ class GCLLogTailer(TailerBase):
 
   def Tail(self):
     """Tail the GCL logs and print any new bytes to the console."""
+
+    if not self.tailer:
+      return
+
+    if self.stop:
+      return
+
     parent = 'projects/{project_id}'.format(project_id=self.project_id)
 
     log_filter = ('logName="projects/{project_id}/logs/cloudbuild" AND '
@@ -203,33 +206,21 @@ class GCLLogTailer(TailerBase):
                   'resource.labels.build_id="{build_id}"').format(
                       project_id=self.project_id, build_id=self.build_id)
 
-    if self.transport:
-      try:
-        # pylint: disable=g-import-not-at-top
-        from googlecloudsdk.api_lib.logging import tailing
-        from google.api_core import bidi
-        # pylint: enable=g-import-not-at-top
-      except ImportError:
-        self._PrintLogLine(LOG_STREAM_HELP_TEXT)
-        return
+    output_logs = self.tailer.TailLogs(
+        [parent],
+        log_filter,
+        buffer_window_seconds=self.buffer_window_seconds)
 
-      if not self.stop:
-        self.tail_stub = bidi.BidiRpc(self.transport.tail_log_entries)
-        output_logs = tailing.TailLogs(
-            self.tail_stub, [parent],
-            log_filter,
-            buffer_window_seconds=self.buffer_window_seconds)
+    self._PrintFirstLine()
 
-        self._PrintFirstLine()
+    for output in output_logs:
+      text = self._ValidateScreenReader(output.text_payload)
+      self._PrintLogLine(text)
 
-        for output in output_logs:
-          text = self._ValidateScreenReader(output.text_payload)
-          self._PrintLogLine(text)
-
-        self._PrintLastLine(' BUILD FINISHED; TRUNCATING OUTPUT LOGS ')
-        if self.log_url:
-          self._PrintLogLine(
-              'Logs are available at [{log_url}].'.format(log_url=self.log_url))
+    self._PrintLastLine(' BUILD FINISHED; TRUNCATING OUTPUT LOGS ')
+    if self.log_url:
+      self._PrintLogLine(
+          'Logs are available at [{log_url}].'.format(log_url=self.log_url))
 
     return
 
@@ -238,8 +229,8 @@ class GCLLogTailer(TailerBase):
     self.stop = True
     # Sleep to allow the Tailing API to send the last logs it buffered up
     time.sleep(self.buffer_window_seconds)
-    if self.tail_stub:
-      self.tail_stub.close()
+    if self.tailer:
+      self.tailer.Stop()
 
   def Print(self):
     """Print GCL logs to the console."""
