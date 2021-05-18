@@ -68,6 +68,14 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'topicsId'],
       True
   )
+  CURSOR_PROJECTS_LOCATIONS_SUBSCRIPTIONS = (
+      'cursor.projects.locations.subscriptions',
+      'cursor/projects/{projectsId}/locations/{locationsId}/subscriptions/'
+      '{subscriptionsId}',
+      {},
+      ['projectsId', 'locationsId', 'subscriptionsId'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

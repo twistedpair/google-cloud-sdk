@@ -51,9 +51,16 @@ def CreateUpdateRequest(ref, args):
   bundles_config = messages.BundlesConfig(
       configControllerConfig=messages.ConfigControllerConfig(enabled=True))
 
-  krm_api_host = messages.KrmApiHost(
-      masterIpv4CidrBlock=master_ipv4_cidr_block,
-      bundlesConfig=bundles_config)
+  # Pass through the network parameter if it was provided.
+  if args.network is not None:
+    krm_api_host = messages.KrmApiHost(
+        masterIpv4CidrBlock=master_ipv4_cidr_block,
+        network=args.network,
+        bundlesConfig=bundles_config)
+  else:
+    krm_api_host = messages.KrmApiHost(
+        masterIpv4CidrBlock=master_ipv4_cidr_block,
+        bundlesConfig=bundles_config)
 
   request = (
       messages.KrmapihostingProjectsLocationsKrmApiHostsCreateRequest(

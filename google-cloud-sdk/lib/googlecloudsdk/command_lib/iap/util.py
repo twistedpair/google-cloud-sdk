@@ -30,28 +30,40 @@ from googlecloudsdk.core import properties
 APP_ENGINE_RESOURCE_TYPE = 'app-engine'
 BACKEND_SERVICES_RESOURCE_TYPE = 'backend-services'
 WEB_RESOURCE_TYPE = 'iap_web'
+GATEWAY_RESOURCE_TYPE = 'iap_gateway'
 COMPUTE_RESOURCE_TYPE = 'compute'
 ORG_RESOURCE_TYPE = 'organization'
 FOLDER_RESOURCE_TYPE = 'folder'
 RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, BACKEND_SERVICES_RESOURCE_TYPE)
+IAM_RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE,
+                          BACKEND_SERVICES_RESOURCE_TYPE, GATEWAY_RESOURCE_TYPE)
 SETTING_RESOURCE_TYPE_ENUM = (APP_ENGINE_RESOURCE_TYPE, WEB_RESOURCE_TYPE,
                               COMPUTE_RESOURCE_TYPE, ORG_RESOURCE_TYPE,
                               FOLDER_RESOURCE_TYPE)
 
 
-def AddIapIamResourceArgs(parser, use_region_arg=False):
+def AddIapIamResourceArgs(parser, use_region_arg=False, use_iap_gateway=False):
   """Adds flags for an IAP IAM resource.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
     use_region_arg: Whether or not to show and accept the region argument.
+    use_iap_gateway: Whether or not to allow iap_gateway resource type.
   """
   group = parser.add_group()
-  group.add_argument(
-      '--resource-type',
-      choices=RESOURCE_TYPE_ENUM,
-      help='Resource type of the IAP IAM resource.')
+  if use_iap_gateway:
+    group.add_argument(
+        '--resource-type',
+        required=True,
+        choices=IAM_RESOURCE_TYPE_ENUM,
+        help='Resource type of the IAP resource.')
+  else:
+    group.add_argument(
+        '--resource-type',
+        required=True,
+        choices=RESOURCE_TYPE_ENUM,
+        help='Resource type of the IAP resource.')
   group.add_argument(
       '--service',
       help='Service name.')
@@ -283,6 +295,20 @@ def ParseIapIamResource(release_track, args):
     elif args.service:
       return iap_api.BackendService(release_track, project, None, args.service)
     return iap_api.BackendServices(release_track, project, None)
+  elif release_track == base.ReleaseTrack.ALPHA and args.resource_type == GATEWAY_RESOURCE_TYPE:
+    if release_track == base.ReleaseTrack.ALPHA and args.region:
+      raise calliope_exc.InvalidArgumentException(
+          '--region', '`--region` cannot be specified for '
+          '`--resource-type=iap_gateway`.')
+    if args.service:
+      raise calliope_exc.InvalidArgumentException(
+          '--service', '`--service` cannot be specified for '
+          '`--resource-type=iap_gateway`.')
+    if args.version:
+      raise calliope_exc.InvalidArgumentException(
+          '--version', '`--version` cannot be specified for '
+          '`--resource-type=iap_gateway`.')
+    return iap_api.IAPGateway(release_track, project)
 
   # This shouldn't be reachable, based on the IAP IAM resource parsing logic.
   raise iap_exc.InvalidIapIamResourceError('Could not parse IAP IAM resource.')

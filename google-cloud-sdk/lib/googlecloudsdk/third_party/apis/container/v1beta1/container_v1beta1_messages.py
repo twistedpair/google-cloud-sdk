@@ -4542,6 +4542,7 @@ class UpgradeAvailableEvent(_messages.Message):
       relative path of the node pool.
     resourceType: The resource type of the release version.
     version: The release version available for upgrade.
+    windowsVersions: Windows node versions info.
   """
 
   class ResourceTypeValueValuesEnum(_messages.Enum):
@@ -4561,6 +4562,7 @@ class UpgradeAvailableEvent(_messages.Message):
   resource = _messages.StringField(2)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 3)
   version = _messages.StringField(4)
+  windowsVersions = _messages.MessageField('WindowsVersions', 5)
 
 
 class UpgradeEvent(_messages.Message):

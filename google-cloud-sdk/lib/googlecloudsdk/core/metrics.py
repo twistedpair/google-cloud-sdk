@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import atexit
 import contextlib
 import json
 import os
@@ -683,7 +682,6 @@ def GetUserAgentIfMetricsEnabled():
 
 
 @CaptureAndLogException
-@atexit.register
 def Shutdown():
   """Reports the metrics that were collected."""
   collector = _MetricsCollector.GetCollectorIfExists()

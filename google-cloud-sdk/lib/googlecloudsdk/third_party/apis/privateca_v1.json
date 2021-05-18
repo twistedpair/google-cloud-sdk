@@ -1888,8 +1888,21 @@
       "type": "object",
       "properties": {
         "deleteResource": {
-          "description": "If set to TRUE, the resource has to be deleted. When using this bit, the CLH should fail the operation.",
+          "description": "DEPRECATED. Use exclusive_action instead.",
           "type": "boolean"
+        },
+        "exclusiveAction": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "The resource has to be deleted. When using this bit, the CLH should fail the operation.",
+            "This resource could not be repaired but the repair should be tried again at a later time. This can happen if there is a dependency that needs to be resolved first- e.g. if a parent resource must be repaired before a child resource."
+          ],
+          "enum": [
+            "UNKNOWN_REPAIR_ACTION",
+            "DELETE",
+            "RETRY"
+          ]
         }
       }
     }

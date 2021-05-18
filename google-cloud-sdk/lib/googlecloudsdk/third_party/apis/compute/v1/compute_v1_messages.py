@@ -601,7 +601,7 @@ class Address(_messages.Message):
       reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
       from a private IP range that are reserved for a VLAN attachment in an
       IPsec-encrypted Cloud Interconnect configuration. These addresses are
-      regional resources.
+      regional resources. Not currently available publicly.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -649,7 +649,7 @@ class Address(_messages.Message):
       reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
       from a private IP range that are reserved for a VLAN attachment in an
       IPsec-encrypted Cloud Interconnect configuration. These addresses are
-      regional resources.
+      regional resources. Not currently available publicly.
     region: [Output Only] The URL of the region where a regional address
       resides. For regional addresses, you must specify the region as a path
       parameter in the HTTP request URL. This field is not applicable to
@@ -720,7 +720,8 @@ class Address(_messages.Message):
     addresses that are external IP addresses automatically reserved for Cloud
     NAT.  - `IPSEC_INTERCONNECT` for addresses created from a private IP range
     that are reserved for a VLAN attachment in an IPsec-encrypted Cloud
-    Interconnect configuration. These addresses are regional resources.
+    Interconnect configuration. These addresses are regional resources. Not
+    currently available publicly.
 
     Values:
       DNS_RESOLVER: <no description>
@@ -3175,14 +3176,7 @@ class BackendService(_messages.Message):
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService. Only available
       for  external HTTP(S) Load Balancing.
-    circuitBreakers: Settings controlling the volume of connections to a
-      backend service. If not set, this feature is considered disabled.  This
-      field is applicable to either:   - A regional backend service with the
-      service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme
-      set to INTERNAL_MANAGED.  - A global backend service with the
-      load_balancing_scheme set to INTERNAL_SELF_MANAGED.    Not supported
-      when the backend service is referenced by a URL map that is bound to
-      target gRPC proxy that has validateForProxyless field set to true.
+    circuitBreakers: A CircuitBreakers attribute.
     connectionDraining: A ConnectionDraining attribute.
     consistentHash: Consistent Hash-based load balancing can be used to
       provide soft session affinity based on HTTP headers, cookies or other
@@ -3275,8 +3269,10 @@ class BackendService(_messages.Message):
       stream until the response has been completely processed, including all
       retries. A stream that does not complete in this duration is closed. If
       not specified, there will be no timeout limit, i.e. the maximum duration
-      is infinite. This field is only allowed when the loadBalancingScheme of
-      the backend service is INTERNAL_SELF_MANAGED.
+      is infinite. This value can be overridden in the PathMatcher
+      configuration of the UrlMap that references this backend service. This
+      field is only allowed when the loadBalancingScheme of the backend
+      service is INTERNAL_SELF_MANAGED.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -3340,10 +3336,9 @@ class BackendService(_messages.Message):
       supported when the backend service is referenced by a URL map that is
       bound to target gRPC proxy that has validateForProxyless field set to
       true.
-    timeoutSec: The backend service timeout has a different meaning depending
-      on the type of load balancer. For more information see,  Backend service
-      settings The default is 30 seconds. The full range of timeout values
-      allowed is 1 - 2,147,483,647 seconds.
+    timeoutSec: Not supported when the backend service is referenced by a URL
+      map that is bound to target gRPC proxy that has validateForProxyless
+      field set to true. Instead, use maxStreamDuration.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
@@ -4413,18 +4408,20 @@ class CircuitBreakers(_messages.Message):
   r"""Settings controlling the volume of connections to a backend service.
 
   Fields:
-    maxConnections: The maximum number of connections to the backend service.
-      If not specified, there is no limit.
-    maxPendingRequests: The maximum number of pending requests allowed to the
-      backend service. If not specified, there is no limit.
+    maxConnections: Not supported when the backend service is referenced by a
+      URL map that is bound to target gRPC proxy that has validateForProxyless
+      field set to true.
+    maxPendingRequests: Not supported when the backend service is referenced
+      by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     maxRequests: The maximum number of parallel requests that allowed to the
       backend service. If not specified, there is no limit.
-    maxRequestsPerConnection: Maximum requests for a single connection to the
-      backend service. This parameter is respected by both the HTTP/1.1 and
-      HTTP/2 implementations. If not specified, there is no limit. Setting
-      this parameter to 1 will effectively disable keep alive.
-    maxRetries: The maximum number of parallel retries allowed to the backend
-      cluster. If not specified, the default is 1.
+    maxRequestsPerConnection: Not supported when the backend service is
+      referenced by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
+    maxRetries: Not supported when the backend service is referenced by a URL
+      map that is bound to target gRPC proxy that has validateForProxyless
+      field set to true.
   """
 
   maxConnections = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -23815,7 +23812,11 @@ class ExternalVpnGateway(_messages.Message):
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    interfaces: List of interfaces for this external VPN gateway.
+    interfaces: List of interfaces for this external VPN gateway.  If your
+      peer-side gateway is an on-premises gateway and non-AWS cloud providers?
+      gateway, at most two interfaces can be provided for an external VPN
+      gateway. If your peer side is an AWS virtual private gateway, four
+      interfaces should be provided for an external VPN gateway.
     kind: [Output Only] Type of the resource. Always
       compute#externalVpnGateway for externalVpnGateways.
     labelFingerprint: A fingerprint for the labels being applied to this
@@ -23897,8 +23898,8 @@ class ExternalVpnGatewayInterface(_messages.Message):
 
   Fields:
     id: The numeric ID of this interface. The allowed input values for this id
-      for different redundancy types of external VPN gateway:
-      SINGLE_IP_INTERNALLY_REDUNDANT - 0 TWO_IPS_REDUNDANCY - 0, 1
+      for different redundancy types of external VPN gateway:  -
+      SINGLE_IP_INTERNALLY_REDUNDANT - 0  - TWO_IPS_REDUNDANCY - 0, 1  -
       FOUR_IPS_REDUNDANCY - 0, 1, 2, 3
     ipAddress: IP address of the interface in the external VPN gateway. Only
       IPv4 is supported. This IP address can be either from your on-premise
@@ -24776,16 +24777,17 @@ class ForwardingRule(_messages.Message):
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
-      For protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP and
-      ICMP.  The valid IP protocols are different for different load balancing
-      products:   - Internal TCP/UDP Load Balancing: The load balancing scheme
-      is INTERNAL, and one of TCP, UDP or ALL is valid.  - Traffic Director:
-      The load balancing scheme is INTERNAL_SELF_MANAGED, and only TCP is
-      valid.   - Internal HTTP(S) Load Balancing: The load balancing scheme is
-      INTERNAL_MANAGED, and only TCP is valid.  - HTTP(S), SSL Proxy, and TCP
-      Proxy Load Balancing: The load balancing scheme is EXTERNAL and only TCP
-      is valid.  - Network Load Balancing: The load balancing scheme is
-      EXTERNAL, and one of TCP or UDP is valid.
+      For protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP, ICMP
+      and L3_DEFAULT.  The valid IP protocols are different for different load
+      balancing products:   - Internal TCP/UDP Load Balancing: The load
+      balancing scheme is INTERNAL, and one of TCP, UDP or L3_DEFAULT is
+      valid.  - Traffic Director: The load balancing scheme is
+      INTERNAL_SELF_MANAGED, and only TCP is valid.   - Internal HTTP(S) Load
+      Balancing: The load balancing scheme is INTERNAL_MANAGED, and only TCP
+      is valid.  - HTTP(S), SSL Proxy, and TCP Proxy Load Balancing: The load
+      balancing scheme is EXTERNAL and only TCP is valid.  - Network Load
+      Balancing: The load balancing scheme is EXTERNAL, and one of TCP, UDP or
+      L3_DEFAULT is valid.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       forwarding rule. Valid options are IPV4 or IPV6. This can only be
       specified for an external global forwarding rule.
@@ -24831,16 +24833,17 @@ class ForwardingRule(_messages.Message):
       forwarding rules that forward traffic to Google APIs, IP address must be
       provided.
     IPProtocol: The IP protocol to which this rule applies.  For protocol
-      forwarding, valid options are TCP, UDP, ESP, AH, SCTP and ICMP.  The
-      valid IP protocols are different for different load balancing products:
-      - Internal TCP/UDP Load Balancing: The load balancing scheme is
-      INTERNAL, and one of TCP, UDP or ALL is valid.  - Traffic Director: The
-      load balancing scheme is INTERNAL_SELF_MANAGED, and only TCP is valid.
-      - Internal HTTP(S) Load Balancing: The load balancing scheme is
-      INTERNAL_MANAGED, and only TCP is valid.  - HTTP(S), SSL Proxy, and TCP
-      Proxy Load Balancing: The load balancing scheme is EXTERNAL and only TCP
-      is valid.  - Network Load Balancing: The load balancing scheme is
-      EXTERNAL, and one of TCP or UDP is valid.
+      forwarding, valid options are TCP, UDP, ESP, AH, SCTP, ICMP and
+      L3_DEFAULT.  The valid IP protocols are different for different load
+      balancing products:   - Internal TCP/UDP Load Balancing: The load
+      balancing scheme is INTERNAL, and one of TCP, UDP or L3_DEFAULT is
+      valid.  - Traffic Director: The load balancing scheme is
+      INTERNAL_SELF_MANAGED, and only TCP is valid.   - Internal HTTP(S) Load
+      Balancing: The load balancing scheme is INTERNAL_MANAGED, and only TCP
+      is valid.  - HTTP(S), SSL Proxy, and TCP Proxy Load Balancing: The load
+      balancing scheme is EXTERNAL and only TCP is valid.  - Network Load
+      Balancing: The load balancing scheme is EXTERNAL, and one of TCP, UDP or
+      L3_DEFAULT is valid.
     allPorts: This field is used along with the backend_service field for
       Internal TCP/UDP Load Balancing or Network Load Balancing, or with the
       target field for internal and external TargetInstance.  You can only use
@@ -24991,16 +24994,16 @@ class ForwardingRule(_messages.Message):
 
   class IPProtocolValueValuesEnum(_messages.Enum):
     r"""The IP protocol to which this rule applies.  For protocol forwarding,
-    valid options are TCP, UDP, ESP, AH, SCTP and ICMP.  The valid IP
-    protocols are different for different load balancing products:   -
+    valid options are TCP, UDP, ESP, AH, SCTP, ICMP and L3_DEFAULT.  The valid
+    IP protocols are different for different load balancing products:   -
     Internal TCP/UDP Load Balancing: The load balancing scheme is INTERNAL,
-    and one of TCP, UDP or ALL is valid.  - Traffic Director: The load
+    and one of TCP, UDP or L3_DEFAULT is valid.  - Traffic Director: The load
     balancing scheme is INTERNAL_SELF_MANAGED, and only TCP is valid.   -
     Internal HTTP(S) Load Balancing: The load balancing scheme is
     INTERNAL_MANAGED, and only TCP is valid.  - HTTP(S), SSL Proxy, and TCP
     Proxy Load Balancing: The load balancing scheme is EXTERNAL and only TCP
     is valid.  - Network Load Balancing: The load balancing scheme is
-    EXTERNAL, and one of TCP or UDP is valid.
+    EXTERNAL, and one of TCP, UDP or L3_DEFAULT is valid.
 
     Values:
       AH: <no description>
@@ -27002,7 +27005,10 @@ class HttpFaultAbort(_messages.Message):
 
   Fields:
     httpStatus: The HTTP status code used to abort the request. The value must
-      be between 200 and 599 inclusive.
+      be between 200 and 599 inclusive. For gRPC protocol, the gRPC status
+      code is mapped to HTTP status code according to this  mapping table.
+      HTTP status 200 is mapped to gRPC status UNKNOWN. Injecting an OK status
+      is currently not supported by Traffic Director.
     percentage: The percentage of traffic (connections/operations/requests)
       which will be aborted as part of fault injection. The value must be
       between 0.0 and 100.0 inclusive.
@@ -27443,7 +27449,7 @@ class HttpRetryPolicy(_messages.Message):
       specified, will use the timeout set in HttpRouteAction. If timeout in
       HttpRouteAction is not set, will use the largest timeout among all
       backend services associated with the route.
-    retryConditions: Specfies one or more conditions when this retry rule
+    retryConditions: Specifies one or more conditions when this retry rule
       applies. Valid values are:   - 5xx: Loadbalancer will attempt a retry if
       the backend service responds with any 5xx response code, or if the
       backend service does not respond at all, example: disconnects, reset,
@@ -27484,8 +27490,6 @@ class HttpRouteAction(_messages.Message):
       service. Similarly requests from clients can be aborted by the
       Loadbalancer for a percentage of requests. timeout and retry_policy will
       be ignored by clients that are configured with a fault_injection_policy.
-      Not supported when the URL map is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
     maxStreamDuration: Specifies the maximum duration (timeout) for streams on
       the selected route. Unlike the timeout field where the timeout duration
       starts from the time the request has been fully processed (i.e. end-of-
@@ -27916,12 +27920,13 @@ class Image(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     shieldedInstanceInitialState: Set the secure boot keys of shielded
       instance.
-    sourceDisk: URL of the source disk used to create this image. This can be
-      a full or valid partial URL. You must provide either this property or
-      the rawDisk.source property but not both to create an image. For
-      example, the following are valid values:   - https://www.googleapis.com/
-      compute/v1/projects/project/zones/zone/disks/disk  -
-      projects/project/zones/zone/disks/disk  - zones/zone/disks/disk
+    sourceDisk: URL of the source disk used to create this image. For example,
+      the following are valid values:   - https://www.googleapis.com/compute/v
+      1/projects/project/zones/zone/disks/disk  -
+      projects/project/zones/zone/disks/disk  - zones/zone/disks/disk   In
+      order to create an image, you must provide the full or partial URL of
+      one of the following:   - The rawDisk.source URL   - The sourceDisk URL
+      - The sourceImage URL   - The sourceSnapshot URL
     sourceDiskEncryptionKey: The customer-supplied encryption key of the
       source disk. Required if the source disk is protected by a customer-
       supplied encryption key.
@@ -27930,8 +27935,8 @@ class Image(_messages.Message):
       from the current or a previous instance of a given disk name.
     sourceImage: URL of the source image used to create this image.  In order
       to create an image, you must provide the full or partial URL of one of
-      the following:   - The selfLink URL   - This property   - The
-      rawDisk.source URL   - The sourceDisk URL
+      the following:   - The rawDisk.source URL   - The sourceDisk URL   - The
+      sourceImage URL   - The sourceSnapshot URL
     sourceImageEncryptionKey: The customer-supplied encryption key of the
       source image. Required if the source image is protected by a customer-
       supplied encryption key.
@@ -27940,8 +27945,8 @@ class Image(_messages.Message):
       from the current or a previous instance of a given image name.
     sourceSnapshot: URL of the source snapshot used to create this image.  In
       order to create an image, you must provide the full or partial URL of
-      one of the following:   - The selfLink URL   - This property  - The
-      sourceImage URL   - The rawDisk.source URL   - The sourceDisk URL
+      one of the following:   - The rawDisk.source URL   - The sourceDisk URL
+      - The sourceImage URL   - The sourceSnapshot URL
     sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
       source snapshot. Required if the source snapshot is protected by a
       customer-supplied encryption key.
@@ -28028,8 +28033,9 @@ class Image(_messages.Message):
         checksum of the disk image before unpackaging provided by the client
         when the disk image is created.
       source: The full Google Cloud Storage URL where the disk image is
-        stored. You must provide either this property or the sourceDisk
-        property but not both.
+        stored.  In order to create an image, you must provide the full or
+        partial URL of one of the following:   - The rawDisk.source URL   -
+        The sourceDisk URL   - The sourceImage URL   - The sourceSnapshot URL
     """
 
     class ContainerTypeValueValuesEnum(_messages.Enum):
@@ -31674,14 +31680,17 @@ class InterconnectAttachment(_messages.Message):
       specified domain. If not specified, the value will default to
       AVAILABILITY_DOMAIN_ANY.
     EncryptionValueValuesEnum: Indicates the user-supplied encryption option
-      of this interconnect attachment:  - NONE is the default value, which
-      means that the attachment carries unencrypted traffic. VMs can send
-      traffic to, or receive traffic from, this type of attachment.  - IPSEC
-      indicates that the attachment carries only traffic encrypted by an IPsec
-      device such as an HA VPN gateway. VMs cannot directly send traffic to,
-      or receive traffic from, such an attachment. To use IPsec-encrypted
-      Cloud Interconnect, create the attachment using this option.  Not
-      currently available in all Interconnect locations.
+      of this VLAN attachment (interconnectAttachment). Can only be specified
+      at attachment creation for PARTNER or DEDICATED attachments. Possible
+      values are:  - NONE - This is the default value, which means that the
+      VLAN attachment carries unencrypted traffic. VMs are able to send
+      traffic to, or receive traffic from, such a VLAN attachment.  - IPSEC -
+      The VLAN attachment carries only encrypted traffic that is encrypted by
+      an IPsec device, such as an HA VPN gateway or third-party IPsec VPN. VMs
+      cannot directly send traffic to, or receive traffic from, such a VLAN
+      attachment. To use IPsec-encrypted Cloud Interconnect, the VLAN
+      attachment must be created with this option.  Not currently available
+      publicly.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional, which can
       take one of the following values:  - OS_ACTIVE: The attachment has been
@@ -31750,15 +31759,17 @@ class InterconnectAttachment(_messages.Message):
       via the pairing key, so that the provisioned circuit will lie in the
       specified domain. If not specified, the value will default to
       AVAILABILITY_DOMAIN_ANY.
-    encryption: Indicates the user-supplied encryption option of this
-      interconnect attachment:  - NONE is the default value, which means that
-      the attachment carries unencrypted traffic. VMs can send traffic to, or
-      receive traffic from, this type of attachment.  - IPSEC indicates that
-      the attachment carries only traffic encrypted by an IPsec device such as
-      an HA VPN gateway. VMs cannot directly send traffic to, or receive
-      traffic from, such an attachment. To use IPsec-encrypted Cloud
-      Interconnect, create the attachment using this option.  Not currently
-      available in all Interconnect locations.
+    encryption: Indicates the user-supplied encryption option of this VLAN
+      attachment (interconnectAttachment). Can only be specified at attachment
+      creation for PARTNER or DEDICATED attachments. Possible values are:  -
+      NONE - This is the default value, which means that the VLAN attachment
+      carries unencrypted traffic. VMs are able to send traffic to, or receive
+      traffic from, such a VLAN attachment.  - IPSEC - The VLAN attachment
+      carries only encrypted traffic that is encrypted by an IPsec device,
+      such as an HA VPN gateway or third-party IPsec VPN. VMs cannot directly
+      send traffic to, or receive traffic from, such a VLAN attachment. To use
+      IPsec-encrypted Cloud Interconnect, the VLAN attachment must be created
+      with this option.  Not currently available publicly.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues. [Deprecated] This field is not used.
@@ -31766,21 +31777,20 @@ class InterconnectAttachment(_messages.Message):
       is defined by the server.
     interconnect: URL of the underlying Interconnect object that this
       attachment's traffic will traverse through.
-    ipsecInternalAddresses: URL of addresses that have been reserved for the
-      interconnect attachment, Used only for interconnect attachment that has
-      the encryption option as IPSEC. The addresses must be RFC 1918 IP
-      address ranges. When creating HA VPN gateway over the interconnect
-      attachment, if the attachment is configured to use an RFC 1918 IP
-      address, then the VPN gateway's IP address will be allocated from the IP
+    ipsecInternalAddresses: List of URL of addresses that have been reserved
+      for the VLAN attachment. Used only for the VLAN attachment that has the
+      encryption option as IPSEC. The addresses must be regional internal IP
+      address ranges. When creating an HA VPN gateway over the VLAN
+      attachment, if the attachment is configured to use a regional internal
+      IP address, then the VPN gateway's IP address is allocated from the IP
       address range specified here. For example, if the HA VPN gateway's
-      interface 0 is paired to this interconnect attachment, then an RFC 1918
+      interface 0 is paired to this VLAN attachment, then a regional internal
       IP address for the VPN gateway interface 0 will be allocated from the IP
-      address specified for this interconnect attachment. If this field is not
-      specified for interconnect attachment that has encryption option as
-      IPSEC, later on when creating HA VPN gateway on this interconnect
-      attachment, the HA VPN gateway's IP address will be allocated from
-      regional external IP address pool. Not currently available in all
-      Interconnect locations.
+      address specified for this VLAN attachment. If this field is not
+      specified when creating the VLAN attachment, then later on when creating
+      an HA VPN gateway on this VLAN attachment, the HA VPN gateway's IP
+      address is allocated from the regional external IP address pool. Not
+      currently available publicly.
     kind: [Output Only] Type of the resource. Always
       compute#interconnectAttachment for interconnect attachments.
     mtu: Maximum Transmission Unit (MTU), in bytes, of packets passing through
@@ -31904,15 +31914,17 @@ class InterconnectAttachment(_messages.Message):
     AVAILABILITY_DOMAIN_ANY = 2
 
   class EncryptionValueValuesEnum(_messages.Enum):
-    r"""Indicates the user-supplied encryption option of this interconnect
-    attachment:  - NONE is the default value, which means that the attachment
-    carries unencrypted traffic. VMs can send traffic to, or receive traffic
-    from, this type of attachment.  - IPSEC indicates that the attachment
-    carries only traffic encrypted by an IPsec device such as an HA VPN
-    gateway. VMs cannot directly send traffic to, or receive traffic from,
-    such an attachment. To use IPsec-encrypted Cloud Interconnect, create the
-    attachment using this option.  Not currently available in all Interconnect
-    locations.
+    r"""Indicates the user-supplied encryption option of this VLAN attachment
+    (interconnectAttachment). Can only be specified at attachment creation for
+    PARTNER or DEDICATED attachments. Possible values are:  - NONE - This is
+    the default value, which means that the VLAN attachment carries
+    unencrypted traffic. VMs are able to send traffic to, or receive traffic
+    from, such a VLAN attachment.  - IPSEC - The VLAN attachment carries only
+    encrypted traffic that is encrypted by an IPsec device, such as an HA VPN
+    gateway or third-party IPsec VPN. VMs cannot directly send traffic to, or
+    receive traffic from, such a VLAN attachment. To use IPsec-encrypted Cloud
+    Interconnect, the VLAN attachment must be created with this option.  Not
+    currently available publicly.
 
     Values:
       IPSEC: <no description>
@@ -43702,10 +43714,9 @@ class Router(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    encryptedInterconnectRouter: Field to indicate if a router is dedicated to
-      use with encrypted Interconnect Attachment (IPsec-encrypted Cloud
-      Interconnect feature). Not currently available in all Interconnect
-      locations.
+    encryptedInterconnectRouter: Indicates if a router is dedicated for use
+      with encrypted VLAN attachments (interconnectAttachments). Not currently
+      available publicly.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: Router interfaces. Each interface requires either one linked
@@ -51893,7 +51904,8 @@ class VpnGateway(_messages.Message):
       Provided by the client when the VPN gateway is created.
     region: [Output Only] URL of the region where the VPN gateway resides.
     selfLink: [Output Only] Server-defined URL for the resource.
-    vpnInterfaces: A list of interfaces on this VPN gateway.
+    vpnInterfaces: The list of VPN interfaces associated with this VPN
+      gateway.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -52321,15 +52333,24 @@ class VpnGatewayVpnGatewayInterface(_messages.Message):
   r"""A VPN gateway interface.
 
   Fields:
-    id: The numeric ID of this VPN gateway interface.
-    interconnectAttachment: URL of the interconnect attachment resource. When
-      the value of this field is present, the VPN Gateway will be used for
-      IPsec-encrypted Cloud Interconnect; all Egress or Ingress traffic for
-      this VPN Gateway interface will go through the specified interconnect
-      attachment resource. Not currently available in all Interconnect
-      locations.
-    ipAddress: [Output Only] The external IP address for this VPN gateway
-      interface.
+    id: [Output Only] Numeric identifier for this VPN interface associated
+      with the VPN gateway.
+    interconnectAttachment: URL of the VLAN attachment
+      (interconnectAttachment) resource for this VPN gateway interface. When
+      the value of this field is present, the VPN gateway is used for IPsec-
+      encrypted Cloud Interconnect; all egress or ingress traffic for this VPN
+      gateway interface goes through the specified VLAN attachment resource.
+      Not currently available publicly.
+    ipAddress: [Output Only] IP address for this VPN interface associated with
+      the VPN gateway. The IP address could be either a regional external IP
+      address or a regional internal IP address. The two IP addresses for a
+      VPN gateway must be all regional external or regional internal IP
+      addresses. There cannot be a mix of regional external IP addresses and
+      regional internal IP addresses. For IPsec-encrypted Cloud Interconnect,
+      the IP addresses for both interfaces could either be regional internal
+      IP addresses or regional external IP addresses. For regular (non IPsec-
+      encrypted Cloud Interconnect) HA VPN tunnels, the IP address must be a
+      regional external IP address.
   """
 
   id = _messages.IntegerField(1, variant=_messages.Variant.UINT32)

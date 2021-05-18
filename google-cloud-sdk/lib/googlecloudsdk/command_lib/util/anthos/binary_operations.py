@@ -45,6 +45,11 @@ _DEFAULT_MISSING_EXEC_MESSAGE = 'Executable [{}] not found.'
 _STRUCTURED_TEXT_EXPECTED_ERROR = ('Expected structured message, '
                                    'logging as raw text:{}')
 
+_INSTALL_MISSING_EXEC_PROMPT = (
+    'This command requires the `{binary}` component to be installed. '
+    'Would you like to install the `{binary}` component to continue '
+    'command execution?')
+
 
 def _LogDefaultOperationFailure(result_object):
   log.error(
@@ -408,7 +413,8 @@ def CheckBinaryComponentInstalled(component_name, check_hidden=False):
 
 def CheckForInstalledBinary(binary_name,
                             check_hidden=False,
-                            custom_message=None):
+                            custom_message=None,
+                            install_if_missing=False):
   """Check if binary is installed and return path or raise error.
 
   Prefer the installed component over any version found on path.
@@ -418,12 +424,14 @@ def CheckForInstalledBinary(binary_name,
     check_hidden: bool, whether to check hidden components for the binary.
     custom_message: str, custom message to used by
       MissingExecutableException if thrown.
+    install_if_missing: bool, if true will prompt user to install binary if
+      not found.
 
   Returns:
     Path to executable if found on path or installed component.
 
   Raises:
-    MissingExecutableException: if executable can not be found and is not
+    MissingExecutableException: if executable can not be found or can not be
      installed as a component.
   """
   is_component = CheckBinaryComponentInstalled(binary_name, check_hidden)
@@ -434,6 +442,10 @@ def CheckForInstalledBinary(binary_name,
   path_executable = files.FindExecutableOnPath(binary_name)
   if path_executable:
     return path_executable
+
+  if install_if_missing:
+    return InstallBinaryNoOverrides(
+        binary_name, _INSTALL_MISSING_EXEC_PROMPT.format(binary=binary_name))
 
   raise MissingExecutableException(binary_name, custom_message)
 
@@ -509,7 +521,8 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
                std_err_func=None,
                failure_func=None,
                default_args=None,
-               custom_errors=None):
+               custom_errors=None,
+               install_if_missing=False):
     """Creates the Binary Operation.
 
     Args:
@@ -529,10 +542,13 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
         command.
       custom_errors: dict(str:str}, map of custom exception messages to be used
         for known errors.
+      install_if_missing: bool, if True prompt for install on missing component.
     """
     self._executable = CheckForInstalledBinary(
-        binary, check_hidden,
-        custom_errors['MISSING_EXEC'] if custom_errors else None)
+        binary_name=binary,
+        check_hidden=check_hidden,
+        install_if_missing=install_if_missing,
+        custom_message=custom_errors['MISSING_EXEC'] if custom_errors else None)
     self._binary = binary
     self._version = binary_version
     self._default_args = default_args

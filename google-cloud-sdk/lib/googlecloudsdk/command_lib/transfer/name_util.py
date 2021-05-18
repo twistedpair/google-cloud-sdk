@@ -19,8 +19,14 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
+_JOBS_PREFIX = 'transferJobs/'
+_OPERATIONS_PREFIX = 'transferOperations/'
+
+
 def _add_single_transfer_prefix(prefix, resource_string):
-  return '{}/{}'.format(prefix, resource_string)
+  if resource_string.startswith(prefix):
+    return resource_string
+  return prefix + resource_string
 
 
 def _add_transfer_prefix(prefix, resource_string_or_list):
@@ -35,9 +41,20 @@ def _add_transfer_prefix(prefix, resource_string_or_list):
 
 
 def add_job_prefix(job_name_string_or_list):
-  return _add_transfer_prefix('transferJobs', job_name_string_or_list)
+  return _add_transfer_prefix(_JOBS_PREFIX, job_name_string_or_list)
 
 
 def add_operation_prefix(job_operation_string_or_list):
-  return _add_transfer_prefix('transferOperations',
-                              job_operation_string_or_list)
+  return _add_transfer_prefix(_OPERATIONS_PREFIX, job_operation_string_or_list)
+
+
+def remove_job_prefix(operation_string):
+  if operation_string.startswith(_JOBS_PREFIX):
+    return operation_string[len(_JOBS_PREFIX):]
+  return operation_string
+
+
+def remove_operation_prefix(operation_string):
+  if operation_string.startswith(_OPERATIONS_PREFIX):
+    return operation_string[len(_OPERATIONS_PREFIX):]
+  return operation_string

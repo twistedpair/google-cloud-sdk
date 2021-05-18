@@ -771,6 +771,56 @@ class GenerateUploadUrlResponse(_messages.Message):
   uploadUrl = _messages.StringField(1)
 
 
+class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: API version used to start the operation.
+    cancelRequested: Identifies whether the user has requested cancellation of
+      the operation. Operations that have successfully been cancelled have
+      Operation.error value with a google.rpc.Status.code of 1, corresponding
+      to `Code.CANCELLED`.
+    createTime: The time the operation was created.
+    endTime: The time the operation finished running.
+    statusDetail: Human-readable status of the operation, if any.
+    target: Server-defined resource path for the target of the operation.
+    verb: Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  statusDetail = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
+class GoogleCloudFunctionsV2mainOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: API version used to start the operation.
+    cancelRequested: Identifies whether the user has requested cancellation of
+      the operation. Operations that have successfully been cancelled have
+      Operation.error value with a google.rpc.Status.code of 1, corresponding
+      to `Code.CANCELLED`.
+    createTime: The time the operation was created.
+    endTime: The time the operation finished running.
+    statusDetail: Human-readable status of the operation, if any.
+    target: Server-defined resource path for the target of the operation.
+    verb: Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  statusDetail = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class HttpsTrigger(_messages.Message):
   r"""Describes HttpsTrigger, could be used to connect web hooks to function.
 
@@ -1031,31 +1081,6 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
-
-
-class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: API version used to start the operation.
-    cancelRequested: Identifies whether the user has requested cancellation of
-      the operation. Operations that have successfully been cancelled have
-      Operation.error value with a google.rpc.Status.code of 1, corresponding
-      to `Code.CANCELLED`.
-    createTime: The time the operation was created.
-    endTime: The time the operation finished running.
-    statusDetail: Human-readable status of the operation, if any.
-    target: Server-defined resource path for the target of the operation.
-    verb: Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  cancelRequested = _messages.BooleanField(2)
-  createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  statusDetail = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
 
 
 class OperationMetadataV1(_messages.Message):

@@ -152,12 +152,12 @@ def GetProxyInfo():
   proxy_user = properties.VALUES.proxy.username.Get()
   proxy_pass = properties.VALUES.proxy.password.Get()
 
-  proxy_type = http_proxy_types.PROXY_TYPE_MAP[proxy_type]
-  if proxy_type == socks.PROXY_TYPE_SOCKS4:
+  http_proxy_type = http_proxy_types.PROXY_TYPE_MAP[proxy_type]
+  if http_proxy_type == socks.PROXY_TYPE_SOCKS4:
     proxy_scheme = 'socks4a' if proxy_rdns else 'socks4'
-  elif proxy_type == socks.PROXY_TYPE_SOCKS5:
+  elif http_proxy_type == socks.PROXY_TYPE_SOCKS5:
     proxy_scheme = 'socks5h' if proxy_rdns else 'socks5'
-  elif proxy_type == socks.PROXY_TYPE_HTTP:
+  elif http_proxy_type == socks.PROXY_TYPE_HTTP:
     proxy_scheme = 'http'
   else:
     raise ValueError('Unsupported proxy type: {}'.format(proxy_type))

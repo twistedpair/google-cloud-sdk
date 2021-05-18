@@ -70,7 +70,8 @@ def CreateAssuredWorkload(display_name=None,
       for example: folders/{FOLDER_ID}
     resource_settings: list of key=value pairs to set customized resource
       settings, which can be one of the following: consumer-project-id,
-      encryption-keys-project-id or keyring-id, for example:
+      consumer-project-name, encryption-keys-project-id,
+      encryption-keys-project-name or keyring-id, for example:
       consumer-project-id={ID1},encryption-keys-project-id={ID2}
     release_track: ReleaseTrack, gcloud release track being used
 
@@ -122,34 +123,41 @@ def CreateResourceSettingsList(resource_settings, release_track):
   Returns:
     A list of ResourceSettings for the Assured Workload object.
   """
-  workload_resource_settings = []
+  resource_settings_dict = {}
   for key, value in resource_settings.items():
-    workload_resource_settings.append(
-        CreateResourceSettings(key, value, release_track))
-  return workload_resource_settings
+    resource_type = GetResourceType(key, release_track)
+    resource_settings = resource_settings_dict[
+        resource_type] if resource_type in resource_settings_dict else CreateResourceSettings(
+            resource_type, release_track)
+    if key.endswith('-id'):
+      resource_settings.resourceId = value
+    elif key.endswith('-name'):
+      resource_settings.displayName = value
+    resource_settings_dict[resource_type] = resource_settings
+  return list(resource_settings_dict.values())
 
 
-def CreateResourceSettings(key, value, release_track):
-  """Construct a ResourceSettings from key=value pair for Assured Workload object.
+def GetResourceType(key, release_track):
+  """Returns a resource settings type from the key.
 
   Args:
     key: str, the setting name, which can be one of the following -
-      consumer-project-id, encryption-keys-project-id or keyring-id.
-    value: str, the value of the resource property.
+      consumer-project-id, consumer-project-name, encryption-keys-project-id,
+      encryption-keys-project-name or keyring-id.
     release_track: ReleaseTrack, gcloud release track being used.
-
-  Returns:
-    A list of ResourceSettings for the Assured Workload object.
   """
-  resource_type = None
   resource_settings_message = GetResourceSettings(release_track)
-  if key == 'consumer-project-id':
-    resource_type = resource_settings_message.ResourceTypeValueValuesEnum.CONSUMER_PROJECT
-  elif key == 'encryption-keys-project-id':
-    resource_type = resource_settings_message.ResourceTypeValueValuesEnum.ENCRYPTION_KEYS_PROJECT
-  elif key == 'keyring-id':
-    resource_type = resource_settings_message.ResourceTypeValueValuesEnum.KEYRING
-  return resource_settings_message(resourceType=resource_type, resourceId=value)
+  if key.startswith('consumer-project'):
+    return resource_settings_message.ResourceTypeValueValuesEnum.CONSUMER_PROJECT
+  elif key.startswith('encryption-keys-project'):
+    return resource_settings_message.ResourceTypeValueValuesEnum.ENCRYPTION_KEYS_PROJECT
+  elif key.startswith('keyring'):
+    return resource_settings_message.ResourceTypeValueValuesEnum.KEYRING
+
+
+def CreateResourceSettings(resource_type, release_track):
+  resource_settings_message = GetResourceSettings(release_track)
+  return resource_settings_message(resourceType=resource_type)
 
 
 def CreateUpdateMask(display_name, labels):

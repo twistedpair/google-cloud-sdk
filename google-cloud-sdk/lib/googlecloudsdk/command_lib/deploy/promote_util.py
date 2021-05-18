@@ -19,9 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.clouddeploy import release
+from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import release_util
 from googlecloudsdk.command_lib.deploy import target_util
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
@@ -66,8 +66,7 @@ def GetToTargetID(release_obj):
   """
 
   if not release_obj.targetSnapshots:
-    raise exceptions.Error('No snapped targets in the release {}.'.format(
-        release_obj.name))
+    raise exceptions.NoSnappedTargets(release_obj.name)
   # Use release short name to avoid the issue by mixed use of
   # the project number and id.
   release_ref = resources.REGISTRY.ParseRelativeName(
@@ -104,6 +103,11 @@ def GetToTargetID(release_obj):
                       target_ref.RelativeName())))
           to_target = target_ref.RelativeName()
         break
+
+  # This means the release is not deployed to any target,
+  # to_target flag is required in this case.
+  if to_target == release_obj.targetSnapshots[0].name:
+    raise exceptions.ReleaseInactiveError()
 
   return resources.REGISTRY.ParseRelativeName(
       to_target,

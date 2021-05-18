@@ -565,8 +565,8 @@ class ConfigManagementInstallError(_messages.Message):
 
 
 class ConfigManagementMembershipSpec(_messages.Message):
-  r"""Configuration for a single cluster. Intended to parallel the
-  ConfigManagement CR.
+  r"""**Anthos Config Management**: Configuration for a single cluster.
+  Intended to parallel the ConfigManagement CR.
 
   Fields:
     binauthz: Binauthz conifguration for the cluster.
@@ -584,7 +584,7 @@ class ConfigManagementMembershipSpec(_messages.Message):
 
 
 class ConfigManagementMembershipState(_messages.Message):
-  r"""State for Anthos Config Management
+  r"""**Anthos Config Management**: State for a single cluster.
 
   Fields:
     binauthzState: Binauthz status
@@ -1546,7 +1546,7 @@ class MembershipFeatureState(_messages.Message):
 
 
 class MeteringMembershipState(_messages.Message):
-  r"""Metering per-Membership Feature State.
+  r"""**Metering**: Per-Membership Feature State.
 
   Fields:
     lastMeasurementTime: The time stamp of the most recent measurement of the
@@ -1560,7 +1560,8 @@ class MeteringMembershipState(_messages.Message):
 
 
 class MultiClusterIngressFeatureSpec(_messages.Message):
-  r"""FeatureSpec contains the input for the MultiClusterIngress feature.
+  r"""**Multi-cluster Ingress**: The configuration for the MultiClusterIngress
+  feature.
 
   Enums:
     BillingValueValuesEnum: Customer's billing structure

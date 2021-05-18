@@ -734,6 +734,24 @@ class AlloydbadminProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class AlloydbadminProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Message):
+  r"""A AlloydbadminProjectsLocationsSupportedDatabaseFlagsListRequest object.
+
+  Fields:
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results the server should return.
+    parent: Required. The name of the parent resource. The required format is:
+      * projects/{project}/locations/{location} Regardless of the parent
+      specified here, as long it is contains a valid project and location, the
+      service will return a static list of supported flags resources.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class AlloydbadminProjectsLocationsUsersGetIamPolicyRequest(_messages.Message):
   r"""A AlloydbadminProjectsLocationsUsersGetIamPolicyRequest object.
 
@@ -1287,6 +1305,18 @@ class Instance(_messages.Message):
   updateTime = _messages.StringField(12)
 
 
+class IntegerRestrictions(_messages.Message):
+  r"""Restrictions on INTEGER type values.
+
+  Fields:
+    maxValue: The maximum value that can be specified, if applicable.
+    minValue: The minimum value that can be specified, if applicable.
+  """
+
+  maxValue = _messages.IntegerField(1)
+  minValue = _messages.IntegerField(2)
+
+
 class ListBackupsResponse(_messages.Message):
   r"""Message for response to listing Backups
 
@@ -1356,6 +1386,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListSupportedDatabaseFlagsResponse(_messages.Message):
+  r"""Message for response to listing SupportedDatabaseFlags.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    supportedDatabaseFlags: The list of SupportedDatabaseFlags.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  supportedDatabaseFlags = _messages.MessageField('SupportedDatabaseFlag', 2, repeated=True)
 
 
 class ListUsersResponse(_messages.Message):
@@ -1832,6 +1875,83 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StringRestrictions(_messages.Message):
+  r"""Restrictions on STRING type values
+
+  Fields:
+    allowedValues: The list of allowed values, if bounded. This field will be
+      empty if there is a unbounded number of allowed values.
+  """
+
+  allowedValues = _messages.StringField(1, repeated=True)
+
+
+class SupportedDatabaseFlag(_messages.Message):
+  r"""SupportedDatabaseFlag gives general information about a database flag,
+  like type and allowed values. This is a static value that is defined on the
+  server side, and it cannot be modified by callers. To set the Database flags
+  on a particular Instance, a caller should modify the Instance.database_flags
+  field.
+
+  Enums:
+    SupportedDbVersionsValueListEntryValuesEnum:
+    ValueTypeValueValuesEnum:
+
+  Fields:
+    acceptsMultipleValues: Whether the database flag accepts multiple values.
+      If true, a comma-separated list of stringified values may be specified.
+    flagName: The name of the database flag, e.g. "--max_allowed_packets". The
+      is a possibly key for the Instance.database_flags map field.
+    integerRestrictions: A IntegerRestrictions attribute.
+    name: The name of the flag resource, following GCP conventions, e.g.: *
+      projects/{project}/locations/{location}/flags/{flag_id} This field
+      currently has no semantic meaning.
+    requiresDbRestart: Whether setting or updating this flag on an Instance
+      requires a database restart. If a flag that requires database restart is
+      set, the backend will automatically restart the database (making sure to
+      satisfy any avaialability SLO's).
+    stringRestrictions: A StringRestrictions attribute.
+    supportedDbVersions: Major database engine versions for which this flag is
+      supported.
+    valueType: A ValueTypeValueValuesEnum attribute.
+  """
+
+  class SupportedDbVersionsValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedDbVersionsValueListEntryValuesEnum enum type.
+
+    Values:
+      DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      POSTGRES_12: The database version is Postgres 12.
+    """
+    DATABASE_VERSION_UNSPECIFIED = 0
+    POSTGRES_12 = 1
+
+  class ValueTypeValueValuesEnum(_messages.Enum):
+    r"""ValueTypeValueValuesEnum enum type.
+
+    Values:
+      TYPE_UNSPECIFIED: This is an unknown flag type.
+      STRING: String type flag.
+      INTEGER: Integer type flag.
+      FLOAT: Float type flag.
+      NONE: Denotes that the flag does not accept any values.
+    """
+    TYPE_UNSPECIFIED = 0
+    STRING = 1
+    INTEGER = 2
+    FLOAT = 3
+    NONE = 4
+
+  acceptsMultipleValues = _messages.BooleanField(1)
+  flagName = _messages.StringField(2)
+  integerRestrictions = _messages.MessageField('IntegerRestrictions', 3)
+  name = _messages.StringField(4)
+  requiresDbRestart = _messages.BooleanField(5)
+  stringRestrictions = _messages.MessageField('StringRestrictions', 6)
+  supportedDbVersions = _messages.EnumField('SupportedDbVersionsValueListEntryValuesEnum', 7, repeated=True)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 8)
 
 
 class TestIamPermissionsRequest(_messages.Message):

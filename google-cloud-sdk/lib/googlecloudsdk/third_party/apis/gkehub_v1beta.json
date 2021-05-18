@@ -328,7 +328,7 @@
     },
     "MultiClusterIngressFeatureSpec": {
       "id": "MultiClusterIngressFeatureSpec",
-      "description": "FeatureSpec contains the input for the MultiClusterIngress feature.",
+      "description": "**Multi-cluster Ingress**: The configuration for the MultiClusterIngress feature.",
       "type": "object",
       "properties": {
         "configMembership": {
@@ -364,7 +364,7 @@
     },
     "ConfigManagementMembershipSpec": {
       "id": "ConfigManagementMembershipSpec",
-      "description": "Configuration for a single cluster. Intended to parallel the ConfigManagement CR.",
+      "description": "**Anthos Config Management**: Configuration for a single cluster. Intended to parallel the ConfigManagement CR.",
       "type": "object",
       "properties": {
         "configSync": {
@@ -574,7 +574,7 @@
     },
     "MeteringMembershipState": {
       "id": "MeteringMembershipState",
-      "description": "Metering per-Membership Feature State.",
+      "description": "**Metering**: Per-Membership Feature State.",
       "type": "object",
       "properties": {
         "lastMeasurementTime": {
@@ -591,7 +591,7 @@
     },
     "ConfigManagementMembershipState": {
       "id": "ConfigManagementMembershipState",
-      "description": "State for Anthos Config Management",
+      "description": "**Anthos Config Management**: State for a single cluster.",
       "type": "object",
       "properties": {
         "clusterName": {

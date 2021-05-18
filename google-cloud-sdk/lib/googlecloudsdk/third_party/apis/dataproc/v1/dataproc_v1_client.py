@@ -288,7 +288,7 @@ class DataprocV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a batch workload that will be executed asynchronously.
+      r"""Creates a batch workload that executes asynchronously.
 
       Args:
         request: (DataprocProjectsLocationsBatchesCreateRequest) input message
@@ -315,7 +315,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the batch workload resource. If the batch is not in terminal state, the delete fails, and the response returns FAILED_PRECONDITION.
+      r"""Deletes the batch workload resource. If the batch is not in terminal state, the delete fails and the response returns FAILED_PRECONDITION.
 
       Args:
         request: (DataprocProjectsLocationsBatchesDeleteRequest) input message
@@ -342,7 +342,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the resource representation for a batch workload.
+      r"""Gets the batch workload resource representation.
 
       Args:
         request: (DataprocProjectsLocationsBatchesGetRequest) input message

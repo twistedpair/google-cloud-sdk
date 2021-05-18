@@ -232,7 +232,14 @@ class _StorageStreamResponseHandler(requests.ResponseHandler):
 class GcsApi(cloud_api.CloudApi):
   """Client for Google Cloud Storage API."""
 
+  capabilities = {
+      cloud_api.Capability.COMPOSE_OBJECTS,
+      cloud_api.Capability.RESUMABLE_UPLOAD,
+      cloud_api.Capability.SLICED_DOWNLOAD
+  }
+
   def __init__(self):
+    super().__init__()
     self.client = core_apis.GetClientInstance('storage', 'v1')
     self.client.overwrite_transfer_urls_with_client_base = True
     self.messages = core_apis.GetMessagesModule('storage', 'v1')
@@ -255,7 +262,10 @@ class GcsApi(cloud_api.CloudApi):
     Raises:
       ValueError: The fields_scope isn't recognized.
     """
-    if fields_scope not in cloud_api.FieldsScope:
+    try:
+      if fields_scope not in cloud_api.FieldsScope:
+        raise ValueError('Invalid fields_scope.')
+    except TypeError:
       raise ValueError('Invalid fields_scope.')
     projection_enum = message_class.ProjectionValueValuesEnum
 

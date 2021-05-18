@@ -1116,7 +1116,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Location to make a regional call. Format: `projects\/{project-number-or-id}\/locations\/{location-id}`. For global calls, use `projects\/{project-number-or-id}\/locations\/global` or `projects\/{project-number-or-id}`. Non-global location is required for requests using AutoML models or custom glossaries. Models and glossaries must be within the same region (have the same location-id), otherwise an INVALID_ARGUMENT (400) error is returned.",
+                  "description": "Required. Location to make a regional call. Format: `projects\/{project-number-or-id}\/locations\/{location-id}`. For global calls, use `projects\/{project-number-or-id}\/locations\/global`. Non-global location is required for requests using AutoML models or custom glossaries. Models and glossaries must be within the same region (have the same location-id), otherwise an INVALID_ARGUMENT (400) error is returned.",
                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,

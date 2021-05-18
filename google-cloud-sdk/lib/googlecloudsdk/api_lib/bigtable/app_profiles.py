@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.bigtable import util
+from googlecloudsdk.calliope import exceptions
 
 
 def Describe(app_profile_ref):
@@ -84,6 +85,7 @@ def Create(app_profile_ref,
            cluster=None,
            description='',
            multi_cluster=False,
+           restrict_to=None,
            transactional_writes=False,
            force=False):
   """Create an app profile.
@@ -95,18 +97,35 @@ def Create(app_profile_ref,
     description: string, A description of the app profile.
     multi_cluster: bool, Whether this app profile should route to multiple
         clusters, instead of single cluster.
+    restrict_to: list[string] The list of cluster ids for the new app profile to
+        route to using multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
         writes enabled. This is only possible when using single cluster routing.
     force: bool, Whether to ignore API warnings and create forcibly.
 
   Raises:
-    ValueError: Cannot specify both cluster and multi_cluster.
+    ConflictingArgumentsException:
+        If both cluster and multi_cluster are present.
+        If both multi_cluster and transactional_writes are present.
+        If both cluster and restrict_to are present.
+    OneOfArgumentsRequiredException: If neither cluster or multi_cluster are
+        present.
 
   Returns:
     Created app profile resource object.
   """
-  if (multi_cluster and cluster) or not (multi_cluster or cluster):
-    raise ValueError('Must specify either --route-to or --route-any')
+  if multi_cluster and cluster:
+    raise exceptions.ConflictingArgumentsException('--route-to', '--route-any')
+  if multi_cluster and transactional_writes:
+    raise exceptions.ConflictingArgumentsException('--route-any',
+                                                   '--transactional-writes')
+  if cluster and restrict_to:
+    raise exceptions.ConflictingArgumentsException('--route-to',
+                                                   '--restrict-to')
+  if not multi_cluster and not cluster:
+    raise exceptions.OneOfArgumentsRequiredException(
+        ['--route-to', '--route-any'],
+        'Either --route-to or --route-any must be specified.')
 
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
@@ -116,7 +135,8 @@ def Create(app_profile_ref,
   multi_cluster_routing = None
   single_cluster_routing = None
   if multi_cluster:
-    multi_cluster_routing = msgs.MultiClusterRoutingUseAny()
+    multi_cluster_routing = msgs.MultiClusterRoutingUseAny(
+        clusterIds=restrict_to or [])
   elif cluster:
     single_cluster_routing = msgs.SingleClusterRouting(
         clusterId=cluster, allowTransactionalWrites=transactional_writes)
@@ -136,6 +156,7 @@ def Update(app_profile_ref,
            cluster=None,
            description='',
            multi_cluster=False,
+           restrict_to=None,
            transactional_writes=False,
            force=False):
   """Update an app profile.
@@ -147,18 +168,35 @@ def Update(app_profile_ref,
     description: string, A description of the app profile.
     multi_cluster: bool, Whether this app profile should route to multiple
         clusters, instead of single cluster.
+    restrict_to: list[string] The list of cluster IDs for the new app profile to
+        route to using multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
         writes enabled. This is only possible when using single cluster routing.
     force: bool, Whether to ignore API warnings and create forcibly.
 
   Raises:
-    ValueError: Cannot specify both cluster and multi_cluster.
+    ConflictingArgumentsException:
+        If both cluster and multi_cluster are present.
+        If both multi_cluster and transactional_writes are present.
+        If both cluster and restrict_to are present.
+    OneOfArgumentsRequiredException: If neither cluster or multi_cluster are
+        present.
 
   Returns:
     Long running operation.
   """
-  if cluster and multi_cluster:
-    raise ValueError('Cannot update both --route-to and --route-any')
+  if multi_cluster and cluster:
+    raise exceptions.ConflictingArgumentsException('--route-to', '--route-any')
+  if multi_cluster and transactional_writes:
+    raise exceptions.ConflictingArgumentsException('--route-any',
+                                                   '--transactional-writes')
+  if cluster and restrict_to:
+    raise exceptions.ConflictingArgumentsException('--route-to',
+                                                   '--restrict-to')
+  if not multi_cluster and not cluster:
+    raise exceptions.OneOfArgumentsRequiredException(
+        ['--route-to', '--route-any'],
+        'Either --route-to or --route-any must be specified.')
 
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
@@ -172,7 +210,8 @@ def Update(app_profile_ref,
         clusterId=cluster, allowTransactionalWrites=transactional_writes)
   elif multi_cluster:
     changed_fields.append('multiClusterRoutingUseAny')
-    app_profile.multiClusterRoutingUseAny = msgs.MultiClusterRoutingUseAny()
+    app_profile.multiClusterRoutingUseAny = msgs.MultiClusterRoutingUseAny(
+        clusterIds=restrict_to or [])
 
   if description:
     changed_fields.append('description')

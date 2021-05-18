@@ -36,13 +36,13 @@ _DATAPATH_PROVIDER = {
 }
 
 _DNS_PROVIDER = {
-    'clouddns': 'Selects CloudDNS as the DNS provider for the cluster.',
-    'default': 'Selects the default DNS provider(kube-dns) for the cluster.',
+    'clouddns': 'Selects Cloud DNS as the DNS provider for the cluster.',
+    'default': 'Selects the default DNS provider (kube-dns) for the cluster.',
 }
 
 _DNS_SCOPE = {
-    'cluster': 'Configures the CloudDNS zone to be private to the cluster.',
-    'vpc': 'Configures the CloudDNS zone to be private to the VPC Network.',
+    'cluster': 'Configures the Cloud DNS zone to be private to the cluster.',
+    'vpc': 'Configures the Cloud DNS zone to be private to the VPC Network.',
 }
 
 
@@ -928,16 +928,15 @@ Example:
   $ {command} --master-logs APISERVER,SCHEDULER
 """
   if for_create:
-    group = parser.add_group()
+    group = parser.add_group(hidden=True)
   else:
-    group = parser.add_mutually_exclusive_group()
+    group = parser.add_mutually_exclusive_group(hidden=True)
 
   group.add_argument(
       '--master-logs',
       type=arg_parsers.ArgList(choices=api_adapter.PRIMARY_LOGS_OPTIONS),
       help=help_text,
       metavar='COMPONENT',
-      hidden=True,
   )
 
   if not for_create:
@@ -949,7 +948,6 @@ Disable sending logs from master components to Cloud Operations.
         action='store_true',
         default=False,
         help=help_text,
-        hidden=True,
     )
 
   help_text = """\
@@ -960,7 +958,6 @@ Enable sending metrics from master components to Cloud Operations.
       action='store_true',
       default=None,
       help=help_text,
-      hidden=True,
   )
 
 
@@ -1355,7 +1352,7 @@ def AddILBSubsettingFlags(parser, hidden=False):
       help='Enable Subsetting for L4 ILB services created on this cluster.')
 
 
-def AddClusterDNSFlags(parser, hidden=True):
+def AddClusterDNSFlags(parser, hidden=False):
   """Adds flags related to clusterDNS to parser.
 
   This includes:
@@ -1371,26 +1368,26 @@ def AddClusterDNSFlags(parser, hidden=True):
   group.add_argument(
       '--cluster-dns',
       choices=_DNS_PROVIDER,
-      help=('DNS provider to use for this Cluster.'),
+      help='DNS provider to use for this cluster.',
       hidden=hidden,
   )
   group.add_argument(
       '--cluster-dns-scope',
       choices=_DNS_SCOPE,
-      help=("""
-            DNS Scope for the CloudDNS zone created - valid only with
-             `--cluster-dns=clouddns`"""),
+      help="""\
+            DNS scope for the Cloud DNS zone created - valid only with
+             `--cluster-dns=clouddns`""",
       hidden=hidden,
   )
   group.add_argument(
       '--cluster-dns-domain',
-      help=("""
-            DNS Domain for this cluster.
-            The default value is ``cluster.local''.
-            is configurable when `--cluster-dns=clouddns` and
-             `--cluster-dns-scope=vpc`.
-            The value must be a valid DNS Subdomain as defined in RFC 1123.
-            """),
+      help="""\
+            DNS domain for this cluster.
+            The default value is `cluster.local`.
+            This is configurable when `--cluster-dns=clouddns` and
+             `--cluster-dns-scope=vpc` are set.
+            The value must be a valid DNS subdomain as defined in RFC 1123.
+            """,
       hidden=hidden,
   )
 
@@ -3466,11 +3463,10 @@ Set kubernetes objects changes target [Currently only CLOUD_LOGGING value is sup
   if for_create:
     regexp = r'^CLOUD_LOGGING$'
   type_ = arg_parsers.RegexpValidator(regexp, validation_description)
-  group = parser.add_group()
+  group = parser.add_group(hidden=True)
   group.add_argument(
       '--kubernetes-objects-changes-target',
       default=None,
-      hidden=True,
       type=type_,
       help=help_text)
   help_text = """\
@@ -3479,7 +3475,6 @@ Set kubernetes objects snapshots target [Currently only CLOUD_LOGGING value is s
   group.add_argument(
       '--kubernetes-objects-snapshots-target',
       default=None,
-      hidden=True,
       type=type_,
       help=help_text)
 
@@ -3537,6 +3532,18 @@ def AddNumNodes(parser, default=3):
       type=arg_parsers.BoundedInt(1),
       help='The number of nodes to be created in each of the cluster\'s zones.',
       default=default)
+
+
+def AddThreadsPerCore(parser):
+  help_text = """
+      The number of visible threads per physical core for each node. To disable
+      simultaneous multithreading (SMT) set this to 1.
+    """
+  parser.add_argument(
+      '--threads-per-core',
+      type=arg_parsers.BoundedInt(1),
+      help=help_text,
+      default=None)
 
 
 def AddEnableGcfsFlag(parser, for_node_pool=False, hidden=True):

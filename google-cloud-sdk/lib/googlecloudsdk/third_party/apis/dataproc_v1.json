@@ -355,7 +355,7 @@
           "$ref": "RuntimeInfo"
         },
         "state": {
-          "description": "Output only. A state of the batch.",
+          "description": "Output only. The state of the batch.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -364,8 +364,8 @@
             "The batch is running.",
             "The batch is cancelling.",
             "The batch cancellation was successful.",
-            "The batch has completed successfully.",
-            "The batch has completed, but encountered a failure."
+            "The batch completed successfully.",
+            "The batch is no longer running due to an error."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -412,7 +412,7 @@
     },
     "PySparkBatch": {
       "id": "PySparkBatch",
-      "description": "A configuration for running Apache PySpark (https:\/\/spark.apache.org\/docs\/latest\/api\/python\/getting_started\/quickstart.html) batch workload.",
+      "description": "A configuration for running an Apache PySpark (https:\/\/spark.apache.org\/docs\/latest\/api\/python\/getting_started\/quickstart.html) batch workload.",
       "type": "object",
       "properties": {
         "mainPythonFileUri": {
@@ -420,7 +420,7 @@
           "type": "string"
         },
         "args": {
-          "description": "Optional. The arguments to pass to the driver. Do not include arguments, such as --conf, that can be set as batch properties, since a collision may occur that causes an incorrect batch submission.",
+          "description": "Optional. The arguments to pass to the driver. Do not include arguments that can be set as batch properties, such as --conf, since a collision can occur that causes an incorrect batch submission.",
           "type": "array",
           "items": {
             "type": "string"
@@ -458,7 +458,7 @@
     },
     "SparkBatch": {
       "id": "SparkBatch",
-      "description": "A configuration for running Apache Spark (http:\/\/spark.apache.org\/) batch workload.",
+      "description": "A configuration for running an Apache Spark (http:\/\/spark.apache.org\/) batch workload.",
       "type": "object",
       "properties": {
         "mainJarFileUri": {
@@ -466,11 +466,11 @@
           "type": "string"
         },
         "mainClass": {
-          "description": "Optional. The name of the driver main class. The jar file that contains the class must be already in the classpath or specified in jar_file_uris.",
+          "description": "Optional. The name of the driver main class. The jar file that contains the class must be in the classpath or specified in jar_file_uris.",
           "type": "string"
         },
         "args": {
-          "description": "Optional. The arguments to pass to the driver. Do not include arguments, such as --conf, that can be set as batch properties, since a collision may occur that causes an incorrect batch submission.",
+          "description": "Optional. The arguments to pass to the driver. Do not include arguments that can be set as batch properties, such as --conf, since a collision can occur that causes an incorrect batch submission.",
           "type": "array",
           "items": {
             "type": "string"
@@ -501,7 +501,7 @@
     },
     "SparkRBatch": {
       "id": "SparkRBatch",
-      "description": "A configuration for running Apache SparkR (https:\/\/spark.apache.org\/docs\/latest\/sparkr.html) batch workload.",
+      "description": "A configuration for running an Apache SparkR (https:\/\/spark.apache.org\/docs\/latest\/sparkr.html) batch workload.",
       "type": "object",
       "properties": {
         "mainRFileUri": {
@@ -509,7 +509,7 @@
           "type": "string"
         },
         "args": {
-          "description": "Optional. The arguments to pass to the Spark driver. Do not include arguments, such as --conf, that can be set as batch properties, since a collision may occur that causes an incorrect batch submission.",
+          "description": "Optional. The arguments to pass to the Spark driver. Do not include arguments that can be set as batch properties, such as --conf, since a collision can occur that causes an incorrect batch submission.",
           "type": "array",
           "items": {
             "type": "string"
@@ -562,11 +562,17 @@
       "type": "object",
       "properties": {
         "endpoints": {
-          "description": "Map of remote access endpoints (web interfaces, APIs, etc) to their URIs.",
+          "description": "Output only. Map of remote access endpoints (such as web interfaces and APIs) to their URIs.",
+          "readOnly": true,
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "processOutputUri": {
+          "description": "Output only. A URI pointing to the location of the stdout of the workload's main process.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -1158,7 +1164,8 @@
               "The Solr service.",
               "The Zeppelin notebook.",
               "The Zookeeper service.",
-              "Dask"
+              "Dask",
+              "Nvidia GPU driver."
             ],
             "enum": [
               "COMPONENT_UNSPECIFIED",
@@ -1175,7 +1182,8 @@
               "SOLR",
               "ZEPPELIN",
               "ZOOKEEPER",
-              "DASK"
+              "DASK",
+              "GPU_DRIVER"
             ]
           }
         }
@@ -2766,7 +2774,7 @@
           "format": "google-datetime"
         },
         "doneTime": {
-          "description": "The time when the operation was finished.",
+          "description": "The time when the operation finished.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -3375,12 +3383,12 @@
                       "type": "string"
                     },
                     "batchId": {
-                      "description": "Optional. The ID to use for the batch, which will become the final component of the batch's resource name.This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+                      "description": "Optional. The ID to use for the batch, which will become the final component of the batch's resource name.This value must be 4-63 characters. Valid characters are \/a-z-\/.",
                       "location": "query",
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A unique ID used to identify the request. If the service receives two CreateBatchRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.CreateBatchRequest)s with the same request_id, then the second request will be ignored and the Operation that corresponds to the first Batch created and stored in the backend is returned.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The value must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "Optional. A unique ID used to identify the request. If the service receives two CreateBatchRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.CreateBatchRequest)s with the same request_id, the second request is ignored and the Operation that corresponds to the first Batch created and stored in the backend is returned.Recommendation: Set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The value must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3397,7 +3405,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a batch workload that will be executed asynchronously."
+                  "description": "Creates a batch workload that executes asynchronously."
                 },
                 "get": {
                   "id": "dataproc.projects.locations.batches.get",
@@ -3422,7 +3430,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the resource representation for a batch workload."
+                  "description": "Gets the batch workload resource representation."
                 },
                 "list": {
                   "id": "dataproc.projects.locations.batches.list",
@@ -3438,18 +3446,18 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Optional. The maximum number of batches to return in each response. The service may return fewer than this value. The default page size is 20, the maximum page size is 1000.",
+                      "description": "Optional. The maximum number of batches to return in each response. The service may return fewer than this value. The default page size is 20; the maximum page size is 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "Optional. A page token, received from a previous ListBatches call. Provide this to retrieve the subsequent page.",
+                      "description": "Optional. A page token received from a previous ListBatches call. Provide this token to retrieve the subsequent page.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Optional. A filter constraining the batches to list. Filters are case-sensitive and have the following syntax:field = value AND field = value ...",
+                      "description": "Optional. A filter constraining the batches to list. Filters are case sensitive and have the following syntax:field = value AND field = value ...",
                       "location": "query",
                       "type": "string"
                     }
@@ -3488,7 +3496,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes the batch workload resource. If the batch is not in terminal state, the delete fails, and the response returns FAILED_PRECONDITION."
+                  "description": "Deletes the batch workload resource. If the batch is not in terminal state, the delete fails and the response returns FAILED_PRECONDITION."
                 }
               }
             },

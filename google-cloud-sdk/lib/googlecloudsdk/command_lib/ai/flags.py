@@ -291,8 +291,7 @@ For example:
 `--autoscaling-metric-specs=cpu-usage=70`
 """.format(', '.join([
     "'{}'".format(c)
-    for c in sorted(constants.OP_AUTOSCALING_METRIC_NAME_MAPPER.keys())]
-                     )))
+    for c in sorted(constants.OP_AUTOSCALING_METRIC_NAME_MAPPER.keys())])))
 
 
 def AddAutomaticResourcesArgs(parser, resource_type):
@@ -398,7 +397,7 @@ def GetModelResourceSpec(resource_name='model',
 
 
 def AddRegionResourceArg(parser, verb, prompt_func=region_util.PromptForRegion):
-  """Add a resource argument for a cloud AI Platform region.
+  """Add a resource argument for a Vertex AI region.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -427,7 +426,7 @@ def GetDefaultOperationResourceSpec():
 
 
 def AddOperationResourceArg(parser):
-  """Add a resource argument for a cloud AI Platform operation."""
+  """Add a resource argument for a Vertex AI operation."""
   resource_name = 'operation'
   concept_parsers.ConceptParser.ForResource(
       resource_name,
@@ -437,7 +436,7 @@ def AddOperationResourceArg(parser):
 
 
 def AddModelResourceArg(parser, verb, prompt_func=region_util.PromptForRegion):
-  """Add a resource argument for a cloud AI Platform model.
+  """Add a resource argument for a Vertex AI model.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -586,7 +585,7 @@ def GetMetadataSchemaUriArg(noun):
 
 
 def AddIndexResourceArg(parser, verb):
-  """Add a resource argument for a cloud AI Platform index.
+  """Add a resource argument for a Vertex AI index.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -625,7 +624,7 @@ def GetEndpointResourceSpec(resource_name='endpoint',
 def AddEndpointResourceArg(parser,
                            verb,
                            prompt_func=region_util.PromptForRegion):
-  """Add a resource argument for a Cloud AI Platform endpoint.
+  """Add a resource argument for a Vertex AI endpoint.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -644,7 +643,7 @@ def AddEndpointResourceArg(parser,
 
 
 def AddIndexEndpointResourceArg(parser, verb):
-  """Add a resource argument for a cloud AI Platform index endpoint.
+  """Add a resource argument for a Vertex AI index endpoint.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -742,7 +741,7 @@ def GetTensorboardResourceSpec(resource_name='tensorboard'):
 
 
 def AddTensorboardTimeSeriesResourceArg(parser, verb):
-  """Add a resource argument for a Cloud AI Platform Tensorboard time series.
+  """Add a resource argument for a Vertex AI Tensorboard time series.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -758,7 +757,7 @@ def AddTensorboardTimeSeriesResourceArg(parser, verb):
 
 
 def AddTensorboardRunResourceArg(parser, verb):
-  """Add a resource argument for a Cloud AI Platform Tensorboard run.
+  """Add a resource argument for a Vertex AI Tensorboard run.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -774,7 +773,7 @@ def AddTensorboardRunResourceArg(parser, verb):
 
 
 def AddTensorboardExperimentResourceArg(parser, verb):
-  """Add a resource argument for a Cloud AI Platform Tensorboard experiment.
+  """Add a resource argument for a Vertex AI Tensorboard experiment.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -790,7 +789,7 @@ def AddTensorboardExperimentResourceArg(parser, verb):
 
 
 def AddTensorboardResourceArg(parser, verb):
-  """Add a resource argument for a Cloud AI Platform Tensorboard.
+  """Add a resource argument for a Vertex AI Tensorboard.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -848,7 +847,7 @@ def AddFilterArg(noun):
 
 
 def ParseAcceleratorFlag(accelerator, version):
-  """Validates and returns a accelerator config message object."""
+  """Validates and returns an accelerator config message object."""
   if accelerator is None:
     return None
   types = list(c for c in GetAcceleratorTypeMapper(version).choices)
@@ -941,7 +940,7 @@ def GetHptuningJobResourceSpec(resource_name='hptuning_job'):
 
 
 def AddHptuningJobResourceArg(parser, verb):
-  """Add a resource argument for a Cloud AI Platform hyperparameter tuning  job.
+  """Add a resource argument for a Vertex AI hyperparameter tuning job.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -958,7 +957,7 @@ def AddHptuningJobResourceArg(parser, verb):
 
 def AddKmsKeyResourceArg(parser, resource):
   """Add the --kms-key resource arg to the given parser."""
-  permission_info = ("The 'AI Platform Service Agent' service account must hold"
+  permission_info = ("The 'Vertex AI Service Agent' service account must hold"
                      " permission 'Cloud KMS CryptoKey Encrypter/Decrypter'")
   kms_resource_args.AddKmsKeyResourceArg(
       parser, resource, permission_info=permission_info)
@@ -1001,7 +1000,8 @@ def GetPredictInstanceSchemaArg(required=False):
       '--predict-instance-schema',
       help="""
       YAML schema file uri(Google Cloud Storage) describing the format of a
-      single instance, which are given to format this Endpoint's.
+      single instance, which are given to format this Endpoint's prediction.
+      If not set, we will generate predict schema from collected predict requests.
       """,
       required=required)
 
@@ -1020,7 +1020,9 @@ def GetSamplingPredictRequestArg(required=False):
   return base.Argument(
       '--sample-predict-request',
       help="""\
-      Path to a local file containing the body of a JSON object.
+      Path to a local file containing the body of a JSON object. Same format as
+      [PredictRequest.instances][], this can be set as a replacement of predict-instance-schema.
+      If not set, we will generate predict schema from collected predict requests.
 
        An example of a JSON request:
 
@@ -1050,45 +1052,47 @@ def AddObjectiveConfigGroup(parser, required=False):
       type=arg_parsers.ArgDict(allow_key_only=True),
       action=arg_parsers.UpdateAction,
       help=("""
-      List of paris of feature name and threshold value, if only feature name is set, the default threshold value would be 0.3.
+List of feature-threshold value pairs(For drift detection purpose only,
+if you want to do skew detection, please use flag --monitoring-config-from-file).
+If only feature name is set, the default threshold value would be 0.3.
 
-      Note: Only one of --drift-thresholds and --monitoring-config-from-file needs to be set.
+Note: Only one of --drift-thresholds and --monitoring-config-from-file needs to be set.
 
-      For example: `--drift-thresholds=feat1=0.1,feat2,feat3=0.2`"""))
+For example: `--drift-thresholds=feat1=0.1,feat2,feat3=0.2`"""))
   objective_config_group.add_argument(
       '--monitoring-config-from-file',
       help=("""
-      Path to the model monitoring objective config file. This fild shoule be a
-      YAML document containing a ModelDeploymentMonitoringJob, but only the
-      ModelDeploymentMonitoringObjectiveConfig needs to be configured.
+Path to the model monitoring objective config file. This file shoule be a YAML document containing a ModelDeploymentMonitoringJob,
+but only the ModelDeploymentMonitoringObjectiveConfig needs to be configured.
 
-      Note: Only one of --drift-thresholds and --monitoring-config-from-file needs to be set.
+Note: Only one of --drift-thresholds and --monitoring-config-from-file needs to be set.
 
-      Example(YAML):
+Example(YAML):
 
-      modelDeploymentMonitoringObjectiveConfigs:
-      - deployedModelId: '5251549009234886656'
-        objectiveConfig:
-          trainingDataset:
-            dataFormat: csv
-            gcsSource:
-              uris:
-              - gs://fake-bucket/training_data.csv
-            targetField: price
-          trainingPredictionSkewDetectionConfig:
-            skewThresholds:
-              feat1:
-                value: 0.9
-              feat2:
-                value: 0.8
-      - deployedModelId: '2945706000021192704'
-        objectiveConfig:
-          predictionDriftDetectionConfig:
-            driftThresholds:
-              feat1:
-                value: 0.3
-              feat2:
-                value: 0.4"""))
+  modelDeploymentMonitoringObjectiveConfigs:
+  - deployedModelId: '5251549009234886656'
+    objectiveConfig:
+      trainingDataset:
+        dataFormat: csv
+        gcsSource:
+          uris:
+          - gs://fake-bucket/training_data.csv
+        targetField: price
+      trainingPredictionSkewDetectionConfig:
+        skewThresholds:
+          feat1:
+            value: 0.9
+          feat2:
+            value: 0.8
+  - deployedModelId: '2945706000021192704'
+    objectiveConfig:
+      predictionDriftDetectionConfig:
+        driftThresholds:
+          feat1:
+            value: 0.3
+          feat2:
+            value: 0.4
+"""))
 
 
 def GetMonitoringJobResourceSpec(resource_name='monitoring_job'):
@@ -1101,7 +1105,7 @@ def GetMonitoringJobResourceSpec(resource_name='monitoring_job'):
 
 
 def AddModelMonitoringJobResourceArg(parser, verb):
-  """Add a resource argument for a cloud AI Platform model deployment monitoring job.
+  """Add a resource argument for a Vertex AI model deployment monitoring job.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 

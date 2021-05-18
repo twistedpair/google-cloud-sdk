@@ -54,6 +54,7 @@ def AddSubnetId(parser):
       '--subnet-id',
       required=True,
       type=arg_parsers.ArgList(),
+      metavar='SUBNET_ID',
       help='Subnet ID of an existing VNET to use for the control plane.')
 
 
@@ -259,6 +260,7 @@ def AddTags(parser):
   parser.add_argument(
       '--tags',
       type=arg_parsers.ArgDict(min_length=1),
+      metavar='TAG',
       help="""\
 Applies the given tags (comma separated) on the Azure resources. Example:
 

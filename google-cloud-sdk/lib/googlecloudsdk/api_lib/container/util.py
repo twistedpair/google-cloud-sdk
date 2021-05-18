@@ -237,6 +237,14 @@ class NodeConfigError(Error):
     super(NodeConfigError, self).__init__('Invalid node config: {0}'.format(e))
 
 
+class AutoprovisioningConfigError(Error):
+  """Error for attempting parse autoprovisioning config YAML/JSON file."""
+
+  def __init__(self, e):
+    super(AutoprovisioningConfigError,
+          self).__init__('Invalid autoprovisioning config file: {0}'.format(e))
+
+
 class ClusterConfig(object):
   """Encapsulates persistent cluster config data.
 
@@ -649,3 +657,61 @@ def GetPrivateIpv6GoogleAccessTypeMapperForUpdate(messages, hidden=False):
       _GetPrivateIPv6CustomMappings(),
       hidden=hidden,
       help_str='')
+
+
+def HasUnknownKeys(actual, known):
+  if not actual:
+    return
+  if set(actual.keys()) - known:
+    return 'following names are not recognised: {0}'.format(
+        ' '.join(set(actual.keys()) - known))
+
+
+def ValidateAutoprovisioningConfigFile(nap_config_file):
+  """Load and Validate Autoprovisioning configuration from YAML/JSON file.
+
+  Args:
+    nap_config_file: The YAML/JSON string that contains sysctl and kubelet
+      options.
+
+  Raises:
+    Error: when there's any errors on parsing the YAML/JSON system config
+    or wrong name are present.
+  """
+
+  try:
+    nap_config = yaml.load(nap_config_file)
+  except yaml.YAMLParseError as e:
+    raise AutoprovisioningConfigError(
+        'autoprovisioning config file is not valid YAML/JSON: {0}'.format(e))
+  if not nap_config:
+    raise AutoprovisioningConfigError(
+        'autoprovisioning config file cannot be empty')
+  nap_params = {
+      'resourceLimits', 'serviceAccount', 'scopes', 'upgradeSettings',
+      'management', 'autoprovisioningLocations', 'minCpuPlatform', 'imageType',
+      'bootDiskKmsKey', 'diskSizeGb', 'diskType', 'shieldedInstanceConfig'
+  }
+  err = HasUnknownKeys(nap_config, nap_params)
+  if err:
+    raise AutoprovisioningConfigError(err)
+
+  if nap_config.get('upgradeSettings'):
+    upgrade_settings_params = {'maxSurgeUpgrade', 'maxUnavailableUpgrade'}
+    err = HasUnknownKeys(
+        nap_config.get('upgradeSettings'), upgrade_settings_params)
+    if err:
+      raise AutoprovisioningConfigError(err)
+
+  if nap_config.get('management'):
+    node_management_params = {'autoUpgrade', 'autoRepair'}
+    err = HasUnknownKeys(nap_config.get('management'), node_management_params)
+    if err:
+      raise AutoprovisioningConfigError(err)
+
+  if nap_config.get('shieldedInstanceConfig'):
+    shielded_params = {'enableSecureBoot', 'enableIntegrityMonitoring'}
+    err = HasUnknownKeys(
+        nap_config.get('shieldedInstanceConfig'), shielded_params)
+    if err:
+      raise AutoprovisioningConfigError(err)

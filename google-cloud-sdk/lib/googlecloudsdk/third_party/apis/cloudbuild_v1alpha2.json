@@ -476,6 +476,14 @@
         "availableSecrets": {
           "description": "Secrets and secret environment variables.",
           "$ref": "Secrets"
+        },
+        "warnings": {
+          "description": "Output only. Non-fatal problems encountered during the execution of the build.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "Warning"
+          }
         }
       }
     },
@@ -1229,6 +1237,33 @@
             "type": "string",
             "format": "byte"
           }
+        }
+      }
+    },
+    "Warning": {
+      "id": "Warning",
+      "description": "A non-fatal problem encountered during the execution of the build.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "Explanation of the warning generated.",
+          "type": "string"
+        },
+        "priority": {
+          "description": "The priority for this warning.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "e.g. deprecation warnings and alternative feature highlights.",
+            "e.g. automated detection of possible issues with the build.",
+            "e.g. alerts that a feature used in the build is pending removal"
+          ],
+          "enum": [
+            "PRIORITY_UNSPECIFIED",
+            "INFO",
+            "WARNING",
+            "ALERT"
+          ]
         }
       }
     },

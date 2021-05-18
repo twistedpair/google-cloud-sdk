@@ -1997,12 +1997,32 @@ class ReconciliationOperationMetadata(_messages.Message):
   r"""Operation metadata returned by the CLH during resource state
   reconciliation.
 
+  Enums:
+    ExclusiveActionValueValuesEnum:
+
   Fields:
-    deleteResource: If set to TRUE, the resource has to be deleted. When using
-      this bit, the CLH should fail the operation.
+    deleteResource: DEPRECATED. Use exclusive_action instead.
+    exclusiveAction: A ExclusiveActionValueValuesEnum attribute.
   """
 
+  class ExclusiveActionValueValuesEnum(_messages.Enum):
+    r"""ExclusiveActionValueValuesEnum enum type.
+
+    Values:
+      UNKNOWN_REPAIR_ACTION: <no description>
+      DELETE: The resource has to be deleted. When using this bit, the CLH
+        should fail the operation.
+      RETRY: This resource could not be repaired but the repair should be
+        tried again at a later time. This can happen if there is a dependency
+        that needs to be resolved first- e.g. if a parent resource must be
+        repaired before a child resource.
+    """
+    UNKNOWN_REPAIR_ACTION = 0
+    DELETE = 1
+    RETRY = 2
+
   deleteResource = _messages.BooleanField(1)
+  exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
 
 
 class RestoreCertificateAuthorityRequest(_messages.Message):

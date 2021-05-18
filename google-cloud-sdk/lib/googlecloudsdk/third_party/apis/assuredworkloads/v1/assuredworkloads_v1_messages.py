@@ -390,6 +390,8 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     createTime: Optional. Time when the operation was created.
     displayName: Optional. The display name of the workload.
     parent: Optional. The parent of the workload.
+    resourceSettings: Optional. Resource properties in the input that are used
+      for creating/customizing workload resources.
   """
 
   class ComplianceRegimeValueValuesEnum(_messages.Enum):
@@ -420,6 +422,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
   parent = _messages.StringField(4)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 5, repeated=True)
 
 
 class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):

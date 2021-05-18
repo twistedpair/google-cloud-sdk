@@ -61,9 +61,11 @@ class Argument(object):
     category: str, The argument help category name.
     help: str, The argument help text.
     is_global: bool, The argument is global to all commands.
+    is_hidden: bool, The argument help text is hidden.
     is_group: bool, The argument is a group with arguments in self.arguments.
     is_mutex: bool, This is a mutex argument group; at most one argument in
       arguments may be specified.
+    is_positional: bool, The argument is a positional argument.
     is_required: bool, The argument is required.
   """
 
@@ -74,12 +76,16 @@ class Argument(object):
     self.arguments = arguments or []
     self.is_group = is_group or arguments
     self.is_global = is_global
-    self.is_hidden = hidden
+    self._is_hidden = hidden
     self.is_mutex = mutex
     self.is_positional = False
     self.is_required = required
     self.help = help
     self.category = category
+
+  @property
+  def is_hidden(self):
+    return self._is_hidden
 
 
 class ArgumentInterceptor(Argument):
@@ -196,6 +202,24 @@ class ArgumentInterceptor(Argument):
     return self.data.positional_args
 
   @property
+  def is_hidden(self):
+    if self._is_hidden:
+      return True
+
+    try:
+      next(a for a in self.arguments if not a.is_hidden)
+      return False
+    except StopIteration:
+      flags = []
+      for arg in self.arguments:
+        if hasattr(arg, 'option_strings'):
+          flags += arg.option_strings
+      raise parser_errors.ArgumentException(
+          'Groups with arguments and subgroups that are all hidden should be '
+          'marked hidden.\nCommand: [{}]\nGroup: [{}]\nFlags: [{}]'.format(
+              '.'.join(self.command_name), self.help, ', '.join(flags)))
+
+  @property
   def flag_args(self):
     return self.data.flag_args
 
@@ -246,7 +270,7 @@ class ArgumentInterceptor(Argument):
     # subcommands.
     do_not_propagate = kwargs.pop('do_not_propagate', False)
     # hidden=True retains help but does not display it.
-    hidden = kwargs.pop('hidden', False)
+    hidden = kwargs.pop('hidden', False) or self._is_hidden
     help_text = kwargs.get('help')
     if not help_text:
       raise ValueError('Argument {} requires help text [hidden={}]'.format(
@@ -410,7 +434,7 @@ class ArgumentInterceptor(Argument):
                                 category=category,
                                 mutex=mutex,
                                 required=required,
-                                hidden=hidden,
+                                hidden=hidden or self._is_hidden,
                                 **kwargs)
     self.arguments.append(group)
     return group
@@ -544,7 +568,6 @@ class ArgumentInterceptor(Argument):
 
     inverted_argument = self.parser.add_argument(
         name.replace('--', '--no-', 1), **kwargs)
-    inverted_argument.hidden = True
     if inverted_synopsis:
       # flag.inverted_synopsis means display the inverted flag in the SYNOPSIS.
       setattr(added_argument, 'inverted_synopsis', True)

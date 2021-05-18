@@ -222,7 +222,7 @@ class ArgAdder(object):
         required=True)
     return self
 
-  def AddAppProfileRouting(self, required=True):
+  def AddAppProfileRouting(self, required=True, allow_restrict_to=False):
     """Adds arguments for app_profile routing to parser."""
     routing_group = self.parser.add_mutually_exclusive_group(required=required)
     any_group = routing_group.add_group('Multi Cluster Routing Policy')
@@ -232,6 +232,14 @@ class ArgAdder(object):
         required=True,
         default=False,
         help='Use Multi Cluster Routing policy.')
+    if allow_restrict_to:
+      any_group.add_argument(
+          '--restrict-to',
+          type=arg_parsers.ArgList(),
+          help='Cluster IDs to route to using the Multi Cluster Routing Policy.'
+          ' If unset, all clusters in the instance will be eligible.',
+          metavar='RESTRICT_TO',
+          hidden=True)
     route_to_group = routing_group.add_group('Single Cluster Routing Policy')
     route_to_group.add_argument(
         '--route-to',

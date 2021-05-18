@@ -224,7 +224,11 @@ class AnnotationSetConfig(_messages.Message):
 
   Fields:
     complexType: Reference to the complex type name, in the following form:
-      `projects/{project}/locations/{location}/complexTypes/{name}`.
+      `projects/{project}/locations/{location}/complexTypes/{name}`. Complex
+      type of the annotation set config has the following requirements: 1.
+      Must have two required fields named start and end. 2. Allowed types for
+      start and end are number, duration, and datetime. 3. Start and end
+      should have the same type.
     indexedFieldConfigs: List of indexed fields (e.g. "data.start") to make
       available in searches with their corresponding properties.
   """
@@ -1169,9 +1173,10 @@ class GoogleIamV1Condition(_messages.Message):
         of the request's realms match one of the given values; with NOT_IN,
         "none of the realms match any of the given values". Note that a value
         can be: - 'self' (i.e., allow connections from clients that are in the
-        same security realm) - 'self:metro' (i.e., clients that are in the
-        same metro) - 'self:cloud-region' (i.e., allow connections from
-        clients that are in the same cloud region) - 'guardians' (i.e., allow
+        same security realm, which is currently but not guaranteed to be
+        campus-sized) - 'self:metro' (i.e., clients that are in the same
+        metro) - 'self:cloud-region' (i.e., allow connections from clients
+        that are in the same cloud region) - 'guardians' (i.e., allow
         connections from its guardian realms. See go/security-realms-
         glossary#guardian for more information.) - a realm (e.g., 'campus-
         abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go/realm-
@@ -1946,13 +1951,15 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsCreate
 
   Fields:
     annotation: A Annotation resource to be passed as the request body.
+    annotationId: Required. The ID of the annotation resource to be created.
     parent: Required. The parent resource where this Annotation will be
       created. Format: `projects/{project}/locations/{location}/assetTypes/{as
       set_type}/assets/{asset}/annotationSets/{annotation_set}`
   """
 
   annotation = _messages.MessageField('Annotation', 1)
-  parent = _messages.StringField(2, required=True)
+  annotationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsDeleteRequest(_messages.Message):
@@ -2036,7 +2043,8 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsCreateRequest(_me
 
   Fields:
     annotationSet: A AnnotationSet resource to be passed as the request body.
-    annotationSetId: The ID of the annotationSet resource to be created.
+    annotationSetId: Required. The ID of the annotationSet resource to be
+      created.
     parent: Required. The parent resource where this AnnotationSet will be
       created. Format: `projects/{project}/locations/{location}/assetTypes/{as
       set_type}/assets/{asset}`
@@ -3347,11 +3355,11 @@ class PubSubDestination(_messages.Message):
   r"""Specifies the pub/sub destination to send the notifications to.
 
   Fields:
-    pubsubTopic: Required. A Pub/Sub topic to which messages are sent by GCMA.
+    topic: Required. A Pub/Sub topic to which messages are sent by GCMA.
       https://cloud.google.com/pubsub/docs/overview
   """
 
-  pubsubTopic = _messages.StringField(1)
+  topic = _messages.StringField(1)
 
 
 class Rule(_messages.Message):

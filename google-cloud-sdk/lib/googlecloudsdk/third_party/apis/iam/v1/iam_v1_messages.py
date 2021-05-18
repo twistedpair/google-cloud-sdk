@@ -1761,7 +1761,7 @@ class Oidc(_messages.Message):
       without the HTTPS prefix. For example: ``` //iam.googleapis.com/projects
       //locations//workloadIdentityPools//providers/ https://iam.googleapis.co
       m/projects//locations//workloadIdentityPools//providers/ ```
-    issuerUri: Required. The OIDC issuer URL.
+    issuerUri: Required. The OIDC issuer URL. Must be an HTTPS endpoint.
   """
 
   allowedAudiences = _messages.StringField(1, repeated=True)

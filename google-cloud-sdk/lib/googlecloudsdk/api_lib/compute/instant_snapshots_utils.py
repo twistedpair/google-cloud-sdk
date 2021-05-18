@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utilities for handling Compute ZoneInstantSnapshotService and RegionInstantSnapshotService."""
+"""Utilities for handling Compute InstantSnapshotService and RegionInstantSnapshotService."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -27,7 +27,7 @@ class UnknownResourceError(Error):
   """Raised when a instant snapshot resource argument is neither regional nor zonal."""
 
 
-class _InstantSnapshot(six.with_metaclass(abc.ABCMeta, object)):
+class _InstantSnapshotBase(six.with_metaclass(abc.ABCMeta, object)):
   """Common class for InstantSnapshot Service API client."""
 
   def GetService(self):
@@ -50,14 +50,14 @@ class _InstantSnapshot(six.with_metaclass(abc.ABCMeta, object)):
     raise NotImplementedError
 
 
-class _ZoneInstantSnapshot(_InstantSnapshot):
-  """A wrapper for Compute Engine ZoneInstantSnapshotService API client."""
+class _InstantSnapshot(_InstantSnapshotBase):
+  """A wrapper for Compute Engine InstantSnapshotService API client."""
 
   def __init__(self, client, ips_ref, messages):
-    _InstantSnapshot.__init__(self)
+    _InstantSnapshotBase.__init__(self)
     self._ips_ref = ips_ref
     self._client = client
-    self._service = client.zoneInstantSnapshots
+    self._service = client.instantSnapshots
     self._messages = messages
 
   @classmethod
@@ -65,14 +65,14 @@ class _ZoneInstantSnapshot(_InstantSnapshot):
     return 'compute.zoneOperations'
 
   def GetInstantSnapshotRequestMessage(self):
-    return self._messages.ComputeZoneInstantSnapshotsGetRequest(
+    return self._messages.ComputeInstantSnapshotsGetRequest(
         **self._ips_ref.AsDict())
 
   def GetSetLabelsRequestMessage(self):
     return self._messages.ZoneSetLabelsRequest
 
   def GetSetInstantSnapshotLabelsRequestMessage(self, ips, labels):
-    req = self._messages.ComputeZoneInstantSnapshotsSetLabelsRequest
+    req = self._messages.ComputeInstantSnapshotsSetLabelsRequest
     return req(
         project=self._ips_ref.project,
         resource=self._ips_ref.instantSnapshot,
@@ -81,11 +81,11 @@ class _ZoneInstantSnapshot(_InstantSnapshot):
             labelFingerprint=ips.labelFingerprint, labels=labels))
 
 
-class _RegionInstantSnapshot(_InstantSnapshot):
+class _RegionInstantSnapshot(_InstantSnapshotBase):
   """A wrapper for Compute Engine RegionInstantSnapshotService API client."""
 
   def __init__(self, client, ips_ref, messages):
-    _InstantSnapshot.__init__(self)
+    _InstantSnapshotBase.__init__(self)
     self._ips_ref = ips_ref
     self._client = client
     self._service = client.regionInstantSnapshots
@@ -130,9 +130,9 @@ def IsZonal(ips_ref):
       correct format.
   """
   # There are 2 types of instant snapshot services,
-  # ZoneInstantSnapshotService (by zone) and
+  # InstantSnapshotService (by zone) and
   # RegionInstantSnapshotService (by region).
-  if ips_ref.Collection() == 'compute.zoneInstantSnapshots':
+  if ips_ref.Collection() == 'compute.instantSnapshots':
     return True
   elif ips_ref.Collection() == 'compute.regionInstantSnapshots':
     return False
@@ -152,9 +152,9 @@ def GetInstantSnapshotInfo(ips_ref, client, messages):
     messages: the compute message module.
 
   Returns:
-    _ZoneInstantSnapshot or _RegionInstantSnapshot.
+    _InstantSnapshot or _RegionInstantSnapshot.
   """
   if IsZonal(ips_ref):
-    return _ZoneInstantSnapshot(client, ips_ref, messages)
+    return _InstantSnapshot(client, ips_ref, messages)
   else:
     return _RegionInstantSnapshot(client, ips_ref, messages)

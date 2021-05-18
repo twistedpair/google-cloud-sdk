@@ -134,7 +134,7 @@ Examples: `user:test-user@gmail.com`, `group:admins@example.com`,
 `serviceAccount:test123@example.domain.com`, or
 `domain:example.domain.com`.
 
-Can also be one of the following special values:
+Some resources also accept the following special values:
 * `allUsers` - Special identifier that represents anyone who is on the internet,
    with or without a Google account.
 * `allAuthenticatedUsers` - Special identifier that represents anyone who is

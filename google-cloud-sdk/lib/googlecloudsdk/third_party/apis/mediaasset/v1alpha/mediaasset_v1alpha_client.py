@@ -199,7 +199,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         method_id='mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['annotationId'],
         relative_path='v1alpha/{+parent}/annotations',
         request_field='annotation',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsCreateRequest',

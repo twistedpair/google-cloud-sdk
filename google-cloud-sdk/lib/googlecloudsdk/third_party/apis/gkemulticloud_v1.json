@@ -293,6 +293,11 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "workloadIdentityConfig": {
+          "description": "Output only. Workload Identity settings.",
+          "readOnly": true,
+          "$ref": "GoogleCloudGkemulticloudV1WorkloadIdentityConfig"
         }
       }
     },
@@ -485,6 +490,25 @@
       "properties": {
         "username": {
           "description": "The name of the user, e.g. my-gcp-id@gmail.com.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1WorkloadIdentityConfig": {
+      "id": "GoogleCloudGkemulticloudV1WorkloadIdentityConfig",
+      "description": "Workload Identity settings.",
+      "type": "object",
+      "properties": {
+        "issuerUri": {
+          "description": "The OIDC issuer URL for this cluster.",
+          "type": "string"
+        },
+        "worloadPool": {
+          "description": "The Workload Identity Pool associated to the cluster.",
+          "type": "string"
+        },
+        "identityProvider": {
+          "description": "The ID of the OIDC Identity Provider (IdP) associated to the Workload Identity Pool.",
           "type": "string"
         }
       }
@@ -1003,6 +1027,11 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "workloadIdentityConfig": {
+          "description": "Output only. Workload Identity settings.",
+          "readOnly": true,
+          "$ref": "GoogleCloudGkemulticloudV1WorkloadIdentityConfig"
         }
       }
     },

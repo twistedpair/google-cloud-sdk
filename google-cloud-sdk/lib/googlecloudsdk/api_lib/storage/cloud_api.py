@@ -23,6 +23,13 @@ import enum
 from googlecloudsdk.command_lib.storage import storage_url
 
 
+class Capability(enum.Enum):
+  """Used to track API capabilities relevant to logic in tasks."""
+  COMPOSE_OBJECTS = 'COMPOSE_OBJECTS'
+  RESUMABLE_UPLOAD = 'RESUMABLE_UPLOAD'
+  SLICED_DOWNLOAD = 'SLICED_DOWNLOAD'
+
+
 class DownloadStrategy(enum.Enum):
   """Enum class for specifying download strategy."""
   ONE_SHOT = 'oneshot'
@@ -106,7 +113,12 @@ class CloudApi(object):
   Behavior when calling a Cloud API instance simultaneously across
   threads is undefined and doing so will likely cause errors. Therefore,
   a separate instance of the Cloud API should be instantiated per-thread.
+
+  Attributes:
+    capabilities (set[Capability]): If a Capability is present in this set, this
+      API can be used to execute related logic in tasks.
   """
+  capabilities = set()
 
   def create_bucket(self, bucket_resource, fields_scope=None):
     """Creates a new bucket with the specified metadata.

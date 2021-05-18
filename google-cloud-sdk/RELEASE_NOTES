@@ -5,6 +5,73 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 341.0.0 (2021-05-18)
+
+### AI Platform
+
+*  Added beta commands for the AI platform tensorboard suite.
+*  Added `gcloud beta ai tensorboards` commands to manage a Tensorboard on the unified AI platform.
+*  Added `gcloud beta ai tensorboard-experiments` commands to manage a Tensorboard Experiment on the unified AI platform.
+*  Added `gcloud beta ai tensorboard-runs` commands to manage a Tensorboard Run on the unified AI platform.
+*  Added `gcloud beta ai tensorboard-time-series` commands to manage a Tensorboard Time Series on the unified AI platform.
+
+### App Engine
+
+* Added a deprecation warning to `gcloud app deploy dos.yaml`.
+
+### App Engine Flexible Environment
+
+* Added a deprecation warning to `gcloud app deploy dos.yaml`.
+
+### Assured Workloads
+
+*   Added option to specify custom project names in `--resource-settings` by using `consumer-project-name` or `encryption-keys-project-name` key in `gcloud assured workloads create` command.
+
+### BigQuery
+
+* Support displaying TVF return table signature.
+* Adds enable_queuing_and_priorities reservation flag (only for whitelisted reservations).
+* Adds support for reservation assignment priority (only for whitelisted reservations).
+
+### Cloud Asset Inventory
+
+*  Added `gcloud asset analyze-move` commands to analyze a GCP Project Migration.
+
+### Cloud Pub/Sub
+
+* Added `gcloud beta pubsub lite-topics publish` which allows the user to publish a message to their specified Pub/Sub Lite topic.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.62.
+
+### Compute Engine
+
+* `Promoted `disk-resource-policy` key of flag `--create-disk` for all `compute instances` create commands.
+* Updated help text for `--enable-endpoint-independent-mapping`  on `compute routers nats create` and `compute routers nats update` to reflect the new default.
+
+### Kubernetes Engine
+
+* Added `--threads-per-core` flag to `gcloud container clusters create` and `gcloud container node-pools create` commands.
+* Promoted `--cluster-dns-*` flags of `gcloud container clusters create`
+and `gcloud container clusters update` to beta.
+* Updates default kubectl from 1.17 to 1.18.
+* Additional kubectl versions:
+  * kubectl.1.17 (1.17.17)
+  * kubectl.1.18 (1.18.19)
+  * kubectl.1.19 (1.19.11)
+  * kubectl.1.20 (1.20.7)
+  * kubectl.1.21 (1.21.1)
+
+### Pubsub Emulator
+
+*   Fixed issue where subscription retention was not being respected upon
+    subscription creation.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 340.0.0 (2021-05-11)
 
 ### Cloud Asset Inventory

@@ -263,6 +263,7 @@ class _Sections(object):
     app: Section, The section containing app properties for the Cloud SDK.
     auth: Section, The section containing auth properties for the Cloud SDK.
     aws: Section, The section containing properties for GKE on AWS.
+    azure: Section, The section containing properties for GKE on Azure.
     billing: Section, The section containing billing properties for the Cloud
       SDK.
     blueprints: Section, the section containing blueprints properties for the
@@ -352,6 +353,8 @@ class _Sections(object):
       SDK.
     survey: Section, The section containing survey properties for the Cloud SDK.
     test: Section, The section containing test properties for the Cloud SDK.
+    transfer: Section, The section containing transfer properties for the Cloud
+      SDK.
     transport: Section, The section containing transport properties for the
       Cloud SDK.
     transcoder: Section, The section containing transcoder properties for the
@@ -378,6 +381,7 @@ class _Sections(object):
     self.artifacts = _SectionArtifacts()
     self.auth = _SectionAuth()
     self.aws = _SectionAws()
+    self.azure = _SectionAzure()
     self.billing = _SectionBilling()
     self.blueprints = _SectionBlueprints()
     self.builds = _SectionBuilds()
@@ -426,6 +430,7 @@ class _Sections(object):
     self.storage = _SectionStorage()
     self.survey = _SectionSurvey()
     self.test = _SectionTest()
+    self.transfer = _SectionTransfer()
     self.transport = _SectionTransport()
     self.transcoder = _SectionTranscoder()
     self.vmware = _SectionVmware()
@@ -441,6 +446,7 @@ class _Sections(object):
         self.app,
         self.auth,
         self.aws,
+        self.azure,
         self.billing,
         self.blueprints,
         self.builds,
@@ -1655,6 +1661,23 @@ class _SectionAws(_Section):
         hidden=True)
 
 
+class _SectionAzure(_Section):
+  """Contains the properties for the 'azure' section."""
+
+  def __init__(self):
+    super(_SectionAzure, self).__init__('azure')
+    self.region = self._Add(
+        'region',
+        help_text='Default Google Cloud region `gcloud` should use for '
+        'container azure surface.',
+        hidden=True)
+    self.azure_region = self._Add(
+        'azure_region',
+        help_text='Default Azure region `gcloud` should use for '
+        'container azure surface.',
+        hidden=True)
+
+
 class _SectionBilling(_Section):
   """Contains the properties for the 'auth' section."""
 
@@ -1757,6 +1780,19 @@ class _SectionTest(_Section):
     self.results_base_url = self._Add('results_base_url', hidden=True)
     self.matrix_status_interval = self._Add(
         'matrix_status_interval', hidden=True)
+
+
+class _SectionTransfer(_Section):
+  """Contains the properties for the 'transfer' section."""
+
+  def __init__(self):
+    super(_SectionTransfer, self).__init__('transfer', hidden=True)
+    self.no_async_polling_interval_ms = self._Add(
+        'no_async_polling_interval_ms',
+        default=3000,
+        hidden=True,
+        help_text='Frequency for polling a transfer operation to see if'
+        ' it is done.')
 
 
 class _SectionTransport(_Section):
@@ -2125,6 +2161,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.datapol = self._Add('datapol')
     self.dataproc = self._Add('dataproc')
     self.datastore = self._Add('datastore')
+    self.datastream = self._Add('datastream')
     self.deploymentmanager = self._Add('deploymentmanager')
     self.discovery = self._Add('discovery')
     self.dns = self._Add('dns')
@@ -2162,6 +2199,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.orgpolicy = self._Add('orgpolicy')
     self.osconfig = self._Add('osconfig')
     self.oslogin = self._Add('oslogin')
+    self.policyanalyzer = self._Add('policyanalyzer')
     self.policysimulator = self._Add('policysimulator')
     self.policytroubleshooter = self._Add('policytroubleshooter')
     self.privateca = self._Add('privateca')

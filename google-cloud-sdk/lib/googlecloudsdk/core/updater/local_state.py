@@ -635,6 +635,7 @@ class InstallationState(object):
                                    '|third_party/proto'
                                    '|dulwich'
                                    '|pubsublite'
+                                   '|logging_v2'
                                    '|pubsub_v1/services)')
     else:
       # Do not compile anything on python 3.4.x

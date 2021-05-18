@@ -5,7 +5,7 @@ operation:
   - *location
   - parameter_name: operationsId
     attribute_name: operation
-    help: The name of the Google Cloud AI Platform operation.
+    help: The name of Vertex AI operation.
 
 model:
   name: model
@@ -15,4 +15,4 @@ model:
   - &model
     parameter_name: modelsId
     attribute_name: model
-    help: The name of the Google Cloud AI Platform model.
+    help: The name of Vertex AI model.

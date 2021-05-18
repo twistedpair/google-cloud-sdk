@@ -219,8 +219,8 @@ class ConfigMapVolumeSource(_messages.Message):
       of the referenced Secret will be projected into the volume as a file
       whose name is the key and content is the value. If specified, the listed
       keys will be projected into the specified paths, and unlisted keys will
-      not be present. If a key is specified which is not present in the
-      Secret, the volume setup will error unless it is marked optional.
+      not be present. If a key is specified that is not present in the Secret,
+      the volume setup will error unless it is marked optional.
     name: Cloud Run fully managed: not supported Cloud Run for Anthos:
       supported Name of the config.
     optional: (Optional) Cloud Run fully managed: not supported Cloud Run for
@@ -1591,7 +1591,10 @@ class RevisionTemplate(_messages.Message):
       connections. Multiple values should be comma separated. *
       `run.googleapis.com/vpc-access-connector` sets a Serverless VPC Access
       connector. * `run.googleapis.com/vpc-access-egress` sets VPC egress.
-      Supported values are `all` and `private-ranges-only`.
+      Supported values are `all-traffic`, `all` (deprecated), and `private-
+      ranges-only`. `all-traffic` and `all` provide the same functionality.
+      `all` is deprecated but will continue to be supported. Prefer `all-
+      traffic`.
     spec: RevisionSpec holds the desired state of the Revision (from the
       client).
   """
@@ -2247,7 +2250,7 @@ class RunProjectsLocationsListRequest(_messages.Message):
       documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
-      will select a default.
+      selects a default.
     pageToken: A page token received from the `next_page_token` field in the
       response. Send that page token to receive the subsequent page.
   """
@@ -2695,7 +2698,7 @@ class SecretEnvSource(_messages.Message):
 
 
 class SecretKeySelector(_messages.Message):
-  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: supported Cloud Run for Anthos: supported
   SecretKeySelector selects a key of a Secret.
 
   Fields:
@@ -2750,8 +2753,8 @@ class SecretVolumeSource(_messages.Message):
       of the referenced Secret will be projected into the volume as a file
       whose name is the key and content is the value. If specified, the listed
       keys will be projected into the specified paths, and unlisted keys will
-      not be present. If a key is specified which is not present in the
-      Secret, the volume setup will error unless it is marked optional.
+      not be present. If a key is specified that is not present in the Secret,
+      the volume setup will error unless it is marked optional.
     optional: (Optional) Cloud Run fully managed: not supported Cloud Run for
       Anthos: supported Specify whether the Secret or its keys must be
       defined.

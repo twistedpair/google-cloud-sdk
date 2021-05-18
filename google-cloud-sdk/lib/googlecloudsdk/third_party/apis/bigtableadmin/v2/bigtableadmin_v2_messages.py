@@ -843,8 +843,8 @@ class BigtableadminProjectsInstancesTablesRestoreRequest(_messages.Message):
 
   Fields:
     parent: Required. The name of the instance in which to create the restored
-      table. This instance must be the parent of the source backup. Values are
-      of the form `projects//instances/`.
+      table. This instance must be in the same project as the source backup.
+      Values are of the form `projects//instances/`.
     restoreTableRequest: A RestoreTableRequest resource to be passed as the
       request body.
   """
@@ -1897,8 +1897,14 @@ class MultiClusterRoutingUseAny(_messages.Message):
   transient errors or delays. Clusters in a region are considered equidistant.
   Choosing this option sacrifices read-your-writes consistency to improve
   availability.
+
+  Fields:
+    clusterIds: The set of clusters to route to. The order is ignored;
+      clusters will be tried in order of distance. If left empty, all clusters
+      are eligible.
   """
 
+  clusterIds = _messages.StringField(1, repeated=True)
 
 
 class Operation(_messages.Message):

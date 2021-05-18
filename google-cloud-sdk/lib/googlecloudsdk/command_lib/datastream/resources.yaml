@@ -1,0 +1,69 @@
+region:
+  name: region
+  collection: datastream.projects.locations
+  request_id_field: location.name
+  attributes:
+  - &region
+    parameter_name: locationsId
+    attribute_name: region
+    help: The name of the region.
+
+connection_profile:
+  name: connection_profile
+  collection: datastream.projects.locations.connectionProfiles
+  request_id_field: connection_profile.name
+  attributes:
+  - *region
+  - &connection_profile
+    parameter_name: connectionProfilesId
+    attribute_name: connection_profile
+    help: The connection profile name.
+    completion_request_params:
+    - fieldName: fieldMask
+      value: name
+  disable_auto_completers: false
+
+stream:
+  name: stream
+  collection: datastream.projects.locations.streams
+  request_id_field: stream.name
+  attributes:
+  - *region
+  - &stream
+    parameter_name: streamsId
+    attribute_name: stream
+    help: The stream name.
+    completion_request_params:
+    - fieldName: fieldMask
+      value: name
+  disable_auto_completers: false
+
+operation:
+  name: operation
+  collection: datastream.projects.locations.operations
+  request_id_field: operation.name
+  attributes:
+  - *region
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: The operation name.
+    completion_request_params:
+    - fieldName: fieldMask
+      value: name
+  disable_auto_completers: false
+
+private_connection:
+  name: private_connection
+  collection: datastream.projects.locations.privateConnections
+  request_id_field: private_connection.name
+  attributes:
+  - *region
+  - &private_connection
+    parameter_name: privateConnectionsId
+    attribute_name: private_connection
+    help: The private connection name.
+    completion_request_params:
+    - fieldName: fieldMask
+      value: name
+  disable_auto_completers: false

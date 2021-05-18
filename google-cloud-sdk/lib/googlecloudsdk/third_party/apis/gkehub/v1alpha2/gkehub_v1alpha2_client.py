@@ -104,7 +104,7 @@ class GkehubV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Adds a new Membership.
+      r"""Creates a new Membership. **This is currently only supported for GKE clusters on Google Cloud**. To register other clusters, follow the instructions at https://cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsCreateRequest) input message
@@ -131,7 +131,7 @@ class GkehubV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Removes a Membership.
+      r"""Removes a Membership. **This is currently only supported for GKE clusters on Google Cloud**. To unregister other clusters, follow the instructions at https://cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsDeleteRequest) input message
@@ -158,7 +158,7 @@ class GkehubV1alpha2(base_api.BaseApiClient):
     )
 
     def GenerateConnectManifest(self, request, global_params=None):
-      r"""Generates the manifest for deployment of the GKE connect agent.
+      r"""Generates the manifest for deployment of the GKE connect agent. **This method is used internally by Google-provided libraries.** Most clients should not need to call this method directly.
 
       Args:
         request: (GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest) input message

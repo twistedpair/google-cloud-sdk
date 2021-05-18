@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from google.auth import credentials
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store
 
@@ -54,7 +55,7 @@ class StoredCredentials(credentials.Credentials):
     pass
 
 
-def MakeClient(transport_class, client_class, address=None):
+def MakeClient(client_class, address=None):
   """Instantiates a gapic API client with gcloud defaults and configuration.
 
   grpc cannot be packaged like our other Python dependencies, due to platform
@@ -63,17 +64,22 @@ def MakeClient(transport_class, client_class, address=None):
   imported safely anywhere.
 
   Args:
-    transport_class: A gapic transport class.
     client_class: a gapic client class.
     address: str, API endpoint override.
 
   Returns:
     requests.Response object
   """
-  from googlecloudsdk.core import gapic  # pylint: disable=g-import-not-at-top
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core import gapic_util_internal
+  import google.api_core.gapic_v1.client_info
+  # pylint: enable=g-import-not-at-top
 
   if not address:
-    address = client_class.SERVICE_ADDRESS
-
-  transport = gapic.MakeTransport(transport_class, address, StoredCredentials())
-  return client_class(transport=transport)
+    address = client_class.DEFAULT_ENDPOINT
+  return client_class(
+      transport=gapic_util_internal.MakeTransport(
+          client_class.get_transport_class(), address, StoredCredentials()),
+      client_info=google.api_core.gapic_v1.client_info.ClientInfo(
+          user_agent=transport.MakeUserAgentString())
+      )

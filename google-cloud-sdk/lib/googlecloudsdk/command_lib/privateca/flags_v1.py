@@ -211,8 +211,8 @@ def AddIgnoreActiveCertificatesFlag(parser):
   base.Argument(
       '--ignore-active-certificates',
       help='If this flag is set, the Certificate Authority will be '
-      'scheduled for deletion even if the Certificate Authority has '
-      'un-revoked or un-expired certificates.',
+      'deleted even if the Certificate Authority has '
+      'un-revoked or un-expired certificates after the grace period.',
       action='store_true',
       default=False,
       required=False).AddToParser(parser)
@@ -605,3 +605,13 @@ def ParseX509Parameters(args, is_ca_command):
           # Don't include maxIssuerPathLength if it's None.
           maxIssuerPathLength=int(args.max_chain_length)
           if is_ca and args.max_chain_length is not None else None))
+
+
+def X509ConfigFlagsAreSpecified(args):
+  """Returns true if any x509 config flags are specified."""
+  return any([
+      flag in vars(args) and args.IsSpecified(flag) for flag in [
+          'use_preset_profile', 'key_usages', 'extended_key_usages',
+          'max_chain_length', 'is_ca_cert'
+      ]
+  ])

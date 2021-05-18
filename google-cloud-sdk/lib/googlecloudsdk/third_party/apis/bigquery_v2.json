@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210430",
+ "revision": "20210510",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1629,6 +1629,10 @@
      "type": "string",
      "description": "[Output-only] [Preview] The number of row access policies affected by a DDL statement. Present only for DROP ALL ROW ACCESS POLICIES queries.",
      "format": "int64"
+    },
+    "ddlDestinationTable": {
+     "$ref": "TableReference",
+     "description": "[Output-only] The DDL destination table. Present only for ALTER TABLE RENAME TO queries. Note that ddl_target_table is used just for its type information."
     },
     "ddlOperationPerformed": {
      "type": "string",

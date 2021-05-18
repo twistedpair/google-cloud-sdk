@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://orgpolicy.googleapis.com/v2alpha1/'
-DOCS_URL = 'https://cloud.google.com/resource-manager/docs/organization-policy/understanding-constraints'
+DOCS_URL = 'https://cloud.google.com/orgpolicy/docs/reference/rest/index.html'
 
 
 class Collections(enum.Enum):

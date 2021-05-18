@@ -3993,6 +3993,10 @@
         "resource": {
           "description": "Optional relative path to the resource. For example, the relative path of the node pool.",
           "type": "string"
+        },
+        "windowsVersions": {
+          "description": "Windows node versions info.",
+          "$ref": "WindowsVersions"
         }
       }
     }

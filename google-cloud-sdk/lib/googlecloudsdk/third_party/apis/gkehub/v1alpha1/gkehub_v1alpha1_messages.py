@@ -1540,6 +1540,7 @@ class IdentityServiceFeatureState(_messages.Message):
     failureReason: The reason of the failure.
     installedVersion: Installed AIS version. This is the AIS version installed
       on this member. The values makes sense iff state is OK.
+    memberConfig: Membership config state on this member
     state: Deployment state on this member
   """
 
@@ -1557,7 +1558,8 @@ class IdentityServiceFeatureState(_messages.Message):
 
   failureReason = _messages.StringField(1)
   installedVersion = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  memberConfig = _messages.MessageField('MemberConfig', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class InstallError(_messages.Message):

@@ -1418,6 +1418,21 @@ class HttpFilters(_messages.Message):
   httpFilters = _messages.StringField(1, repeated=True)
 
 
+class HttpRoute(_messages.Message):
+  r"""HttpRoute is the resource defining how HTTP traffic should be routed by
+  a Router resource.
+
+  Fields:
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    name: Required. Name of the HttpRoute resource. It matches pattern
+      `projects/*/locations/global/httpRoutes/http_route_name>`.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class ListEdgeCacheKeysetsResponse(_messages.Message):
   r"""Response returned by the ListEdgeCacheKeysets method.
 
@@ -1520,6 +1535,21 @@ class ListHttpFiltersResponse(_messages.Message):
   """
 
   httpFilters = _messages.MessageField('HttpFilter', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListHttpRoutesResponse(_messages.Message):
+  r"""Response returned by the ListHttpRoutes method.
+
+  Fields:
+    httpRoutes: List of HttpRoute resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  httpRoutes = _messages.MessageField('HttpRoute', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2723,6 +2753,132 @@ class NetworkservicesProjectsLocationsHttpFiltersTestIamPermissionsRequest(_mess
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsHttpRoutesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesCreateRequest object.
+
+  Fields:
+    httpRoute: A HttpRoute resource to be passed as the request body.
+    httpRouteId: Required. Short name of the HttpRoute resource to be created.
+      E.g. TODO(Add an example).
+    parent: Required. The parent resource of the HttpRoute. Must be in the
+      format `projects/*/locations/global`.
+  """
+
+  httpRoute = _messages.MessageField('HttpRoute', 1)
+  httpRouteId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the HttpRoute to delete. Must be in the format
+      `projects/*/locations/global/httpRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesGetRequest object.
+
+  Fields:
+    name: Required. A name of the HttpRoute to get. Must be in the format
+      `projects/*/locations/global/httpRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of HttpRoutes to return per call.
+    pageToken: The value returned by the last `ListHttpRoutesResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the HttpRoutes
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesPatchRequest object.
+
+  Fields:
+    httpRoute: A HttpRoute resource to be passed as the request body.
+    name: Required. Name of the HttpRoute resource. It matches pattern
+      `projects/*/locations/global/httpRoutes/http_route_name>`.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the HttpRoute resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  httpRoute = _messages.MessageField('HttpRoute', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsHttpRoutesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsHttpRoutesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkservicesProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsListRequest object.
 
@@ -3708,27 +3864,6 @@ class Timeout(_messages.Message):
   r"""The timeout configuration for this origin.
 
   Fields:
-    connectTimeout: Optional. The maximum duration to wait for a single origin
-      connection to be established, including DNS lookup, TLS handshake and
-      TCP/QUIC connection establishment. Defaults to 5 seconds. The timeout
-      must be a value between 1s and 15s. The connectTimeout capped by the
-      deadline set by the request's maxAttemptsTimeout. The last connection
-      attempt may have a smaller connectTimeout in order to adhere to the
-      overall maxAttemptsTimeout.
-    maxAttemptsTimeout: Optional. The maximum time across all connection
-      attempts to all origins, including failover origins, before returning an
-      error to the client. A HTTP 502 will be returned if the timeout is
-      reached before a response is returned. Defaults to 15 seconds. The
-      timeout must be a value between 1s and 30s. If a failoverOrigin is
-      specified, the maxAttemptsTimeout of the first configured origin sets
-      the deadline for all connection attempts across all failoverOrigins.
-    readTimeout: Optional. The maximum duration to wait between reads of a
-      single HTTP connection/stream. Defaults to 15 seconds. The timeout must
-      be a value between 1s and 30s. The readTimeout is capped by the
-      responseTimeout. All reads of the HTTP connection/stream must be
-      completed by the deadline set by the responseTimeout. If the response
-      headers have already been written to the connection, the response will
-      be truncated and logged.
     responseTimeout: Optional. The maximum duration to wait for the last byte
       of a response to arrive when reading from the HTTP connection/stream.
       Defaults to 30 seconds. The timeout must be a value between 1s and 120s.
@@ -3741,10 +3876,7 @@ class Timeout(_messages.Message):
       connection, the response will be truncated and logged.
   """
 
-  connectTimeout = _messages.StringField(1)
-  maxAttemptsTimeout = _messages.StringField(2)
-  readTimeout = _messages.StringField(3)
-  responseTimeout = _messages.StringField(4)
+  responseTimeout = _messages.StringField(1)
 
 
 class TrafficPortSelector(_messages.Message):

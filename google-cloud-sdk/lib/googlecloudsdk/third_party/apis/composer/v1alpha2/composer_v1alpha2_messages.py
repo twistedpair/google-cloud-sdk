@@ -1132,6 +1132,7 @@ class SoftwareConfig(_messages.Message):
       This field is only supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*. Environments in newer versions always use
       Python major version 3.
+    schedulerCount: Optional. The number of schedulers for Airflow.
   """
 
   class AirflowExecutorTypeValueValuesEnum(_messages.Enum):
@@ -1257,6 +1258,7 @@ class SoftwareConfig(_messages.Message):
   imageVersion = _messages.StringField(4)
   pypiPackages = _messages.MessageField('PypiPackagesValue', 5)
   pythonVersion = _messages.StringField(6)
+  schedulerCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):

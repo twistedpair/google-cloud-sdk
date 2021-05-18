@@ -48,7 +48,7 @@ class BackfillJob(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: Default value.
-      NOT_STARTED: Backfill disabled for the object.
+      NOT_SCHEDULED: Backfill job was never scheduled for the stream object.
       QUEUED: Backfill job created and queued but not yet running.
       ACTIVE: Backfill job is running.
       STOPPED: Backfill job stopped (next job run will start from beginning).
@@ -56,7 +56,7 @@ class BackfillJob(_messages.Message):
       COMPLETED: Backfill completed successfully.
     """
     STATE_UNSPECIFIED = 0
-    NOT_STARTED = 1
+    NOT_SCHEDULED = 1
     QUEUED = 2
     ACTIVE = 3
     STOPPED = 4
@@ -152,7 +152,7 @@ class DatastreamProjectsLocationsConnectionProfilesCreateRequest(_messages.Messa
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -176,7 +176,7 @@ class DatastreamProjectsLocationsConnectionProfilesDeleteRequest(_messages.Messa
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -248,7 +248,7 @@ class DatastreamProjectsLocationsConnectionProfilesPatchRequest(_messages.Messag
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -379,7 +379,7 @@ class DatastreamProjectsLocationsPrivateConnectionsCreateRequest(_messages.Messa
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -406,7 +406,7 @@ class DatastreamProjectsLocationsPrivateConnectionsDeleteRequest(_messages.Messa
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -465,7 +465,7 @@ class DatastreamProjectsLocationsPrivateConnectionsRoutesCreateRequest(_messages
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -492,7 +492,7 @@ class DatastreamProjectsLocationsPrivateConnectionsRoutesDeleteRequest(_messages
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -548,7 +548,7 @@ class DatastreamProjectsLocationsStreamsCreateRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -578,7 +578,7 @@ class DatastreamProjectsLocationsStreamsDeleteRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -678,7 +678,7 @@ class DatastreamProjectsLocationsStreamsObjectsPatchRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -709,7 +709,7 @@ class DatastreamProjectsLocationsStreamsPatchRequest(_messages.Message):
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents

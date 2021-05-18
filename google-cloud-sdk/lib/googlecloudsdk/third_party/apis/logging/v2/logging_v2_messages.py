@@ -912,11 +912,16 @@ class LogEntry(_messages.Message):
   Messages:
     JsonPayloadValue: The log entry payload, represented as a structure that
       is expressed as a JSON object.
-    LabelsValue: Optional. A set of user-defined (key, value) data that
-      provides additional information about the log entry.Cloud Logging
-      truncates label keys that exceed 512 B and label values that exceed 64
-      KB upon their associated log entry being written. The truncation is
-      indicated by an ellipsis at the end of the character string.
+    LabelsValue: Optional. A map of key, value pairs that provides additional
+      information about the log entry. The labels can be user-defined or
+      system-defined.User-defined labels are arbitrary key, value pairs that
+      you can use to classify logs.System-defined labels are defined by GCP
+      services for platform logs. They have two components - a service
+      namespace component and the attribute name. For example:
+      compute.googleapis.com/resource_name.Cloud Logging truncates label keys
+      that exceed 512 B and label values that exceed 64 KB upon their
+      associated log entry being written. The truncation is indicated by an
+      ellipsis at the end of the character string.
     ProtoPayloadValue: The log entry payload, represented as a protocol
       buffer. Some Google Cloud Platform services use this field for their log
       entry payloads.The following protocol buffer types are supported; user-
@@ -937,9 +942,14 @@ class LogEntry(_messages.Message):
       log entries that have the same log_name and timestamp values.
     jsonPayload: The log entry payload, represented as a structure that is
       expressed as a JSON object.
-    labels: Optional. A set of user-defined (key, value) data that provides
-      additional information about the log entry.Cloud Logging truncates label
-      keys that exceed 512 B and label values that exceed 64 KB upon their
+    labels: Optional. A map of key, value pairs that provides additional
+      information about the log entry. The labels can be user-defined or
+      system-defined.User-defined labels are arbitrary key, value pairs that
+      you can use to classify logs.System-defined labels are defined by GCP
+      services for platform logs. They have two components - a service
+      namespace component and the attribute name. For example:
+      compute.googleapis.com/resource_name.Cloud Logging truncates label keys
+      that exceed 512 B and label values that exceed 64 KB upon their
       associated log entry being written. The truncation is indicated by an
       ellipsis at the end of the character string.
     logName: Required. The resource name of the log to which this log entry
@@ -951,22 +961,16 @@ class LogEntry(_messages.Message):
       corresponding PROJECT_ID internally and the log_name field will contain
       PROJECT_ID in queries and exports.[LOG_ID] must be URL-encoded within
       log_name. Example: "organizations/1234567890/logs/cloudresourcemanager.g
-      oogleapis.com%2Factivity". [LOG_ID] must be less than 512 characters
-      long and can only include the following characters: upper and lower case
+      oogleapis.com%2Factivity".[LOG_ID] must be less than 512 characters long
+      and can only include the following characters: upper and lower case
       alphanumeric characters, forward-slash, underscore, hyphen, and
       period.For backward compatibility, if log_name begins with a forward-
-      slash, such as /projects/..., then the log entry is ingested as usual
+      slash, such as /projects/..., then the log entry is ingested as usual,
       but the forward-slash is removed. Listing the log entry will not show
       the leading slash and filtering for a log name with a leading slash will
       never return any results.
-    metadata: Output only. Deprecated. Additional metadata about the monitored
-      resource.Only k8s_container, k8s_pod, and k8s_node MonitoredResources
-      have this field populated for GKE versions older than 1.12.6. For GKE
-      versions 1.12.6 and above, the metadata field has been deprecated. The
-      Kubernetes pod labels that used to be in metadata.userLabels will now be
-      present in the labels field with a key prefix of k8s-pod/. The system
-      labels that were present in the metadata.systemLabels field will no
-      longer be available in the log entry.
+    metadata: Output only. Deprecated. This field is not used by Logging. Any
+      value written to it is cleared.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer.
@@ -1067,11 +1071,16 @@ class LogEntry(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. A set of user-defined (key, value) data that provides
-    additional information about the log entry.Cloud Logging truncates label
-    keys that exceed 512 B and label values that exceed 64 KB upon their
-    associated log entry being written. The truncation is indicated by an
-    ellipsis at the end of the character string.
+    r"""Optional. A map of key, value pairs that provides additional
+    information about the log entry. The labels can be user-defined or system-
+    defined.User-defined labels are arbitrary key, value pairs that you can
+    use to classify logs.System-defined labels are defined by GCP services for
+    platform logs. They have two components - a service namespace component
+    and the attribute name. For example:
+    compute.googleapis.com/resource_name.Cloud Logging truncates label keys
+    that exceed 512 B and label values that exceed 64 KB upon their associated
+    log entry being written. The truncation is indicated by an ellipsis at the
+    end of the character string.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

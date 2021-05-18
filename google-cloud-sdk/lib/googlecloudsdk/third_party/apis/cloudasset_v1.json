@@ -293,75 +293,26 @@
         }
       }
     },
-    "BatchGetAssetsHistoryResponse": {
-      "id": "BatchGetAssetsHistoryResponse",
-      "description": "Batch get assets history response.",
+    "ListAssetsResponse": {
+      "id": "ListAssetsResponse",
+      "description": "ListAssets response.",
       "type": "object",
       "properties": {
+        "readTime": {
+          "description": "Time the snapshot was taken.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "assets": {
-          "description": "A list of assets with valid time windows.",
+          "description": "Assets.",
           "type": "array",
           "items": {
-            "$ref": "TemporalAsset"
+            "$ref": "Asset"
           }
-        }
-      }
-    },
-    "TemporalAsset": {
-      "id": "TemporalAsset",
-      "description": "An asset in Google Cloud and its temporal metadata, including the time window when it was observed and its status during that window.",
-      "type": "object",
-      "properties": {
-        "window": {
-          "description": "The time window when the asset data and state was observed.",
-          "$ref": "TimeWindow"
         },
-        "deleted": {
-          "description": "Whether the asset has been deleted or not.",
-          "type": "boolean"
-        },
-        "asset": {
-          "description": "An asset in Google Cloud.",
-          "$ref": "Asset"
-        },
-        "priorAssetState": {
-          "description": "State of prior_asset.",
-          "type": "string",
-          "enumDescriptions": [
-            "prior_asset is not applicable for the current asset.",
-            "prior_asset is populated correctly.",
-            "Failed to set prior_asset.",
-            "Current asset is the first known state.",
-            "prior_asset is a deletion."
-          ],
-          "enum": [
-            "PRIOR_ASSET_STATE_UNSPECIFIED",
-            "PRESENT",
-            "INVALID",
-            "DOES_NOT_EXIST",
-            "DELETED"
-          ]
-        },
-        "priorAsset": {
-          "description": "Prior copy of the asset. Populated if prior_asset_state is PRESENT. Currently this is only set for responses in Real-Time Feed.",
-          "$ref": "Asset"
-        }
-      }
-    },
-    "TimeWindow": {
-      "id": "TimeWindow",
-      "description": "A time window specified by its `start_time` and `end_time`.",
-      "type": "object",
-      "properties": {
-        "startTime": {
-          "description": "Start time of the time window (exclusive).",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "End time of the time window (inclusive). If not specified, the current timestamp is used instead.",
-          "type": "string",
-          "format": "google-datetime"
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. It expires 72 hours after the page token for the first page is generated. Set to empty if there are no remaining results.",
+          "type": "string"
         }
       }
     },
@@ -1496,6 +1447,78 @@
         }
       }
     },
+    "BatchGetAssetsHistoryResponse": {
+      "id": "BatchGetAssetsHistoryResponse",
+      "description": "Batch get assets history response.",
+      "type": "object",
+      "properties": {
+        "assets": {
+          "description": "A list of assets with valid time windows.",
+          "type": "array",
+          "items": {
+            "$ref": "TemporalAsset"
+          }
+        }
+      }
+    },
+    "TemporalAsset": {
+      "id": "TemporalAsset",
+      "description": "An asset in Google Cloud and its temporal metadata, including the time window when it was observed and its status during that window.",
+      "type": "object",
+      "properties": {
+        "window": {
+          "description": "The time window when the asset data and state was observed.",
+          "$ref": "TimeWindow"
+        },
+        "deleted": {
+          "description": "Whether the asset has been deleted or not.",
+          "type": "boolean"
+        },
+        "asset": {
+          "description": "An asset in Google Cloud.",
+          "$ref": "Asset"
+        },
+        "priorAssetState": {
+          "description": "State of prior_asset.",
+          "type": "string",
+          "enumDescriptions": [
+            "prior_asset is not applicable for the current asset.",
+            "prior_asset is populated correctly.",
+            "Failed to set prior_asset.",
+            "Current asset is the first known state.",
+            "prior_asset is a deletion."
+          ],
+          "enum": [
+            "PRIOR_ASSET_STATE_UNSPECIFIED",
+            "PRESENT",
+            "INVALID",
+            "DOES_NOT_EXIST",
+            "DELETED"
+          ]
+        },
+        "priorAsset": {
+          "description": "Prior copy of the asset. Populated if prior_asset_state is PRESENT. Currently this is only set for responses in Real-Time Feed.",
+          "$ref": "Asset"
+        }
+      }
+    },
+    "TimeWindow": {
+      "id": "TimeWindow",
+      "description": "A time window specified by its `start_time` and `end_time`.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Start time of the time window (exclusive).",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "End time of the time window (inclusive). If not specified, the current timestamp is used instead.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "CreateFeedRequest": {
       "id": "CreateFeedRequest",
       "description": "Create asset feed request.",
@@ -1699,12 +1722,12 @@
           "type": "string"
         },
         "createTime": {
-          "description": "The create timestamp of this resource, at which the resource was created. The granularity is in seconds. Timestamp.nanos will always be 0. This field is available only when the resource's proto contains it. To search against `create_time`: * use a field query (value in seconds). Example: `createTime >= 1594294238`",
+          "description": "The create timestamp of this resource, at which the resource was created. The granularity is in seconds. Timestamp.nanos will always be 0. This field is available only when the resource's proto contains it. To search against `create_time`: * use a field query. - value in seconds since unix epoch. Example: `createTime > 1609459200` - value in date string. Example: `createTime > 2021-01-01` - value in date-time string (must be quoted). Example: `createTime > \"2021-01-01T00:00:00\"`",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The last update timestamp of this resource, at which the resource was last modified or deleted. The granularity is in seconds. Timestamp.nanos will always be 0. This field is available only when the resource's proto contains it. To search against `update_time`: * use a field query (value in seconds). Example: `updateTime < 1594294238`",
+          "description": "The last update timestamp of this resource, at which the resource was last modified or deleted. The granularity is in seconds. Timestamp.nanos will always be 0. This field is available only when the resource's proto contains it. To search against `update_time`: * use a field query. - value in seconds since unix epoch. Example: `updateTime < 1609459200` - value in date string. Example: `updateTime < 2021-01-01` - value in date-time string (must be quoted). Example: `updateTime < \"2021-01-01T00:00:00\"`",
           "type": "string",
           "format": "google-datetime"
         },
@@ -1757,8 +1780,23 @@
           "description": "The full resource name of the resource associated with this IAM policy. Example: `\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`. See [Cloud Asset Inventory Resource Name Format](https:\/\/cloud.google.com\/asset-inventory\/docs\/resource-name-format) for more information. To search against the `resource`: * use a field query. Example: `resource:organizations\/123`",
           "type": "string"
         },
+        "assetType": {
+          "description": "The type of the resource associated with this IAM policy. Example: `compute.googleapis.com\/Disk`. To search against the `asset_type`: * specify the `asset_types` field in your search request.",
+          "type": "string"
+        },
         "project": {
           "description": "The project that the associated GCP resource belongs to, in the form of projects\/{PROJECT_NUMBER}. If an IAM policy is set on a resource (like VM instance, Cloud Storage bucket), the project field will indicate the project that contains the resource. If an IAM policy is set on a folder or orgnization, this field will be empty. To search against the `project`: * specify the `scope` field as this project in your search request.",
+          "type": "string"
+        },
+        "folders": {
+          "description": "The folder(s) that the IAM policy belongs to, in the form of folders\/{FOLDER_NUMBER}. This field is available when the IAM policy belongs to one or more folders. To search against `folders`: * use a field query. Example: `folders:(123 OR 456)` * use a free text query. Example: `123` * specify the `scope` field as this folder in your search request.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "organization": {
+          "description": "The organization that the IAM policy belongs to, in the form of organizations\/{ORGANIZATION_NUMBER}. This field is available when the IAM policy belongs to an organization. To search against `organization`: * use a field query. Example: `organization:123` * use a free text query. Example: `123` * specify the `scope` field as this organization in your search request.",
           "type": "string"
         },
         "policy": {
@@ -2655,7 +2693,7 @@
               "type": "string"
             },
             "orderBy": {
-              "description": "Optional. A comma separated list of fields specifying the sorting order of the results. The default order is ascending. Add \" DESC\" after the field name to indicate descending order. Redundant space characters are ignored. Example: \"location DESC, name\". Only string fields in the response are sortable, including `name`, `displayName`, `description`, `location`. All the other fields such as repeated fields (e.g., `networkTags`), map fields (e.g., `labels`) and struct fields (e.g., `additionalAttributes`) are not supported.",
+              "description": "Optional. A comma-separated list of fields specifying the sorting order of the results. The default order is ascending. Add \" DESC\" after the field name to indicate descending order. Redundant space characters are ignored. Example: \"location DESC, name\". Only singular primitive fields in the response are sortable: * name * assetType * project * displayName * description * location * kmsKey * createTime * updateTime * state * parentFullResourceName * parentAssetType All the other fields such as repeated fields (e.g., `networkTags`), map fields (e.g., `labels`) and struct fields (e.g., `additionalAttributes`) are not supported.",
               "location": "query",
               "type": "string"
             }
@@ -2697,6 +2735,17 @@
             },
             "pageToken": {
               "description": "Optional. If present, retrieve the next batch of results from the preceding call to this method. `page_token` must be the value of `next_page_token` from the previous response. The values of all other method parameters must be identical to those in the previous call.",
+              "location": "query",
+              "type": "string"
+            },
+            "assetTypes": {
+              "description": "Optional. A list of asset types that the IAM policies are attached to. If empty, it will search the IAM policies that are attached to all the [searchable asset types](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types#searchable_asset_types). Regular expressions are also supported. For example: * \"compute.googleapis.com.*\" snapshots resources whose asset type starts with \"compute.googleapis.com\". * \".*Instance\" snapshots resources whose asset type ends with \"Instance\". * \".*Instance.*\" snapshots resources whose asset type contains \"Instance\". See [RE2](https:\/\/github.com\/google\/re2\/wiki\/Syntax) for all supported regular expression syntax. If the regular expression does not match any supported asset type, an INVALID_ARGUMENT error will be returned.",
+              "location": "query",
+              "repeated": true,
+              "type": "string"
+            },
+            "orderBy": {
+              "description": "Optional. A comma-separated list of fields specifying the sorting order of the results. The default order is ascending. Add \" DESC\" after the field name to indicate descending order. Redundant space characters are ignored. Example: \"assetType DESC, resource\". Only singular primitive fields in the response are sortable: * resource * assetType * project All the other fields such as repeated fields (e.g., `folders`) and non-primitive fields (e.g., `policy`) are not supported.",
               "location": "query",
               "type": "string"
             }
@@ -2873,6 +2922,79 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Analyze moving a resource to a specified destination without kicking off the actual move. The analysis is best effort depending on the user's permissions of viewing different hierarchical policies and configurations. The policies and configuration are subject to change before the actual resource migration takes place."
+        }
+      }
+    },
+    "assets": {
+      "methods": {
+        "list": {
+          "id": "cloudasset.assets.list",
+          "path": "v1/{+parent}/assets",
+          "flatPath": "v1/{v1Id}/{v1Id1}/assets",
+          "httpMethod": "GET",
+          "parameters": {
+            "parent": {
+              "description": "Required. Name of the organization or project the assets belong to. Format: \"organizations\/[organization-number]\" (such as \"organizations\/123\"), \"projects\/[project-number]\" (such as \"projects\/my-project-id\"), or \"projects\/[project-id]\" (such as \"projects\/12345\").",
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "readTime": {
+              "description": "Timestamp to take an asset snapshot. This can only be set to a timestamp between the current time and the current time minus 35 days (inclusive). If not specified, the current time will be used. Due to delays in resource data collection and indexing, there is a volatile window during which running the same query may get different results.",
+              "location": "query",
+              "type": "string",
+              "format": "google-datetime"
+            },
+            "assetTypes": {
+              "description": "A list of asset types to take a snapshot for. For example: \"compute.googleapis.com\/Disk\". Regular expression is also supported. For example: * \"compute.googleapis.com.*\" snapshots resources whose asset type starts with \"compute.googleapis.com\". * \".*Instance\" snapshots resources whose asset type ends with \"Instance\". * \".*Instance.*\" snapshots resources whose asset type contains \"Instance\". See [RE2](https:\/\/github.com\/google\/re2\/wiki\/Syntax) for all supported regular expression syntax. If the regular expression does not match any supported asset type, an INVALID_ARGUMENT error will be returned. If specified, only matching assets will be returned, otherwise, it will snapshot all asset types. See [Introduction to Cloud Asset Inventory](https:\/\/cloud.google.com\/asset-inventory\/docs\/overview) for all supported asset types.",
+              "location": "query",
+              "repeated": true,
+              "type": "string"
+            },
+            "contentType": {
+              "description": "Asset content type. If not specified, no content but the asset name will be returned.",
+              "location": "query",
+              "type": "string",
+              "enumDescriptions": [
+                "Unspecified content type.",
+                "Resource metadata.",
+                "The actual IAM policy set on a resource.",
+                "The Cloud Organization Policy set on an asset.",
+                "The Cloud Access context manager Policy set on an asset.",
+                "The runtime OS Inventory information."
+              ],
+              "enum": [
+                "CONTENT_TYPE_UNSPECIFIED",
+                "RESOURCE",
+                "IAM_POLICY",
+                "ORG_POLICY",
+                "ACCESS_POLICY",
+                "OS_INVENTORY"
+              ]
+            },
+            "pageSize": {
+              "description": "The maximum number of assets to be returned in a single response. Default is 100, minimum is 1, and maximum is 1000.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The `next_page_token` returned from the previous `ListAssetsResponse`, or unspecified for the first `ListAssetsRequest`. It is a continuation of a prior `ListAssets` call, and the API should return the next page of assets.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "response": {
+            "$ref": "ListAssetsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Lists assets with time and resource types and returns paged results in response."
         }
       }
     },

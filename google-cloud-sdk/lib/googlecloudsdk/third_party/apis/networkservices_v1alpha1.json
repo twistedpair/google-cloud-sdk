@@ -774,23 +774,8 @@
       "description": "The timeout configuration for this origin.",
       "type": "object",
       "properties": {
-        "connectTimeout": {
-          "description": "Optional. The maximum duration to wait for a single origin connection to be established, including DNS lookup, TLS handshake and TCP\/QUIC connection establishment. Defaults to 5 seconds. The timeout must be a value between 1s and 15s. The connectTimeout capped by the deadline set by the request's maxAttemptsTimeout. The last connection attempt may have a smaller connectTimeout in order to adhere to the overall maxAttemptsTimeout.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "maxAttemptsTimeout": {
-          "description": "Optional. The maximum time across all connection attempts to all origins, including failover origins, before returning an error to the client. A HTTP 502 will be returned if the timeout is reached before a response is returned. Defaults to 15 seconds. The timeout must be a value between 1s and 30s. If a failoverOrigin is specified, the maxAttemptsTimeout of the first configured origin sets the deadline for all connection attempts across all failoverOrigins.",
-          "type": "string",
-          "format": "google-duration"
-        },
         "responseTimeout": {
           "description": "Optional. The maximum duration to wait for the last byte of a response to arrive when reading from the HTTP connection\/stream. Defaults to 30 seconds. The timeout must be a value between 1s and 120s. The responseTimeout starts after the connection has been established. This also applies to HTTP Chunked Transfer Encoding responses, and\/or when an open-ended Range request is made to the origin. Origins that take longer to write additional bytes to the response than the configured responseTimeout will result in an error being returned to the client. If the response headers have already been written to the connection, the response will be truncated and logged.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "readTimeout": {
-          "description": "Optional. The maximum duration to wait between reads of a single HTTP connection\/stream. Defaults to 15 seconds. The timeout must be a value between 1s and 30s. The readTimeout is capped by the responseTimeout. All reads of the HTTP connection\/stream must be completed by the deadline set by the responseTimeout. If the response headers have already been written to the connection, the response will be truncated and logged.",
           "type": "string",
           "format": "google-duration"
         }
@@ -1748,6 +1733,39 @@
         "enabled": {
           "description": "Defines whether the observability for service graph is enabled. If enabled, samples from user defined services will be collected and a graph visualization of those services will be built.",
           "type": "boolean"
+        }
+      }
+    },
+    "ListHttpRoutesResponse": {
+      "id": "ListHttpRoutesResponse",
+      "description": "Response returned by the ListHttpRoutes method.",
+      "type": "object",
+      "properties": {
+        "httpRoutes": {
+          "description": "List of HttpRoute resources.",
+          "type": "array",
+          "items": {
+            "$ref": "HttpRoute"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "HttpRoute": {
+      "id": "HttpRoute",
+      "description": "HttpRoute is the resource defining how HTTP traffic should be routed by a Router resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the HttpRoute resource. It matches pattern `projects\/*\/locations\/global\/httpRoutes\/http_route_name>`.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
+          "type": "string"
         }
       }
     },
@@ -4292,6 +4310,250 @@
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/observabilityPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "httpRoutes": {
+              "methods": {
+                "list": {
+                  "id": "networkservices.projects.locations.httpRoutes.list",
+                  "path": "v1alpha1/{+parent}/httpRoutes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/httpRoutes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the HttpRoutes should be listed, specified in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of HttpRoutes to return per call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListHttpRoutesResponse` Indicates that this is a continuation of a prior `ListRouters` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListHttpRoutesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists HttpRoute in a given project and location."
+                },
+                "get": {
+                  "id": "networkservices.projects.locations.httpRoutes.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/httpRoutes/{httpRoutesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the HttpRoute to get. Must be in the format `projects\/*\/locations\/global\/httpRoutes\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/httpRoutes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "HttpRoute"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single HttpRoute."
+                },
+                "create": {
+                  "id": "networkservices.projects.locations.httpRoutes.create",
+                  "path": "v1alpha1/{+parent}/httpRoutes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/httpRoutes",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the HttpRoute. Must be in the format `projects\/*\/locations\/global`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "httpRouteId": {
+                      "description": "Required. Short name of the HttpRoute resource to be created. E.g. TODO(Add an example).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "HttpRoute"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new HttpRoute in a given project and location."
+                },
+                "patch": {
+                  "id": "networkservices.projects.locations.httpRoutes.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/httpRoutes/{httpRoutesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the HttpRoute resource. It matches pattern `projects\/*\/locations\/global\/httpRoutes\/http_route_name>`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/httpRoutes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the HttpRoute resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "HttpRoute"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single HttpRoute."
+                },
+                "delete": {
+                  "id": "networkservices.projects.locations.httpRoutes.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/httpRoutes/{httpRoutesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the HttpRoute to delete. Must be in the format `projects\/*\/locations\/global\/httpRoutes\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/httpRoutes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single HttpRoute."
+                },
+                "setIamPolicy": {
+                  "id": "networkservices.projects.locations.httpRoutes.setIamPolicy",
+                  "path": "v1alpha1/{+resource}:setIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/httpRoutes/{httpRoutesId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/httpRoutes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "networkservices.projects.locations.httpRoutes.getIamPolicy",
+                  "path": "v1alpha1/{+resource}:getIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/httpRoutes/{httpRoutesId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/httpRoutes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "networkservices.projects.locations.httpRoutes.testIamPermissions",
+                  "path": "v1alpha1/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/httpRoutes/{httpRoutesId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/httpRoutes\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"

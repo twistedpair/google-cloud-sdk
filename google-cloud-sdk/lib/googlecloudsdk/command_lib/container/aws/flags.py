@@ -38,6 +38,7 @@ def AddServicesLbSubnetId(parser):
       "--services-lb-subnet-id",
       required=True,
       type=arg_parsers.ArgList(),
+      metavar="SUBNET_ID",
       help=("Subnets for the services of type Load Balancer "))
 
 

@@ -724,7 +724,8 @@ def _MetadataHasOsloginEnable(metadata):
 
 def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
                               expiration_time, release_track,
-                              username_requested=False):
+                              username_requested=False,
+                              instance_enable_oslogin=False):
   """Check instance/project metadata for oslogin and return updated username.
 
   Check to see if OS Login is enabled in metadata and if it is, return
@@ -743,6 +744,9 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
     release_track: release_track, The object representing the release track.
     username_requested: bool, True if the user has passed a specific username in
       the args.
+    instance_enable_oslogin: bool, True if the instance's metadata indicates
+      that OS Login is enabled. Used when the instance cannot be passed through
+      the instance object.
 
   Returns:
     tuple, A string containing the oslogin username and a boolean indicating
@@ -753,6 +757,8 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
   oslogin_enabled = None
   if instance is not None:
     oslogin_enabled = _MetadataHasOsloginEnable(instance.metadata)
+  elif instance_enable_oslogin:
+    oslogin_enabled = instance_enable_oslogin
   if oslogin_enabled is None:
     project_metadata = project.commonInstanceMetadata
     oslogin_enabled = _MetadataHasOsloginEnable(project_metadata)

@@ -84,7 +84,6 @@ def CreateDiskMessages(args,
                        csek_keys=None,
                        support_kms=False,
                        support_nvdimm=False,
-                       support_disk_resource_policy=False,
                        support_source_snapshot_csek=False,
                        support_boot_snapshot_uri=False,
                        support_image_csek=False,
@@ -126,7 +125,6 @@ def CreateDiskMessages(args,
           enable_kms=support_kms,
           enable_snapshots=support_create_disk_snapshots,
           container_mount_disk=container_mount_disk,
-          resource_policy=support_disk_resource_policy,
           enable_source_snapshot_csek=support_source_snapshot_csek,
           enable_image_csek=support_image_csek,
           support_replica_zones=support_replica_zones,
@@ -247,7 +245,6 @@ def CreatePersistentCreateDiskMessages(compute_client,
                                        enable_kms=False,
                                        enable_snapshots=False,
                                        container_mount_disk=None,
-                                       resource_policy=False,
                                        enable_source_snapshot_csek=False,
                                        enable_image_csek=False,
                                        support_replica_zones=False,
@@ -280,7 +277,6 @@ def CreatePersistentCreateDiskMessages(compute_client,
     enable_kms: True if KMS keys are supported for the disk.
     enable_snapshots: True if snapshot initialization is supported for the disk.
     container_mount_disk: list of disks to be mounted to container, if any.
-    resource_policy: True if resource-policies are enabled
     enable_source_snapshot_csek: True if snapshot CSK files are enabled
     enable_image_csek: True if image CSK files are enabled
     support_replica_zones: True if we allow creation of regional disks
@@ -374,10 +370,9 @@ def CreatePersistentCreateDiskMessages(compute_client,
         initialize_params.sourceImage = None
         initialize_params.sourceSnapshot = attached_snapshot_uri
 
-    if resource_policy:
-      policies = disk.get('disk-resource-policy')
-      if policies:
-        initialize_params.resourcePolicies = policies
+    policies = disk.get('disk-resource-policy')
+    if policies:
+      initialize_params.resourcePolicies = policies
 
     if enable_image_csek:
       image_key_file = disk.get('image_csek')

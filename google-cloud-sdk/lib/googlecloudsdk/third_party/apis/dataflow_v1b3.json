@@ -497,14 +497,14 @@
           "type": "string"
         },
         "experiments": {
-          "description": "The list of experiments to enable. This field should be used for SDK related experiments and not for service related experiments. The proper field for service related experiments is service_options. For more details see the rationale at go\/user-specified-service-options.",
+          "description": "The list of experiments to enable. This field should be used for SDK related experiments and not for service related experiments. The proper field for service related experiments is service_options.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "serviceOptions": {
-          "description": "The list of service options to enable. This field should be used for service related experiments only. These experiments, when graduating to GA, should be replaced by dedicated fields or become default (i.e. always on). For more details see the rationale at go\/user-specified-service-options.",
+          "description": "The list of service options to enable. This field should be used for service related experiments only. These experiments, when graduating to GA, should be replaced by dedicated fields or become default (i.e. always on).",
           "type": "array",
           "items": {
             "type": "string"
@@ -632,7 +632,7 @@
             "The default set of packages to stage is unknown, or unspecified.",
             "Indicates that no packages should be staged at the worker unless explicitly specified by the job.",
             "Stage packages typically useful to workers written in Java.",
-            "Stage pacakges typically useful to workers written in Python."
+            "Stage packages typically useful to workers written in Python."
           ],
           "enum": [
             "DEFAULT_PACKAGE_SET_UNKNOWN",

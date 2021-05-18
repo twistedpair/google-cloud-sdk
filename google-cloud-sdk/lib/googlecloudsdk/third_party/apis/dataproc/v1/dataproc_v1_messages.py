@@ -151,7 +151,7 @@ class Batch(_messages.Message):
   r"""A representation of a batch workload in the service.
 
   Enums:
-    StateValueValuesEnum: Output only. A state of the batch.
+    StateValueValuesEnum: Output only. The state of the batch.
 
   Messages:
     LabelsValue: Optional. The labels to associate with this batch. Label keys
@@ -179,7 +179,7 @@ class Batch(_messages.Message):
     sparkBatch: Optional. Spark batch config.
     sparkRBatch: Optional. SparkR batch config.
     sparkSqlBatch: Optional. SparkSql batch config.
-    state: Output only. A state of the batch.
+    state: Output only. The state of the batch.
     stateMessage: Output only. Batch state details, such as a failure
       description if the state is FAILED.
     stateTime: Output only. The time when the batch entered a current state.
@@ -188,7 +188,7 @@ class Batch(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. A state of the batch.
+    r"""Output only. The state of the batch.
 
     Values:
       STATE_UNSPECIFIED: The batch state is unknown.
@@ -196,8 +196,8 @@ class Batch(_messages.Message):
       RUNNING: The batch is running.
       CANCELLING: The batch is cancelling.
       CANCELLED: The batch cancellation was successful.
-      SUCCEEDED: The batch has completed successfully.
-      FAILED: The batch has completed, but encountered a failure.
+      SUCCEEDED: The batch completed successfully.
+      FAILED: The batch is no longer running due to an error.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -267,7 +267,7 @@ class BatchOperationMetadata(_messages.Message):
     batchUuid: Batch UUID for the operation.
     createTime: The time when the operation was created.
     description: Short description of the operation.
-    doneTime: The time when the operation was finished.
+    doneTime: The time when the operation finished.
     labels: Labels associated with the operation.
     operationType: The operation type.
     warnings: Warnings encountered during operation execution.
@@ -936,19 +936,18 @@ class DataprocProjectsLocationsBatchesCreateRequest(_messages.Message):
   Fields:
     batch: A Batch resource to be passed as the request body.
     batchId: Optional. The ID to use for the batch, which will become the
-      final component of the batch's resource name.This value should be 4-63
-      characters, and valid characters are /a-z-/.
+      final component of the batch's resource name.This value must be 4-63
+      characters. Valid characters are /a-z-/.
     parent: Required. The parent resource where this batch will be created.
     requestId: Optional. A unique ID used to identify the request. If the
       service receives two CreateBatchRequest (https://cloud.google.com/datapr
       oc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1.
-      CreateBatchRequest)s with the same request_id, then the second request
-      will be ignored and the Operation that corresponds to the first Batch
-      created and stored in the backend is returned.It is recommended to
-      always set this value to a UUID
-      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The value
-      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
-      and hyphens (-). The maximum length is 40 characters.
+      CreateBatchRequest)s with the same request_id, the second request is
+      ignored and the Operation that corresponds to the first Batch created
+      and stored in the backend is returned.Recommendation: Set this value to
+      a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
+      value must contain only letters (a-z, A-Z), numbers (0-9), underscores
+      (_), and hyphens (-). The maximum length is 40 characters.
   """
 
   batch = _messages.MessageField('Batch', 1)
@@ -982,13 +981,13 @@ class DataprocProjectsLocationsBatchesListRequest(_messages.Message):
 
   Fields:
     filter: Optional. A filter constraining the batches to list. Filters are
-      case-sensitive and have the following syntax:field = value AND field =
+      case sensitive and have the following syntax:field = value AND field =
       value ...
     pageSize: Optional. The maximum number of batches to return in each
       response. The service may return fewer than this value. The default page
-      size is 20, the maximum page size is 1000.
-    pageToken: Optional. A page token, received from a previous ListBatches
-      call. Provide this to retrieve the subsequent page.
+      size is 20; the maximum page size is 1000.
+    pageToken: Optional. A page token received from a previous ListBatches
+      call. Provide this token to retrieve the subsequent page.
     parent: Required. The parent, which owns this collection of batches.
   """
 
@@ -3974,16 +3973,16 @@ class PrestoJob(_messages.Message):
 
 
 class PySparkBatch(_messages.Message):
-  r"""A configuration for running Apache PySpark (https://spark.apache.org/doc
-  s/latest/api/python/getting_started/quickstart.html) batch workload.
+  r"""A configuration for running an Apache PySpark (https://spark.apache.org/
+  docs/latest/api/python/getting_started/quickstart.html) batch workload.
 
   Fields:
     archiveUris: Optional. HCFS URIs of archives to be extracted into the
       working directory of each executor. Supported file types: .jar, .tar,
       .tar.gz, .tgz, and .zip.
     args: Optional. The arguments to pass to the driver. Do not include
-      arguments, such as --conf, that can be set as batch properties, since a
-      collision may occur that causes an incorrect batch submission.
+      arguments that can be set as batch properties, such as --conf, since a
+      collision can occur that causes an incorrect batch submission.
     fileUris: Optional. HCFS URIs of files to be placed in the working
       directory of each executor.
     jarFileUris: Optional. HCFS URIs of jar files to add to the classpath of
@@ -4180,18 +4179,20 @@ class RuntimeInfo(_messages.Message):
   r"""Runtime information about workload execution.
 
   Messages:
-    EndpointsValue: Map of remote access endpoints (web interfaces, APIs, etc)
-      to their URIs.
+    EndpointsValue: Output only. Map of remote access endpoints (such as web
+      interfaces and APIs) to their URIs.
 
   Fields:
-    endpoints: Map of remote access endpoints (web interfaces, APIs, etc) to
-      their URIs.
+    endpoints: Output only. Map of remote access endpoints (such as web
+      interfaces and APIs) to their URIs.
+    processOutputUri: Output only. A URI pointing to the location of the
+      stdout of the workload's main process.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EndpointsValue(_messages.Message):
-    r"""Map of remote access endpoints (web interfaces, APIs, etc) to their
-    URIs.
+    r"""Output only. Map of remote access endpoints (such as web interfaces
+    and APIs) to their URIs.
 
     Messages:
       AdditionalProperty: An additional property for a EndpointsValue object.
@@ -4214,6 +4215,7 @@ class RuntimeInfo(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   endpoints = _messages.MessageField('EndpointsValue', 1)
+  processOutputUri = _messages.StringField(2)
 
 
 class SecurityConfig(_messages.Message):
@@ -4319,6 +4321,7 @@ class SoftwareConfig(_messages.Message):
       ZEPPELIN: The Zeppelin notebook.
       ZOOKEEPER: The Zookeeper service.
       DASK: Dask
+      GPU_DRIVER: Nvidia GPU driver.
     """
     COMPONENT_UNSPECIFIED = 0
     ANACONDA = 1
@@ -4335,6 +4338,7 @@ class SoftwareConfig(_messages.Message):
     ZEPPELIN = 12
     ZOOKEEPER = 13
     DASK = 14
+    GPU_DRIVER = 15
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
@@ -4373,7 +4377,7 @@ class SoftwareConfig(_messages.Message):
 
 
 class SparkBatch(_messages.Message):
-  r"""A configuration for running Apache Spark (http://spark.apache.org/)
+  r"""A configuration for running an Apache Spark (http://spark.apache.org/)
   batch workload.
 
   Fields:
@@ -4381,14 +4385,14 @@ class SparkBatch(_messages.Message):
       working directory of each executor. Supported file types: .jar, .tar,
       .tar.gz, .tgz, and .zip.
     args: Optional. The arguments to pass to the driver. Do not include
-      arguments, such as --conf, that can be set as batch properties, since a
-      collision may occur that causes an incorrect batch submission.
+      arguments that can be set as batch properties, such as --conf, since a
+      collision can occur that causes an incorrect batch submission.
     fileUris: Optional. HCFS URIs of files to be placed in the working
       directory of each executor.
     jarFileUris: Optional. HCFS URIs of jar files to add to the classpath of
       the Spark driver and tasks.
     mainClass: Optional. The name of the driver main class. The jar file that
-      contains the class must be already in the classpath or specified in
+      contains the class must be in the classpath or specified in
       jar_file_uris.
     mainJarFileUri: Optional. The HCFS URI of the jar file that contains the
       main class.
@@ -4484,7 +4488,7 @@ class SparkJob(_messages.Message):
 
 
 class SparkRBatch(_messages.Message):
-  r"""A configuration for running Apache SparkR
+  r"""A configuration for running an Apache SparkR
   (https://spark.apache.org/docs/latest/sparkr.html) batch workload.
 
   Fields:
@@ -4492,8 +4496,8 @@ class SparkRBatch(_messages.Message):
       working directory of each executor. Supported file types: .jar, .tar,
       .tar.gz, .tgz, and .zip.
     args: Optional. The arguments to pass to the Spark driver. Do not include
-      arguments, such as --conf, that can be set as batch properties, since a
-      collision may occur that causes an incorrect batch submission.
+      arguments that can be set as batch properties, such as --conf, since a
+      collision can occur that causes an incorrect batch submission.
     fileUris: Optional. HCFS URIs of files to be placed in the working
       directory of each executor.
     mainRFileUri: Required. The HCFS URI of the main R file to use as the

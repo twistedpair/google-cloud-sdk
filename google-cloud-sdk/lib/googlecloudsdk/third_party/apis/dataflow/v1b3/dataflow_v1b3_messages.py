@@ -2063,8 +2063,7 @@ class Environment(_messages.Message):
     debugOptions: Any debugging options to be supplied to the job.
     experiments: The list of experiments to enable. This field should be used
       for SDK related experiments and not for service related experiments. The
-      proper field for service related experiments is service_options. For
-      more details see the rationale at go/user-specified-service-options.
+      proper field for service related experiments is service_options.
     flexResourceSchedulingGoal: Which Flexible Resource Scheduling mode to run
       in.
     internalExperiments: Experimental settings.
@@ -2081,8 +2080,7 @@ class Environment(_messages.Message):
     serviceOptions: The list of service options to enable. This field should
       be used for service related experiments only. These experiments, when
       graduating to GA, should be replaced by dedicated fields or become
-      default (i.e. always on). For more details see the rationale at go/user-
-      specified-service-options.
+      default (i.e. always on).
     shuffleMode: Output only. The shuffle mode used for the job.
     tempStoragePrefix: The prefix of the resources the system should use for
       temporary storage. The system will append the suffix "/temp-{JOBNAME} to
@@ -7011,7 +7009,7 @@ class WorkerPool(_messages.Message):
         the worker unless explicitly specified by the job.
       DEFAULT_PACKAGE_SET_JAVA: Stage packages typically useful to workers
         written in Java.
-      DEFAULT_PACKAGE_SET_PYTHON: Stage pacakges typically useful to workers
+      DEFAULT_PACKAGE_SET_PYTHON: Stage packages typically useful to workers
         written in Python.
     """
     DEFAULT_PACKAGE_SET_UNKNOWN = 0

@@ -13,6 +13,77 @@ from apitools.base.py import extra_types
 package = 'networksecurity'
 
 
+class AddressGroup(_messages.Message):
+  r"""AddressGroup is a resource that specifies how a collection of IP/DNS
+  used in Firewall Policy.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of the Address Group. Possible
+      values are "IPv4" or "IPV6".
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the AddressGroup
+      resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. Free-text description of the resource.
+    items: Optional. List of items.
+    labels: Optional. Set of label tags associated with the AddressGroup
+      resource.
+    name: Required. Name of the AddressGroup resource. It matches pattern
+      `projects/*/locations/{location}/addressGroups/`.
+    type: Required. The type of the Address Group. Possible values are "IPv4"
+      or "IPV6".
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the Address Group. Possible values are "IPv4" or
+    "IPV6".
+
+    Values:
+      TYPE_UNSPECIFIED: Default value.
+      IP_V4: IP v4 ranges.
+      IP_V6: IP v6 ranges.
+    """
+    TYPE_UNSPECIFIED = 0
+    IP_V4 = 1
+    IP_V6 = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the AddressGroup resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  items = _messages.StringField(3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
 class AuthorizationPolicy(_messages.Message):
   r"""AuthorizationPolicy is a resource that specifies how a server should
   authorize incoming connections. This resource in itself does not change the
@@ -517,6 +588,21 @@ class HttpHeaderMatch(_messages.Message):
   regexMatch = _messages.StringField(2)
 
 
+class ListAddressGroupsResponse(_messages.Message):
+  r"""Response returned by the ListAddressGroups method.
+
+  Fields:
+    addressGroups: List of AddressGroups resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  addressGroups = _messages.MessageField('AddressGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListAuthorizationPoliciesResponse(_messages.Message):
   r"""Response returned by the ListAuthorizationPolicies method.
 
@@ -677,6 +763,138 @@ class MTLSPolicy(_messages.Message):
   """
 
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsCreateRequest object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    addressGroupId: Required. Short name of the AddressGroup resource to be
+      created. This value should be 1-63 characters long, containing only
+      letters, numbers, hyphens, and underscores, and should not start with a
+      number. E.g. "authz_policy".
+    parent: Required. The parent resource of the AddressGroup. Must be in the
+      format `projects/*/locations/{location}`.
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  addressGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to delete. Must be in the
+      format `projects/*/locations/{location}/addressGroups/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsGetRequest object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to get. Must be in the format
+      `projects/*/locations/{location}/addressGroups/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of AddressGroups to return per call.
+    pageToken: The value returned by the last `ListAddressGroupsResponse`
+      Indicates that this is a continuation of a prior `ListAddressGroups`
+      call, and that the system should return the next page of data.
+    parent: Required. The project and location from which the AddressGroups
+      should be listed, specified in the format
+      `projects/*/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsPatchRequest object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    name: Required. Name of the AddressGroup resource. It matches pattern
+      `projects/*/locations/{location}/addressGroups/`.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the AddressGroup resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworksecurityProjectsLocationsAddressGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsAddressGroupsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworksecurityProjectsLocationsAuthorizationPoliciesCreateRequest(_messages.Message):

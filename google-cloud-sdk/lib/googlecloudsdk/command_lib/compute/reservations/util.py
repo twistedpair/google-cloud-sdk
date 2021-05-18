@@ -80,8 +80,8 @@ def MakeShareSettings(messages, args, setting_configs):
   """Constructs the share settings message object."""
   if setting_configs:
     if setting_configs == 'organization':
-      return messages.AllocationShareSettings(
-          shareType=messages.AllocationShareSettings.ShareTypeValueValuesEnum
+      return messages.ShareSettings(
+          shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .ORGANIZATION)
     if setting_configs == 'projects':
       if not args.IsSpecified('share_with'):
@@ -89,8 +89,8 @@ def MakeShareSettings(messages, args, setting_configs):
             '--share_with',
             'The projects this reservation is to be shared with must be '
             'specified.')
-      return messages.AllocationShareSettings(
-          shareType=messages.AllocationShareSettings.ShareTypeValueValuesEnum
+      return messages.ShareSettings(
+          shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .SPECIFIC_PROJECTS,
           projects=getattr(args, 'share_with', None))
   else:

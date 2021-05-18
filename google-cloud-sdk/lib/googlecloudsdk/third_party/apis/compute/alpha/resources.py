@@ -101,6 +101,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'forwardingRule'],
       True
   )
+  FUTURERESERVATIONS = (
+      'futureReservations',
+      'projects/{project}/zones/{zone}/futureReservations/{futureReservation}',
+      {},
+      ['project', 'zone', 'futureReservation'],
+      True
+  )
   GLOBALADDRESSES = (
       'globalAddresses',
       'projects/{project}/global/addresses/{address}',
@@ -208,6 +215,13 @@ class Collections(enum.Enum):
       ['project', 'zone', 'instance'],
       True
   )
+  INSTANTSNAPSHOTS = (
+      'instantSnapshots',
+      'projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}',
+      {},
+      ['project', 'zone', 'instantSnapshot'],
+      True
+  )
   INTERCONNECTATTACHMENTS = (
       'interconnectAttachments',
       'projects/{project}/regions/{region}/interconnectAttachments/'
@@ -256,6 +270,14 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/machineTypes/{machineType}',
       {},
       ['project', 'zone', 'machineType'],
+      True
+  )
+  NETWORKEDGESECURITYSERVICES = (
+      'networkEdgeSecurityServices',
+      'projects/{project}/regions/{region}/networkEdgeSecurityServices/'
+      '{networkEdgeSecurityService}',
+      {},
+      ['project', 'region', 'networkEdgeSecurityService'],
       True
   )
   NETWORKENDPOINTGROUPS = (
@@ -468,6 +490,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'operation'],
       True
   )
+  REGIONSECURITYPOLICIES = (
+      'regionSecurityPolicies',
+      'projects/{project}/regions/{region}/securityPolicies/{securityPolicy}',
+      {},
+      ['project', 'region', 'securityPolicy'],
+      True
+  )
   REGIONSSLCERTIFICATES = (
       'regionSslCertificates',
       'projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',
@@ -667,13 +696,6 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/inPlaceSnapshots/{inPlaceSnapshot}',
       {},
       ['project', 'zone', 'inPlaceSnapshot'],
-      True
-  )
-  ZONEINSTANTSNAPSHOTS = (
-      'zoneInstantSnapshots',
-      'projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}',
-      {},
-      ['project', 'zone', 'instantSnapshot'],
       True
   )
   ZONEOPERATIONS = (

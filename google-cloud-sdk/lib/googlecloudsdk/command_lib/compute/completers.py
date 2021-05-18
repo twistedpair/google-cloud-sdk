@@ -315,21 +315,21 @@ class SearchMachineImagesCompleter(completers.ResourceSearchCompleter):
         **kwargs)
 
 
-class InstantSnapshotsCompleter(completers.MultiResourceCompleter):
+class AllInstantSnapshotsCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
-    super(InstantSnapshotsCompleter, self).__init__(
+    super(AllInstantSnapshotsCompleter, self).__init__(
         completers=[
-            RegionInstantSnapshotsCompleter, ZoneInstantSnapshotsCompleter
+            RegionInstantSnapshotsCompleter, InstantSnapshotsCompleter
         ],
         **kwargs)
 
 
-class ZoneInstantSnapshotsCompleter(ListCommandCompleter):
+class InstantSnapshotsCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
-    super(ZoneInstantSnapshotsCompleter, self).__init__(
-        collection='compute.zoneInstantSnapshots',
+    super(InstantSnapshotsCompleter, self).__init__(
+        collection='compute.instantSnapshots',
         list_command='alpha compute instant-snapshots list --uri',
         api_version='alpha',
         **kwargs)

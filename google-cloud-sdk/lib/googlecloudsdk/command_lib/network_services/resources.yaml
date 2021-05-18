@@ -55,3 +55,15 @@ endpointPolicy:
     parameter_name: endpointPoliciesId
     attribute_name: endpoint_policy
     help: Id of the endpoint policy.
+
+observabilityPolicy:
+  name: observability policy
+  collection: networkservices.projects.locations.observabilityPolicies
+  request_id_field: observabilityPolicyId
+  attributes:
+  - *project
+  - *location
+  - &observabilityPolicy
+    parameter_name: observabilityPoliciesId
+    attribute_name: observability_policy
+    help: Id of the observability policy.

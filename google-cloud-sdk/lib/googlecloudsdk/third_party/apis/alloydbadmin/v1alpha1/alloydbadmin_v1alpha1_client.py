@@ -46,6 +46,7 @@ class AlloydbadminV1alpha1(base_api.BaseApiClient):
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_supportedDatabaseFlags = self.ProjectsLocationsSupportedDatabaseFlagsService(self)
     self.projects_locations_users = self.ProjectsLocationsUsersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -1062,6 +1063,43 @@ class AlloydbadminV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AlloydbadminProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSupportedDatabaseFlagsService(base_api.BaseApiService):
+    """Service class for the projects_locations_supportedDatabaseFlags resource."""
+
+    _NAME = 'projects_locations_supportedDatabaseFlags'
+
+    def __init__(self, client):
+      super(AlloydbadminV1alpha1.ProjectsLocationsSupportedDatabaseFlagsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists SupportedDatabaseFlags for a given project and location.
+
+      Args:
+        request: (AlloydbadminProjectsLocationsSupportedDatabaseFlagsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSupportedDatabaseFlagsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/supportedDatabaseFlags',
+        http_method='GET',
+        method_id='alloydbadmin.projects.locations.supportedDatabaseFlags.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/supportedDatabaseFlags',
+        request_field='',
+        request_type_name='AlloydbadminProjectsLocationsSupportedDatabaseFlagsListRequest',
+        response_type_name='ListSupportedDatabaseFlagsResponse',
         supports_download=False,
     )
 

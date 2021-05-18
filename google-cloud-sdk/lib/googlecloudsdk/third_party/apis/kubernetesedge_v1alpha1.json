@@ -205,15 +205,18 @@
     },
     "ListClustersResponse": {
       "id": "ListClustersResponse",
+      "description": "List of clusters in a location.",
       "type": "object",
       "properties": {
-        "resources": {
+        "clusters": {
+          "description": "Clusters in the location.",
           "type": "array",
           "items": {
             "$ref": "Cluster"
           }
         },
         "nextPageToken": {
+          "description": "A token to retrieve next page of results.",
           "type": "string"
         },
         "unreachable": {
@@ -227,33 +230,38 @@
     },
     "Cluster": {
       "id": "Cluster",
+      "description": "A Google Edge Cloud Kubernetes cluster.",
       "type": "object",
       "properties": {
         "name": {
+          "description": "Required. The resource name of the cluster.",
           "type": "string"
         },
         "createTime": {
+          "description": "Output only. The time when the cluster was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "description": "Output only. The time when the cluster was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "labels": {
+          "description": "Labels associated with this resource.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "hub": {
-          "description": "GKE Hub configuration.",
+          "description": "Required. GKE Hub configuration.",
           "$ref": "Hub"
         },
         "networking": {
-          "description": "Cluster-wide networking configuration.",
+          "description": "Required. Cluster-wide networking configuration.",
           "$ref": "ClusterNetworking"
         },
         "defaultMaxPodsPerNode": {
@@ -262,7 +270,8 @@
           "format": "int32"
         },
         "endpoint": {
-          "description": "The IP address of the Kubernetes API server.",
+          "description": "Output only. The IP address of the Kubernetes API server.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -273,7 +282,7 @@
       "type": "object",
       "properties": {
         "membership": {
-          "description": "Name of the membership resource to use when registering this cluster to GKE Hub e.g. projects\/{project}\/locations\/global\/memberships\/{membership}.",
+          "description": "Required. The resource name of the membership resource to use when registering this cluster to GKE Hub e.g. projects\/{project}\/locations\/global\/memberships\/{membership}.",
           "type": "string"
         }
       }
@@ -284,14 +293,14 @@
       "type": "object",
       "properties": {
         "clusterIpv4CidrBlocks": {
-          "description": "All pods in the cluster are assigned an RFC1918 IPv4 address from these blocks. Only a single block is supported. This field cannot be changed after creation.",
+          "description": "Required. All pods in the cluster are assigned an RFC1918 IPv4 address from these blocks. Only a single block is supported. This field cannot be changed after creation.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "servicesIpv4CidrBlocks": {
-          "description": "All services in the cluster are assigned an RFC1918 IPv4 address from these blocks. Only a single block is supported. This field cannot be changed after creation.",
+          "description": "Required. All services in the cluster are assigned an RFC1918 IPv4 address from these blocks. Only a single block is supported. This field cannot be changed after creation.",
           "type": "array",
           "items": {
             "type": "string"
@@ -301,15 +310,18 @@
     },
     "ListNodePoolsResponse": {
       "id": "ListNodePoolsResponse",
+      "description": "List of node pools in a cluster.",
       "type": "object",
       "properties": {
-        "resources": {
+        "nodePools": {
+          "description": "Node pools in the cluster.",
           "type": "array",
           "items": {
             "$ref": "NodePool"
           }
         },
         "nextPageToken": {
+          "description": "A token to retrieve next page of results.",
           "type": "string"
         },
         "unreachable": {
@@ -323,22 +335,27 @@
     },
     "NodePool": {
       "id": "NodePool",
+      "description": "A set of Kubernetes nodes in a cluster with common configuration and specification.",
       "type": "object",
       "properties": {
         "name": {
+          "description": "Required. The resource name of the node pool.",
           "type": "string"
         },
         "createTime": {
+          "description": "Output only. The time when the node pool was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "description": "Output only. The time when the node pool was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "labels": {
+          "description": "Labels associated with this resource.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -349,7 +366,7 @@
           "type": "string"
         },
         "nodeCount": {
-          "description": "The number of nodes in the pool.",
+          "description": "Required. The number of nodes in the pool.",
           "type": "integer",
           "format": "int32"
         }
@@ -359,7 +376,7 @@
       "id": "ListSitesResponse",
       "type": "object",
       "properties": {
-        "resources": {
+        "sites": {
           "type": "array",
           "items": {
             "$ref": "Site"
@@ -404,15 +421,18 @@
     },
     "ListMachinesResponse": {
       "id": "ListMachinesResponse",
+      "description": "List of machines in a site.",
       "type": "object",
       "properties": {
-        "resources": {
+        "machines": {
+          "description": "Machines in the site.",
           "type": "array",
           "items": {
             "$ref": "Machine"
           }
         },
         "nextPageToken": {
+          "description": "A token to retrieve next page of results.",
           "type": "string"
         },
         "unreachable": {
@@ -426,22 +446,27 @@
     },
     "Machine": {
       "id": "Machine",
+      "description": "A Google Edge Cloud machine capable of acting as a Kubernetes node.",
       "type": "object",
       "properties": {
         "name": {
+          "description": "Required. The resource name of the machine.",
           "type": "string"
         },
         "createTime": {
+          "description": "Output only. The time when the node pool was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
+          "description": "Output only. The time when the node pool was last updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "labels": {
+          "description": "Labels associated with this resource.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -675,37 +700,37 @@
     },
     "OperationMetadata": {
       "id": "OperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
+      "description": "Long-running operation metadata for Edge Container API methods.",
       "type": "object",
       "properties": {
         "createTime": {
-          "description": "Output only. The time the operation was created.",
+          "description": "The time the operation was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Output only. The time the operation finished running.",
+          "description": "The time the operation finished running.",
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
-          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "description": "Server-defined resource path for the target of the operation.",
           "type": "string"
         },
         "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
+          "description": "The verb executed by the operation.",
           "type": "string"
         },
         "statusMessage": {
-          "description": "Output only. Human-readable status of the operation, if any.",
+          "description": "Human-readable status of the operation, if any.",
           "type": "string"
         },
         "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "description": "Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
           "type": "boolean"
         },
         "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
+          "description": "API version used to start the operation.",
           "type": "string"
         }
       }
@@ -917,25 +942,30 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
+                      "description": "Required. The parent location, which owns this collection of clusters.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
+                      "description": "The maximum number of resources to list.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
+                      "description": "A page token received from previous list request. A page token received from previous list request.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
+                      "description": "Only resources matching this filter will be listed.",
                       "location": "query",
                       "type": "string"
                     },
                     "orderBy": {
+                      "description": "Specifies the order in which resources will be listed.",
                       "location": "query",
                       "type": "string"
                     }
@@ -958,6 +988,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
+                      "description": "Required. The resource name of the cluster.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -982,17 +1013,19 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
+                      "description": "Required. The parent location where this cluster will be created.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "clusterId": {
+                      "description": "Required. A client-specified unique identifier for the cluster.",
                       "location": "query",
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1018,6 +1051,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
+                      "description": "Required. The resource name of the cluster.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1030,7 +1064,7 @@
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1056,13 +1090,14 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
+                      "description": "Required. The resource name of the cluster.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1177,25 +1212,30 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
+                          "description": "Required. The parent cluster, which owns this collection of node pools.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "pageSize": {
+                          "description": "The maximum number of resources to list.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
+                          "description": "A page token received from previous list request.",
                           "location": "query",
                           "type": "string"
                         },
                         "filter": {
+                          "description": "Only resources matching this filter will be listed.",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
+                          "description": "Specifies the order in which resources will be listed.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1218,6 +1258,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
+                          "description": "Required. The resource name of the node pool.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1242,17 +1283,19 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
+                          "description": "Required. The parent cluster where this node pool will be created.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "nodePoolId": {
+                          "description": "Required. A client-specified unique identifier for the node pool.",
                           "location": "query",
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1278,6 +1321,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
+                          "description": "Required. The resource name of the node pool.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1290,7 +1334,7 @@
                           "format": "google-fieldmask"
                         },
                         "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1316,13 +1360,14 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
+                          "description": "Required. The resource name of the node pool.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1508,25 +1553,30 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
+                          "description": "Required. The parent site, which owns this collection of machines.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/sites\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "pageSize": {
+                          "description": "The maximum number of resources to list.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
+                          "description": "A page token received from previous list request.",
                           "location": "query",
                           "type": "string"
                         },
                         "filter": {
+                          "description": "Only resources matching this filter will be listed.",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
+                          "description": "Specifies the order in which resources will be listed.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1549,6 +1599,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
+                          "description": "Required. The resource name of the machine.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/sites\/[^\/]+\/machines\/[^\/]+$",
                           "location": "path",
                           "required": true,

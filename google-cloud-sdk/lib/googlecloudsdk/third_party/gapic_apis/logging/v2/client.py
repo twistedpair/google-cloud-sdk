@@ -28,24 +28,17 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.core import gapic_util
-
 from googlecloudsdk.third_party import logging_v2
-from googlecloudsdk.third_party.logging_v2.gapic.transports.config_service_v2_grpc_transport import ConfigServiceV2GrpcTransport
-from googlecloudsdk.third_party.logging_v2.gapic.transports.logging_service_v2_grpc_transport import LoggingServiceV2GrpcTransport
-from googlecloudsdk.third_party.logging_v2.gapic.transports.metrics_service_v2_grpc_transport import MetricsServiceV2GrpcTransport
 
 
 class LoggingClient(object):
   """Logging client."""
   types = logging_v2.types
 
-  def __init__(self, address_override=None):
+  def __init__(self):
     self.config = gapic_util.MakeClient(
-        ConfigServiceV2GrpcTransport, logging_v2.ConfigServiceV2Client,
-        address=address_override)
+        logging_v2.services.config_service_v2.client.ConfigServiceV2Client)
     self.logging = gapic_util.MakeClient(
-        LoggingServiceV2GrpcTransport, logging_v2.LoggingServiceV2Client,
-        address=address_override)
+        logging_v2.services.logging_service_v2.client.LoggingServiceV2Client)
     self.metrics = gapic_util.MakeClient(
-        MetricsServiceV2GrpcTransport, logging_v2.MetricsServiceV2Client,
-        address=address_override)
+        logging_v2.services.metrics_service_v2.client.MetricsServiceV2Client)

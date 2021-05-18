@@ -118,6 +118,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_HTTPROUTES = (
+      'projects.locations.httpRoutes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/httpRoutes/'
+              '{httpRoutesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OBSERVABILITYPOLICIES = (
       'projects.locations.observabilityPolicies',
       '{+name}',

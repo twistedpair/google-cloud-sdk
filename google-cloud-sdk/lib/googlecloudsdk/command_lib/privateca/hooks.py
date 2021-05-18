@@ -25,26 +25,39 @@ from googlecloudsdk.command_lib.privateca import resource_args
 from googlecloudsdk.core.util import times
 
 
-def CheckResponseSubordinateTypeHook(response, unused_args):
+def CheckResponseSubordinateTypeHook(version='v1beta1'):
   """Raises an exception if the response is not a subordinate ca."""
-  resource_args.CheckExpectedCAType(
-      base.GetMessagesModule().CertificateAuthority.TypeValueValuesEnum
-      .SUBORDINATE, response)
-  return response
+
+  def CheckResponseSubordinateTypeHookVersioned(response, unused_args):
+    resource_args.CheckExpectedCAType(
+        base.GetMessagesModule(api_version=version).CertificateAuthority
+        .TypeValueValuesEnum.SUBORDINATE,
+        response,
+        version=version)
+
+    return response
+
+  return CheckResponseSubordinateTypeHookVersioned
 
 
-def CheckResponseRootTypeHook(response, unused_args):
+def CheckResponseRootTypeHook(version='v1beta1'):
   """Raises an exception if the response is not a root ca."""
-  resource_args.CheckExpectedCAType(
-      base.GetMessagesModule().CertificateAuthority.TypeValueValuesEnum
-      .SELF_SIGNED, response)
-  return response
+
+  def CheckResponseRootTypeHookVersioned(response, unused_args):
+    resource_args.CheckExpectedCAType(
+        base.GetMessagesModule(api_version=version).CertificateAuthority
+        .TypeValueValuesEnum.SELF_SIGNED,
+        response,
+        version=version)
+    return response
+
+  return CheckResponseRootTypeHookVersioned
 
 
-def _CheckRequestTypeHook(resource_ref, expected_type):
+def _CheckRequestTypeHook(resource_ref, expected_type, version='v1beta1'):
   """Do a get on a CA resource and check its type against expected_type."""
-  client = base.GetClientInstance()
-  messages = base.GetMessagesModule()
+  client = base.GetClientInstance(api_version=version)
+  messages = base.GetMessagesModule(api_version=version)
   certificate_authority = client.projects_locations_certificateAuthorities.Get(
       messages.PrivatecaProjectsLocationsCertificateAuthoritiesGetRequest(
           name=resource_ref.RelativeName()))
@@ -52,23 +65,32 @@ def _CheckRequestTypeHook(resource_ref, expected_type):
   resource_args.CheckExpectedCAType(expected_type, certificate_authority)
 
 
-def CheckRequestRootTypeHook(resource_ref, unused_args, request):
+def CheckRequestRootTypeHook(version='v1beta1'):
   """Raises an exception if the request is not for a root ca."""
-  _CheckRequestTypeHook(
-      resource_ref,
-      base.GetMessagesModule().CertificateAuthority.TypeValueValuesEnum
-      .SELF_SIGNED)
 
-  return request
+  def CheckRequestRootTypeHookVersioned(resource_ref, unused_args, request):
+    _CheckRequestTypeHook(
+        resource_ref,
+        base.GetMessagesModule(api_version=version).CertificateAuthority
+        .TypeValueValuesEnum.SELF_SIGNED)
+
+    return request
+
+  return CheckRequestRootTypeHookVersioned
 
 
-def CheckRequestSubordinateTypeHook(resource_ref, unused_args, request):
+def CheckRequestSubordinateTypeHook(version='v1beta1'):
   """Raises an exception if the request is not for a subordinate ca."""
-  _CheckRequestTypeHook(
-      resource_ref,
-      base.GetMessagesModule().CertificateAuthority.TypeValueValuesEnum
-      .SUBORDINATE)
-  return request
+
+  def CheckRequestSubordinateTypeHookVersioned(resource_ref, unused_args,
+                                               request):
+    _CheckRequestTypeHook(
+        resource_ref,
+        base.GetMessagesModule(api_version=version).CertificateAuthority
+        .TypeValueValuesEnum.SUBORDINATE)
+    return request
+
+  return CheckRequestSubordinateTypeHookVersioned
 
 
 def AddRequestIdHook(unused_ref, unused_args, request):

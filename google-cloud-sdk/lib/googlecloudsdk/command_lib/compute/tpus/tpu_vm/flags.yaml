@@ -1,0 +1,197 @@
+# Copyright 2021 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+accelerator_type:
+  api_field: node.acceleratorType
+  arg_name: accelerator-type
+  required: false
+  help_text: |
+    TPU accelerator type for the TPU.
+    If not specified, this defaults to `v2-8`.
+
+    For a list of available accelerator types run:
+
+    `{parent_command} accelerator-types list`
+  type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
+  default: 'v2-8'
+
+description:
+  api_field: node.description
+  arg_name: description
+  required: false
+  help_text: |
+    Specifies a text description of the TPU.
+
+network:
+  api_field: node.networkConfig.network
+  arg_name: network
+  required: false
+  help_text: |
+    Specifies the network that this TPU will be a part of.
+  default: 'default'
+
+subnetwork:
+  api_field: node.networkConfig.subnetwork
+  arg_name: subnetwork
+  required: false
+  help_text: |
+    Specifies the subnetwork that this TPU will be a part of.
+
+enable_external_ips:
+  api_field: node.networkConfig.enableExternalIps
+  arg_name: internal-ips
+  required: false
+  default: false
+  type: bool
+  processor: googlecloudsdk.command_lib.compute.tpus.tpu_vm.util:InvertBoolean
+  help_text: |
+    Indicates that the IP addresses for the node should be internal. The default is that external IP
+    addresses will be associated with the TPU workers.
+
+version:
+  api_field: node.runtimeVersion
+  arg_name: version
+  required: true
+  help_text: |
+    Runtime version for the TPU, such as `2.3`.
+
+    For a list of available versions run:
+
+    `{parent_command} versions list`
+
+range: &range
+  api_field: node.cidrBlock
+  arg_name: range
+  help_text: |
+    CIDR Range for the TPU.
+
+    The IP range that the TPU will select an IP address from.
+    Must be in CIDR notation and a `/29` range, for example
+    `192.168.0.0/29`. Errors will occur if the CIDR range has already been
+    used for a currently existing TPU, the CIDR range conflicts with any
+    networks in the user's provided network, or the provided network is
+    peered with another network that is using that CIDR range.
+
+preemptible:
+  api_field: node.schedulingConfig.preemptible
+  arg_name: preemptible
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    If provided, the TPU will be preemptible and time-limited. It may be
+    preempted to free up resources for standard TPUs, and will only be able
+    to run for a limited amount of time.
+
+    Preemptible TPUs cannot be restarted.
+
+reserved:
+  api_field: node.schedulingConfig.reserved
+  arg_name: reserved
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    When specified, will attempt to create the TPU node under reservations made in the current
+    project. The reservations can be made separately but used in aggregated form. i.e., the user can
+    make a reservation of 128 V2 TPUs and later on make another reservation of 128 V2 TPUs then
+    creates a v2-256 TPU instance. If there exists no reservation or not sufficient amount of
+    reserved cores under the project, the request will fail due to lack of capacity.
+
+service_account:
+  api_field: node.serviceAccount.email
+  arg_name: service-account
+  required: false
+  help_text: |
+    Email address of the service account. If empty, default Google Compute Engine service
+    account will be used.
+
+service_account_scopes:
+  api_field: node.serviceAccount.scope
+  arg_name: scopes
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  help_text: |
+    List of comma-separated scopes to be made available for the service account.
+
+labels:
+  api_field: node.labels
+  arg_name: labels
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  required: false
+  help_text: |
+    Resource labels to represent user-provided metadata. See
+    https://cloud.google.com/compute/docs/labeling-resources for details.
+
+metadata:
+  api_field: node.metadata
+  arg_name: metadata
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  required: false
+  help_text: |
+    List of comma-separated metadata key-value pairs for the Cloud TPU VM node.
+
+metadata_from_file:
+  api_field: node.metadata
+  arg_name: metadata-from-file
+  type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
+  processor: googlecloudsdk.command_lib.compute.tpus.tpu_vm.util:ReadMetadataFromFile
+  required: false
+  help_text: |
+    Same as --metadata except the value for the entry will be read from a local file.
+
+tags:
+  api_field: node.tags
+  arg_name: tags
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  help_text: |
+    Tags to apply to the TPU Node. Tags are used to identify valid sources or
+    targets for network firewalls. See https://cloud.google.com/vpc/docs/add-remove-network-tags for
+    more details.
+
+data_disks:
+  api_field: node.dataDisks
+  arg_name: data-disk
+  type:
+    arg_dict:
+      flatten: false
+      spec:
+      - api_field: sourceDisk
+        arg_name: source
+        type: str
+        required: true
+      - api_field: mode
+        arg_name: mode
+        type: str
+        required: false
+        choices:
+        - arg_value: read-write
+          enum_value: READ_WRITE
+        - arg_value: read-only
+          enum_value: READ_ONLY
+  required: false
+  help_text: |
+    An additional data disk for the TPU VM.
+
+    This flag must be repeated to provide multiple data disks. For example:
+
+      $ {command} --data-disk source=projects/my-project/zones/us-central1-c/disks/my-disk,mode=read-only
+
+    The following keys are allowed:
+
+    *source*::: Specifies the full path to an existing disk. Required. The disk must be in the same zone.
+
+    *mode*::: Specifies the mode in which to attach this disk. Valid options are 'read-write',
+    'read-only'. If not specified, the default is 'read-write'.

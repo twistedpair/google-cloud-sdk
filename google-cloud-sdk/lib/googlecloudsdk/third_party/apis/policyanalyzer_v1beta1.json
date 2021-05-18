@@ -188,7 +188,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request. Acceptable formats: `projects\/[PROJECT_ID|PROJECT_NUMBER]\/locations\/[LOCATION]\/activityTypes\/[ACTIVITY_RESOURCE_TYPE]\/activities` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/ ACTIVITY_RESOURCE_TYPE here refers to `ActivityType`",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: `projects\/[PROJECT_ID|PROJECT_NUMBER]\/locations\/[LOCATION]\/activityTypes\/[ACTIVITY_TYPE]` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activityTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -200,7 +200,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of `nextPageToken` in the response indicates that more results might be available.",
+                          "description": "Optional. The maximum number of results to return from this request. Max limit is 1000. Non-positive values are ignored. The presence of `nextPageToken` in the response indicates that more results might be available.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"

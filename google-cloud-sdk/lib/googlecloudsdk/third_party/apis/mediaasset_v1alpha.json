@@ -673,7 +673,7 @@
       "type": "object",
       "properties": {
         "complexType": {
-          "description": "Reference to the complex type name, in the following form: `projects\/{project}\/locations\/{location}\/complexTypes\/{name}`.",
+          "description": "Reference to the complex type name, in the following form: `projects\/{project}\/locations\/{location}\/complexTypes\/{name}`. Complex type of the annotation set config has the following requirements: 1. Must have two required fields named start and end. 2. Allowed types for start and end are number, duration, and datetime. 3. Start and end should have the same type.",
           "type": "string"
         },
         "indexedFieldConfigs": {
@@ -1089,7 +1089,7 @@
       "description": "Specifies the pub\/sub destination to send the notifications to.",
       "type": "object",
       "properties": {
-        "pubsubTopic": {
+        "topic": {
           "description": "Required. A Pub\/Sub topic to which messages are sent by GCMA. https:\/\/cloud.google.com\/pubsub\/docs\/overview",
           "type": "string"
         }
@@ -1476,7 +1476,7 @@
             "Default non-attribute.",
             "Either principal or (if present) authority selector.",
             "The principal (even if an authority selector is present), which must only be used for attribution, not authorization.",
-            "Any of the security realms in the IAMContext (go\/security-realms). When used with IN, the condition indicates \"any of the request's realms match one of the given values; with NOT_IN, \"none of the realms match any of the given values\". Note that a value can be: - 'self' (i.e., allow connections from clients that are in the same security realm) - 'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-region' (i.e., allow connections from clients that are in the same cloud region) - 'guardians' (i.e., allow connections from its guardian realms. See go\/security-realms-glossary#guardian for more information.) - a realm (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups) A match is determined by a realm group membership check performed by a RealmAclRep object (go\/realm-acl-howto). It is not permitted to grant access based on the *absence* of a realm, so realm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
+            "Any of the security realms in the IAMContext (go\/security-realms). When used with IN, the condition indicates \"any of the request's realms match one of the given values; with NOT_IN, \"none of the realms match any of the given values\". Note that a value can be: - 'self' (i.e., allow connections from clients that are in the same security realm, which is currently but not guaranteed to be campus-sized) - 'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-region' (i.e., allow connections from clients that are in the same cloud region) - 'guardians' (i.e., allow connections from its guardian realms. See go\/security-realms-glossary#guardian for more information.) - a realm (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups) A match is determined by a realm group membership check performed by a RealmAclRep object (go\/realm-acl-howto). It is not permitted to grant access based on the *absence* of a realm, so realm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
             "An approver (distinct from the requester) that has authorized this request. When used with IN, the condition indicates that one of the approvers associated with the request matches the specified principal, or is a member of the specified group. Approvers can only grant additional access, and are thus only used in a strictly positive context (e.g. ALLOW\/IN or DENY\/NOT_IN).",
             "What types of justifications have been supplied with this request. String values should match enum names from security.credentials.JustificationType, e.g. \"MANUAL_STRING\". It is not permitted to grant access based on the *absence* of a justification, so justification conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN). Multiple justifications, e.g., a Buganizer ID and a manually-entered reason, are normal and supported.",
             "What type of credentials have been supplied with this request. String values should match enum names from security_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access based on the *absence* of a credentials type, so the conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
@@ -2737,7 +2737,7 @@
                               "type": "string"
                             },
                             "annotationSetId": {
-                              "description": "The ID of the annotationSet resource to be created.",
+                              "description": "Required. The ID of the annotationSet resource to be created.",
                               "location": "query",
                               "type": "string"
                             }
@@ -2902,6 +2902,11 @@
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
                                   "location": "path",
                                   "required": true,
+                                  "type": "string"
+                                },
+                                "annotationId": {
+                                  "description": "Required. The ID of the annotation resource to be created.",
+                                  "location": "query",
                                   "type": "string"
                                 }
                               },

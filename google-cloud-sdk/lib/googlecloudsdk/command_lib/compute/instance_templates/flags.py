@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers
@@ -166,6 +168,58 @@ def ValidateServiceProxyFlags(args):
         raise exceptions.InvalidArgumentException(
             'proxy-port',
             'Port value can only be between 1025 and 65535.')
+
+
+def AddMeshArgs(parser, hide_arguments=False):
+  """Adds Anthos Service Mesh configuration arguments for instance templates."""
+
+  mesh_group = parser.add_group(hidden=hide_arguments)
+  mesh_group.add_argument(
+      '--mesh',
+      type=arg_parsers.ArgDict(
+          spec={
+              'gke-cluster': str,
+              'workload': str
+          },
+          allow_key_only=False,
+          required_keys=['gke-cluster', 'workload']),
+      hidden=hide_arguments,
+      help="""\
+      Configures the instance template to allow the created VMs to join an Anthos Service Mesh.
+
+      *gke-cluster*::: Required. The location/name of the GKE cluster. The location can be a zone or
+          a region, e.g `us-central1-a/my-cluster`.
+
+      *workload*::: Required. The workload identifier of the VM workload. In a GKE cluster, it is
+          the identifier namespace/name of the `WorkloadGroup` custom resource representing the VM
+          workload, e.g.`foo/my-workload`.
+      """)
+
+
+def ValidateMeshFlag(args):
+  """Validates the values of the --mesh flag."""
+
+  if getattr(args, 'mesh', False):
+    if args.no_scopes:
+      # --no-scopes flag needs to be removed for adding cloud-platform scope.
+      # This is required for ASM's service proxy to work properly.
+      raise exceptions.ConflictingArgumentsException('--mesh',
+                                                     '--no-scopes')
+
+    rgx = r'(.*)\/(.*)'
+    try:
+      if not re.match(rgx, args.mesh['gke-cluster']):
+        raise ValueError
+    except ValueError:
+      raise exceptions.InvalidArgumentException(
+          'gke-cluster',
+          'GKE cluster value should have the format location/name.')
+    try:
+      if not re.match(rgx, args.mesh['workload']):
+        raise ValueError
+    except ValueError:
+      raise exceptions.InvalidArgumentException(
+          'workload', 'Workload value should have the format namespace/name.')
 
 
 def AddPostKeyRevocationActionTypeArgs(parser):

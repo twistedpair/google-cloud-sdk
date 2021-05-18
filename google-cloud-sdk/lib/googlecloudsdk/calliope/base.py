@@ -38,6 +38,8 @@ import six
 
 # Category constants
 AI_AND_MACHINE_LEARNING_CATEGORY = 'AI and Machine Learning'
+VERTEX_AI_CATEGORY = 'Vertex AI'
+TENSORBOARD_CATEGORY = 'AI Platform Tensorboard'
 API_PLATFORM_AND_ECOSYSTEMS_CATEGORY = 'API Platform and Ecosystems'
 ANTHOS_CLI_CATEGORY = 'Anthos CLI'
 ANTHOS_AUTH_CATEGORY = 'Anthos Auth'
@@ -884,6 +886,11 @@ def _ChoiceValueType(value):
        hyphens.
   """
   return value.replace('_', '-').lower()
+
+
+def SanitizeChoices(iterable):
+  """Applies _ChoiceValueType to a collection of choices."""
+  return [_ChoiceValueType(x) for x in iterable]
 
 
 def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,

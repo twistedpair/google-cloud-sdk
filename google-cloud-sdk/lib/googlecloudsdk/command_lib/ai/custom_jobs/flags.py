@@ -140,7 +140,7 @@ def _GetCustomJobResourceSpec(resource_name='custom_job'):
 
 
 def AddCustomJobResourceArg(parser, verb):
-  """Add a resource argument for a Cloud AI Platform custom job.
+  """Add a resource argument for a Vertex AI custom job.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -217,7 +217,7 @@ def AddLocalRunCustomJobFlags(parser):
       URI or ID of the container image in either the Container Registry or local
       that will run the application.
       See https://cloud.google.com/ai-platform-unified/docs/training/pre-built-containers
-      for available pre-built container images provided by AI Platform for training.
+      for available pre-built container images provided by Vertex AI for training.
       """))
 
   # Flags for extra requirements.

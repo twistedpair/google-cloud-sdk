@@ -1687,6 +1687,10 @@
         "failureReason": {
           "description": "The reason of the failure.",
           "type": "string"
+        },
+        "memberConfig": {
+          "description": "Membership config state on this member",
+          "$ref": "MemberConfig"
         }
       }
     },

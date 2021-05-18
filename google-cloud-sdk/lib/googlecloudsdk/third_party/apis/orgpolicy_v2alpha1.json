@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/resource-manager/docs/organization-policy/understanding-constraints",
+  "documentationLink": "https://cloud.google.com/orgpolicy/docs/reference/rest/index.html",
   "protocol": "rest",
   "rootUrl": "https://orgpolicy.googleapis.com/",
   "mtlsRootUrl": "https://orgpolicy.mtls.googleapis.com/",

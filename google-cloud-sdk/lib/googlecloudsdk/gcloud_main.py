@@ -26,6 +26,7 @@ START_TIME = time.time()
 
 # pylint:disable=g-bad-import-order
 # pylint:disable=g-import-not-at-top, We want to get the start time first.
+import atexit
 import errno
 import os
 import sys
@@ -160,6 +161,7 @@ def _IssueAIPlatformAliasWarning(command_path=None):
 
 @crash_handling.CrashManager
 def main(gcloud_cli=None, credential_providers=None):
+  atexit.register(metrics.Shutdown)
   if not platforms.PythonVersion().IsCompatible():
     sys.exit(1)
   metrics.Started(START_TIME)

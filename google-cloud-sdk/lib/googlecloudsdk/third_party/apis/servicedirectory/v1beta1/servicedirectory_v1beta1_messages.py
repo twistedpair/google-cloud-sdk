@@ -226,9 +226,10 @@ class Condition(_messages.Message):
         of the request's realms match one of the given values; with NOT_IN,
         "none of the realms match any of the given values". Note that a value
         can be: - 'self' (i.e., allow connections from clients that are in the
-        same security realm) - 'self:metro' (i.e., clients that are in the
-        same metro) - 'self:cloud-region' (i.e., allow connections from
-        clients that are in the same cloud region) - 'guardians' (i.e., allow
+        same security realm, which is currently but not guaranteed to be
+        campus-sized) - 'self:metro' (i.e., clients that are in the same
+        metro) - 'self:cloud-region' (i.e., allow connections from clients
+        that are in the same cloud region) - 'guardians' (i.e., allow
         connections from its guardian realms. See go/security-realms-
         glossary#guardian for more information.) - a realm (e.g., 'campus-
         abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go/realm-
@@ -1016,6 +1017,8 @@ class Service(_messages.Message):
     uid: Output only. A globally unique identifier (in UUID4 format) for this
       service.
     updateTime: Output only. The timestamp when the service was last updated.
+      Note: endpoints being created/deleted/updated within the service are not
+      considered service updates for the purpose of this timestamp.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

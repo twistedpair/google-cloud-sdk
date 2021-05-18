@@ -501,6 +501,7 @@ class CreateClusterOptions(object):
       enable_shielded_nodes=None,
       linux_sysctls=None,
       disable_default_snat=None,
+      dataplane_v2=None,
       shielded_secure_boot=None,
       shielded_integrity_monitoring=None,
       system_config_from_file=None,
@@ -547,6 +548,7 @@ class CreateClusterOptions(object):
       private_endpoint_subnetwork=None,
       cross_connect_subnetworks=None,
       enable_service_externalips=None,
+      threads_per_core=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -642,6 +644,7 @@ class CreateClusterOptions(object):
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
     self.disable_default_snat = disable_default_snat
+    self.dataplane_v2 = dataplane_v2
     self.shielded_secure_boot = shielded_secure_boot
     self.shielded_integrity_monitoring = shielded_integrity_monitoring
     self.system_config_from_file = system_config_from_file
@@ -688,6 +691,7 @@ class CreateClusterOptions(object):
     self.private_endpoint_subnetwork = private_endpoint_subnetwork
     self.cross_connect_subnetworks = cross_connect_subnetworks
     self.enable_service_externalips = enable_service_externalips
+    self.threads_per_core = threads_per_core
 
 
 class UpdateClusterOptions(object):
@@ -931,7 +935,8 @@ class CreateNodePoolOptions(object):
                enable_gcfs=None,
                pod_ipv4_range=None,
                create_pod_ipv4_range=None,
-               enable_private_nodes=None):
+               enable_private_nodes=None,
+               threads_per_core=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -978,6 +983,7 @@ class CreateNodePoolOptions(object):
     self.pod_ipv4_range = pod_ipv4_range
     self.create_pod_ipv4_range = create_pod_ipv4_range
     self.enable_private_nodes = enable_private_nodes
+    self.threads_per_core = threads_per_core
 
 
 class UpdateNodePoolOptions(object):
@@ -1034,8 +1040,7 @@ class UpdateNodePoolOptions(object):
             self.max_unavailable_upgrade is not None or
             self.system_config_from_file is not None or
             self.node_labels is not None or self.node_taints is not None or
-            self.tags is not None or
-            self.enable_private_nodes is not None)
+            self.tags is not None or self.enable_private_nodes is not None)
 
 
 class APIAdapter(object):
@@ -1315,6 +1320,12 @@ class APIAdapter(object):
       else:
         cluster.networkConfig.defaultSnatStatus = default_snat_status
 
+    if options.dataplane_v2 is not None and options.dataplane_v2:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.datapathProvider = \
+            self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
+
     if options.enable_l4_ilb_subsetting:
       if cluster.networkConfig is None:
         cluster.networkConfig = self.messages.NetworkConfig(
@@ -1507,6 +1518,9 @@ class APIAdapter(object):
       util.LoadSystemConfigFromYAML(node_config,
                                     options.system_config_from_file,
                                     self.messages)
+    if options.threads_per_core:
+      node_config.advancedMachineFeatures = self.messages.AdvancedMachineFeatures(
+          threadsPerCore=options.threads_per_core)
 
     return node_config
 
@@ -1847,6 +1861,8 @@ class APIAdapter(object):
 
     resource_limits = []
     if options.autoprovisioning_config_file is not None:
+      util.ValidateAutoprovisioningConfigFile(
+          options.autoprovisioning_config_file)
       # Create using config file only.
       config = yaml.load(options.autoprovisioning_config_file)
       resource_limits = config.get(RESOURCE_LIMITS)
@@ -2608,6 +2624,9 @@ class APIAdapter(object):
       node_config.diskType = options.disk_type
     if options.image_type:
       node_config.imageType = options.image_type
+    if options.threads_per_core:
+      node_config.advancedMachineFeatures = self.messages.AdvancedMachineFeatures(
+          threadsPerCore=options.threads_per_core)
 
     custom_config = self.messages.CustomImageConfig()
     if options.image:
@@ -2988,9 +3007,9 @@ class APIAdapter(object):
       A NetworkConfig object that contains the options for how the network
       for the nodepool needs to be configured.
     """
-    if (options.pod_ipv4_range is None
-        and options.create_pod_ipv4_range is None
-        and options.enable_private_nodes is None):
+    if (options.pod_ipv4_range is None and
+        options.create_pod_ipv4_range is None and
+        options.enable_private_nodes is None):
       return None
 
     network_config = self.messages.NodeNetworkConfig()
@@ -3363,8 +3382,7 @@ class V1Beta1Adapter(V1Adapter):
       if not options.workload_pool:
         raise util.Error(
             PREREQUISITE_OPTION_ERROR_MSG.format(
-                prerequisite='workload-pool',
-                opt='enable-alts'))
+                prerequisite='workload-pool', opt='enable-alts'))
       if cluster.workloadAltsConfig is None:
         cluster.workloadAltsConfig = self.messages.WorkloadALTSConfig()
       cluster.workloadAltsConfig.enableAlts = options.enable_alts
@@ -3409,12 +3427,6 @@ class V1Beta1Adapter(V1Adapter):
         raise util.Error(
             DATAPATH_PROVIDER_ILL_SPECIFIED_ERROR_MSG.format(
                 provider=options.datapath_provider))
-
-    if options.dataplane_v2 is not None and options.dataplane_v2:
-      if cluster.networkConfig is None:
-        cluster.networkConfig = self.messages.NetworkConfig()
-      cluster.networkConfig.datapathProvider = \
-            self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
 
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
 
@@ -3838,8 +3850,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       if not options.workload_pool:
         raise util.Error(
             PREREQUISITE_OPTION_ERROR_MSG.format(
-                prerequisite='workload-pool',
-                opt='enable-alts'))
+                prerequisite='workload-pool', opt='enable-alts'))
       if cluster.workloadAltsConfig is None:
         cluster.workloadAltsConfig = self.messages.WorkloadALTSConfig()
       cluster.workloadAltsConfig.enableAlts = options.enable_alts
@@ -3907,12 +3918,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         raise util.Error(
             DATAPATH_PROVIDER_ILL_SPECIFIED_ERROR_MSG.format(
                 provider=options.datapath_provider))
-
-    if options.dataplane_v2 is not None and options.dataplane_v2:
-      if cluster.networkConfig is None:
-        cluster.networkConfig = self.messages.NetworkConfig()
-      cluster.networkConfig.datapathProvider = \
-            self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
 
     if options.enable_experimental_vertical_pod_autoscaling is not None:
       cluster.verticalPodAutoscaling = self.messages.VerticalPodAutoscaling(

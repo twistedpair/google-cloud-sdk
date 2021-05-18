@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20210430",
+ "revision": "20210510",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -652,7 +652,7 @@
     },
     "purpose": {
      "type": "string",
-     "description": "The purpose of this resource, which can be one of the following values:  \n- `GCE_ENDPOINT` for addresses that are used by VM instances, alias IP ranges, internal load balancers, and similar resources. \n- `DNS_RESOLVER` for a DNS resolver address in a subnetwork \n- `VPC_PEERING` for addresses that are reserved for VPC peer networks. \n- `NAT_AUTO` for addresses that are external IP addresses automatically reserved for Cloud NAT. \n- `IPSEC_INTERCONNECT` for addresses created from a private IP range that are reserved for a VLAN attachment in an IPsec-encrypted Cloud Interconnect configuration. These addresses are regional resources.",
+     "description": "The purpose of this resource, which can be one of the following values:  \n- `GCE_ENDPOINT` for addresses that are used by VM instances, alias IP ranges, internal load balancers, and similar resources. \n- `DNS_RESOLVER` for a DNS resolver address in a subnetwork \n- `VPC_PEERING` for addresses that are reserved for VPC peer networks. \n- `NAT_AUTO` for addresses that are external IP addresses automatically reserved for Cloud NAT. \n- `IPSEC_INTERCONNECT` for addresses created from a private IP range that are reserved for a VLAN attachment in an IPsec-encrypted Cloud Interconnect configuration. These addresses are regional resources. Not currently available publicly.",
      "enum": [
       "DNS_RESOLVER",
       "GCE_ENDPOINT",
@@ -2213,6 +2213,18 @@
      "$ref": "BackendBucketCdnPolicy",
      "description": "Cloud CDN configuration for this BackendBucket."
     },
+    "compressionMode": {
+     "type": "string",
+     "description": "Compress text responses using Brotli or gzip compression, based on the client?s Accept-Encoding header.",
+     "enum": [
+      "AUTOMATIC",
+      "DISABLED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -2521,8 +2533,19 @@
      "description": "Cloud CDN configuration for this BackendService. Only available for  external HTTP(S) Load Balancing."
     },
     "circuitBreakers": {
-     "$ref": "CircuitBreakers",
-     "description": "Settings controlling the volume of connections to a backend service. If not set, this feature is considered disabled.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.  \n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true."
+     "$ref": "CircuitBreakers"
+    },
+    "compressionMode": {
+     "type": "string",
+     "description": "Compress text responses using Brotli or gzip compression, based on the client?s Accept-Encoding header.",
+     "enum": [
+      "AUTOMATIC",
+      "DISABLED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     },
     "connectionDraining": {
      "$ref": "ConnectionDraining"
@@ -2636,7 +2659,7 @@
     },
     "maxStreamDuration": {
      "$ref": "Duration",
-     "description": "Specifies the default maximum duration (timeout) for streams to this service. Duration is computed from the beginning of the stream until the response has been completely processed, including all retries. A stream that does not complete in this duration is closed.\nIf not specified, there will be no timeout limit, i.e. the maximum duration is infinite.\nThis field is only allowed when the loadBalancingScheme of the backend service is INTERNAL_SELF_MANAGED."
+     "description": "Specifies the default maximum duration (timeout) for streams to this service. Duration is computed from the beginning of the stream until the response has been completely processed, including all retries. A stream that does not complete in this duration is closed.\nIf not specified, there will be no timeout limit, i.e. the maximum duration is infinite.\nThis value can be overridden in the PathMatcher configuration of the UrlMap that references this backend service.\nThis field is only allowed when the loadBalancingScheme of the backend service is INTERNAL_SELF_MANAGED."
     },
     "name": {
      "type": "string",
@@ -2729,7 +2752,7 @@
     },
     "timeoutSec": {
      "type": "integer",
-     "description": "The backend service timeout has a different meaning depending on the type of load balancer. For more information see,  Backend service settings The default is 30 seconds. The full range of timeout values allowed is 1 - 2,147,483,647 seconds.",
+     "description": "Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true. Instead, use maxStreamDuration.",
      "format": "int32"
     }
    }
@@ -3706,12 +3729,12 @@
     },
     "maxConnections": {
      "type": "integer",
-     "description": "The maximum number of connections to the backend service. If not specified, there is no limit.",
+     "description": "Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "format": "int32"
     },
     "maxPendingRequests": {
      "type": "integer",
-     "description": "The maximum number of pending requests allowed to the backend service. If not specified, there is no limit.",
+     "description": "Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "format": "int32"
     },
     "maxRequests": {
@@ -3721,12 +3744,12 @@
     },
     "maxRequestsPerConnection": {
      "type": "integer",
-     "description": "Maximum requests for a single connection to the backend service. This parameter is respected by both the HTTP/1.1 and HTTP/2 implementations. If not specified, there is no limit. Setting this parameter to 1 will effectively disable keep alive.",
+     "description": "Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "format": "int32"
     },
     "maxRetries": {
      "type": "integer",
-     "description": "The maximum number of parallel retries allowed to the backend cluster. If not specified, the default is 1.",
+     "description": "Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "format": "int32"
     }
    }
@@ -5800,7 +5823,7 @@
     },
     "interfaces": {
      "type": "array",
-     "description": "List of interfaces for this external VPN gateway.",
+     "description": "List of interfaces for this external VPN gateway.\n\nIf your peer-side gateway is an on-premises gateway and non-AWS cloud providers? gateway, at most two interfaces can be provided for an external VPN gateway. If your peer side is an AWS virtual private gateway, four interfaces should be provided for an external VPN gateway.",
      "items": {
       "$ref": "ExternalVpnGatewayInterface"
      }
@@ -5859,7 +5882,7 @@
    "properties": {
     "id": {
      "type": "integer",
-     "description": "The numeric ID of this interface. The allowed input values for this id for different redundancy types of external VPN gateway: SINGLE_IP_INTERNALLY_REDUNDANT - 0 TWO_IPS_REDUNDANCY - 0, 1 FOUR_IPS_REDUNDANCY - 0, 1, 2, 3",
+     "description": "The numeric ID of this interface. The allowed input values for this id for different redundancy types of external VPN gateway: \n- SINGLE_IP_INTERNALLY_REDUNDANT - 0 \n- TWO_IPS_REDUNDANCY - 0, 1 \n- FOUR_IPS_REDUNDANCY - 0, 1, 2, 3",
      "format": "uint32"
     },
     "ipAddress": {
@@ -6682,7 +6705,7 @@
     },
     "IPProtocol": {
      "type": "string",
-     "description": "The IP protocol to which this rule applies.\n\nFor protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP and ICMP.\n\nThe valid IP protocols are different for different load balancing products:  \n- Internal TCP/UDP Load Balancing: The load balancing scheme is INTERNAL, and one of TCP, UDP or ALL is valid. \n- Traffic Director: The load balancing scheme is INTERNAL_SELF_MANAGED, and only TCP is valid.  \n- Internal HTTP(S) Load Balancing: The load balancing scheme is INTERNAL_MANAGED, and only TCP is valid. \n- HTTP(S), SSL Proxy, and TCP Proxy Load Balancing: The load balancing scheme is EXTERNAL and only TCP is valid. \n- Network Load Balancing: The load balancing scheme is EXTERNAL, and one of TCP or UDP is valid.",
+     "description": "The IP protocol to which this rule applies.\n\nFor protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP, ICMP and L3_DEFAULT.\n\nThe valid IP protocols are different for different load balancing products:  \n- Internal TCP/UDP Load Balancing: The load balancing scheme is INTERNAL, and one of TCP, UDP or L3_DEFAULT is valid. \n- Traffic Director: The load balancing scheme is INTERNAL_SELF_MANAGED, and only TCP is valid.  \n- Internal HTTP(S) Load Balancing: The load balancing scheme is INTERNAL_MANAGED, and only TCP is valid. \n- HTTP(S), SSL Proxy, and TCP Proxy Load Balancing: The load balancing scheme is EXTERNAL and only TCP is valid. \n- Network Load Balancing: The load balancing scheme is EXTERNAL, and one of TCP, UDP or L3_DEFAULT is valid.",
      "enum": [
       "AH",
       "ESP",
@@ -6828,6 +6851,23 @@
      "type": "string",
      "description": "[Output Only] The PSC connection id of the PSC Forwarding Rule.",
      "format": "uint64"
+    },
+    "pscConnectionStatus": {
+     "type": "string",
+     "enum": [
+      "ACCEPTED",
+      "CLOSED",
+      "PENDING",
+      "REJECTED",
+      "STATUS_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
     },
     "region": {
      "type": "string",
@@ -8406,7 +8446,7 @@
    "properties": {
     "httpStatus": {
      "type": "integer",
-     "description": "The HTTP status code used to abort the request.\nThe value must be between 200 and 599 inclusive.",
+     "description": "The HTTP status code used to abort the request.\nThe value must be between 200 and 599 inclusive.\nFor gRPC protocol, the gRPC status code is mapped to HTTP status code according to this  mapping table. HTTP status 200 is mapped to gRPC status UNKNOWN. Injecting an OK status is currently not supported by Traffic Director.",
      "format": "uint32"
     },
     "percentage": {
@@ -8826,7 +8866,7 @@
     },
     "retryConditions": {
      "type": "array",
-     "description": "Specfies one or more conditions when this retry rule applies. Valid values are:  \n- 5xx: Loadbalancer will attempt a retry if the backend service responds with any 5xx response code, or if the backend service does not respond at all, example: disconnects, reset, read timeout, connection failure, and refused streams. \n- gateway-error: Similar to 5xx, but only applies to response codes 502, 503 or 504.\n- \n- connect-failure: Loadbalancer will retry on failures connecting to backend services, for example due to connection timeouts. \n- retriable-4xx: Loadbalancer will retry for retriable 4xx response codes. Currently the only retriable error supported is 409. \n- refused-stream:Loadbalancer will retry if the backend service resets the stream with a REFUSED_STREAM error code. This reset type indicates that it is safe to retry. \n- cancelledLoadbalancer will retry if the gRPC status code in the response header is set to cancelled \n- deadline-exceeded: Loadbalancer will retry if the gRPC status code in the response header is set to deadline-exceeded \n- resource-exhausted: Loadbalancer will retry if the gRPC status code in the response header is set to resource-exhausted \n- unavailable: Loadbalancer will retry if the gRPC status code in the response header is set to unavailable",
+     "description": "Specifies one or more conditions when this retry rule applies. Valid values are:  \n- 5xx: Loadbalancer will attempt a retry if the backend service responds with any 5xx response code, or if the backend service does not respond at all, example: disconnects, reset, read timeout, connection failure, and refused streams. \n- gateway-error: Similar to 5xx, but only applies to response codes 502, 503 or 504.\n- \n- connect-failure: Loadbalancer will retry on failures connecting to backend services, for example due to connection timeouts. \n- retriable-4xx: Loadbalancer will retry for retriable 4xx response codes. Currently the only retriable error supported is 409. \n- refused-stream:Loadbalancer will retry if the backend service resets the stream with a REFUSED_STREAM error code. This reset type indicates that it is safe to retry. \n- cancelledLoadbalancer will retry if the gRPC status code in the response header is set to cancelled \n- deadline-exceeded: Loadbalancer will retry if the gRPC status code in the response header is set to deadline-exceeded \n- resource-exhausted: Loadbalancer will retry if the gRPC status code in the response header is set to resource-exhausted \n- unavailable: Loadbalancer will retry if the gRPC status code in the response header is set to unavailable",
      "items": {
       "type": "string"
      }
@@ -8843,7 +8883,7 @@
     },
     "faultInjectionPolicy": {
      "$ref": "HttpFaultInjection",
-     "description": "The specification for fault injection introduced into traffic to test the resiliency of clients to backend service failure. As part of fault injection, when clients send requests to a backend service, delays can be introduced by Loadbalancer on a percentage of requests before sending those request to the backend service. Similarly requests from clients can be aborted by the Loadbalancer for a percentage of requests.\ntimeout and retry_policy will be ignored by clients that are configured with a fault_injection_policy.\nNot supported when the URL map is bound to target gRPC proxy that has validateForProxyless field set to true."
+     "description": "The specification for fault injection introduced into traffic to test the resiliency of clients to backend service failure. As part of fault injection, when clients send requests to a backend service, delays can be introduced by Loadbalancer on a percentage of requests before sending those request to the backend service. Similarly requests from clients can be aborted by the Loadbalancer for a percentage of requests.\ntimeout and retry_policy will be ignored by clients that are configured with a fault_injection_policy."
     },
     "maxStreamDuration": {
      "$ref": "Duration",
@@ -9264,12 +9304,7 @@
       },
       "source": {
        "type": "string",
-       "description": "The full Google Cloud Storage URL where the disk image is stored. You must provide either this property or the sourceDisk property but not both.",
-       "annotations": {
-        "required": [
-         "compute.images.insert"
-        ]
-       }
+       "description": "The full Google Cloud Storage URL where the disk image is stored.\n\nIn order to create an image, you must provide the full or partial URL of one of the following:  \n- The rawDisk.source URL  \n- The sourceDisk URL  \n- The sourceImage URL  \n- The sourceSnapshot URL"
       }
      }
     },
@@ -9287,7 +9322,7 @@
     },
     "sourceDisk": {
      "type": "string",
-     "description": "URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk \n- projects/project/zones/zone/disks/disk \n- zones/zone/disks/disk"
+     "description": "URL of the source disk used to create this image. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk \n- projects/project/zones/zone/disks/disk \n- zones/zone/disks/disk \n\nIn order to create an image, you must provide the full or partial URL of one of the following:  \n- The rawDisk.source URL  \n- The sourceDisk URL  \n- The sourceImage URL  \n- The sourceSnapshot URL"
     },
     "sourceDiskEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
@@ -9299,7 +9334,7 @@
     },
     "sourceImage": {
      "type": "string",
-     "description": "URL of the source image used to create this image.\n\nIn order to create an image, you must provide the full or partial URL of one of the following:  \n- The selfLink URL  \n- This property  \n- The rawDisk.source URL  \n- The sourceDisk URL"
+     "description": "URL of the source image used to create this image.\n\nIn order to create an image, you must provide the full or partial URL of one of the following:  \n- The rawDisk.source URL  \n- The sourceDisk URL  \n- The sourceImage URL  \n- The sourceSnapshot URL"
     },
     "sourceImageEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
@@ -9311,7 +9346,7 @@
     },
     "sourceSnapshot": {
      "type": "string",
-     "description": "URL of the source snapshot used to create this image.\n\nIn order to create an image, you must provide the full or partial URL of one of the following:  \n- The selfLink URL  \n- This property \n- The sourceImage URL  \n- The rawDisk.source URL  \n- The sourceDisk URL"
+     "description": "URL of the source snapshot used to create this image.\n\nIn order to create an image, you must provide the full or partial URL of one of the following:  \n- The rawDisk.source URL  \n- The sourceDisk URL  \n- The sourceImage URL  \n- The sourceSnapshot URL"
     },
     "sourceSnapshotEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
@@ -12791,7 +12826,7 @@
     },
     "encryption": {
      "type": "string",
-     "description": "Indicates the user-supplied encryption option of this interconnect attachment: \n- NONE is the default value, which means that the attachment carries unencrypted traffic. VMs can send traffic to, or receive traffic from, this type of attachment. \n- IPSEC indicates that the attachment carries only traffic encrypted by an IPsec device such as an HA VPN gateway. VMs cannot directly send traffic to, or receive traffic from, such an attachment. To use IPsec-encrypted Cloud Interconnect, create the attachment using this option. \nNot currently available in all Interconnect locations.",
+     "description": "Indicates the user-supplied encryption option of this VLAN attachment (interconnectAttachment). Can only be specified at attachment creation for PARTNER or DEDICATED attachments. Possible values are: \n- NONE - This is the default value, which means that the VLAN attachment carries unencrypted traffic. VMs are able to send traffic to, or receive traffic from, such a VLAN attachment. \n- IPSEC - The VLAN attachment carries only encrypted traffic that is encrypted by an IPsec device, such as an HA VPN gateway or third-party IPsec VPN. VMs cannot directly send traffic to, or receive traffic from, such a VLAN attachment. To use IPsec-encrypted Cloud Interconnect, the VLAN attachment must be created with this option. \nNot currently available publicly.",
      "enum": [
       "IPSEC",
       "NONE"
@@ -12816,7 +12851,7 @@
     },
     "ipsecInternalAddresses": {
      "type": "array",
-     "description": "URL of addresses that have been reserved for the interconnect attachment, Used only for interconnect attachment that has the encryption option as IPSEC. The addresses must be RFC 1918 IP address ranges. When creating HA VPN gateway over the interconnect attachment, if the attachment is configured to use an RFC 1918 IP address, then the VPN gateway's IP address will be allocated from the IP address range specified here. For example, if the HA VPN gateway's interface 0 is paired to this interconnect attachment, then an RFC 1918 IP address for the VPN gateway interface 0 will be allocated from the IP address specified for this interconnect attachment. If this field is not specified for interconnect attachment that has encryption option as IPSEC, later on when creating HA VPN gateway on this interconnect attachment, the HA VPN gateway's IP address will be allocated from regional external IP address pool.\nNot currently available in all Interconnect locations.",
+     "description": "List of URL of addresses that have been reserved for the VLAN attachment. Used only for the VLAN attachment that has the encryption option as IPSEC. The addresses must be regional internal IP address ranges. When creating an HA VPN gateway over the VLAN attachment, if the attachment is configured to use a regional internal IP address, then the VPN gateway's IP address is allocated from the IP address range specified here. For example, if the HA VPN gateway's interface 0 is paired to this VLAN attachment, then a regional internal IP address for the VPN gateway interface 0 will be allocated from the IP address specified for this VLAN attachment. If this field is not specified when creating the VLAN attachment, then later on when creating an HA VPN gateway on this VLAN attachment, the HA VPN gateway's IP address is allocated from the regional external IP address pool.\nNot currently available publicly.",
      "items": {
       "type": "string"
      }
@@ -23606,7 +23641,7 @@
     },
     "encryptedInterconnectRouter": {
      "type": "boolean",
-     "description": "Field to indicate if a router is dedicated to use with encrypted Interconnect Attachment (IPsec-encrypted Cloud Interconnect feature).\nNot currently available in all Interconnect locations."
+     "description": "Indicates if a router is dedicated for use with encrypted VLAN attachments (interconnectAttachments).\nNot currently available publicly."
     },
     "id": {
      "type": "string",
@@ -25924,7 +25959,7 @@
    "id": "ServiceAttachmentsScopedList",
    "type": "object",
    "properties": {
-    "resources": {
+    "serviceAttachments": {
      "type": "array",
      "description": "A list of ServiceAttachments contained in this scope.",
      "items": {
@@ -31883,7 +31918,7 @@
     },
     "vpnInterfaces": {
      "type": "array",
-     "description": "A list of interfaces on this VPN gateway.",
+     "description": "The list of VPN interfaces associated with this VPN gateway.",
      "items": {
       "$ref": "VpnGatewayVpnGatewayInterface"
      }
@@ -32225,16 +32260,16 @@
    "properties": {
     "id": {
      "type": "integer",
-     "description": "The numeric ID of this VPN gateway interface.",
+     "description": "[Output Only] Numeric identifier for this VPN interface associated with the VPN gateway.",
      "format": "uint32"
     },
     "interconnectAttachment": {
      "type": "string",
-     "description": "URL of the interconnect attachment resource. When the value of this field is present, the VPN Gateway will be used for IPsec-encrypted Cloud Interconnect; all Egress or Ingress traffic for this VPN Gateway interface will go through the specified interconnect attachment resource.\nNot currently available in all Interconnect locations."
+     "description": "URL of the VLAN attachment (interconnectAttachment) resource for this VPN gateway interface. When the value of this field is present, the VPN gateway is used for IPsec-encrypted Cloud Interconnect; all egress or ingress traffic for this VPN gateway interface goes through the specified VLAN attachment resource.\nNot currently available publicly."
     },
     "ipAddress": {
      "type": "string",
-     "description": "[Output Only] The external IP address for this VPN gateway interface."
+     "description": "[Output Only] IP address for this VPN interface associated with the VPN gateway. The IP address could be either a regional external IP address or a regional internal IP address. The two IP addresses for a VPN gateway must be all regional external or regional internal IP addresses. There cannot be a mix of regional external IP addresses and regional internal IP addresses. For IPsec-encrypted Cloud Interconnect, the IP addresses for both interfaces could either be regional internal IP addresses or regional external IP addresses. For regular (non IPsec-encrypted Cloud Interconnect) HA VPN tunnels, the IP address must be a regional external IP address."
     }
    }
   },

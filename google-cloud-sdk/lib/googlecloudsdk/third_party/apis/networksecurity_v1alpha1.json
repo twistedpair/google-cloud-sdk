@@ -256,6 +256,79 @@
       "properties": {
       }
     },
+    "ListAddressGroupsResponse": {
+      "id": "ListAddressGroupsResponse",
+      "description": "Response returned by the ListAddressGroups method.",
+      "type": "object",
+      "properties": {
+        "addressGroups": {
+          "description": "List of AddressGroups resources.",
+          "type": "array",
+          "items": {
+            "$ref": "AddressGroup"
+          }
+        },
+        "nextPageToken": {
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
+          "type": "string"
+        }
+      }
+    },
+    "AddressGroup": {
+      "id": "AddressGroup",
+      "description": "AddressGroup is a resource that specifies how a collection of IP\/DNS used in Firewall Policy.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the AddressGroup resource. It matches pattern `projects\/*\/locations\/{location}\/addressGroups\/`.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Free-text description of the resource.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Optional. Set of label tags associated with the AddressGroup resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "description": "Required. The type of the Address Group. Possible values are \"IPv4\" or \"IPV6\".",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "IP v4 ranges.",
+            "IP v6 ranges."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "IP_V4",
+            "IP_V6"
+          ]
+        },
+        "items": {
+          "description": "Optional. List of items.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ListAuthorizationPoliciesResponse": {
       "id": "ListAuthorizationPoliciesResponse",
       "description": "Response returned by the ListAuthorizationPolicies method.",
@@ -1002,6 +1075,250 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "addressGroups": {
+              "methods": {
+                "list": {
+                  "id": "networksecurity.projects.locations.addressGroups.list",
+                  "path": "v1alpha1/{+parent}/addressGroups",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the AddressGroups should be listed, specified in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of AddressGroups to return per call.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The value returned by the last `ListAddressGroupsResponse` Indicates that this is a continuation of a prior `ListAddressGroups` call, and that the system should return the next page of data.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAddressGroupsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists AddressGroups in a given project and location."
+                },
+                "get": {
+                  "id": "networksecurity.projects.locations.addressGroups.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the AddressGroup to get. Must be in the format `projects\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "AddressGroup"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single AddressGroup."
+                },
+                "create": {
+                  "id": "networksecurity.projects.locations.addressGroups.create",
+                  "path": "v1alpha1/{+parent}/addressGroups",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of the AddressGroup. Must be in the format `projects\/*\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "addressGroupId": {
+                      "description": "Required. Short name of the AddressGroup resource to be created. This value should be 1-63 characters long, containing only letters, numbers, hyphens, and underscores, and should not start with a number. E.g. \"authz_policy\".",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "AddressGroup"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new AddressGroup in a given project and location."
+                },
+                "patch": {
+                  "id": "networksecurity.projects.locations.addressGroups.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the AddressGroup resource. It matches pattern `projects\/*\/locations\/{location}\/addressGroups\/`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the AddressGroup resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "AddressGroup"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single AddressGroup."
+                },
+                "delete": {
+                  "id": "networksecurity.projects.locations.addressGroups.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A name of the AddressGroup to delete. Must be in the format `projects\/*\/locations\/{location}\/addressGroups\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single AddressGroup."
+                },
+                "setIamPolicy": {
+                  "id": "networksecurity.projects.locations.addressGroups.setIamPolicy",
+                  "path": "v1alpha1/{+resource}:setIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "GoogleIamV1SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleIamV1Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "networksecurity.projects.locations.addressGroups.getIamPolicy",
+                  "path": "v1alpha1/{+resource}:getIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "GoogleIamV1Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "networksecurity.projects.locations.addressGroups.testIamPermissions",
+                  "path": "v1alpha1/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/addressGroups/{addressGroupsId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/addressGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "GoogleIamV1TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleIamV1TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
             },

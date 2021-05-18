@@ -901,8 +901,45 @@
         }
       }
     },
-    "OperationMetadata": {
-      "id": "OperationMetadata",
+    "GoogleCloudFunctionsV2alphaOperationMetadata": {
+      "id": "GoogleCloudFunctionsV2alphaOperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "The time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time the operation finished running.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Server-defined resource path for the target of the operation.",
+          "type": "string"
+        },
+        "verb": {
+          "description": "Name of the verb executed by the operation.",
+          "type": "string"
+        },
+        "statusDetail": {
+          "description": "Human-readable status of the operation, if any.",
+          "type": "string"
+        },
+        "cancelRequested": {
+          "description": "Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "API version used to start the operation.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudFunctionsV2mainOperationMetadata": {
+      "id": "GoogleCloudFunctionsV2mainOperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
       "type": "object",
       "properties": {

@@ -1,0 +1,1956 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "vmwareengine:v1",
+  "name": "vmwareengine",
+  "canonicalName": "VMware Engine",
+  "version": "v1",
+  "revision": "0",
+  "title": "VMware Engine API",
+  "description": "The Google VMWare Engine API lets you programmatically manage VMware environments.",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/solutions/vmware-as-a-service",
+  "protocol": "rest",
+  "rootUrl": "https://vmwareengine.googleapis.com/",
+  "mtlsRootUrl": "https://vmwareengine.mtls.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://vmwareengine.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "CancelOperationRequest": {
+      "id": "CancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListPrivateCloudsResponse": {
+      "id": "ListPrivateCloudsResponse",
+      "description": "Response message for VmwareEngine.ListPrivateClouds",
+      "type": "object",
+      "properties": {
+        "privateClouds": {
+          "description": "A list of private clouds.",
+          "type": "array",
+          "items": {
+            "$ref": "PrivateCloud"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PrivateCloud": {
+      "id": "PrivateCloud",
+      "description": "Private cloud resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this private cloud. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "deleteTime": {
+          "description": "Output only. Time the resource was marked as deleted, in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expireTime": {
+          "description": "Output only. Planned deletion time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "Output only. State of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "The private cloud is ready.",
+            "The private cloud is being created.",
+            "The private cloud is being updated.",
+            "The private cloud is in failed state.",
+            "The private cloud is deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "UPDATING",
+            "FAILED",
+            "DELETED"
+          ]
+        },
+        "networkConfig": {
+          "description": "Required. Network configuration.",
+          "$ref": "NetworkConfig"
+        },
+        "managementCluster": {
+          "description": "Input only. The management cluster for this private cloud. This parameter is required during creation of private cloud to provide details for the default cluster.",
+          "$ref": "ManagementCluster"
+        },
+        "description": {
+          "description": "User-provided description for this private cloud.",
+          "type": "string"
+        },
+        "hcx": {
+          "description": "Output only. HCX appliance.",
+          "readOnly": true,
+          "$ref": "Hcx"
+        },
+        "nsx": {
+          "description": "Output only. NSX appliance.",
+          "readOnly": true,
+          "$ref": "Nsx"
+        },
+        "vcenter": {
+          "description": "Output only. Vcenter appliance.",
+          "readOnly": true,
+          "$ref": "Vcenter"
+        }
+      }
+    },
+    "NetworkConfig": {
+      "id": "NetworkConfig",
+      "description": "Network configuration in the consumer project with which the peering has to be done.",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "Required. The relative resource name of the consumer VPC network this private cloud is attached to. The name is specified in the following form: `projects\/{project}\/global\/networks\/{network_id}`.",
+          "type": "string"
+        },
+        "serviceNetwork": {
+          "description": "Output only. The relative resource name of the service VPC network this private cloud is attached to. The name is specified in the following form: `projects\/{service_project}\/global\/networks\/{network_id}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "managementCidr": {
+          "description": "Required. Management CIDR used by VMWare management appliances.",
+          "type": "string"
+        }
+      }
+    },
+    "ManagementCluster": {
+      "id": "ManagementCluster",
+      "description": "Management cluster configuration.",
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "description": "Required. The user-provided identifier of the new `Cluster`.",
+          "type": "string"
+        },
+        "nodeTypeId": {
+          "description": "Required. The canonical identifier of node types (`NodeType`) in this cluster. For example: standard-72.",
+          "type": "string"
+        },
+        "nodeCount": {
+          "description": "Required. Number of nodes in this cluster.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Hcx": {
+      "id": "Hcx",
+      "description": "Describes HCX appliance.",
+      "type": "object",
+      "properties": {
+        "fdqn": {
+          "description": "Fully qualified domain name of the appliance.",
+          "type": "string"
+        },
+        "internalIp": {
+          "description": "Internal IP address of the appliance.",
+          "type": "string"
+        },
+        "externalIp": {
+          "description": "External IP address of the appliance.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of the appliance.",
+          "type": "string"
+        }
+      }
+    },
+    "Nsx": {
+      "id": "Nsx",
+      "description": "Describes NSX appliance.",
+      "type": "object",
+      "properties": {
+        "fdqn": {
+          "description": "Fully qualified domain name of the appliance.",
+          "type": "string"
+        },
+        "internalIp": {
+          "description": "Internal IP address of the appliance.",
+          "type": "string"
+        },
+        "externalIp": {
+          "description": "External IP address of the appliance.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of the appliance.",
+          "type": "string"
+        }
+      }
+    },
+    "Vcenter": {
+      "id": "Vcenter",
+      "description": "Describes vCenter appliance.",
+      "type": "object",
+      "properties": {
+        "fdqn": {
+          "description": "Fully qualified domain name of the appliance.",
+          "type": "string"
+        },
+        "internalIp": {
+          "description": "Internal IP address of the appliance.",
+          "type": "string"
+        },
+        "externalIp": {
+          "description": "External IP address of the appliance.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Version of the appliance.",
+          "type": "string"
+        }
+      }
+    },
+    "UndeletePrivateCloudRequest": {
+      "id": "UndeletePrivateCloudRequest",
+      "description": "Request message for VmwareEngine.UndeletePrivateCloud",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "ListClustersResponse": {
+      "id": "ListClustersResponse",
+      "description": "Response message for VmwareEngine.ListClusters",
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "description": "A list of private cloud clusters.",
+          "type": "array",
+          "items": {
+            "$ref": "Cluster"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Cluster": {
+      "id": "Cluster",
+      "description": "A cluster in a private cloud.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this cluster. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "Output only. State of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "The cluster is ready.",
+            "The cluster is being created.",
+            "The cluster is being updated.",
+            "The cluster is being deleted.",
+            "The cluster is in failed state."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "UPDATING",
+            "DELETING",
+            "FAILED"
+          ]
+        },
+        "management": {
+          "description": "Output only. True if the cluster is a management cluster; false otherwise. There can only be one management cluster in a private cloud and it has to be the first one.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "nodeTypeId": {
+          "description": "Required. The canonical identifier of node types (`NodeType`) in this cluster. For example: standard-72.",
+          "type": "string"
+        },
+        "nodeCount": {
+          "description": "Required. Number of bare metal nodes in this cluster.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListNodeTypesResponse": {
+      "id": "ListNodeTypesResponse",
+      "description": "Response message for VmwareEngine.ListNodeTypes",
+      "type": "object",
+      "properties": {
+        "nodeTypes": {
+          "description": "A list of Node Types.",
+          "type": "array",
+          "items": {
+            "$ref": "NodeType"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "NodeType": {
+      "id": "NodeType",
+      "description": "Describes node type.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this node type. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-proj\/locations\/us-west1-a\/nodeTypes\/standard-72`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "nodeTypeId": {
+          "description": "Output only. The canonical identifier of the node type (corresponds to the `NodeType`). For example: standard-72.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Output only. The friendly name for this node type. For example: ve1-standard-72",
+          "readOnly": true,
+          "type": "string"
+        },
+        "virtualCpuCount": {
+          "description": "Output only. The total number of virtual CPUs in a single node.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "memoryGb": {
+          "description": "Output only. The amount of physical memory available, defined in GB.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        },
+        "diskSizeGb": {
+          "description": "Output only. The amount of storage available, defined in GB.",
+          "readOnly": true,
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "Credentials": {
+      "id": "Credentials",
+      "description": "Credentials for a private cloud.",
+      "type": "object",
+      "properties": {
+        "username": {
+          "description": "Initial username.",
+          "type": "string"
+        },
+        "password": {
+          "description": "Initial password.",
+          "type": "string"
+        }
+      }
+    },
+    "ResetNsxCredentialsRequest": {
+      "id": "ResetNsxCredentialsRequest",
+      "description": "Request message for VmwareEngine.ResetNsxCredentials",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "ResetVcenterCredentialsRequest": {
+      "id": "ResetVcenterCredentialsRequest",
+      "description": "Request message for VmwareEngine.ResetVcenterCredentials",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "SetIamPolicyRequest": {
+      "id": "SetIamPolicyRequest",
+      "description": "Request message for `SetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
+          "$ref": "Policy"
+        },
+        "updateMask": {
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only the fields in the mask will be modified. If no mask is provided, the following default mask is used: `paths: \"bindings, etag\"`",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
+    "Policy": {
+      "id": "Policy",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Specifies the format of the policy. Valid values are `0`, `1`, and `3`. Requests that specify an invalid value are rejected. Any operation that affects conditional role bindings must specify version `3`. This requirement applies to the following operations: * Getting a policy that includes a conditional role binding * Adding a conditional role binding to a policy * Changing a conditional role binding in a policy * Removing any role binding, with or without a condition, from a policy that includes conditions **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost. If a policy does not include any conditions, operations on that policy may specify any valid version or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bindings": {
+          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member.",
+          "type": "array",
+          "items": {
+            "$ref": "Binding"
+          }
+        },
+        "auditConfigs": {
+          "description": "Specifies cloud audit logging configuration for this policy.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditConfig"
+          }
+        },
+        "etag": {
+          "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy. **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "Binding": {
+      "id": "Binding",
+      "description": "Associates `members` with a `role`.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "Role that is assigned to `members`. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "type": "string"
+        },
+        "members": {
+          "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "condition": {
+          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
+          "type": "string"
+        },
+        "title": {
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "AuditConfig": {
+      "id": "AuditConfig",
+      "description": "Specifies the audit configuration for a service. The configuration determines which permission types are logged, and what identities, if any, are exempted from logging. An AuditConfig must have one or more AuditLogConfigs. If there are AuditConfigs for both `allServices` and a specific service, the union of the two AuditConfigs is used for that service: the log_types specified in each AuditConfig are enabled, and the exempted_members in each AuditLogConfig are exempted. Example Policy with multiple AuditConfigs: { \"audit_configs\": [ { \"service\": \"allServices\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:jose@example.com\" ] }, { \"log_type\": \"DATA_WRITE\" }, { \"log_type\": \"ADMIN_READ\" } ] }, { \"service\": \"sampleservice.googleapis.com\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\" }, { \"log_type\": \"DATA_WRITE\", \"exempted_members\": [ \"user:aliya@example.com\" ] } ] } ] } For sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging, and aliya@example.com from DATA_WRITE logging.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services.",
+          "type": "string"
+        },
+        "auditLogConfigs": {
+          "description": "The configuration for logging of each type of permission.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditLogConfig"
+          }
+        }
+      }
+    },
+    "AuditLogConfig": {
+      "id": "AuditLogConfig",
+      "description": "Provides the configuration for logging a type of permissions. Example: { \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:jose@example.com\" ] }, { \"log_type\": \"DATA_WRITE\" } ] } This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from DATA_READ logging.",
+      "type": "object",
+      "properties": {
+        "logType": {
+          "description": "The log type that this config enables.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default case. Should never be this.",
+            "Admin reads. Example: CloudIAM getIamPolicy",
+            "Data writes. Example: CloudSQL Users create",
+            "Data reads. Example: CloudSQL Users list"
+          ],
+          "enum": [
+            "LOG_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "DATA_WRITE",
+            "DATA_READ"
+          ]
+        },
+        "exemptedMembers": {
+          "description": "Specifies the identities that do not cause logging for this type of permission. Follows the same format of Binding.members.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestIamPermissionsRequest": {
+      "id": "TestIamPermissionsRequest",
+      "description": "Request message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as '*' or 'storage.*') are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestIamPermissionsResponse": {
+      "id": "TestIamPermissionsResponse",
+      "description": "Response message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is allowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. True if the user has requested cancellation of the operation; false otherwise. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "projects": {
+      "resources": {
+        "locations": {
+          "methods": {
+            "list": {
+              "id": "vmwareengine.projects.locations.list",
+              "path": "v1/{+name}/locations",
+              "flatPath": "v1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like \"displayName=tokyo\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of results to return. If not set, the service selects a default.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "ListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "vmwareengine.projects.locations.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Location"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
+          "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "vmwareengine.projects.locations.operations.list",
+                  "path": "v1/{+name}/operations",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "vmwareengine.projects.locations.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                },
+                "delete": {
+                  "id": "vmwareengine.projects.locations.operations.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                },
+                "cancel": {
+                  "id": "vmwareengine.projects.locations.operations.cancel",
+                  "path": "v1/{+name}:cancel",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource to be cancelled.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CancelOperationRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "privateClouds": {
+              "methods": {
+                "list": {
+                  "id": "vmwareengine.projects.locations.privateClouds.list",
+                  "path": "v1/{+parent}/privateClouds",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the private cloud to be queried for clusters. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of private clouds to return in one page. The service may return fewer than this value. The maximum value is coerced to 25.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListPrivateCloudsRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListPrivateCloudsRequest` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of private clouds, you can exclude the ones named `example-pc` by specifying `name != \"example-pc\"`. You can also filter nested fields. For example, you could specify `networkConfig.managementCidr = \"192.168.0.0\/24\"` to include private clouds only if they have a matching address in their network configuration. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-pc\") (create_time > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"private-cloud-1\") AND (create_time > \"2021-04-12T08:15:10.40Z\") OR (name = \"private-cloud-2\") ```",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sorts list results by a certain order. By default, returned results are ordered by `name` in ascending order. You can also sort results in descending order based on the `name` value using `orderBy=\"name desc\"`. Currently, only ordering by `name` is supported.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListPrivateCloudsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists private clouds in a given project and location."
+                },
+                "get": {
+                  "id": "vmwareengine.projects.locations.privateClouds.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the private cloud to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "PrivateCloud"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single private cloud."
+                },
+                "create": {
+                  "id": "vmwareengine.projects.locations.privateClouds.create",
+                  "path": "v1/{+parent}/privateClouds",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location (region) to create the new private cloud in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "privateCloudId": {
+                      "description": "Required. The user-provided identifier of the private cloud to be created. This identifier must be unique among each `PrivateCloud` within the parent and becomes the final token in the name URI.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. When true, the request is validated only, but not executed.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "PrivateCloud"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new private cloud in a given project and location."
+                },
+                "patch": {
+                  "id": "vmwareengine.projects.locations.privateClouds.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of this private cloud. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the `PrivateCloud` resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "PrivateCloud"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single private cloud. Only fields specified in `update_mask` are applied."
+                },
+                "delete": {
+                  "id": "vmwareengine.projects.locations.privateClouds.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the private cloud to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "force": {
+                      "description": "Optional. If set to true, cascade delete is enabled and all children of this private cloud resource will also be deleted. This will also delete mandatory management cluster. With this flag specified to false, private cloud will not be deleted due to management cluster child resource.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Starts private cloud delayed deletion. The resource is deleted after system defined delay passes. Until then, deletion can be cancelled by using `UndeletePrivateCloud`."
+                },
+                "undelete": {
+                  "id": "vmwareengine.projects.locations.privateClouds.undelete",
+                  "path": "v1/{+name}:undelete",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:undelete",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the private cloud to undelete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UndeletePrivateCloudRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Stops the private cloud deletion process started by `DeletePrivateCloud`."
+                },
+                "showNsxCredentials": {
+                  "id": "vmwareengine.projects.locations.privateClouds.showNsxCredentials",
+                  "path": "v1/{+privateCloud}:showNsxCredentials",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:showNsxCredentials",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "privateCloud": {
+                      "description": "Required. The resource name of the private cloud to be queried for credentials. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "privateCloud"
+                  ],
+                  "response": {
+                    "$ref": "Credentials"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of credentials for NSX appliance."
+                },
+                "showVcenterCredentials": {
+                  "id": "vmwareengine.projects.locations.privateClouds.showVcenterCredentials",
+                  "path": "v1/{+privateCloud}:showVcenterCredentials",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:showVcenterCredentials",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "privateCloud": {
+                      "description": "Required. The resource name of the private cloud to be queried for credentials. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "privateCloud"
+                  ],
+                  "response": {
+                    "$ref": "Credentials"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of credentials for Vcenter appliance."
+                },
+                "resetNsxCredentials": {
+                  "id": "vmwareengine.projects.locations.privateClouds.resetNsxCredentials",
+                  "path": "v1/{+privateCloud}:resetNsxCredentials",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:resetNsxCredentials",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "privateCloud": {
+                      "description": "Required. The resource name of the private cloud to reset credentials for. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "privateCloud"
+                  ],
+                  "request": {
+                    "$ref": "ResetNsxCredentialsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Resets credentials of the NSX appliance."
+                },
+                "resetVcenterCredentials": {
+                  "id": "vmwareengine.projects.locations.privateClouds.resetVcenterCredentials",
+                  "path": "v1/{+privateCloud}:resetVcenterCredentials",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:resetVcenterCredentials",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "privateCloud": {
+                      "description": "Required. The resource name of the private cloud to reset credentials for. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "privateCloud"
+                  ],
+                  "request": {
+                    "$ref": "ResetVcenterCredentialsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Resets credentials of the Vcenter appliance."
+                },
+                "setIamPolicy": {
+                  "id": "vmwareengine.projects.locations.privateClouds.setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "vmwareengine.projects.locations.privateClouds.getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "vmwareengine.projects.locations.privateClouds.testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+              ,
+              "resources": {
+                "clusters": {
+                  "methods": {
+                    "list": {
+                      "id": "vmwareengine.projects.locations.privateClouds.clusters.list",
+                      "path": "v1/{+parent}/clusters",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the private cloud to query for clusters. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of clusters to return in one page. The service may return fewer than this value. The maximum value is coerced to 25.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListClustersRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListClustersRequest` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of clusters, you can exclude the ones named `example-cluster` by specifying `name != \"example-cluster\"`. You can also filter nested fields. For example, you could specify `autoscale_settings.cooldown_period_minutes = 2` to include clusters only if they have given cooldown period in autoscale policy. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-cluster\") (node_count = \"3\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-cluster-1\") AND (create_time > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-cluster-2\") ```",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Sorts list results by a certain order. By default, returned results are ordered by `name` in ascending order. You can also sort results in descending order based on the `name` value using `orderBy=\"name desc\"`. Currently, only ordering by `name` is supported.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListClustersResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists clusters in a given private cloud."
+                    },
+                    "get": {
+                      "id": "vmwareengine.projects.locations.privateClouds.clusters.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The cluster resource name to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Cluster"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single cluster."
+                    },
+                    "create": {
+                      "id": "vmwareengine.projects.locations.privateClouds.clusters.create",
+                      "path": "v1/{+parent}/clusters",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the private cloud to create a new cluster in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "clusterId": {
+                          "description": "Required. The user-provided identifier of the new `Cluster`. This identifier must be unique among clusters within the parent and becomes the final token in the name URI.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. When true, the request is validated only, but not executed.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Cluster"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new cluster in a given project and location."
+                    },
+                    "patch": {
+                      "id": "vmwareengine.projects.locations.privateClouds.clusters.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The resource name of this cluster. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the `Cluster` resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. When true, the request is validated only, but not executed.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "Cluster"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates the parameters of a single cluster. Only fields specified in `update_mask` are applied."
+                    },
+                    "delete": {
+                      "id": "vmwareengine.projects.locations.privateClouds.clusters.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the cluster to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud\/clusters\/my-cluster`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single cluster."
+                    },
+                    "setIamPolicy": {
+                      "id": "vmwareengine.projects.locations.privateClouds.clusters.setIamPolicy",
+                      "path": "v1/{+resource}:setIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "vmwareengine.projects.locations.privateClouds.clusters.getIamPolicy",
+                      "path": "v1/{+resource}:getIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    },
+                    "testIamPermissions": {
+                      "id": "vmwareengine.projects.locations.privateClouds.clusters.testIamPermissions",
+                      "path": "v1/{+resource}:testIamPermissions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                }
+              }
+            },
+            "nodeTypes": {
+              "methods": {
+                "list": {
+                  "id": "vmwareengine.projects.locations.nodeTypes.list",
+                  "path": "v1/{+parent}/nodeTypes",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location to be queried for node types. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of node types to return in one page. The service may return fewer than this value. The maximum value is coerced to 50.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListNodeTypesRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListNodeTypesRequest` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of node types, you can exclude the ones named `standard-72` by specifying `name != \"standard-72\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"standard-72\") (virtual_cpu_count > 2) ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"standard-96\") AND (virtual_cpu_count > 2) OR (name = \"standard-72\") ```",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListNodeTypesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists node types"
+                },
+                "get": {
+                  "id": "vmwareengine.projects.locations.nodeTypes.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the node type to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-proj\/locations\/us-west1-a\/nodeTypes\/standard-72`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "NodeType"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single `NodeType`."
+                },
+                "setIamPolicy": {
+                  "id": "vmwareengine.projects.locations.nodeTypes.setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "vmwareengine.projects.locations.nodeTypes.getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "vmwareengine.projects.locations.nodeTypes.testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodeTypes/{nodeTypesId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodeTypes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

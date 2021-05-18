@@ -436,7 +436,8 @@ class ArgumentGroup(object):
       The base argument group.
     """
     group = base.ArgumentGroup(
-        mutex=self.mutex, required=self.required, help=self.help_text)
+        mutex=self.mutex, required=self.required, help=self.help_text,
+        hidden=self.hidden)
     for arg in self.arguments:
       group.AddArgument(arg.Generate(message))
     return group

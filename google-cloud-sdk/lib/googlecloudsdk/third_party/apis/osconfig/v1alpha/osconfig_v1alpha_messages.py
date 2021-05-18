@@ -267,7 +267,8 @@ class InstanceOSPoliciesCompliance(_messages.Message):
   could be applied to a single VM. You can use this API resource to determine
   both the compliance state of your VM as well as the compliance state of an
   individual OS policy. For more information, see [View
-  compliance](/compute/docs/os-configuration-management/view-compliance).
+  compliance](https://cloud.google.com/compute/docs/os-configuration-
+  management/view-compliance).
 
   Enums:
     StateValueValuesEnum: Output only. Compliance state of the VM.
@@ -373,7 +374,8 @@ class Inventory(_messages.Message):
   Engine virtual machine (VM) instance at a given point in time. You can use
   this API resource to determine the inventory data of your VM. For more
   information, see [Information provided by OS inventory
-  management](/compute/docs/instances/os-inventory-management#data-collected).
+  management](https://cloud.google.com/compute/docs/instances/os-inventory-
+  management#data-collected).
 
   Messages:
     ItemsValue: Output only. Inventory items related to the VM keyed by an
@@ -765,8 +767,8 @@ class OSPolicyAssignment(_messages.Message):
   Engine VM instance through a set of configuration resources that provide
   capabilities such as installing or removing software packages, or executing
   a script. For more information, see [OS policy and OS policy
-  assignment](/compute/docs/os-configuration-management/working-with-os-
-  policies).
+  assignment](https://cloud.google.com/compute/docs/os-configuration-
+  management/working-with-os-policies).
 
   Enums:
     RolloutStateValueValuesEnum: Output only. OS policy assignment rollout
@@ -1027,6 +1029,7 @@ class OSPolicyResourceCompliance(_messages.Message):
   Fields:
     configSteps: Ordered list of configuration steps taken by the agent for
       the OS policy resource.
+    execResourceOutput: ExecResource specific output.
     osPolicyResourceId: The id of the OS policy resource.
     state: Compliance state of the OS policy resource.
   """
@@ -1050,8 +1053,20 @@ class OSPolicyResourceCompliance(_messages.Message):
     NO_OS_POLICIES_APPLICABLE = 4
 
   configSteps = _messages.MessageField('OSPolicyResourceConfigStep', 1, repeated=True)
-  osPolicyResourceId = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  execResourceOutput = _messages.MessageField('OSPolicyResourceComplianceExecResourceOutput', 2)
+  osPolicyResourceId = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class OSPolicyResourceComplianceExecResourceOutput(_messages.Message):
+  r"""ExecResource specific output.
+
+  Fields:
+    enforcementOutput: Output from Enforcement phase output file (if run).
+      Output size is limited to 100K bytes.
+  """
+
+  enforcementOutput = _messages.BytesField(1)
 
 
 class OSPolicyResourceConfigStep(_messages.Message):
@@ -1151,6 +1166,11 @@ class OSPolicyResourceExecResourceExec(_messages.Message):
     args: Optional arguments to pass to the source during execution.
     file: A remote or local file.
     interpreter: Required. The script interpreter to use.
+    outputFilePath: Only recorded for enforce Exec. Path to an output file
+      (that is created by this Exec) whose content will be recorded in
+      OSPolicyResourceCompliance after a successful run. Absence or failure to
+      read this file will result in this ExecResource being non-compliant.
+      Output file size is limited to 100K bytes.
     script: An inline script. The size of the script is limited to 1024
       characters.
   """
@@ -1176,7 +1196,8 @@ class OSPolicyResourceExecResourceExec(_messages.Message):
   args = _messages.StringField(1, repeated=True)
   file = _messages.MessageField('OSPolicyResourceFile', 2)
   interpreter = _messages.EnumField('InterpreterValueValuesEnum', 3)
-  script = _messages.StringField(4)
+  outputFilePath = _messages.StringField(4)
+  script = _messages.StringField(5)
 
 
 class OSPolicyResourceFile(_messages.Message):
@@ -1329,8 +1350,8 @@ class OSPolicyResourcePackageResource(_messages.Message):
 
 
 class OSPolicyResourcePackageResourceAPT(_messages.Message):
-  r"""A package managed by APT. install: `apt-get update && apt-get -y install
-  [name]` remove: `apt-get -y remove [name]`
+  r"""A package managed by APT. - install: `apt-get update && apt-get -y
+  install [name]` - remove: `apt-get -y remove [name]`
 
   Fields:
     name: Required. Package name.
@@ -1343,8 +1364,8 @@ class OSPolicyResourcePackageResourceDeb(_messages.Message):
   r"""A deb package file. dpkg packages only support INSTALLED state.
 
   Fields:
-    pullDeps: Whether dependencies should also be installed. install when
-      false: `dpkg -i package` install when true: `apt-get update && apt-get
+    pullDeps: Whether dependencies should also be installed. - install when
+      false: `dpkg -i package` - install when true: `apt-get update && apt-get
       -y install package.deb`
     source: Required. A deb package.
   """
@@ -1354,8 +1375,8 @@ class OSPolicyResourcePackageResourceDeb(_messages.Message):
 
 
 class OSPolicyResourcePackageResourceGooGet(_messages.Message):
-  r"""A package managed by GooGet. install: `googet -noconfirm install
-  package` remove: `googet -noconfirm remove package`
+  r"""A package managed by GooGet. - install: `googet -noconfirm install
+  package` - remove: `googet -noconfirm remove package`
 
   Fields:
     name: Required. Package name.
@@ -1370,7 +1391,7 @@ class OSPolicyResourcePackageResourceMSI(_messages.Message):
   Fields:
     properties: Additional properties to use during installation. This should
       be in the format of Property=Setting. Appended to the defaults of
-      "ACTION=INSTALL REBOOT=ReallySuppress".
+      `ACTION=INSTALL REBOOT=ReallySuppress`.
     source: Required. The MSI package.
   """
 
@@ -1382,9 +1403,9 @@ class OSPolicyResourcePackageResourceRPM(_messages.Message):
   r"""An RPM package file. RPM packages only support INSTALLED state.
 
   Fields:
-    pullDeps: Whether dependencies should also be installed. install when
-      false: `rpm --upgrade --replacepkgs package.rpm` install when true: `yum
-      -y install package.rpm` or `zypper -y install package.rpm`
+    pullDeps: Whether dependencies should also be installed. - install when
+      false: `rpm --upgrade --replacepkgs package.rpm` - install when true:
+      `yum -y install package.rpm` or `zypper -y install package.rpm`
     source: Required. An rpm package.
   """
 
@@ -1393,8 +1414,8 @@ class OSPolicyResourcePackageResourceRPM(_messages.Message):
 
 
 class OSPolicyResourcePackageResourceYUM(_messages.Message):
-  r"""A package managed by YUM. install: `yum -y install package` remove: `yum
-  -y remove package`
+  r"""A package managed by YUM. - install: `yum -y install package` - remove:
+  `yum -y remove package`
 
   Fields:
     name: Required. Package name.
@@ -1404,7 +1425,7 @@ class OSPolicyResourcePackageResourceYUM(_messages.Message):
 
 
 class OSPolicyResourcePackageResourceZypper(_messages.Message):
-  r"""A package managed by Zypper. install: `zypper -y install package`
+  r"""A package managed by Zypper. - install: `zypper -y install package` -
   remove: `zypper -y rm package`
 
   Fields:
@@ -1433,7 +1454,7 @@ class OSPolicyResourceRepositoryResource(_messages.Message):
 class OSPolicyResourceRepositoryResourceAptRepository(_messages.Message):
   r"""Represents a single apt package repository. These will be added to a
   repo file that will be managed at
-  /etc/apt/sources.list.d/google_osconfig.list.
+  `/etc/apt/sources.list.d/google_osconfig.list`.
 
   Enums:
     ArchiveTypeValueValuesEnum: Required. Type of archive files in this
@@ -1445,7 +1466,7 @@ class OSPolicyResourceRepositoryResourceAptRepository(_messages.Message):
       at least one item.
     distribution: Required. Distribution of this repository.
     gpgKey: URI of the key file for this repository. The agent maintains a
-      keyring at /etc/apt/trusted.gpg.d/osconfig_agent_managed.gpg.
+      keyring at `/etc/apt/trusted.gpg.d/osconfig_agent_managed.gpg`.
     uri: Required. URI for this repository.
   """
 
@@ -2023,8 +2044,9 @@ class Status(_messages.Message):
 class VulnerabilityReport(_messages.Message):
   r"""This API resource represents the vulnerability report for a specified
   Compute Engine virtual machine (VM) instance at a given point in time. For
-  more information, see [Vulnerability reports](/compute/docs/instances/os-
-  inventory-management#vulnerability-reports).
+  more information, see [Vulnerability
+  reports](https://cloud.google.com/compute/docs/instances/os-inventory-
+  management#vulnerability-reports).
 
   Fields:
     name: Output only. The `vulnerabilityReport` API resource name. Format: `p

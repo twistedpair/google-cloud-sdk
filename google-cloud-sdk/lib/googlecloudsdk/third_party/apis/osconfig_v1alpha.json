@@ -188,7 +188,7 @@
     },
     "OSPolicyAssignment": {
       "id": "OSPolicyAssignment",
-      "description": "OS policy assignment is an API resource that is used to apply a set of OS policies to a dynamically targeted group of Compute Engine VM instances. An OS policy is used to define the desired state configuration for a Compute Engine VM instance through a set of configuration resources that provide capabilities such as installing or removing software packages, or executing a script. For more information, see [OS policy and OS policy assignment](\/compute\/docs\/os-configuration-management\/working-with-os-policies).",
+      "description": "OS policy assignment is an API resource that is used to apply a set of OS policies to a dynamically targeted group of Compute Engine VM instances. An OS policy is used to define the desired state configuration for a Compute Engine VM instance through a set of configuration resources that provide capabilities such as installing or removing software packages, or executing a script. For more information, see [OS policy and OS policy assignment](https:\/\/cloud.google.com\/compute\/docs\/os-configuration-management\/working-with-os-policies).",
       "type": "object",
       "properties": {
         "name": {
@@ -417,7 +417,7 @@
     },
     "OSPolicyResourcePackageResourceAPT": {
       "id": "OSPolicyResourcePackageResourceAPT",
-      "description": "A package managed by APT. install: `apt-get update && apt-get -y install [name]` remove: `apt-get -y remove [name]`",
+      "description": "A package managed by APT. - install: `apt-get update && apt-get -y install [name]` - remove: `apt-get -y remove [name]`",
       "type": "object",
       "properties": {
         "name": {
@@ -436,7 +436,7 @@
           "$ref": "OSPolicyResourceFile"
         },
         "pullDeps": {
-          "description": "Whether dependencies should also be installed. install when false: `dpkg -i package` install when true: `apt-get update && apt-get -y install package.deb`",
+          "description": "Whether dependencies should also be installed. - install when false: `dpkg -i package` - install when true: `apt-get update && apt-get -y install package.deb`",
           "type": "boolean"
         }
       }
@@ -501,7 +501,7 @@
     },
     "OSPolicyResourcePackageResourceYUM": {
       "id": "OSPolicyResourcePackageResourceYUM",
-      "description": "A package managed by YUM. install: `yum -y install package` remove: `yum -y remove package`",
+      "description": "A package managed by YUM. - install: `yum -y install package` - remove: `yum -y remove package`",
       "type": "object",
       "properties": {
         "name": {
@@ -512,7 +512,7 @@
     },
     "OSPolicyResourcePackageResourceZypper": {
       "id": "OSPolicyResourcePackageResourceZypper",
-      "description": "A package managed by Zypper. install: `zypper -y install package` remove: `zypper -y rm package`",
+      "description": "A package managed by Zypper. - install: `zypper -y install package` - remove: `zypper -y rm package`",
       "type": "object",
       "properties": {
         "name": {
@@ -531,14 +531,14 @@
           "$ref": "OSPolicyResourceFile"
         },
         "pullDeps": {
-          "description": "Whether dependencies should also be installed. install when false: `rpm --upgrade --replacepkgs package.rpm` install when true: `yum -y install package.rpm` or `zypper -y install package.rpm`",
+          "description": "Whether dependencies should also be installed. - install when false: `rpm --upgrade --replacepkgs package.rpm` - install when true: `yum -y install package.rpm` or `zypper -y install package.rpm`",
           "type": "boolean"
         }
       }
     },
     "OSPolicyResourcePackageResourceGooGet": {
       "id": "OSPolicyResourcePackageResourceGooGet",
-      "description": "A package managed by GooGet. install: `googet -noconfirm install package` remove: `googet -noconfirm remove package`",
+      "description": "A package managed by GooGet. - install: `googet -noconfirm install package` - remove: `googet -noconfirm remove package`",
       "type": "object",
       "properties": {
         "name": {
@@ -557,7 +557,7 @@
           "$ref": "OSPolicyResourceFile"
         },
         "properties": {
-          "description": "Additional properties to use during installation. This should be in the format of Property=Setting. Appended to the defaults of \"ACTION=INSTALL REBOOT=ReallySuppress\".",
+          "description": "Additional properties to use during installation. This should be in the format of Property=Setting. Appended to the defaults of `ACTION=INSTALL REBOOT=ReallySuppress`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -590,7 +590,7 @@
     },
     "OSPolicyResourceRepositoryResourceAptRepository": {
       "id": "OSPolicyResourceRepositoryResourceAptRepository",
-      "description": "Represents a single apt package repository. These will be added to a repo file that will be managed at \/etc\/apt\/sources.list.d\/google_osconfig.list.",
+      "description": "Represents a single apt package repository. These will be added to a repo file that will be managed at `\/etc\/apt\/sources.list.d\/google_osconfig.list`.",
       "type": "object",
       "properties": {
         "archiveType": {
@@ -623,7 +623,7 @@
           }
         },
         "gpgKey": {
-          "description": "URI of the key file for this repository. The agent maintains a keyring at \/etc\/apt\/trusted.gpg.d\/osconfig_agent_managed.gpg.",
+          "description": "URI of the key file for this repository. The agent maintains a keyring at `\/etc\/apt\/trusted.gpg.d\/osconfig_agent_managed.gpg`.",
           "type": "string"
         }
       }
@@ -745,6 +745,10 @@
             "SHELL",
             "POWERSHELL"
           ]
+        },
+        "outputFilePath": {
+          "description": "Only recorded for enforce Exec. Path to an output file (that is created by this Exec) whose content will be recorded in OSPolicyResourceCompliance after a successful run. Absence or failure to read this file will result in this ExecResource being non-compliant. Output file size is limited to 100K bytes.",
+          "type": "string"
         }
       }
     },
@@ -904,7 +908,7 @@
     },
     "InstanceOSPoliciesCompliance": {
       "id": "InstanceOSPoliciesCompliance",
-      "description": "This API resource represents the OS policies compliance data for a Compute Engine virtual machine (VM) instance at a given point in time. A Compute Engine VM can have multiple OS policy assignments, and each assignment can have multiple OS policies. As a result, multiple OS policies could be applied to a single VM. You can use this API resource to determine both the compliance state of your VM as well as the compliance state of an individual OS policy. For more information, see [View compliance](\/compute\/docs\/os-configuration-management\/view-compliance).",
+      "description": "This API resource represents the OS policies compliance data for a Compute Engine virtual machine (VM) instance at a given point in time. A Compute Engine VM can have multiple OS policy assignments, and each assignment can have multiple OS policies. As a result, multiple OS policies could be applied to a single VM. You can use this API resource to determine both the compliance state of your VM as well as the compliance state of an individual OS policy. For more information, see [View compliance](https:\/\/cloud.google.com\/compute\/docs\/os-configuration-management\/view-compliance).",
       "type": "object",
       "properties": {
         "name": {
@@ -1040,6 +1044,10 @@
             "UNKNOWN",
             "NO_OS_POLICIES_APPLICABLE"
           ]
+        },
+        "execResourceOutput": {
+          "description": "ExecResource specific output.",
+          "$ref": "OSPolicyResourceComplianceExecResourceOutput"
         }
       }
     },
@@ -1082,6 +1090,18 @@
         }
       }
     },
+    "OSPolicyResourceComplianceExecResourceOutput": {
+      "id": "OSPolicyResourceComplianceExecResourceOutput",
+      "description": "ExecResource specific output.",
+      "type": "object",
+      "properties": {
+        "enforcementOutput": {
+          "description": "Output from Enforcement phase output file (if run). Output size is limited to 100K bytes.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
     "ListInstanceOSPoliciesCompliancesResponse": {
       "id": "ListInstanceOSPoliciesCompliancesResponse",
       "description": "A response message for listing OS policies compliance data for all Compute Engine VMs in the given location.",
@@ -1102,7 +1122,7 @@
     },
     "Inventory": {
       "id": "Inventory",
-      "description": "This API resource represents the available inventory data for a Compute Engine virtual machine (VM) instance at a given point in time. You can use this API resource to determine the inventory data of your VM. For more information, see [Information provided by OS inventory management](\/compute\/docs\/instances\/os-inventory-management#data-collected).",
+      "description": "This API resource represents the available inventory data for a Compute Engine virtual machine (VM) instance at a given point in time. You can use this API resource to determine the inventory data of your VM. For more information, see [Information provided by OS inventory management](https:\/\/cloud.google.com\/compute\/docs\/instances\/os-inventory-management#data-collected).",
       "type": "object",
       "properties": {
         "name": {
@@ -1419,7 +1439,7 @@
     },
     "VulnerabilityReport": {
       "id": "VulnerabilityReport",
-      "description": "This API resource represents the vulnerability report for a specified Compute Engine virtual machine (VM) instance at a given point in time. For more information, see [Vulnerability reports](\/compute\/docs\/instances\/os-inventory-management#vulnerability-reports).",
+      "description": "This API resource represents the vulnerability report for a specified Compute Engine virtual machine (VM) instance at a given point in time. For more information, see [Vulnerability reports](https:\/\/cloud.google.com\/compute\/docs\/instances\/os-inventory-management#vulnerability-reports).",
       "type": "object",
       "properties": {
         "name": {
@@ -1782,7 +1802,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Create an OS policy assignment. This method also creates the first revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](\/compute\/docs\/osconfig\/rest\/v1alpha\/projects.locations.osPolicyAssignments.operations\/cancel)."
+                  "description": "Create an OS policy assignment. This method also creates the first revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](https:\/\/cloud.google.com\/compute\/docs\/osconfig\/rest\/v1alpha\/projects.locations.osPolicyAssignments.operations\/cancel)."
                 },
                 "patch": {
                   "id": "osconfig.projects.locations.osPolicyAssignments.patch",
@@ -1816,7 +1836,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Update an existing OS policy assignment. This method creates a new revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](\/compute\/docs\/osconfig\/rest\/v1alpha\/projects.locations.osPolicyAssignments.operations\/cancel)."
+                  "description": "Update an existing OS policy assignment. This method creates a new revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](https:\/\/cloud.google.com\/compute\/docs\/osconfig\/rest\/v1alpha\/projects.locations.osPolicyAssignments.operations\/cancel)."
                 },
                 "get": {
                   "id": "osconfig.projects.locations.osPolicyAssignments.get",
@@ -1938,7 +1958,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Delete the OS policy assignment. This method creates a new revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. If the LRO completes and is not cancelled, all revisions associated with the OS policy assignment are deleted. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](\/compute\/docs\/osconfig\/rest\/v1alpha\/projects.locations.osPolicyAssignments.operations\/cancel)."
+                  "description": "Delete the OS policy assignment. This method creates a new revision of the OS policy assignment. This method returns a long running operation (LRO) that contains the rollout details. The rollout can be cancelled by cancelling the LRO. If the LRO completes and is not cancelled, all revisions associated with the OS policy assignment are deleted. For more information, see [Method: projects.locations.osPolicyAssignments.operations.cancel](https:\/\/cloud.google.com\/compute\/docs\/osconfig\/rest\/v1alpha\/projects.locations.osPolicyAssignments.operations\/cancel)."
                 }
               }
               ,

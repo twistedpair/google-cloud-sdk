@@ -23,10 +23,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
-from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
@@ -106,9 +106,10 @@ def _should_perform_sliced_download(resource):
       properties.VALUES.storage.sliced_object_download_threshold.Get())
   component_size = scaled_integer.ParseInteger(
       properties.VALUES.storage.sliced_object_download_component_size.Get())
+  api_capabilities = api_factory.get_capabilities(resource.storage_url.scheme)
   return (resource.size and threshold != 0 and resource.size > threshold and
           component_size and
-          resource.storage_url.scheme is storage_url.ProviderPrefix.GCS)
+          cloud_api.Capability.SLICED_DOWNLOAD in api_capabilities)
 
 
 class FileDownloadTask(task.Task):

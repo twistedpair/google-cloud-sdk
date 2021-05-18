@@ -678,6 +678,13 @@
             "HIPAA",
             "HITRUST"
           ]
+        },
+        "resourceSettings": {
+          "description": "Optional. Resource properties in the input that are used for creating\/customizing workload resources.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings"
+          }
         }
       }
     }

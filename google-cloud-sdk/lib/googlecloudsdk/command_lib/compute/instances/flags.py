@@ -625,7 +625,6 @@ def AddCreateDiskArgs(parser,
                       enable_kms=False,
                       enable_snapshots=False,
                       container_mount_enabled=False,
-                      resource_policy=False,
                       source_snapshot_csek=False,
                       image_csek=False,
                       include_name=True,
@@ -700,6 +699,14 @@ def AddCreateDiskArgs(parser,
       This sets the number of I/O operations per second that the disk can
       handle. Value must be between 10,000 and 120,000.
 
+      *disk-resource-policy*::: Resource policy to apply to the disk. Specify a full or partial URL. For example:
+        * ``https://www.googleapis.com/compute/v1/projects/my-project/regions/us-central1/resourcePolicies/my-resource-policy''
+        * ``projects/my-project/regions/us-central1/resourcePolicies/my-resource-policy''
+
+      For more information, see the following docs:
+        * https://cloud.google.com/sdk/gcloud/reference/beta/compute/resource-policies/
+        * https://cloud.google.com/compute/docs/disks/scheduled-snapshots
+
       *auto-delete*::: If ``yes'', this persistent disk will be
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
@@ -768,6 +775,7 @@ def AddCreateDiskArgs(parser,
       'device-name': str,
       'auto-delete': arg_parsers.ArgBoolean(),
       'provisioned-iops': int,
+      'disk-resource-policy': arg_parsers.ArgList(max_length=1),
   }
 
   if include_name:
@@ -793,17 +801,6 @@ def AddCreateDiskArgs(parser,
         * snapshot
       """
     spec['source-snapshot'] = str
-
-  if resource_policy:
-    disk_help += """
-      *disk-resource-policy*::: Resource policy that will be applied to created
-      disk. You can provide full or partial URL. For more details see
-
-        * https://cloud.google.com/sdk/gcloud/reference/beta/compute/resource-policies/
-        * https://cloud.google.com/compute/docs/disks/scheduled-snapshots
-
-      """
-    spec['disk-resource-policy'] = arg_parsers.ArgList(max_length=1)
 
   if source_snapshot_csek:
     disk_help += """
@@ -1340,7 +1337,7 @@ def AddAddressArgs(parser,
               interface of the instance.
 
                   The following keys are allowed:
-                  subnet: Specifies the subnet that the subinterface will be
+                  subnetwork: Specifies the subnet that the subinterface will be
                   part of. The subnet should have l2-enable set and VLAN tagged.
 
                   vlan: Specifies the VLAN of the subinterface. Can have a value
@@ -1355,10 +1352,10 @@ def AddAddressArgs(parser,
           [
            {
             "network":"global/networks/network-example",
-            "subnet":"projects/example-project/regions/us-central1/subnetworks/untagged-subnet",
+            "subnetwork":"projects/example-project/regions/us-central1/subnetworks/untagged-subnet",
             "subinterfaces":[
                {
-                "subnet":"projects/example-project/regions/us-central1/subnetworks/tagged-subnet",
+                "subnetwork":"projects/example-project/regions/us-central1/subnetworks/tagged-subnet",
                 "vlan":2,
                 "ipAddress":"111.11.11.1"
              }
@@ -1842,6 +1839,20 @@ def AddTagsArgs(parser):
       To list instances tagged with a specific tag, `tag1`, run:
 
         $ gcloud compute instances list --filter='tags:tag1'
+      """)
+
+
+def AddSecureTagsArgs(parser):
+  """Adds secure tag related args."""
+  parser.add_argument(
+      '--secure-tags',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='SECURE_TAG',
+      help="""\
+      Specifies a list of secure tags to apply to the instance. These tags allow
+      network firewall rules and routes to be applied to specified VM instances.
+      See gcloud_compute_network_firewall-policies_rules_create(1) for more
+      details.
       """)
 
 

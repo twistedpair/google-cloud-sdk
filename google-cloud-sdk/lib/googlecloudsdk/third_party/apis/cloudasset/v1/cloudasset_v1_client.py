@@ -39,9 +39,47 @@ class CloudassetV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.assets = self.AssetsService(self)
     self.feeds = self.FeedsService(self)
     self.operations = self.OperationsService(self)
     self.v1 = self.V1Service(self)
+
+  class AssetsService(base_api.BaseApiService):
+    """Service class for the assets resource."""
+
+    _NAME = 'assets'
+
+    def __init__(self, client):
+      super(CloudassetV1.AssetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists assets with time and resource types and returns paged results in response.
+
+      Args:
+        request: (CloudassetAssetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAssetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}/assets',
+        http_method='GET',
+        method_id='cloudasset.assets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['assetTypes', 'contentType', 'pageSize', 'pageToken', 'readTime'],
+        relative_path='v1/{+parent}/assets',
+        request_field='',
+        request_type_name='CloudassetAssetsListRequest',
+        response_type_name='ListAssetsResponse',
+        supports_download=False,
+    )
 
   class FeedsService(base_api.BaseApiService):
     """Service class for the feeds resource."""
@@ -389,7 +427,7 @@ class CloudassetV1(base_api.BaseApiClient):
         method_id='cloudasset.searchAllIamPolicies',
         ordered_params=['scope'],
         path_params=['scope'],
-        query_params=['pageSize', 'pageToken', 'query'],
+        query_params=['assetTypes', 'orderBy', 'pageSize', 'pageToken', 'query'],
         relative_path='v1/{+scope}:searchAllIamPolicies',
         request_field='',
         request_type_name='CloudassetSearchAllIamPoliciesRequest',

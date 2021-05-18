@@ -19,10 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.api_lib.clouddeploy import delivery_pipeline
 from googlecloudsdk.api_lib.clouddeploy import target
+from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.projects import util
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -44,23 +45,6 @@ RESOURCE_CHANGED = ('The following snapped releases resources differ from '
                     'were cached when the release was created, but the source '
                     'has changed since then. You should review the differences '
                     'before proceeding.\n')
-
-
-class ParserError(exceptions.Error):
-  """Error parsing JSON into a dictionary."""
-
-  def __init__(self, path, msg):
-    """Initialize a release_util.ParserError.
-
-    Args:
-      path: build artifacts file path.
-      msg: error message.
-    """
-    msg = 'parsing {path}: {msg}'.format(
-        path=path,
-        msg=msg,
-    )
-    super(ParserError, self).__init__(msg)
 
 
 def SetBuildArtifacts(images, messages, release_config):
@@ -97,7 +81,7 @@ def LoadBuildArtifactFile(path):
     try:
       structured_data = yaml.load(f, file_hint=path)
     except yaml.Error as e:
-      raise ParserError(path, e.inner_error)
+      raise exceptions.ParserError(path, e.inner_error)
     images = {}
     for build in structured_data['builds']:
       images[build['imageName']] = build['tag']

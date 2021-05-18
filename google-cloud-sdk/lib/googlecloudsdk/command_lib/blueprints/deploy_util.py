@@ -294,4 +294,19 @@ def Apply(
 
   progress_message = '{} the deployment'.format(
       'Creating' if is_creating_deployment else 'Updating')
-  return blueprints_util.WaitForDeploymentOperation(op, progress_message)
+
+  applied_deployment = blueprints_util.WaitForDeploymentOperation(
+      op, progress_message)
+
+  if applied_deployment.state == messages.Deployment.StateValueValuesEnum.FAILED:
+    if applied_deployment.latestRevision is None:
+      log.error('Failed to apply the deployment: {}'.format(
+          applied_deployment.stateDetail))
+    else:
+      # TODO(b/186878215): remove this code or change "alpha" to be the correct
+      # release track.
+      log.error('Failed to apply the deployment. To view more information, '
+                'run:\ngcloud alpha blueprints revisions describe {}'.format(
+                    applied_deployment.latestRevision))
+
+  return applied_deployment

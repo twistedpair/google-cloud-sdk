@@ -47,11 +47,18 @@ def AddBitbucketServerConfigArgs(parser, update=False):
   parser.add_argument(
       '--admin-access-token-name',
       required=not update,
-      help='Secret Manager resource containing the admin access token.')
+      help='Secret Manager resource containing the admin access token. The secret is specified in resource URL format projects/{secret_project}/secrets/{secret_name}/versions/{secret_version}.'
+  )
   parser.add_argument(
       '--read-access-token-name',
       required=not update,
-      help='Secret Manager resource containing the read access token.')
+      help='Secret Manager resource containing the read access token. The secret is specified in resource URL format projects/{secret_project}/secrets/{secret_name}/versions/{secret_version}.'
+  )
+  parser.add_argument(
+      '--webhook-secret-name',
+      required=not update,
+      help='Secret Manager resource containing the webhook secret. The secret is specified in resource URL format projects/{secret_project}/secrets/{secret_name}/versions/{secret_version}.'
+  )
   if not update:
     parser.add_argument(
         '--peered-network',

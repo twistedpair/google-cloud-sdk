@@ -1098,13 +1098,15 @@
             "Resource is in an unspecified state.",
             "Resource is being created.",
             "Resource is provisioned and ready to use.",
-            "The resource is being deleted."
+            "The resource is being deleted.",
+            "The resource is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         }
       }
@@ -1154,13 +1156,15 @@
             "Resource is in an unspecified state.",
             "Resource is being created.",
             "Resource is provisioned and ready to use.",
-            "The resource is being deleted."
+            "The resource is being deleted.",
+            "The resource is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         }
       }
@@ -1505,13 +1509,15 @@
             "Resource is in an unspecified state.",
             "Resource is being created.",
             "Resource is provisioned and ready to use.",
-            "The resource is being deleted."
+            "The resource is being deleted.",
+            "The resource is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         },
         "deploymentType": {
@@ -2323,13 +2329,15 @@
             "Resource is in an unspecified state.",
             "Resource is being created.",
             "Resource is provisioned and ready to use.",
-            "The resource is being deleted."
+            "The resource is being deleted.",
+            "The resource is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         }
       }
@@ -2552,13 +2560,15 @@
             "Resource is in an unspecified state.",
             "Resource is being created.",
             "Resource is provisioned and ready to use.",
-            "The resource is being deleted."
+            "The resource is being deleted.",
+            "The resource is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         }
       }
@@ -2867,12 +2877,9 @@
             "$ref": "GoogleCloudApigeeV1ResourceStatus"
           }
         },
-        "specs": {
-          "description": "Resource specs.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudApigeeV1ResourceSpec"
-          }
+        "spec": {
+          "description": "Resource spec.",
+          "$ref": "GoogleCloudApigeeV1ResourceSpec"
         }
       }
     },
@@ -2925,7 +2932,7 @@
           }
         },
         "jsonSpec": {
-          "description": "The json content of the resource revision.",
+          "description": "The json content of the resource revision. Large specs should be sent individually via the spec field to avoid hitting request size limits.",
           "type": "string"
         }
       }
@@ -5525,13 +5532,15 @@
             "Resource is in an unspecified state.",
             "Resource is being created.",
             "Resource is provisioned and ready to use.",
-            "The resource is being deleted."
+            "The resource is being deleted.",
+            "The resource is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "ACTIVE",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         }
       }

@@ -48,12 +48,20 @@ def AddParentArgs(parser, project_help_text, org_help_text, folder_help_text):
 
 
 def AddAnalyzerParentArgs(parser):
+  """Adds analysis parent(aka scope) argument."""
   parent_group = parser.add_mutually_exclusive_group(required=True)
-  AddOrganizationArgs(parent_group,
-                      'The organization ID to perform the analysis.')
-  AddFolderArgs(parent_group, 'The folder ID to perform the analysis.')
-  AddProjectArgs(parent_group,
-                 'The project ID or number to perform the analysis.')
+  AddOrganizationArgs(
+      parent_group, 'Organization ID on which to perform the analysis.'
+      ' Only policies defined at or below this organization '
+      ' will be targeted in the analysis.')
+  AddFolderArgs(
+      parent_group, 'Folder ID on which to perform the analysis.'
+      ' Only policies defined at or below this folder will be '
+      ' targeted in the analysis.')
+  AddProjectArgs(
+      parent_group, 'Project ID or number on which to perform the analysis.'
+      ' Only policies defined at or below this project will be '
+      ' targeted in the analysis.')
 
 
 def AddSnapshotTimeArgs(parser):

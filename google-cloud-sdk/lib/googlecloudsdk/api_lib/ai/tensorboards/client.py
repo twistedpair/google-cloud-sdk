@@ -38,10 +38,10 @@ class TensorboardsClient(object):
         constants.AI_PLATFORM_API_VERSION[version])
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_tensorboards
-    self.version = version
+    self._version = version
 
   def Create(self, location_ref, args):
-    if self.version == constants.ALPHA_VERSION:
+    if self._version == constants.ALPHA_VERSION:
       return self.CreateAlpha(location_ref, args)
     else:
       return self.CreateBeta(location_ref, args)
@@ -97,16 +97,21 @@ class TensorboardsClient(object):
 
   def Patch(self, tensorboard_ref, args):
     """Update a Tensorboard."""
-    tensorboard = self.messages.GoogleCloudAiplatformV1alpha1Tensorboard()
+    if self._version == constants.ALPHA_VERSION:
+      tensorboard = self.messages.GoogleCloudAiplatformV1alpha1Tensorboard()
+      labels_value = self.messages.GoogleCloudAiplatformV1alpha1Tensorboard.LabelsValue
+    else:
+      tensorboard = self.messages.GoogleCloudAiplatformV1beta1Tensorboard()
+      labels_value = self.messages.GoogleCloudAiplatformV1beta1Tensorboard.LabelsValue
+
     update_mask = []
 
     def GetLabels():
       return self.Get(tensorboard_ref).labels
 
-    labels_update = labels_util.ProcessUpdateArgsLazy(
-        args,
-        self.messages.GoogleCloudAiplatformV1alpha1Tensorboard.LabelsValue,
-        GetLabels)
+    labels_update = labels_util.ProcessUpdateArgsLazy(args, labels_value,
+                                                      GetLabels)
+
     if labels_update.needs_update:
       tensorboard.labels = labels_update.labels
       update_mask.append('labels')
@@ -122,8 +127,14 @@ class TensorboardsClient(object):
     if not update_mask:
       raise errors.NoFieldsSpecifiedError('No updates requested.')
 
-    req = self.messages.AiplatformProjectsLocationsTensorboardsPatchRequest(
-        name=tensorboard_ref.RelativeName(),
-        googleCloudAiplatformV1alpha1Tensorboard=tensorboard,
-        updateMask=','.join(update_mask))
+    if self._version == constants.ALPHA_VERSION:
+      req = self.messages.AiplatformProjectsLocationsTensorboardsPatchRequest(
+          name=tensorboard_ref.RelativeName(),
+          googleCloudAiplatformV1alpha1Tensorboard=tensorboard,
+          updateMask=','.join(update_mask))
+    else:
+      req = self.messages.AiplatformProjectsLocationsTensorboardsPatchRequest(
+          name=tensorboard_ref.RelativeName(),
+          googleCloudAiplatformV1beta1Tensorboard=tensorboard,
+          updateMask=','.join(update_mask))
     return self._service.Patch(req)

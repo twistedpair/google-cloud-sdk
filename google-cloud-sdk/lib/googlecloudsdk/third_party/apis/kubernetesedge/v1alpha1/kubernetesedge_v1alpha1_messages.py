@@ -133,27 +133,27 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""A Cluster object.
+  r"""A Google Edge Cloud Kubernetes cluster.
 
   Messages:
-    LabelsValue: A LabelsValue object.
+    LabelsValue: Labels associated with this resource.
 
   Fields:
-    createTime: A string attribute.
+    createTime: Output only. The time when the cluster was created.
     defaultMaxPodsPerNode: The default maximum number of pods per node used if
       a maximum value is not specified explicitly for a node pool in this
       cluster. If unspecified, the Kubernetes default value will be used.
-    endpoint: The IP address of the Kubernetes API server.
-    hub: GKE Hub configuration.
-    labels: A LabelsValue attribute.
-    name: A string attribute.
-    networking: Cluster-wide networking configuration.
-    updateTime: A string attribute.
+    endpoint: Output only. The IP address of the Kubernetes API server.
+    hub: Required. GKE Hub configuration.
+    labels: Labels associated with this resource.
+    name: Required. The resource name of the cluster.
+    networking: Required. Cluster-wide networking configuration.
+    updateTime: Output only. The time when the cluster was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""A LabelsValue object.
+    r"""Labels associated with this resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -189,11 +189,11 @@ class ClusterNetworking(_messages.Message):
   r"""Cluster-wide networking configuration.
 
   Fields:
-    clusterIpv4CidrBlocks: All pods in the cluster are assigned an RFC1918
-      IPv4 address from these blocks. Only a single block is supported. This
-      field cannot be changed after creation.
-    servicesIpv4CidrBlocks: All services in the cluster are assigned an
+    clusterIpv4CidrBlocks: Required. All pods in the cluster are assigned an
       RFC1918 IPv4 address from these blocks. Only a single block is
+      supported. This field cannot be changed after creation.
+    servicesIpv4CidrBlocks: Required. All services in the cluster are assigned
+      an RFC1918 IPv4 address from these blocks. Only a single block is
       supported. This field cannot be changed after creation.
   """
 
@@ -251,8 +251,8 @@ class Hub(_messages.Message):
   r"""GKE Hub configuration.
 
   Fields:
-    membership: Name of the membership resource to use when registering this
-      cluster to GKE Hub e.g.
+    membership: Required. The resource name of the membership resource to use
+      when registering this cluster to GKE Hub e.g.
       projects/{project}/locations/global/memberships/{membership}.
   """
 
@@ -264,19 +264,11 @@ class KubernetesedgeProjectsLocationsClustersCreateRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    clusterId: A string attribute.
-    parent: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+    clusterId: Required. A client-specified unique identifier for the cluster.
+    parent: Required. The parent location where this cluster will be created.
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
   """
 
   cluster = _messages.MessageField('Cluster', 1)
@@ -289,18 +281,10 @@ class KubernetesedgeProjectsLocationsClustersDeleteRequest(_messages.Message):
   r"""A KubernetesedgeProjectsLocationsClustersDeleteRequest object.
 
   Fields:
-    name: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+    name: Required. The resource name of the cluster.
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
   """
 
   name = _messages.StringField(1, required=True)
@@ -332,7 +316,7 @@ class KubernetesedgeProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A KubernetesedgeProjectsLocationsClustersGetRequest object.
 
   Fields:
-    name: A string attribute.
+    name: Required. The resource name of the cluster.
   """
 
   name = _messages.StringField(1, required=True)
@@ -342,11 +326,13 @@ class KubernetesedgeProjectsLocationsClustersListRequest(_messages.Message):
   r"""A KubernetesedgeProjectsLocationsClustersListRequest object.
 
   Fields:
-    filter: A string attribute.
-    orderBy: A string attribute.
-    pageSize: A integer attribute.
-    pageToken: A string attribute.
-    parent: A string attribute.
+    filter: Only resources matching this filter will be listed.
+    orderBy: Specifies the order in which resources will be listed.
+    pageSize: The maximum number of resources to list.
+    pageToken: A page token received from previous list request. A page token
+      received from previous list request.
+    parent: Required. The parent location, which owns this collection of
+      clusters.
   """
 
   filter = _messages.StringField(1)
@@ -361,19 +347,12 @@ class KubernetesedgeProjectsLocationsClustersNodePoolsCreateRequest(_messages.Me
 
   Fields:
     nodePool: A NodePool resource to be passed as the request body.
-    nodePoolId: A string attribute.
-    parent: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+    nodePoolId: Required. A client-specified unique identifier for the node
+      pool.
+    parent: Required. The parent cluster where this node pool will be created.
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
   """
 
   nodePool = _messages.MessageField('NodePool', 1)
@@ -386,18 +365,10 @@ class KubernetesedgeProjectsLocationsClustersNodePoolsDeleteRequest(_messages.Me
   r"""A KubernetesedgeProjectsLocationsClustersNodePoolsDeleteRequest object.
 
   Fields:
-    name: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+    name: Required. The resource name of the node pool.
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
   """
 
   name = _messages.StringField(1, required=True)
@@ -408,7 +379,7 @@ class KubernetesedgeProjectsLocationsClustersNodePoolsGetRequest(_messages.Messa
   r"""A KubernetesedgeProjectsLocationsClustersNodePoolsGetRequest object.
 
   Fields:
-    name: A string attribute.
+    name: Required. The resource name of the node pool.
   """
 
   name = _messages.StringField(1, required=True)
@@ -418,11 +389,12 @@ class KubernetesedgeProjectsLocationsClustersNodePoolsListRequest(_messages.Mess
   r"""A KubernetesedgeProjectsLocationsClustersNodePoolsListRequest object.
 
   Fields:
-    filter: A string attribute.
-    orderBy: A string attribute.
-    pageSize: A integer attribute.
-    pageToken: A string attribute.
-    parent: A string attribute.
+    filter: Only resources matching this filter will be listed.
+    orderBy: Specifies the order in which resources will be listed.
+    pageSize: The maximum number of resources to list.
+    pageToken: A page token received from previous list request.
+    parent: Required. The parent cluster, which owns this collection of node
+      pools.
   """
 
   filter = _messages.StringField(1)
@@ -436,19 +408,11 @@ class KubernetesedgeProjectsLocationsClustersNodePoolsPatchRequest(_messages.Mes
   r"""A KubernetesedgeProjectsLocationsClustersNodePoolsPatchRequest object.
 
   Fields:
-    name: A string attribute.
+    name: Required. The resource name of the node pool.
     nodePool: A NodePool resource to be passed as the request body.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
     updateMask: Field mask is used to specify the fields to be overwritten in
       the NodePool resource by the update. The fields specified in the
       update_mask are relative to the resource, not the full request. A field
@@ -467,18 +431,10 @@ class KubernetesedgeProjectsLocationsClustersPatchRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    name: A string attribute.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+    name: Required. The resource name of the cluster.
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
     updateMask: Field mask is used to specify the fields to be overwritten in
       the Cluster resource by the update. The fields specified in the
       update_mask are relative to the resource, not the full request. A field
@@ -759,7 +715,7 @@ class KubernetesedgeProjectsLocationsSitesMachinesGetRequest(_messages.Message):
   r"""A KubernetesedgeProjectsLocationsSitesMachinesGetRequest object.
 
   Fields:
-    name: A string attribute.
+    name: Required. The resource name of the machine.
   """
 
   name = _messages.StringField(1, required=True)
@@ -769,11 +725,11 @@ class KubernetesedgeProjectsLocationsSitesMachinesListRequest(_messages.Message)
   r"""A KubernetesedgeProjectsLocationsSitesMachinesListRequest object.
 
   Fields:
-    filter: A string attribute.
-    orderBy: A string attribute.
-    pageSize: A integer attribute.
-    pageToken: A string attribute.
-    parent: A string attribute.
+    filter: Only resources matching this filter will be listed.
+    orderBy: Specifies the order in which resources will be listed.
+    pageSize: The maximum number of resources to list.
+    pageToken: A page token received from previous list request.
+    parent: Required. The parent site, which owns this collection of machines.
   """
 
   filter = _messages.StringField(1)
@@ -814,16 +770,16 @@ class KubernetesedgeProjectsLocationsSitesTestIamPermissionsRequest(_messages.Me
 
 
 class ListClustersResponse(_messages.Message):
-  r"""A ListClustersResponse object.
+  r"""List of clusters in a location.
 
   Fields:
-    nextPageToken: A string attribute.
-    resources: A Cluster attribute.
+    clusters: Clusters in the location.
+    nextPageToken: A token to retrieve next page of results.
     unreachable: Locations that could not be reached.
   """
 
-  nextPageToken = _messages.StringField(1)
-  resources = _messages.MessageField('Cluster', 2, repeated=True)
+  clusters = _messages.MessageField('Cluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -841,30 +797,30 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListMachinesResponse(_messages.Message):
-  r"""A ListMachinesResponse object.
+  r"""List of machines in a site.
 
   Fields:
-    nextPageToken: A string attribute.
-    resources: A Machine attribute.
+    machines: Machines in the site.
+    nextPageToken: A token to retrieve next page of results.
     unreachable: Locations that could not be reached.
   """
 
-  nextPageToken = _messages.StringField(1)
-  resources = _messages.MessageField('Machine', 2, repeated=True)
+  machines = _messages.MessageField('Machine', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListNodePoolsResponse(_messages.Message):
-  r"""A ListNodePoolsResponse object.
+  r"""List of node pools in a cluster.
 
   Fields:
-    nextPageToken: A string attribute.
-    resources: A NodePool attribute.
+    nextPageToken: A token to retrieve next page of results.
+    nodePools: Node pools in the cluster.
     unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
-  resources = _messages.MessageField('NodePool', 2, repeated=True)
+  nodePools = _messages.MessageField('NodePool', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -886,12 +842,12 @@ class ListSitesResponse(_messages.Message):
 
   Fields:
     nextPageToken: A string attribute.
-    resources: A Site attribute.
+    sites: A Site attribute.
     unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
-  resources = _messages.MessageField('Site', 2, repeated=True)
+  sites = _messages.MessageField('Site', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -976,25 +932,25 @@ class Location(_messages.Message):
 
 
 class Machine(_messages.Message):
-  r"""A Machine object.
+  r"""A Google Edge Cloud machine capable of acting as a Kubernetes node.
 
   Messages:
-    LabelsValue: A LabelsValue object.
+    LabelsValue: Labels associated with this resource.
 
   Fields:
-    createTime: A string attribute.
+    createTime: Output only. The time when the node pool was created.
     hostedNode: Canonical resource name of the node that this machine is
       responsible for hosting e.g. projects/{project}/locations/{location}/clu
       sters/{cluster_id}/nodePools/{pool_id}/{node}, Or empty if the machine
       is not assigned to assume the role of a node.
-    labels: A LabelsValue attribute.
-    name: A string attribute.
-    updateTime: A string attribute.
+    labels: Labels associated with this resource.
+    name: Required. The resource name of the machine.
+    updateTime: Output only. The time when the node pool was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""A LabelsValue object.
+    r"""Labels associated with this resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1024,28 +980,29 @@ class Machine(_messages.Message):
 
 
 class NodePool(_messages.Message):
-  r"""A NodePool object.
+  r"""A set of Kubernetes nodes in a cluster with common configuration and
+  specification.
 
   Messages:
-    LabelsValue: A LabelsValue object.
+    LabelsValue: Labels associated with this resource.
 
   Fields:
-    createTime: A string attribute.
-    labels: A LabelsValue attribute.
-    name: A string attribute.
-    nodeCount: The number of nodes in the pool.
+    createTime: Output only. The time when the node pool was created.
+    labels: Labels associated with this resource.
+    name: Required. The resource name of the node pool.
+    nodeCount: Required. The number of nodes in the pool.
     site: Canonical resource name of the site responsible for provisioning
       machines to assume the role of nodes in this node pool e.g.
       projects/{project}/locations/{location}/sites/{site_id}. When a node
       pool is created, the site will be notified, and the site is thereafter
       responsible for ensuring that machines exist to assume the role of the
       node (or reporting that provisioning is not possible).
-    updateTime: A string attribute.
+    updateTime: Output only. The time when the node pool was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""A LabelsValue object.
+    r"""Labels associated with this resource.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1184,21 +1141,19 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
+  r"""Long-running operation metadata for Edge Container API methods.
 
   Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
+    apiVersion: API version used to start the operation.
+    createTime: The time the operation was created.
+    endTime: The time the operation finished running.
+    requestedCancellation: Identifies whether the user has requested
+      cancellation of the operation. Operations that have successfully been
+      cancelled have Operation.error value with a google.rpc.Status.code of 1,
+      corresponding to `Code.CANCELLED`.
+    statusMessage: Human-readable status of the operation, if any.
+    target: Server-defined resource path for the target of the operation.
+    verb: The verb executed by the operation.
   """
 
   apiVersion = _messages.StringField(1)

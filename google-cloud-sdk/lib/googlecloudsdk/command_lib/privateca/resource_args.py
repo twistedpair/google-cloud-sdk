@@ -60,7 +60,7 @@ def CaPoolAttributeConfig(display_name='pool', fallthroughs=None):
   # TODO(b/186143764): GA Autocompleters
   return concepts.ResourceParameterAttributeConfig(
       name=display_name,
-      help_text='The issuing ca pool of the {resource}',
+      help_text='The parent CA Pool of the {resource}.',
       fallthroughs=fallthroughs or [])
 
 
@@ -192,6 +192,8 @@ def CreateCertAuthorityResourceSpec(
     display_name,
     certificate_authority_attribute='certificate_authority',
     location_attribute='location',
+    location_fallthroughs=None,
+    pool_id_fallthroughs=None,
     ca_id_fallthroughs=None):
   # TODO(b/186143764): GA Autocompleters
   return concepts.ResourceSpec(
@@ -201,21 +203,26 @@ def CreateCertAuthorityResourceSpec(
       resource_name=display_name,
       certificateAuthoritiesId=CertAuthorityAttributeConfig(
           certificate_authority_attribute, fallthroughs=ca_id_fallthroughs),
-      caPoolsId=CaPoolAttributeConfig(),
-      locationsId=LocationAttributeConfig(location_attribute),
+      caPoolsId=CaPoolAttributeConfig(fallthroughs=pool_id_fallthroughs),
+      locationsId=LocationAttributeConfig(
+          location_attribute, fallthroughs=location_fallthroughs),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=True)
 
 
-def CreateCaPoolResourceSpec(display_name, location_attribute='location'):
+def CreateCaPoolResourceSpec(display_name,
+                             location_attribute='location',
+                             pool_id_fallthroughs=None,
+                             location_fallthroughs=None):
   # TODO(b/186143764): GA Autocompleters
   return concepts.ResourceSpec(
       'privateca.projects.locations.caPools',
       api_version='v1',
       # This will be formatted and used as {resource} in the help text.
       resource_name=display_name,
-      caPoolsId=CaPoolAttributeConfig(),
-      locationsId=LocationAttributeConfig(location_attribute),
+      caPoolsId=CaPoolAttributeConfig(fallthroughs=pool_id_fallthroughs),
+      locationsId=LocationAttributeConfig(
+          location_attribute, fallthroughs=location_fallthroughs),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=True)
 
@@ -337,9 +344,9 @@ def AddCertPositionalResourceArg(parser, verb):
 # Resource validation.
 
 
-def ValidateResourceLocation(resource_ref, arg_name):
+def ValidateResourceLocation(resource_ref, arg_name, version='v1beta1'):
   """Raises an exception if the given resource is in an unsupported location."""
-  supported_locations = locations.GetSupportedLocations()
+  supported_locations = locations.GetSupportedLocations(version=version)
   if resource_ref.locationsId not in supported_locations:
     raise exceptions.InvalidArgumentException(
         arg_name,
@@ -347,16 +354,16 @@ def ValidateResourceLocation(resource_ref, arg_name):
         .format(', '.join(sorted(supported_locations))))
 
 
-def CheckExpectedCAType(expected_type, ca, api_version='v1beta1'):
+def CheckExpectedCAType(expected_type, ca, version='v1beta1'):
   """Raises an exception if the Certificate Authority type is not expected_type.
 
   Args:
     expected_type: The expected type.
     ca: The ca object to check.
-    api_version: The api version.
+    version: The version of the API to check against.
   """
   ca_type_enum = base.GetMessagesModule(
-      api_version).CertificateAuthority.TypeValueValuesEnum
+      api_version=version).CertificateAuthority.TypeValueValuesEnum
   if expected_type == ca_type_enum.SUBORDINATE and ca.type != expected_type:
     raise privateca_exceptions.InvalidCertificateAuthorityTypeError(
         'Cannot perform subordinates command on Root CA. Please use the `privateca roots` command group instead.'

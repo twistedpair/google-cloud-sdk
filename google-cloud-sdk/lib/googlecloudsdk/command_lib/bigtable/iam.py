@@ -23,25 +23,8 @@ from googlecloudsdk.api_lib.bigtable import util
 from googlecloudsdk.command_lib.iam import iam_util
 
 
-# TODO(b/187327443): Remove this. The usage was removed in cl/206774642.
-def AddInstanceIamPolicyBinding(instance_ref, member, role):
-  """Adds a policy binding to an instance IAM policy."""
-  msgs = util.GetAdminMessages()
-  policy = instances.GetIamPolicy(instance_ref)
-  iam_util.AddBindingToIamPolicy(msgs.Binding, policy, member, role)
-  return instances.SetIamPolicy(instance_ref, policy)
-
-
 def SetInstanceIamPolicy(instance_ref, policy):
   """Sets the IAM policy on an instance."""
   msgs = util.GetAdminMessages()
   policy = iam_util.ParsePolicyFile(policy, msgs.Policy)
-  return instances.SetIamPolicy(instance_ref, policy)
-
-
-# TODO(b/187327443): Remove this. The usage was removed in cl/206774642.
-def RemoveInstanceIamPolicyBinding(instance_ref, member, role):
-  """Removes a policy binding from an instance IAM policy."""
-  policy = instances.GetIamPolicy(instance_ref)
-  iam_util.RemoveBindingFromIamPolicy(policy, member, role)
   return instances.SetIamPolicy(instance_ref, policy)

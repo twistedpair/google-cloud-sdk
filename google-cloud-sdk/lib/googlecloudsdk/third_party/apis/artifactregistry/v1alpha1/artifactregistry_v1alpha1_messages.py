@@ -80,12 +80,22 @@ class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest(_me
 
 
 class DockerImage(_messages.Message):
-  r"""DockerImage represents a docker artifact.
+  r"""DockerImage represents a docker artifact. The following fields are
+  returned as untyped metadata in the Version resource, using camelcase keys
+  (i.e. metadata.imageSizeBytes): - imageSizeBytes - mediaType - buildTime
 
   Fields:
-    imageSizeBytes: Calculated size of the image.
+    buildTime: The time this image was built. This field is returned as the
+      'metadata.buildTime' field in the Version resource. The build time is
+      returned to the client as an RFC 3339 string, which can be easily used
+      with the JavaScript Date constructor and keeps the Version timestamps
+      returned via OnePlatform consistent, as JSON marshals
+      google.protobuf.Timestamp into an RFC 3339 string.
+    imageSizeBytes: Calculated size of the image. This field is returned as
+      the 'metadata.imageSizeBytes' field in the Version resource.
     mediaType: Media type of this image, e.g.
-      "application/vnd.docker.distribution.manifest.v2+json".
+      "application/vnd.docker.distribution.manifest.v2+json". This field is
+      returned as the 'metadata.mediaType' field in the Version resource.
     name: Required. registry_location, project_id, repository_name and image
       id forms a unique image
       name:`projects//locations//repository//dockerImages/`. For example,
@@ -102,12 +112,13 @@ class DockerImage(_messages.Message):
       be1c3e36eca16be2d9e9bccc4bf072163515467d6a823c7cf
   """
 
-  imageSizeBytes = _messages.IntegerField(1)
-  mediaType = _messages.StringField(2)
-  name = _messages.StringField(3)
-  tags = _messages.StringField(4, repeated=True)
-  uploadTime = _messages.StringField(5)
-  uri = _messages.StringField(6)
+  buildTime = _messages.StringField(1)
+  imageSizeBytes = _messages.IntegerField(2)
+  mediaType = _messages.StringField(3)
+  name = _messages.StringField(4)
+  tags = _messages.StringField(5, repeated=True)
+  uploadTime = _messages.StringField(6)
+  uri = _messages.StringField(7)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1AptArtifact(_messages.Message):

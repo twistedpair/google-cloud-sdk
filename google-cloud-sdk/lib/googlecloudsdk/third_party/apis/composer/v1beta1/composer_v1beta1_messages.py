@@ -408,6 +408,11 @@ class Environment(_messages.Message):
 class EnvironmentConfig(_messages.Message):
   r"""Configuration information for an environment.
 
+  Enums:
+    EnvironmentSizeValueValuesEnum: Optional. The size of the Cloud Composer
+      environment. This field is supported for Cloud Composer environments in
+      versions composer-2.*.*-airflow-*.*.* and newer.
+
   Fields:
     airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
       within this environment (see [Airflow web interface](/composer/docs/how-
@@ -421,6 +426,9 @@ class EnvironmentConfig(_messages.Message):
       instance used internally by Apache Airflow software.
     encryptionConfig: Optional. The encryption options for the Cloud Composer
       environment and its dependencies. Cannot be updated.
+    environmentSize: Optional. The size of the Cloud Composer environment.
+      This field is supported for Cloud Composer environments in versions
+      composer-2.*.*-airflow-*.*.* and newer.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
     maintenanceWindow: Optional. The maintenance window is the period when
@@ -444,20 +452,44 @@ class EnvironmentConfig(_messages.Message):
     webServerNetworkAccessControl: Optional. The network-level access control
       policy for the Airflow web server. If unspecified, no network-level
       access restrictions will be applied.
+    workloadsConfig: Optional. The workloads configuration settings for the
+      GKE cluster associated with the Cloud Composer environment. The GKE
+      cluster runs Airflow scheduler, web server and workers workloads. This
+      field is supported for Cloud Composer environments in versions
+      composer-2.*.*-airflow-*.*.* and newer.
   """
+
+  class EnvironmentSizeValueValuesEnum(_messages.Enum):
+    r"""Optional. The size of the Cloud Composer environment. This field is
+    supported for Cloud Composer environments in versions
+    composer-2.*.*-airflow-*.*.* and newer.
+
+    Values:
+      ENVIRONMENT_SIZE_UNSPECIFIED: The size of the environment is
+        unspecified.
+      ENVIRONMENT_SIZE_SMALL: The environment size is small.
+      ENVIRONMENT_SIZE_MEDIUM: The environment size is medium.
+      ENVIRONMENT_SIZE_LARGE: The environment size is large.
+    """
+    ENVIRONMENT_SIZE_UNSPECIFIED = 0
+    ENVIRONMENT_SIZE_SMALL = 1
+    ENVIRONMENT_SIZE_MEDIUM = 2
+    ENVIRONMENT_SIZE_LARGE = 3
 
   airflowUri = _messages.StringField(1)
   dagGcsPrefix = _messages.StringField(2)
   databaseConfig = _messages.MessageField('DatabaseConfig', 3)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
-  gkeCluster = _messages.StringField(5)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
-  nodeConfig = _messages.MessageField('NodeConfig', 7)
-  nodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 9)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 10)
-  webServerConfig = _messages.MessageField('WebServerConfig', 11)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 12)
+  environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 5)
+  gkeCluster = _messages.StringField(6)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 7)
+  nodeConfig = _messages.MessageField('NodeConfig', 8)
+  nodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 10)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
+  webServerConfig = _messages.MessageField('WebServerConfig', 12)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 13)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 14)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -902,6 +934,25 @@ class RestartWebServerRequest(_messages.Message):
   r"""Restart Airflow web server."""
 
 
+class SchedulerResource(_messages.Message):
+  r"""Configuration for resources used by Airflow schedulers.
+
+  Fields:
+    count: Optional. The number of schedulers.
+    cpu: Optional. CPU request and limit for a single Airflow scheduler
+      replica.
+    memoryGb: Optional. Memory (GB) request and limit for a single Airflow
+      scheduler replica.
+    storageGb: Optional. Storage (GB) request and limit for a single Airflow
+      scheduler replica.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  cpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  storageGb = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
 class SoftwareConfig(_messages.Message):
   r"""Specifies the selection and configuration of software inside the
   environment.
@@ -985,6 +1036,7 @@ class SoftwareConfig(_messages.Message):
     pythonVersion: Optional. The major version of Python used to run the
       Apache Airflow scheduler, worker, and webserver processes. Can be set to
       '2' or '3'. If not specified, the default is '3'. Cannot be updated.
+    schedulerCount: Optional. The number of schedulers for Airflow.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1093,6 +1145,7 @@ class SoftwareConfig(_messages.Message):
   imageVersion = _messages.StringField(3)
   pypiPackages = _messages.MessageField('PypiPackagesValue', 4)
   pythonVersion = _messages.StringField(5)
+  schedulerCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1233,6 +1286,57 @@ class WebServerNetworkAccessControl(_messages.Message):
   """
 
   allowedIpRanges = _messages.MessageField('AllowedIpRange', 1, repeated=True)
+
+
+class WebServerResource(_messages.Message):
+  r"""Configuration for resources used by Airflow web server.
+
+  Fields:
+    cpu: Optional. CPU request and limit for Airflow web server.
+    memoryGb: Optional. Memory (GB) request and limit for Airflow web server.
+    storageGb: Optional. Storage (GB) request and limit for Airflow web
+      server.
+  """
+
+  cpu = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  storageGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class WorkerResource(_messages.Message):
+  r"""Configuration for resources used by Airflow workers.
+
+  Fields:
+    cpu: Optional. CPU request and limit for a single Airflow worker replica.
+    maxCount: Optional. Maximum number of workers for autoscaling.
+    memoryGb: Optional. Memory (GB) request and limit for a single Airflow
+      worker replica.
+    minCount: Optional. Minimum number of workers for autoscaling.
+    storageGb: Optional. Storage (GB) request and limit for a single Airflow
+      worker replica.
+  """
+
+  cpu = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  minCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  storageGb = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+
+
+class WorkloadsConfig(_messages.Message):
+  r"""The Kubernetes workloads configuration for GKE cluster associated with
+  the Cloud Composer environment. Supported for Cloud Composer environments in
+  versions composer-2.*.*-airflow-*.*.* and newer.
+
+  Fields:
+    scheduler: Optional. Resources used by Airflow schedulers.
+    webServer: Optional. Resources used by Airflow web server.
+    worker: Optional. Resources used by Airflow workers.
+  """
+
+  scheduler = _messages.MessageField('SchedulerResource', 1)
+  webServer = _messages.MessageField('WebServerResource', 2)
+  worker = _messages.MessageField('WorkerResource', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

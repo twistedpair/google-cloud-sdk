@@ -2048,6 +2048,9 @@ class JobStatistics2(_messages.Message):
     ddlAffectedRowAccessPolicyCount: [Output-only] [Preview] The number of row
       access policies affected by a DDL statement. Present only for DROP ALL
       ROW ACCESS POLICIES queries.
+    ddlDestinationTable: [Output-only] The DDL destination table. Present only
+      for ALTER TABLE RENAME TO queries. Note that ddl_target_table is used
+      just for its type information.
     ddlOperationPerformed: The DDL operation performed, possibly dependent on
       the pre-existence of the DDL target. Possible values (new values might
       be added in the future): "CREATE": The query created the DDL target.
@@ -2133,29 +2136,30 @@ class JobStatistics2(_messages.Message):
   billingTier = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   cacheHit = _messages.BooleanField(2)
   ddlAffectedRowAccessPolicyCount = _messages.IntegerField(3)
-  ddlOperationPerformed = _messages.StringField(4)
-  ddlTargetDataset = _messages.MessageField('DatasetReference', 5)
-  ddlTargetRoutine = _messages.MessageField('RoutineReference', 6)
-  ddlTargetRowAccessPolicy = _messages.MessageField('RowAccessPolicyReference', 7)
-  ddlTargetTable = _messages.MessageField('TableReference', 8)
-  estimatedBytesProcessed = _messages.IntegerField(9)
-  modelTraining = _messages.MessageField('BigQueryModelTraining', 10)
-  modelTrainingCurrentIteration = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  modelTrainingExpectedTotalIteration = _messages.IntegerField(12)
-  numDmlAffectedRows = _messages.IntegerField(13)
-  queryPlan = _messages.MessageField('ExplainQueryStage', 14, repeated=True)
-  referencedRoutines = _messages.MessageField('RoutineReference', 15, repeated=True)
-  referencedTables = _messages.MessageField('TableReference', 16, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 17, repeated=True)
-  schema = _messages.MessageField('TableSchema', 18)
-  statementType = _messages.StringField(19)
-  timeline = _messages.MessageField('QueryTimelineSample', 20, repeated=True)
-  totalBytesBilled = _messages.IntegerField(21)
-  totalBytesProcessed = _messages.IntegerField(22)
-  totalBytesProcessedAccuracy = _messages.StringField(23)
-  totalPartitionsProcessed = _messages.IntegerField(24)
-  totalSlotMs = _messages.IntegerField(25)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 26, repeated=True)
+  ddlDestinationTable = _messages.MessageField('TableReference', 4)
+  ddlOperationPerformed = _messages.StringField(5)
+  ddlTargetDataset = _messages.MessageField('DatasetReference', 6)
+  ddlTargetRoutine = _messages.MessageField('RoutineReference', 7)
+  ddlTargetRowAccessPolicy = _messages.MessageField('RowAccessPolicyReference', 8)
+  ddlTargetTable = _messages.MessageField('TableReference', 9)
+  estimatedBytesProcessed = _messages.IntegerField(10)
+  modelTraining = _messages.MessageField('BigQueryModelTraining', 11)
+  modelTrainingCurrentIteration = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  modelTrainingExpectedTotalIteration = _messages.IntegerField(13)
+  numDmlAffectedRows = _messages.IntegerField(14)
+  queryPlan = _messages.MessageField('ExplainQueryStage', 15, repeated=True)
+  referencedRoutines = _messages.MessageField('RoutineReference', 16, repeated=True)
+  referencedTables = _messages.MessageField('TableReference', 17, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 18, repeated=True)
+  schema = _messages.MessageField('TableSchema', 19)
+  statementType = _messages.StringField(20)
+  timeline = _messages.MessageField('QueryTimelineSample', 21, repeated=True)
+  totalBytesBilled = _messages.IntegerField(22)
+  totalBytesProcessed = _messages.IntegerField(23)
+  totalBytesProcessedAccuracy = _messages.StringField(24)
+  totalPartitionsProcessed = _messages.IntegerField(25)
+  totalSlotMs = _messages.IntegerField(26)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 27, repeated=True)
 
 
 class JobStatistics3(_messages.Message):

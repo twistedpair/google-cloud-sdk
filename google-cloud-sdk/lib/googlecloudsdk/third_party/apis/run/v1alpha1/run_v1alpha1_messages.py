@@ -391,7 +391,8 @@ class EnvVar(_messages.Message):
       double $$, ie: $$(VAR_NAME). Escaped references will never be expanded,
       regardless of whether the variable exists or not. Defaults to "".
       +optional
-    valueFrom: Cloud Run fully managed: not supported Cloud Run on GKE:
+    valueFrom: Cloud Run fully managed: supported Source for the environment
+      variable's value. Only supports secret_key_ref. Cloud Run for Anthos:
       supported Source for the environment variable's value. Cannot be used if
       value is not empty. +optional
   """
@@ -408,8 +409,9 @@ class EnvVarSource(_messages.Message):
   Fields:
     configMapKeyRef: Cloud Run fully managed: not supported Cloud Run on GKE:
       supported Selects a key of a ConfigMap. +optional
-    secretKeyRef: Cloud Run fully managed: not supported Cloud Run on GKE:
-      supported Selects a key of a secret in the pod's namespace +optional
+    secretKeyRef: Cloud Run fully managed: supported. Selects a key (version)
+      of a secret in Secret Manager. Cloud Run for Anthos: supported. Selects
+      a key of a secret in the pod's namespace. +optional
   """
 
   configMapKeyRef = _messages.MessageField('ConfigMapKeySelector', 1)
@@ -739,14 +741,17 @@ class KeyToPath(_messages.Message):
   r"""Maps a string key to a path within a volume.
 
   Fields:
-    key: The key to project.
+    key: Cloud Run fully managed: supported The Cloud Secret Manager secret
+      version. Can be 'latest' for the latest value or an integer for a
+      specific version. Cloud Run for Anthos: supported The key to project.
     mode: Mode bits to use on this file, must be a value between 0 and 0777.
       If not specified, the volume defaultMode will be used. This might be in
       conflict with other options that affect the file mode, like fsGroup, and
       the result can be other mode bits set. +optional
-    path: The relative path of the file to map the key to. May not be an
-      absolute path. May not contain the path element '..'. May not start with
-      the string '..'.
+    path: Cloud Run fully managed: supported Cloud Run for Anthos: supported
+      The relative path of the file to map the key to. May not be an absolute
+      path. May not contain the path element '..'. May not start with the
+      string '..'.
   """
 
   key = _messages.StringField(1)
@@ -1633,17 +1638,25 @@ class SecretEnvSource(_messages.Message):
 
 
 class SecretKeySelector(_messages.Message):
-  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: supported Cloud Run on GKE: supported
   SecretKeySelector selects a key of a Secret.
 
   Fields:
-    key: Cloud Run fully managed: not supported Cloud Run on GKE: supported
-      The key of the secret to select from. Must be a valid secret key.
+    key: Cloud Run fully managed: supported A Cloud Secret Manager secret
+      version. Must be 'latest' for the latest version or an integer for a
+      specific version. Cloud Run for Anthos: supported The key of the secret
+      to select from. Must be a valid secret key.
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.
-    name: Cloud Run fully managed: not supported Cloud Run on GKE: supported
-      The name of the secret in the pod's namespace to select from.
+    name: Cloud Run fully managed: supported The name of the secret in Cloud
+      Secret Manager. By default, the secret is assumed to be in the same
+      project. If the secret is in another project, you must define an alias.
+      An alias definition has the form: :projects//secrets/. If multiple alias
+      definitions are needed, they must be separated by commas. The alias
+      definitions must be set on the run.googleapis.com/secrets annotation.
+      Cloud Run for Anthos: supported The name of the secret in the pod's
+      namespace to select from.
     optional: Cloud Run fully managed: not supported Cloud Run on GKE:
       supported Specify whether the Secret or its key must be defined
       +optional
@@ -1665,14 +1678,26 @@ class SecretVolumeSource(_messages.Message):
       not affected by this setting. This might be in conflict with other
       options that affect the file mode, like fsGroup, and the result can be
       other mode bits set.
-    items: If unspecified, each key-value pair in the Data field of the
+    items: Cloud Run fully managed: supported If unspecified, the volume will
+      expose a file whose name is the secret_name. If specified, the key will
+      be used as the version to fetch from Cloud Secret Manager and the path
+      will be the name of the file exposed in the volume. When items are
+      defined, they must specify a key and a path. Cloud Run for Anthos:
+      supported If unspecified, each key-value pair in the Data field of the
       referenced Secret will be projected into the volume as a file whose name
       is the key and content is the value. If specified, the listed keys will
       be projected into the specified paths, and unlisted keys will not be
       present. If a key is specified which is not present in the Secret, the
       volume setup will error unless it is marked optional.
     optional: Specify whether the Secret or its keys must be defined.
-    secretName: Name of the secret in the container's namespace to use.
+    secretName: Cloud Run fully managed: supported The name of the secret in
+      Cloud Secret Manager. By default, the secret is assumed to be in the
+      same project. If the secret is in another project, you must define an
+      alias. An alias definition has the form: :projects//secrets/. If
+      multiple alias definitions are needed, they must be separated by commas.
+      The alias definitions must be set on the run.googleapis.com/secrets
+      annotation. Cloud Run for Anthos: supported Name of the secret in the
+      container's namespace to use.
   """
 
   defaultMode = _messages.IntegerField(1, variant=_messages.Variant.INT32)

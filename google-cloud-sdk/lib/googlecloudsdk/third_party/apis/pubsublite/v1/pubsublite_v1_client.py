@@ -607,6 +607,33 @@ class PubsubliteV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ComputeTimeCursor(self, request, global_params=None):
+      r"""Compute the corresponding cursor for a publish or event time in a topic partition.
+
+      Args:
+        request: (PubsubliteTopicStatsProjectsLocationsTopicsComputeTimeCursorRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ComputeTimeCursorResponse) The response message.
+      """
+      config = self.GetMethodConfig('ComputeTimeCursor')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeTimeCursor.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/topicStats/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}:computeTimeCursor',
+        http_method='POST',
+        method_id='pubsublite.topicStats.projects.locations.topics.computeTimeCursor',
+        ordered_params=['topic'],
+        path_params=['topic'],
+        query_params=[],
+        relative_path='v1/topicStats/{+topic}:computeTimeCursor',
+        request_field='computeTimeCursorRequest',
+        request_type_name='PubsubliteTopicStatsProjectsLocationsTopicsComputeTimeCursorRequest',
+        response_type_name='ComputeTimeCursorResponse',
+        supports_download=False,
+    )
+
   class TopicStatsProjectsLocationsService(base_api.BaseApiService):
     """Service class for the topicStats_projects_locations resource."""
 

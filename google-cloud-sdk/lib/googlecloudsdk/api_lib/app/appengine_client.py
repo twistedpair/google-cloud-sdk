@@ -228,6 +228,10 @@ class AppengineClient(object):
     Args:
       dos_yaml: The parsed yaml file with dos data.
     """
+    log.warning(
+        '`gcloud app deploy dos.yaml` is deprecated and will be removed '
+        'in an upcoming release. Please use `gcloud app firewall-rules` '
+        'instead.')
     self._GetRpcServer().Send('/api/dos/update',
                               app_id=self.project, payload=dos_yaml.ToYAML())
 

@@ -674,6 +674,8 @@ def AddProtocol(parser,
                    if support_unspecified_protocol else 'TCP, UDP')
   td_protocols = ('HTTP, HTTPS, HTTP2, GRPC'
                   if support_grpc_protocol else 'HTTP, HTTPS, HTTP2')
+  netlb_protocols = ('TCP, UDP, UNSPECIFIED'
+                     if support_unspecified_protocol else 'TCP, UDP')
   parser.add_argument(
       '--protocol',
       default=default,
@@ -695,12 +697,12 @@ def AddProtocol(parser,
       one of: HTTP, HTTPS, HTTP2, SSL, TCP.
 
       If the `load-balancing-scheme` is `EXTERNAL` and `region` is set
-      (External Network Load Balancing), the protocol must be one of: TCP, UDP.
+      (External Network Load Balancing), the protocol must be one of: {2}.
 
       If the `load-balancing-scheme` is `EXTERNAL_MANAGED` and `region` is not
       set (Envoy based External HTTP(S) Load Balancing), the protocol must be
       one of: HTTP, HTTPS, HTTP2.
-      """.format(ilb_protocols, td_protocols))
+      """.format(ilb_protocols, td_protocols, netlb_protocols))
 
 
 def AddConnectionDrainOnFailover(parser, default):

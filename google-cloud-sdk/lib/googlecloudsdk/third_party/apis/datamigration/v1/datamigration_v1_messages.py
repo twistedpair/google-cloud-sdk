@@ -368,7 +368,7 @@ class ConnectionProfile(_messages.Message):
       "mass": "1.3kg", "count": "3" }`.
     mysql: A MySQL database connection profile.
     name: The name of this connection profile resource in the form of
-      projects/{project}/locations/{location}/instances/{instance}.
+      projects/{project}/locations/{location}/connectionProfiles/{instance}.
     postgresql: A PostgreSQL database connection profile.
     provider: The database provider.
     state: The current connection profile state (e.g. DRAFT, READY, or
@@ -607,7 +607,7 @@ class DatamigrationProjectsLocationsConnectionProfilesPatchRequest(_messages.Mes
     connectionProfile: A ConnectionProfile resource to be passed as the
       request body.
     name: The name of this connection profile resource in the form of
-      projects/{project}/locations/{location}/instances/{instance}.
+      projects/{project}/locations/{location}/connectionProfiles/{instance}.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
       ignored. It is recommended to always set this value to a UUID. The id

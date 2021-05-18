@@ -182,14 +182,16 @@
             "A boolean setting.",
             "A string setting.",
             "A string set setting.",
-            "A Enum setting"
+            "A Enum setting",
+            "A Duration setting"
           ],
           "enum": [
             "DATA_TYPE_UNSPECIFIED",
             "BOOLEAN",
             "STRING",
             "STRING_SET",
-            "ENUM_VALUE"
+            "ENUM_VALUE",
+            "DURATION_VALUE"
           ]
         },
         "defaultValue": {
@@ -218,6 +220,11 @@
         "enumValue": {
           "description": "Defines this value as being a Enum.",
           "$ref": "GoogleCloudResourcesettingsV1ValueEnumValue"
+        },
+        "durationValue": {
+          "description": "Defines this value as being a Duration.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },

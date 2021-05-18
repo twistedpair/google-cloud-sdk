@@ -448,6 +448,13 @@
       "description": "Read\/write requests are routed to the nearest cluster in the instance, and will fail over to the nearest cluster that is available in the event of transient errors or delays. Clusters in a region are considered equidistant. Choosing this option sacrifices read-your-writes consistency to improve availability.",
       "type": "object",
       "properties": {
+        "clusterIds": {
+          "description": "The set of clusters to route to. The order is ignored; clusters will be tried in order of distance. If left empty, all clusters are eligible.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "SingleClusterRouting": {
@@ -2956,7 +2963,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the instance in which to create the restored table. This instance must be the parent of the source backup. Values are of the form `projects\/\/instances\/`.",
+                      "description": "Required. The name of the instance in which to create the restored table. This instance must be in the same project as the source backup. Values are of the form `projects\/\/instances\/`.",
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2979,7 +2986,7 @@
                     "https://www.googleapis.com/auth/cloud-bigtable.admin.table",
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Create a new table by restoring from a completed backup. The new table must be in the same instance as the instance containing the backup. The returned table long-running operation can be used to track the progress of the operation, and to cancel it. The metadata field type is RestoreTableMetadata. The response type is Table, if successful."
+                  "description": "Create a new table by restoring from a completed backup. The new table must be in the same project as the instance containing the backup. The returned table long-running operation can be used to track the progress of the operation, and to cancel it. The metadata field type is RestoreTableMetadata. The response type is Table, if successful."
                 },
                 "getIamPolicy": {
                   "id": "bigtableadmin.projects.instances.tables.getIamPolicy",

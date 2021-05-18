@@ -602,7 +602,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of this connection profile resource in the form of projects\/{project}\/locations\/{location}\/instances\/{instance}.",
+          "description": "The name of this connection profile resource in the form of projects\/{project}\/locations\/{location}\/connectionProfiles\/{instance}.",
           "type": "string"
         },
         "createTime": {
@@ -2104,7 +2104,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The name of this connection profile resource in the form of projects\/{project}\/locations\/{location}\/instances\/{instance}.",
+                      "description": "The name of this connection profile resource in the form of projects\/{project}\/locations\/{location}\/connectionProfiles\/{instance}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "location": "path",
                       "required": true,

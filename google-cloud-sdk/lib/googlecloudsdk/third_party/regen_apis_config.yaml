@@ -260,8 +260,6 @@ apis:
     v2:
       discovery_doc: clouddebugger_v2.json
   clouddeploy:
-    v1alpha1:
-      discovery_doc: clouddeploy_v1alpha1.json
     v1:
       default: true
       discovery_doc: clouddeploy_v1.json
@@ -878,6 +876,8 @@ apis:
       resources:
         admin.projects.locations.topics.subscriptions:
           path: admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}/subscriptions
+        cursor.projects.locations.subscriptions:
+          path: cursor/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}
   recaptchaenterprise:
     v1:
       discovery_doc: recaptchaenterprise_v1.json
@@ -1141,6 +1141,10 @@ apis:
   sddc:
     v1alpha1:
       discovery_doc: sddc_v1alpha1.json
+  vmwareengine:
+    v1:
+      discovery_doc: vmwareengine_v1.json
+      default: true
   ondemandscanning:
     v1beta1:
       discovery_doc: ondemandscanning_v1beta1.json

@@ -22,6 +22,19 @@ import collections
 import datetime
 
 from google.api_core import bidi
+
+# pylint: disable=unused-import, type imports needed for gRPC
+import google.appengine.logging.v1.request_log_pb2
+import google.cloud.appengine_v1.proto.audit_data_pb2
+import google.cloud.appengine_v1alpha.proto.audit_data_pb2
+import google.cloud.appengine_v1beta.proto.audit_data_pb2
+import google.cloud.bigquery_logging_v1.proto.audit_data_pb2
+import google.cloud.cloud_audit.proto.audit_log_pb2
+import google.cloud.iam_admin_v1.proto.audit_data_pb2
+import google.iam.v1.logging.audit_data_pb2
+import google.type.money_pb2
+# pylint: enable=unused-import
+
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.gapic_apis.logging.v2 import client
 
@@ -203,7 +216,7 @@ class LogTailer(object):
     request.resource_names.extend(resource_names)
     request.filter = logs_filter
     if buffer_window_seconds:
-      request.buffer_window.FromSeconds(buffer_window_seconds)
+      request.buffer_window = datetime.timedelta(seconds=buffer_window_seconds)
     for entry in _StreamEntries(get_now, output_warning, output_error,
                                 output_debug, self.tail_stub, request):
       yield entry

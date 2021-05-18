@@ -533,14 +533,6 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.clouddeploy.v1alpha1',
-                client_classpath='clouddeploy_v1alpha1_client.ClouddeployV1alpha1',
-                messages_modulepath='clouddeploy_v1alpha1_messages',
-                default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
     },
     'clouderrorreporting': {
         'v1beta1':
@@ -2270,6 +2262,16 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.vision.v1',
                 client_classpath='vision_v1_client.VisionV1',
                 messages_modulepath='vision_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'vmwareengine': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.vmwareengine.v1',
+                client_classpath='vmwareengine_v1_client.VmwareengineV1',
+                messages_modulepath='vmwareengine_v1_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

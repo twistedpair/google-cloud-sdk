@@ -457,14 +457,17 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
           heading.append('At most one of these may be specified:')
       elif arg.is_required:
         heading.append('At least one of these must be specified:')
+
+    if not arg.is_hidden and heading:
+      self._out('\n{0} {1}\n\n'.format(':' * (depth + _SECOND_LINE_OFFSET),
+                                       '\n+\n'.join(heading)))
+      heading = None
+      depth += 1
+
     for a in args:
       if a.is_hidden:
         continue
-      if heading:
-        self._out('\n{0} {1}\n\n'.format(':' * (depth + _SECOND_LINE_OFFSET),
-                                         '\n+\n'.join(heading)))
-        heading = None
-        depth += 1
+
       if a.is_group:
         single = False
         singleton = usage_text.GetSingleton(a)

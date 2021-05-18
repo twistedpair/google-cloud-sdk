@@ -560,6 +560,7 @@ def BitbucketServerConfigFromArgs(args, update=False):
   secret_location = messages.BitbucketServerSecrets()
   secret_location.adminAccessTokenVersionName = args.admin_access_token_name
   secret_location.readAccessTokenVersionName = args.read_access_token_name
+  secret_location.webhookSecretVersionName = args.webhook_secret_name
   if update or secret_location is not None:
     bbs.secrets = secret_location
   if not update and args.peered_network is not None:

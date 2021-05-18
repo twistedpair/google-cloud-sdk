@@ -384,10 +384,10 @@ def AddSchemaSettingsFlags(parser):
   set_schema_settings_group.add_argument(
       '--message-encoding',
       type=arg_parsers.ArgList(
-          element_type=str,
+          element_type=lambda x: str(x).lower(),
           min_length=1,
           max_length=1,
-          choices=['JSON', 'BINARY']),
+          choices=['json', 'binary']),
       metavar='ENCODING',
       help="""The encoding of messages validated against the schema.""",
       required=True)

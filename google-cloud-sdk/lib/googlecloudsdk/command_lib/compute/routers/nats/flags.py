@@ -286,7 +286,7 @@ def _AddEndpointIndependentMappingArg(parser):
   help_text = textwrap.dedent("""\
   Enable endpoint-independent mapping for the NAT (as defined in RFC 5128).
 
-  If not specified, NATs have endpoint-independent mapping enabled by default.
+  If not specified, NATs have endpoint-independent mapping disabled by default.
 
   Use `--no-enable-endpoint-independent-mapping` to disable endpoint-independent
   mapping.

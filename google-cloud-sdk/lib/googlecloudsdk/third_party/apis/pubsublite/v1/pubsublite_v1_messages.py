@@ -107,6 +107,34 @@ class ComputeMessageStatsResponse(_messages.Message):
   minimumPublishTime = _messages.StringField(4)
 
 
+class ComputeTimeCursorRequest(_messages.Message):
+  r"""Compute the corresponding cursor for a publish or event time in a topic
+  partition.
+
+  Fields:
+    partition: Required. The partition for which we should compute the cursor.
+    target: Required. The target publish or event time. Specifying a future
+      time will return an unset cursor.
+  """
+
+  partition = _messages.IntegerField(1)
+  target = _messages.MessageField('TimeTarget', 2)
+
+
+class ComputeTimeCursorResponse(_messages.Message):
+  r"""Response containing the cursor corresponding to a publish or event time
+  in a topic partition.
+
+  Fields:
+    cursor: If present, the cursor references the first message with time
+      greater than or equal to the specified target time. If such a message
+      cannot be found, the cursor will be unset (i.e. `cursor` is not
+      present).
+  """
+
+  cursor = _messages.MessageField('Cursor', 1)
+
+
 class Cursor(_messages.Message):
   r"""A cursor that describes the position of a message within a topic
   partition.
@@ -496,6 +524,20 @@ class PubsubliteTopicStatsProjectsLocationsTopicsComputeMessageStatsRequest(_mes
   topic = _messages.StringField(2, required=True)
 
 
+class PubsubliteTopicStatsProjectsLocationsTopicsComputeTimeCursorRequest(_messages.Message):
+  r"""A PubsubliteTopicStatsProjectsLocationsTopicsComputeTimeCursorRequest
+  object.
+
+  Fields:
+    computeTimeCursorRequest: A ComputeTimeCursorRequest resource to be passed
+      as the request body.
+    topic: Required. The topic for which we should compute the cursor.
+  """
+
+  computeTimeCursorRequest = _messages.MessageField('ComputeTimeCursorRequest', 1)
+  topic = _messages.StringField(2, required=True)
+
+
 class RetentionConfig(_messages.Message):
   r"""The settings for a topic's message retention.
 
@@ -590,6 +632,25 @@ class Subscription(_messages.Message):
   deliveryConfig = _messages.MessageField('DeliveryConfig', 1)
   name = _messages.StringField(2)
   topic = _messages.StringField(3)
+
+
+class TimeTarget(_messages.Message):
+  r"""A target publish or event time. Can be used for seeking to or retrieving
+  the corresponding cursor.
+
+  Fields:
+    eventTime: Request the cursor of the first message with event time greater
+      than or equal to `event_time`. If messages are missing an event time,
+      the publish time is used as a fallback. As event times are user
+      supplied, subsequent messages may have event times less than
+      `event_time` and should be filtered by the client, if necessary.
+    publishTime: Request the cursor of the first message with publish time
+      greater than or equal to `publish_time`. All messages thereafter are
+      guaranteed to have publish times >= `publish_time`.
+  """
+
+  eventTime = _messages.StringField(1)
+  publishTime = _messages.StringField(2)
 
 
 class Topic(_messages.Message):

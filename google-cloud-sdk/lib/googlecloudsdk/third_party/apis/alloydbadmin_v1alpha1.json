@@ -792,6 +792,116 @@
         }
       }
     },
+    "ListSupportedDatabaseFlagsResponse": {
+      "id": "ListSupportedDatabaseFlagsResponse",
+      "description": "Message for response to listing SupportedDatabaseFlags.",
+      "type": "object",
+      "properties": {
+        "supportedDatabaseFlags": {
+          "description": "The list of SupportedDatabaseFlags.",
+          "type": "array",
+          "items": {
+            "$ref": "SupportedDatabaseFlag"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results the server should return.",
+          "type": "string"
+        }
+      }
+    },
+    "SupportedDatabaseFlag": {
+      "id": "SupportedDatabaseFlag",
+      "description": "SupportedDatabaseFlag gives general information about a database flag, like type and allowed values. This is a static value that is defined on the server side, and it cannot be modified by callers. To set the Database flags on a particular Instance, a caller should modify the Instance.database_flags field.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the flag resource, following GCP conventions, e.g.: * projects\/{project}\/locations\/{location}\/flags\/{flag_id} This field currently has no semantic meaning.",
+          "type": "string"
+        },
+        "flagName": {
+          "description": "The name of the database flag, e.g. \"--max_allowed_packets\". The is a possibly key for the Instance.database_flags map field.",
+          "type": "string"
+        },
+        "valueType": {
+          "type": "string",
+          "enumDescriptions": [
+            "This is an unknown flag type.",
+            "String type flag.",
+            "Integer type flag.",
+            "Float type flag.",
+            "Denotes that the flag does not accept any values."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "STRING",
+            "INTEGER",
+            "FLOAT",
+            "NONE"
+          ]
+        },
+        "acceptsMultipleValues": {
+          "description": "Whether the database flag accepts multiple values. If true, a comma-separated list of stringified values may be specified.",
+          "type": "boolean"
+        },
+        "supportedDbVersions": {
+          "description": "Major database engine versions for which this flag is supported.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "This is an unknown database version.",
+              "The database version is Postgres 12."
+            ],
+            "enum": [
+              "DATABASE_VERSION_UNSPECIFIED",
+              "POSTGRES_12"
+            ]
+          }
+        },
+        "requiresDbRestart": {
+          "description": "Whether setting or updating this flag on an Instance requires a database restart. If a flag that requires database restart is set, the backend will automatically restart the database (making sure to satisfy any avaialability SLO's).",
+          "type": "boolean"
+        },
+        "stringRestrictions": {
+          "$ref": "StringRestrictions"
+        },
+        "integerRestrictions": {
+          "$ref": "IntegerRestrictions"
+        }
+      }
+    },
+    "StringRestrictions": {
+      "id": "StringRestrictions",
+      "description": "Restrictions on STRING type values",
+      "type": "object",
+      "properties": {
+        "allowedValues": {
+          "description": "The list of allowed values, if bounded. This field will be empty if there is a unbounded number of allowed values.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "IntegerRestrictions": {
+      "id": "IntegerRestrictions",
+      "description": "Restrictions on INTEGER type values.",
+      "type": "object",
+      "properties": {
+        "minValue": {
+          "description": "The minimum value that can be specified, if applicable.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxValue": {
+          "description": "The maximum value that can be specified, if applicable.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Represents the metadata of the long-running operation.",
@@ -2178,6 +2288,46 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "supportedDatabaseFlags": {
+              "methods": {
+                "list": {
+                  "id": "alloydbadmin.projects.locations.supportedDatabaseFlags.list",
+                  "path": "v1alpha1/{+parent}/supportedDatabaseFlags",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/supportedDatabaseFlags",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the parent resource. The required format is: * projects\/{project}\/locations\/{location} Regardless of the parent specified here, as long it is contains a valid project and location, the service will return a static list of supported flags resources.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A token identifying a page of results the server should return.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListSupportedDatabaseFlagsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists SupportedDatabaseFlags for a given project and location."
                 }
               }
             }

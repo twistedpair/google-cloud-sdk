@@ -22,6 +22,7 @@ import collections
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -166,3 +167,90 @@ def AddUpdateInstancesArgs(parser):
       help='Names of instances to update.')
   AddMinimalActionArg(parser, True, 'none')
   AddMostDisruptiveActionArg(parser, True, 'replace')
+
+
+INSTANCE_REDISTRIBUTION_TYPES = ['NONE', 'PROACTIVE']
+
+
+def AddMigInstanceRedistributionTypeFlag(parser):
+  """Add --instance-redistribution-type flag to the parser."""
+  parser.add_argument(
+      '--instance-redistribution-type',
+      metavar='TYPE',
+      type=lambda x: x.upper(),
+      choices=INSTANCE_REDISTRIBUTION_TYPES,
+      help="""\
+      Specifies the type of the instance redistribution policy. An instance
+      redistribution type lets you enable or disable automatic instance
+      redistribution across zones to meet the target distribution. The target
+      distribution is a state of a regional managed instance group where all
+      instances are spread out evenly across all target zones.
+
+      An instance redistribution type can be specified only for a non-autoscaled
+      regional managed instance group. By default it is set to PROACTIVE.
+
+      The following types are available:
+
+       * NONE - The managed instance group does not redistribute instances
+         across zones.
+
+       * PROACTIVE - The managed instance group proactively redistributes
+         instances to meet its target distribution.
+      """)
+
+
+DISTRIBUTION_POLICY_TARGET_SHAPE_CHOICES = {
+    'EVEN':
+        'The group schedules VM instance creation and deletion to achieve and '
+        'maintain an even number of managed instances across the selected '
+        'zones. The distribution is even when the number of managed instances '
+        'does not differ by more than 1 between any two zones. Recommended for'
+        ' highly available serving workloads.',
+    'BALANCED':
+        'The group prioritizes acquisition of resources, scheduling VMs in '
+        'zones where resources are available while distributing VMs as evenly '
+        'as possible across selected zones to minimize the impact of zonal '
+        'failure. Recommended for highly available serving or batch workloads '
+        'that do not require autoscaling.',
+    'ANY': 'The group picks zones for creating VM instances to fulfill the '
+           'requested number of VMs within present resource constraints and to '
+           'maximize utilization of unused zonal reservations. Recommended for '
+           'batch workloads that do not require high availability.'
+}
+
+
+def AddMigDistributionPolicyTargetShapeFlag(parser):
+  """Add --target-distribution-shape flag to the parser."""
+  help_text = """\
+      Specifies how a regional managed instance group distributes its instances
+      across zones within the region. The default shape is ``EVEN''.
+    """
+
+  parser.add_argument(
+      '--target-distribution-shape',
+      metavar='SHAPE',
+      type=lambda x: x.upper(),
+      choices=DISTRIBUTION_POLICY_TARGET_SHAPE_CHOICES,
+      help=help_text)
+
+
+def ValidateRegionalMigFlagsUsage(args, regional_flags_dests, igm_ref):
+  """For zonal MIGs validate that user did not supply any RMIG-specific flags.
+
+  Can be safely called from GA track for all flags, unknowns are ignored.
+
+  Args:
+    args: provided arguments.
+    regional_flags_dests: list of RMIG-specific flag dests (names of the
+      attributes used to store flag values in args).
+    igm_ref: resource reference of the target IGM.
+  """
+  if igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
+    return
+  for dest in regional_flags_dests:
+    if args.IsKnownAndSpecified(dest):
+      flag_name = args.GetFlag(dest)
+      error_message = ('Flag %s may be specified for regional managed instance '
+                       'groups only.') % flag_name
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name, message=error_message)

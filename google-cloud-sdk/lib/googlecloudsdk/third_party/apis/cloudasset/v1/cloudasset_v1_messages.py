@@ -511,6 +511,73 @@ class CloudassetAnalyzeMoveRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
+class CloudassetAssetsListRequest(_messages.Message):
+  r"""A CloudassetAssetsListRequest object.
+
+  Enums:
+    ContentTypeValueValuesEnum: Asset content type. If not specified, no
+      content but the asset name will be returned.
+
+  Fields:
+    assetTypes: A list of asset types to take a snapshot for. For example:
+      "compute.googleapis.com/Disk". Regular expression is also supported. For
+      example: * "compute.googleapis.com.*" snapshots resources whose asset
+      type starts with "compute.googleapis.com". * ".*Instance" snapshots
+      resources whose asset type ends with "Instance". * ".*Instance.*"
+      snapshots resources whose asset type contains "Instance". See
+      [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
+      regular expression syntax. If the regular expression does not match any
+      supported asset type, an INVALID_ARGUMENT error will be returned. If
+      specified, only matching assets will be returned, otherwise, it will
+      snapshot all asset types. See [Introduction to Cloud Asset
+      Inventory](https://cloud.google.com/asset-inventory/docs/overview) for
+      all supported asset types.
+    contentType: Asset content type. If not specified, no content but the
+      asset name will be returned.
+    pageSize: The maximum number of assets to be returned in a single
+      response. Default is 100, minimum is 1, and maximum is 1000.
+    pageToken: The `next_page_token` returned from the previous
+      `ListAssetsResponse`, or unspecified for the first `ListAssetsRequest`.
+      It is a continuation of a prior `ListAssets` call, and the API should
+      return the next page of assets.
+    parent: Required. Name of the organization or project the assets belong
+      to. Format: "organizations/[organization-number]" (such as
+      "organizations/123"), "projects/[project-number]" (such as "projects/my-
+      project-id"), or "projects/[project-id]" (such as "projects/12345").
+    readTime: Timestamp to take an asset snapshot. This can only be set to a
+      timestamp between the current time and the current time minus 35 days
+      (inclusive). If not specified, the current time will be used. Due to
+      delays in resource data collection and indexing, there is a volatile
+      window during which running the same query may get different results.
+  """
+
+  class ContentTypeValueValuesEnum(_messages.Enum):
+    r"""Asset content type. If not specified, no content but the asset name
+    will be returned.
+
+    Values:
+      CONTENT_TYPE_UNSPECIFIED: Unspecified content type.
+      RESOURCE: Resource metadata.
+      IAM_POLICY: The actual IAM policy set on a resource.
+      ORG_POLICY: The Cloud Organization Policy set on an asset.
+      ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
+      OS_INVENTORY: The runtime OS Inventory information.
+    """
+    CONTENT_TYPE_UNSPECIFIED = 0
+    RESOURCE = 1
+    IAM_POLICY = 2
+    ORG_POLICY = 3
+    ACCESS_POLICY = 4
+    OS_INVENTORY = 5
+
+  assetTypes = _messages.StringField(1, repeated=True)
+  contentType = _messages.EnumField('ContentTypeValueValuesEnum', 2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readTime = _messages.StringField(6)
+
+
 class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
   r"""A CloudassetBatchGetAssetsHistoryRequest object.
 
@@ -662,6 +729,25 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
   r"""A CloudassetSearchAllIamPoliciesRequest object.
 
   Fields:
+    assetTypes: Optional. A list of asset types that the IAM policies are
+      attached to. If empty, it will search the IAM policies that are attached
+      to all the [searchable asset types](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#searchable_asset_types). Regular
+      expressions are also supported. For example: *
+      "compute.googleapis.com.*" snapshots resources whose asset type starts
+      with "compute.googleapis.com". * ".*Instance" snapshots resources whose
+      asset type ends with "Instance". * ".*Instance.*" snapshots resources
+      whose asset type contains "Instance". See
+      [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
+      regular expression syntax. If the regular expression does not match any
+      supported asset type, an INVALID_ARGUMENT error will be returned.
+    orderBy: Optional. A comma-separated list of fields specifying the sorting
+      order of the results. The default order is ascending. Add " DESC" after
+      the field name to indicate descending order. Redundant space characters
+      are ignored. Example: "assetType DESC, resource". Only singular
+      primitive fields in the response are sortable: * resource * assetType *
+      project All the other fields such as repeated fields (e.g., `folders`)
+      and non-primitive fields (e.g., `policy`) are not supported.
     pageSize: Optional. The page size for search result pagination. Page size
       is capped at 500 even if a larger value is given. If set to zero, server
       will pick an appropriate default. Returned results may be fewer than
@@ -714,10 +800,12 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
       organizations/{ORGANIZATION_NUMBER} (e.g., "organizations/123456")
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  query = _messages.StringField(3)
-  scope = _messages.StringField(4, required=True)
+  assetTypes = _messages.StringField(1, repeated=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  query = _messages.StringField(5)
+  scope = _messages.StringField(6, required=True)
 
 
 class CloudassetSearchAllResourcesRequest(_messages.Message):
@@ -735,14 +823,16 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       See [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
       regular expression syntax. If the regular expression does not match any
       supported asset type, an INVALID_ARGUMENT error will be returned.
-    orderBy: Optional. A comma separated list of fields specifying the sorting
+    orderBy: Optional. A comma-separated list of fields specifying the sorting
       order of the results. The default order is ascending. Add " DESC" after
       the field name to indicate descending order. Redundant space characters
-      are ignored. Example: "location DESC, name". Only string fields in the
-      response are sortable, including `name`, `displayName`, `description`,
-      `location`. All the other fields such as repeated fields (e.g.,
-      `networkTags`), map fields (e.g., `labels`) and struct fields (e.g.,
-      `additionalAttributes`) are not supported.
+      are ignored. Example: "location DESC, name". Only singular primitive
+      fields in the response are sortable: * name * assetType * project *
+      displayName * description * location * kmsKey * createTime * updateTime
+      * state * parentFullResourceName * parentAssetType All the other fields
+      such as repeated fields (e.g., `networkTags`), map fields (e.g.,
+      `labels`) and struct fields (e.g., `additionalAttributes`) are not
+      supported.
     pageSize: Optional. The page size for search result pagination. Page size
       is capped at 500 even if a larger value is given. If set to zero, server
       will pick an appropriate default. Returned results may be fewer than
@@ -2571,9 +2661,24 @@ class IamPolicySearchResult(_messages.Message):
   r"""A result of IAM Policy search, containing information of an IAM policy.
 
   Fields:
+    assetType: The type of the resource associated with this IAM policy.
+      Example: `compute.googleapis.com/Disk`. To search against the
+      `asset_type`: * specify the `asset_types` field in your search request.
     explanation: Explanation about the IAM policy search result. It contains
       additional information to explain why the search result matches the
       query.
+    folders: The folder(s) that the IAM policy belongs to, in the form of
+      folders/{FOLDER_NUMBER}. This field is available when the IAM policy
+      belongs to one or more folders. To search against `folders`: * use a
+      field query. Example: `folders:(123 OR 456)` * use a free text query.
+      Example: `123` * specify the `scope` field as this folder in your search
+      request.
+    organization: The organization that the IAM policy belongs to, in the form
+      of organizations/{ORGANIZATION_NUMBER}. This field is available when the
+      IAM policy belongs to an organization. To search against `organization`:
+      * use a field query. Example: `organization:123` * use a free text
+      query. Example: `123` * specify the `scope` field as this organization
+      in your search request.
     policy: The IAM policy directly set on the given resource. Note that the
       original IAM policy can contain multiple bindings. This only contains
       the bindings that match the given query. For queries that don't contain
@@ -2599,10 +2704,13 @@ class IamPolicySearchResult(_messages.Message):
       field query. Example: `resource:organizations/123`
   """
 
-  explanation = _messages.MessageField('Explanation', 1)
-  policy = _messages.MessageField('Policy', 2)
-  project = _messages.StringField(3)
-  resource = _messages.StringField(4)
+  assetType = _messages.StringField(1)
+  explanation = _messages.MessageField('Explanation', 2)
+  folders = _messages.StringField(3, repeated=True)
+  organization = _messages.StringField(4)
+  policy = _messages.MessageField('Policy', 5)
+  project = _messages.StringField(6)
+  resource = _messages.StringField(7)
 
 
 class IdentitySelector(_messages.Message):
@@ -2721,6 +2829,22 @@ class Item(_messages.Message):
   originType = _messages.EnumField('OriginTypeValueValuesEnum', 5)
   type = _messages.EnumField('TypeValueValuesEnum', 6)
   updateTime = _messages.StringField(7)
+
+
+class ListAssetsResponse(_messages.Message):
+  r"""ListAssets response.
+
+  Fields:
+    assets: Assets.
+    nextPageToken: Token to retrieve the next page of results. It expires 72
+      hours after the page token for the first page is generated. Set to empty
+      if there are no remaining results.
+    readTime: Time the snapshot was taken.
+  """
+
+  assets = _messages.MessageField('Asset', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  readTime = _messages.StringField(3)
 
 
 class ListFeedsResponse(_messages.Message):
@@ -3236,8 +3360,10 @@ class ResourceSearchResult(_messages.Message):
     createTime: The create timestamp of this resource, at which the resource
       was created. The granularity is in seconds. Timestamp.nanos will always
       be 0. This field is available only when the resource's proto contains
-      it. To search against `create_time`: * use a field query (value in
-      seconds). Example: `createTime >= 1594294238`
+      it. To search against `create_time`: * use a field query. - value in
+      seconds since unix epoch. Example: `createTime > 1609459200` - value in
+      date string. Example: `createTime > 2021-01-01` - value in date-time
+      string (must be quoted). Example: `createTime > "2021-01-01T00:00:00"`
     description: One or more paragraphs of text description of this resource.
       Maximum length could be up to 1M bytes. This field is available only
       when the resource's proto contains it. To search against the
@@ -3327,7 +3453,10 @@ class ResourceSearchResult(_messages.Message):
       resource was last modified or deleted. The granularity is in seconds.
       Timestamp.nanos will always be 0. This field is available only when the
       resource's proto contains it. To search against `update_time`: * use a
-      field query (value in seconds). Example: `updateTime < 1594294238`
+      field query. - value in seconds since unix epoch. Example: `updateTime <
+      1609459200` - value in date string. Example: `updateTime < 2021-01-01` -
+      value in date-time string (must be quoted). Example: `updateTime <
+      "2021-01-01T00:00:00"`
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

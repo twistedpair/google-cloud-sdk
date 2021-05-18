@@ -155,6 +155,8 @@ class Build(_messages.Message):
       push all specified images. * FETCHSOURCE: time to fetch source. If the
       build does not specify source or images, these keys will not be
       included.
+    warnings: Output only. Non-fatal problems encountered during the execution
+      of the build.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -259,6 +261,7 @@ class Build(_messages.Message):
   tags = _messages.StringField(24, repeated=True)
   timeout = _messages.StringField(25)
   timing = _messages.MessageField('TimingValue', 26)
+  warnings = _messages.MessageField('Warning', 27, repeated=True)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -1490,6 +1493,35 @@ class Volume(_messages.Message):
 
   name = _messages.StringField(1)
   path = _messages.StringField(2)
+
+
+class Warning(_messages.Message):
+  r"""A non-fatal problem encountered during the execution of the build.
+
+  Enums:
+    PriorityValueValuesEnum: The priority for this warning.
+
+  Fields:
+    priority: The priority for this warning.
+    text: Explanation of the warning generated.
+  """
+
+  class PriorityValueValuesEnum(_messages.Enum):
+    r"""The priority for this warning.
+
+    Values:
+      PRIORITY_UNSPECIFIED: Should not be used.
+      INFO: e.g. deprecation warnings and alternative feature highlights.
+      WARNING: e.g. automated detection of possible issues with the build.
+      ALERT: e.g. alerts that a feature used in the build is pending removal
+    """
+    PRIORITY_UNSPECIFIED = 0
+    INFO = 1
+    WARNING = 2
+    ALERT = 3
+
+  priority = _messages.EnumField('PriorityValueValuesEnum', 1)
+  text = _messages.StringField(2)
 
 
 class WorkerConfig(_messages.Message):

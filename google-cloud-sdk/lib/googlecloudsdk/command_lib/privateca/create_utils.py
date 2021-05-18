@@ -42,7 +42,8 @@ def _ParseCAResourceArgs(args):
   resource_args.ValidateResourceIsCompleteIfSpecified(args, 'from_ca')
 
   ca_ref = args.CONCEPTS.certificate_authority.Parse()
-  resource_args.ValidateResourceLocation(ca_ref, 'CERTIFICATE_AUTHORITY')
+  resource_args.ValidateResourceLocation(
+      ca_ref, 'CERTIFICATE_AUTHORITY', version='v1beta1')
 
   kms_key_version_ref = args.CONCEPTS.kms_key_version.Parse()
   if kms_key_version_ref and ca_ref.locationsId != kms_key_version_ref.locationsId:
@@ -71,8 +72,7 @@ def CreateCAFromArgs(args, is_subordinate):
   client = privateca_base.GetClientInstance()
   messages = privateca_base.GetMessagesModule()
 
-  ca_ref, source_ca_ref, issuer_ref = _ParseCAResourceArgs(
-      args)
+  ca_ref, source_ca_ref, issuer_ref = _ParseCAResourceArgs(args)
   source_ca = None
 
   if source_ca_ref:

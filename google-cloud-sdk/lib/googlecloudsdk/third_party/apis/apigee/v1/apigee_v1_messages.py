@@ -5186,11 +5186,13 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       CREATING: Resource is being created.
       ACTIVE: Resource is provisioned and ready to use.
       DELETING: The resource is being deleted.
+      UPDATING: The resource is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    UPDATING = 4
 
   apiProxyType = _messages.EnumField('ApiProxyTypeValueValuesEnum', 1)
   createdAt = _messages.IntegerField(2)
@@ -5317,11 +5319,13 @@ class GoogleCloudApigeeV1EnvironmentGroup(_messages.Message):
       CREATING: Resource is being created.
       ACTIVE: Resource is provisioned and ready to use.
       DELETING: The resource is being deleted.
+      UPDATING: The resource is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    UPDATING = 4
 
   createdAt = _messages.IntegerField(1)
   hostnames = _messages.StringField(2, repeated=True)
@@ -5357,11 +5361,13 @@ class GoogleCloudApigeeV1EnvironmentGroupAttachment(_messages.Message):
       CREATING: Resource is being created.
       ACTIVE: Resource is provisioned and ready to use.
       DELETING: The resource is being deleted.
+      UPDATING: The resource is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    UPDATING = 4
 
   createdAt = _messages.IntegerField(1)
   environment = _messages.StringField(2)
@@ -5722,11 +5728,13 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
       CREATING: Resource is being created.
       ACTIVE: Resource is provisioned and ready to use.
       DELETING: The resource is being deleted.
+      UPDATING: The resource is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    UPDATING = 4
 
   createdAt = _messages.IntegerField(1)
   description = _messages.StringField(2)
@@ -5770,11 +5778,13 @@ class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
       CREATING: Resource is being created.
       ACTIVE: Resource is provisioned and ready to use.
       DELETING: The resource is being deleted.
+      UPDATING: The resource is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    UPDATING = 4
 
   createdAt = _messages.IntegerField(1)
   environment = _messages.StringField(2)
@@ -6657,11 +6667,13 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       CREATING: Resource is being created.
       ACTIVE: Resource is provisioned and ready to use.
       DELETING: The resource is being deleted.
+      UPDATING: The resource is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
+    UPDATING = 4
 
   class SubscriptionTypeValueValuesEnum(_messages.Enum):
     r"""Output only. DEPRECATED: This will eventually be replaced by
@@ -7177,13 +7189,13 @@ class GoogleCloudApigeeV1ReportInstanceStatusRequest(_messages.Message):
       prevent an old status from overwriting a newer one. An instance should
       space out it's status reports so that clock skew does not play a factor.
     resources: Status for config resources
-    specs: Resource specs.
+    spec: Resource spec.
   """
 
   instanceUid = _messages.StringField(1)
   reportTime = _messages.StringField(2)
   resources = _messages.MessageField('GoogleCloudApigeeV1ResourceStatus', 3, repeated=True)
-  specs = _messages.MessageField('GoogleCloudApigeeV1ResourceSpec', 4, repeated=True)
+  spec = _messages.MessageField('GoogleCloudApigeeV1ResourceSpec', 4)
 
 
 class GoogleCloudApigeeV1ReportInstanceStatusResponse(_messages.Message):
@@ -7354,7 +7366,9 @@ class GoogleCloudApigeeV1RevisionStatus(_messages.Message):
 
   Fields:
     errors: Errors reported when attempting to load this revision.
-    jsonSpec: The json content of the resource revision.
+    jsonSpec: The json content of the resource revision. Large specs should be
+      sent individually via the spec field to avoid hitting request size
+      limits.
     replicas: The number of replicas that have successfully loaded this
       revision.
     revisionId: The revision of the resource.

@@ -36,10 +36,10 @@ _FallbackLocations = [
 ]
 
 
-def GetSupportedLocations():
+def GetSupportedLocations(version='v1beta1'):
   """Gets a list of supported Private CA locations for the current project."""
-  client = base.GetClientInstance()
-  messages = base.GetMessagesModule()
+  client = base.GetClientInstance(api_version=version)
+  messages = base.GetMessagesModule(api_version=version)
 
   project = properties.VALUES.core.project.GetOrFail()
 

@@ -29,6 +29,26 @@ from googlecloudsdk.core import properties
 _cloud_api_thread_local_storage = threading.local()
 
 
+def _get_api_class(provider):
+  """Returns a CloudApi subclass corresponding to the requested provider.
+
+  Args:
+    provider (storage_url.ProviderPrefix): Cloud provider prefix.
+
+  Returns:
+    An appropriate CloudApi subclass.
+
+  Raises:
+    ValueError: If provider is not a cloud scheme in storage_url.ProviderPrefix.
+  """
+  if provider == storage_url.ProviderPrefix.GCS:
+    return gcs_api.GcsApi
+  elif provider == storage_url.ProviderPrefix.S3:
+    return s3_api.S3Api
+  else:
+    raise ValueError('Provider must be a valid storage_url.ProviderPrefix.')
+
+
 def get_api(provider):
   """Returns thread local API instance for cloud provider.
 
@@ -42,21 +62,33 @@ def get_api(provider):
     CloudApi client object for provider argument.
 
   Raises:
-    ValueError: Invalid API provider.
+    ValueError: If provider is not a cloud scheme in storage_url.ProviderPrefix.
   """
   if properties.VALUES.storage.use_threading_local.GetBool():
     api_client = getattr(_cloud_api_thread_local_storage, provider.value, None)
     if api_client:
       return api_client
 
-  if provider == storage_url.ProviderPrefix.GCS:
-    api_client = gcs_api.GcsApi()
-  elif provider == storage_url.ProviderPrefix.S3:
-    api_client = s3_api.S3Api()
-  else:
-    raise ValueError('Provider must be a valid storage_url.ProviderPrefix.')
+  api_class = _get_api_class(provider)
+  api_client = api_class()
 
   if properties.VALUES.storage.use_threading_local.GetBool():
     setattr(_cloud_api_thread_local_storage, provider.value, api_client)
 
   return api_client
+
+
+def get_capabilities(provider):
+  """Gets the capabilities of a cloud provider.
+
+  Args:
+    provider (storage_url.ProviderPrefix): Cloud provider prefix.
+
+  Returns:
+    The CloudApi.capabilities attribute for the requested provider.
+
+  Raises:
+    ValueError: If provider is not a cloud scheme in storage_url.ProviderPrefix.
+  """
+  api_class = _get_api_class(provider)
+  return api_class.capabilities

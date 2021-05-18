@@ -38,6 +38,7 @@ class GoogleCloudRecommenderV1Impact(_messages.Message):
   Fields:
     category: Category that is being targeted.
     costProjection: Use with CategoryType.COST
+    securityProjection: Use with CategoryType.SECURITY
   """
 
   class CategoryValueValuesEnum(_messages.Enum):
@@ -59,6 +60,7 @@ class GoogleCloudRecommenderV1Impact(_messages.Message):
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   costProjection = _messages.MessageField('GoogleCloudRecommenderV1CostProjection', 2)
+  securityProjection = _messages.MessageField('GoogleCloudRecommenderV1SecurityProjection', 3)
 
 
 class GoogleCloudRecommenderV1Insight(_messages.Message):
@@ -778,6 +780,46 @@ class GoogleCloudRecommenderV1RecommendationStateInfo(_messages.Message):
   stateMetadata = _messages.MessageField('StateMetadataValue', 2)
 
 
+class GoogleCloudRecommenderV1SecurityProjection(_messages.Message):
+  r"""Contains various ways of describing the impact on Security.
+
+  Messages:
+    DetailsValue: Additional security impact details that is provided by the
+      recommender.
+
+  Fields:
+    details: Additional security impact details that is provided by the
+      recommender.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValue(_messages.Message):
+    r"""Additional security impact details that is provided by the
+    recommender.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  details = _messages.MessageField('DetailsValue', 1)
+
+
 class GoogleCloudRecommenderV1ValueMatcher(_messages.Message):
   r"""Contains various matching options for values for a GCP resource field.
 
@@ -828,7 +870,12 @@ class RecommenderBillingAccountsLocationsInsightTypesInsightsListRequest(_messag
 
   Fields:
     filter: Optional. Filter expression to restrict the insights returned.
-      Supported filter fields: state Eg: `state:"DISMISSED" or state:"ACTIVE"
+      Supported filter fields: * `stateInfo.state` * `insightSubtype` *
+      `severity` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
+      DISMISSED` * `insightSubtype = PERMISSIONS_USAGE` * `severity = CRITICAL
+      OR severity = HIGH` * `stateInfo.state = ACTIVE AND (severity = CRITICAL
+      OR severity = HIGH)` (These expressions are based on the filter language
+      described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -889,8 +936,12 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsListRequest(
 
   Fields:
     filter: Filter expression to restrict the recommendations returned.
-      Supported filter fields: state_info.state Eg:
-      `state_info.state:"DISMISSED" or state_info.state:"FAILED"
+      Supported filter fields: * `state_info.state` * `recommenderSubtype` *
+      `priority` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
+      DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR recommenderSubtype =
+      REPLACE_ROLE` * `priority = P1 OR priority = P2` * `stateInfo.state =
+      ACTIVE AND (priority = P1 OR priority = P2)` (These expressions are
+      based on the filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -976,7 +1027,12 @@ class RecommenderFoldersLocationsInsightTypesInsightsListRequest(_messages.Messa
 
   Fields:
     filter: Optional. Filter expression to restrict the insights returned.
-      Supported filter fields: state Eg: `state:"DISMISSED" or state:"ACTIVE"
+      Supported filter fields: * `stateInfo.state` * `insightSubtype` *
+      `severity` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
+      DISMISSED` * `insightSubtype = PERMISSIONS_USAGE` * `severity = CRITICAL
+      OR severity = HIGH` * `stateInfo.state = ACTIVE AND (severity = CRITICAL
+      OR severity = HIGH)` (These expressions are based on the filter language
+      described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1034,8 +1090,12 @@ class RecommenderFoldersLocationsRecommendersRecommendationsListRequest(_message
 
   Fields:
     filter: Filter expression to restrict the recommendations returned.
-      Supported filter fields: state_info.state Eg:
-      `state_info.state:"DISMISSED" or state_info.state:"FAILED"
+      Supported filter fields: * `state_info.state` * `recommenderSubtype` *
+      `priority` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
+      DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR recommenderSubtype =
+      REPLACE_ROLE` * `priority = P1 OR priority = P2` * `stateInfo.state =
+      ACTIVE AND (priority = P1 OR priority = P2)` (These expressions are
+      based on the filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1126,7 +1186,12 @@ class RecommenderOrganizationsLocationsInsightTypesInsightsListRequest(_messages
 
   Fields:
     filter: Optional. Filter expression to restrict the insights returned.
-      Supported filter fields: state Eg: `state:"DISMISSED" or state:"ACTIVE"
+      Supported filter fields: * `stateInfo.state` * `insightSubtype` *
+      `severity` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
+      DISMISSED` * `insightSubtype = PERMISSIONS_USAGE` * `severity = CRITICAL
+      OR severity = HIGH` * `stateInfo.state = ACTIVE AND (severity = CRITICAL
+      OR severity = HIGH)` (These expressions are based on the filter language
+      described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1186,8 +1251,12 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsListRequest(_m
 
   Fields:
     filter: Filter expression to restrict the recommendations returned.
-      Supported filter fields: state_info.state Eg:
-      `state_info.state:"DISMISSED" or state_info.state:"FAILED"
+      Supported filter fields: * `state_info.state` * `recommenderSubtype` *
+      `priority` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
+      DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR recommenderSubtype =
+      REPLACE_ROLE` * `priority = P1 OR priority = P2` * `stateInfo.state =
+      ACTIVE AND (priority = P1 OR priority = P2)` (These expressions are
+      based on the filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1273,7 +1342,12 @@ class RecommenderProjectsLocationsInsightTypesInsightsListRequest(_messages.Mess
 
   Fields:
     filter: Optional. Filter expression to restrict the insights returned.
-      Supported filter fields: state Eg: `state:"DISMISSED" or state:"ACTIVE"
+      Supported filter fields: * `stateInfo.state` * `insightSubtype` *
+      `severity` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
+      DISMISSED` * `insightSubtype = PERMISSIONS_USAGE` * `severity = CRITICAL
+      OR severity = HIGH` * `stateInfo.state = ACTIVE AND (severity = CRITICAL
+      OR severity = HIGH)` (These expressions are based on the filter language
+      described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
@@ -1331,8 +1405,12 @@ class RecommenderProjectsLocationsRecommendersRecommendationsListRequest(_messag
 
   Fields:
     filter: Filter expression to restrict the recommendations returned.
-      Supported filter fields: state_info.state Eg:
-      `state_info.state:"DISMISSED" or state_info.state:"FAILED"
+      Supported filter fields: * `state_info.state` * `recommenderSubtype` *
+      `priority` Examples: * `stateInfo.state = ACTIVE OR stateInfo.state =
+      DISMISSED` * `recommenderSubtype = REMOVE_ROLE OR recommenderSubtype =
+      REPLACE_ROLE` * `priority = P1 OR priority = P2` * `stateInfo.state =
+      ACTIVE AND (priority = P1 OR priority = P2)` (These expressions are
+      based on the filter language described at https://google.aip.dev/160)
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.

@@ -639,6 +639,7 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
     state: Output only. The current state of the cluster.
     uid: Output only. The unique identifier of the cluster.
     updateTime: Output only. The time at which this cluster was last updated.
+    workloadIdentityConfig: Output only. Workload Identity settings.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -710,6 +711,7 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 12)
   uid = _messages.StringField(13)
   updateTime = _messages.StringField(14)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 15)
 
 
 class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
@@ -1286,6 +1288,7 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
     state: Output only. The current state of the cluster.
     uid: Output only. The unique identifier of the cluster.
     updateTime: Output only. The time at which this cluster was last updated.
+    workloadIdentityConfig: Output only. Workload Identity settings.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1359,6 +1362,7 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 14)
   uid = _messages.StringField(15)
   updateTime = _messages.StringField(16)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 17)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
@@ -1841,6 +1845,21 @@ class GoogleCloudGkemulticloudV1ListAzureNodePoolsResponse(_messages.Message):
 
   azureNodePools = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodePool', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudGkemulticloudV1WorkloadIdentityConfig(_messages.Message):
+  r"""Workload Identity settings.
+
+  Fields:
+    identityProvider: The ID of the OIDC Identity Provider (IdP) associated to
+      the Workload Identity Pool.
+    issuerUri: The OIDC issuer URL for this cluster.
+    worloadPool: The Workload Identity Pool associated to the cluster.
+  """
+
+  identityProvider = _messages.StringField(1)
+  issuerUri = _messages.StringField(2)
+  worloadPool = _messages.StringField(3)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):

@@ -90,12 +90,14 @@ class GoogleCloudResourcesettingsV1SettingMetadata(_messages.Message):
       STRING: A string setting.
       STRING_SET: A string set setting.
       ENUM_VALUE: A Enum setting
+      DURATION_VALUE: A Duration setting
     """
     DATA_TYPE_UNSPECIFIED = 0
     BOOLEAN = 1
     STRING = 2
     STRING_SET = 3
     ENUM_VALUE = 4
+    DURATION_VALUE = 5
 
   dataType = _messages.EnumField('DataTypeValueValuesEnum', 1)
   defaultValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 2)
@@ -109,15 +111,17 @@ class GoogleCloudResourcesettingsV1Value(_messages.Message):
 
   Fields:
     booleanValue: Defines this value as being a boolean value.
+    durationValue: Defines this value as being a Duration.
     enumValue: Defines this value as being a Enum.
     stringSetValue: Defines this value as being a StringSet.
     stringValue: Defines this value as being a string value.
   """
 
   booleanValue = _messages.BooleanField(1)
-  enumValue = _messages.MessageField('GoogleCloudResourcesettingsV1ValueEnumValue', 2)
-  stringSetValue = _messages.MessageField('GoogleCloudResourcesettingsV1ValueStringSet', 3)
-  stringValue = _messages.StringField(4)
+  durationValue = _messages.StringField(2)
+  enumValue = _messages.MessageField('GoogleCloudResourcesettingsV1ValueEnumValue', 3)
+  stringSetValue = _messages.MessageField('GoogleCloudResourcesettingsV1ValueStringSet', 4)
+  stringValue = _messages.StringField(5)
 
 
 class GoogleCloudResourcesettingsV1ValueEnumValue(_messages.Message):

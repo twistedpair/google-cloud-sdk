@@ -526,15 +526,14 @@ def ArgsDeploy(parser):
       default=False,
       help='Skip caching mechanisms involved in the deployment process, in '
       'particular do not use cached dependencies during the build step.')
-  staging_group = parser.add_mutually_exclusive_group()
+  staging_group = parser.add_mutually_exclusive_group(hidden=True)
   staging_group.add_argument(
       '--skip-staging',
       action='store_true',
       default=False,
-      hidden=True,
       help='THIS ARGUMENT NEEDS HELP TEXT.')
   staging_group.add_argument(
-      '--staging-command', hidden=True, help='THIS ARGUMENT NEEDS HELP TEXT.')
+      '--staging-command', help='THIS ARGUMENT NEEDS HELP TEXT.')
 
 
 def _MakeStager(skip_staging, use_beta_stager, staging_command, staging_area):
