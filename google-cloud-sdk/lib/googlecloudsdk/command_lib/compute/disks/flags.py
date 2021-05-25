@@ -154,9 +154,9 @@ SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
 
 SOURCE_INSTANT_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='source instant snapshot',
-    completer=compute_completers.AllInstantSnapshotsCompleter,
+    completer=compute_completers.InstantSnapshotsCompleter,
     name='--source-instant-snapshot',
-    zonal_collection='compute.instantSnapshots',
+    zonal_collection='compute.zoneInstantSnapshots',
     regional_collection='compute.regionInstantSnapshots',
     plural=False,
     required=False,

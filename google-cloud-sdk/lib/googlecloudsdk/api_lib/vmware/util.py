@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,15 +22,15 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
 
-_DEFAULT_API_VERSION = 'v1alpha1'
+_DEFAULT_API_VERSION = 'v1'
 
 
 class VmwareClientBase(object):
   """Base class for vwmare API client wrappers."""
 
   def __init__(self, api_version=_DEFAULT_API_VERSION):
-    self._client = apis.GetClientInstance('sddc', api_version)
-    self._messages = apis.GetMessagesModule('sddc', api_version)
+    self._client = apis.GetClientInstance('vmwareengine', api_version)
+    self._messages = apis.GetMessagesModule('vmwareengine', api_version)
     self.service = None
     self.operations_service = self.client.projects_locations_operations
 
@@ -44,7 +44,7 @@ class VmwareClientBase(object):
 
   def WaitForOperation(self, operation, message, is_delete=False):
     operation_ref = resources.REGISTRY.Parse(
-        operation.name, collection='sddc.projects.locations.operations')
+        operation.name, collection='vmwareengine.projects.locations.operations')
     if is_delete:
       poller = waiter.CloudOperationPollerNoResources(self.operations_service)
     else:

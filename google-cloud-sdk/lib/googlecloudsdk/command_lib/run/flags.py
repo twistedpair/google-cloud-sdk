@@ -887,6 +887,27 @@ def AddWaitForCompletionFlag(parser):
       'If not set, polling completes when the job has started.')
 
 
+def AddJobAndTaskTimeoutFlags(parser):
+  """Add job flags for job and task deadline."""
+  parser.add_argument(
+      '--job-timeout',
+      type=arg_parsers.Duration(lower_bound='1s'),
+      help='Set the maximum time (deadline) the job can run for. If the job '
+      'does not complete within this time, it will be killed. It is specified '
+      'as a duration; for example, "10m5s" is ten minutes, and five seconds. '
+      'If you don\'t specify a unit, seconds is assumed. For example, "10" is '
+      '10 seconds.')
+  parser.add_argument(
+      '--task-timeout',
+      type=arg_parsers.Duration(lower_bound='1s'),
+      help='Set the maximum time (deadline) a job task attempt can run for. '
+      'In the case of retries, this deadline applies to each attempt of a task. '
+      'If the task attempt does not complete within this time, it will be '
+      'killed. It is specified as a duration; for example, "10m5s" is ten '
+      'minutes, and five seconds. If you don\'t specify a unit, seconds is '
+      'assumed. For example, "10" is 10 seconds.')
+
+
 def AddBinAuthzPolicyFlags(parser, with_clear=True):
   """Add flags for BinAuthz."""
   policy_group = parser
@@ -1186,8 +1207,8 @@ def _GetIngressChanges(args):
             args.ingress, platform))
 
 
-def GetConfigurationChanges(args):
-  """Returns a list of changes to Configuration, based on the flags set."""
+def _GetConfigurationChanges(args):
+  """Returns a list of changes shared by multiple resources, based on the flags set."""
   changes = []
 
   # Set client name and version regardless of whether or not it was specified.
@@ -1209,9 +1230,6 @@ def GetConfigurationChanges(args):
   if _HasEnvChanges(args):
     changes.append(_GetEnvChanges(args))
 
-  if _HasTrafficChanges(args):
-    changes.append(_GetTrafficChanges(args))
-
   if _HasCloudSQLChanges(args):
     region = GetRegion(args)
     project = (
@@ -1227,18 +1245,10 @@ def GetConfigurationChanges(args):
   if _HasConfigMapsChanges(args):
     changes.extend(_GetConfigMapsChanges(args))
 
-  if 'no_traffic' in args and args.no_traffic:
-    changes.append(config_changes.NoTrafficChange())
-
   if 'cpu' in args and args.cpu:
     changes.append(config_changes.ResourceChanges(cpu=args.cpu))
   if 'memory' in args and args.memory:
     changes.append(config_changes.ResourceChanges(memory=args.memory))
-  if 'concurrency' in args and args.concurrency:
-    changes.append(
-        config_changes.ConcurrencyChanges(concurrency=args.concurrency))
-  if 'timeout' in args and args.timeout:
-    changes.append(config_changes.TimeoutChanges(timeout=args.timeout))
   if 'service_account' in args and args.service_account:
     changes.append(
         config_changes.ServiceAccountChanges(
@@ -1253,48 +1263,18 @@ def GetConfigurationChanges(args):
         clear=args.clear_labels if 'clear_labels' in args else False)
     if diff.MayHaveUpdates():
       changes.append(config_changes.LabelChanges(diff))
-  if 'update_annotations' in args and args.update_annotations:
-    for key, value in args.update_annotations.items():
-      changes.append(config_changes.SetAnnotationChange(key, value))
-  if 'revision_suffix' in args and args.revision_suffix:
-    changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
-  if 'sandbox' in args and args.sandbox:
-    changes.append(config_changes.SandboxChange(args.sandbox))
   if 'vpc_connector' in args and args.vpc_connector:
     changes.append(config_changes.VpcConnectorChange(args.vpc_connector))
   if FlagIsExplicitlySet(args, 'vpc_egress'):
     changes.append(
         config_changes.SetTemplateAnnotationChange(
             container_resource.EGRESS_SETTINGS_ANNOTATION, args.vpc_egress))
-  if 'clear_vpc_connector' in args and args.clear_vpc_connector:
-    # MUST be after 'vpc_egress' change.
-    changes.append(config_changes.ClearVpcConnectorChange())
-  if 'connectivity' in args and args.connectivity:
-    if args.connectivity == 'internal':
-      changes.append(config_changes.EndpointVisibilityChange(True))
-    elif args.connectivity == 'external':
-      changes.append(config_changes.EndpointVisibilityChange(False))
-  if FlagIsExplicitlySet(args, 'ingress'):
-    changes.append(_GetIngressChanges(args))
   if 'command' in args and args.command is not None:
     # Allow passing an empty string here to reset the field
     changes.append(config_changes.ContainerCommandChange(args.command))
   if 'args' in args and args.args is not None:
     # Allow passing an empty string here to reset the field
     changes.append(config_changes.ContainerArgsChange(args.args))
-  if FlagIsExplicitlySet(args, 'port'):
-    changes.append(config_changes.ContainerPortChange(port=args.port))
-  if FlagIsExplicitlySet(args, 'use_http2'):
-    changes.append(config_changes.ContainerPortChange(use_http2=args.use_http2))
-  if FlagIsExplicitlySet(args, 'tag'):
-    # MUST be after 'revision_suffix' change
-    changes.append(config_changes.TagOnDeployChange(args.tag))
-  if FlagIsExplicitlySet(args, 'parallelism'):
-    changes.append(config_changes.SpecChange('parallelism', args.parallelism))
-  if FlagIsExplicitlySet(args, 'tasks'):
-    changes.append(config_changes.SpecChange('completions', args.tasks))
-  if FlagIsExplicitlySet(args, 'max_retries'):
-    changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
   if FlagIsExplicitlySet(args, 'binary_authorization'):
     changes.append(
         config_changes.SetAnnotationChange(
@@ -1311,6 +1291,67 @@ def GetConfigurationChanges(args):
     changes.append(
         config_changes.SetTemplateAnnotationChange(
             container_resource.CMEK_KEY_ANNOTATION, args.key))
+  return changes
+
+
+def GetServiceConfigurationChanges(args):
+  """Returns a list of changes to the service config, based on the flags set."""
+  changes = _GetConfigurationChanges(args)
+
+  changes.extend(_GetScalingChanges(args))
+  if _HasTrafficChanges(args):
+    changes.append(_GetTrafficChanges(args))
+  if 'no_traffic' in args and args.no_traffic:
+    changes.append(config_changes.NoTrafficChange())
+  if 'concurrency' in args and args.concurrency:
+    changes.append(
+        config_changes.ConcurrencyChanges(concurrency=args.concurrency))
+  if 'timeout' in args and args.timeout:
+    changes.append(config_changes.TimeoutChanges(timeout=args.timeout))
+  if 'update_annotations' in args and args.update_annotations:
+    for key, value in args.update_annotations.items():
+      changes.append(config_changes.SetAnnotationChange(key, value))
+  if 'revision_suffix' in args and args.revision_suffix:
+    changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
+  if 'sandbox' in args and args.sandbox:
+    changes.append(config_changes.SandboxChange(args.sandbox))
+  if 'clear_vpc_connector' in args and args.clear_vpc_connector:
+    # MUST be after 'vpc_egress' change.
+    changes.append(config_changes.ClearVpcConnectorChange())
+  if 'connectivity' in args and args.connectivity:
+    if args.connectivity == 'internal':
+      changes.append(config_changes.EndpointVisibilityChange(True))
+    elif args.connectivity == 'external':
+      changes.append(config_changes.EndpointVisibilityChange(False))
+  if FlagIsExplicitlySet(args, 'ingress'):
+    changes.append(_GetIngressChanges(args))
+  if FlagIsExplicitlySet(args, 'port'):
+    changes.append(config_changes.ContainerPortChange(port=args.port))
+  if FlagIsExplicitlySet(args, 'use_http2'):
+    changes.append(config_changes.ContainerPortChange(use_http2=args.use_http2))
+  if FlagIsExplicitlySet(args, 'tag'):
+    # MUST be after 'revision_suffix' change
+    changes.append(config_changes.TagOnDeployChange(args.tag))
+
+  return changes
+
+
+def GetJobConfigurationChanges(args):
+  """Returns a list of changes to the job config, based on the flags set."""
+  changes = _GetConfigurationChanges(args)
+
+  if FlagIsExplicitlySet(args, 'parallelism'):
+    changes.append(config_changes.SpecChange('parallelism', args.parallelism))
+  if FlagIsExplicitlySet(args, 'tasks'):
+    changes.append(config_changes.SpecChange('completions', args.tasks))
+  if FlagIsExplicitlySet(args, 'max_retries'):
+    changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
+  if FlagIsExplicitlySet(args, 'job_timeout'):
+    changes.append(
+        config_changes.SpecChange('activeDeadlineSeconds', args.job_timeout))
+  if FlagIsExplicitlySet(args, 'task_timeout'):
+    changes.append(config_changes.JobInstanceDeadlineChange(args.task_timeout))
+
   return changes
 
 

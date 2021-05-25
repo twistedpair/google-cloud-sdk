@@ -56,6 +56,11 @@ def CertificateAttributeConfig(fallthroughs=None):
       fallthroughs=fallthroughs or [])
 
 
+def CertificateTemplateAttributeConfig():
+  # TODO(b/186143764): GA Autocompleters
+  return concepts.ResourceParameterAttributeConfig(name='certificate template')
+
+
 def CaPoolAttributeConfig(display_name='pool', fallthroughs=None):
   # TODO(b/186143764): GA Autocompleters
   return concepts.ResourceParameterAttributeConfig(
@@ -164,6 +169,7 @@ def CreateReusableConfigResourceSpec(location_fallthroughs=None):
       plural=False)
   return concepts.ResourceSpec(
       'privateca.projects.locations.reusableConfigs',
+      api_version='v1beta1',
       resource_name='reusable config',
       reusableConfigsId=ReusableConfigAttributeConfig(),
       locationsId=LocationAttributeConfig(fallthroughs=location_fallthroughs),
@@ -179,6 +185,7 @@ def CreateCertificateAuthorityResourceSpec(
     ca_id_fallthroughs=None):
   return concepts.ResourceSpec(
       'privateca.projects.locations.certificateAuthorities',
+      api_version='v1beta1',
       # This will be formatted and used as {resource} in the help text.
       resource_name=display_name,
       certificateAuthoritiesId=CertificateAuthorityAttributeConfig(
@@ -240,10 +247,24 @@ def CreateCertResourceSpec(display_name, id_fallthroughs=None):
       disable_auto_completers=False)
 
 
+def CreateCertificateTemplateResourceSpec(display_name):
+  # TODO(b/186143764): GA Autocompleters
+  return concepts.ResourceSpec(
+      'privateca.projects.locations.certificateTemplates',
+      api_version='v1',
+      # This will be formatted and used as {resource} in the help text.
+      resource_name=display_name,
+      certificateTemplatesId=CertificateTemplateAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=True)
+
+
 # TODO(b/177604350): Remove Beta code paths
 def CreateCertificateResourceSpec(display_name, id_fallthroughs=None):
   return concepts.ResourceSpec(
       'privateca.projects.locations.certificateAuthorities.certificates',
+      api_version='v1beta1',
       # This will be formatted and used as {resource} in the help text.
       resource_name=display_name,
       certificatesId=CertificateAttributeConfig(
@@ -338,6 +359,23 @@ def AddCertPositionalResourceArg(parser, verb):
       arg_name,
       CreateCertResourceSpec(arg_name),
       'The certificate {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddCertificateTemplatePositionalResourceArg(parser, verb):
+  """Add a positional resource argument for a certificate template.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  arg_name = 'CERTIFICATE_TEMPLATE'
+  concept_parsers.ConceptParser.ForResource(
+      arg_name,
+      CreateCertificateTemplateResourceSpec(arg_name),
+      'The template {}.'.format(verb),
       required=True).AddToParser(parser)
 
 

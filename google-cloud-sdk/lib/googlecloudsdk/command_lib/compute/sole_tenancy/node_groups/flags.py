@@ -110,6 +110,16 @@ def AddLocationHintArgToParser(parser):
       ))
 
 
+def AddShareSettingsArgToParser(parser):
+  """Add --share-setting flag."""
+  parser.add_argument(
+      '--share-setting',
+      help="""
+Specify if this node group is shared; and if so, the type of sharing:
+share with specific projects or folders.
+""")
+
+
 def GetMaintenancePolicyEnumMapper(messages):
   return arg_utils.ChoiceEnumMapper(
       '--maintenance-policy',

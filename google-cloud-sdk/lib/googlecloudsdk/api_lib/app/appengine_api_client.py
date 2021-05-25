@@ -148,7 +148,8 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
                     service_config,
                     manifest,
                     build,
-                    extra_config_settings=None):
+                    extra_config_settings=None,
+                    service_account_email=None):
     """Updates and deploys new app versions.
 
     Args:
@@ -164,12 +165,16 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         present during standard deploys.
       extra_config_settings: dict, client config settings to pass to the server
         as beta settings.
+      service_account_email: Identity of this deployed version. If not set, the
+        Admin API will fall back to use the App Engine default appspot service
+        account.
+
     Returns:
       The Admin API Operation, unfinished.
     """
-    operation = self._CreateVersion(service_name, version_id,
-                                    service_config, manifest, build,
-                                    extra_config_settings)
+    operation = self._CreateVersion(service_name, version_id, service_config,
+                                    manifest, build, extra_config_settings,
+                                    service_account_email)
 
     message = 'Updating service [{service}]'.format(service=service_name)
     if service_config.env in [env.FLEX, env.MANAGED_VMS]:
@@ -221,7 +226,8 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
                      service_config,
                      manifest,
                      build,
-                     extra_config_settings=None):
+                     extra_config_settings=None,
+                     service_account_email=None):
     """Begins the updates and deployment of new app versions.
 
     Args:
@@ -231,17 +237,22 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         file.
       manifest: Dictionary mapping source files to Google Cloud Storage
         locations.
-      build: BuildArtifact, a wrapper which contains either the build
-        ID for an in-progress parallel build, the name of the container image
-        for a serial build, or the options to pass to Appengine for a
-        server-side build.
+      build: BuildArtifact, a wrapper which contains either the build ID for an
+        in-progress parallel build, the name of the container image for a serial
+        build, or the options to pass to Appengine for a server-side build.
       extra_config_settings: dict, client config settings to pass to the server
         as beta settings.
+      service_account_email: Identity of this deployed version. If not set, the
+        Admin API will fall back to use the App Engine default appspot service
+        account.
+
     Returns:
       The Admin API Operation, unfinished.
     """
-    version_resource = self._CreateVersionResource(
-        service_config, manifest, version_id, build, extra_config_settings)
+    version_resource = self._CreateVersionResource(service_config, manifest,
+                                                   version_id, build,
+                                                   extra_config_settings,
+                                                   service_account_email)
     create_request = self.messages.AppengineAppsServicesVersionsCreateRequest(
         parent=self._GetServiceRelativeName(service_name=service_name),
         version=version_resource)
@@ -642,8 +653,13 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
         batch_size=100, batch_size_attribute='pageSize')
     return [operations_util.Operation(op) for op in operations]
 
-  def _CreateVersionResource(self, service_config, manifest, version_id, build,
-                             extra_config_settings=None):
+  def _CreateVersionResource(self,
+                             service_config,
+                             manifest,
+                             version_id,
+                             build,
+                             extra_config_settings=None,
+                             service_account_email=None):
     """Constructs a Version resource for deployment.
 
     Args:
@@ -655,6 +671,8 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       build: BuildArtifact, The build ID, image path, or build options.
       extra_config_settings: dict, client config settings to pass to the server
         as beta settings.
+      service_account_email: identity of this deployed version. If not set,
+        Admin API will fallback to use the App Engine default appspot SA.
 
     Returns:
       A Version resource whose Deployment includes either a container pointing
@@ -678,6 +696,10 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
               f=service_config.file, msg=six.text_type(e)))
     log.debug('Converted YAML to JSON: "{0}"'.format(
         json.dumps(json_version_resource, indent=2, sort_keys=True)))
+
+    # Override the 'service_account' in app.yaml if CLI provided this param.
+    if service_account_email is not None:
+      json_version_resource['serviceAccount'] = service_account_email
 
     json_version_resource['deployment'] = {}
     # Add the deployment manifest information.

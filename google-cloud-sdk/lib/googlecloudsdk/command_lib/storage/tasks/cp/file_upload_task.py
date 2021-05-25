@@ -29,11 +29,10 @@ import os
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import gcs_api
-from googlecloudsdk.command_lib.storage.tasks import compose_objects_task
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_upload_task
-from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+from googlecloudsdk.command_lib.storage.tasks.cp import finalize_composite_upload_task
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
 
@@ -84,6 +83,7 @@ class FileUploadTask(task.Task):
         size < self._composite_upload_threshold or
         not self._composite_upload_threshold or
         cloud_api.Capability.COMPOSE_OBJECTS not in api_capabilties
+        # TODO(b/183017513): Only perform composite uploads with parallelism.
     )
 
     if should_perform_single_transfer:
@@ -99,14 +99,10 @@ class FileUploadTask(task.Task):
           .Get(), gcs_api.MAX_OBJECTS_PER_COMPOSE_CALL)
 
       file_part_upload_tasks = []
-      compose_objects_sources = []
-      delete_object_tasks = []
       for i, (offset, length) in enumerate(component_offsets_and_lengths):
 
         temporary_component_resource = copy_component_util.get_temporary_component_resource(
             self._source_resource, self._destination_resource, i)
-
-        compose_objects_sources.append(temporary_component_resource)
 
         upload_task = file_part_upload_task.FilePartUploadTask(
             self._source_resource,
@@ -118,17 +114,14 @@ class FileUploadTask(task.Task):
 
         file_part_upload_tasks.append(upload_task)
 
-        delete_task = delete_object_task.DeleteObjectTask(
-            temporary_component_resource.storage_url)
-        delete_object_tasks.append(delete_task)
-
-      compose_objects_tasks = [compose_objects_task.ComposeObjectsTask(
-          compose_objects_sources, self._destination_resource)]
+      finalize_upload_task = (
+          finalize_composite_upload_task.FinalizeCompositeUploadTask(
+              expected_component_count=len(file_part_upload_tasks),
+              destination_resource=self._destination_resource))
 
       return task.Output(
           additional_task_iterators=[
               file_part_upload_tasks,
-              compose_objects_tasks,
-              delete_object_tasks,
+              [finalize_upload_task]
           ],
           messages=None)

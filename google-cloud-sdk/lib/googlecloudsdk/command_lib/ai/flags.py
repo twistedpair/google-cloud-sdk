@@ -171,6 +171,16 @@ def GetDescriptionArg(noun):
       help='Description of the {noun}.'.format(noun=noun))
 
 
+def GetEndpointNetworkArg():
+  return base.Argument(
+      '--network',
+      required=False,
+      default=None,
+      hidden=True,
+      help="""The full name of the Google Compute Engine network to which the endpoint should be peered."""
+  )
+
+
 def AddPredictInstanceArg(parser, required=True):
   """Add arguments for different types of predict instances."""
   base.Argument(

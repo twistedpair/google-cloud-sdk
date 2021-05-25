@@ -37,10 +37,10 @@ MULTISCOPE_LIST_FORMAT = """
 def MakeInstantSnapshotArg(plural=False):
   return compute_flags.ResourceArgument(
       resource_name='instant snapshot',
-      completer=compute_completers.AllInstantSnapshotsCompleter,
+      completer=compute_completers.InstantSnapshotsCompleter,
       plural=plural,
       name='INSTANT_SNAPSHOT_NAME',
-      zonal_collection='compute.instantSnapshots',
+      zonal_collection='compute.zoneInstantSnapshots',
       regional_collection='compute.regionInstantSnapshots',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)

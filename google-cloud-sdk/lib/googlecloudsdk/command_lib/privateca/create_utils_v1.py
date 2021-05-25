@@ -154,8 +154,9 @@ def ValidateIssuingCA(ca_name):
   try:
     client = privateca_base.GetClientInstance(api_version='v1')
     messages = privateca_base.GetMessagesModule(api_version='v1')
-    ca = client.projects_locations_certificateAuthorities.Get(
-        messages.PrivatecaProjectsLocationsCertificateAuthoritiesGetRequest(
+    ca = client.projects_locations_caPools_certificateAuthorities.Get(
+        messages
+        .PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesGetRequest(
             name=ca_name))
     if ca.state != messages.CertificateAuthority.StateValueValuesEnum.ENABLED:
       raise exceptions.InvalidArgumentException(

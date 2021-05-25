@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,15 +23,15 @@ from googlecloudsdk.api_lib.vmware import util
 from googlecloudsdk.command_lib.vmware import flags
 
 
-class PrivatecloudsClient(util.VmwareClientBase):
+class PrivateCloudsClient(util.VmwareClientBase):
   """cloud vmware privateclouds client."""
 
   def __init__(self):
-    super(PrivatecloudsClient, self).__init__()
-    self.service = self.client.projects_locations_clusterGroups
+    super(PrivateCloudsClient, self).__init__()
+    self.service = self.client.projects_locations_privateClouds
 
   def Get(self, resource):
-    request = self.messages.SddcProjectsLocationsClusterGroupsGetRequest(
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsGetRequest(
         name=resource.RelativeName())
     return self.service.Get(request)
 
@@ -39,22 +39,33 @@ class PrivatecloudsClient(util.VmwareClientBase):
              resource,
              labels=None,
              description=None,
-             vpc_network=None,
-             management_ip_range=None,
-             workload_ip_range=None):
+             cluster_id=None,
+             node_type=None,
+             node_count=None,
+             network_cidr=None,
+             network=None,
+             network_project=None):
     parent = resource.Parent().RelativeName()
-    cluster_group_id = resource.Name()
-    cluster_group = self.messages.ClusterGroup(description=description)
-    flags.AddLabelsToMessage(labels, cluster_group)
+    private_cloud_id = resource.Name()
+    private_cloud = self.messages.PrivateCloud(description=description)
+    flags.AddLabelsToMessage(labels, private_cloud)
     network_config = self.messages.NetworkConfig(
-        network=vpc_network,
-        managementCidr=management_ip_range,
-        workloadCidr=workload_ip_range)
-    cluster_group.networkConfig = network_config
-    request = self.messages.SddcProjectsLocationsClusterGroupsCreateRequest(
+        managementCidr=network_cidr,
+        network=network,
+    )
+    if not network.startswith('project'):
+      if bool(network_project is None or '' is network_project):
+        network_project = resource.Parent().Parent().Name()
+      network_config.network = 'projects/{}/global/networks/{}'.format(
+          network_project, network)
+    management_cluster = self.messages.ManagementCluster(
+        clusterId=cluster_id, nodeCount=node_count, nodeTypeId=node_type)
+    private_cloud.managementCluster = management_cluster
+    private_cloud.networkConfig = network_config
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsCreateRequest(
         parent=parent,
-        clusterGroup=cluster_group,
-        clusterGroupId=cluster_group_id)
+        privateCloudId=private_cloud_id,
+        privateCloud=private_cloud)
     return self.service.Create(request)
 
   def Update(self,
@@ -78,8 +89,13 @@ class PrivatecloudsClient(util.VmwareClientBase):
         updateMask=','.join(update_mask))
     return self.service.Patch(request)
 
+  def UnDelete(self, resource):
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest(
+        name=resource.RelativeName())
+    return self.service.Undelete(request)
+
   def Delete(self, resource):
-    request = self.messages.SddcProjectsLocationsClusterGroupsDeleteRequest(
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(
         name=resource.RelativeName())
     return self.service.Delete(request)
 
@@ -90,7 +106,7 @@ class PrivatecloudsClient(util.VmwareClientBase):
            page_size=None,
            sort_by=None):
     location = location_resource.RelativeName()
-    request = self.messages.SddcProjectsLocationsClusterGroupsListRequest(
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsListRequest(
         parent=location, filter=filter_expression)
     if page_size:
       request.page_size = page_size
@@ -100,4 +116,25 @@ class PrivatecloudsClient(util.VmwareClientBase):
         limit=limit,
         batch_size_attribute='pageSize',
         batch_size=page_size,
-        field='clusterGroups')
+        field='privateClouds')
+
+  def GetNsxCredentials(self, resource):
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsShowNsxCredentialsRequest(
+        privateCloud=resource.RelativeName())
+    return self.service.ShowNsxCredentials(request)
+
+  def ResetNsxCredentials(self, resource):
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsResetNsxCredentialsRequest(
+        privateCloud=resource.RelativeName())
+    return self.service.ResetNsxCredentials(request)
+
+  def GetVcenterCredentials(self, resource):
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsShowVcenterCredentialsRequest(
+        privateCloud=resource.RelativeName())
+    return self.service.ShowVcenterCredentials(request)
+
+  def ResetVcenterCredentials(self, resource):
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsResetVcenterCredentialsRequest(
+        privateCloud=resource.RelativeName())
+    return self.service.ResetVcenterCredentials(request)
+

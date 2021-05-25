@@ -541,6 +541,14 @@ apis:
       default: true
     v1alpha2:
       discovery_doc: domains_v1alpha2.json
+  edgecontainer:
+    v1:
+      discovery_doc: edgecontainer_v1.json
+    v1beta:
+      discovery_doc: edgecontainer_v1beta.json
+    v1alpha:
+      discovery_doc: edgecontainer_v1alpha.json
+      default: true
   essentialcontacts:
     v1alpha1:
       discovery_doc: essentialcontacts_v1alpha1.json
@@ -586,7 +594,13 @@ apis:
       discovery_doc: genomics_v1alpha2.json
     v2alpha1:
       discovery_doc: genomics_v2alpha1.json
+  gkebackup:
+    v1alpha1:
+      discovery_doc: gkebackup_v1alpha1.json
+      default: true
   gkehub:
+    v1alpha:
+      discovery_doc: gkehub_v1alpha.json
     v1alpha1:
       discovery_doc: gkehub_v1alpha1.json
     v1alpha2:

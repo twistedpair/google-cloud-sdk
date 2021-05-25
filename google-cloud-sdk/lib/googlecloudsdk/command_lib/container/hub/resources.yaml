@@ -18,8 +18,8 @@ location:
     attribute_name: location
     help: The location name.
     fallthroughs:
-    - hook: googlecloudsdk.command_lib.container.hub.memberships.util:SetLocation
-      hint: use global location
+    - hook: googlecloudsdk.command_lib.container.hub.util:DefaultToGlobal
+      hint: "global is the only supported location"
 
 membership:
   name: membership

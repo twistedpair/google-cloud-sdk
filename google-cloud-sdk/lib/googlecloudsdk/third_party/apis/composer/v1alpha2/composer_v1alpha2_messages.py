@@ -61,6 +61,41 @@ class CheckUpgradeRequest(_messages.Message):
   imageVersion = _messages.StringField(1)
 
 
+class CheckUpgradeResponse(_messages.Message):
+  r"""Message containing information about the result of an upgrade check
+  operation.
+
+  Enums:
+    ContainsPypiModulesConflictValueValuesEnum: Output only. Whether build has
+      succeeded or failed on modules conflicts.
+
+  Fields:
+    buildLogUri: Output only. Url for a docker build log of an upgraded image.
+    containsPypiModulesConflict: Output only. Whether build has succeeded or
+      failed on modules conflicts.
+    pypiConflictBuildLogExtract: Output only. Extract from a docker image
+      build log containing information about pypi modules conflicts.
+  """
+
+  class ContainsPypiModulesConflictValueValuesEnum(_messages.Enum):
+    r"""Output only. Whether build has succeeded or failed on modules
+    conflicts.
+
+    Values:
+      CONFLICT_RESULT_UNSPECIFIED: It is unknown whether build had conflicts
+        or not.
+      CONFLICT: There were python packages conflicts.
+      NO_CONFLICT: There were no python packages conflicts.
+    """
+    CONFLICT_RESULT_UNSPECIFIED = 0
+    CONFLICT = 1
+    NO_CONFLICT = 2
+
+  buildLogUri = _messages.StringField(1)
+  containsPypiModulesConflict = _messages.EnumField('ContainsPypiModulesConflictValueValuesEnum', 2)
+  pypiConflictBuildLogExtract = _messages.StringField(3)
+
+
 class ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest object.
 
@@ -1001,6 +1036,10 @@ class PrivateEnvironmentConfig(_messages.Message):
       environment is created. If this field is set to true,
       `IPAllocationPolicy.use_ip_aliases` must be set to true for Cloud
       Composer environments in versions composer-1.*.*-airflow-*.*.*.
+    enablePrivatelyUsedPublicIps: Optional. When enabled, IPs from public
+      (non-RFC1918) ranges can be used for
+      `IPAllocationPolicy.cluster_ipv4_cidr_block` and
+      `IPAllocationPolicy.service_ipv4_cidr_block`.
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
     webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for
@@ -1015,9 +1054,10 @@ class PrivateEnvironmentConfig(_messages.Message):
 
   cloudSqlIpv4CidrBlock = _messages.StringField(1)
   enablePrivateEnvironment = _messages.BooleanField(2)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 3)
-  webServerIpv4CidrBlock = _messages.StringField(4)
-  webServerIpv4ReservedRange = _messages.StringField(5)
+  enablePrivatelyUsedPublicIps = _messages.BooleanField(3)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 4)
+  webServerIpv4CidrBlock = _messages.StringField(5)
+  webServerIpv4ReservedRange = _messages.StringField(6)
 
 
 class RestartWebServerRequest(_messages.Message):

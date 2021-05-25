@@ -513,6 +513,20 @@ ENABLE_PRIVATE_ENDPOINT_FLAG = base.Argument(
     specified.
     """)
 
+ENABLE_PRIVATELY_USED_PUBLIC_IPS_FLAG = base.Argument(
+    '--enable-privately-used-public-ips',
+    default=None,
+    hidden=True,
+    action='store_true',
+    help="""\
+    When enabled GKE pods and services may use public(non-RFC1918) IP ranges
+    privately. The ranges are specified by '--cluster-ipv4-cidr' and '
+    --services-ipv4-cidr' flags.
+
+    Cannot be specified unless '--enable-private-environment' is also
+    specified.
+    """)
+
 
 def _GetIpv4CidrMaskSize(ipv4_cidr_block):
   """Returns the size of IPV4 CIDR block mask in bits.

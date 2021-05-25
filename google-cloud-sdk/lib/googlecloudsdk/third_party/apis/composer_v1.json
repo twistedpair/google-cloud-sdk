@@ -682,6 +682,38 @@
           "format": "google-datetime"
         }
       }
+    },
+    "CheckUpgradeResponse": {
+      "id": "CheckUpgradeResponse",
+      "description": "Message containing information about the result of an upgrade check operation.",
+      "type": "object",
+      "properties": {
+        "buildLogUri": {
+          "description": "Output only. Url for a docker build log of an upgraded image.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "containsPypiModulesConflict": {
+          "description": "Output only. Whether build has succeeded or failed on modules conflicts.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "It is unknown whether build had conflicts or not.",
+            "There were python packages conflicts.",
+            "There were no python packages conflicts."
+          ],
+          "enum": [
+            "CONFLICT_RESULT_UNSPECIFIED",
+            "CONFLICT",
+            "NO_CONFLICT"
+          ]
+        },
+        "pypiConflictBuildLogExtract": {
+          "description": "Output only. Extract from a docker image build log containing information about pypi modules conflicts.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {

@@ -3023,7 +3023,7 @@ def AddThreadsPerCoreArgs(parser):
       type=int,
       help="""
       The number of visible threads per physical core. To disable simultaneous
-      multithreading (SMT) set this to 1. Valid values are currently: 1 or 2.
+      multithreading (SMT) set this to 1. Valid values are: 1 or 2.
     """)
 
 

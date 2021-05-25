@@ -163,6 +163,7 @@ SCHEMA = s.Message(
             size_gb=s.Value()))),
     runtime=s.Value(converter=c.ToJsonString),
     runtime_channel=s.Value(converter=c.ToJsonString),
+    service_account=s.Value(converter=c.ToJsonString),
     standard_websocket=s.Value('enable_standard_websocket'),
     threadsafe=s.Value(),
     version=s.Value('id', converter=c.ToJsonString),

@@ -48,3 +48,12 @@ def BuildAutoscaling(args, messages):
       minNodes=args.min_nodes if args.IsSpecified('min_nodes') else None,
       maxNodes=args.max_nodes if args.IsSpecified('max_nodes') else None)
   return autoscaling_policy
+
+
+def BuildShareSettings(messages, share_type, projects):
+  """Build ShareSettings object from parameters."""
+  share_settings = messages.ShareSettings(
+      shareType=(messages.ShareSettings.ShareTypeValueValuesEnum(
+          ChoiceToEnumName(share_type))),
+      projects=projects.split(','))
+  return share_settings

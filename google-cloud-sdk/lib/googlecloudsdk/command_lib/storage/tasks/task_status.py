@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 import abc
 import enum
-import multiprocessing
 import threading
 
 from googlecloudsdk.command_lib.storage import thread_messages
@@ -281,27 +280,43 @@ def status_message_handler(task_status_queue, status_tracker):
                 ' manager to print it.')
 
 
-class ProgressManager:
+def progress_manager(task_status_queue=None, progress_type=None):
+  """Factory function that returns a ProgressManager instance.
+
+  Args:
+    task_status_queue (multiprocessing.Queue|None): Tasks can submit their
+      progress messages here.
+    progress_type (ProgressType|None): Determines what type of progress
+      indicator to display.
+  Returns:
+    An instance of _ProgressManager or _NoOpProgressManager.
+  """
+  if task_status_queue is not None:
+    return _ProgressManager(task_status_queue, progress_type)
+  else:
+    return _NoOpProgressManager()
+
+
+class _ProgressManager:
   """Context manager for processing and displaying progress completing command.
 
-  Attributes:
-    task_status_queue (multiprocessing.Queue): Tasks can submit their progress
-      messages here.
+  Ensure that this class is instantiated after all the child
+  processes (if any) are started to prevent deadlock.
   """
 
-  def __init__(self, progress_type=None):
+  def __init__(self, task_status_queue, progress_type=None):
     """Initializes context manager.
 
     Args:
+      task_status_queue (multiprocessing.Queue): Tasks can submit their progress
+        messages here.
       progress_type (ProgressType|None): Determines what type of progress
         indicator to display.
     """
-    super(ProgressManager, self).__init__()
-
     self._progress_type = progress_type
     self._status_message_handler_thread = None
     self._status_tracker = None
-    self.task_status_queue = multiprocessing.Queue()
+    self._task_status_queue = task_status_queue
 
   def __enter__(self):
     if self._progress_type is ProgressType.COUNT:
@@ -311,7 +326,7 @@ class ProgressManager:
 
     self._status_message_handler_thread = threading.Thread(
         target=status_message_handler,
-        args=(self.task_status_queue, self._status_tracker))
+        args=(self._task_status_queue, self._status_tracker))
     self._status_message_handler_thread.start()
 
     if self._status_tracker:
@@ -319,8 +334,22 @@ class ProgressManager:
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
-    self.task_status_queue.put('_SHUTDOWN')
+    self._task_status_queue.put('_SHUTDOWN')
     self._status_message_handler_thread.join()
 
     if self._status_tracker:
       self._status_tracker.stop(exc_type, exc_val, exc_tb)
+
+
+class _NoOpProgressManager:
+  """Progress Manager that does not do anything.
+
+  Similar to contextlib.nullcontext, but it is available only for Python3.7+.
+  """
+
+  def __enter__(self):
+    return self
+
+  def __exit__(self, exc_type, exc_val, exc_tb):
+    del  exc_type, exc_val, exc_tb  # Unused.
+    pass

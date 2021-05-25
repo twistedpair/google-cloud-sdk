@@ -215,13 +215,6 @@ class Collections(enum.Enum):
       ['project', 'zone', 'instance'],
       True
   )
-  INSTANTSNAPSHOTS = (
-      'instantSnapshots',
-      'projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}',
-      {},
-      ['project', 'zone', 'instantSnapshot'],
-      True
-  )
   INTERCONNECTATTACHMENTS = (
       'interconnectAttachments',
       'projects/{project}/regions/{region}/interconnectAttachments/'
@@ -696,6 +689,13 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/inPlaceSnapshots/{inPlaceSnapshot}',
       {},
       ['project', 'zone', 'inPlaceSnapshot'],
+      True
+  )
+  ZONEINSTANTSNAPSHOTS = (
+      'zoneInstantSnapshots',
+      'projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}',
+      {},
+      ['project', 'zone', 'instantSnapshot'],
       True
   )
   ZONEOPERATIONS = (

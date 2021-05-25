@@ -74,6 +74,8 @@ class CreateEnvironmentFlags():
     private_endpoint: bool or None, managed env cluster using the private IP
       address of the master API endpoint.
     master_ipv4_cidr: IPv4 CIDR range to use for the cluster master network.
+    privately_used_public_ips: bool or None, when enabled, GKE pod and services
+      can use IPs from public (non-RFC1918) ranges.
     web_server_ipv4_cidr: IPv4 CIDR range to use for Web Server network.
     cloud_sql_ipv4_cidr: IPv4 CIDR range to use for Cloud SQL network.
     web_server_access_control: [{string: string}], List of IP ranges with
@@ -131,6 +133,7 @@ class CreateEnvironmentFlags():
                private_environment=None,
                private_endpoint=None,
                master_ipv4_cidr=None,
+               privately_used_public_ips=None,
                web_server_ipv4_cidr=None,
                cloud_sql_ipv4_cidr=None,
                web_server_access_control=None,
@@ -171,6 +174,7 @@ class CreateEnvironmentFlags():
     self.private_environment = private_environment
     self.private_endpoint = private_endpoint
     self.master_ipv4_cidr = master_ipv4_cidr
+    self.privately_used_public_ips = privately_used_public_ips
     self.web_server_ipv4_cidr = web_server_ipv4_cidr
     self.cloud_sql_ipv4_cidr = cloud_sql_ipv4_cidr
     self.web_server_access_control = web_server_access_control
@@ -292,7 +296,9 @@ def _CreateConfig(messages, flags):
     if flags.cloud_sql_ipv4_cidr is not None:
       private_env_config_args[
           'cloudSqlIpv4CidrBlock'] = flags.cloud_sql_ipv4_cidr
-
+    if flags.privately_used_public_ips is not None:
+      private_env_config_args[
+          'enablePrivatelyUsedPublicIps'] = flags.privately_used_public_ips
     config.privateEnvironmentConfig = messages.PrivateEnvironmentConfig(
         **private_env_config_args)
 

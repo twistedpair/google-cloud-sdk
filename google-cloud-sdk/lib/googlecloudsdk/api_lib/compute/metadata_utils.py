@@ -243,6 +243,16 @@ def AddMetadataArgs(parser, required=False):
       *startup-script-url*::: Same as ``startup-script'' except that
       the script contents are pulled from a publicly-accessible
       location on the web.
+
+
+      For startup scripts on Windows instances, the following metadata keys
+      have special meanings:
+      ``windows-startup-script-url'',
+      ``windows-startup-script-cmd'', ``windows-startup-script-bat'',
+      ``windows-startup-script-ps1'', ``sysprep-specialize-script-url'',
+      ``sysprep-specialize-script-cmd'', ``sysprep-specialize-script-bat'',
+      and ``sysprep-specialize-script-ps1''. For more information, see
+      [Running startup scripts](https://cloud.google.com/compute/docs/startupscript).
       """
   if required:
     metadata_help += """\n

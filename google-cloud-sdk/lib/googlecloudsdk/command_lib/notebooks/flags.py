@@ -104,11 +104,12 @@ def AddCreateEnvironmentFlags(parser):
             'Format: projects/`{project_id}`.'),
       default='deeplearning-platform-release')
   vm_mutex_group.add_argument(
-      '--vm-image-name', help='Use this VM image name to find the image.')
-  vm_mutex_group.add_argument(
       '--vm-image-family',
       help=('Use this VM image family to find the image; the newest image in '
-            'this family will be used.'))
+            'this family will be used.'),
+      default='common-cpu')
+  vm_mutex_group.add_argument(
+      '--vm-image-name', help='Use this VM image name to find the image.')
   container_group.add_argument(
       '--container-repository',
       help=('The path to the container image repository. For example: '
@@ -267,11 +268,12 @@ def AddCreateInstanceFlags(parser):
             'Format: projects/`{project_id}`.'),
       default='deeplearning-platform-release')
   vm_mutex_group.add_argument(
-      '--vm-image-name', help='Use this VM image name to find the image.')
-  vm_mutex_group.add_argument(
       '--vm-image-family',
-      help=('Use this VM image family to find the image; the newest image '
-            'in this family will be used.'))
+      help=('Use this VM image family to find the image; the newest image in '
+            'this family will be used.'),
+      default='common-cpu')
+  vm_mutex_group.add_argument(
+      '--vm-image-name', help='Use this VM image name to find the image.')
   container_group.add_argument(
       '--container-repository',
       help=('The path to the container image repository. '

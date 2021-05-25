@@ -1,0 +1,34 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1alpha1 GrpcRouteRouteAction export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  destination:
+    description: |-
+      The destination service to which traffic should be forwarded. One of
+      destination or drop must be specified.
+    $ref: GrpcRouteDestination.yaml
+  drop:
+    description: |-
+      If set, the traffic will be dropped and the client will fail with the
+      status code number specified in this field. One of destination or drop
+      must be specified. If this field is specified, no other field must be
+      specified.
+    type: integer

@@ -45,7 +45,7 @@ class JobPrinter(cp.CustomPrinterBase):
     return cp.Labeled([
         ('Image', record.template.UserImage()),
         ('Tasks', record.completions),
-        ('Job Deadline', '{}s'.format(record.spec.activeDeadlineSeconds)
+        ('Job Timeout', '{}s'.format(record.spec.activeDeadlineSeconds)
          if record.spec.activeDeadlineSeconds else None),
         ('Command', ' '.join(record.template.container.command)),
         ('Args', ' '.join(record.template.container.args)),
@@ -56,7 +56,7 @@ class JobPrinter(cp.CustomPrinterBase):
          ' ' if breakglass_value == '' else breakglass_value),
         ('Memory', limits['memory']),
         ('CPU', limits['cpu']),
-        ('Instance Deadline',
+        ('Task Timeout',
          '{}s'.format(record.template.spec.activeDeadlineSeconds)
          if record.template.spec.activeDeadlineSeconds else None),
         ('Max Retries', record.backoff_limit),

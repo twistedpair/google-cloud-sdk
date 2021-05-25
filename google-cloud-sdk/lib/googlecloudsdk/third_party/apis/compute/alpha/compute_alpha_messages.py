@@ -13368,229 +13368,6 @@ class ComputeInstancesUpdateShieldedVmConfigRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
-class ComputeInstantSnapshotsDeleteRequest(_messages.Message):
-  r"""A ComputeInstantSnapshotsDeleteRequest object.
-
-  Fields:
-    instantSnapshot: Name of the InstantSnapshot resource to delete.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
-    zone: The name of the zone for this request.
-  """
-
-  instantSnapshot = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeInstantSnapshotsExportRequest(_messages.Message):
-  r"""A ComputeInstantSnapshotsExportRequest object.
-
-  Fields:
-    instantSnapshot: Name of the instant snapshot to export.
-    instantSnapshotsExportRequest: A InstantSnapshotsExportRequest resource to
-      be passed as the request body.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
-    zone: The name of the zone for this request.
-  """
-
-  instantSnapshot = _messages.StringField(1, required=True)
-  instantSnapshotsExportRequest = _messages.MessageField('InstantSnapshotsExportRequest', 2)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
-
-
-class ComputeInstantSnapshotsGetIamPolicyRequest(_messages.Message):
-  r"""A ComputeInstantSnapshotsGetIamPolicyRequest object.
-
-  Fields:
-    optionsRequestedPolicyVersion: Requested IAM Policy version.
-    project: Project ID for this request.
-    resource: Name or id of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeInstantSnapshotsGetRequest(_messages.Message):
-  r"""A ComputeInstantSnapshotsGetRequest object.
-
-  Fields:
-    instantSnapshot: Name of the InstantSnapshot resource to return.
-    project: Project ID for this request.
-    zone: The name of the zone for this request.
-  """
-
-  instantSnapshot = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-
-
-class ComputeInstantSnapshotsInsertRequest(_messages.Message):
-  r"""A ComputeInstantSnapshotsInsertRequest object.
-
-  Fields:
-    instantSnapshot: A InstantSnapshot resource to be passed as the request
-      body.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
-    zone: Name of the zone for this request.
-  """
-
-  instantSnapshot = _messages.MessageField('InstantSnapshot', 1)
-  project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeInstantSnapshotsListRequest(_messages.Message):
-  r"""A ComputeInstantSnapshotsListRequest object.
-
-  Fields:
-    filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`.  For example, if you are filtering Compute
-      Engine instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`.  You can also filter nested
-      fields. For example, you could specify `scheduling.automaticRestart =
-      false` to include instances only if they are not scheduled for automatic
-      restarts. You can use filtering on nested fields to filter based on
-      resource labels.  To filter on multiple expressions, provide each
-      separate expression within parentheses. For example: ```
-      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
-      By default, each expression is an `AND` expression. However, you can
-      include `AND` and `OR` expressions explicitly. For example: ```
-      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
-      (scheduling.automaticRestart = true) ```
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than
-      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
-      to get the next page of results in subsequent list requests. Acceptable
-      values are `0` to `500`, inclusive. (Default: `500`)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name.  You can
-      also sort results in descending order based on the creation timestamp
-      using `orderBy="creationTimestamp desc"`. This sorts results based on
-      the `creationTimestamp` field in reverse chronological order (newest
-      result first). Use this to sort resources like operations so that the
-      newest operation is returned first.  Currently, only sorting by `name`
-      or `creationTimestamp desc` is supported.
-    pageToken: Specifies a page token to use. Set `pageToken` to the
-      `nextPageToken` returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-    returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
-    zone: The name of the zone for this request.
-  """
-
-  filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-  returnPartialSuccess = _messages.BooleanField(6)
-  zone = _messages.StringField(7, required=True)
-
-
-class ComputeInstantSnapshotsSetIamPolicyRequest(_messages.Message):
-  r"""A ComputeInstantSnapshotsSetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name or id of the resource for this request.
-    zone: The name of the zone for this request.
-    zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-  zoneSetPolicyRequest = _messages.MessageField('ZoneSetPolicyRequest', 4)
-
-
-class ComputeInstantSnapshotsSetLabelsRequest(_messages.Message):
-  r"""A ComputeInstantSnapshotsSetLabelsRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed.  For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments.  The request
-      ID must be a valid UUID with the exception that zero UUID is not
-      supported (00000000-0000-0000-0000-000000000000).
-    resource: Name or id of the resource for this request.
-    zone: The name of the zone for this request.
-    zoneSetLabelsRequest: A ZoneSetLabelsRequest resource to be passed as the
-      request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  resource = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
-  zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 5)
-
-
-class ComputeInstantSnapshotsTestIamPermissionsRequest(_messages.Message):
-  r"""A ComputeInstantSnapshotsTestIamPermissionsRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name or id of the resource for this request.
-    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
-      the request body.
-    zone: The name of the zone for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
-  zone = _messages.StringField(4, required=True)
-
-
 class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
   r"""A ComputeInterconnectAttachmentsAggregatedListRequest object.
 
@@ -27829,6 +27606,229 @@ class ComputeZoneInPlaceSnapshotsTestIamPermissionsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeZoneInstantSnapshotsDeleteRequest(_messages.Message):
+  r"""A ComputeZoneInstantSnapshotsDeleteRequest object.
+
+  Fields:
+    instantSnapshot: Name of the InstantSnapshot resource to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeZoneInstantSnapshotsExportRequest(_messages.Message):
+  r"""A ComputeZoneInstantSnapshotsExportRequest object.
+
+  Fields:
+    instantSnapshot: Name of the instant snapshot to export.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+    zoneInstantSnapshotsExportRequest: A ZoneInstantSnapshotsExportRequest
+      resource to be passed as the request body.
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+  zoneInstantSnapshotsExportRequest = _messages.MessageField('ZoneInstantSnapshotsExportRequest', 5)
+
+
+class ComputeZoneInstantSnapshotsGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeZoneInstantSnapshotsGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeZoneInstantSnapshotsGetRequest(_messages.Message):
+  r"""A ComputeZoneInstantSnapshotsGetRequest object.
+
+  Fields:
+    instantSnapshot: Name of the InstantSnapshot resource to return.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
+class ComputeZoneInstantSnapshotsInsertRequest(_messages.Message):
+  r"""A ComputeZoneInstantSnapshotsInsertRequest object.
+
+  Fields:
+    instantSnapshot: A InstantSnapshot resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: Name of the zone for this request.
+  """
+
+  instantSnapshot = _messages.MessageField('InstantSnapshot', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
+
+
+class ComputeZoneInstantSnapshotsListRequest(_messages.Message):
+  r"""A ComputeZoneInstantSnapshotsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      `=`, `!=`, `>`, or `<`.  For example, if you are filtering Compute
+      Engine instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`.  You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first.  Currently, only sorting by `name`
+      or `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+    zone: The name of the zone for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+  zone = _messages.StringField(7, required=True)
+
+
+class ComputeZoneInstantSnapshotsSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeZoneInstantSnapshotsSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+  zoneSetPolicyRequest = _messages.MessageField('ZoneSetPolicyRequest', 4)
+
+
+class ComputeZoneInstantSnapshotsSetLabelsRequest(_messages.Message):
+  r"""A ComputeZoneInstantSnapshotsSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetLabelsRequest: A ZoneSetLabelsRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  resource = _messages.StringField(3, required=True)
+  zone = _messages.StringField(4, required=True)
+  zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 5)
+
+
+class ComputeZoneInstantSnapshotsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeZoneInstantSnapshotsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeZoneOperationsDeleteRequest(_messages.Message):
   r"""A ComputeZoneOperationsDeleteRequest object.
 
@@ -39606,16 +39606,6 @@ class InstantSnapshotList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
-
-
-class InstantSnapshotsExportRequest(_messages.Message):
-  r"""A InstantSnapshotsExportRequest object.
-
-  Fields:
-    exportParams: Parameters to export the changed blocks.
-  """
-
-  exportParams = _messages.MessageField('InstantSnapshotExportParams', 1)
 
 
 class Int64RangeMatch(_messages.Message):
@@ -66693,6 +66683,16 @@ class Zone(_messages.Message):
   selfLink = _messages.StringField(9)
   status = _messages.EnumField('StatusValueValuesEnum', 10)
   supportsPzs = _messages.BooleanField(11)
+
+
+class ZoneInstantSnapshotsExportRequest(_messages.Message):
+  r"""A ZoneInstantSnapshotsExportRequest object.
+
+  Fields:
+    exportParams: Parameters to export the changed blocks.
+  """
+
+  exportParams = _messages.MessageField('InstantSnapshotExportParams', 1)
 
 
 class ZoneList(_messages.Message):

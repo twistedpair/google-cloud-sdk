@@ -22,7 +22,9 @@ import collections
 import os
 import time
 
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
@@ -31,6 +33,10 @@ from googlecloudsdk.core.util import http_proxy_types
 import grpc
 from six.moves import urllib
 import socks
+
+
+class Error(exceptions.Error):
+  """Exceptions for the gapic module."""
 
 
 class ClientCallDetailsInterceptor(grpc.UnaryUnaryClientInterceptor,
@@ -105,27 +111,71 @@ class _ClientCallDetails(
   pass
 
 
-def RequestReasonInterceptor():
-  """Returns an interceptor that adds a request reason header."""
-  def AddRequestReason(client_call_details):
-    request_reason = properties.VALUES.core.request_reason.Get()
-    if not request_reason:
+def HeaderAdderInterceptor(headers_func):
+  """Returns an interceptor that adds headers."""
+  def AddHeaders(client_call_details):
+    headers = headers_func()
+    if not headers:
       return client_call_details
 
     metadata = []
     if client_call_details.metadata is not None:
       metadata = list(client_call_details.metadata)
-    metadata.append((
-        'X-Goog-Request-Reason',
-        request_reason,
-    ))
+
+    for header, value in headers:
+      metadata.append((header.lower(), value))
+
     new_client_call_details = _ClientCallDetails(
         client_call_details.method, client_call_details.timeout, metadata,
         client_call_details.credentials, client_call_details.wait_for_ready,
         client_call_details.compression)
     return new_client_call_details
 
-  return ClientCallDetailsInterceptor(AddRequestReason)
+  return ClientCallDetailsInterceptor(AddHeaders)
+
+
+IAM_AUTHORITY_SELECTOR_HEADER = 'x-goog-iam-authority-selector'
+IAM_AUTHORIZATION_TOKEN_HEADER = 'x-goog-iam-authorization-token'
+
+
+def IAMAuthHeadersInterceptor():
+  """Returns an interceptor that adds IAM headers."""
+  def GetIAMAuthHeaders():
+    headers = []
+
+    authority_selector = properties.VALUES.auth.authority_selector.Get()
+    if authority_selector:
+      headers.append((IAM_AUTHORITY_SELECTOR_HEADER, authority_selector))
+
+    authorization_token = None
+    authorization_token_file = (
+        properties.VALUES.auth.authorization_token_file.Get())
+    if authorization_token_file:
+      try:
+        authorization_token = files.ReadFileContents(authorization_token_file)
+      except files.Error as e:
+        raise Error(e)
+
+    if authorization_token:
+      headers.append((
+          IAM_AUTHORIZATION_TOKEN_HEADER,
+          authorization_token.strip()
+      ))
+    return headers
+
+  return HeaderAdderInterceptor(GetIAMAuthHeaders)
+
+
+def RequestReasonInterceptor():
+  """Returns an interceptor that adds a request reason header."""
+  def GetRequestReasonHeader():
+    headers = []
+    request_reason = properties.VALUES.core.request_reason.Get()
+    if request_reason:
+      headers.append(('x-goog-request-reason', request_reason))
+    return headers
+
+  return HeaderAdderInterceptor(GetRequestReasonHeader)
 
 
 def TimeoutInterceptor():
@@ -150,6 +200,9 @@ class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
   Logging is enabled if the --log-http flag is provided on any command.
   """
 
+  def __init__(self, credentials):
+    self._credentials = credentials
+
   def log_metadata(self, metadata):
     """Logs the metadata.
 
@@ -157,7 +210,10 @@ class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
       metadata: `metadata` to be transmitted to
         the service-side of the RPC.
     """
-    for (h, v) in sorted(metadata, key=lambda x: x[0]):
+    redact_token = properties.VALUES.core.log_http_redact_token.GetBool()
+    for (h, v) in sorted(metadata or [], key=lambda x: x[0]):
+      if redact_token and h.lower() == IAM_AUTHORIZATION_TOKEN_HEADER:
+        v = '--- Token Redacted ---'
       log.status.Print('{0}: {1}'.format(h, v))
 
   def log_request(self, client_call_details, request):
@@ -168,10 +224,17 @@ class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
             instance containing request metadata.
         request: the request value for the RPC.
     """
+    redact_token = properties.VALUES.core.log_http_redact_token.GetBool()
+
     log.status.Print('=======================')
     log.status.Print('==== request start ====')
     log.status.Print('method: {}'.format(client_call_details.method))
     log.status.Print('== headers start ==')
+    if self._credentials:
+      if redact_token:
+        log.status.Print('authorization: --- Token Redacted ---')
+      else:
+        log.status.Print('authorization: {}'.format(self._credentials.token))
     self.log_metadata(client_call_details.metadata)
     log.status.Print('== headers end ==')
     log.status.Print('== body start ==')
@@ -224,6 +287,33 @@ class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
     time_taken = time.time() - start_time
 
     self.log_response(response, time_taken)
+    return response
+
+
+class RPCDurationReporterInterceptor(grpc.UnaryUnaryClientInterceptor):
+  """Interceptor for reporting RPC Durations.
+
+  We only report durations for unary-unary RPCs as some streaming RPCs have
+  arbitrary duration. i.e. How long they take is decided by the user.
+  """
+
+  def intercept_unary_unary(self, continuation, client_call_details, request):
+    """Intercepts and logs API interactions.
+
+    Overrides abstract method defined in grpc.UnaryUnaryClientInterceptor.
+    Args:
+        continuation: a function to continue the request process.
+        client_call_details: a grpc._interceptor._ClientCallDetails
+            instance containing request metadata.
+        request: the request value for the RPC.
+    Returns:
+        A grpc.Call/grpc.Future instance representing a service response.
+    """
+    start_time = time.time()
+    response = continuation(client_call_details, request)
+    time_taken = time.time() - start_time
+    metrics.RPCDuration(time_taken)
+
     return response
 
 
@@ -311,8 +401,10 @@ def MakeTransport(transport_class, address, credentials):
 
   interceptors = []
   interceptors.append(RequestReasonInterceptor())
+  interceptors.append(IAMAuthHeadersInterceptor())
+  interceptors.append(RPCDurationReporterInterceptor())
   if properties.VALUES.core.log_http.GetBool():
-    interceptors.append(LoggingInterceptor())
+    interceptors.append(LoggingInterceptor(credentials))
 
   channel = grpc.intercept_channel(channel, *interceptors)
   return transport_class(channel=channel, host=address)

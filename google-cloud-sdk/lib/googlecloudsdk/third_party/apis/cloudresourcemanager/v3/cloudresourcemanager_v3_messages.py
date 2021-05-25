@@ -130,34 +130,15 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class CloudresourcemanagerFoldersCreateRequest(_messages.Message):
-  r"""A CloudresourcemanagerFoldersCreateRequest object.
-
-  Fields:
-    folder: A Folder resource to be passed as the request body.
-    validateOnly: Optional. True to perform validations necessary for creating
-      the resource, but not actually perform the action.
-  """
-
-  folder = _messages.MessageField('Folder', 1)
-  validateOnly = _messages.BooleanField(2)
-
-
 class CloudresourcemanagerFoldersDeleteRequest(_messages.Message):
   r"""A CloudresourcemanagerFoldersDeleteRequest object.
 
   Fields:
-    etag: Optional. The etag known to the client for the expected state of the
-      folder. This is to be used for optimistic concurrency.
     name: Required. The resource name of the folder to be deleted. Must be of
       the form `folders/{folder_id}`.
-    validateOnly: Optional. True to perform validations necessary for
-      deletion, but not actually perform the action.
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  validateOnly = _messages.BooleanField(3)
+  name = _messages.StringField(1, required=True)
 
 
 class CloudresourcemanagerFoldersGetIamPolicyRequest(_messages.Message):
@@ -231,14 +212,11 @@ class CloudresourcemanagerFoldersPatchRequest(_messages.Message):
       `folders/{folder_id}`, for example: "folders/1234".
     updateMask: Required. Fields to be updated. Only the `display_name` can be
       updated.
-    validateOnly: Optional. True to perform validations necessary for updating
-      the resource, but not actually perform the action.
   """
 
   folder = _messages.MessageField('Folder', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
 
 
 class CloudresourcemanagerFoldersSearchRequest(_messages.Message):
@@ -523,17 +501,11 @@ class CloudresourcemanagerProjectsDeleteRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsDeleteRequest object.
 
   Fields:
-    etag: Optional. The etag known to the client for the expected state of the
-      Project. This is to be used for optimistic concurrency.
     name: Required. The name of the Project (for example,
       `projects/415104041262`).
-    validateOnly: Optional. True to perform validations necessary for
-      deletion, but not actually perform the action.
   """
 
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  validateOnly = _messages.BooleanField(3)
+  name = _messages.StringField(1, required=True)
 
 
 class CloudresourcemanagerProjectsGetIamPolicyRequest(_messages.Message):
@@ -607,14 +579,11 @@ class CloudresourcemanagerProjectsPatchRequest(_messages.Message):
       `projects/415104041262`
     project: A Project resource to be passed as the request body.
     updateMask: Optional. An update mask to selectively update fields.
-    validateOnly: Optional. True to perform validations necessary for updating
-      the resource, but not actually perform the action.
   """
 
   name = _messages.StringField(1, required=True)
   project = _messages.MessageField('Project', 2)
   updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
 
 
 class CloudresourcemanagerProjectsSearchRequest(_messages.Message):
@@ -1430,15 +1399,9 @@ class MoveFolderRequest(_messages.Message):
     destinationParent: Required. The resource name of the folder or
       organization which should be the folder's new parent. Must be of the
       form `folders/{folder_id}` or `organizations/{org_id}`.
-    etag: Optional. The etag known to the client for the expected state of the
-      Folder. This is to be used for optimistic concurrency.
-    validateOnly: Optional. True to perform validations necessary for moving
-      the resource, but not actually perform the action.
   """
 
   destinationParent = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
 
 
 class MoveProjectMetadata(_messages.Message):
@@ -1453,15 +1416,9 @@ class MoveProjectRequest(_messages.Message):
 
   Fields:
     destinationParent: Required. The new parent to move the Project under.
-    etag: Optional. The etag known to the client for the expected state of the
-      Project. This is to be used for optimistic concurrency.
-    validateOnly: Optional. True to perform validations necessary for moving
-      the project, but not actually perform the action.
   """
 
   destinationParent = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
 
 
 class Operation(_messages.Message):
@@ -2035,6 +1992,19 @@ class TagBinding(_messages.Message):
 class TagKey(_messages.Message):
   r"""A TagKey, used to group a set of TagValues.
 
+  Enums:
+    PurposeValueValuesEnum: Optional. A purpose denotes that this Tag is
+      intended for use in policies of a specific policy engine, and will
+      involve that policy engine in management operations involving this Tag.
+      A purpose does not grant a policy engine exclusive rights to the Tag,
+      and it may be referenced by other policy engines. A purpose cannot be
+      changed once set.
+
+  Messages:
+    PurposeDataValue: Optional. Purpose data corresponds to the policy system
+      that the tag is intended for. See documentation for `Purpose` for
+      formatting of this field. Purpose data cannot be changed once set.
+
   Fields:
     createTime: Output only. Creation time.
     description: Optional. User-assigned description of the TagKey. Must not
@@ -2048,6 +2018,15 @@ class TagKey(_messages.Message):
     namespacedName: Output only. Immutable. Namespaced name of the TagKey.
     parent: Immutable. The resource name of the new TagKey's parent. Must be
       of the form `organizations/{org_id}`.
+    purpose: Optional. A purpose denotes that this Tag is intended for use in
+      policies of a specific policy engine, and will involve that policy
+      engine in management operations involving this Tag. A purpose does not
+      grant a policy engine exclusive rights to the Tag, and it may be
+      referenced by other policy engines. A purpose cannot be changed once
+      set.
+    purposeData: Optional. Purpose data corresponds to the policy system that
+      the tag is intended for. See documentation for `Purpose` for formatting
+      of this field. Purpose data cannot be changed once set.
     shortName: Required. Immutable. The user friendly name for a TagKey. The
       short name should be unique for TagKeys within the same tag namespace.
       The short name must be 1-63 characters, beginning and ending with an
@@ -2056,14 +2035,61 @@ class TagKey(_messages.Message):
     updateTime: Output only. Update time.
   """
 
+  class PurposeValueValuesEnum(_messages.Enum):
+    r"""Optional. A purpose denotes that this Tag is intended for use in
+    policies of a specific policy engine, and will involve that policy engine
+    in management operations involving this Tag. A purpose does not grant a
+    policy engine exclusive rights to the Tag, and it may be referenced by
+    other policy engines. A purpose cannot be changed once set.
+
+    Values:
+      PURPOSE_UNSPECIFIED: Unspecified purpose.
+      GCE_FIREWALL: Purpose for Compute Engine firewalls. A corresponding
+        purpose_data should be set for the network the tag is intended for.
+        The key should be 'network' and the value should be in the format of
+        the network url id string: http://compute.googleapis.com/v1/projects/{
+        project_number}/global/networks/{network_id}
+    """
+    PURPOSE_UNSPECIFIED = 0
+    GCE_FIREWALL = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PurposeDataValue(_messages.Message):
+    r"""Optional. Purpose data corresponds to the policy system that the tag
+    is intended for. See documentation for `Purpose` for formatting of this
+    field. Purpose data cannot be changed once set.
+
+    Messages:
+      AdditionalProperty: An additional property for a PurposeDataValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type PurposeDataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PurposeDataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   etag = _messages.StringField(3)
   name = _messages.StringField(4)
   namespacedName = _messages.StringField(5)
   parent = _messages.StringField(6)
-  shortName = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 7)
+  purposeData = _messages.MessageField('PurposeDataValue', 8)
+  shortName = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class TagValue(_messages.Message):
@@ -2132,17 +2158,7 @@ class UndeleteFolderMetadata(_messages.Message):
 
 
 class UndeleteFolderRequest(_messages.Message):
-  r"""The UndeleteFolder request message.
-
-  Fields:
-    etag: The etag known to the client for the expected state of the folder.
-      This is to be used for optimistic concurrency.
-    validateOnly: True to perform validations necessary for undeletion, but
-      not actually perform the action.
-  """
-
-  etag = _messages.StringField(1)
-  validateOnly = _messages.BooleanField(2)
+  r"""The UndeleteFolder request message."""
 
 
 class UndeleteOrganizationMetadata(_messages.Message):
@@ -2160,17 +2176,7 @@ class UndeleteProjectMetadata(_messages.Message):
 
 
 class UndeleteProjectRequest(_messages.Message):
-  r"""The request sent to the UndeleteProject method.
-
-  Fields:
-    etag: Optional. The etag known to the client for the expected state of the
-      project. This is to be used for optimistic concurrency.
-    validateOnly: Optional. True to perform validations necessary for
-      undeletion, but not actually perform the action.
-  """
-
-  etag = _messages.StringField(1)
-  validateOnly = _messages.BooleanField(2)
+  r"""The request sent to the UndeleteProject method."""
 
 
 class UpdateFolderMetadata(_messages.Message):

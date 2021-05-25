@@ -32,6 +32,41 @@ class AllowedIpRange(_messages.Message):
   value = _messages.StringField(2)
 
 
+class CheckUpgradeResponse(_messages.Message):
+  r"""Message containing information about the result of an upgrade check
+  operation.
+
+  Enums:
+    ContainsPypiModulesConflictValueValuesEnum: Output only. Whether build has
+      succeeded or failed on modules conflicts.
+
+  Fields:
+    buildLogUri: Output only. Url for a docker build log of an upgraded image.
+    containsPypiModulesConflict: Output only. Whether build has succeeded or
+      failed on modules conflicts.
+    pypiConflictBuildLogExtract: Output only. Extract from a docker image
+      build log containing information about pypi modules conflicts.
+  """
+
+  class ContainsPypiModulesConflictValueValuesEnum(_messages.Enum):
+    r"""Output only. Whether build has succeeded or failed on modules
+    conflicts.
+
+    Values:
+      CONFLICT_RESULT_UNSPECIFIED: It is unknown whether build had conflicts
+        or not.
+      CONFLICT: There were python packages conflicts.
+      NO_CONFLICT: There were no python packages conflicts.
+    """
+    CONFLICT_RESULT_UNSPECIFIED = 0
+    CONFLICT = 1
+    NO_CONFLICT = 2
+
+  buildLogUri = _messages.StringField(1)
+  containsPypiModulesConflict = _messages.EnumField('ContainsPypiModulesConflictValueValuesEnum', 2)
+  pypiConflictBuildLogExtract = _messages.StringField(3)
+
+
 class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsCreateRequest object.
 

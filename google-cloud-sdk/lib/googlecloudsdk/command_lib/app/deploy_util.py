@@ -382,7 +382,8 @@ class ServiceDeployer(object):
              disable_build_cache,
              wait_for_stop_version,
              flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
-             ignore_file=None):
+             ignore_file=None,
+             service_account=None):
     """Deploy the given service.
 
     Performs all deployment steps for the given service (if applicable):
@@ -415,6 +416,8 @@ class ServiceDeployer(object):
         image on client.
       ignore_file: custom ignore_file name. Override .gcloudignore file to
         customize files to be skipped.
+      service_account: identity this version runs as. If not set, Admin API
+        will fallback to use the App Engine default appspot SA.
     """
     log.status.Print('Beginning deployment of service [{service}]...'.format(
         service=new_version.service))
@@ -457,7 +460,7 @@ class ServiceDeployer(object):
     metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
     self.api_client.DeployService(new_version.service, new_version.id,
                                   service_info, manifest, build,
-                                  extra_config_settings)
+                                  extra_config_settings, service_account)
     metrics.CustomTimedEvent(metric_names.DEPLOY_API)
     self._PossiblyPromote(all_services, new_version, wait_for_stop_version)
 
@@ -485,6 +488,11 @@ def ArgsDeploy(parser):
       help=('The Google Cloud Storage bucket used to stage files associated '
             'with the deployment. If this argument is not specified, the '
             "application's default code bucket is used."))
+  parser.add_argument(
+      '--service-account',
+      help=('The service account that this deployed version will run as. '
+            'If this argument is not specified, the App Engine default '
+            'service account will be used for your current deployed version.'))
   parser.add_argument(
       'deployables',
       nargs='*',
@@ -680,7 +688,8 @@ def RunDeploy(
           disable_build_cache=args.no_cache,
           wait_for_stop_version=wait_for_stop_version,
           flex_image_build_option=flex_image_build_option,
-          ignore_file=args.ignore_file)
+          ignore_file=args.ignore_file,
+          service_account=args.service_account)
       new_versions.append(new_version)
       log.status.Print('Deployed service [{0}] to [{1}]'.format(
           service.service_id, deployed_urls[service.service_id]))

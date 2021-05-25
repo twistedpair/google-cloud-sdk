@@ -90,8 +90,9 @@ def _call_api_get_and_print_progress(name):
     total_bytes = metadata['counters']['bytesFoundFromSource']
     progress_percent = int(round(copied_bytes / total_bytes, 2) * 100)
     progress_string = '{}% ({} of {})'.format(
-        progress_percent, scaled_integer.FormatInteger(copied_bytes),
-        scaled_integer.FormatInteger(total_bytes))
+        progress_percent,
+        scaled_integer.FormatBinaryNumber(copied_bytes, decimal_places=2),
+        scaled_integer.FormatBinaryNumber(total_bytes, decimal_places=2))
   else:
     progress_string = 'UNKNOWN'
 

@@ -14,6 +14,10 @@
 # limitations under the License.
 """A library for Security Command Center(SCC) settings commands arguments."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import base
 
 
@@ -58,3 +62,39 @@ def AddModuleArgument(parser):
       required=True,
       metavar='MODULE_NAME',
       help='Module name in Security Command Center')
+
+
+def AddConfigArgument(parser):
+  parser.add_argument(
+      '--config',
+      metavar='CONFIG_VALUE',
+      help='Module config in Security Command Center')
+
+
+def AddClearConfigArgument(parser):
+  parser.add_argument(
+      '--clear-config',
+      action='store_true',
+      help='Clear module config in Security Command Center')
+
+
+def ExtractModuleConfigFlags(parser):
+  parent_group = parser.add_group(
+      mutex=True,
+      required=True,
+      help='Config value group in Security Command Center.')
+  AddConfigArgument(parent_group)
+  AddClearConfigArgument(parent_group)
+
+
+def AddModuleEnablementArgument(parser):
+  base.ChoiceArgument(
+      '--enablement-state',
+      required=True,
+      metavar='ENABLEMENT_STATE',
+      choices=[
+          'enabled',
+          'disabled',
+      ],
+      help_str='Module enablement state in Security Command Center'
+  ).AddToParser(parser)

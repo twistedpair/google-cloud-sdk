@@ -154,6 +154,14 @@ def _GetCrossConnectSubnetworkEndpoint(cluster, cross_connect_subnetwork):
   return cross_connect_config_item.privateEndpoint
 
 
+def _GetFqdnPrivateEndpoint(cluster):
+  """Extract endpoint for the kubeconfig from the fqdn."""
+  fqdn = cluster.privateClusterConfig.privateEndpointFqdn
+  if fqdn is None:
+    raise MissingPrivateFqdnError(cluster)
+  return fqdn
+
+
 def LocationalResourceToZonal(path):
   """Converts a resource identifier (possibly a full URI) to the zonal format.
 
@@ -174,9 +182,10 @@ def LocationalResourceToZonal(path):
   return path.replace('/locations/', '/zones/')
 
 
-def _GetClusterEndpoint(cluster, use_internal_ip, cross_connect_subnetwork):
+def _GetClusterEndpoint(cluster, use_internal_ip, cross_connect_subnetwork,
+                        use_private_fqdn):
   """Get the cluster endpoint suitable for writing to kubeconfig."""
-  if use_internal_ip or cross_connect_subnetwork is not None:
+  if use_internal_ip or cross_connect_subnetwork or use_private_fqdn is not None:
     if not cluster.privateClusterConfig:
       raise NonPrivateClusterError(cluster)
     if not cluster.privateClusterConfig.privateEndpoint:
@@ -184,6 +193,8 @@ def _GetClusterEndpoint(cluster, use_internal_ip, cross_connect_subnetwork):
     if cross_connect_subnetwork is not None:
       return _GetCrossConnectSubnetworkEndpoint(cluster,
                                                 cross_connect_subnetwork)
+    if use_private_fqdn:
+      return _GetFqdnPrivateEndpoint(cluster)
     return cluster.privateClusterConfig.privateEndpoint
 
   if not cluster.endpoint:
@@ -193,6 +204,14 @@ def _GetClusterEndpoint(cluster, use_internal_ip, cross_connect_subnetwork):
 
 KUBECONFIG_USAGE_FMT = '''\
 kubeconfig entry generated for {cluster}.'''
+
+
+class MissingPrivateFqdnError(Error):
+  """Error for retrieving private fqdn of a cluster that has none."""
+
+  def __init__(self, cluster):
+    super(MissingPrivateFqdnError, self).__init__(
+        'cluster {0} is missing private fqdn.'.format(cluster.name))
 
 
 class MissingCrossConnectError(Error):
@@ -344,7 +363,8 @@ class ClusterConfig(object):
               cluster,
               project_id,
               use_internal_ip=False,
-              cross_connect_subnetwork=None):
+              cross_connect_subnetwork=None,
+              use_private_fqdn=None):
     """Saves config data for the given cluster.
 
     Persists config file and kubernetes auth file for the given cluster
@@ -357,6 +377,7 @@ class ClusterConfig(object):
       use_internal_ip: whether to persist the internal IP of the endpoint.
       cross_connect_subnetwork: full path of the cross connect subnet whose
       endpoint to persist (optional)
+      use_private_fqdn: whether to persist the private fqdn.
     Returns:
       ClusterConfig of the persisted data.
     Raises:
@@ -364,7 +385,7 @@ class ClusterConfig(object):
         seconds while cluster is PROVISIONING).
     """
     endpoint = _GetClusterEndpoint(cluster, use_internal_ip,
-                                   cross_connect_subnetwork)
+                                   cross_connect_subnetwork, use_private_fqdn)
     kwargs = {
         'cluster_name': cluster.name,
         'zone_id': cluster.zone,

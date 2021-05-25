@@ -974,3 +974,15 @@ class JobMaxRetriesChange(ConfigChanger):
       resource.template.restart_policy = job.RestartPolicy.ON_FAILURE
       resource.backoff_limit = self._max_retries
     return resource
+
+
+class JobInstanceDeadlineChange(ConfigChanger):
+  """Represents the user intent to update a job's instance deadline."""
+
+  def __init__(self, deadline_seconds):
+    super(JobInstanceDeadlineChange, self).__init__()
+    self._deadline_seconds = deadline_seconds
+
+  def Adjust(self, resource):
+    resource.template.spec.activeDeadlineSeconds = self._deadline_seconds
+    return resource

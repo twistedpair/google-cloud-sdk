@@ -91,7 +91,7 @@ def AddClusterVersion(parser):
   parser.add_argument(
       '--cluster-version',
       required=True,
-      help='The Kubernetes version to use for the cluster.')
+      help='Kubernetes version to use for the cluster.')
 
 
 def GetClusterVersion(args):
@@ -241,19 +241,19 @@ def AddRootVolumeSize(parser, required=True):
 
 
 def GetRootVolumeSize(args):
-  return args.root_volume_size
+  return getattr(args, 'root_volume_size', None)
 
 
-def AddMainVolumeSize(parser):
+def AddMainVolumeSize(parser, required=True):
   parser.add_argument(
       '--main-volume-size',
-      required=True,
+      required=required,
       type=int,
       help='Size of the main volume in GiB.')
 
 
 def GetMainVolumeSize(args):
-  return args.main_volume_size
+  return getattr(args, 'main_volume_size', None)
 
 
 def AddTags(parser):

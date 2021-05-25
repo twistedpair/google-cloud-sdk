@@ -23,8 +23,6 @@ import os
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.services import enable_api
-from googlecloudsdk.api_lib.services import services_util
-from googlecloudsdk.api_lib.services import serviceusage
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.api_lib.util import waiter
@@ -94,18 +92,12 @@ class DisableCommand(base.DeleteCommand):
         help='Disable this feature, even if it is currently in use. '
         'Force disablement may result in unexpected behavior.')
 
-  def RunCommand(self, args):
-    try:
-      project = properties.VALUES.core.project.GetOrFail()
-      name = 'projects/{0}/locations/global/features/{1}'.format(
-          project, self.FEATURE_NAME)
-      DeleteFeature(name, self.FEATURE_DISPLAY_NAME, force=args.force)
-    except apitools_exceptions.HttpUnauthorizedError as e:
-      raise exceptions.Error(
-          'You are not authorized to disable {} Feature from project [{}]. '
-          'Underlying error: {}'.format(self.FEATURE_DISPLAY_NAME, project, e))
-    except properties.RequiredPropertyError as e:
-      raise exceptions.Error('Failed to retrieve the project ID.')
+  def Run(self, args):
+    project = properties.VALUES.core.project.GetOrFail()
+    name = 'projects/{0}/locations/global/features/{1}'.format(
+        project, self.FEATURE_NAME)
+    # TODO(b/177098463): Treat 404 as OK?
+    DeleteFeature(name, self.FEATURE_DISPLAY_NAME, force=args.force)
 
 
 class DescribeCommand(base.DescribeCommand):
@@ -128,16 +120,9 @@ class UpdateCommand(base.UpdateCommand):
   """Base class for the command that updates a Feature."""
 
   def RunCommand(self, mask, **kwargs):
-    try:
-      project = properties.VALUES.core.project.GetOrFail()
-      return UpdateFeature(project, self.FEATURE_NAME,
-                           self.FEATURE_DISPLAY_NAME, mask, **kwargs)
-    except apitools_exceptions.HttpUnauthorizedError as e:
-      raise exceptions.Error(
-          'You are not authorized to update {} Feature from project [{}]. '
-          'Underlying error: {}'.format(self.FEATURE_DISPLAY_NAME, project, e))
-    except properties.RequiredPropertyError as e:
-      raise exceptions.Error('Failed to retrieve the project ID.')
+    project = properties.VALUES.core.project.GetOrFail()
+    return UpdateFeature(project, self.FEATURE_NAME, self.FEATURE_DISPLAY_NAME,
+                         mask, **kwargs)
 
 
 def CreateMultiClusterIngressFeatureSpec(config_membership, billing=None):
@@ -346,31 +331,6 @@ def UpdateFeature(project, feature_id, feature_display_name, mask, **kwargs):
       'Waiting for Feature {} to be updated'.format(feature_display_name))
 
   return result
-
-
-def DisableService(project, service_name, force=False):
-  """Disable service.
-
-  Args:
-    project: The project for which to disable the service.
-    service_name: The identifier of the service to disable, for example
-      'serviceusage.googleapis.com'.
-    force: disable the service even if there are enabled services which depend
-      on it. This also disables the services which depend on the service to be
-      disabled.
-
-  Raises:
-    exceptions.EnableServicePermissionDeniedException: when disabling API fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    The service configuration.
-  """
-  op = serviceusage.DisableApiCall(project, service_name, force)
-  if op.done:
-    return
-  op = services_util.WaitOperation(op.name, serviceusage.GetOperation)
-  services_util.PrintOperation(op)
 
 
 def ListMemberships(project):

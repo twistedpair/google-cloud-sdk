@@ -504,6 +504,10 @@
           "description": "Output only. The IP range reserved for the tenant project's App Engine VMs. This field is supported for Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*.",
           "readOnly": true,
           "type": "string"
+        },
+        "enablePrivatelyUsedPublicIps": {
+          "description": "Optional. When enabled, IPs from public (non-RFC1918) ranges can be used for `IPAllocationPolicy.cluster_ipv4_cidr_block` and `IPAllocationPolicy.service_ipv4_cidr_block`.",
+          "type": "boolean"
         }
       }
     },
@@ -859,6 +863,38 @@
           "description": "Output only. The time when the operation terminated, regardless of its success. This field is unset if the operation is still ongoing.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "CheckUpgradeResponse": {
+      "id": "CheckUpgradeResponse",
+      "description": "Message containing information about the result of an upgrade check operation.",
+      "type": "object",
+      "properties": {
+        "buildLogUri": {
+          "description": "Output only. Url for a docker build log of an upgraded image.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "containsPypiModulesConflict": {
+          "description": "Output only. Whether build has succeeded or failed on modules conflicts.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "It is unknown whether build had conflicts or not.",
+            "There were python packages conflicts.",
+            "There were no python packages conflicts."
+          ],
+          "enum": [
+            "CONFLICT_RESULT_UNSPECIFIED",
+            "CONFLICT",
+            "NO_CONFLICT"
+          ]
+        },
+        "pypiConflictBuildLogExtract": {
+          "description": "Output only. Extract from a docker image build log containing information about pypi modules conflicts.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     }

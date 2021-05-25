@@ -67,3 +67,27 @@ observabilityPolicy:
     parameter_name: observabilityPoliciesId
     attribute_name: observability_policy
     help: Id of the observability policy.
+
+grpcRoute:
+  name: grpc route
+  collection: networkservices.projects.locations.grpcRoutes
+  request_id_field: grpcRouteId
+  attributes:
+  - *project
+  - *location
+  - &grpcRoute
+    parameter_name: grpcRoutesId
+    attribute_name: grpc_route
+    help: Id of the grpc route.
+
+router:
+  name: router
+  collection: networkservices.projects.locations.routers
+  request_id_field: routerId
+  attributes:
+  - *project
+  - *location
+  - &router
+    parameter_name: routersId
+    attribute_name: router
+    help: Id of the router.

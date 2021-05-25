@@ -20,13 +20,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.storage import optimize_parameters_util
+from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage.tasks import task_graph_executor
+from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.core import properties
 
 
-def _ExecuteTasksSequential(task_iterator,
-                            received_messages=None,
-                            task_status_queue=None):
+def _execute_tasks_sequential(task_iterator,
+                              received_messages=None,
+                              task_status_queue=None):
   """Executes task objects sequentially.
 
   Args:
@@ -54,7 +57,7 @@ def _ExecuteTasksSequential(task_iterator,
     if task_output.additional_task_iterators is not None:
       messages_for_dependent_tasks = []
       for additional_task_iterator in task_output.additional_task_iterators:
-        messages_for_dependent_tasks = _ExecuteTasksSequential(
+        messages_for_dependent_tasks = _execute_tasks_sequential(
             additional_task_iterator,
             messages_for_dependent_tasks,
             task_status_queue=task_status_queue)
@@ -62,24 +65,44 @@ def _ExecuteTasksSequential(task_iterator,
   return messages_from_current_task_iterator
 
 
-def ExecuteTasks(task_iterator, is_parallel=False, task_status_queue=None):
+def execute_tasks(task_iterator,
+                  parallelizable=False,
+                  task_status_queue=None,
+                  progress_type=None):
   """Call appropriate executor.
 
   Args:
     task_iterator: An iterator for task objects.
-    is_parallel (boolean): Should tasks be executed in parallel.
+    parallelizable (boolean): Should tasks be executed in parallel.
     task_status_queue (multiprocessing.Queue|None): Used by task to report its
       progress to a central location.
+    progress_type (task_status.ProgressType|None): Determines what type of
+      progress indicator to display.
+
+  Returns:
+    An integer indicating the exit_code. Zero indicates no fatal errors were
+      raised.
   """
+  plurality_checkable_task_iterator = (
+      plurality_checkable_iterator.PluralityCheckableIterator(task_iterator))
+  optimize_parameters_util.detect_and_set_best_config(
+      is_estimated_multi_file_workload=(
+          plurality_checkable_task_iterator.is_plural()))
   process_count = properties.VALUES.storage.process_count.GetInt()
   thread_count = properties.VALUES.storage.thread_count.GetInt()
 
-  if is_parallel and (process_count > 1 or thread_count > 1):
-    task_graph_executor.TaskGraphExecutor(
-        task_iterator,
+  if parallelizable and (process_count > 1 or thread_count > 1):
+    exit_code = task_graph_executor.TaskGraphExecutor(
+        plurality_checkable_task_iterator,
         max_process_count=process_count,
         thread_count=thread_count,
-        task_status_queue=task_status_queue).run()
+        task_status_queue=task_status_queue,
+        progress_type=progress_type).run()
   else:
-    _ExecuteTasksSequential(
-        task_iterator, task_status_queue=task_status_queue)
+    with task_status.progress_manager(task_status_queue, progress_type):
+      _execute_tasks_sequential(
+          plurality_checkable_task_iterator,
+          task_status_queue=task_status_queue)
+    # TODO(b/188092601) Deterimine the exit_code in _execute_tasks_sequential.
+    exit_code = 0
+  return exit_code

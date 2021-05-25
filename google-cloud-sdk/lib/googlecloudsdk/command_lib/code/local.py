@@ -123,7 +123,7 @@ class DockerfileBuilder(DataObject):
   NAMES = ('dockerfile',)
 
 
-def _GaeBuilder(runtime):
+def _GaeBuilderPackagePath(runtime):
   """GCR package path for a builder that works on the given appengine runtime.
 
   Args:
@@ -220,16 +220,38 @@ class Settings(DataObject):
     if args.source:
       replacements['context'] = os.path.abspath(args.source)
 
-    builder = None
-    if not getattr(args, 'no_skaffold_file', False):
-      builder = _CreateBuilder(args, replacements.get('context', self.context))
+    if getattr(args, 'no_skaffold_file', False):
+      replacements['builder'] = None
+    else:
+      if args.IsKnownAndSpecified('builder'):
+        replacements['builder'] = _BuilderFromArg(args.builder)
+      elif args.IsKnownAndSpecified('appengine'):
+        context = replacements.get('context', self.context)
+        replacements['builder'] = _GaeBuilder(context)
+      else:
+        # This is the default value, to be moved up to Defaults.
+        replacements['builder'] = DockerfileBuilder(
+            dockerfile=os.path.abspath(args.dockerfile))
 
     if getattr(args, 'env_vars', None):
       replacements['env_vars'] = args.env_vars
     elif getattr(args, 'env_vars_file', None):
       replacements['env_vars'] = args.env_vars_file
 
-    return self.replace(builder=builder, **replacements)
+    return self.replace(**replacements)
+
+  def Validate(self):
+    if isinstance(self.builder, DockerfileBuilder):
+      _CheckDockerfilePath(self.builder.dockerfile, self.context)
+
+
+def AssembleSettings(args):
+  """Layer the default values, service.yaml values, and cmdline overrides."""
+  settings = Settings.Defaults()
+  # (here's where we'll optionally set from service.yaml)
+  settings = settings.WithArgs(args)
+  settings.Validate()
+  return settings
 
 
 def _DefaultImageName(service_name):
@@ -249,33 +271,21 @@ def _DefaultImageName(service_name):
   return image
 
 
-def _CreateBuilder(args, context):
-  """Create a builder object depending on the args.
+def _BuilderFromArg(builder_arg):
+  is_gcp_base_builder = _IsGcpBaseBuilder(builder_arg)
+  return BuildpackBuilder(
+      builder=builder_arg,
+      trust=is_gcp_base_builder,
+      devmode=is_gcp_base_builder)
 
-  Args:
-    args: Args namespace.
-    context: Build context directory.
 
-  Returns:
-    A builder data object.
-  """
-  if args.IsKnownAndSpecified('builder'):
-    is_gcp_base_builder = _IsGcpBaseBuilder(args.builder)
-    return BuildpackBuilder(
-        builder=args.builder,
-        trust=is_gcp_base_builder,
-        devmode=is_gcp_base_builder)
-  elif args.IsKnownAndSpecified('appengine'):
-    rel_path_to_app_yaml = os.path.relpath(os.path.join(context, 'app.yaml'))
-    # Undo __future__.unicode_literals so we get a str in py2:
-    app_yaml_str = six.ensure_str(rel_path_to_app_yaml)
-    service_config = yaml_parsing.ServiceYamlInfo.FromFile(app_yaml_str)
-    builder = _GaeBuilder(service_config.parsed.runtime)
-    return BuildpackBuilder(builder=builder, trust=True, devmode=False)
-  else:
-    dockerfile = os.path.abspath(args.dockerfile)
-    return DockerfileBuilder(
-        dockerfile=_CheckDockerfilePath(dockerfile, context))
+def _GaeBuilder(context):
+  rel_path_to_app_yaml = os.path.relpath(os.path.join(context, 'app.yaml'))
+  # Undo __future__.unicode_literals so we get a str in py2:
+  app_yaml_str = six.ensure_str(rel_path_to_app_yaml)
+  service_config = yaml_parsing.ServiceYamlInfo.FromFile(app_yaml_str)
+  builder = _GaeBuilderPackagePath(service_config.parsed.runtime)
+  return BuildpackBuilder(builder=builder, trust=True, devmode=False)
 
 
 def _CheckDockerfilePath(dockerfile, context):

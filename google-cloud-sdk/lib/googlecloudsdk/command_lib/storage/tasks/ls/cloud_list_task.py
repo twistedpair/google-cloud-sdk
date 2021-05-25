@@ -108,8 +108,12 @@ class _HeaderFormatWrapper(_BaseFormatWrapper):
 class _ResourceFormatWrapper(_BaseFormatWrapper):
   """For formatting how resources print when listed."""
 
-  def __init__(self, resource, all_versions=False,
-               display_detail=DisplayDetail.SHORT, include_etag=False):
+  def __init__(self,
+               resource,
+               all_versions=False,
+               display_detail=DisplayDetail.SHORT,
+               include_etag=False,
+               readable_sizes=False):
     """Initializes wrapper instance.
 
     Args:
@@ -117,9 +121,12 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
       all_versions (bool): Display information about all versions of resource.
       display_detail (DisplayDetail): Level of metadata detail for printing.
       include_etag (bool): Display etag string of resource.
+      readable_sizes (bool): Convert bytes to a more human readable format for
+        long lising. For example, print 1024B as 1KiB.
     """
     self._all_versions = all_versions
     self._include_etag = include_etag
+    self._readable_sizes = readable_sizes
     super().__init__(resource, display_detail)
 
   def _format_for_list_long(self):
@@ -147,11 +154,21 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
     else:
       etag_string = ''
 
+    if self._readable_sizes and self.resource.size is not None:
+      size = scaled_integer.FormatBinaryNumber(
+          self.resource.size, decimal_places=2)
+    else:
+      # Also handles None values.
+      size = str(self.resource.size)
+
     # Full example (add 9 spaces of padding to the left):
     # 8  2020-07-27T20:58:25Z  gs://b/o  metageneration=4  etag=CJqt6aup7uoCEAQ=
     return LONG_LIST_ROW_FORMAT.format(
-        size=str(self.resource.size), creation_time=creation_time,
-        url=url_string, metageneration=metageneration_string, etag=etag_string)
+        size=size,
+        creation_time=creation_time,
+        url=url_string,
+        metageneration=metageneration_string,
+        etag=etag_string)
 
   def __str__(self):
     if self._display_detail == DisplayDetail.LONG and (
@@ -179,6 +196,7 @@ class CloudListTask(task.Task):
                buckets_flag=False,
                display_detail=DisplayDetail.SHORT,
                include_etag=False,
+               readable_sizes=False,
                recursion_flag=False):
     """Initializes task.
 
@@ -191,6 +209,8 @@ class CloudListTask(task.Task):
       display_detail (DisplayDetail): Determines level of metadata printed.
       include_etag (bool): Print etag string of resource, depending on other
         settings.
+      readable_sizes (bool): Convert bytes to a more human readable format for
+        long lising. For example, print 1024B as 1KiB.
       recursion_flag (bool): Recurse through all containers and format all
         container headers.
     """
@@ -201,6 +221,7 @@ class CloudListTask(task.Task):
     self._buckets_flag = buckets_flag
     self._display_detail = display_detail
     self._include_etag = include_etag
+    self._readable_sizes = readable_sizes
     self._recursion_flag = recursion_flag
 
     self._only_display_buckets = self._cloud_url.is_provider() or (
@@ -258,10 +279,12 @@ class CloudListTask(task.Task):
 
       else:
         # Resource wasn't a container we can recurse into, so just yield it.
-        yield _ResourceFormatWrapper(resource,
-                                     all_versions=self._all_versions,
-                                     display_detail=self._display_detail,
-                                     include_etag=self._include_etag)
+        yield _ResourceFormatWrapper(
+            resource,
+            all_versions=self._all_versions,
+            display_detail=self._display_detail,
+            include_etag=self._include_etag,
+            readable_sizes=self._readable_sizes)
 
   def _print_json_list(self, resource_wrappers):
     """Prints ResourceWrapper objects as JSON list."""

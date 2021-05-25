@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
@@ -306,8 +307,8 @@ class SettingsClient(object):
     elif args.service == 'event-threat-detection':
       event_threat_detection_settings = self.message_module.EventThreatDetectionSettings(
           serviceEnablementState=self.message_module
-          .EventThreatDetectionSettings
-          .ServiceEnablementStateValueValuesEnum.DISABLED)
+          .EventThreatDetectionSettings.ServiceEnablementStateValueValuesEnum
+          .DISABLED)
       return self._UpdateService(args, event_threat_detection_settings,
                                  SERVICE_STATUS_MASK)
 
@@ -414,7 +415,22 @@ class SettingsClient(object):
     """Disable a module for a service of organization/folder/project."""
     return self._UpdateModules(args, False)
 
-  def _UpdateModules(self, args, enabled):
+  def UpdateModuleConfig(self, args):
+    """Update a config within a module."""
+    if args.clear_config:
+      config = None
+    else:
+      try:
+        config = encoding.JsonToMessage(self.message_module.Config.ValueValue,
+                                        args.config)
+      except Exception:
+        raise scc_exceptions.SecurityCenterSettingsException(
+            'Invalid argument {}. Check help text for an example json.'.format(
+                args.config))
+    enabled = args.enablement_state == 'enabled'
+    return self._UpdateModules(args, enabled, config)
+
+  def _UpdateModules(self, args, enabled, config=None):
     """Update modules within service settings."""
     state = self.message_module.Config.ModuleEnablementStateValueValuesEnum.ENABLED if enabled else self.message_module.Config.ModuleEnablementStateValueValuesEnum.DISABLED
     if args.service == 'web-security-scanner':
@@ -425,7 +441,7 @@ class SettingsClient(object):
                   .AdditionalProperty(
                       key=args.module,
                       value=self.message_module.Config(
-                          moduleEnablementState=state))
+                          moduleEnablementState=state, value=config))
               ]))
     elif args.service == 'security-health-analytics':
       settings = self.message_module.SecurityHealthAnalyticsSettings(
@@ -434,7 +450,8 @@ class SettingsClient(object):
               self.message_module.SecurityHealthAnalyticsSettings.ModulesValue
               .AdditionalProperty(
                   key=args.module,
-                  value=self.message_module.Config(moduleEnablementState=state))
+                  value=self.message_module.Config(
+                      moduleEnablementState=state, value=config))
           ]))
     elif args.service == 'container-threat-detection':
       settings = self.message_module.ContainerThreatDetectionSettings(
@@ -443,7 +460,8 @@ class SettingsClient(object):
               self.message_module.ContainerThreatDetectionSettings.ModulesValue
               .AdditionalProperty(
                   key=args.module,
-                  value=self.message_module.Config(moduleEnablementState=state))
+                  value=self.message_module.Config(
+                      moduleEnablementState=state, value=config))
           ]))
     elif args.service == 'event-threat-detection':
       settings = self.message_module.EventThreatDetectionSettings(
@@ -453,7 +471,7 @@ class SettingsClient(object):
                   .AdditionalProperty(
                       key=args.module,
                       value=self.message_module.Config(
-                          moduleEnablementState=state))
+                          moduleEnablementState=state, value=config))
               ]))
 
     curr_modules = self.DescribeServiceExplicit(args).modules
@@ -463,7 +481,6 @@ class SettingsClient(object):
       ]
       settings.modules.additionalProperties = (
           settings.modules.additionalProperties +
-          unmodified_additional_properties
-      )
+          unmodified_additional_properties)
 
     return self._UpdateService(args, settings, MODULE_STATUS_MASK)

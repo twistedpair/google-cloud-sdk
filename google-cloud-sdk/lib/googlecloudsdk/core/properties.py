@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 import enum
 import functools
-import multiprocessing
 import os
 import re
 import sys
@@ -2475,9 +2474,6 @@ class _SectionStorage(_Section):
       don't compute hashes but instead (inexpensively) compare the cloud source
       and destination hashes.""")
 
-  MAXIMUM_DEFAULT_PROCESS_COUNT = 12
-  DEFAULT_THREAD_COUNT = 4
-
   DEFAULT_COPY_CHUNK_SIZE = '100Mi'
   DEFAULT_DOWNLOAD_CHUNK_SIZE = '256Ki'
   DEFAULT_UPLOAD_CHUNK_SIZE = '100Mi'
@@ -2523,8 +2519,6 @@ class _SectionStorage(_Section):
 
     self.process_count = self._Add(
         'process_count',
-        default=min(multiprocessing.cpu_count(),
-                    self.MAXIMUM_DEFAULT_PROCESS_COUNT),
         help_text='The maximum number of processes parallel execution should '
         'use. When process_count and thread_count are both 1, commands use '
         'sequential execution.')
@@ -2538,27 +2532,23 @@ class _SectionStorage(_Section):
 
     self.sliced_object_download_component_size = self._Add(
         'sliced_object_download_component_size',
-        default='200Mi',
         validator=_HumanReadableByteAmountValidator,
         help_text='Target size and upper bound for files to be sliced into.'
         ' Analogous to parallel_composite_upload_component_size.')
 
     self.sliced_object_download_max_components = self._Add(
         'sliced_object_download_max_components',
-        default=None,
         help_text='Specifies the maximum number of slices to be used when'
         ' performing a sliced object download. Set None for no limit.')
 
     self.sliced_object_download_threshold = self._Add(
         'sliced_object_download_threshold',
-        default='100Mi',
         validator=_HumanReadableByteAmountValidator,
         help_text='Slice files larger than this value. Zero will block sliced'
         ' downloads. Analogous to parallel_composite_upload_threshold.')
 
     self.thread_count = self._Add(
         'thread_count',
-        default=self.DEFAULT_THREAD_COUNT,
         help_text='The number of threads parallel execution should use per '
         'process. When process_count and thread_count are both 1, commands use '
         'sequential execution.')

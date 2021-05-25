@@ -530,6 +530,34 @@ class KubernetesedgeProjectsLocationsMachinesGetIamPolicyRequest(_messages.Messa
   resource = _messages.StringField(2, required=True)
 
 
+class KubernetesedgeProjectsLocationsMachinesGetRequest(_messages.Message):
+  r"""A KubernetesedgeProjectsLocationsMachinesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the machine.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class KubernetesedgeProjectsLocationsMachinesListRequest(_messages.Message):
+  r"""A KubernetesedgeProjectsLocationsMachinesListRequest object.
+
+  Fields:
+    filter: Only resources matching this filter will be listed.
+    orderBy: Specifies the order in which resources will be listed.
+    pageSize: The maximum number of resources to list.
+    pageToken: A page token received from previous list request.
+    parent: Required. The parent site, which owns this collection of machines.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class KubernetesedgeProjectsLocationsMachinesSetIamPolicyRequest(_messages.Message):
   r"""A KubernetesedgeProjectsLocationsMachinesSetIamPolicyRequest object.
 
@@ -944,6 +972,7 @@ class Machine(_messages.Message):
       sters/{cluster_id}/nodePools/{pool_id}/{node}, Or empty if the machine
       is not assigned to assume the role of a node.
     labels: Labels associated with this resource.
+    location: The Google Edge Cloud location of this machine.
     name: Required. The resource name of the machine.
     updateTime: Output only. The time when the node pool was last updated.
   """
@@ -975,8 +1004,9 @@ class Machine(_messages.Message):
   createTime = _messages.StringField(1)
   hostedNode = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  location = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class NodePool(_messages.Message):

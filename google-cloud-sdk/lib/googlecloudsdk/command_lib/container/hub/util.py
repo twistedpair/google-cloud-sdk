@@ -184,3 +184,8 @@ def ReleaseTrackCommandPrefix(release_track):
 
   prefix = release_track.prefix
   return prefix + ' ' if prefix else ''
+
+
+def DefaultToGlobal():
+  """Returns 'global' to be used as a fallthrough hook in resources.yaml."""
+  return 'global'

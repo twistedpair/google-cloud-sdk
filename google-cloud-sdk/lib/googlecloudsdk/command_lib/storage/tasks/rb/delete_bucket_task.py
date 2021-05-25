@@ -54,3 +54,9 @@ class DeleteBucketTask(task.Task):
                     ' bucket, use: gcloud storage rm -r'))
       else:
         log.error(e)
+
+  def __eq__(self, other):
+    if not isinstance(other, DeleteBucketTask):
+      return NotImplemented
+    return (self._url == other._url and
+            self.parallel_processing_key == other.parallel_processing_key)

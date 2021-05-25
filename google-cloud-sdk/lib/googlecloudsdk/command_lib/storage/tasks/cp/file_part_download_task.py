@@ -38,16 +38,15 @@ from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core.util import files
 
 
-COMPONENT_CRC32C_TOPIC = 'component_crc32c_topic'
+_READ_SIZE = 8192  # 8 KiB.
+NULL_BYTE = b'\x00'
 
 
-def _get_first_null_byte_index(destination_url, resource, offset, length):
+def _get_first_null_byte_index(destination_url, offset, length):
   """Checks to see how many bytes in range have already been downloaded.
 
   Args:
     destination_url (storage_url.FileUrl): Has path of file being downloaded.
-    resource (resource_reference.ObjectResource): Has metadata of path being
-      downloaded.
     offset (int): For components, index to start reading bytes at.
     length (int): For components, where to stop reading bytes.
 
@@ -57,8 +56,6 @@ def _get_first_null_byte_index(destination_url, resource, offset, length):
   """
   if not destination_url.exists():
     return 0
-  if offset == 0 and length == resource.size:
-    return os.path.getsize(destination_url.object_name)
 
   # Component is slice of larger file. Find how much of slice is downloaded.
   first_null_byte = offset
@@ -66,10 +63,14 @@ def _get_first_null_byte_index(destination_url, resource, offset, length):
   with files.BinaryFileReader(destination_url.object_name) as file_reader:
     file_reader.seek(offset)
     while first_null_byte < end_of_range:
-      data = file_reader.read(1)
-      if not data or data == b'\x00':
+      data = file_reader.read(_READ_SIZE)
+      if not data:
         break
-      first_null_byte += 1
+      null_byte_index = data.find(NULL_BYTE)
+      if null_byte_index != -1:
+        first_null_byte += null_byte_index
+        break
+      first_null_byte += len(data)
   return first_null_byte
 
 
@@ -153,7 +154,6 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
     destination_url = self._destination_resource.storage_url
     first_null_byte = _get_first_null_byte_index(destination_url,
-                                                 self._source_resource,
                                                  self._offset, self._length)
     tracker_file_path, found_tracker_file = (
         tracker_file_util.read_or_create_download_tracker_file(
@@ -182,7 +182,6 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
     destination_url = self._destination_resource.storage_url
     first_null_byte = _get_first_null_byte_index(
         destination_url,
-        self._source_resource,
         offset=self._offset,
         length=self._length)
 
@@ -208,7 +207,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
           additional_task_iterators=None,
           messages=[
               task.Message(
-                  topic=COMPONENT_CRC32C_TOPIC,
+                  topic=task.Topic.CRC32C,
                   payload={
                       'component_number':
                           self._component_number,
@@ -236,7 +235,14 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
     )
 
     if self._source_resource.size and self._component_number is not None:
-      return self._perform_component_download(progress_callback)
+      try:
+        return self._perform_component_download(progress_callback)
+      # pylint:disable=broad-except
+      except Exception as e:
+        # pylint:enable=broad-except
+        return task.Output(
+            additional_task_iterators=None,
+            messages=[task.Message(topic=task.Topic.ERROR, payload=e)])
 
     if self._strategy is cloud_api.DownloadStrategy.RESUMABLE:
       self._perform_resumable_download(progress_callback)

@@ -21,12 +21,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import functools
 import multiprocessing
+import sys
 import threading
 
 from googlecloudsdk.command_lib import crash_handling
+from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_buffer
 from googlecloudsdk.command_lib.storage.tasks import task_graph as task_graph_module
+from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import creds_context_managers
 
@@ -43,6 +48,8 @@ from six.moves import queue
 # TaskGraphExecutor._executable_tasks and is passed to
 # TaskGraphExecutor._task_queue.
 _SHUTDOWN = 'SHUTDOWN'
+
+_CREATE_WORKER_PROCESS = 'CREATE_WORKER_PROCESS'
 
 
 @crash_handling.CrashManager
@@ -66,16 +73,21 @@ def _thread_worker(task_queue, task_output_queue, task_status_queue,
     idle_thread_count.acquire()
 
     try:
-      additional_task_iterators = task_wrapper.task.execute(
+      task_output = task_wrapper.task.execute(
           task_status_queue=task_status_queue)
     # pylint: disable=broad-except
     # If any exception is raised, it will prevent the executor from exiting.
     except Exception as exception:
       log.error(exception)
-      additional_task_iterators = None
+      if task_wrapper.task.report_error:
+        task_output = task.Output(
+            additional_task_iterators=None,
+            messages=[task.Message(topic=task.Topic.FATAL_ERROR, payload={})])
+      else:
+        task_output = None
     # pylint: enable=broad-except
 
-    task_output_queue.put((task_wrapper, additional_task_iterators))
+    task_output_queue.put((task_wrapper, task_output))
     idle_thread_count.release()
 
 
@@ -107,6 +119,91 @@ def _process_worker(task_queue, task_output_queue, task_status_queue,
       thread.join()
 
 
+@crash_handling.CrashManager
+def _process_factory(task_queue, task_output_queue, task_status_queue,
+                     thread_count, idle_thread_count, signal_queue):
+  """Create worker processes.
+
+  This factory must run in a separate process to avoid deadlock issue,
+  see go/gcloud-storage-deadlock-issue/. Although we are adding one
+  extra process by doing this, it will remain idle once all the child worker
+  processes are created. Thus, it does not add noticable burden on the system.
+
+  Args:
+    task_queue (multiprocessing.Queue): Holds task_graph.TaskWrapper instances.
+    task_output_queue (multiprocessing.Queue): Sends information about completed
+      tasks back to the main process.
+    task_status_queue (multiprocessing.Queue|None): Used by task to report it
+      progress to a central location.
+    thread_count (int): Number of threads the process should spawn.
+    idle_thread_count (multiprocessing.Semaphore): Passed on to worker threads.
+    signal_queue (multiprocessing.Queue): Queue used by parent process to
+      signal when a new child worker process must be created.
+  """
+  processes = []
+  while True:
+    # We receive one signal message for each process to be created.
+    signal = signal_queue.get()
+    if signal == _SHUTDOWN:
+      for _ in processes:
+        for _ in range(thread_count):
+          task_queue.put(_SHUTDOWN)
+      break
+    elif signal == _CREATE_WORKER_PROCESS:
+      for _ in range(thread_count):
+        idle_thread_count.release()
+
+      process = multiprocessing.Process(
+          target=_process_worker,
+          args=(task_queue, task_output_queue, task_status_queue,
+                thread_count, idle_thread_count))
+      processes.append(process)
+      log.debug('Adding 1 process with {} threads.'
+                ' Total processes: {}. Total threads: {}.'.format(
+                    thread_count, len(processes),
+                    len(processes) * thread_count))
+      process.start()
+    else:
+      raise errors.Error('Received invalid signal for worker '
+                         'process creation: {}'.format(signal))
+
+  for process in processes:
+    process.join()
+
+
+def _store_exception(target_function):
+  """Decorator for storing exceptions raised from the thread targets.
+
+  Args:
+    target_function (function): Thread target to decorate.
+
+  Returns:
+    Decorator function.
+  """
+  @functools.wraps(target_function)
+  def wrapper(self, *args, **kwargs):
+    try:
+      target_function(self, *args, **kwargs)
+      # pylint:disable=broad-except
+    except Exception as e:
+      # pylint:enable=broad-except
+      if not isinstance(self, TaskGraphExecutor):
+        # Storing of exception is only allowed for TaskGraphExecutor.
+        raise
+      with self.thread_exception_lock:
+        if self.thread_exception is None:
+          log.debug('Storing error to raise later: %s', e)
+          self.thread_exception = e
+        else:
+          # This indicates that the exception has been already stored for
+          # another thread. We will simply log the traceback in this
+          # case, since raising the error is not going to be handled by the
+          # main thread anyway.
+          log.error(e)
+          log.debug(e, exc_info=sys.exc_info())
+  return wrapper
+
+
 class TaskGraphExecutor:
   """Executes an iterable of command_lib.storage.tasks.task.Task instances."""
 
@@ -114,7 +211,8 @@ class TaskGraphExecutor:
                task_iterator,
                max_process_count=multiprocessing.cpu_count(),
                thread_count=4,
-               task_status_queue=None):
+               task_status_queue=None,
+               progress_type=None):
     """Initializes a TaskGraphExecutor instance.
 
     No threads or processes are started by the constructor.
@@ -124,21 +222,21 @@ class TaskGraphExecutor:
         instances to execute.
       max_process_count (int): The number of processes to start.
       thread_count (int): The number of threads to start per process.
-      task_status_queue (multiprocessing.Queue|None): Used by task to report it
+      task_status_queue (multiprocessing.Queue|None): Used by task to report its
         progress to a central location.
+      progress_type (task_status.ProgressType|None): Determines what type of
+        progress indicator to display.
     """
     self._task_iterator = iter(task_iterator)
     self._max_process_count = max_process_count
     self._thread_count = thread_count
     self._task_status_queue = task_status_queue
+    self._progress_type = progress_type
 
-    self._processes = []
+    self._process_count = 0
     self._idle_thread_count = multiprocessing.Semaphore(value=0)
 
     self._worker_count = self._max_process_count * self._thread_count
-    # If a process forks at the same time as _task_iterator generates a value,
-    # it will cause obscure case of the process not responding.
-    self._process_start_lock = multiprocessing.Lock()
 
     # Sends task_graph.TaskWrapper instances to child processes.
     # Size must be 1. go/lazy-process-spawning-addendum.
@@ -146,6 +244,9 @@ class TaskGraphExecutor:
 
     # Sends information about completed tasks to the main process.
     self._task_output_queue = multiprocessing.Queue(maxsize=self._worker_count)
+
+    # Queue for informing worker_process_creator to create a new process.
+    self._signal_queue = multiprocessing.Queue(maxsize=self._worker_count + 1)
 
     # Tracks dependencies between tasks in the executor to help ensure that
     # tasks returned by executed tasks are completed in the correct order.
@@ -155,26 +256,18 @@ class TaskGraphExecutor:
     # Holds tasks without any dependencies.
     self._executable_tasks = task_buffer.TaskBuffer()
 
+    # For storing exceptions.
+    self.thread_exception = None
+    self.thread_exception_lock = threading.Lock()
+
+    self._exit_code = 0
+
   def _add_worker_process(self):
-    """Creates and triggers worker process."""
-    # Increase total thread count by number of threads available per processor.
-    for _ in range(self._thread_count):
-      self._idle_thread_count.release()
+    """Signal the worker process spawner to create a new process."""
+    self._signal_queue.put(_CREATE_WORKER_PROCESS)
+    self._process_count += 1
 
-    process = multiprocessing.Process(
-        target=_process_worker,
-        args=(self._task_queue, self._task_output_queue,
-              self._task_status_queue, self._thread_count,
-              self._idle_thread_count))
-    self._processes.append(process)
-    log.debug('Adding 1 process with {} threads.'
-              ' Total processes: {}. Total threads: {}.'.format(
-                  self._thread_count, len(self._processes),
-                  len(self._processes) * self._thread_count))
-    with self._process_start_lock:
-      process.start()
-
-  @crash_handling.CrashManager
+  @_store_exception
   def _get_tasks_from_iterator(self):
     """Adds tasks from self._task_iterator to the executor.
 
@@ -184,11 +277,10 @@ class TaskGraphExecutor:
 
     while True:
       try:
-        with self._process_start_lock:
-          task = next(self._task_iterator)
+        task_object = next(self._task_iterator)
       except StopIteration:
         break
-      task_wrapper = self._task_graph.add(task)
+      task_wrapper = self._task_graph.add(task_object)
       if task_wrapper is None:
         # self._task_graph rejected the task.
         continue
@@ -198,7 +290,7 @@ class TaskGraphExecutor:
       # when a workload's task graph has a large branching factor.
       self._executable_tasks.put(task_wrapper, prioritize=False)
 
-  @crash_handling.CrashManager
+  @_store_exception
   def _add_executable_tasks_to_queue(self):
     """Sends executable tasks to consumer threads in child processes."""
     task_wrapper = None
@@ -208,7 +300,7 @@ class TaskGraphExecutor:
         if task_wrapper == _SHUTDOWN:
           break
 
-      reached_process_limit = len(self._processes) >= self._max_process_count
+      reached_process_limit = self._process_count >= self._max_process_count
 
       try:
         self._task_queue.put(task_wrapper, block=reached_process_limit)
@@ -218,10 +310,9 @@ class TaskGraphExecutor:
           # Idle worker will take a task. Restore semaphore count.
           self._idle_thread_count.release()
         else:
-          # Create workers because current workers are busy.
           self._add_worker_process()
 
-  @crash_handling.CrashManager
+  @_store_exception
   def _handle_task_output(self):
     """Updates a dependency graph based on information from executed tasks."""
     while True:
@@ -230,6 +321,10 @@ class TaskGraphExecutor:
         break
 
       executed_task_wrapper, task_output = output
+      if task_output and task_output.messages:
+        for message in task_output.messages:
+          if message.topic == task.Topic.FATAL_ERROR:
+            self._exit_code = 1
       submittable_tasks = self._task_graph.update_from_executed_task(
           executed_task_wrapper, task_output)
 
@@ -238,33 +333,54 @@ class TaskGraphExecutor:
         self._executable_tasks.put(task_wrapper)
 
   def run(self):
-    """Executes tasks from a task iterator in parallel."""
-    self._add_worker_process()
+    """Executes tasks from a task iterator in parallel.
 
-    get_tasks_from_iterator_thread = threading.Thread(
-        target=self._get_tasks_from_iterator)
-    add_executable_tasks_to_queue_thread = threading.Thread(
-        target=self._add_executable_tasks_to_queue)
-    handle_task_output_thread = threading.Thread(
-        target=self._handle_task_output)
+    Returns:
+      An integer indicating the exit code. Zero indicates no fatal errors were
+        raised.
+    """
+    worker_process_spawner = multiprocessing.Process(
+        target=_process_factory,
+        args=(self._task_queue, self._task_output_queue,
+              self._task_status_queue, self._thread_count,
+              self._idle_thread_count, self._signal_queue))
+    worker_process_spawner.start()
 
-    get_tasks_from_iterator_thread.start()
-    add_executable_tasks_to_queue_thread.start()
-    handle_task_output_thread.start()
+    # It is now safe to start the progress_manager.
+    with task_status.progress_manager(self._task_status_queue,
+                                      self._progress_type):
+      self._add_worker_process()
 
-    get_tasks_from_iterator_thread.join()
-    self._task_graph.is_empty.wait()
+      get_tasks_from_iterator_thread = threading.Thread(
+          target=self._get_tasks_from_iterator)
+      add_executable_tasks_to_queue_thread = threading.Thread(
+          target=self._add_executable_tasks_to_queue)
+      handle_task_output_thread = threading.Thread(
+          target=self._handle_task_output)
 
-    self._executable_tasks.put(_SHUTDOWN)
-    for _ in self._processes:
-      for _ in range(self._thread_count):
-        self._task_queue.put(_SHUTDOWN)
-    self._task_output_queue.put(_SHUTDOWN)
+      get_tasks_from_iterator_thread.start()
+      add_executable_tasks_to_queue_thread.start()
+      handle_task_output_thread.start()
 
-    handle_task_output_thread.join()
-    add_executable_tasks_to_queue_thread.join()
-    for process in self._processes:
-      process.join()
+      get_tasks_from_iterator_thread.join()
+      self._task_graph.is_empty.wait()
 
-    self._task_queue.close()
-    self._task_output_queue.close()
+      self._executable_tasks.put(_SHUTDOWN)
+      self._task_output_queue.put(_SHUTDOWN)
+
+      handle_task_output_thread.join()
+      add_executable_tasks_to_queue_thread.join()
+
+      # Shutdown all the workers.
+      self._signal_queue.put(_SHUTDOWN)
+      worker_process_spawner.join()
+
+      self._task_queue.close()
+      self._task_output_queue.close()
+
+    # TODO(b/187408108) Update exit code for task failures.
+    with self.thread_exception_lock:
+      if self.thread_exception:
+        raise self.thread_exception  # pylint: disable=raising-bad-type
+
+    return self._exit_code

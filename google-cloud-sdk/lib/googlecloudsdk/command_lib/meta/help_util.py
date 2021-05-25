@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 import collections
 import contextlib
 import os
-import re
 import shutil
 import time
 
@@ -36,8 +35,6 @@ from googlecloudsdk.core.util import text
 import six
 
 
-# Help documents must not contain any of these invalid brand abbreviations.
-INVALID_BRAND_ABBREVIATIONS = ['GAE', 'GCE', 'GCP', 'GCS']
 # Max number of test changes to display.
 TEST_CHANGES_DISPLAY_MAX = 32
 
@@ -228,7 +225,6 @@ class HelpAccumulator(DiffAccumulator):
 
   Attributes:
     _changes: The list of DirDiff() (op, path) difference tuples.
-    _invalid_file_count: The number of files that have invalid content.
     _restrict: The set of file path prefixes that the accumulator should be
       restricted to.
   """
@@ -236,15 +232,8 @@ class HelpAccumulator(DiffAccumulator):
   def __init__(self, restrict=None):
     super(HelpAccumulator, self).__init__()
     self._changes = []
-    self._invalid_abbreviations = re.compile(
-        r'\b({0})\b'.format('|'.join(INVALID_BRAND_ABBREVIATIONS)))
-    self._invalid_file_count = 0
     self._restrict = ({os.sep.join(r.split('.')[1:]) for r in restrict}
                       if restrict else {})
-
-  @property
-  def invalid_file_count(self):
-    return self._invalid_file_count
 
   def Ignore(self, relative_file):
     """Checks if relative_file should be ignored by DirDiff().
@@ -263,13 +252,6 @@ class HelpAccumulator(DiffAccumulator):
       if relative_file == item or relative_file.startswith(item + os.sep):
         return False
     return True
-
-  def Validate(self, relative_file, contents):
-    if self._invalid_abbreviations.search(contents):
-      log.error('[{0}] Help document cannot contain these abbreviations: '
-                '[{1}].'.format(relative_file,
-                                ','.join(INVALID_BRAND_ABBREVIATIONS)))
-      self._invalid_file_count += 1
 
   def AddChange(self, op, relative_file, old_contents=None, new_contents=None):
     """Adds an DirDiff() difference tuple to the list of changes.
@@ -337,14 +319,6 @@ class HelpUpdater(object):
       diff = HelpAccumulator(restrict=restrict)
       with TimeIt('Diffing'):
         DirDiff(self._directory, temp_dir, diff)
-      if diff.invalid_file_count:
-        # Bail out early on invalid content errors. These must be corrected
-        # before proceeding.
-        raise HelpUpdateError(
-            '{0} help document {1} with invalid content must be fixed.'.format(
-                diff.invalid_file_count,
-                text.Pluralize(diff.invalid_file_count, 'file')))
-
       ops = collections.defaultdict(list)
 
       changes = 0

@@ -113,10 +113,10 @@ def AddFunctionMemoryFlag(parser):
       help="""\
       Limit on the amount of memory the function can use.
 
-      Allowed values are: 128MB, 256MB, 512MB, 1024MB, 2048MB, and 4096MB. By
-      default, a new function is limited to 256MB of memory. When deploying an
-      update to an existing function, the function keeps its old memory
-      limit unless you specify this flag.""")
+      Allowed values are: 128MB, 256MB, 512MB, 1024MB, 2048MB, 4096MB, and
+      8192MB. By default, a new function is limited to 256MB of memory. When
+      deploying an update to an existing function, the function keeps its old
+      memory limit unless you specify this flag.""")
 
 
 def AddFunctionTimeoutFlag(parser):

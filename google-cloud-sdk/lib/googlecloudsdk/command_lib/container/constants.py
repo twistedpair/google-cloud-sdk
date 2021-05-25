@@ -45,3 +45,8 @@ KUBERNETES_GPU_LIMITATION_MSG = (
 USERNAME_PASSWORD_ERROR_MSG = (
     "Cannot specify --password with empty --username or --no-enable-basic-auth."
 )
+
+CONFLICTING_GET_CREDS_FLAGS_ERROR_MSG = (
+    "Can only specify one of the following flags for get-credentials: "
+    "--cross-connect-subnetwork, --internal-ip, --private-endpoint-fqdn."
+)

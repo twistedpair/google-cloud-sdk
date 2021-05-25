@@ -54,8 +54,6 @@ class DeleteTaskIteratorFactory:
     Yields:
       True if resource found.
     """
-    items_count = 0
-
     for name_expansion_result in self._name_expansion_iterator:
       resource = name_expansion_result.resource
       if isinstance(resource, resource_reference.BucketResource):
@@ -64,20 +62,23 @@ class DeleteTaskIteratorFactory:
       else:
         self._object_delete_tasks.put(
             delete_object_task.DeleteObjectTask(resource.storage_url))
-      items_count += 1
       yield True
 
-    progress_callbacks.workload_estimator_callback(self._task_status_queue,
-                                                   items_count)
-
   def _resource_iterator(self, resource_queue):
+    """Yields a resource from the queue."""
+    resource_count = 0
     try:
+
       while (not resource_queue.empty() or
              next(self._flat_wildcard_results_iterator)):
         if not resource_queue.empty():
+          resource_count += 1
           yield resource_queue.get()
     except StopIteration:
       pass
+    if resource_count:
+      progress_callbacks.workload_estimator_callback(self._task_status_queue,
+                                                     resource_count)
 
   def bucket_iterator(self):
     return self._resource_iterator(self._bucket_delete_tasks)

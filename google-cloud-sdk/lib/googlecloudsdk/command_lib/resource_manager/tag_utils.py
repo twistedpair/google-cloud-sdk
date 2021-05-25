@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.resource_manager import tags
 from googlecloudsdk.api_lib.resource_manager.exceptions import ResourceManagerError
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.projects import util as command_lib_util
 from googlecloudsdk.command_lib.resource_manager import endpoint_utils as endpoints
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -189,6 +190,11 @@ def GetCanonicalResourceName(resource_name, location, release_track):
   gce_search = re.search(gce_compute_instance_name_pattern, resource_name)
 
   if gce_search:
+    if not location:
+      raise exceptions.InvalidArgumentException(
+          '--location',
+          'Please specify an appropriate cloud location with the --location flag.'
+      )
     project_identifier, instance_identifier = gce_search.group(
         1), gce_search.group(2)
     # call compute instance's describe api to get canonical resource name

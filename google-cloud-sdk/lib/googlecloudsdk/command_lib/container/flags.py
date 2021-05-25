@@ -3731,3 +3731,35 @@ def AddNodePoolEnablePrivateNodes(parser, for_update=False, hidden=True):  # pyl
       default=None,
       action='store_true',
       help=help_text)
+
+
+def AddPrivateEndpointFQDNFlag(parser, hidden=True):
+  """Adds a --private-endpoint-fqdn flag to the given parser."""
+  help_text = ' '
+  parser.add_argument(
+      '--private-endpoint-fqdn',
+      help=help_text,
+      hidden=hidden,
+      default=None,
+      action='store_true')
+
+
+def VerifyGetCredentialsFlags(args):
+  """Verifies that the passed flags are valid for get-credentials.
+
+  Only one of the following flags may be specified at a time:
+  --cross-connect, --private-endpoint-fqdn, or --internal-ip
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Raises:
+    util.Error, if flags conflict.
+  """
+  if (args.IsSpecified('internal_ip') +
+      args.IsSpecified('cross_connect_subnetwork') +
+      args.IsSpecified('private_endpoint_fqdn')) > 1:
+    raise util.Error(constants.CONFLICTING_GET_CREDS_FLAGS_ERROR_MSG)
+
+

@@ -30,7 +30,6 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
-from googlecloudsdk.command_lib.storage.tasks.cp import file_part_download_task
 from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
@@ -75,13 +74,14 @@ class FinalizeSlicedDownloadTask(task.Task):
     self._source_resource = source_resource
     self._destination_resource = destination_resource
 
-  def execute(self, task_status_queue=None):
-    """Validates and clean ups after sliced download."""
-    # Clean up master and component tracker files.
+  def _clean_up_tracker_files(self):
+    """Clean up master and component tracker files."""
     tracker_file_util.delete_download_tracker_files(
         self._destination_resource.storage_url,
         tracker_file_util.TrackerFileType.SLICED_DOWNLOAD)
 
+  def execute(self, task_status_queue=None):
+    """Validates and clean ups after sliced download."""
     if (properties.VALUES.storage.check_hashes.Get() !=
         properties.CheckHashes.NEVER.value and
         self._source_resource.crc32c_hash):
@@ -89,7 +89,7 @@ class FinalizeSlicedDownloadTask(task.Task):
       component_payloads = [
           message.payload
           for message in self.received_messages
-          if message.topic == file_part_download_task.COMPONENT_CRC32C_TOPIC
+          if message.topic == task.Topic.CRC32C
       ]
       if component_payloads:
         # Returns list of payload values sorted by component number.
@@ -115,9 +115,15 @@ class FinalizeSlicedDownloadTask(task.Task):
               self._destination_resource.storage_url,
               self._source_resource.crc32c_hash, downloaded_file_hash_digest)
         except errors.HashMismatchError:
-          os.remove(self._destination_resource.storage_url.object_name)
+          if task.Topic.ERROR not in [
+              message.topic for message in self.received_messages
+          ]:
+            os.remove(self._destination_resource.storage_url.object_name)
+            self._clean_up_tracker_files()
           raise
 
     if _should_decompress_gzip(self._source_resource,
                                self._destination_resource):
       _ungzip_file(self._destination_resource.storage_url.object_name)
+
+    self._clean_up_tracker_files()

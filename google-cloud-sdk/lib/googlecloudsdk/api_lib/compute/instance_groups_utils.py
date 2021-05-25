@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import enum
 from apitools.base.py import encoding
 
@@ -245,32 +246,64 @@ list as parameter:
 }
 
 
-def CreateInstanceReferences(
-    resources, compute_client, igm_ref, instance_names):
-  """Creates reference to instances in instance group (zonal or regional)."""
+def CreateInstanceReferences(resources, compute_client, igm_ref,
+                             instance_names_or_urls):
+  """Creates reference to instances in instance group (zonal or regional).
+
+  Args:
+    resources: Resources parser for the client.
+    compute_client: Client for the current release track.
+    igm_ref: URL to the target IGM.
+    instance_names_or_urls: names or full URLs of target instances.
+
+  Returns:
+    A dict where instance names are keys, and corresponding references are
+    values. Unresolved names are present in dict with value None.
+  """
+  _InstanceNameWithReference = collections.namedtuple(
+      'InstanceNameWithReference', ['instance_name', 'instance_reference'])
+  instance_references = []
+  # Make sure we don't have URLs here.
+  names_to_resolve = [
+      path_simplifier.Name(name_or_url)
+      for name_or_url in instance_names_or_urls
+  ]
   if igm_ref.Collection() == 'compute.instanceGroupManagers':
-    instance_refs = []
-    for instance in instance_names:
-      instance_refs.append(resources.Parse(
-          instance,
+    for instance_name in names_to_resolve:
+      instance_ref = resources.Parse(
+          instance_name,
           params={
               'project': igm_ref.project,
               'zone': igm_ref.zone,
           },
-          collection='compute.instances'))
-    return [instance_ref.SelfLink() for instance_ref in instance_refs]
+          collection='compute.instances')
+      instance_references.append(
+          _InstanceNameWithReference(
+              instance_name=instance_name,
+              instance_reference=instance_ref.SelfLink()))
+    return instance_references
   elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
     service = compute_client.apitools_client.regionInstanceGroupManagers
     request = service.GetRequestType('ListManagedInstances')(
         instanceGroupManager=igm_ref.Name(),
         region=igm_ref.region,
         project=igm_ref.project)
-    results = compute_client.MakeRequests(requests=[
-        (service, 'ListManagedInstances', request)])
-    # here we assume that instances are uniquely named within RMIG
-    return [instance_ref.instance for instance_ref in results
-            if path_simplifier.Name(instance_ref.instance) in instance_names
-            or instance_ref.instance in instance_names]
+    resolved_references = {}
+    for instance_ref in compute_client.MakeRequests(
+        requests=[(service, 'ListManagedInstances', request)]):
+      resolved_references[path_simplifier.Name(
+          instance_ref.instance)] = instance_ref.instance
+    for instance_name in names_to_resolve:
+      if instance_name in resolved_references:
+        instance_references.append(
+            _InstanceNameWithReference(
+                instance_name=instance_name,
+                instance_reference=resolved_references[instance_name]))
+      else:
+        instance_references.append(
+            _InstanceNameWithReference(
+                instance_name=instance_name, instance_reference=None))
+    return instance_references
   else:
     raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
 
@@ -322,43 +355,119 @@ def GenerateRequestTuples(service, method, requests):
     yield (service, method, request)
 
 
-# TODO(b/36799480) Parallelize instance_groups_utils.MakeRequestsList
-def MakeRequestsList(client, requests, field_name):
-  """Make list of *-instances requests returning actionable feedback.
+# TODO(b/36799480) Parallelize instance_groups_utils.MakeRequests
+def MakeRequestsAndGetStatusPerInstance(client, requests,
+                                        instances_holder_field,
+                                        errors_to_collect):
+  """Make *-instances requests with feedback per instance.
 
   Args:
     client: Compute client.
     requests: [(service, method, request)].
-    field_name: name of field inside request holding list of instances.
+    instances_holder_field: name of field inside request holding list of
+      instances.
+    errors_to_collect: A list for capturing errors. If any response contains an
+      error, it is added to this list.
+
+  Returns:
+    A list of request statuses per instance. Requests status is a dictionary
+    object, see SendInstancesRequestsAndPostProcessOutputs for details.
+  """
+
+  # Make requests and collect errors for each.
+  request_results = []
+  for service, method, request in requests:
+    errors = []
+    client.MakeRequests([(service, method, request)], errors)
+    request_results.append((request, errors))
+    errors_to_collect.extend(errors)
+
+  # Determine status of instances.
+  status_per_instance = []
+  for request, errors in request_results:
+    # Currently, any validation failure means that whole request is rejected.
+    if errors:
+      instance_status = 'FAIL'
+    else:
+      instance_status = 'SUCCESS'
+    for instance in getattr(request, instances_holder_field).instances:
+      status_per_instance.append({
+          'selfLink': instance,
+          'instanceName': path_simplifier.Name(instance),
+          'status': instance_status
+      })
+
+  return status_per_instance
+
+
+def SendInstancesRequestsAndPostProcessOutputs(api_holder, method_name,
+                                               request_template,
+                                               instances_holder_field, igm_ref,
+                                               instances):
+  """Make *-instances requests and format output.
+
+  Method resolves instance references, splits them to make batch of requests,
+  adds to results statuses for unresolved instances, and yields all statuses
+  raising errors, if any, in the end.
+
+  Args:
+    api_holder: Compute API holder.
+    method_name: Name of the (region) instance groups managers service method to
+      call.
+    request_template: Partially filled *-instances request (no instances).
+    instances_holder_field: Name of the field inside request holding instances
+      field.
+    igm_ref: URL to the target IGM.
+    instances: A list of names of the instances to apply method to.
 
   Yields:
-    Dictionaries with link to instance keyed with 'selfLink' and string
-    indicating if operation succeeded keyed with 'status'.
+    A list of request statuses per instance. Requests status is a dictionary
+    object with link to an instance keyed with 'selfLink', instance name keyed
+    with 'instanceName', and status indicating if operation succeeded for
+    instance keyed with 'status'. Status might be 'FAIL', 'SUCCESS' or
+    'MEMBER_NOT_FOUND' (in case of regional MIGs, when instance name cannot be
+    resolved).
   """
-  errors_to_propagate = []
-  result = []
+  client = api_holder.client
+  if igm_ref.Collection() == 'compute.instanceGroupManagers':
+    service = client.apitools_client.instanceGroupManagers
+  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
+    service = client.apitools_client.regionInstanceGroupManagers
+  else:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
 
-  for service, method, request in requests:
-    # Using batching here because otherwise all tests would have to be
-    # rewritten.
-    errors = []
-    # Result is synthesized, API response is unused.
-    client.MakeRequests([(service, method, request)], errors)
-    if errors:
-      # Operation failed for all instances.
-      errors_to_propagate.extend(errors)
-      status = 'FAIL'
-    else:
-      status = 'SUCCESS'
-    for instance in getattr(request, field_name).instances:
-      # Cannot yield here - only last dict will be printed
-      result.append({'selfLink': instance, 'status': status})
+  instances_with_references = CreateInstanceReferences(api_holder.resources,
+                                                       client, igm_ref,
+                                                       instances)
+  resolved_references = [
+      instance.instance_reference
+      for instance in instances_with_references
+      if instance.instance_reference
+  ]
+  getattr(request_template,
+          instances_holder_field).instances = resolved_references
+  requests = SplitInstancesInRequest(request_template, instances_holder_field)
+  request_tuples = GenerateRequestTuples(service, method_name, requests)
 
-  for record in result:
-    yield record
+  errors_to_collect = []
+  request_status_per_instance = MakeRequestsAndGetStatusPerInstance(
+      client, request_tuples, instances_holder_field, errors_to_collect)
 
-  if errors_to_propagate:
-    raise utils.RaiseToolException(errors_to_propagate)
+  unresolved_instance_names = [
+      instance.instance_name
+      for instance in instances_with_references
+      if not instance.instance_reference
+  ]
+  request_status_per_instance.extend([
+      dict(instanceName=name, status='MEMBER_NOT_FOUND')
+      for name in unresolved_instance_names
+  ])
+
+  for status in request_status_per_instance:
+    yield status
+
+  if errors_to_collect:
+    raise utils.RaiseToolException(errors_to_collect)
 
 
 class InstanceGroupFilteringMode(enum.Enum):

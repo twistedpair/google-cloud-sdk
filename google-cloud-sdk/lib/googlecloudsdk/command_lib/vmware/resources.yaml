@@ -1,6 +1,6 @@
 project:
   name: project
-  collection: sddc.projects
+  collection: vmwareengine.projects
   attributes:
   - &project
     parameter_name: projectsId
@@ -9,36 +9,36 @@ project:
     property: core/project
   disable_auto_completers: false
 
-region:
-  name: region
-  collection: sddc.projects.locations
+location:
+  name: location
+  collection: vmwareengine.projects.locations
   attributes:
   - *project
-  - &region
+  - &location
     parameter_name: locationsId
-    attribute_name: region
-    help: Region of the private cloud or cluster.
-    property: vmware/region
+    attribute_name: location
+    help: Zone of the private cloud or cluster.
+    property: compute/zone
   disable_auto_completers: false
 
 privatecloud:
   name: privatecloud
-  collection: sddc.projects.locations.clusterGroups
+  collection: vmwareengine.projects.locations.privateClouds
   attributes:
   - *project
-  - *region
+  - *location
   - &privatecloud
-    parameter_name: clusterGroupsId
+    parameter_name: privateCloudsId
     attribute_name: privatecloud
     help: VMware Engine private cloud.
   disable_auto_completers: false
 
 cluster:
   name: cluster
-  collection: sddc.projects.locations.clusterGroups.clusters
+  collection: vmwareengine.projects.locations.privateClouds.clusters
   attributes:
   - *project
-  - *region
+  - *location
   - *privatecloud
   - &cluster
     parameter_name: clustersId
@@ -46,15 +46,28 @@ cluster:
     help: Cluster in a VMware Engine private cloud.
   disable_auto_completers: false
 
-ip_address:
-  name: ip_address
-  collection: sddc.projects.locations.clusterGroups.ipAddresses
+
+operation:
+  name: operation
+  collection: vmwareengine.projects.locations.operations
   attributes:
   - *project
-  - *region
-  - *privatecloud
-  - &ip_address
-    parameter_name: ipAddressesId
-    attribute_name: name
-    help: IP address name in a VMware Engine private cloud.
+  - *location
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      The name of the VMware Engine operation.
+  disable_auto_completers: false
+
+
+nodetype:
+  name: nodetype
+  collection: vmwareengine.projects.locations.nodeTypes
+  attributes:
+  - *project
+  - *location
+  - parameter_name: nodeTypesId
+    attribute_name: nodetype
+    help: |
+      Node Type in a VMware Engine cluster.
   disable_auto_completers: false

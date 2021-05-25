@@ -538,7 +538,7 @@ class ResourceResolver(object):
     project = properties.VALUES.core.project.GetOrFail
     if with_project:
       params = {
-          'project': project,
+          'project': project(),
       }
     else:
       params = {}

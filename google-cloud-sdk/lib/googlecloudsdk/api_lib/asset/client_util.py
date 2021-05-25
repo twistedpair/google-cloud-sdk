@@ -19,9 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.asset import utils as asset_utils
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -370,13 +372,14 @@ class AnalyzeIamPolicyClient(object):
 class AssetExportClient(object):
   """Client for export asset."""
 
-  def __init__(self, parent, api_version=DEFAULT_API_VERSION):
+  def __init__(self, parent, api_version=DEFAULT_API_VERSION, client=None):
     self.parent = parent
     self.message_module = GetMessages(api_version)
     if api_version == V1P7BETA1_API_VERSION:
-      self.service = GetClient(api_version).v1p7beta1
+      self.service = client.v1p7beta1 if client else GetClient(
+          api_version).v1p7beta1
     else:
-      self.service = GetClient(api_version).v1
+      self.service = client.v1 if client else GetClient(api_version).v1
     self.api_version = api_version
 
   def Export(self, args):
@@ -429,7 +432,13 @@ class AssetExportClient(object):
           readTime=snapshot_time)
     request_message = self.message_module.CloudassetExportAssetsRequest(
         parent=self.parent, exportAssetsRequest=export_assets_request)
-    operation = self.service.ExportAssets(request_message)
+    try:
+      operation = self.service.ExportAssets(request_message)
+    except apitools_exceptions.HttpBadRequestError as bad_request:
+      raise exceptions.HttpException(bad_request, error_format='{error_info}')
+    except apitools_exceptions.HttpForbiddenError as permission_deny:
+      raise exceptions.HttpException(
+          permission_deny, error_format='{error_info}')
     return operation
 
 
@@ -548,6 +557,7 @@ class AssetSearchClient(object):
 
   def __init__(self, api_version):
     self.message_module = GetMessages(api_version)
+    self.api_version = api_version
     if api_version == V1P1BETA1_API_VERSION:
       self.resource_service = GetClient(api_version).resources
       self.search_all_resources_method = 'SearchAll'
@@ -582,8 +592,15 @@ class AssetSearchClient(object):
 
   def SearchAllIamPolicies(self, args):
     """Calls SearchAllIamPolicies method."""
-    request = self.search_all_iam_policies_request(
-        scope=asset_utils.GetDefaultScopeIfEmpty(args), query=args.query)
+    if self.api_version == V1P1BETA1_API_VERSION:
+      request = self.search_all_iam_policies_request(
+          scope=asset_utils.GetDefaultScopeIfEmpty(args), query=args.query)
+    else:
+      request = self.search_all_iam_policies_request(
+          scope=asset_utils.GetDefaultScopeIfEmpty(args),
+          query=args.query,
+          assetTypes=args.asset_types,
+          orderBy=args.order_by)
     return list_pager.YieldFromList(
         self.policy_service,
         request,

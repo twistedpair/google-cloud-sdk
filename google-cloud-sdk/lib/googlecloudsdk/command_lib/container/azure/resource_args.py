@@ -32,23 +32,23 @@ def GetOperationResource(op):
 
 def AzureClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='cluster', help_text='The Azure cluster of the {resource}.')
+      name='cluster', help_text='Azure cluster of the {resource}.')
 
 
 def AzureNodePoolAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='nodepool', help_text='The Azure node pool of the {resource}.')
+      name='nodepool', help_text='Azure node pool of the {resource}.')
 
 
 def AzureClientAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='client', help_text='The Azure client of the {resource}.')
+      name='client', help_text='Azure client of the {resource}.')
 
 
 def RegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='region',
-      help_text='The Anthos GKE Multi-cloud region for the {resource}.',
+      help_text='Anthos GKE Multi-cloud region for the {resource}.',
       fallthroughs=[deps.PropertyFallthrough(properties.VALUES.azure.region)])
 
 
@@ -100,7 +100,7 @@ def AddAzureClusterResourceArg(parser, verb, positional=True):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAzureClusterResourceSpec(),
-      'The Azure cluster {}.'.format(verb),
+      'Azure cluster {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -116,7 +116,7 @@ def AddAzureNodePoolResourceArg(parser, verb, positional=True):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAzureNodePoolResourceSpec(),
-      'The Azure node pool {}.'.format(verb),
+      'Azure node pool {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -132,7 +132,7 @@ def AddAzureClientResourceArg(parser, verb, positional=True):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAzureClientResourceSpec(),
-      'The Azure client {}.'.format(verb),
+      'Azure client {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -146,7 +146,7 @@ def AddRegionResourceArg(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       '--region',
       GetRegionResourceSpec(),
-      'The Azure region {}.'.format(verb),
+      'Azure region {}.'.format(verb),
       required=True).AddToParser(parser)
 
 

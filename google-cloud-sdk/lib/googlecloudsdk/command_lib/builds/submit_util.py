@@ -515,6 +515,14 @@ def Build(messages, async_, build_config, hide_logs=False,
         'Your build timed out. Use the [--timeout=DURATION] flag to change '
         'the timeout threshold.')
 
+  if build.warnings:
+    for warn in build.warnings:
+      log.status.Print('\n{priority}: {text}'.format(
+          text=warn.text, priority=warn.priority))
+
+    log.status.Print(
+        '\n{count} message(s) issued.'.format(count=len(build.warnings)))
+
   if build.status != messages.Build.StatusValueValuesEnum.SUCCESS:
     raise FailedBuildException(build)
 

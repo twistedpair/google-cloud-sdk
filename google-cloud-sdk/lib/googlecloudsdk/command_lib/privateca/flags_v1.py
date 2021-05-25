@@ -29,6 +29,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.privateca import preset_profiles
 from googlecloudsdk.command_lib.privateca import text_utils
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import times
 
 import six
@@ -202,8 +203,8 @@ def AddBucketFlag(parser):
   base.Argument(
       '--bucket',
       help='The name of an existing storage bucket to use for storing the CA '
-      'certificates and CRLs for CAs in this pool. If omitted, a new bucket will'
-      'be created and managed by the service on your behalf.',
+      'certificates and CRLs for CAs in this pool. If omitted, a new bucket '
+      'will be created and managed by the service on your behalf.',
       required=False).AddToParser(parser)
 
 
@@ -265,7 +266,170 @@ def AddInlineX509ParametersFlags(parser, is_ca_command,
   group.AddToParser(parser)
 
 
+def AddIdentityConstraintsFlags(parser):
+  """Adds flags for expressing identity constraints."""
+  base.Argument(
+      '--identity-cel-expression',
+      help='A CEL expression that will be evaluated against the identity '
+      'in the certificate before it is issued, and returns a boolean '
+      'signifying whether the request should be allowed.').AddToParser(parser)
+
+  base.Argument(
+      '--copy-subject',
+      help=('If this is specified, the Subject from the certificate request '
+            'will be copied into the signed certificate. Specify '
+            '--no-copy-subject to drop any caller-specifed subjects from the '
+            'certificate request.'),
+      action='store_true',
+      required=True).AddToParser(parser)
+  base.Argument(
+      '--copy-sans',
+      help=(
+          'If this is specified, the Subject Alternative Name extension from '
+          'the certificate request will be copied into the signed certificate. '
+          'Specify --no-copy-sans to drop any caller-specified SANs in the '
+          'certificate request.'),
+      action='store_true',
+      required=True).AddToParser(parser)
+
+
+def GetKnownExtensionMapping():
+  enum_type = privateca_base.GetMessagesModule(
+      'v1'
+  ).CertificateExtensionConstraints.KnownExtensionsValueListEntryValuesEnum
+  return {
+      'base-key-usage': enum_type.BASE_KEY_USAGE,
+      'extended-key-usage': enum_type.EXTENDED_KEY_USAGE,
+      'ca-options': enum_type.CA_OPTIONS,
+      'policy-ids': enum_type.POLICY_IDS,
+      'aia-ocsp-servers': enum_type.AIA_OCSP_SERVERS,
+  }
+
+
+def _StrToObjectId(val):
+  return privateca_base.GetMessagesModule('v1').ObjectId(objectIdPath=[
+      int(part) for part in six.text_type(val).strip().split('.')
+  ])
+
+
+def _StrToKnownExtension(arg_name, val):
+  trimmed_val = six.text_type(val).strip().lower()
+  known_extensions = GetKnownExtensionMapping()
+  if trimmed_val in known_extensions:
+    return known_extensions[trimmed_val]
+  else:
+    raise exceptions.UnknownArgumentException(
+        arg_name,
+        'expected one of [{}]'.format(','.join(known_extensions.keys())))
+
+
+def AddExtensionConstraintsFlags(parser):
+  """Adds flags for expressing extension constraints."""
+  extension_group = parser.add_group(
+      mutex=True,
+      required=False,
+      help=('Constraints on requested X.509 extensions. If unspecified, all '
+            'extensions from certificate request will be ignored when signing '
+            'the certificate.'))
+  copy_group = extension_group.add_group(
+      mutex=False,
+      required=False,
+      help=('Specify exact x509 extensions to copy by OID or known extension.'))
+
+  base.Argument(
+      '--copy-extensions-by-oid',
+      help='If this is set, then extensions with the given OIDs will be copied '
+      'from the certificate request into the signed certificate.',
+      type=arg_parsers.ArgList(element_type=_StrToObjectId),
+      metavar='OBJECT_ID').AddToParser(copy_group)
+  known_extensions = GetKnownExtensionMapping()
+  base.Argument(
+      '--copy-known-extensions',
+      help='If this is set, then the given extensions will be copied '
+      'from the certificate request into the signed certificate.',
+      type=arg_parsers.ArgList(choices=known_extensions.keys()),
+      metavar='KNOWN_EXTENSIONS').AddToParser(copy_group)
+
+  base.Argument(
+      '--copy-all-requested-extensions',
+      help=('If this is set, all extensions specified in the certificate '
+            ' request eill be copied into the signed certificate.'),
+      action='store_const',
+      const=True,
+  ).AddToParser(extension_group)
+
+
+def AddPredefinedValuesFileFlag(parser):
+  """Adds a flag for the predefined x509 extensions file for a Certificate Template."""
+  base.Argument(
+      '--predefined-values-file',
+      action='store',
+      type=arg_parsers.YAMLFileContents(),
+      help=('A YAML file describing any predefined X.509 values set by this '
+            'template. The provided extensions will be copied over to any '
+            'certificate requests that use this template, taking precedent '
+            'over any allowed extensions in the certificate request.'
+           )).AddToParser(parser)
+
+
 # Flag parsing
+
+
+def ParseIdentityConstraints(args):
+  """Parses the identity flags into a CertificateIdentityConstraints object."""
+  messages = privateca_base.GetMessagesModule('v1')
+
+  missing_subject_conf = (
+      'Neither copy-sans nor copy-subject was specified.This means that all '
+      'certificate requests that use this template must use identity '
+      'reflection.')
+  if not args.copy_subject and not args.copy_sans and not console_io.PromptContinue(
+      message=missing_subject_conf, default=True):
+    raise exceptions.InvalidArgumentException(
+        'copy-subject/copy-san',
+        'User aborted due to invalid subject configuration.')
+
+  return messages.CertificateIdentityConstraints(
+      allowSubjectPassthrough=args.copy_subject,
+      allowSubjectAltNamesPassthrough=args.copy_sans,
+      celExpression=messages.Expr(expression=args.identity_cel_expression)
+      if args.IsSpecified('identity_cel_expression') else None)
+
+
+def ParseExtensionConstraints(args):
+  """Parse extension constraints flags into CertificateExtensionConstraints API message."""
+  if args.IsSpecified('copy_all_requested_extensions'):
+    return None
+  messages = privateca_base.GetMessagesModule('v1')
+  known_exts = []
+  if args.IsSpecified('copy_known_extensions'):
+    known_exts = [
+        _StrToKnownExtension('--copy-known-extensions', ext)
+        for ext in args.copy_known_extensions
+    ]
+
+  oids = []
+  if args.IsSpecified('copy_extensions_by_oid'):
+    oids = args.copy_extensions_by_oid
+
+  return messages.CertificateExtensionConstraints(
+      knownExtensions=known_exts, additionalExtensions=oids)
+
+
+def ParsePredefinedValues(args):
+  """Parses an X509Parameters proto message from the predefined values file in args."""
+  if not args.IsSpecified('predefined_values_file'):
+    return None
+  try:
+    return messages_util.DictToMessageWithErrorCheck(
+        args.predefined_values_file,
+        privateca_base.GetMessagesModule('v1').X509Parameters)
+  # TODO(b/77547931): Catch `AttributeError` until upstream library takes the
+  # fix.
+  except (messages_util.DecodeError, AttributeError):
+    raise exceptions.InvalidArgumentException(
+        '--predefined-values-file',
+        'Unrecognized field in the X509Parameters file.')
 
 
 def ParseSubject(args):
@@ -481,7 +645,7 @@ _TIER_MAPPER = arg_utils.ChoiceEnumMapper(
 
 _KEY_ALGORITHM_MAPPING = {
     'RSA_PSS_2048_SHA256': 'rsa-pss-2048-sha256',
-    'RSA_PSS_3072_SHA256': 'rsa-pss-3078-sha256',
+    'RSA_PSS_3072_SHA256': 'rsa-pss-3072-sha256',
     'RSA_PSS_4096_SHA256': 'rsa-pss-4096-sha256',
     'RSA_PKCS1_2048_SHA256': 'rsa-pkcs1-2048-sha256',
     'RSA_PKCS1_3072_SHA256': 'rsa-pkcs1-3072-sha256',

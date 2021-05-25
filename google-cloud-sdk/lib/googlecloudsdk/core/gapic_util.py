@@ -19,44 +19,77 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from google.auth import credentials
+from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import requests
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store
 
 
-class MissingStoredCredentialsError(Exception):
+class MissingStoredCredentialsError(exceptions.Error):
   """Indicates stored credentials do not exist or are not available."""
 
 
-class StoredCredentials(credentials.Credentials):
-  """Implements the Credentials interface required by gapic."""
+def GetGapicCredentials(enable_resource_quota=True,
+                        force_resource_quota=False,
+                        allow_account_impersonation=True):
+  """Returns a credential object for use by gapic client libraries.
 
-  def __init__(self,
+  Currently, we set _quota_project on the credentials, unlike for http requests,
+  which add quota project through request wrapping to implement
+  go/gcloud-quota-model-v2.
+
+  Additionally, we wrap the refresh method and plug in our own
+  google.auth.transport.Request object that uses our transport.
+
+  Args:
+    enable_resource_quota: bool, By default, we are going to tell APIs to use
+        the quota of the project being operated on. For some APIs we want to use
+        gcloud's quota, so you can explicitly disable that behavior by passing
+        False here.
+    force_resource_quota: bool, If true resource project quota will be used by
+        this client regardless of the settings in gcloud. This should be used
+        for newer APIs that cannot work with legacy project quota.
+    allow_account_impersonation: bool, True to allow use of impersonated service
+        account credentials for calls made with this client. If False, the
+        active user credentials will always be used.
+
+  Returns:
+    A google auth credentials.Credentials object.
+
+  Raises:
+    MissingStoredCredentialsError: If a google-auth credential cannot be loaded.
+  """
+
+  stored_credentials = store.LoadIfEnabled(
+      allow_account_impersonation=allow_account_impersonation,
+      use_google_auth=True)
+  if not creds.IsGoogleAuthCredentials(stored_credentials):
+    raise MissingStoredCredentialsError('Unable to load credentials')
+
+  if enable_resource_quota or force_resource_quota:
+    # pylint: disable=protected-access
+    stored_credentials._quota_project_id = creds.GetQuotaProject(
+        credentials, force_resource_quota)
+
+  # In order to ensure that credentials.Credentials:refresh is called with a
+  # google.auth.transport.Request that uses our transport, we ignore the request
+  # argument that is passed in and plug in our own.
+  original_refresh = stored_credentials.refresh
+  def WrappedRefresh(request):
+    del request  # unused
+    return original_refresh(requests.GoogleAuthRequest())
+  stored_credentials.refresh = WrappedRefresh
+
+  return stored_credentials
+
+
+def MakeClient(client_class, address=None,
                enable_resource_quota=True,
                force_resource_quota=False,
                allow_account_impersonation=True):
-    super(StoredCredentials, self).__init__()
-    self.stored_credentials = store.LoadIfEnabled(
-        allow_account_impersonation=allow_account_impersonation,
-        use_google_auth=True)
-    if self.stored_credentials is None:
-      raise MissingStoredCredentialsError()
-    if creds.IsOauth2ClientCredentials(self.stored_credentials):
-      self.token = self.stored_credentials.access_token
-    else:
-      self.token = self.stored_credentials.token
-    if enable_resource_quota or force_resource_quota:
-      self._quota_project_id = creds.GetQuotaProject(self.stored_credentials,
-                                                     force_resource_quota)
-    else:
-      self._quota_project_id = None
-
-  def refresh(self, request):
-    pass
-
-
-def MakeClient(client_class, address=None):
   """Instantiates a gapic API client with gcloud defaults and configuration.
+
 
   grpc cannot be packaged like our other Python dependencies, due to platform
   differences and must be installed by the user. googlecloudsdk.core.gapic
@@ -66,6 +99,16 @@ def MakeClient(client_class, address=None):
   Args:
     client_class: a gapic client class.
     address: str, API endpoint override.
+    enable_resource_quota: bool, By default, we are going to tell APIs to use
+        the quota of the project being operated on. For some APIs we want to use
+        gcloud's quota, so you can explicitly disable that behavior by passing
+        False here.
+    force_resource_quota: bool, If true resource project quota will be used by
+        this client regardless of the settings in gcloud. This should be used
+        for newer APIs that cannot work with legacy project quota.
+    allow_account_impersonation: bool, True to allow use of impersonated service
+        account credentials for calls made with this client. If False, the
+        active user credentials will always be used.
 
   Returns:
     requests.Response object
@@ -77,9 +120,14 @@ def MakeClient(client_class, address=None):
 
   if not address:
     address = client_class.DEFAULT_ENDPOINT
+
+  gapic_credentials = GetGapicCredentials(
+      enable_resource_quota=enable_resource_quota,
+      force_resource_quota=force_resource_quota,
+      allow_account_impersonation=allow_account_impersonation)
   return client_class(
       transport=gapic_util_internal.MakeTransport(
-          client_class.get_transport_class(), address, StoredCredentials()),
+          client_class.get_transport_class(), address, gapic_credentials),
       client_info=google.api_core.gapic_v1.client_info.ClientInfo(
           user_agent=transport.MakeUserAgentString())
       )

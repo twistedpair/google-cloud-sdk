@@ -1072,6 +1072,32 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'edgecontainer': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.edgecontainer.v1',
+                client_classpath='edgecontainer_v1_client.EdgecontainerV1',
+                messages_modulepath='edgecontainer_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1alpha':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.edgecontainer.v1alpha',
+                client_classpath='edgecontainer_v1alpha_client.EdgecontainerV1alpha',
+                messages_modulepath='edgecontainer_v1alpha_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.edgecontainer.v1beta',
+                client_classpath='edgecontainer_v1beta_client.EdgecontainerV1beta',
+                messages_modulepath='edgecontainer_v1beta_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'essentialcontacts': {
         'v1alpha1':
             APIDef(
@@ -1232,6 +1258,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'gkebackup': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.gkebackup.v1alpha1',
+                client_classpath='gkebackup_v1alpha1_client.GkebackupV1alpha1',
+                messages_modulepath='gkebackup_v1alpha1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'gkehub': {
         'v1':
             APIDef(
@@ -1239,6 +1275,14 @@ MAP = {
                 client_classpath='gkehub_v1_client.GkehubV1',
                 messages_modulepath='gkehub_v1_messages',
                 default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1alpha':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.gkehub.v1alpha',
+                client_classpath='gkehub_v1alpha_client.GkehubV1alpha',
+                messages_modulepath='gkehub_v1alpha_messages',
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
         'v1alpha1':

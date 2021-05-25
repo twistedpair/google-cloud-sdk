@@ -43,6 +43,12 @@ def RSAKeyGen(key_size=2048):
   Returns:
     A tuple with: (private_key, public_key) both serialized in PKCS1 as bytes.
   """
+  import_error_msg = ('Cannot load the Pyca cryptography library. Either the '
+                      'library is not installed, or site packages are not '
+                      'enabled for the Google Cloud SDK. Please consult Cloud '
+                      'KMS documentation on adding Pyca to Google Cloud SDK '
+                      'for further instructions.\n'
+                      'https://cloud.google.com/kms/docs/crypto')
   try:
     # TODO(b/141249289): Move imports to the top of the file. In the
     # meantime, until we're sure that all Private CA SDK users have the
@@ -51,21 +57,29 @@ def RSAKeyGen(key_size=2048):
     # pylint: disable=g-import-not-at-top
     from cryptography.hazmat.primitives.asymmetric import rsa
     from cryptography.hazmat.backends.openssl.backend import backend
+  except ImportError:
+    log.err.Print(import_error_msg)
+    sys.exit(1)
+
+  # The serialization modules have moved in cryptography version 3.4 and above.
+  # Try both the old and new locations to support both versions. See b/183521338
+  # for more context.
+  try:
+    # pylint: disable=g-import-not-at-top
     from cryptography.hazmat.primitives.serialization.base import Encoding
     from cryptography.hazmat.primitives.serialization.base import PrivateFormat
     from cryptography.hazmat.primitives.serialization.base import PublicFormat
     from cryptography.hazmat.primitives.serialization.base import NoEncryption
-
   except ImportError:
-    # TODO(b/149416011) Update documentation to point to PrivateCA
-    # documentation.
-    log.err.Print('Cannot load the Pyca cryptography library. Either the '
-                  'library is not installed, or site packages are not '
-                  'enabled for the Google Cloud SDK. Please consult Cloud '
-                  'KMS documentation on adding Pyca to Google Cloud SDK '
-                  'for further instructions.\n'
-                  'https://cloud.google.com/kms/docs/crypto')
-    sys.exit(1)
+    try:
+      # pylint: disable=g-import-not-at-top
+      from cryptography.hazmat.primitives.serialization import Encoding
+      from cryptography.hazmat.primitives.serialization import PrivateFormat
+      from cryptography.hazmat.primitives.serialization import PublicFormat
+      from cryptography.hazmat.primitives.serialization import NoEncryption
+    except ImportError:
+      log.err.Print(import_error_msg)
+      sys.exit(1)
 
   private_key = rsa.generate_private_key(
       public_exponent=65537, key_size=key_size, backend=backend)

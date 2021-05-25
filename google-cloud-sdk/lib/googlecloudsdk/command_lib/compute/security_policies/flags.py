@@ -27,7 +27,7 @@ class SecurityPoliciesCompleter(compute_completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(SecurityPoliciesCompleter, self).__init__(
         collection='compute.securityPolicies',
-        list_command='alpha compute security-policies list --uri',
+        list_command='compute security-policies list --uri',
         **kwargs)
 
 

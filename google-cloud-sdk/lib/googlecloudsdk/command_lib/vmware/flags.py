@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2019 Google LLC. All Rights Reserved.
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,55 +27,97 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 def AddPrivatecloudArgToParser(parser, positional=False):
   """Sets up an argument for the privatecloud resource."""
+  name = '--privatecloud'
   if positional:
     name = 'privatecloud'
-  else:
-    name = '--privatecloud'
   privatecloud_data = yaml_data.ResourceYAMLData.FromPath('vmware.privatecloud')
   resource_spec = concepts.ResourceSpec.FromYaml(privatecloud_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,
       required=True,
-      group_help='privatecloud.')
+      group_help='privatecloud.'
+      )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddIPArgToParser(parser):
-  ip_address_id = yaml_data.ResourceYAMLData.FromPath('vmware.ip_address')
-  resource_spec = concepts.ResourceSpec.FromYaml(ip_address_id.GetData())
+def AddOperationArgToParser(parser):
+  """Sets up an argument for the operation resource."""
+  operation_data = yaml_data.ResourceYAMLData.FromPath('vmware.operation')
+  resource_spec = concepts.ResourceSpec.FromYaml(operation_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
-      name='name',
+      name='operation',
       concept_spec=resource_spec,
       required=True,
-      group_help='ip_address.')
+      group_help='operation.'
+      )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddClusterArgToParser(parser):
+def AddClusterArgToParser(parser, positional=False):
+  """Sets up an argument for the cluster resource."""
+  if positional:
+    name = 'cluster'
+  else:
+    name = '--cluster'
   cluster_data = yaml_data.ResourceYAMLData.FromPath('vmware.cluster')
   resource_spec = concepts.ResourceSpec.FromYaml(cluster_data.GetData())
-  presentation_spec = presentation_specs.ResourcePresentationSpec(
-      name='cluster',
-      concept_spec=resource_spec,
-      required=True,
-      group_help='cluster.')
-  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+  flag_name_overrides = {'location': '', 'privatecloud': ''}
 
-
-def AddRegionArgToParser(parser, positional=False):
-  """Parses region flag."""
-  region_data = yaml_data.ResourceYAMLData.FromPath('vmware.region')
-  resource_spec = concepts.ResourceSpec.FromYaml(region_data.GetData())
   if positional:
-    name = 'region'
-  else:
-    name = '--region'
+    flag_name_overrides = None
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,
       required=True,
-      group_help='region.')
+      group_help='cluster.',
+      flag_name_overrides=flag_name_overrides
+      )
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddLocationArgToParser(parser, positional=False):
+  """Parses location flag."""
+  location_data = yaml_data.ResourceYAMLData.FromPath('vmware.location')
+  resource_spec = concepts.ResourceSpec.FromYaml(location_data.GetData())
+  name = '--location'
+  if positional:
+    name = 'location'
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='location.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddNodeTypeArgToParser(parser):
+  """Parses node type flag."""
+  location_data = yaml_data.ResourceYAMLData.FromPath('vmware.nodetype')
+  resource_spec = concepts.ResourceSpec.FromYaml(location_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name='--node-type',
+      concept_spec=resource_spec,
+      required=True,
+      group_help='nodetype.',
+      flag_name_overrides={'location': ''})
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddProjectArgToParser(parser, positional=False):
+  """Parses project flag."""
+  name = '--project'
+  if positional:
+    name = 'project'
+
+  project_data = yaml_data.ResourceYAMLData.FromPath('vmware.project')
+  resource_spec = concepts.ResourceSpec.FromYaml(project_data.GetData())
+
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='project.')
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -92,3 +134,4 @@ def AddLabelsToMessage(labels, message):
   message.labels = labels_util.ParseCreateArgs(
       LabelHolder(labels),
       type(message).LabelsValue)
+

@@ -38,7 +38,10 @@ import six
 
 
 class Topic(enum.Enum):
+  CRC32C = 'crc32c'
   ERROR = 'error'
+  FATAL_ERROR = 'fatal_error'  # Error that should be reported to the user.
+  UPLOADED_COMPONENT = 'uploaded_component'
 
 
 # Holds information to be passed between tasks.
@@ -88,11 +91,14 @@ class Task(six.with_metaclass(abc.ABCMeta, object)):
       the executor will not skip any tasks based on it.
     received_messages (Iterable[Message]): Messages sent to this task
       by its dependencies.
+    report_error (bool): If True, failure of this task should be reported
+      by updating the exit_code to non-zero. Defaults to True.
   """
 
   def __init__(self):
     self.parallel_processing_key = None
     self.received_messages = []
+    self.report_error = True
 
   @abc.abstractmethod
   def execute(self, task_status_queue=None):

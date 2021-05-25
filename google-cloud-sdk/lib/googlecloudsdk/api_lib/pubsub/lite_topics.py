@@ -28,7 +28,8 @@ from googlecloudsdk.core.util import http_encoding
 
 
 def GetDefaultPublisherClient():
-  return cloudpubsub.PublisherClient(credentials=gapic_util.StoredCredentials())
+  return cloudpubsub.PublisherClient(
+      credentials=gapic_util.GetGapicCredentials())
 
 
 class PublisherClient(object):

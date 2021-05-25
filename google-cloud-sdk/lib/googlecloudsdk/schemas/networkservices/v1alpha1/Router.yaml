@@ -1,0 +1,63 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1alpha1 Router export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- name
+- type
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  description:
+    description: |-
+      A free-text description of the resource. Max length 1024 characters.
+    type: string
+  labels:
+    description: Set of label tags associated with the Router resource.
+    $ref: LabelsValue.yaml
+  name:
+    description: |-
+      Name of the Router resource. It matches pattern
+      `projects/*/locations/global/routers/`.
+    type: string
+  network:
+    description: |-
+      The reference to the VPC network that is using this configuration.
+      Currently only the short name (network name) is supported, for example
+      "default", and we assume it is under the same project as the resource by
+      default.
+    type: string
+  routes:
+    description: |-
+      List of references to routes that this Router must be able to route
+      traffic for. Example:
+      projects/12345/locations/global/grpcRoutes/myGrpcRoute
+    type: array
+    items:
+      type: string
+  type:
+    description: The type of the Router resource.
+    type: string
+    enum:
+    - PROXYLESS_GRPC
+    - TYPE_UNSPECIFIED

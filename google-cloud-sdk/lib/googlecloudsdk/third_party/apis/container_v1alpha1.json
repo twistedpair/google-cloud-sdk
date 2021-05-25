@@ -474,6 +474,10 @@
           "description": "Output only. Unique id for the cluster.",
           "readOnly": true,
           "type": "string"
+        },
+        "nodePoolDefaults": {
+          "description": "Default NodePool settings for the entire cluster. These settings are overridden if specified on the specific NodePool object.",
+          "$ref": "NodePoolDefaults"
         }
       }
     },
@@ -1368,7 +1372,8 @@
             "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot service account.",
             "Google Compute Engine quota was exceeded.",
             "Cluster state was manually changed by an SRE due to a system logic error.",
-            "Unable to perform an encrypt operation against the CloudKMS key used for etcd level encryption. More codes TBA"
+            "Unable to perform an encrypt operation against the CloudKMS key used for etcd level encryption.",
+            "Cluster CA is expiring soon. More codes TBA"
           ],
           "enum": [
             "UNKNOWN",
@@ -1376,7 +1381,8 @@
             "GKE_SERVICE_ACCOUNT_DELETED",
             "GCE_QUOTA_EXCEEDED",
             "SET_BY_OPERATOR",
-            "CLOUD_KMS_KEY_ERROR"
+            "CLOUD_KMS_KEY_ERROR",
+            "CA_EXPIRING"
           ]
         },
         "message": {
@@ -2442,6 +2448,28 @@
         }
       }
     },
+    "NodePoolDefaults": {
+      "id": "NodePoolDefaults",
+      "description": "Subset of Nodepool message that has defaults.",
+      "type": "object",
+      "properties": {
+        "nodeConfigDefaults": {
+          "description": "Subset of NodeConfig message that has defaults.",
+          "$ref": "NodeConfigDefaults"
+        }
+      }
+    },
+    "NodeConfigDefaults": {
+      "id": "NodeConfigDefaults",
+      "description": "Subset of NodeConfig message that has defaults.",
+      "type": "object",
+      "properties": {
+        "gcfsConfig": {
+          "description": "GCFS (Google Container File System, a.k.a Riptide) options.",
+          "$ref": "GcfsConfig"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -2886,6 +2914,10 @@
         "desiredAutopilot": {
           "description": "The desired Autopilot configuration for the cluster.",
           "$ref": "Autopilot"
+        },
+        "desiredGcfsConfig": {
+          "description": "The desired GCFS config for the cluster",
+          "$ref": "GcfsConfig"
         },
         "desiredImage": {
           "description": "The desired name of the image to use for this node. This is used to create clusters using a custom image.",

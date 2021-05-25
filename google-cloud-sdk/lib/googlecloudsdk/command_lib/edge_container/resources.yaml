@@ -47,27 +47,13 @@ nodePool:
     help: Pool of Kubernetes nodes with similar properties.
   disable_auto_completers: false
 
-site:
-  name: site
-  collection: kubernetesedge.projects.locations.sites
-  request_id_field: siteId
-  attributes:
-  - *project
-  - *location
-  - &site
-    parameter_name: sitesId
-    attribute_name: site
-    help: Sites are the logical providers of physical or virtual machines which can assume the role of Kubernetes nodes in GMEC clusters.
-  disable_auto_completers: false
-
 machine:
   name: machine
-  collection: kubernetesedge.projects.locations.sites.machines
+  collection: kubernetesedge.projects.locations.machines
   request_id_field: machineId
   attributes:
   - *project
   - *location
-  - *site
   - &machine
     parameter_name: machinesId
     attribute_name: machine

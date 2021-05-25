@@ -5,6 +5,60 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 342.0.0 (2021-05-25)
+
+### App Engine
+
+* Added support for specifying a service account for each App Engine version during deployment. This can be done by either running `gcloud app deploy --service-account=<SERVICE_ACCOUNT>` or by specifying 'service_account: <SERVICE_ACCOUNT>' in `app.yaml` file. If both are specified, the CLI parameter will override the app.yaml spec.
+* Updated the Java SDK to version 1.9.89.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### App Engine Flexible Environment
+
+* Added support for specifying a service account for each App Engine Flexible version during deployment. This can be done by either running `gcloud app deploy --service-account=<SERVICE_ACCOUNT>` or by specifying 'service_account: <SERVICE_ACCOUNT>' in `app.yaml` file. If both are specified, the CLI parameter will override the app.yaml spec.
+
+### Certificate Authority Service
+
+* Added support for key generation in `certificates create` using newer versions
+  (3.4 and above) of the Python cryptography package.
+
+### Cloud Build
+
+* Update `gcloud beta builds triggers run` for repoless triggers.
+
+### Cloud Datastream
+
+* Added `gcloud beta datastream locations` command group - contains
+  describe and list for Datastream locations objects.
+* Added `gcloud beta datastream routes` command group - contains
+  describe and list for Datastream routes objects.
+* Deprecated `--region` flag of `gcloud beta datastream`.
+  Use `--location` instead.
+
+### Cloud Pub/Sub
+
+* Added `--definition-file` to `gcloud beta pubsub schemas validate-message`, `gcloud beta pubsub schemas validate-schema`, and `gcloud beta pubsub schemas create` to specify a schema stored in a file.
+
+### Compute Engine
+
+* Updated `gcloud compute instance-groups managed` `abandon-instances`, `delete-instances`, `recreate-instances`, and `update-instances` to return unresolved instance names for regional groups with status MEMBER_NOT_FOUND.
+* Updated `gcloud beta compute service-attachment update` to allow users to clear the consumer-accept-list and consumer-reject-list.
+* Added `--threads-per-core` flag to specify number of visible threads per physical core to both beta and GA for:
+    * `gcloud compute instances create`
+    * `gcloud compute instances create-with-container`
+    * `gcloud compute instance-templates create`
+    * `gcloud compute instances bulk create`
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.50.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 341.0.0 (2021-05-18)
 
 ### AI Platform

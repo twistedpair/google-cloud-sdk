@@ -100,7 +100,12 @@ class EndpointsClient(object):
             displayName=display_name, description=description, labels=labels))
     return self.client.projects_locations_endpoints.Create(req)
 
-  def CreateBeta(self, location_ref, display_name, labels, description=None):
+  def CreateBeta(self,
+                 location_ref,
+                 display_name,
+                 labels,
+                 description=None,
+                 network=None):
     """Creates a new endpoint using v1beta1 API.
 
     Args:
@@ -108,6 +113,7 @@ class EndpointsClient(object):
       display_name: str, the display name of the new endpoint.
       labels: list, the labels to organize the new endpoint.
       description: str or None, the description of the new endpoint.
+      network: str, the full name of the Google Compute Engine network.
 
     Returns:
       A long-running operation for Create.
@@ -116,7 +122,10 @@ class EndpointsClient(object):
         parent=location_ref.RelativeName(),
         googleCloudAiplatformV1beta1Endpoint=self.messages
         .GoogleCloudAiplatformV1beta1Endpoint(
-            displayName=display_name, description=description, labels=labels))
+            displayName=display_name,
+            description=description,
+            labels=labels,
+            network=network))
     return self.client.projects_locations_endpoints.Create(req)
 
   def Delete(self, endpoint_ref):
