@@ -125,6 +125,16 @@ def GetGCLLogTailer():
   return tailing.LogTailer()
 
 
+def IsCB4A(build):
+  """Separate CB4A requests to print different logs."""
+  if build.options:
+    if build.options.cluster:
+      return bool(build.options.cluster.name)
+    elif build.options.anthosCluster:
+      return bool(build.options.anthosCluster.membership)
+  return False
+
+
 class TailerBase(object):
   """Base class for log tailer classes."""
   LOG_OUTPUT_BEGIN = ' REMOTE BUILD OUTPUT '
@@ -139,7 +149,7 @@ class TailerBase(object):
 
   def _PrintLogLine(self, text):
     """Testing Hook: This method enables better verification of output."""
-    self.out.Print(text)
+    self.out.Print(text.rstrip())
 
   def _PrintFirstLine(self):
     """Print a pretty starting line to identify start of build output logs."""
@@ -162,7 +172,8 @@ class GCLLogTailer(TailerBase):
                projectId,
                timestamp,
                logUrl=None,
-               out=log.status):
+               out=log.status,
+               is_cb4a=False):
     self.tailer = GetGCLLogTailer()
     self.build_id = buildId
     self.project_id = projectId
@@ -171,6 +182,7 @@ class GCLLogTailer(TailerBase):
     self.buffer_window_seconds = 2
     self.log_url = logUrl
     self.stop = False
+    self.is_cb4a = is_cb4a
 
   @classmethod
   def FromBuild(cls, build, out=log.out):
@@ -188,7 +200,8 @@ class GCLLogTailer(TailerBase):
         projectId=build.projectId,
         timestamp=build.createTime,
         logUrl=build.logUrl,
-        out=out)
+        out=out,
+        is_cb4a=IsCB4A(build))
 
   def Tail(self):
     """Tail the GCL logs and print any new bytes to the console."""
@@ -205,6 +218,9 @@ class GCLLogTailer(TailerBase):
                   'resource.type="build" AND '
                   'resource.labels.build_id="{build_id}"').format(
                       project_id=self.project_id, build_id=self.build_id)
+    if self.is_cb4a:
+      log_filter = ('labels."k8s-pod/tekton_dev/taskRun"="{build_id}"').format(
+          build_id=self.build_id)
 
     output_logs = self.tailer.TailLogs(
         [parent],
@@ -245,6 +261,10 @@ class GCLLogTailer(TailerBase):
             project_id=self.project_id,
             timestamp=self.timestamp,
             build_id=self.build_id)
+    if self.is_cb4a:
+      log_filter = ('labels."k8s-pod/tekton_dev/taskRun"="{build_id}" AND '
+                    'timestamp>="{timestamp}"').format(
+                        build_id=self.build_id, timestamp=self.timestamp)
 
     output_logs = common.FetchLogs(
         log_filter=log_filter, order_by='asc', parent=parent)

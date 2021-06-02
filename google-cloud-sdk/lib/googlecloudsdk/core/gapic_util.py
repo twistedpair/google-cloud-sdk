@@ -31,7 +31,6 @@ class MissingStoredCredentialsError(exceptions.Error):
 
 
 def GetGapicCredentials(enable_resource_quota=True,
-                        force_resource_quota=False,
                         allow_account_impersonation=True):
   """Returns a credential object for use by gapic client libraries.
 
@@ -47,9 +46,6 @@ def GetGapicCredentials(enable_resource_quota=True,
         the quota of the project being operated on. For some APIs we want to use
         gcloud's quota, so you can explicitly disable that behavior by passing
         False here.
-    force_resource_quota: bool, If true resource project quota will be used by
-        this client regardless of the settings in gcloud. This should be used
-        for newer APIs that cannot work with legacy project quota.
     allow_account_impersonation: bool, True to allow use of impersonated service
         account credentials for calls made with this client. If False, the
         active user credentials will always be used.
@@ -67,10 +63,9 @@ def GetGapicCredentials(enable_resource_quota=True,
   if not creds.IsGoogleAuthCredentials(stored_credentials):
     raise MissingStoredCredentialsError('Unable to load credentials')
 
-  if enable_resource_quota or force_resource_quota:
+  if enable_resource_quota:
     # pylint: disable=protected-access
-    stored_credentials._quota_project_id = creds.GetQuotaProject(
-        credentials, force_resource_quota)
+    stored_credentials._quota_project_id = creds.GetQuotaProject(credentials)
 
   # In order to ensure that credentials.Credentials:refresh is called with a
   # google.auth.transport.Request that uses our transport, we ignore the request
@@ -86,7 +81,6 @@ def GetGapicCredentials(enable_resource_quota=True,
 
 def MakeClient(client_class, address=None,
                enable_resource_quota=True,
-               force_resource_quota=False,
                allow_account_impersonation=True):
   """Instantiates a gapic API client with gcloud defaults and configuration.
 
@@ -103,9 +97,6 @@ def MakeClient(client_class, address=None,
         the quota of the project being operated on. For some APIs we want to use
         gcloud's quota, so you can explicitly disable that behavior by passing
         False here.
-    force_resource_quota: bool, If true resource project quota will be used by
-        this client regardless of the settings in gcloud. This should be used
-        for newer APIs that cannot work with legacy project quota.
     allow_account_impersonation: bool, True to allow use of impersonated service
         account credentials for calls made with this client. If False, the
         active user credentials will always be used.
@@ -123,7 +114,6 @@ def MakeClient(client_class, address=None,
 
   gapic_credentials = GetGapicCredentials(
       enable_resource_quota=enable_resource_quota,
-      force_resource_quota=force_resource_quota,
       allow_account_impersonation=allow_account_impersonation)
   return client_class(
       transport=gapic_util_internal.MakeTransport(

@@ -277,7 +277,7 @@ def _CreateConfig(messages, flags):
         endTime=flags.maintenance_window_end.isoformat(),
         recurrence=flags.maintenance_window_recurrence)
 
-  if flags.use_ip_aliases and flags.private_environment:
+  if flags.private_environment:
     # Adds a PrivateClusterConfig, if necessary.
     private_cluster_config = None
     if flags.private_endpoint or flags.master_ipv4_cidr:

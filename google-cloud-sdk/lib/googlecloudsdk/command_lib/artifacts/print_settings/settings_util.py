@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.artifacts.print_settings import gradle
 from googlecloudsdk.command_lib.artifacts.print_settings import mvn
 from googlecloudsdk.command_lib.artifacts.print_settings import npm
 from googlecloudsdk.command_lib.artifacts.print_settings import pypi
+from googlecloudsdk.command_lib.artifacts.print_settings import python
 from googlecloudsdk.core import config
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -207,14 +208,10 @@ def GetMavenSnippet(args):
   location, repo_path = _GetLocationAndRepoPath(
       args, messages.Repository.FormatValueValuesEnum.MAVEN)
   data = {
-      "scheme":
-          "artifactregistry",
-      "location":
-          location,
-      "server_id":
-          "artifact-registry",
-      "repo_path":
-          repo_path,
+      "scheme": "artifactregistry",
+      "location": location,
+      "server_id": "artifact-registry",
+      "repo_path": repo_path,
   }
   mvn_template = mvn.NO_SERVICE_ACCOUNT_TEMPLATE
 
@@ -278,3 +275,28 @@ def GetPypiSettingsSnippet(args):
     return pypi.SERVICE_ACCOUNT_SETTING_TEMPLATE.format(**data)
   else:
     return pypi.NO_SERVICE_ACCOUNT_SETTING_TEMPLATE.format(**data)
+
+
+def GetPythonSettingsSnippet(args):
+  """Forms a Python snippet for .pypirc file (twine) and pip.conf file.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Returns:
+    A python snippet.
+  """
+  messages = ar_requests.GetMessages()
+  location, repo_path = _GetLocationAndRepoPath(
+      args, messages.Repository.FormatValueValuesEnum.PYPI)
+  repo = _GetRequiredRepoValue(args)
+  data = {"location": location, "repo_path": repo_path, "repo": repo}
+
+  sa_creds = _GetServiceAccountCreds(args)
+
+  if sa_creds:
+    data["password"] = sa_creds
+    return python.SERVICE_ACCOUNT_SETTING_TEMPLATE.format(**data)
+  else:
+    return python.NO_SERVICE_ACCOUNT_SETTING_TEMPLATE.format(**data)

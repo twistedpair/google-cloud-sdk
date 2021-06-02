@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.functions.v1 import env_vars as env_vars_api_util
@@ -39,6 +40,11 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from six.moves import urllib
+
+_BUILD_NAME_REGEX = re.compile(
+    r'projects\/(?P<projectnumber>[^\/]+)\/locations'
+    r'\/(?P<region>[^\/]+)\/builds\/(?P<buildid>[^\/]+)'
+)
 
 
 def _ApplyBuildEnvVarsArgsToFunction(function, args):
@@ -164,11 +170,11 @@ def _ApplySecretsArgsToFunction(function, args):
   return updated_fields
 
 
-def _CreateBindPolicyCommand(function_name, region):
-  template = ('gcloud alpha functions add-iam-policy-binding %s %s'
+def _CreateBindPolicyCommand(function_name):
+  template = ('gcloud alpha functions add-iam-policy-binding %s --region=%s '
               '--member=allUsers --role=roles/cloudfunctions.invoker')
-  region_flag = '--region=%s ' % region if region else ''
-  return template % (function_name, region_flag)
+  return template % (function_name,
+                     properties.VALUES.functions.region.GetOrFail())
 
 
 def _CreateStackdriverURLforBuildLogs(build_id, project_id):
@@ -180,7 +186,15 @@ def _CreateStackdriverURLforBuildLogs(build_id, project_id):
 
 
 def _GetProject():
-  return properties.VALUES.core.project.Get(required=True)
+  return properties.VALUES.core.project.GetOrFail()
+
+
+def _CreateCloudBuildLogURL(build_name):
+  matched_groups = _BUILD_NAME_REGEX.match(build_name).groupdict()
+  return ('https://console.cloud.google.com/'
+          'cloud-build/builds;region=%s/%s?project=%s' %
+          (matched_groups['region'], matched_groups['buildid'],
+           matched_groups['projectnumber']))
 
 
 def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
@@ -368,8 +382,8 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
     if (function.httpsTrigger and not ensure_all_users_invoke and
         not deny_all_users_invoke):
       template = ('Function created with limited-access IAM policy. '
-                  'To enable unauthorized access consider "%s"')
-      log.warning(template % _CreateBindPolicyCommand(args.NAME, args.region))
+                  'To enable unauthorized access consider `%s`')
+      log.warning(template % _CreateBindPolicyCommand(args.NAME))
       deny_all_users_invoke = True
 
   elif updated_fields:
@@ -409,8 +423,8 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
             api_util.RemoveFunctionIamPolicyBindingIfFound(function.name))
     except calliope_exceptions.HttpException:
       stop_trying_perm_set[0] = True
-      log.warning('Setting IAM policy failed, try "%s"' %
-                  _CreateBindPolicyCommand(args.NAME, args.region))
+      log.warning('Setting IAM policy failed, try `%s`' %
+                  _CreateBindPolicyCommand(args.NAME))
 
   log_stackdriver_url = [True]
 
@@ -426,7 +440,11 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
     if log_stackdriver_url[0] and op.metadata:
       metadata = encoding.PyValueToMessage(
           messages.OperationMetadataV1, encoding.MessageToPyValue(op.metadata))
-      if metadata.buildId:
+      if metadata.buildName and _BUILD_NAME_REGEX.match(metadata.buildName):
+        log.status.Print('\nFor Cloud Build Logs, visit: %s' %
+                         _CreateCloudBuildLogURL(metadata.buildName))
+        log_stackdriver_url[0] = False
+      elif metadata.buildId:
         sd_info_template = '\nFor Cloud Build Stackdriver Logs, visit: %s'
         log.status.Print(
             sd_info_template %

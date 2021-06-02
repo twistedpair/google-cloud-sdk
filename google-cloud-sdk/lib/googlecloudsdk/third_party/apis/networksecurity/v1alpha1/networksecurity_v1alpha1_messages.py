@@ -26,6 +26,7 @@ class AddressGroup(_messages.Message):
       resource.
 
   Fields:
+    capacity: Optional. Capacity of the Address Group, default value is 1000.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. Free-text description of the resource.
     items: Optional. List of items.
@@ -75,13 +76,14 @@ class AddressGroup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  items = _messages.StringField(3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  capacity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  items = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class AuthorizationPolicy(_messages.Message):
@@ -107,9 +109,11 @@ class AuthorizationPolicy(_messages.Message):
       AuthorizationPolicy resource.
     name: Required. Name of the AuthorizationPolicy resource. It matches
       pattern `projects/*/locations/{location}/authorizationPolicies/`.
-    rules: Optional. List of rules to match. If not set, the action specified
-      in the 'action' field will be applied without any additional rule
-      checks.
+    rules: Optional. List of rules to match. Note that at least one of the
+      rules must match in order for the action specified in the 'action' field
+      to be taken. A rule is a match if there is a matching source and
+      destination. If left blank, the action specified in the `action` field
+      will be applied on every request.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -247,15 +251,16 @@ class Destination(_messages.Message):
 
   Fields:
     hosts: Required. List of host names to match. Matched against HOST header
-      in http requests. Each host can be an exact match, or a prefix match
-      (example, "mydomain.*") or a suffix match (example, *.myorg.com") or a
-      presence(any) match "*".
+      in http requests. At least one host should match. Each host can be an
+      exact match, or a prefix match (example "mydomain.*") or a suffix match
+      (example // *.myorg.com") or a presence(any) match "*".
     httpHeaderMatch: Optional. Match against key:value pair in http header.
       Provides a flexible match based on HTTP headers, for potentially
-      advanced use cases.
-    methods: Optional. A list of HTTP methods to match. Should not be set for
-      gRPC services.
-    ports: Required. List of destination ports to match.
+      advanced use cases. At least one header should match.
+    methods: Optional. A list of HTTP methods to match. At least one method
+      should match. Should not be set for gRPC services.
+    ports: Required. List of destination ports to match. At least one port
+      should match.
   """
 
   hosts = _messages.StringField(1, repeated=True)
@@ -1502,12 +1507,15 @@ class Rule(_messages.Message):
   r"""Specification of rules.
 
   Fields:
-    destinations: Optional. List of attributes for the traffic destination. If
+    destinations: Optional. List of attributes for the traffic destination.
+      All of the destinations must match. A destination is a match if a
+      request matches all the specified hosts, ports, methods and headers. If
       not set, the action specified in the 'action' field will be applied
       without any rule checks for the destination.
-    sources: Optional. List of attributes for the traffic source. If not set,
-      the action specified in the 'action' field will be applied without any
-      rule checks for the source.
+    sources: Optional. List of attributes for the traffic source. All of the
+      sources must match. A source is a match if both principals and ip_blocks
+      match. If not set, the action specified in the 'action' field will be
+      applied without any rule checks for the source.
   """
 
   destinations = _messages.MessageField('Destination', 1, repeated=True)
@@ -1587,12 +1595,12 @@ class Source(_messages.Message):
 
   Fields:
     ipBlocks: Optional. List of CIDR ranges to match based on source IP
-      address. Single IP (e.g., "1.2.3.4") and CIDR (e.g., "1.2.3.0/24") are
-      supported.
+      address. At least one IP block should match. Single IP (e.g., "1.2.3.4")
+      and CIDR (e.g., "1.2.3.0/24") are supported.
     principals: Optional. List of peer identities to match for authorization.
-      Each peer can be an exact match, or a prefix match (example,
-      "namespace/*") or a suffix match (example, */service-account") or a
-      presence match "*".
+      At least one principal should match. Each peer can be an exact match, or
+      a prefix match (example, "namespace/*") or a suffix match (example, //
+      */service-account") or a presence match "*".
   """
 
   ipBlocks = _messages.StringField(1, repeated=True)

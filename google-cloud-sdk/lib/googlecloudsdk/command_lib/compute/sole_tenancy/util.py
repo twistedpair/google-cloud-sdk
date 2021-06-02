@@ -31,7 +31,9 @@ class NodeAffinityFileParseError(Error):
   """Exception for invalid node affinity file format."""
 
 
-def GetSchedulingNodeAffinityListFromArgs(args, messages):
+def GetSchedulingNodeAffinityListFromArgs(args,
+                                          messages,
+                                          support_node_project=False):
   """Returns a list of ScheduleNodeAffinity messages populated from args."""
   operator_enum = messages.SchedulingNodeAffinity.OperatorValueValuesEnum
 
@@ -71,4 +73,10 @@ def GetSchedulingNodeAffinityListFromArgs(args, messages):
             key='compute.googleapis.com/node-name',
             operator=operator_enum.IN,
             values=[args.node]))
+  if support_node_project and args.IsSpecified('node_project'):
+    node_affinities.append(
+        messages.SchedulingNodeAffinity(
+            key='compute.googleapis.com/project-id',
+            operator=operator_enum.IN,
+            values=[args.node_project]))
   return node_affinities

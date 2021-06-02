@@ -326,11 +326,11 @@
       "type": "object",
       "properties": {
         "network": {
-          "description": "Required. The relative resource name of the consumer VPC network this private cloud is attached to. The name is specified in the following form: `projects\/{project}\/global\/networks\/{network_id}`.",
+          "description": "Required. The relative resource name of the consumer VPC network this private cloud is attached to. Specify the name in the following form: `projects\/{project}\/global\/networks\/{network_id}` where `{project}` can either be a project number or a project ID.",
           "type": "string"
         },
         "serviceNetwork": {
-          "description": "Output only. The relative resource name of the service VPC network this private cloud is attached to. The name is specified in the following form: `projects\/{service_project}\/global\/networks\/{network_id}`.",
+          "description": "Output only. The relative resource name of the service VPC network this private cloud is attached to. The name is specified in the following form: `projects\/{service_project_number}\/global\/networks\/{network_id}`.",
           "readOnly": true,
           "type": "string"
         },
@@ -500,11 +500,11 @@
           "type": "string",
           "enumDescriptions": [
             "The default value. This value should never be used.",
-            "The cluster is ready.",
-            "The cluster is being created.",
-            "The cluster is being updated.",
-            "The cluster is being deleted.",
-            "The cluster is in failed state."
+            "The Cluster is operational and can be used by the user.",
+            "The Cluster is being deployed.",
+            "Adding or removing of a node to the cluster, any other cluster specific updates.",
+            "The Cluster is being deleted.",
+            "The Cluster is undergoing maintenance, for example: a failed node is getting replaced."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -512,7 +512,7 @@
             "CREATING",
             "UPDATING",
             "DELETING",
-            "FAILED"
+            "REPAIRING"
           ]
         },
         "management": {

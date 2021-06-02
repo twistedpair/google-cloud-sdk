@@ -62,7 +62,7 @@ certificate:
 # -- GA resources -- #
 
 certificate_template:
-  name: CERTIFICATE_TEMPLATE
+  name: Certificate Template
   collection: privateca.projects.locations.certificateTemplates
   request_id_field: certificate_template.name
   attributes:

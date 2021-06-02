@@ -15,6 +15,62 @@ from apitools.base.py import extra_types
 package = 'artifactregistry'
 
 
+class ArtifactregistryProjectsLocationsGetRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsListRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsListRequest object.
+
+  Fields:
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class ArtifactregistryProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest
   object.
@@ -28,6 +84,22 @@ class ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest(_me
   """
 
   googleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesAptartifactsUploadRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesAptartifactsUploadRequest
+  object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1alpha1UploadAptArtifactRequest: A
+      GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactRequest resource
+      to be passed as the request body.
+    parent: The name of the parent resource where the artifacts will be
+      uploaded.
+  """
+
+  googleDevtoolsArtifactregistryV1alpha1UploadAptArtifactRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactRequest', 1)
   parent = _messages.StringField(2, required=True)
 
 
@@ -369,7 +441,8 @@ class GoogleDevtoolsArtifactregistryV1alpha1Package(_messages.Message):
     createTime: The time when the package was created.
     displayName: The display name of the package.
     name: The name of the package, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1".
+      central1/repositories/repo1/packages/pkg1". If the package ID part
+      contains slashes, the slashes are escaped.
     updateTime: The time when the package was last updated. This includes
       publishing a new version of the package.
   """
@@ -425,9 +498,17 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
     Values:
       FORMAT_UNSPECIFIED: Unspecified package format.
       DOCKER: Docker package format.
+      MAVEN: Maven package format.
+      NPM: NPM package format.
+      PYPI: PyPI package format.
+      PYTHON: Python package format.
     """
     FORMAT_UNSPECIFIED = 0
     DOCKER = 1
+    MAVEN = 2
+    NPM = 3
+    PYPI = 4
+    PYTHON = 5
 
   class ModeValueValuesEnum(_messages.Enum):
     r"""The mode of the repository.
@@ -519,6 +600,10 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMediaResponse(_mess
   operation = _messages.MessageField('Operation', 1)
 
 
+class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactRequest(_messages.Message):
+  r"""The request to upload an artifact."""
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactResponse(_messages.Message):
   r"""The response of the completed artifact upload operation. This response
   is contained in the Operation and available to users.
@@ -528,6 +613,48 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactResponse(_messages.
   """
 
   aptArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1AptArtifact', 1, repeated=True)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse(_messages.Message):
+  r"""The response to upload an artifact.
+
+  Fields:
+    operation: Operation to be returned to the user.
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactResponse(_messages.Message):
+  r"""The response of the completed artifact upload operation. This response
+  is contained in the Operation and available to users.
+
+  Fields:
+    googetArtifacts: The Apt artifacts updated.
+  """
+
+  googetArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact', 1, repeated=True)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse(_messages.Message):
+  r"""The response to upload an artifact.
+
+  Fields:
+    operation: Operation to be returned to the user.
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactResponse(_messages.Message):
+  r"""The response of the completed artifact upload operation. This response
+  is contained in the Operation and available to users.
+
+  Fields:
+    yumArtifacts: The Apt artifacts updated.
+  """
+
+  yumArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1YumArtifact', 1, repeated=True)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1UpstreamPolicy(_messages.Message):
@@ -576,6 +703,112 @@ class GoogleDevtoolsArtifactregistryV1alpha1YumArtifact(_messages.Message):
   name = _messages.StringField(2)
   packageName = _messages.StringField(3)
   packageType = _messages.EnumField('PackageTypeValueValuesEnum', 4)
+
+
+class ListLocationsResponse(_messages.Message):
+  r"""The response message for Locations.ListLocations.
+
+  Fields:
+    locations: A list of locations that matches the specified filter in the
+      request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class Location(_messages.Message):
+  r"""A resource that represents Google Cloud Platform location.
+
+  Messages:
+    LabelsValue: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    MetadataValue: Service-specific metadata. For example the available
+      capacity at the given location.
+
+  Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
+    labels: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    locationId: The canonical id for this location. For example: `"us-east1"`.
+    metadata: Service-specific metadata. For example the available capacity at
+      the given location.
+    name: Resource name for the location, which may vary between
+      implementations. For example: `"projects/example-project/locations/us-
+      east1"`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Cross-service attributes for the location. For example
+    {"cloud.googleapis.com/region": "us-east1"}
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata. For example the available capacity at the
+    given location.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
 
 
 class Operation(_messages.Message):

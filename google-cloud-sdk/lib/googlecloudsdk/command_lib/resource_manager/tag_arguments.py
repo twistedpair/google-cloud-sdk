@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
 
@@ -73,6 +74,7 @@ def AddPurposeArgToParser(parser):
   parser.add_argument(
       "--purpose",
       metavar="PURPOSE",
+      choices=["GCE_FIREWALL"],
       help=("Purpose specifier of the TagKey that can only be set on creation. "
             "Specifying this field adds additional validation from the policy "
             "system that corresponds to the purpose."))
@@ -86,7 +88,10 @@ def AddPurposeDataArgToParser(parser):
   """
   parser.add_argument(
       "--purpose-data",
-      metavar="PURPOSE_DATA",
+      type=arg_parsers.ArgDict(
+          spec={"network": str},
+          max_length=1,
+          ),
       help=("Purpose data of the TagKey that can only be set on creation. "
             "This data is validated by the policy system that corresponds"
             " to the purpose."))

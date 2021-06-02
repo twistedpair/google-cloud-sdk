@@ -114,6 +114,12 @@ def ImageVersionFromAirflowVersion(airflow_version):
       airflow_ver=airflow_version).GetImageVersionString()
 
 
+def IsImageVersionStringComposerV1(image_version):
+  """Checks if string composer-X.Y.Z-airflow-A.B.C is Composer v1 version."""
+  return (not image_version or image_version.startswith('composer-1.') or
+          image_version.startswith('composer-latest'))
+
+
 def CompareVersions(v1, v2):
   """Compares semantic version strings.
 

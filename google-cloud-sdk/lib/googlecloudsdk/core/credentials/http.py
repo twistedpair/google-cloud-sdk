@@ -34,7 +34,6 @@ def Http(timeout='unset',
          response_encoding=None,
          ca_certs=None,
          enable_resource_quota=True,
-         force_resource_quota=False,
          allow_account_impersonation=True,
          use_google_auth=None):
   """Get an httplib2.Http client for working with the Google API.
@@ -50,9 +49,6 @@ def Http(timeout='unset',
         the quota of the project being operated on. For some APIs we want to use
         gcloud's quota, so you can explicitly disable that behavior by passing
         False here.
-    force_resource_quota: bool, If true resource project quota will be used by
-      this client regardless of the settings in gcloud. This should be used for
-      newer APIs that cannot work with legacy project quota.
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials for calls made with this client. If False, the active
       user credentials will always be used.
@@ -80,7 +76,6 @@ def Http(timeout='unset',
   http_client = request_wrapper.WrapQuota(
       http_client,
       enable_resource_quota,
-      force_resource_quota,
       allow_account_impersonation,
       use_google_auth)
   http_client = request_wrapper.WrapCredentials(http_client,
@@ -124,12 +119,10 @@ class RequestWrapper(transport.CredentialWrappingMixin,
   def WrapQuota(self,
                 http_client,
                 enable_resource_quota,
-                force_resource_quota,
                 allow_account_impersonation,
                 use_google_auth):
     """Returns an http_client with quota project handling."""
     quota_project = self.QuotaProject(enable_resource_quota,
-                                      force_resource_quota,
                                       allow_account_impersonation,
                                       use_google_auth)
     if not quota_project:

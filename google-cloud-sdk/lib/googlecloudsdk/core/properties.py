@@ -882,6 +882,7 @@ class _SectionRun(_Section):
     self.platform = self._Add(
         'platform',
         choices=['gke', 'managed', 'kubernetes'],
+        default='managed',
         help_text='Target platform for running commands.')
 
 

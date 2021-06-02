@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import enum
 import hashlib
 import json
@@ -44,6 +45,11 @@ class TrackerFileType(enum.Enum):
   PARALLEL_UPLOAD = 'parallel_upload'
   SLICED_DOWNLOAD = 'sliced_download'
   REWRITE = 'rewrite'
+
+
+ResumableUploadTrackerData = collections.namedtuple(
+    'ResumableUploadTrackerData',
+    ['complete', 'encryption_key_sha256', 'serialization_data'])
 
 
 def _get_unwritable_tracker_file_error(error, tracker_file_path):
@@ -321,6 +327,45 @@ def _write_json_to_tracker_file(tracker_file_path, data):
   """
   json_string = json.dumps(data)
   _write_tracker_file(tracker_file_path, json_string)
+
+
+def write_resumable_upload_tracker_file(tracker_file_path, complete,
+                                        encryption_key_sha256,
+                                        serialization_data):
+  """Updates or creates a tracker file for a resumable upload.
+
+  Args:
+    tracker_file_path (str): The path to the tracker file.
+    complete (bool): True if the upload is complete.
+    encryption_key_sha256 (Optional[str]): The encryption key used for the
+        upload.
+    serialization_data (dict): Data used by API libraries to resume uploads.
+
+  Returns:
+    None, but writes data passed as arguments at tracker_file_path.
+  """
+  data = ResumableUploadTrackerData(
+      complete=complete,
+      encryption_key_sha256=encryption_key_sha256,
+      serialization_data=serialization_data)
+  _write_json_to_tracker_file(tracker_file_path, data._asdict())
+
+
+def read_resumable_upload_tracker_file(tracker_file_path):
+  """Reads a resumable upload tracker file.
+
+  Args:
+    tracker_file_path (str): The path to the tracker file.
+
+  Returns:
+    A ResumableUploadTrackerData instance with data at tracker_file_path, or
+    None if no file exists at tracker_file_path.
+  """
+  if not os.path.exists(tracker_file_path):
+    return None
+  with files.FileReader(tracker_file_path) as tracker_file:
+    tracker_dict = json.load(tracker_file)
+    return ResumableUploadTrackerData(**tracker_dict)
 
 
 def write_tracker_file_with_component_data(tracker_file_path,

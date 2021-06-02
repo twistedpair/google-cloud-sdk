@@ -705,6 +705,11 @@
             "ON_DEMAND",
             "LOW_COST"
           ]
+        },
+        "priority": {
+          "description": "Optional. Job scheduling will be based on this priority. A 32 bit integer [-2,147,483,648 , 2,147,483,647], the bigger the number, the higher the priority. Default to 0 if not set.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20210510",
+ "revision": "20210521",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -310,6 +310,9 @@
    "id": "ManagedZone",
    "type": "object",
    "properties": {
+    "cloudLoggingConfig": {
+     "$ref": "ManagedZoneCloudLoggingConfig"
+    },
     "creationTime": {
      "type": "string"
     },
@@ -374,6 +377,20 @@
       "",
       ""
      ]
+    }
+   }
+  },
+  "ManagedZoneCloudLoggingConfig": {
+   "id": "ManagedZoneCloudLoggingConfig",
+   "type": "object",
+   "properties": {
+    "enableLogging": {
+     "type": "boolean"
+    },
+    "kind": {
+     "type": "string",
+     "description": "Identifies what kind of resource this is. Value: the fixed string \"dns#managedZoneCloudLoggingConfig\".",
+     "default": "dns#managedZoneCloudLoggingConfig"
     }
    }
   },

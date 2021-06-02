@@ -672,7 +672,7 @@ class RecaptchaenterpriseProjectsKeysPatchRequest(_messages.Message):
       resource to be passed as the request body.
     name: The resource name for the Key in the format
       "projects/{project}/keys/{key}".
-    updateMask: Optional. The mask to control which field of the key get
+    updateMask: Optional. The mask to control which fields of the key get
       updated. If the mask is not present, all fields will be updated.
   """
 

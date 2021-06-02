@@ -203,7 +203,8 @@ class _ConfigImpl(object):
           'Invalid output format from certificate provider, no %s' % e)
 
   def _UnprovisionClientCert(self):
-    if self._cert_and_key_path is not None:
+    if (self._cert_and_key_path is not None and
+        os.path.exists(self._cert_and_key_path)):
       try:
         os.remove(self._cert_and_key_path)
         log.debug('unprovisioned client cert - %s', self._cert_and_key_path)

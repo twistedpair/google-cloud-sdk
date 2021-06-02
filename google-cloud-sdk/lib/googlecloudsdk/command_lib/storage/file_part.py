@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 import os
 
+from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.core.updater import installers
 
 _PROGRESS_CALLBACK_THRESHOLD = 16777216  # 16 MiB in bytes.
 
@@ -63,6 +65,42 @@ class FilePart:
     self._progress_callback = progress_callback
 
     self._bytes_read_since_last_progress_callback = 0
+    self._checkpoint_digesters = None
+    self._checkpoint_absolute_index = self._start_byte
+
+  def _save_digesters_checkpoint(self):
+    """Updates checkpoint that holds old hashes to optimize backwards seeks."""
+    if not self._digesters:
+      return
+    self._checkpoint_absolute_index = self._stream.tell()
+    self._checkpoint_digesters = hash_util.copy_digesters(self._digesters)
+
+  def _catch_up_digesters(self, new_absolute_index):
+    """Digests data between last and current stream position."""
+    if not self._digesters:
+      return
+    if new_absolute_index < self._checkpoint_absolute_index:
+      # Case 1: New position < Checkpoint position < Old position.
+      self._stream.seek(self._start_byte)
+      hash_util.reset_digesters(self._digesters)
+    elif new_absolute_index < self._stream.tell():
+      # Case 2: Checkpoint position < New position < Old position.
+      self._stream.seek(self._checkpoint_absolute_index)
+      self._digesters = hash_util.copy_digesters(self._checkpoint_digesters)
+    elif new_absolute_index == self._stream.tell():
+      # Case 3: Old position == New position.
+      return
+    # Case 4: Old position < New position.
+    # Below digester updates are sufficient.
+
+    self._save_digesters_checkpoint()
+    while True:
+      data = self._stream.read(
+          min(new_absolute_index - self._stream.tell(),
+              installers.WRITE_BUFFER_SIZE))
+      if not data:
+        break
+      hash_util.update_digesters(self._digesters, data)
 
   def tell(self):
     """Returns the current position relative to the part's start byte."""
@@ -70,13 +108,13 @@ class FilePart:
 
   def read(self, size=-1):
     """Returns `size` bytes from the underlying stream."""
+    self._save_digesters_checkpoint()
     if size < 0:
       size = self._length
     size = min(size, self._end_byte - self._stream.tell())
     data = self._stream.read(max(0, size))
     if data:
-      for hash_object in self._digesters.values():
-        hash_object.update(data)
+      hash_util.update_digesters(self._digesters, data)
       if self._progress_callback:
         self._bytes_read_since_last_progress_callback += len(data)
         if (self._bytes_read_since_last_progress_callback >=
@@ -97,17 +135,25 @@ class FilePart:
         os.SEEK_SET: offset is added to the first byte in the FilePart.
 
     Returns:
-      The new absolute position in the stream (int).
+      The new relative position in the stream (int).
     """
     if whence == os.SEEK_END:
-      return self._stream.seek(offset + self._end_byte) - self._start_byte
+      new_absolute_index = offset + self._end_byte
     elif whence == os.SEEK_CUR:
-      return self._stream.seek(offset, whence) - self._start_byte
+      new_absolute_index = self._stream.tell() + offset
     else:
-      return self._stream.seek(self._start_byte + offset) - self._start_byte
+      new_absolute_index = offset + self._start_byte
+
+    self._catch_up_digesters(new_absolute_index)
+    # Above may perform seek, but repeating is harmless.
+    return self._stream.seek(new_absolute_index) - self._start_byte
 
   def close(self):
     """Closes the underlying stream."""
+    if (self._progress_callback and
+        self._bytes_read_since_last_progress_callback):
+      self._bytes_read_since_last_progress_callback = 0
+      self._progress_callback(self._stream.tell())
     self._stream.close()
 
   def __enter__(self):

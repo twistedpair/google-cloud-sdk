@@ -216,7 +216,8 @@ class Instance(_messages.Message):
       latest supported version will be used. Updating the version will perform
       an upgrade/downgrade to the new version. Currently, the supported values
       are: * `REDIS_4_0` for Redis 4.0 compatibility * `REDIS_3_2` for Redis
-      3.2 compatibility (default) * `REDIS_5_0` for Redis 5.0 compatibility
+      3.2 compatibility (default) * `REDIS_5_0` for Redis 5.0 compatibility *
+      `REDIS_6_X` for Redis 6.x compatibility
     reservedIpRange: Optional. For DIRECT_PEERING mode, the CIDR range of
       internal addresses that are reserved for this instance. Range must be
       unique and non-overlapping with existing subnets in an authorized

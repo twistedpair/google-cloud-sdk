@@ -353,7 +353,7 @@
       "type": "object",
       "properties": {
         "translatedText": {
-          "description": "Text translated into the target language.",
+          "description": "Text translated into the target language. If an error occurs during translation, this field might be excluded from the response.",
           "type": "string"
         },
         "model": {

@@ -140,6 +140,9 @@ def GetResourceInfo(request):
   elif hasattr(request, 'name'):
     resource = request.name
     resource_name = 'name'
+  elif hasattr(request, 'subscription'):
+    resource = request.subscription
+    resource_name = 'subscription'
   else:
     raise UnexpectedResourceField(
         'The resource specified for this command is unknown!')
@@ -218,6 +221,20 @@ def UpdateAdminRequest(resource_ref, args, request):
 
   request = ParseResource(request)
   request = OverrideProjectIdToProjectNumber(request)
+  OverrideEndpointWithRegion(request, resource_ref.SelfLink())
+
+  return request
+
+
+def UpdateCommitCursorRequest(resource_ref, args, request):
+  """Updates a CommitCursorRequest by adding 1 to the provided offset."""
+  # Unused resource reference.
+  del args
+
+  request = ParseResource(request)
+  # Add 1 to the offset so that the message corresponding to the provided offset
+  # is included in the list of messages that are acknowledged.
+  request.commitCursorRequest.cursor.offset += 1
   OverrideEndpointWithRegion(request, resource_ref.SelfLink())
 
   return request

@@ -184,6 +184,7 @@ def AddBgpPeerArgs(parser,
                    for_add_bgp_peer=False,
                    support_bfd=False,
                    support_enable=False,
+                   support_enable_ipv6=False,
                    is_update=False):
   """Adds common arguments for managing BGP peers."""
 
@@ -237,8 +238,7 @@ def AddBgpPeerArgs(parser,
     bfd_group_help = (
         'Arguments to {0} BFD (Bidirectional Forwarding Detection) '
         'settings:'.format('update' if is_update else 'configure'))
-    bfd_group = parser.add_group(help=bfd_group_help,
-                                 hidden=True)
+    bfd_group = parser.add_group(help=bfd_group_help, hidden=True)
     bfd_group.add_argument(
         '--bfd-session-initialization-mode',
         choices=_BFD_SESSION_INITIALIZATION_MODE_CHOICES,
@@ -293,6 +293,17 @@ def AddBgpPeerArgs(parser,
         hidden=True,
         action=arg_parsers.StoreTrueFalseAction,
         help=enabled_display_help)
+  if support_enable_ipv6:
+    enable_ipv6_display_help = (
+        'If ipv6 is enabled, the peer connection can be established with '
+        'ipv6 route exchange. If disabled, no ipv6 route exchange is allowed '
+        'on any active session.')
+    if not is_update:
+      enable_ipv6_display_help += ' Disabled by default.'
+    parser.add_argument(
+        '--enable-ipv6',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=enable_ipv6_display_help)
 
 
 def AddUpdateCustomAdvertisementArgs(parser, resource_str):

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
 from apitools.base.py import transfer
 
 from googlecloudsdk.core import properties
@@ -105,20 +107,55 @@ class SimpleUpload(_Upload):
 class ResumableUpload(_Upload):
   """Uploads objects with support for resuming after interruptions."""
 
-  def run(self):
-    apitools_upload = transfer.Upload(
-        self._source_stream,
-        self._content_type,
-        auto_transfer=False,
-        chunksize=scaled_integer.ParseInteger(
-            properties.VALUES.storage.upload_chunk_size.Get()),
-        gzip_encoded=self._request_config.gzip_encoded,
-        total_size=self._request_config.size)
-    apitools_upload.bytes_http = self._http_client
-    apitools_upload.strategy = transfer.RESUMABLE_UPLOAD
+  # pylint: disable=g-doc-args
+  def __init__(self,
+               gcs_api,
+               http_client,
+               source_stream,
+               content_type,
+               destination_resource,
+               request_config,
+               serialization_data=None,
+               tracker_callback=None):
+    """Initializes a ResumableUpload instance.
 
-    self._gcs_api.client.objects.Insert(
-        self._get_validated_insert_request(), upload=apitools_upload)
+    See super class for arguments not described below.
+
+    New Args:
+      serialization_data (dict): JSON used by apitools to resume an upload.
+    """
+    # pylint: enable=g-doc-args
+    super().__init__(gcs_api, http_client, source_stream, content_type,
+                     destination_resource, request_config)
+    self._serialization_data = serialization_data
+    self._tracker_callback = tracker_callback
+
+  def run(self):
+    if self._serialization_data is not None:
+      apitools_upload = transfer.Upload.FromData(
+          self._source_stream,
+          json.dumps(self._serialization_data),
+          self._gcs_api.client.http,
+          auto_transfer=False,
+          gzip_encoded=self._request_config.gzip_encoded)
+    else:
+      apitools_upload = transfer.Upload(
+          self._source_stream,
+          self._content_type,
+          auto_transfer=False,
+          chunksize=scaled_integer.ParseInteger(
+              properties.VALUES.storage.upload_chunk_size.Get()),
+          gzip_encoded=self._request_config.gzip_encoded,
+          total_size=self._request_config.size)
+      apitools_upload.strategy = transfer.RESUMABLE_UPLOAD
+    apitools_upload.bytes_http = self._http_client
+
+    if not apitools_upload.initialized:
+      self._gcs_api.client.objects.Insert(
+          self._get_validated_insert_request(), upload=apitools_upload)
+
+    if self._tracker_callback is not None:
+      self._tracker_callback(apitools_upload.serialization_data)
 
     if self._request_config.gzip_encoded:
       http_response = apitools_upload.StreamInChunks()

@@ -1,0 +1,1205 @@
+accessapproval:
+  Folders: {}
+  FoldersApprovalrequests: {}
+  Organizations: {}
+  OrganizationsApprovalrequests: {}
+  Projects: {}
+  ProjectsApprovalrequests: {}
+accesscontextmanager:
+  Accesspolicies: {}
+  AccesspoliciesAccesslevels: {}
+  AccesspoliciesServiceperimeters: {}
+  Operations: {}
+  Organizations: {}
+  OrganizationsGcpuseraccessbindings: {}
+admin:
+  Asps: {}
+  Chromeosdevices: {}
+  Customer: {}
+  Customers: {}
+  Domainaliases: {}
+  Domains: {}
+  Groups: {}
+  Members: {}
+  Mobiledevices: {}
+  Notifications: {}
+  Orgunits: {}
+  Resources: {}
+  ResourcesBuildings: {}
+  ResourcesCalendars: {}
+  ResourcesFeatures: {}
+  Roleassignments: {}
+  Roles: {}
+  Schemas: {}
+  Tokens: {}
+  Users: {}
+  UsersPhotos: {}
+aiplatform:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsBatchpredictionjobs: {}
+  ProjectsLocationsCustomjobs: {}
+  ProjectsLocationsCustomjobsOperations: {}
+  ProjectsLocationsDatalabelingjobs: {}
+  ProjectsLocationsDatalabelingjobsOperations: {}
+  ProjectsLocationsDatasets: {}
+  ProjectsLocationsDatasetsAnnotationspecs: {}
+  ProjectsLocationsDatasetsAnnotationspecsOperations: {}
+  ProjectsLocationsDatasetsDataitems: {}
+  ProjectsLocationsDatasetsDataitemsAnnotations: {}
+  ProjectsLocationsDatasetsDataitemsAnnotationsOperations: {}
+  ProjectsLocationsDatasetsDataitemsOperations: {}
+  ProjectsLocationsDatasetsOperations: {}
+  ProjectsLocationsDatasetsSavedqueries: {}
+  ProjectsLocationsDatasetsSavedqueriesOperations: {}
+  ProjectsLocationsEndpoints: {}
+  ProjectsLocationsEndpointsOperations: {}
+  ProjectsLocationsFeaturestores: {}
+  ProjectsLocationsFeaturestoresEntitytypes: {}
+  ProjectsLocationsFeaturestoresEntitytypesFeatures: {}
+  ProjectsLocationsFeaturestoresEntitytypesFeaturesOperations: {}
+  ProjectsLocationsFeaturestoresEntitytypesOperations: {}
+  ProjectsLocationsFeaturestoresOperations: {}
+  ProjectsLocationsHyperparametertuningjobs: {}
+  ProjectsLocationsHyperparametertuningjobsOperations: {}
+  ProjectsLocationsIndexendpoints: {}
+  ProjectsLocationsIndexendpointsOperations: {}
+  ProjectsLocationsIndexes: {}
+  ProjectsLocationsIndexesOperations: {}
+  ProjectsLocationsMigratableresources: {}
+  ProjectsLocationsMigratableresourcesOperations: {}
+  ProjectsLocationsModeldeploymentmonitoringjobs: {}
+  ProjectsLocationsModeldeploymentmonitoringjobsOperations: {}
+  ProjectsLocationsModels: {}
+  ProjectsLocationsModelsEvaluations: {}
+  ProjectsLocationsModelsEvaluationsOperations: {}
+  ProjectsLocationsModelsEvaluationsSlices: {}
+  ProjectsLocationsModelsOperations: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsPipelinejobs: {}
+  ProjectsLocationsPipelinejobsOperations: {}
+  ProjectsLocationsSpecialistpools: {}
+  ProjectsLocationsSpecialistpoolsOperations: {}
+  ProjectsLocationsStudies: {}
+  ProjectsLocationsStudiesTrials: {}
+  ProjectsLocationsStudiesTrialsOperations: {}
+  ProjectsLocationsTensorboards: {}
+  ProjectsLocationsTensorboardsExperiments: {}
+  ProjectsLocationsTensorboardsExperimentsOperations: {}
+  ProjectsLocationsTensorboardsExperimentsRuns: {}
+  ProjectsLocationsTensorboardsExperimentsRunsOperations: {}
+  ProjectsLocationsTensorboardsExperimentsRunsTimeseries: {}
+  ProjectsLocationsTensorboardsExperimentsRunsTimeseriesOperations: {}
+  ProjectsLocationsTensorboardsOperations: {}
+  ProjectsLocationsTrainingpipelines: {}
+  ProjectsLocationsTrainingpipelinesOperations: {}
+anthosevents:
+  ApiV1Namespaces: {}
+  ApiV1NamespacesConfigmaps: {}
+  ApiV1NamespacesSecrets: {}
+  ApiV1NamespacesServiceaccounts: {}
+  Customresourcedefinitions: {}
+  Kuberuns: {}
+  Namespaces: {}
+  NamespacesApiserversources: {}
+  NamespacesBrokers: {}
+  NamespacesCloudauditlogssources: {}
+  NamespacesCloudpubsubsources: {}
+  NamespacesCloudruns: {}
+  NamespacesCloudschedulersources: {}
+  NamespacesCloudstoragesources: {}
+  NamespacesCustomresourcedefinitions: {}
+  NamespacesPingsources: {}
+  NamespacesTriggers: {}
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsConfigmaps: {}
+  ProjectsLocationsNamespaces: {}
+  ProjectsLocationsSecrets: {}
+  ProjectsLocationsServiceaccounts: {}
+apigateway:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsApis: {}
+  ProjectsLocationsApisConfigs: {}
+  ProjectsLocationsGateways: {}
+  ProjectsLocationsOperations: {}
+apigee:
+  Organizations: {}
+  OrganizationsAnalyticsDatastores: {}
+  OrganizationsApiproducts: {}
+  OrganizationsApiproductsAttributes: {}
+  OrganizationsApiproductsRateplans: {}
+  OrganizationsApis: {}
+  OrganizationsApisRevisions: {}
+  OrganizationsApps: {}
+  OrganizationsDatacollectors: {}
+  OrganizationsDevelopers: {}
+  OrganizationsDevelopersApps: {}
+  OrganizationsDevelopersAppsAttributes: {}
+  OrganizationsDevelopersAppsKeys: {}
+  OrganizationsDevelopersAttributes: {}
+  OrganizationsDevelopersSubscriptions: {}
+  OrganizationsEnvgroups: {}
+  OrganizationsEnvgroupsAttachments: {}
+  OrganizationsEnvironments: {}
+  OrganizationsEnvironmentsAnalyticsExports: {}
+  OrganizationsEnvironmentsApis: {}
+  OrganizationsEnvironmentsApisRevisions: {}
+  OrganizationsEnvironmentsApisRevisionsDebugsessions: {}
+  OrganizationsEnvironmentsApisRevisionsDebugsessionsData: {}
+  OrganizationsEnvironmentsArchivedeployments: {}
+  OrganizationsEnvironmentsFlowhooks: {}
+  OrganizationsEnvironmentsKeystores: {}
+  OrganizationsEnvironmentsKeystoresAliases: {}
+  OrganizationsEnvironmentsOptimizedstats: {}
+  OrganizationsEnvironmentsQueries: {}
+  OrganizationsEnvironmentsReferences: {}
+  OrganizationsEnvironmentsResourcefiles: {}
+  OrganizationsEnvironmentsStats: {}
+  OrganizationsEnvironmentsTargetservers: {}
+  OrganizationsEnvironmentsTraceconfigOverrides: {}
+  OrganizationsHostqueries: {}
+  OrganizationsHoststats: {}
+  OrganizationsInstances: {}
+  OrganizationsInstancesAttachments: {}
+  OrganizationsInstancesCanaryevaluations: {}
+  OrganizationsInstancesNataddresses: {}
+  OrganizationsOperations: {}
+  OrganizationsOptimizedhoststats: {}
+  OrganizationsReports: {}
+  OrganizationsSharedflows: {}
+  OrganizationsSharedflowsRevisions: {}
+  OrganizationsSites: {}
+  OrganizationsSitesApicategories: {}
+apikeys:
+  Operations: {}
+  Projects: {}
+  ProjectsKeys: {}
+appengine:
+  Apps: {}
+  AppsAuthorizedcertificates: {}
+  AppsDomainmappings: {}
+  AppsFirewallIngressrules: {}
+  AppsLocations: {}
+  AppsOperations: {}
+  AppsServices: {}
+  AppsServicesVersions: {}
+  AppsServicesVersionsInstances: {}
+  Projects: {}
+artifactregistry:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsRepositories: {}
+  ProjectsLocationsRepositoriesFiles: {}
+  ProjectsLocationsRepositoriesPackages: {}
+  ProjectsLocationsRepositoriesPackagesTags: {}
+  ProjectsLocationsRepositoriesPackagesVersions: {}
+assuredworkloads:
+  Organizations: {}
+  OrganizationsLocations: {}
+  OrganizationsLocationsOperations: {}
+  OrganizationsLocationsWorkloads: {}
+bigquery:
+  Datasets: {}
+  Jobs: {}
+  Projects: {}
+  Tabledata: {}
+  Tables: {}
+bigquerydatatransfer:
+  Projects: {}
+  ProjectsDatasources: {}
+  ProjectsLocations: {}
+  ProjectsLocationsDatasources: {}
+  ProjectsLocationsTransferconfigs: {}
+  ProjectsLocationsTransferconfigsRuns: {}
+  ProjectsTransferconfigs: {}
+  ProjectsTransferconfigsRuns: {}
+bigtableadmin:
+  Operations: {}
+  Projects: {}
+  ProjectsInstances: {}
+  ProjectsInstancesAppprofiles: {}
+  ProjectsInstancesClusters: {}
+  ProjectsInstancesClustersBackups: {}
+  ProjectsInstancesTables: {}
+  ProjectsLocations: {}
+billingbudgets:
+  Billingaccounts: {}
+  BillingaccountsBudgets: {}
+binaryauthorization:
+  Projects: {}
+  ProjectsAttestors: {}
+  ProjectsPolicy: {}
+  Systempolicy: {}
+certificatemanager:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsCertificatemaps: {}
+  ProjectsLocationsCertificatemapsCertificatemapentries: {}
+  ProjectsLocationsCertificates: {}
+  ProjectsLocationsDnsauthorizations: {}
+  ProjectsLocationsOperations: {}
+cloudasset:
+  Feeds: {}
+  Iampolicies: {}
+  Operations: {}
+  Resources: {}
+cloudbilling:
+  Billingaccounts: {}
+  Projects: {}
+cloudbuild:
+  Operations: {}
+  Projects: {}
+  ProjectsBuilds: {}
+  ProjectsGithubenterpriseconfigs: {}
+  ProjectsLocations: {}
+  ProjectsLocationsBitbucketserverconfigs: {}
+  ProjectsLocationsBuilds: {}
+  ProjectsLocationsGithubenterpriseconfigs: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsWorkerpools: {}
+  ProjectsTriggers: {}
+  ProjectsWorkerpools: {}
+cloudcommerceconsumerprocurement:
+  Billingaccounts: {}
+  BillingaccountsAccounts: {}
+  BillingaccountsAccountsOperations: {}
+  BillingaccountsOrders: {}
+  BillingaccountsOrdersOperations: {}
+  BillingaccountsOrdersOrderallocations: {}
+  BillingaccountsOrdersOrderallocationsOperations: {}
+  Projects: {}
+  ProjectsEntitlements: {}
+  ProjectsFreetrials: {}
+  ProjectsFreetrialsOperations: {}
+clouddebugger:
+  DebuggerDebuggees: {}
+  DebuggerDebuggeesBreakpoints: {}
+clouddeploy:
+  Projects: {}
+  ProjectsDeliverypipelines: {}
+  ProjectsDeliverypipelinesReleases: {}
+  ProjectsDeliverypipelinesReleasesDeliverypipelines: {}
+  ProjectsDeliverypipelinesReleasesTargets: {}
+  ProjectsLocations: {}
+  ProjectsLocationsDeliverypipelines: {}
+  ProjectsLocationsDeliverypipelinesReleases: {}
+  ProjectsLocationsDeliverypipelinesReleasesRollouts: {}
+  ProjectsLocationsDeliverypipelinesTargets: {}
+  ProjectsLocationsOperations: {}
+clouderrorreporting:
+  Projects: {}
+  ProjectsGroups: {}
+cloudfunctions:
+  Operations: {}
+  Projects: {}
+  ProjectsBuckets: {}
+  ProjectsLocations: {}
+  ProjectsLocationsFunctions: {}
+  ProjectsLocationsOperations: {}
+  ProvidersEvent_types: {}
+cloudidentity:
+  Customers: {}
+  CustomersUserinvitations: {}
+  Devices: {}
+  DevicesDeviceusers: {}
+  DevicesDeviceusersClientstates: {}
+  Groups: {}
+  GroupsMemberships: {}
+cloudiot:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsRegistries: {}
+  ProjectsLocationsRegistriesDevices: {}
+  ProjectsLocationsRegistriesDevicesConfigversions: {}
+  ProjectsLocationsRegistriesDevicesStates: {}
+cloudkms:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsKeyrings: {}
+  ProjectsLocationsKeyringsCryptokeys: {}
+  ProjectsLocationsKeyringsCryptokeysCryptokeyversions: {}
+  ProjectsLocationsKeyringsImportjobs: {}
+cloudresourcemanager:
+  Folders: {}
+  Liens: {}
+  Operations: {}
+  Organizations: {}
+  Projects: {}
+  Tagkeys: {}
+  Tagvalues: {}
+cloudscheduler:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsJobs: {}
+cloudshell:
+  Operations: {}
+  Users: {}
+  UsersEnvironments: {}
+cloudtasks:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsQueues: {}
+  ProjectsLocationsQueuesTasks: {}
+cloudtrace:
+  Projects: {}
+  ProjectsTracesinks: {}
+composer:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsEnvironments: {}
+  ProjectsLocationsOperations: {}
+composerflex:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsContexts: {}
+  ProjectsLocationsWorkflows: {}
+  ProjectsLocationsWorkflowsRuns: {}
+compute:
+  Acceleratortypes: {}
+  Addresses: {}
+  Autoscalers: {}
+  Backendbuckets: {}
+  Backendservices: {}
+  Disks: {}
+  Disktypes: {}
+  Externalvpngateways: {}
+  Firewallpolicies: {}
+  Firewalls: {}
+  Forwardingrules: {}
+  Globaladdresses: {}
+  Globalforwardingrules: {}
+  Globalnetworkendpointgroups: {}
+  Globaloperations: {}
+  Globalorganizationoperations: {}
+  Globalpublicdelegatedprefixes: {}
+  Healthchecks: {}
+  Httphealthchecks: {}
+  Httpshealthchecks: {}
+  Imagefamilyviews: {}
+  Images: {}
+  Instancegroupmanagers: {}
+  Instancegroups: {}
+  Instances: {}
+  Instancetemplates: {}
+  Interconnectattachments: {}
+  Interconnectlocations: {}
+  Interconnects: {}
+  Licensecodes: {}
+  Licenses: {}
+  Machineimages: {}
+  Machinetypes: {}
+  Networkendpointgroups: {}
+  Networkfirewallpolicies: {}
+  Networks: {}
+  Nexthopgateways: {}
+  Nodegroups: {}
+  Nodetemplates: {}
+  Nodetypes: {}
+  Organizationsecuritypolicies: {}
+  Packetmirrorings: {}
+  Projects: {}
+  Publicadvertisedprefixes: {}
+  Publicdelegatedprefixes: {}
+  Regionacceleratortypes: {}
+  Regionautoscalers: {}
+  Regionbackendservices: {}
+  Regioncommitments: {}
+  Regiondisks: {}
+  Regiondisktypes: {}
+  Regionhealthchecks: {}
+  Regionhealthcheckservices: {}
+  Regioninplacesnapshots: {}
+  Regioninstancegroupmanagers: {}
+  Regioninstancegroups: {}
+  Regioninstantsnapshots: {}
+  Regionmachinetypes: {}
+  Regionnetworkendpointgroups: {}
+  Regionnetworkfirewallpolicies: {}
+  Regionnotificationendpoints: {}
+  Regionoperations: {}
+  Regions: {}
+  Regionsslcertificates: {}
+  Regiontargethttpproxies: {}
+  Regiontargethttpsproxies: {}
+  Regionurlmaps: {}
+  Reservations: {}
+  Resourcepolicies: {}
+  Routers: {}
+  Routes: {}
+  Securitypolicies: {}
+  Securitypolicyrules: {}
+  Serviceattachments: {}
+  Snapshots: {}
+  Sslcertificates: {}
+  Sslpolicies: {}
+  Subnetworks: {}
+  Targetgrpcproxies: {}
+  Targethttpproxies: {}
+  Targethttpsproxies: {}
+  Targetinstances: {}
+  Targetpools: {}
+  Targetsslproxies: {}
+  Targettcpproxies: {}
+  Targetvpngateways: {}
+  Urlmaps: {}
+  Vpngateways: {}
+  Vpntunnels: {}
+  Zoneinplacesnapshots: {}
+  Zoneinstantsnapshots: {}
+  Zoneoperations: {}
+  Zones: {}
+container:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsClusters: {}
+  ProjectsLocationsClustersNodepools: {}
+  ProjectsLocationsOperations: {}
+  ProjectsZones: {}
+  ProjectsZonesClusters: {}
+  ProjectsZonesClustersNodepools: {}
+  ProjectsZonesOperations: {}
+containeranalysis:
+  Operations: {}
+  Projects: {}
+  ProjectsNotes: {}
+  ProjectsOccurrences: {}
+  ProjectsScanconfigs: {}
+  Providers: {}
+  ProvidersNotes: {}
+datacatalog:
+  Catalog: {}
+  Entries: {}
+  Projects: {}
+  ProjectsCrawlers: {}
+  ProjectsCrawlersCrawlerruns: {}
+  ProjectsLocations: {}
+  ProjectsLocationsEntrygroups: {}
+  ProjectsLocationsEntrygroupsEntries: {}
+  ProjectsLocationsEntrygroupsEntriesTags: {}
+  ProjectsLocationsTagtemplates: {}
+  ProjectsLocationsTagtemplatesFields: {}
+  ProjectsLocationsTagtemplatesFieldsEnumvalues: {}
+  ProjectsLocationsTaxonomies: {}
+  ProjectsLocationsTaxonomiesPolicytags: {}
+  ProjectsTaxonomies: {}
+  ProjectsTaxonomiesCategories: {}
+dataflow:
+  Projects: {}
+  ProjectsCatalogtemplates: {}
+  ProjectsJobs: {}
+  ProjectsLocations: {}
+  ProjectsLocationsJobs: {}
+  ProjectsLocationsSnapshots: {}
+  ProjectsLocationsTemplates: {}
+  ProjectsSnapshots: {}
+  ProjectsTemplates: {}
+datafusion:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsInstances: {}
+  ProjectsLocationsOperations: {}
+datamigration:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsConnectionprofiles: {}
+  ProjectsLocationsMigrationjobs: {}
+  ProjectsLocationsOperations: {}
+dataproc:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsAutoscalingpolicies: {}
+  ProjectsLocationsWorkflowtemplates: {}
+  ProjectsRegions: {}
+  ProjectsRegionsAutoscalingpolicies: {}
+  ProjectsRegionsClusters: {}
+  ProjectsRegionsJobs: {}
+  ProjectsRegionsOperations: {}
+  ProjectsRegionsOperations_list: {}
+  ProjectsRegionsWorkflowtemplates: {}
+datastore:
+  Projects: {}
+  ProjectsIndexes: {}
+  ProjectsOperations: {}
+deploymentmanager:
+  Compositetypes: {}
+  Deployments: {}
+  Manifests: {}
+  Operations: {}
+  Projects: {}
+  Resources: {}
+  Typeproviders: {}
+  Types: {}
+dialogflow:
+  Projects: {}
+  ProjectsAgent: {}
+  ProjectsAgentEntitytypes: {}
+  ProjectsAgentEnvironments: {}
+  ProjectsAgentEnvironmentsUsers: {}
+  ProjectsAgentEnvironmentsUsersSessions: {}
+  ProjectsAgentEnvironmentsUsersSessionsContexts: {}
+  ProjectsAgentEnvironmentsUsersSessionsEntitytypes: {}
+  ProjectsAgentIntents: {}
+  ProjectsAgentKnowledgebases: {}
+  ProjectsAgentKnowledgebasesDocuments: {}
+  ProjectsAgentSessions: {}
+  ProjectsAgentSessionsContexts: {}
+  ProjectsAgentSessionsEntitytypes: {}
+  ProjectsConversationprofiles: {}
+  ProjectsConversations: {}
+  ProjectsConversationsParticipants: {}
+  ProjectsKnowledgebases: {}
+  ProjectsKnowledgebasesDocuments: {}
+  ProjectsLocations: {}
+  ProjectsLocationsAgentEntitytypes: {}
+  ProjectsLocationsAgentEnvironments: {}
+  ProjectsLocationsAgentEnvironmentsUsers: {}
+  ProjectsLocationsAgentEnvironmentsUsersSessions: {}
+  ProjectsLocationsAgentEnvironmentsUsersSessionsContexts: {}
+  ProjectsLocationsAgentEnvironmentsUsersSessionsEntitytypes: {}
+  ProjectsLocationsAgentIntents: {}
+  ProjectsLocationsAgentSessions: {}
+  ProjectsLocationsAgentSessionsContexts: {}
+  ProjectsLocationsAgentSessionsEntitytypes: {}
+  ProjectsLocationsConversationprofiles: {}
+  ProjectsLocationsConversations: {}
+  ProjectsLocationsConversationsParticipants: {}
+  ProjectsLocationsKnowledgebases: {}
+  ProjectsLocationsKnowledgebasesDocuments: {}
+  ProjectsLocationsOperations: {}
+  ProjectsOperations: {}
+discovery:
+  ApisVersions: {}
+dlp:
+  Infotypes: {}
+  Organizations: {}
+  OrganizationsDeidentifytemplates: {}
+  OrganizationsInspecttemplates: {}
+  OrganizationsLocations: {}
+  OrganizationsLocationsDeidentifytemplates: {}
+  OrganizationsLocationsInspecttemplates: {}
+  OrganizationsLocationsJobtriggers: {}
+  OrganizationsLocationsStoredinfotypes: {}
+  OrganizationsStoredinfotypes: {}
+  Projects: {}
+  ProjectsContent: {}
+  ProjectsDeidentifytemplates: {}
+  ProjectsDlpjobs: {}
+  ProjectsImage: {}
+  ProjectsInspecttemplates: {}
+  ProjectsJobtriggers: {}
+  ProjectsLocations: {}
+  ProjectsLocationsDeidentifytemplates: {}
+  ProjectsLocationsDlpjobs: {}
+  ProjectsLocationsInspecttemplates: {}
+  ProjectsLocationsJobtriggers: {}
+  ProjectsLocationsStoredinfotypes: {}
+  ProjectsStoredinfotypes: {}
+dns:
+  Changes: {}
+  Dnskeys: {}
+  Managedzoneoperations: {}
+  Managedzones: {}
+  Policies: {}
+  Projects: {}
+  ProjectsManagedzonesRrsets: {}
+  Resourcerecordsets: {}
+  Responsepolicies: {}
+  Responsepolicyrules: {}
+domains:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsRegistrations: {}
+essentialcontacts:
+  Folders: {}
+  FoldersContacts: {}
+  Organizations: {}
+  OrganizationsContacts: {}
+  Projects: {}
+  ProjectsContacts: {}
+eventarc:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsTriggers: {}
+eventflow:
+  Projects: {}
+  ProjectsFlows: {}
+events:
+  Namespaces: {}
+  NamespacesCustomresourcedefinitions: {}
+  NamespacesTriggers: {}
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsCustomresourcedefinitions: {}
+  ProjectsLocationsTriggers: {}
+file:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsBackups: {}
+  ProjectsLocationsInstances: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsSnapshots: {}
+firestore:
+  Projects: {}
+  ProjectsDatabases: {}
+  ProjectsDatabasesCollectiongroups: {}
+  ProjectsDatabasesCollectiongroupsFields: {}
+  ProjectsDatabasesCollectiongroupsIndexes: {}
+  ProjectsDatabasesDocuments: {}
+  ProjectsDatabasesIndexes: {}
+  ProjectsDatabasesOperations: {}
+  ProjectsLocations: {}
+gameservices:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsGameserverdeployments: {}
+  ProjectsLocationsGameserverdeploymentsConfigs: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsRealms: {}
+  ProjectsLocationsRealmsGameserverclusters: {}
+genomics:
+  Operations: {}
+  Pipelines: {}
+  Projects: {}
+  ProjectsOperations: {}
+gkehub:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsGlobalFeatures: {}
+  ProjectsLocationsGlobalMemberships: {}
+  ProjectsLocationsMemberships: {}
+  ProjectsLocationsOperations: {}
+gsuiteaddons:
+  Projects: {}
+  ProjectsDeployments: {}
+healthcare:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsDatasets: {}
+  ProjectsLocationsDatasetsAnnotationstores: {}
+  ProjectsLocationsDatasetsAnnotationstoresAnnotations: {}
+  ProjectsLocationsDatasetsConsentstores: {}
+  ProjectsLocationsDatasetsConsentstoresAttributedefinitions: {}
+  ProjectsLocationsDatasetsConsentstoresConsentartifacts: {}
+  ProjectsLocationsDatasetsConsentstoresConsents: {}
+  ProjectsLocationsDatasetsConsentstoresUserdatamappings: {}
+  ProjectsLocationsDatasetsDicomstores: {}
+  ProjectsLocationsDatasetsFhirstores: {}
+  ProjectsLocationsDatasetsHl7v2stores: {}
+  ProjectsLocationsDatasetsHl7v2storesMessages: {}
+  ProjectsLocationsDatasetsOperations: {}
+  ProjectsLocationsServicesDeidentify: {}
+iam:
+  Iampolicies: {}
+  Organizations: {}
+  OrganizationsRoles: {}
+  Policies: {}
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsWorkloadidentitypools: {}
+  ProjectsLocationsWorkloadidentitypoolsOperations: {}
+  ProjectsLocationsWorkloadidentitypoolsProviders: {}
+  ProjectsLocationsWorkloadidentitypoolsProvidersOperations: {}
+  ProjectsRoles: {}
+  ProjectsServiceaccounts: {}
+  ProjectsServiceaccountsIdentitybindings: {}
+  ProjectsServiceaccountsKeys: {}
+  Roles: {}
+iamassist:
+  Operations: {}
+  Replays: {}
+  Simulator: {}
+iamcredentials:
+  Serviceaccounts: {}
+iap:
+  Projects: {}
+  ProjectsBrands: {}
+  ProjectsBrandsIdentityawareproxyclients: {}
+  ProjectsIap_web: {}
+  ProjectsIap_webServices: {}
+  ProjectsIap_webServicesVersions: {}
+krmapihosting:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsAnthosapiendpoints: {}
+  ProjectsLocationsKrmapihosts: {}
+  ProjectsLocationsOperations: {}
+kubernetesedge:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsClusters: {}
+  ProjectsLocationsClustersNodepools: {}
+  ProjectsLocationsClustersNodepoolsNodes: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsSites: {}
+  ProjectsLocationsSitesMachines: {}
+labelmanager:
+  Labelkeys: {}
+  Labelvalues: {}
+  Operations: {}
+language:
+  Documents: {}
+lifesciences:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsOperations: {}
+logging:
+  Billingaccounts: {}
+  BillingaccountsBuckets: {}
+  BillingaccountsBucketsViews: {}
+  BillingaccountsExclusions: {}
+  BillingaccountsLocations: {}
+  BillingaccountsSinks: {}
+  Exclusions: {}
+  Folders: {}
+  FoldersExclusions: {}
+  FoldersLocations: {}
+  FoldersLocationsBuckets: {}
+  FoldersLocationsBucketsViews: {}
+  FoldersSinks: {}
+  Locations: {}
+  LocationsBuckets: {}
+  LocationsBucketsJobs: {}
+  LocationsBucketsTables: {}
+  LocationsBucketsViews: {}
+  Organizations: {}
+  OrganizationsExclusions: {}
+  OrganizationsLocations: {}
+  OrganizationsLocationsBuckets: {}
+  OrganizationsLocationsBucketsViews: {}
+  OrganizationsSinks: {}
+  Projects: {}
+  ProjectsExclusions: {}
+  ProjectsLocations: {}
+  ProjectsLocationsBuckets: {}
+  ProjectsLocationsBucketsViews: {}
+  ProjectsMetrics: {}
+  ProjectsSinks: {}
+  Sinks: {}
+luxadmin:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsBackups: {}
+  ProjectsLocationsClusters: {}
+  ProjectsLocationsClustersInstances: {}
+  ProjectsLocationsClustersUsers: {}
+  ProjectsLocationsOperations: {}
+managedidentities:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsGlobalDomains: {}
+  ProjectsLocationsGlobalDomainsSqlintegrations: {}
+  ProjectsLocationsGlobalOperations: {}
+  ProjectsLocationsGlobalPeerings: {}
+mediaasset:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsAssettypes: {}
+  ProjectsLocationsAssettypesAssets: {}
+  ProjectsLocationsAssettypesAssetsTransformations: {}
+  ProjectsLocationsComplextypes: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsTransformers: {}
+memcache:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsInstances: {}
+  ProjectsLocationsOperations: {}
+metastore:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsServices: {}
+  ProjectsLocationsServicesMetadataimports: {}
+ml:
+  Projects: {}
+  ProjectsJobs: {}
+  ProjectsLocations: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsStudies: {}
+  ProjectsLocationsStudiesTrials: {}
+  ProjectsModels: {}
+  ProjectsModelsVersions: {}
+  ProjectsOperations: {}
+monitoring:
+  Projects: {}
+  ProjectsAlertpolicies: {}
+  ProjectsAlertpoliciesConditions: {}
+  ProjectsDashboards: {}
+  ProjectsGroups: {}
+  ProjectsMetricdescriptors: {}
+  ProjectsMonitoredresourcedescriptors: {}
+  ProjectsNotificationchanneldescriptors: {}
+  ProjectsNotificationchannels: {}
+  ProjectsUptimecheckconfigs: {}
+networkconnectivity:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsGlobalHubs: {}
+  ProjectsLocationsInternalranges: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsPolicybasedroutes: {}
+  ProjectsLocationsSpokes: {}
+networkmanagement:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsGlobalConnectivitytests: {}
+  ProjectsLocationsGlobalOperations: {}
+networksecurity:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsAuthorizationpolicies: {}
+  ProjectsLocationsClienttlspolicies: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsServertlspolicies: {}
+networkservices:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsEdgecachekeysets: {}
+  ProjectsLocationsEdgecacheorigins: {}
+  ProjectsLocationsEdgecacheservices: {}
+  ProjectsLocationsEndpointconfigselectors: {}
+  ProjectsLocationsHttpfilters: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsRouters: {}
+notebooks:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsEnvironments: {}
+  ProjectsLocationsExecutions: {}
+  ProjectsLocationsInstances: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsSchedules: {}
+ondemandscanning:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsScans: {}
+  ProjectsLocationsScansVulnerabilities: {}
+orgpolicy:
+  Folders: {}
+  FoldersPolicies: {}
+  Organizations: {}
+  OrganizationsPolicies: {}
+  Policies: {}
+  Projects: {}
+  ProjectsPolicies: {}
+osconfig:
+  Folders: {}
+  FoldersAssignments: {}
+  FoldersGuestpolicies: {}
+  FoldersOsconfigs: {}
+  Organizations: {}
+  OrganizationsAssignments: {}
+  OrganizationsGuestpolicies: {}
+  OrganizationsOsconfigs: {}
+  Projects: {}
+  ProjectsAssignments: {}
+  ProjectsGuestpolicies: {}
+  ProjectsOsconfigs: {}
+  ProjectsPatchdeployments: {}
+  ProjectsPatchjobs: {}
+oslogin:
+  Users: {}
+  UsersProjects: {}
+  UsersSshpublickeys: {}
+policysimulator:
+  Folders: {}
+  FoldersLocations: {}
+  FoldersLocationsReplays: {}
+  Operations: {}
+  Organizations: {}
+  OrganizationsLocations: {}
+  OrganizationsLocationsReplays: {}
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsReplays: {}
+  Simulator: {}
+policytroubleshooter:
+  Iam: {}
+privateca:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsCertificateauthorities: {}
+  ProjectsLocationsCertificateauthoritiesCertificaterevocationlists: {}
+  ProjectsLocationsCertificateauthoritiesCertificates: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsReusableconfigs: {}
+publicca: {}
+pubsub:
+  Projects: {}
+  ProjectsSchemas: {}
+  ProjectsSnapshots: {}
+  ProjectsSubscriptions: {}
+  ProjectsTopics: {}
+pubsublite:
+  AdminProjects: {}
+  AdminProjectsLocations: {}
+  AdminProjectsLocationsSubscriptions: {}
+  AdminProjectsLocationsTopics: {}
+  AdminProjectsLocationsTopicsSubscriptions: {}
+recaptchaenterprise:
+  Projects: {}
+  ProjectsKeys: {}
+recommender:
+  Billingaccounts: {}
+  BillingaccountsLocations: {}
+  BillingaccountsLocationsInsighttypes: {}
+  BillingaccountsLocationsInsighttypesInsights: {}
+  BillingaccountsLocationsRecommenders: {}
+  BillingaccountsLocationsRecommendersRecommendations: {}
+  Folders: {}
+  FoldersLocations: {}
+  FoldersLocationsInsighttypes: {}
+  FoldersLocationsInsighttypesInsights: {}
+  FoldersLocationsRecommenders: {}
+  FoldersLocationsRecommendersRecommendations: {}
+  Operations: {}
+  Organizations: {}
+  OrganizationsLocations: {}
+  OrganizationsLocationsInsighttypes: {}
+  OrganizationsLocationsInsighttypesInsights: {}
+  OrganizationsLocationsRecommenders: {}
+  OrganizationsLocationsRecommendersRecommendations: {}
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsInsighttypes: {}
+  ProjectsLocationsInsighttypesInsights: {}
+  ProjectsLocationsRecommenders: {}
+  ProjectsLocationsRecommendersRecommendations: {}
+redis:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsInstances: {}
+  ProjectsLocationsOperations: {}
+remotebuildexecution:
+  Projects: {}
+  ProjectsInstances: {}
+  ProjectsInstancesWorkerpools: {}
+  ProjectsOperations: {}
+resourcesettings:
+  Folders: {}
+  FoldersSettings: {}
+  Organizations: {}
+  OrganizationsSettings: {}
+  Projects: {}
+  ProjectsSettings: {}
+run:
+  ApiV1Namespaces: {}
+  ApiV1NamespacesSecrets: {}
+  Namespaces: {}
+  NamespacesCloudauditlogssources: {}
+  NamespacesCloudpubsubsources: {}
+  NamespacesCloudschedulersources: {}
+  NamespacesCloudstoragesources: {}
+  NamespacesConfigurations: {}
+  NamespacesCustomresourcedefinitions: {}
+  NamespacesDomainmappings: {}
+  NamespacesJobs: {}
+  NamespacesRevisions: {}
+  NamespacesRoutes: {}
+  NamespacesServices: {}
+  NamespacesTriggers: {}
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsCloudauditlogssources: {}
+  ProjectsLocationsCloudpubsubsources: {}
+  ProjectsLocationsCloudschedulersources: {}
+  ProjectsLocationsCloudstoragesources: {}
+  ProjectsLocationsConfigurations: {}
+  ProjectsLocationsCustomresourcedefinitions: {}
+  ProjectsLocationsDomainmappings: {}
+  ProjectsLocationsNamespaces: {}
+  ProjectsLocationsRevisions: {}
+  ProjectsLocationsRoutes: {}
+  ProjectsLocationsSecrets: {}
+  ProjectsLocationsServices: {}
+  ProjectsLocationsTriggers: {}
+runtimeconfig:
+  Projects: {}
+  ProjectsConfigs: {}
+  ProjectsConfigsOperations: {}
+  ProjectsConfigsVariables: {}
+  ProjectsConfigsWaiters: {}
+sddc:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsClustergroupbackups: {}
+  ProjectsLocationsClustergroups: {}
+  ProjectsLocationsClustergroupsClusters: {}
+  ProjectsLocationsClustergroupsIpaddresses: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsPrivatecloudbackups: {}
+  ProjectsLocationsPrivateclouds: {}
+  ProjectsLocationsPrivatecloudsClusters: {}
+  ProjectsLocationsPrivatecloudsIpaddresses: {}
+secretmanager:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsSecrets: {}
+  ProjectsSecretsVersions: {}
+securitycenter:
+  Organizations: {}
+  OrganizationsAssets: {}
+  OrganizationsNotificationconfigs: {}
+  OrganizationsOperations: {}
+  OrganizationsSources: {}
+  OrganizationsSourcesFindings: {}
+serviceconsumermanagement:
+  Operations: {}
+  Services: {}
+  ServicesConsumerquotametrics: {}
+  ServicesConsumerquotametricsLimits: {}
+servicedirectory:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsNamespaces: {}
+  ProjectsLocationsNamespacesServices: {}
+  ProjectsLocationsNamespacesServicesEndpoints: {}
+servicemanagement:
+  Operations: {}
+  Services: {}
+  ServicesConfigs: {}
+  ServicesCustomersettings: {}
+  ServicesProjectsettings: {}
+  ServicesRollouts: {}
+servicenetworking:
+  Operations: {}
+  ServicesProjects: {}
+  ServicesProjectsGlobal: {}
+  ServicesProjectsGlobalNetworks: {}
+serviceusage:
+  Operations: {}
+  Services: {}
+  ServicesConsumerquotametrics: {}
+  ServicesConsumerquotametricsLimits: {}
+source:
+  Projects: {}
+  ProjectsRepos: {}
+  ProjectsReposAliases: {}
+  ProjectsReposAliasesFiles: {}
+  ProjectsReposRevisions: {}
+  ProjectsReposRevisionsFiles: {}
+  ProjectsReposWorkspaces: {}
+  ProjectsReposWorkspacesFiles: {}
+  ProjectsReposWorkspacesSnapshots: {}
+  ProjectsReposWorkspacesSnapshotsFiles: {}
+sourcerepo:
+  Projects: {}
+  ProjectsRepos: {}
+spanner:
+  Projects: {}
+  ProjectsInstanceconfigs: {}
+  ProjectsInstances: {}
+  ProjectsInstancesBackups: {}
+  ProjectsInstancesBackupsOperations: {}
+  ProjectsInstancesDatabases: {}
+  ProjectsInstancesDatabasesOperations: {}
+  ProjectsInstancesDatabasesSessions: {}
+  ProjectsInstancesOperations: {}
+speech:
+  Operations: {}
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsCustomclasses: {}
+  ProjectsLocationsPhrasesets: {}
+  Speech: {}
+sqladmin:
+  Backupruns: {}
+  Databases: {}
+  Instances: {}
+  Operations: {}
+  Projects: {}
+  Sslcerts: {}
+storage:
+  Bucketaccesscontrols: {}
+  Buckets: {}
+  Defaultobjectaccesscontrols: {}
+  Notifications: {}
+  Objectaccesscontrols: {}
+  Objects: {}
+  Projects: {}
+  ProjectsHmackeys: {}
+  ProjectsServiceaccount: {}
+storagetransfer:
+  Googleserviceaccounts: {}
+  Transferjobs: {}
+  Transferoperations: {}
+testing:
+  Projects: {}
+  ProjectsTestmatrices: {}
+  Testenvironmentcatalog: {}
+toolresults:
+  Projects: {}
+  ProjectsHistories: {}
+  ProjectsHistoriesExecutions: {}
+  ProjectsHistoriesExecutionsClusters: {}
+  ProjectsHistoriesExecutionsEnvironments: {}
+  ProjectsHistoriesExecutionsSteps: {}
+  ProjectsHistoriesExecutionsStepsPerfsampleseries: {}
+  ProjectsHistoriesExecutionsStepsTestcases: {}
+tpu:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsAcceleratortypes: {}
+  ProjectsLocationsNodes: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsRuntimeversions: {}
+  ProjectsLocationsTensorflowversions: {}
+transcoder:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsJobs: {}
+  ProjectsLocationsJobtemplates: {}
+translate:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsGlossaries: {}
+  ProjectsLocationsOperations: {}
+videointelligence:
+  OperationsProjects: {}
+  OperationsProjectsLocations: {}
+  OperationsProjectsLocationsOperations: {}
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsOperations: {}
+  Videos: {}
+vision:
+  Files: {}
+  Images: {}
+  Locations: {}
+  LocationsOperations: {}
+  Operations: {}
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsProducts: {}
+  ProjectsLocationsProductsReferenceimages: {}
+  ProjectsLocationsProductsets: {}
+  ProjectsLocationsProductsetsProducts: {}
+  ProjectsOperations: {}
+vpcaccess:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsConnectors: {}
+  ProjectsLocationsOperations: {}
+websecurityscanner:
+  Projects: {}
+  ProjectsScanconfigs: {}
+  ProjectsScanconfigsScanruns: {}
+  ProjectsScanconfigsScanrunsCrawledurls: {}
+  ProjectsScanconfigsScanrunsFindings: {}
+workflowexecutions:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsWorkflows: {}
+  ProjectsLocationsWorkflowsExecutions: {}
+workflows:
+  Projects: {}
+  ProjectsLocations: {}
+  ProjectsLocationsOperations: {}
+  ProjectsLocationsWorkflows: {}

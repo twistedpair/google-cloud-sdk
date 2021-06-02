@@ -27,12 +27,13 @@ from googlecloudsdk.core import log
 
 
 DEPLOY_SERVICE_MESSAGE_TEMPLATE = """\
-descriptor:      [{descriptor}]
-source:          [{source}]
-target project:  [{project}]
-target service:  [{service}]
-target version:  [{version}]
-target url:      [{url}]
+descriptor:                  [{descriptor}]
+source:                      [{source}]
+target project:              [{project}]
+target service:              [{service}]
+target version:              [{version}]
+target url:                  [{url}]
+target service account:      [{service_account}]
 
 """
 
@@ -67,8 +68,8 @@ https://cloud.google.com/tasks/docs/queue-yaml
 """
 
 
-def DisplayProposedDeployment(app, project, services, configs, version,
-                              promote):
+def DisplayProposedDeployment(app, project, services, configs, version, promote,
+                              service_account):
   """Prints the details of the proposed deployment.
 
   Args:
@@ -80,6 +81,7 @@ def DisplayProposedDeployment(app, project, services, configs, version,
     version: The version identifier of the application to be deployed.
     promote: Whether the newly deployed version will receive all traffic
       (this affects deployed URLs).
+    service_account: The service account that the deployed version will run as.
 
   Returns:
     dict (str->str), a mapping of service names to deployed service URLs
@@ -98,9 +100,16 @@ def DisplayProposedDeployment(app, project, services, configs, version,
           app=app, service=service.service_id,
           version=None if promote else version, use_ssl=use_ssl)
       deployed_urls[service.service_id] = url
-      log.status.Print(DEPLOY_SERVICE_MESSAGE_TEMPLATE.format(
-          project=project, service=service.service_id, version=version,
-          descriptor=service.descriptor, source=service.source, url=url))
+      log.status.Print(
+          DEPLOY_SERVICE_MESSAGE_TEMPLATE.format(
+              project=project,
+              service=service.service_id,
+              version=version,
+              descriptor=service.descriptor,
+              source=service.source,
+              url=url,
+              service_account=service_account
+              if service_account else 'App Engine default service account'))
       if not promote:
         default_url = deploy_command_util.GetAppHostname(
             app=app, service=service.service_id, use_ssl=use_ssl)

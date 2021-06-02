@@ -34,7 +34,6 @@ class Error(exceptions.Error):
 def GetSession(timeout='unset',
                ca_certs=None,
                enable_resource_quota=True,
-               force_resource_quota=False,
                allow_account_impersonation=True,
                session=None,
                streaming_response_body=False):
@@ -50,9 +49,6 @@ def GetSession(timeout='unset',
         the quota of the project being operated on. For some APIs we want to use
         gcloud's quota, so you can explicitly disable that behavior by passing
         False here.
-    force_resource_quota: bool, If true resource project quota will be used by
-        this client regardless of the settings in gcloud. This should be used
-        for newer APIs that cannot work with legacy project quota.
     allow_account_impersonation: bool, True to allow use of impersonated service
         account credentials for calls made with this client. If False, the
         active user credentials will always be used.
@@ -76,7 +72,6 @@ def GetSession(timeout='unset',
       streaming_response_body=streaming_response_body)
   request_wrapper = RequestWrapper()
   session = request_wrapper.WrapQuota(session, enable_resource_quota,
-                                      force_resource_quota,
                                       allow_account_impersonation, True)
   session = request_wrapper.WrapCredentials(session,
                                             allow_account_impersonation)
@@ -106,11 +101,10 @@ class RequestWrapper(transport.CredentialWrappingMixin,
     http_client.request = WrappedRequest
     return http_client
 
-  def WrapQuota(self, http_client, enable_resource_quota, force_resource_quota,
+  def WrapQuota(self, http_client, enable_resource_quota,
                 allow_account_impersonation, use_google_auth):
     """Returns an http_client with quota project handling."""
     quota_project = self.QuotaProject(enable_resource_quota,
-                                      force_resource_quota,
                                       allow_account_impersonation,
                                       use_google_auth)
     if not quota_project:

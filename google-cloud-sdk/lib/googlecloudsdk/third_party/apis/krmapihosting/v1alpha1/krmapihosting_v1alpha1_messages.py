@@ -216,6 +216,10 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FullManagementConfig(_messages.Message):
+  r"""Configuration of the full (Autopilot) cluster management"""
+
+
 class KrmApiHost(_messages.Message):
   r"""A KrmApiHost represents a GKE cluster which is pre-installed with KRM
   resources of services currently supported by the KRM API Hosting API.
@@ -252,6 +256,7 @@ class KrmApiHost(_messages.Message):
     labels: Labels are used for additional information for a KrmApiHost.
     manBlock: Master Authorized Network. Allows access to the k8s master from
       this block.
+    managementConfig: Configuration of the cluster management
     masterIpv4CidrBlock: The /28 network that the masters will use.
     name: Output only. The name of this KrmApiHost resource in the format: 'pr
       ojects/{project_id}/locations/{location}/krmApiHosts/{krm_api_host_id}'.
@@ -325,13 +330,14 @@ class KrmApiHost(_messages.Message):
   gkeResourceLink = _messages.StringField(8)
   labels = _messages.MessageField('LabelsValue', 9)
   manBlock = _messages.StringField(10)
-  masterIpv4CidrBlock = _messages.StringField(11)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  servicesCidrBlock = _messages.StringField(14)
-  servicesNamedRange = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  usePrivateEndpoint = _messages.BooleanField(17)
+  managementConfig = _messages.MessageField('ManagementConfig', 11)
+  masterIpv4CidrBlock = _messages.StringField(12)
+  name = _messages.StringField(13)
+  network = _messages.StringField(14)
+  servicesCidrBlock = _messages.StringField(15)
+  servicesNamedRange = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  usePrivateEndpoint = _messages.BooleanField(18)
 
 
 class KrmapihostingProjectsLocationsGetRequest(_messages.Message):
@@ -700,6 +706,20 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class ManagementConfig(_messages.Message):
+  r"""Configuration of the cluster management
+
+  Fields:
+    fullManagementConfig: Configuration of the full (Autopilot) cluster
+      management
+    standardManagementConfig: Configuration of the standard (GKE) cluster
+      management
+  """
+
+  fullManagementConfig = _messages.MessageField('FullManagementConfig', 1)
+  standardManagementConfig = _messages.MessageField('StandardManagementConfig', 2)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -915,6 +935,10 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class StandardManagementConfig(_messages.Message):
+  r"""Configuration of the standard (GKE) cluster management"""
 
 
 class StandardQueryParameters(_messages.Message):

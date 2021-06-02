@@ -2469,6 +2469,9 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       the service will use the network "default".
     numWorkers: The initial number of Google Compute Engine instances for the
       job.
+    sdkContainerImage: Docker registry location of container image to use for
+      the 'worker harness. Default is the container for the version of the
+      SDK. Note this field is only valid for portable pipelines.
     serviceAccountEmail: The email address of the service account to run the
       job as.
     stagingLocation: The Cloud Storage path for staging local files. Must be a
@@ -2564,13 +2567,14 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
   maxWorkers = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   network = _messages.StringField(9)
   numWorkers = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  serviceAccountEmail = _messages.StringField(11)
-  stagingLocation = _messages.StringField(12)
-  subnetwork = _messages.StringField(13)
-  tempLocation = _messages.StringField(14)
-  workerRegion = _messages.StringField(15)
-  workerZone = _messages.StringField(16)
-  zone = _messages.StringField(17)
+  sdkContainerImage = _messages.StringField(11)
+  serviceAccountEmail = _messages.StringField(12)
+  stagingLocation = _messages.StringField(13)
+  subnetwork = _messages.StringField(14)
+  tempLocation = _messages.StringField(15)
+  workerRegion = _messages.StringField(16)
+  workerZone = _messages.StringField(17)
+  zone = _messages.StringField(18)
 
 
 class FloatingPointList(_messages.Message):

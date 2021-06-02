@@ -3103,3 +3103,12 @@ def ValidateNetworkPerformanceConfigsArgs(args):
                      six.text_type(tier_val)
                      for tier_val in constants.ADV_NETWORK_TIER_CHOICES
                  ])))
+
+
+def AddNodeProjectArgs(parser):
+  """Adds node project argument."""
+  parser.add_argument(
+      '--node-project',
+      help="""\
+      The name of the project with shared sole tenant node groups to create
+      an instance in.""")

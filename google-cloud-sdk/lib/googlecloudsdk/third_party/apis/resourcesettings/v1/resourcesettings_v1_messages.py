@@ -91,6 +91,7 @@ class GoogleCloudResourcesettingsV1SettingMetadata(_messages.Message):
       STRING_SET: A string set setting.
       ENUM_VALUE: A Enum setting
       DURATION_VALUE: A Duration setting
+      STRING_MAP: A string->string map setting
     """
     DATA_TYPE_UNSPECIFIED = 0
     BOOLEAN = 1
@@ -98,6 +99,7 @@ class GoogleCloudResourcesettingsV1SettingMetadata(_messages.Message):
     STRING_SET = 3
     ENUM_VALUE = 4
     DURATION_VALUE = 5
+    STRING_MAP = 6
 
   dataType = _messages.EnumField('DataTypeValueValuesEnum', 1)
   defaultValue = _messages.MessageField('GoogleCloudResourcesettingsV1Value', 2)
@@ -113,6 +115,7 @@ class GoogleCloudResourcesettingsV1Value(_messages.Message):
     booleanValue: Defines this value as being a boolean value.
     durationValue: Defines this value as being a Duration.
     enumValue: Defines this value as being a Enum.
+    stringMapValue: Defines this value as being a StringMap.
     stringSetValue: Defines this value as being a StringSet.
     stringValue: Defines this value as being a string value.
   """
@@ -120,8 +123,9 @@ class GoogleCloudResourcesettingsV1Value(_messages.Message):
   booleanValue = _messages.BooleanField(1)
   durationValue = _messages.StringField(2)
   enumValue = _messages.MessageField('GoogleCloudResourcesettingsV1ValueEnumValue', 3)
-  stringSetValue = _messages.MessageField('GoogleCloudResourcesettingsV1ValueStringSet', 4)
-  stringValue = _messages.StringField(5)
+  stringMapValue = _messages.MessageField('GoogleCloudResourcesettingsV1ValueStringMap', 4)
+  stringSetValue = _messages.MessageField('GoogleCloudResourcesettingsV1ValueStringSet', 5)
+  stringValue = _messages.StringField(6)
 
 
 class GoogleCloudResourcesettingsV1ValueEnumValue(_messages.Message):
@@ -134,6 +138,45 @@ class GoogleCloudResourcesettingsV1ValueEnumValue(_messages.Message):
   """
 
   value = _messages.StringField(1)
+
+
+class GoogleCloudResourcesettingsV1ValueStringMap(_messages.Message):
+  r"""A string->string map value that can hold a map of string keys to string
+  values. The maximum length of each string is 200 characters and there can be
+  a maximum of 50 key-value pairs in the map.
+
+  Messages:
+    MappingsValue: The key-value pairs in the map
+
+  Fields:
+    mappings: The key-value pairs in the map
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MappingsValue(_messages.Message):
+    r"""The key-value pairs in the map
+
+    Messages:
+      AdditionalProperty: An additional property for a MappingsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MappingsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MappingsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  mappings = _messages.MessageField('MappingsValue', 1)
 
 
 class GoogleCloudResourcesettingsV1ValueStringSet(_messages.Message):

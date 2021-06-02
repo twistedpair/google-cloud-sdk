@@ -1242,12 +1242,14 @@
           "enumDescriptions": [
             "Container Manager is disabled or not running for this execution.",
             "Container Manager is enabled and there was a matching container available for use during execution.",
-            "Container Manager is enabled, but there was no matching container available for execution."
+            "Container Manager is enabled, but there was no matching container available for execution.",
+            "Container Manager is enabled and we attempted to execute on a matching container, but the container was no longer running. The task was retried without an async container."
           ],
           "enum": [
             "CONFIG_NONE",
             "CONFIG_MATCH",
-            "CONFIG_MISMATCH"
+            "CONFIG_MISMATCH",
+            "CONFIG_MISSING_CONTAINER"
           ]
         },
         "outputLocation": {
@@ -1324,7 +1326,8 @@
             "Docker failed to create an overlay mount because of too many levels of symbolic links.",
             "The local Container Manager is not running.",
             "Docker failed because a request was denied by the organization's policy.",
-            "Working directory is not relative"
+            "Working directory is not relative",
+            "Docker cannot find the container specified in the command. This error is likely to only occur if an asynchronous container is not running when the command is run."
           ],
           "enum": [
             "OK",
@@ -1368,7 +1371,8 @@
             "DOCKER_TOO_MANY_SYMBOLIC_LINK_LEVELS",
             "LOCAL_CONTAINER_MANAGER_NOT_RUNNING",
             "DOCKER_IMAGE_VPCSC_PERMISSION_DENIED",
-            "WORKING_DIR_NOT_RELATIVE"
+            "WORKING_DIR_NOT_RELATIVE",
+            "DOCKER_MISSING_CONTAINER"
           ]
         },
         "message": {
@@ -1391,6 +1395,9 @@
         "cpuUsedPercent": {
           "type": "number",
           "format": "double"
+        },
+        "totalDiskIoStats": {
+          "$ref": "GoogleDevtoolsRemotebuildbotResourceUsageIOStats"
         }
       }
     },
@@ -1403,6 +1410,36 @@
           "format": "uint64"
         },
         "used": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "GoogleDevtoolsRemotebuildbotResourceUsageIOStats": {
+      "id": "GoogleDevtoolsRemotebuildbotResourceUsageIOStats",
+      "type": "object",
+      "properties": {
+        "readCount": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "writeCount": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "readBytesCount": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "writeBytesCount": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "readTimeMs": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "writeTimeMs": {
           "type": "string",
           "format": "uint64"
         }

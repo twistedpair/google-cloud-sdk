@@ -29,7 +29,6 @@ from googlecloudsdk.core.credentials import requests
 
 def GetApitoolsTransport(timeout='unset',
                          enable_resource_quota=True,
-                         force_resource_quota=False,
                          response_encoding=None,
                          ca_certs=None,
                          allow_account_impersonation=True,
@@ -45,9 +44,6 @@ def GetApitoolsTransport(timeout='unset',
         the quota of the project being operated on. For some APIs we want to use
         gcloud's quota, so you can explicitly disable that behavior by passing
         False here.
-    force_resource_quota: bool, If true resource project quota will be used by
-      this client regardless of the settings in gcloud. This should be used for
-      newer APIs that cannot work with legacy project quota.
     response_encoding: str, the encoding to use to decode the response.
     ca_certs: str, absolute filename of a ca_certs file that overrides the
         default
@@ -81,7 +77,6 @@ def GetApitoolsTransport(timeout='unset',
     session = requests.GetSession(
         timeout=timeout,
         enable_resource_quota=enable_resource_quota,
-        force_resource_quota=force_resource_quota,
         ca_certs=ca_certs,
         allow_account_impersonation=allow_account_impersonation,
         streaming_response_body=streaming_response_body)
@@ -91,7 +86,6 @@ def GetApitoolsTransport(timeout='unset',
 
   return http.Http(timeout=timeout,
                    enable_resource_quota=enable_resource_quota,
-                   force_resource_quota=force_resource_quota,
                    response_encoding=response_encoding,
                    ca_certs=ca_certs,
                    allow_account_impersonation=allow_account_impersonation,

@@ -61,7 +61,7 @@ class LinterRenderer(text_renderer.TextRenderer):
     self.command_text = ''
     self.equals_violation_flags = []
     self.nonexistent_violation_flags = []
-    self.json_object = collections.OrderedDict()
+    self.findings = collections.OrderedDict()
 
   def _CaptureOutput(self, heading):
     # check if buffer is full from previous heading
@@ -80,19 +80,61 @@ class LinterRenderer(text_renderer.TextRenderer):
   def _Analyze(self, heading, section):
     self._analyze[heading](section)
 
+  def _check_name(self, heading, check):
+    return '{}_{}_CHECK'.format(heading, check)
+
+  def _add_failure(self, check_name, message):
+    self.findings['# {} FAILED'.format(check_name)] = message
+
+  def _add_success(self, check_name):
+    self.findings['# {} SUCCESS'.format(check_name)] = ''
+
+  def _add_no_errors_summary(self, heading):
+    self.findings['There are no errors for the {} section.'.format(
+        heading)] = ''
+
   def check_for_personal_pronouns(self, heading, section):
     """Raise violation if the section contains personal pronouns."""
+    check_name = self._check_name(heading, 'PRONOUN')
     words_in_section = set(re.compile(r'[-\w]+').findall(section.lower()))
     found_pronouns = words_in_section.intersection(self._PERSONAL_PRONOUNS)
-    key_object = '# ' + heading + '_PRONOUN_CHECK FAILED'
-    value_object = ('Please remove the following personal pronouns in the ' +
-                    heading + ' section:\n')
     if found_pronouns:
-      found_pronouns_list = list(found_pronouns)
-      found_pronouns_list.sort()
-      value_object += '\n'.join(found_pronouns_list)
-      self.json_object[key_object] = value_object
+      found_pronouns_list = sorted(list(found_pronouns))
+      self._add_failure(check_name, ('Please remove the following personal '
+                                     'pronouns in the {} section:\n{}').format(
+                                         heading,
+                                         '\n'.join(found_pronouns_list)))
+    else:
+      self._add_success(check_name)
     return found_pronouns
+
+  def check_for_unmatched_double_backticks(self, heading, section):
+    """Raise violation if the section contains unmatched double backticks.
+
+    This check counts the number of double backticks in the section and ensures
+    that there are an equal number of closing double single-quotes. The common
+    mistake is to use a single double-quote to close these values, which breaks
+    the rendering. See go/cloud-sdk-help-text#formatting.
+
+    Arguments:
+      heading: str, the name of the section.
+      section: str, the contents of the section.
+
+    Returns:
+      True if there was a violation. None otherwise.
+    """
+    check_name = self._check_name(heading, 'DOUBLE_BACKTICKS')
+    double_backticks_count = len(re.compile(r'``').findall(section))
+    double_single_quotes_count = len(re.compile(r"''").findall(section))
+    unbalanced = (double_backticks_count != double_single_quotes_count)
+    if unbalanced:
+      self._add_failure(check_name,
+                        ('There are unbalanced double backticks and double '
+                         'single-quotes in the {} section. See '
+                         'go/cloud-sdk-help-text#formatting.'.format(heading)))
+    else:
+      self._add_success(check_name)
+    return unbalanced
 
   def needs_example(self):
     """Check whether command requires an example."""
@@ -108,11 +150,11 @@ class LinterRenderer(text_renderer.TextRenderer):
 
   def check_indentation_for_examples(self):
     if self._prev_heading == 'EXAMPLES' and not self._buffer.getvalue():
-      key_object = '# EXAMPLE_SECTION_FORMAT_CHECK FAILED'
-      value_object = ('The examples section is not formatted properly. This is '
-                      'likely due to indentation. Please make sure the section '
-                      'is aligned with the heading and not indented.')
-      self.json_object[key_object] = value_object
+      self._add_failure(
+          self._check_name('EXAMPLES', 'SECTION_FORMAT'),
+          'The examples section is not formatted properly. This is likely due '
+          'to indentation. Please make sure the section is aligned with the '
+          'heading and not indented.')
 
   def Finish(self):
     if self._buffer.getvalue() and self._prev_heading:
@@ -121,14 +163,14 @@ class LinterRenderer(text_renderer.TextRenderer):
     self._buffer.close()
     self._null_out.close()
     if self.needs_example() and not self.example:
-      value_object = (
+      self._add_failure(
+          self._check_name('EXAMPLES', 'PRESENT'),
           'You have not included an example in the Examples section.')
-      self.json_object['# EXAMPLE_PRESENT_CHECK FAILED'] = value_object
-    for element in self.json_object:
-      if self.json_object[element]:
+    for element in self.findings:
+      if self.findings[element]:
         self._file_out.write(
             six.text_type(element) + ': ' +
-            six.text_type(self.json_object[element]) + '\n')
+            six.text_type(self.findings[element]) + '\n')
       else:
         self._file_out.write(six.text_type(element) + '\n')
 
@@ -157,7 +199,7 @@ class LinterRenderer(text_renderer.TextRenderer):
         # check that the example starts with the command of the help text
         if self.command_text.startswith(self.command_name):
           self.example = True
-          self.json_object['# EXAMPLE_PRESENT_CHECK SUCCESS'] = ''
+          self._add_success(self._check_name('EXAMPLES', 'PRESENT'))
           rest_of_command = self.command_text[self.command_name_length:].split()
           flag_names = []
           for word in rest_of_command:
@@ -184,75 +226,87 @@ class LinterRenderer(text_renderer.TextRenderer):
         self.equals_violation_flags.append(flag)
 
   def _analyze_name(self, section):
-    warnings = self.check_for_personal_pronouns('NAME', section)
-    if not warnings:
-      self.json_object['# NAME_PRONOUN_CHECK SUCCESS'] = ''
+    has_errors = self.check_for_personal_pronouns('NAME', section)
+
     # The section should look like 'command name - command description' but
     # there may be a newline depending on length of the command.
     section_parts = re.split(r'\s-\s?', section.strip())
-    self.command_name = section_parts[0].strip()
+
     # This is checking if there is a short description in the NAME section. The
     # section_parts list may have whitespace as the second element but this is
     # not a description.
+    check_name = self._check_name('NAME', 'DESCRIPTION')
     if len(section_parts) == 1 or (
         len(section_parts) > 1 and not section_parts[1].strip()):
       self.name_section = ''
-      value_object = 'Please add an explanation for the command.'
-      self.json_object['# NAME_DESCRIPTION_CHECK FAILED'] = value_object
-      warnings = True
+      self._add_failure(check_name,
+                        'Please add an explanation for the command.')
+      has_errors = True
     else:
       self.name_section = section_parts[1]
-      self.json_object['# NAME_DESCRIPTION_CHECK SUCCESS'] = ''
-    self.command_name_length = len(self.command_name)
+      self._add_success(check_name)
+
     # check that name section is not too long
+    check_name = self._check_name('NAME', 'LENGTH')
+    self.command_name = section_parts[0].strip()
+    self.command_name_length = len(self.command_name)
     if len(self.name_section.split()) > self._NAME_WORD_LIMIT:
-      value_object = ('Please shorten the name section description to '
-                      'less than ' + six.text_type(self._NAME_WORD_LIMIT) +
-                      ' words.')
-      self.json_object['# NAME_LENGTH_CHECK FAILED'] = value_object
-      warnings = True
+      self._add_failure(
+          check_name,
+          'Please shorten the name section description to less than {} words.'
+          .format(six.text_type(self._NAME_WORD_LIMIT)))
+      has_errors = True
     else:
-      self.json_object['# NAME_LENGTH_CHECK SUCCESS'] = ''
-    if not warnings:
-      self.json_object['There are no errors for the NAME section.'] = ''
+      self._add_success(check_name)
+
+    if not has_errors:
+      self._add_no_errors_summary('NAME')
 
   def _analyze_examples(self, section):
     if not self.command_metadata.is_group:
-      warnings = self.check_for_personal_pronouns('EXAMPLES', section)
-      if not warnings:
-        self.json_object['# EXAMPLES_PRONOUN_CHECK SUCCESS'] = ''
+      has_errors = self.check_for_personal_pronouns('EXAMPLES', section)
+
+      if self.check_for_unmatched_double_backticks('EXAMPLES', section):
+        has_errors = True
+
+      check_name = self._check_name('EXAMPLES', 'FLAG_EQUALS')
       if self.equals_violation_flags:
-        warnings = True
+        has_errors = True
         list_contents = ''
         for flag in range(len(self.equals_violation_flags) - 1):
           list_contents += six.text_type(
               self.equals_violation_flags[flag]) + ', '
         list_contents += six.text_type(self.equals_violation_flags[-1])
-        value_object = ('There should be an `=` between the flag name and '
-                        'the value for the following flags: ' +  list_contents)
-        self.json_object['# EXAMPLE_FLAG_EQUALS_CHECK FAILED'] = value_object
-        warnings = True
+        self._add_failure(
+            check_name,
+            ('There should be an `=` between the flag name and '
+             'the value for the following flags: {}').format(list_contents))
+        has_errors = True
       else:
-        self.json_object['# EXAMPLE_FLAG_EQUALS_CHECK SUCCESS'] = ''
+        self._add_success(check_name)
+
+      check_name = self._check_name('EXAMPLES', 'NONEXISTENT_FLAG')
       if self.nonexistent_violation_flags:
-        warnings = True
+        has_errors = True
         list_contents = ''
         for flag in range(len(self.nonexistent_violation_flags) - 1):
           list_contents += six.text_type(
               self.nonexistent_violation_flags[flag]) + ', '
         list_contents += six.text_type(self.nonexistent_violation_flags[-1])
-        key_object = '# EXAMPLE_NONEXISTENT_FLAG_CHECK FAILED'
-        value_object = ('The following flags are not valid for the command: ' +
-                        list_contents)
-        self.json_object[key_object] = value_object
+        self._add_failure(
+            check_name,
+            'The following flags are not valid for the command: {}'.format(
+                list_contents))
       else:
-        self.json_object['# EXAMPLE_NONEXISTENT_FLAG_CHECK SUCCESS'] = ''
-      if not warnings:
-        self.json_object['There are no errors for the EXAMPLES section.'] = ''
+        self._add_success(check_name)
+
+      if not has_errors:
+        self._add_no_errors_summary('EXAMPLES')
 
   def _analyze_description(self, section):
-    warnings = self.check_for_personal_pronouns('DESCRIPTION', section)
-    if not warnings:
-      self.json_object['# DESCRIPTION_PRONOUN_CHECK SUCCESS'] = ''
-    if not warnings:
-      self.json_object['There are no errors for the DESCRIPTION section.'] = ''
+    has_errors = (self.check_for_personal_pronouns('DESCRIPTION', section),
+                  self.check_for_unmatched_double_backticks(
+                      'DESCRIPTION', section))
+
+    if not any(has_errors):
+      self._add_no_errors_summary('DESCRIPTION')

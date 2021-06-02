@@ -241,6 +241,19 @@ class BinaryAuthorization(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class BlueGreenSettings(_messages.Message):
+  r"""Settings for blue/green update.
+
+  Fields:
+    nodePoolSoakDuration: Time needed after draining entire blue pool. After
+      this period, blue pool will be cleaned up. Default is 1 day.
+    standardRolloutPolicy: Standard policy for the blue/green update.
+  """
+
+  nodePoolSoakDuration = _messages.StringField(1)
+  standardRolloutPolicy = _messages.MessageField('StandardRolloutPolicy', 2)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""CancelOperationRequest cancels a single operation.
 
@@ -455,6 +468,7 @@ class Cluster(_messages.Message):
       erence/rest/v1/projects.locations.clusters.nodePools#NodePool.FIELDS.loc
       ations) of all node pools and will result in nodes being added and/or
       removed.
+    loggingConfig: Logging configuration for the cluster.
     loggingService: The logging service the cluster should use to write logs.
       Currently available options: * `logging.googleapis.com/kubernetes` - The
       Cloud Logging service with a Kubernetes-native resource model *
@@ -477,6 +491,7 @@ class Cluster(_messages.Message):
       addresses to the master or set of masters, as well as the ILB VIP. This
       field is deprecated, use private_cluster_config.master_ipv4_cidr_block
       instead.
+    monitoringConfig: Monitoring configuration for the cluster.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options: *
       "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
@@ -665,45 +680,47 @@ class Cluster(_messages.Message):
   legacyAbac = _messages.MessageField('LegacyAbac', 33)
   location = _messages.StringField(34)
   locations = _messages.StringField(35, repeated=True)
-  loggingService = _messages.StringField(36)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 37)
-  master = _messages.MessageField('Master', 38)
-  masterAuth = _messages.MessageField('MasterAuth', 39)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 40)
-  masterIpv4CidrBlock = _messages.StringField(41)
-  monitoringService = _messages.StringField(42)
-  name = _messages.StringField(43)
-  network = _messages.StringField(44)
-  networkConfig = _messages.MessageField('NetworkConfig', 45)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 46)
-  nodeConfig = _messages.MessageField('NodeConfig', 47)
-  nodeIpv4CidrSize = _messages.IntegerField(48, variant=_messages.Variant.INT32)
-  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 49)
-  nodePools = _messages.MessageField('NodePool', 50, repeated=True)
-  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 51)
-  notificationConfig = _messages.MessageField('NotificationConfig', 52)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 53)
-  privateCluster = _messages.BooleanField(54)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 55)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 56)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 57)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 58)
-  resourceVersion = _messages.StringField(59)
-  securityProfile = _messages.MessageField('SecurityProfile', 60)
-  selfLink = _messages.StringField(61)
-  servicesIpv4Cidr = _messages.StringField(62)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 63)
-  status = _messages.EnumField('StatusValueValuesEnum', 64)
-  statusMessage = _messages.StringField(65)
-  subnetwork = _messages.StringField(66)
-  tpuConfig = _messages.MessageField('TpuConfig', 67)
-  tpuIpv4CidrBlock = _messages.StringField(68)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 69)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 70)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 71)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 72)
-  workloadMonitoringEnabledEap = _messages.BooleanField(73)
-  zone = _messages.StringField(74)
+  loggingConfig = _messages.MessageField('LoggingConfig', 36)
+  loggingService = _messages.StringField(37)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 38)
+  master = _messages.MessageField('Master', 39)
+  masterAuth = _messages.MessageField('MasterAuth', 40)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 41)
+  masterIpv4CidrBlock = _messages.StringField(42)
+  monitoringConfig = _messages.MessageField('MonitoringConfig', 43)
+  monitoringService = _messages.StringField(44)
+  name = _messages.StringField(45)
+  network = _messages.StringField(46)
+  networkConfig = _messages.MessageField('NetworkConfig', 47)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 48)
+  nodeConfig = _messages.MessageField('NodeConfig', 49)
+  nodeIpv4CidrSize = _messages.IntegerField(50, variant=_messages.Variant.INT32)
+  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 51)
+  nodePools = _messages.MessageField('NodePool', 52, repeated=True)
+  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 53)
+  notificationConfig = _messages.MessageField('NotificationConfig', 54)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 55)
+  privateCluster = _messages.BooleanField(56)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 57)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 58)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 59)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 60)
+  resourceVersion = _messages.StringField(61)
+  securityProfile = _messages.MessageField('SecurityProfile', 62)
+  selfLink = _messages.StringField(63)
+  servicesIpv4Cidr = _messages.StringField(64)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 65)
+  status = _messages.EnumField('StatusValueValuesEnum', 66)
+  statusMessage = _messages.StringField(67)
+  subnetwork = _messages.StringField(68)
+  tpuConfig = _messages.MessageField('TpuConfig', 69)
+  tpuIpv4CidrBlock = _messages.StringField(70)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 71)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 72)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 73)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 74)
+  workloadMonitoringEnabledEap = _messages.BooleanField(75)
+  zone = _messages.StringField(76)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -834,6 +851,7 @@ class ClusterUpdate(_messages.Message):
       cluster's primary zone. Warning: changing cluster locations will update
       the locations of all node pools and will result in nodes being added
       and/or removed.
+    desiredLoggingConfig: The desired logging configuration.
     desiredLoggingService: The logging service the cluster should use to write
       logs. Currently available options: * `logging.googleapis.com/kubernetes`
       - The Cloud Logging service with a Kubernetes-native resource model *
@@ -852,6 +870,7 @@ class ClusterUpdate(_messages.Message):
       patch+gke.N patch in the 1.X version - "1.X.Y": picks the highest valid
       gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
       Kubernetes version - "-": picks the default Kubernetes version
+    desiredMonitoringConfig: The desired monitoring configuration.
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options: *
       "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
@@ -962,32 +981,34 @@ class ClusterUpdate(_messages.Message):
   desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 22)
   desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 23)
   desiredLocations = _messages.StringField(24, repeated=True)
-  desiredLoggingService = _messages.StringField(25)
-  desiredMaster = _messages.MessageField('Master', 26)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 27)
-  desiredMasterVersion = _messages.StringField(28)
-  desiredMonitoringService = _messages.StringField(29)
-  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 30)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 31)
-  desiredNodePoolId = _messages.StringField(32)
-  desiredNodeVersion = _messages.StringField(33)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 34)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 35)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 36)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 37)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 38)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 39)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 40)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 41)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 42)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 43)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 44)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 45)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 46)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 47)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 48)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 49)
-  securityProfile = _messages.MessageField('SecurityProfile', 50)
+  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 25)
+  desiredLoggingService = _messages.StringField(26)
+  desiredMaster = _messages.MessageField('Master', 27)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 28)
+  desiredMasterVersion = _messages.StringField(29)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 30)
+  desiredMonitoringService = _messages.StringField(31)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 32)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 33)
+  desiredNodePoolId = _messages.StringField(34)
+  desiredNodeVersion = _messages.StringField(35)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 36)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 37)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 38)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 39)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 40)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 41)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 42)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 43)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 44)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 45)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 46)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 47)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 48)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 49)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 50)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 51)
+  securityProfile = _messages.MessageField('SecurityProfile', 52)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2342,6 +2363,49 @@ class Location(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class LoggingComponentConfig(_messages.Message):
+  r"""LoggingComponentConfig is cluster logging component configuration.
+
+  Enums:
+    EnableComponentsValueListEntryValuesEnum:
+
+  Fields:
+    enableComponents: Select components to collect logs
+  """
+
+  class EnableComponentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnableComponentsValueListEntryValuesEnum enum type.
+
+    Values:
+      COMPONENT_UNSPECIFIED: Default value. This shouldn't be used.
+      SYSTEM_COMPONENTS: system components
+      WORKLOADS: workloads
+      APISERVER: kube-apiserver
+      SCHEDULER: kube-scheduler
+      CONTROLLER_MANAGER: kube-controller-manager
+      ADDON_MANAGER: kube-addon-manager
+    """
+    COMPONENT_UNSPECIFIED = 0
+    SYSTEM_COMPONENTS = 1
+    WORKLOADS = 2
+    APISERVER = 3
+    SCHEDULER = 4
+    CONTROLLER_MANAGER = 5
+    ADDON_MANAGER = 6
+
+  enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class LoggingConfig(_messages.Message):
+  r"""LoggingConfig is cluster logging configuration.
+
+  Fields:
+    componentConfig: Logging components configuration
+  """
+
+  componentConfig = _messages.MessageField('LoggingComponentConfig', 1)
+
+
 class MaintenancePolicy(_messages.Message):
   r"""MaintenancePolicy defines the maintenance policy to be used for the
   cluster.
@@ -2537,6 +2601,49 @@ class Metric(_messages.Message):
   intValue = _messages.IntegerField(2)
   name = _messages.StringField(3)
   stringValue = _messages.StringField(4)
+
+
+class MonitoringComponentConfig(_messages.Message):
+  r"""MonitoringComponentConfig is cluster monitoring component configuration.
+
+  Enums:
+    EnableComponentsValueListEntryValuesEnum:
+
+  Fields:
+    enableComponents: Select components to collect metrics
+  """
+
+  class EnableComponentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnableComponentsValueListEntryValuesEnum enum type.
+
+    Values:
+      COMPONENT_UNSPECIFIED: Default value. This shouldn't be used.
+      SYSTEM_COMPONENTS: system components
+      WORKLOADS: workloads
+      APISERVER: kube-apiserver
+      SCHEDULER: kube-scheduler
+      CONTROLLER_MANAGER: kube-controller-manager
+      GOOGLE_PROMETHEUS_ENGINE: google prometheus engine
+    """
+    COMPONENT_UNSPECIFIED = 0
+    SYSTEM_COMPONENTS = 1
+    WORKLOADS = 2
+    APISERVER = 3
+    SCHEDULER = 4
+    CONTROLLER_MANAGER = 5
+    GOOGLE_PROMETHEUS_ENGINE = 6
+
+  enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class MonitoringConfig(_messages.Message):
+  r"""MonitoringConfig is cluster monitoring configuration.
+
+  Fields:
+    componentConfig: Monitoring components configuration
+  """
+
+  componentConfig = _messages.MessageField('MonitoringComponentConfig', 1)
 
 
 class NetworkConfig(_messages.Message):
@@ -3088,7 +3195,20 @@ class NodePool(_messages.Message):
   specification, under the control of the cluster master. They may have a set
   of Kubernetes labels applied to them, which may be used to reference them
   during pod scheduling. They may also be resized up or down, to accommodate
-  the workload.
+  the workload. These upgrade settings control the level of parallelism and
+  the level of disruption caused by an upgrade. maxUnavailable controls the
+  number of nodes that can be simultaneously unavailable. maxSurge controls
+  the number of additional nodes that can be added to the node pool
+  temporarily for the time of the upgrade to increase the number of available
+  nodes. (maxUnavailable + maxSurge) determines the level of parallelism (how
+  many nodes are being upgraded at the same time). Note: upgrades inevitably
+  introduce some disruption since workloads need to be moved from old nodes to
+  new, upgraded ones. Even if maxUnavailable=0, this holds true. (Disruption
+  stays within the limits of PodDisruptionBudget, if it is configured.) For
+  example, a 5-node pool is created with maxSurge set to 2 and maxUnavailable
+  set to 1. During an upgrade, GKE creates 2 upgraded nodes, then brings down
+  up to 3 existing nodes after the upgraded nodes are ready. GKE will only
+  bring down 1 node at a time.
 
   Enums:
     StatusValueValuesEnum: [Output only] The status of the nodes in this pool
@@ -4292,6 +4412,22 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StandardRolloutPolicy(_messages.Message):
+  r"""Standard rollout policy is the default policy for blue/green.
+
+  Fields:
+    batchNodeCount: Number of blue nodes to drain in a batch.
+    batchPercentage: Percentage of the bool pool nodes to drain in a batch.
+      The range of this field should be (0.0, 1.0].
+    batchSoakDuration: Soak time after each batch gets drained. Default to
+      zero.
+  """
+
+  batchNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  batchPercentage = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  batchSoakDuration = _messages.StringField(3)
+
+
 class StartIPRotationRequest(_messages.Message):
   r"""StartIPRotationRequest creates a new IP for the cluster and then
   performs a node upgrade on each node pool to point to the new IP.
@@ -4726,31 +4862,39 @@ class UpgradeEvent(_messages.Message):
 
 
 class UpgradeSettings(_messages.Message):
-  r"""These upgrade settings control the level of parallelism and the level of
-  disruption caused by an upgrade. maxUnavailable controls the number of nodes
-  that can be simultaneously unavailable. maxSurge controls the number of
-  additional nodes that can be added to the node pool temporarily for the time
-  of the upgrade to increase the number of available nodes. (maxUnavailable +
-  maxSurge) determines the level of parallelism (how many nodes are being
-  upgraded at the same time). Note: upgrades inevitably introduce some
-  disruption since workloads need to be moved from old nodes to new, upgraded
-  ones. Even if maxUnavailable=0, this holds true. (Disruption stays within
-  the limits of PodDisruptionBudget, if it is configured.) For example, a
-  5-node pool is created with maxSurge set to 2 and maxUnavailable set to 1.
-  During an upgrade, GKE creates 2 upgraded nodes, then brings down up to 3
-  existing nodes after the upgraded nodes are ready. GKE will only bring down
-  1 node at a time.
+  r"""A UpgradeSettings object.
+
+  Enums:
+    StrategyValueValuesEnum: Update strategy of the node pool.
 
   Fields:
+    blueGreenSettings: Settings for blue/green update strategy.
     maxSurge: The maximum number of nodes that can be created beyond the
       current size of the node pool during the upgrade process.
     maxUnavailable: The maximum number of nodes that can be simultaneously
       unavailable during the upgrade process. A node is considered available
       if its status is Ready.
+    strategy: Update strategy of the node pool.
   """
 
-  maxSurge = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  maxUnavailable = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  class StrategyValueValuesEnum(_messages.Enum):
+    r"""Update strategy of the node pool.
+
+    Values:
+      NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED: Default value.
+      ROLLING: Rolling update is the traditional way of updating node pool.
+        max_surge and max_unavailable determines the level of update
+        parallelism.
+      BLUE_GREEN: Blue/green update.
+    """
+    NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED = 0
+    ROLLING = 1
+    BLUE_GREEN = 2
+
+  blueGreenSettings = _messages.MessageField('BlueGreenSettings', 1)
+  maxSurge = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxUnavailable = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  strategy = _messages.EnumField('StrategyValueValuesEnum', 4)
 
 
 class UsableSubnetwork(_messages.Message):

@@ -956,14 +956,16 @@ def DisableUserProjectQuota():
 
 def EnableUserProjectQuota():
   """Enable the quota header for current project."""
-  properties.VALUES.billing.quota_project.Set(
-      properties.VALUES.billing.CURRENT_PROJECT)
+  if not properties.VALUES.billing.quota_project.IsExplicitlySet():
+    properties.VALUES.billing.quota_project.Set(
+        properties.VALUES.billing.CURRENT_PROJECT)
 
 
 def EnableUserProjectQuotaWithFallback():
   """Tries the current project and fall back to the legacy mode."""
-  properties.VALUES.billing.quota_project.Set(
-      properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK)
+  if not properties.VALUES.billing.quota_project.IsExplicitlySet():
+    properties.VALUES.billing.quota_project.Set(
+        properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK)
 
 
 def UserProjectQuotaWithFallbackEnabled():

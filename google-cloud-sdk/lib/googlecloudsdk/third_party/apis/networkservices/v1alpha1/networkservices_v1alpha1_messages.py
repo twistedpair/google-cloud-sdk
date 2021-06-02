@@ -397,6 +397,11 @@ class CacheKeyPolicy(_messages.Message):
       origin and content Removing the host from the cache key may
       inadvertently result in different objects being cached than intended,
       depending on which route the first user matched.
+    excludeQueryString: Optional. If true, exclude query string parameters
+      from the cache key. If false (the default), include the query string
+      parameters in the cache key according to includeQueryParameters and
+      excludeQueryParameters. If neither includeQueryParameters nor
+      excludeQueryParameters is set, the entire query string will be included.
     excludedQueryParameters: Optional. Names of query string parameters to
       exclude from cache keys. All other parameters will be included. Either
       specify includedQueryParameters or excludedQueryParameters, not both.
@@ -426,11 +431,12 @@ class CacheKeyPolicy(_messages.Message):
   """
 
   excludeHost = _messages.BooleanField(1)
-  excludedQueryParameters = _messages.StringField(2, repeated=True)
-  includeProtocol = _messages.BooleanField(3)
-  includeQueryString = _messages.BooleanField(4)
-  includedHeaderNames = _messages.StringField(5, repeated=True)
-  includedQueryParameters = _messages.StringField(6, repeated=True)
+  excludeQueryString = _messages.BooleanField(2)
+  excludedQueryParameters = _messages.StringField(3, repeated=True)
+  includeProtocol = _messages.BooleanField(4)
+  includeQueryString = _messages.BooleanField(5)
+  includedHeaderNames = _messages.StringField(6, repeated=True)
+  includedQueryParameters = _messages.StringField(7, repeated=True)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -439,7 +445,7 @@ class CancelOperationRequest(_messages.Message):
 
 class EdgeCacheKeyset(_messages.Message):
   r"""EdgeCacheKeyset represents a collection of public keys used for
-  validating signed requests. Next ID: 8
+  validating signed requests.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the EdgeCache
@@ -500,7 +506,7 @@ class EdgeCacheKeyset(_messages.Message):
 
 class EdgeCacheOrigin(_messages.Message):
   r"""EdgeCacheOrigin represents a HTTP-reachable backend for an
-  EdgeCacheService. Next ID: 14
+  EdgeCacheService.
 
   Enums:
     ProtocolValueValuesEnum: Optional. The protocol to use to connect to the
@@ -536,9 +542,10 @@ class EdgeCacheOrigin(_messages.Message):
       attempts to cache fill across this and failover origins is limited to
       four. The total time allowed for cache fill attempts across this and
       failover origins can be controlled with max_attempts_timeout. The last
-      valid response from an origin will be returned to the client. If no
-      origin returns a valid response, an HTTP 502 will be returned to the
-      client. Defaults to 1. Must be a value greater than 0 and less than 4.
+      valid, non-retried response from all origins will be returned to the
+      client. If no origin returns a valid response, an HTTP 502 will be
+      returned to the client. Defaults to 1. Must be a value greater than 0
+      and less than 4.
     name: Required. Name of the resource; provided by the client when the
       resource is created. The name must be 1-64 characters long, and match
       the regular expression a-zA-Z* which means the first character must be a
@@ -668,7 +675,7 @@ class EdgeCacheOrigin(_messages.Message):
 
 class EdgeCacheService(_messages.Message):
   r"""EdgeCacheService defines the IP addresses, protocols, security policies,
-  cache policies and routing configuration. Next ID: 17
+  cache policies and routing configuration.
 
   Messages:
     LabelsValue: Optional. Set of label tags associated with the EdgeCache
@@ -3392,6 +3399,33 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
 
 
 class PathMatcher(_messages.Message):

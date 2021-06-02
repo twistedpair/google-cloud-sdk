@@ -21,10 +21,7 @@ from __future__ import unicode_literals
 import collections
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.command_lib.run import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_io
 
 PLATFORM_MANAGED = 'managed'
 PLATFORM_GKE = 'gke'
@@ -81,51 +78,14 @@ PLATFORMS_ANTHOS_ONLY = collections.OrderedDict([
 ])
 
 
-def GetPlatform(prompt_if_unset=True):
+def GetPlatform():
   """Returns the platform to run on.
 
   If set by the user, returns whatever value they specified without any
-  validation. If not set by the user, this may prompt the user to choose a
-  platform and sets the property so future calls to this method do continue to
-  prompt.
+  validation. If not set by the user, default to managed
 
-  Args:
-    prompt_if_unset: bool, if True, will try to prompt for the platform
-
-  Raises:
-    ArgumentError: if no platform is specified, prompt_if_unset is True, and
-      prompting is not allowed.
   """
-  platform = properties.VALUES.run.platform.Get()
-  if platform is None and prompt_if_unset:
-    if console_io.CanPrompt():
-      platform_descs = [PLATFORM_SHORT_DESCRIPTIONS[k] for k in PLATFORMS]
-      index = console_io.PromptChoice(
-          platform_descs,
-          message='Please choose a target platform:',
-          cancel_option=True)
-      platform = list(PLATFORMS.keys())[index]
-      # Set platform so we don't re-prompt on future calls to this method
-      # and so it's available to anyone who wants to know the platform.
-      properties.VALUES.run.platform.Set(platform)
-      if platform != PLATFORM_MANAGED:
-        log.warning('gcloud will soon use --platform {0} as the default. '
-                    'To continue to use this platform, pass `--platform {1}`. '
-                    'Or, to make this the default target platform, run '
-                    '`gcloud config set run/platform {1}`.\n'.format(
-                        PLATFORM_MANAGED, platform))
-      else:
-        log.status.Print(
-            'To specify the platform yourself, pass `--platform {0}`. '
-            'Or, to make this the default target platform, run '
-            '`gcloud config set run/platform {0}`.\n'.format(platform))
-    else:
-      raise exceptions.ArgumentError(
-          'No platform specified. Pass the `--platform` flag or set '
-          'the [run/platform] property to specify a target platform.\n'
-          'Available platforms:\n{}'.format('\n'.join(
-              ['- {}: {}'.format(k, v) for k, v in PLATFORMS.items()])))
-  return platform
+  return properties.VALUES.run.platform.Get()
 
 
 def ValidatePlatformIsManaged(unused_ref, unused_args, req):

@@ -991,27 +991,6 @@
         }
       }
     },
-    "StartStreamRequest": {
-      "id": "StartStreamRequest",
-      "description": "Request message for 'StartStream' request.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "PauseStreamRequest": {
-      "id": "PauseStreamRequest",
-      "description": "Request message for 'PauseStream' request.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "ResumeStreamRequest": {
-      "id": "ResumeStreamRequest",
-      "description": "Request message for 'ResumeStream' request.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "FetchErrorsRequest": {
       "id": "FetchErrorsRequest",
       "description": "Request message for 'FetchErrors' request.",
@@ -2174,90 +2153,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Use this method to delete a stream."
-                },
-                "start": {
-                  "id": "datastream.projects.locations.streams.start",
-                  "path": "v1alpha1/{+name}:start",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}:start",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Name of the Stream resource to start.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/streams\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "StartStreamRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Use this method to start a stream."
-                },
-                "pause": {
-                  "id": "datastream.projects.locations.streams.pause",
-                  "path": "v1alpha1/{+name}:pause",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}:pause",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Name of the Stream resource to pause.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/streams\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "PauseStreamRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Use this method to pause a running stream."
-                },
-                "resume": {
-                  "id": "datastream.projects.locations.streams.resume",
-                  "path": "v1alpha1/{+name}:resume",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}:resume",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Name of the Stream resource to resume.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/streams\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "ResumeStreamRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Use this method to resume a paused stream."
                 },
                 "fetchErrors": {
                   "id": "datastream.projects.locations.streams.fetchErrors",

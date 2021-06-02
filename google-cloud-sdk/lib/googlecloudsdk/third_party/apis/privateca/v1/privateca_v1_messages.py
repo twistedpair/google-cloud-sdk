@@ -1050,9 +1050,9 @@ class IssuanceModes(_messages.Message):
   requested from this CaPool.
 
   Fields:
-    allowConfigBasedIssuance: Required. When true, allows callers to create
+    allowConfigBasedIssuance: Optional. When true, allows callers to create
       Certificates by specifying a CertificateConfig.
-    allowCsrBasedIssuance: Required. When true, allows callers to create
+    allowCsrBasedIssuance: Optional. When true, allows callers to create
       Certificates by specifying a CSR.
   """
 
@@ -2543,12 +2543,12 @@ class PublishingOptions(_messages.Message):
   CertificateAuthority in the CaPool.
 
   Fields:
-    publishCaCert: Required. When true, publishes each CertificateAuthority's
+    publishCaCert: Optional. When true, publishes each CertificateAuthority's
       CA certificate and includes its URL in the "Authority Information
       Access" X.509 extension in all issued Certificates. If this is false,
       the CA certificate will not be published and the corresponding X.509
       extension will not be written in issued certificates.
-    publishCrl: Required. When true, publishes each CertificateAuthority's CRL
+    publishCrl: Optional. When true, publishes each CertificateAuthority's CRL
       and includes its URL in the "CRL Distribution Points" X.509 extension in
       all issued Certificates. If this is false, CRLs will not be published
       and the corresponding X.509 extension will not be written in issued
@@ -3060,7 +3060,7 @@ class X509Extension(_messages.Message):
   different parts of X.509 objects like certificates, CSRs, and CRLs.
 
   Fields:
-    critical: Required. Indicates whether or not this extension is critical
+    critical: Optional. Indicates whether or not this extension is critical
       (i.e., if the client does not know how to handle this extension, the
       client should consider this to be an error).
     objectId: Required. The OID for this X.509 extension.

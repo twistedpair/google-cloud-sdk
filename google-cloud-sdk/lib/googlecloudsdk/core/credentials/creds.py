@@ -995,7 +995,7 @@ def _QuotaProjectIsCurrentProject(quota_project):
       properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK)
 
 
-def GetQuotaProject(credentials, force_resource_quota):
+def GetQuotaProject(credentials, force_resource_quota=False):
   """Gets the value to use for the X-Goog-User-Project header.
 
   Args:

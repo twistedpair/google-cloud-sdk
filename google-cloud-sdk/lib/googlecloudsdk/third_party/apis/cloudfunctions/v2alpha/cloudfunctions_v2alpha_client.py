@@ -208,7 +208,7 @@ class CloudfunctionsV2alpha(base_api.BaseApiClient):
         method_id='cloudfunctions.projects.locations.functions.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v2alpha/{+parent}/functions',
         request_field='',
         request_type_name='CloudfunctionsProjectsLocationsFunctionsListRequest',

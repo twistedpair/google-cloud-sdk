@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20210510",
+ "revision": "20210521",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2880,7 +2880,7 @@
     },
     "sessionAffinity": {
      "type": "string",
-     "description": "Type of session affinity to use. The default is NONE.\n\nWhen the loadBalancingScheme is EXTERNAL: * For Network Load Balancing, the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or  CLIENT_IP_PORT_PROTO. * For all other load balancers that use loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is HTTP, HTTP2, or HTTPS.\n\nWhen the loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.\n\nWhen the loadBalancingScheme is INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+     "description": "Type of session affinity to use. The default is NONE.\n\nWhen the loadBalancingScheme is EXTERNAL:\n\n* For Network Load Balancing, the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or  CLIENT_IP_PORT_PROTO. * For all other load balancers that use loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is HTTP, HTTP2, or HTTPS.\n\nWhen the loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.\n\nWhen the loadBalancingScheme is INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "enum": [
       "CLIENT_IP",
       "CLIENT_IP_NO_DESTINATION",
@@ -3851,7 +3851,7 @@
     },
     "secureTags": {
      "type": "array",
-     "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 50.",
+     "description": "DEPRECATED: Please use instance_properties.secure_tag instead. Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 50.",
      "items": {
       "type": "string"
      }
@@ -4187,11 +4187,9 @@
       "GENERAL_PURPOSE_N2",
       "GENERAL_PURPOSE_N2D",
       "MEMORY_OPTIMIZED",
-      "MEMORY_OPTIMIZED_REGIONAL_EXTENSION",
       "TYPE_UNSPECIFIED"
      ],
      "enumDescriptions": [
-      "",
       "",
       "",
       "",
@@ -7074,7 +7072,7 @@
    "properties": {
     "calculated": {
      "type": "integer",
-     "description": "[Output Only] Absolute value of VM instances calculated based on the specific mode.\n\n \n- If the value is fixed, then the calculated value is equal to the fixed value. \n- If the value is a percent, then the calculated value is percent/100 * targetSize. For example, the calculated value of a 80% of a managed instance group with 150 instances would be (80/100 * 150) = 120 VM instances. If there is a remainder, the number is rounded up.",
+     "description": "[Output Only] Absolute value of VM instances calculated based on the specific mode.\n\n \n- If the value is fixed, then the calculated value is equal to the fixed value. \n- If the value is a percent, then the calculated value is percent/100 * targetSize. For example, the calculated value of a 80% of a managed instance group with 150 instances would be (80/100 * 150) = 120 VM instances. If there is a remainder, the number is rounded.",
      "format": "int32"
     },
     "fixed": {
@@ -10112,7 +10110,7 @@
     },
     "faultInjectionPolicy": {
      "$ref": "HttpFaultInjection",
-     "description": "The specification for fault injection introduced into traffic to test the resiliency of clients to backend service failure. As part of fault injection, when clients send requests to a backend service, delays can be introduced by Loadbalancer on a percentage of requests before sending those request to the backend service. Similarly requests from clients can be aborted by the Loadbalancer for a percentage of requests.\ntimeout and retry_policy will be ignored by clients that are configured with a fault_injection_policy."
+     "description": "The specification for fault injection introduced into traffic to test the resiliency of clients to backend service failure. As part of fault injection, when clients send requests to a backend service, delays can be introduced by Loadbalancer on a percentage of requests before sending those request to the backend service. Similarly requests from clients can be aborted by the Loadbalancer for a percentage of requests. For the requests impacted by fault injection,\ntimeout and retry_policy will be ignored by clients that are configured with a fault_injection_policy."
     },
     "maxStreamDuration": {
      "$ref": "Duration",
@@ -12098,7 +12096,7 @@
     },
     "maxUnavailable": {
      "$ref": "FixedOrPercent",
-     "description": "Maximum number of instances that can be unavailable when autohealing. When 'percent' is used, the value is rounded UP. The instance is considered available if all of the following conditions are satisfied: 1. Instance's status is RUNNING. 2. Instance's currentAction is NONE (in particular its liveness health check result was observed to be HEALTHY at least once as it passed VERIFYING). 3. There is no outgoing action on an instance triggered by IGM.\n\nBy default, number of concurrently autohealed instances is smaller than the managed instance group target size. However, if a zonal managed instance group has only one instance, or a regional managed instance group has only one instance per zone, autohealing will recreate these instances when they become unhealthy."
+     "description": "Maximum number of instances that can be unavailable when autohealing. When 'percent' is used, the value is rounded if necessary. The instance is considered available if all of the following conditions are satisfied: 1. Instance's status is RUNNING. 2. Instance's currentAction is NONE (in particular its liveness health check result was observed to be HEALTHY at least once as it passed VERIFYING). 3. There is no outgoing action on an instance triggered by IGM.\n\nBy default, number of concurrently autohealed instances is smaller than the managed instance group target size. However, if a zonal managed instance group has only one instance, or a regional managed instance group has only one instance per zone, autohealing will recreate these instances when they become unhealthy."
     }
    }
   },
@@ -12317,11 +12315,11 @@
     },
     "maxSurge": {
      "$ref": "FixedOrPercent",
-     "description": "The maximum number of instances that can be created above the specified targetSize during the update process. This value can be either a fixed number or, if the group has 10 or more instances, a percentage. If you set a percentage, the number of instances is rounded up if necessary. The default value for maxSurge is a fixed value equal to the number of zones in which the managed instance group operates.\n\nAt least one of either maxSurge or maxUnavailable must be greater than 0. Learn more about maxSurge."
+     "description": "The maximum number of instances that can be created above the specified targetSize during the update process. This value can be either a fixed number or, if the group has 10 or more instances, a percentage. If you set a percentage, the number of instances is rounded if necessary. The default value for maxSurge is a fixed value equal to the number of zones in which the managed instance group operates.\n\nAt least one of either maxSurge or maxUnavailable must be greater than 0. Learn more about maxSurge."
     },
     "maxUnavailable": {
      "$ref": "FixedOrPercent",
-     "description": "The maximum number of instances that can be unavailable during the update process. An instance is considered available if all of the following conditions are satisfied:\n\n \n- The instance's status is RUNNING. \n- If there is a health check on the instance group, the instance's health check status must be HEALTHY at least once. If there is no health check on the group, then the instance only needs to have a status of RUNNING to be considered available.  This value can be either a fixed number or, if the group has 10 or more instances, a percentage. If you set a percentage, the number of instances is rounded up if necessary. The default value for maxUnavailable is a fixed value equal to the number of zones in which the managed instance group operates.\n\nAt least one of either maxSurge or maxUnavailable must be greater than 0. Learn more about maxUnavailable."
+     "description": "The maximum number of instances that can be unavailable during the update process. An instance is considered available if all of the following conditions are satisfied:\n\n \n- The instance's status is RUNNING. \n- If there is a health check on the instance group, the instance's health check status must be HEALTHY at least once. If there is no health check on the group, then the instance only needs to have a status of RUNNING to be considered available.  This value can be either a fixed number or, if the group has 10 or more instances, a percentage. If you set a percentage, the number of instances is rounded if necessary. The default value for maxUnavailable is a fixed value equal to the number of zones in which the managed instance group operates.\n\nAt least one of either maxSurge or maxUnavailable must be greater than 0. Learn more about maxUnavailable."
     },
     "minReadySec": {
      "type": "integer",
@@ -12404,7 +12402,7 @@
     },
     "targetSize": {
      "$ref": "FixedOrPercent",
-     "description": "Specifies the intended number of instances to be created from the instanceTemplate. The final number of instances created from the template will be equal to:  \n- If expressed as a fixed number, the minimum of either targetSize.fixed or instanceGroupManager.targetSize is used. \n- if expressed as a percent, the targetSize would be (targetSize.percent/100 * InstanceGroupManager.targetSize) If there is a remainder, the number is rounded up.  If unset, this version will update any remaining instances not updated by another version. Read Starting a canary update for more information."
+     "description": "Specifies the intended number of instances to be created from the instanceTemplate. The final number of instances created from the template will be equal to:  \n- If expressed as a fixed number, the minimum of either targetSize.fixed or instanceGroupManager.targetSize is used. \n- if expressed as a percent, the targetSize would be (targetSize.percent/100 * InstanceGroupManager.targetSize) If there is a remainder, the number is rounded.  If unset, this version will update any remaining instances not updated by another version. Read Starting a canary update for more information."
     }
    }
   },
@@ -13641,7 +13639,7 @@
     },
     "secureTags": {
      "type": "array",
-     "description": "Secure tags to apply to this instance. Maximum number of secure tags allowed is 50.",
+     "description": "[Input Only] Secure tags to apply to this instance. Maximum number of secure tags allowed is 50.",
      "items": {
       "type": "string"
      }
@@ -15867,7 +15865,7 @@
     },
     "state": {
      "type": "string",
-     "description": "State of this notification, which can take one of the following values: \n- ACTIVE: This outage notification is active. The event could be in the past, present, or future. See start_time and end_time for scheduling. \n- CANCELLED: The outage associated with this notification was cancelled before the outage was due to start. Note that the versions of this enum prefixed with \"NS_\" have been deprecated in favor of the unprefixed values.",
+     "description": "State of this notification, which can take one of the following values: \n- ACTIVE: This outage notification is active. The event could be in the past, present, or future. See start_time and end_time for scheduling. \n- CANCELLED: The outage associated with this notification was cancelled before the outage was due to start. \n- COMPLETED: The outage associated with this notification is complete.  Note that the versions of this enum prefixed with \"NS_\" have been deprecated in favor of the unprefixed values.",
      "enum": [
       "ACTIVE",
       "CANCELLED",
@@ -16560,6 +16558,22 @@
      "additionalProperties": {
       "$ref": "LocationPolicyLocation"
      }
+    },
+    "targetShape": {
+     "type": "string",
+     "description": "Strategy for distributing VMs across zones in a region.",
+     "enum": [
+      "ANY",
+      "ANY_SINGLE_ZONE",
+      "BALANCED",
+      "TARGET_SHAPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -18946,6 +18960,19 @@
     "ipAddress": {
      "type": "string",
      "description": "An IPv4 internal IP address to assign to the instance for this subinterface. If specified, ip_allocation_mode should be set to ALLOCATE_IP."
+    },
+    "ipAllocationMode": {
+     "type": "string",
+     "enum": [
+      "ALLOCATE_IP",
+      "DO_NOT_ALLOCATE_IP",
+      "UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     },
     "subnetwork": {
      "type": "string",
@@ -23483,9 +23510,11 @@
      "enum": [
       "ANNOUNCED",
       "DELETING",
-      "INITIALIZING"
+      "INITIALIZING",
+      "READY_TO_ANNOUNCE"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""
@@ -23913,6 +23942,7 @@
       "COMMITTED_NVIDIA_P4_GPUS",
       "COMMITTED_NVIDIA_T4_GPUS",
       "COMMITTED_NVIDIA_V100_GPUS",
+      "COMMITTED_P2D_CPUS",
       "CPUS",
       "CPUS_ALL_REGIONS",
       "DISKS_TOTAL_GB",
@@ -23967,6 +23997,7 @@
       "NVIDIA_T4_GPUS",
       "NVIDIA_T4_VWS_GPUS",
       "NVIDIA_V100_GPUS",
+      "P2D_CPUS",
       "PACKET_MIRRORINGS",
       "PD_EXTREME_TOTAL_PROVISIONED_IOPS",
       "PREEMPTIBLE_CPUS",
@@ -24016,6 +24047,8 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -25365,6 +25398,64 @@
     }
    }
   },
+  "RegionInstancesRecommendLocationsResource": {
+   "id": "RegionInstancesRecommendLocationsResource",
+   "type": "object",
+   "description": "A transient resource used in compute.regionInstances.recommendLocations. This resource is not saved anywhere and used only to process the request.",
+   "properties": {
+    "instanceSpecs": {
+     "type": "object",
+     "description": "Specification of named homogeneous instance sets to find location for.\nKeys of this map are arbitrary (but must be different), defined by the caller used only in the response. They must follow RFC 1035 name standard. Specifically, they must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.\nValues are trimmed BulkInsertInstanceResource messages, without the following fields:  \n- min_count\n- predefined_name\n- name_pattern\n- per_instance_properties\n- instance\n- secure_tag\n- location_policy",
+     "additionalProperties": {
+      "$ref": "BulkInsertInstanceResource"
+     }
+    },
+    "locationPolicy": {
+     "$ref": "LocationPolicy",
+     "description": "Location policy to indicate allowed zones for instances, together with the shape of the distribution."
+    }
+   }
+  },
+  "RegionInstancesRecommendLocationsResponse": {
+   "id": "RegionInstancesRecommendLocationsResponse",
+   "type": "object",
+   "description": "Response for for compute.regionInstances.recommendLocations.",
+   "properties": {
+    "recommendedLocations": {
+     "type": "object",
+     "description": "Instance count recommendations, keys are instance spec names.",
+     "additionalProperties": {
+      "$ref": "RegionInstancesRecommendLocationsResponseRecommendationsForInstanceSpecs"
+     }
+    }
+   }
+  },
+  "RegionInstancesRecommendLocationsResponseRecommendation": {
+   "id": "RegionInstancesRecommendLocationsResponseRecommendation",
+   "type": "object",
+   "description": "Instance count recommendation for a single zone.",
+   "properties": {
+    "instanceCount": {
+     "type": "integer",
+     "description": "Count of instances recommended.",
+     "format": "int32"
+    }
+   }
+  },
+  "RegionInstancesRecommendLocationsResponseRecommendationsForInstanceSpecs": {
+   "id": "RegionInstancesRecommendLocationsResponseRecommendationsForInstanceSpecs",
+   "type": "object",
+   "description": "Instance count recommendations for a single instance specification.",
+   "properties": {
+    "locations": {
+     "type": "object",
+     "description": "Instance count recommendations, keys are zone names.",
+     "additionalProperties": {
+      "$ref": "RegionInstancesRecommendLocationsResponseRecommendation"
+     }
+    }
+   }
+  },
   "RegionInstantSnapshotsExportRequest": {
    "id": "RegionInstantSnapshotsExportRequest",
    "type": "object",
@@ -25679,7 +25770,7 @@
     },
     "values": {
      "type": "array",
-     "description": "Corresponds to the label values of a reservation resource.",
+     "description": "Corresponds to the label values of a reservation resource. This can be either a name to a reservation in the same project or \"projects/different-project/reservations/some-reservation-name\" to target a shared reservation in the same zone but in a different project.",
      "items": {
       "type": "string"
      }
@@ -27514,7 +27605,7 @@
     },
     "keepaliveInterval": {
      "type": "integer",
-     "description": "The interval in seconds between BGP keepalive messages that are sent to the peer.\nNot currently available publicly.\nHold time is three times the interval at which keepalive messages are sent, and the hold time is the maximum number of seconds allowed to elapse between successive keepalive messages that BGP receives from a peer.\nBGP will use the smaller of either the local hold time value or the peer's hold time value as the hold time for the BGP connection between the two peers.\nIf set, this value must be between 20 and 60. The default is 20.",
+     "description": "The interval in seconds between BGP keepalive messages that are sent to the peer.\nHold time is three times the interval at which keepalive messages are sent, and the hold time is the maximum number of seconds allowed to elapse between successive keepalive messages that BGP receives from a peer.\nBGP will use the smaller of either the local hold time value or the peer's hold time value as the hold time for the BGP connection between the two peers.\nIf set, this value must be between 20 and 60. The default is 20.",
      "format": "uint32"
     }
    }
@@ -27570,7 +27661,7 @@
     },
     "enable": {
      "type": "string",
-     "description": "The status of the BGP peer connection.\nNot currently available publicly.\nIf set to FALSE, any active session with the peer is terminated and all associated routing information is removed. If set to TRUE, the peer connection can be established with routing information. The default is TRUE.",
+     "description": "The status of the BGP peer connection.\nIf set to FALSE, any active session with the peer is terminated and all associated routing information is removed. If set to TRUE, the peer connection can be established with routing information. The default is TRUE.",
      "enum": [
       "FALSE",
       "TRUE"
@@ -28702,6 +28793,11 @@
      "description": "Specifies the availability domain (AD), which this instance should be scheduled on. The AD belongs to the spread GroupPlacementPolicy resource policy that has been assigned to the instance. Specify a value between 1-max count of availability domains in your GroupPlacementPolicy. See go/placement-policy-extension for more details.",
      "format": "int32"
     },
+    "hostErrorTimeoutSeconds": {
+     "type": "integer",
+     "description": "Specify the time in seconds for host error detection, the value must be within the range of [90, 330] with the increment of 30, if unset, the default behavior of host error recovery will be used.",
+     "format": "int32"
+    },
     "latencyTolerant": {
      "type": "boolean",
      "description": "Defines whether the instance is tolerant of higher cpu latency. This can only be set during instance creation, or when the instance is not currently running. It must not be set if the preemptible option is also set."
@@ -29064,6 +29160,9 @@
     "adaptiveProtectionConfig": {
      "$ref": "SecurityPolicyAdaptiveProtectionConfig"
     },
+    "advancedOptionsConfig": {
+     "$ref": "SecurityPolicyAdvancedOptionsConfig"
+    },
     "associations": {
      "type": "array",
      "description": "A list of associations that belong to this policy.",
@@ -29194,6 +29293,34 @@
      "enum": [
       "PREMIUM",
       "STANDARD"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "SecurityPolicyAdvancedOptionsConfig": {
+   "id": "SecurityPolicyAdvancedOptionsConfig",
+   "type": "object",
+   "properties": {
+    "jsonParsing": {
+     "type": "string",
+     "enum": [
+      "DISABLED",
+      "STANDARD"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "logLevel": {
+     "type": "string",
+     "enum": [
+      "NORMAL",
+      "VERBOSE"
      ],
      "enumDescriptions": [
       "",
@@ -32449,7 +32576,7 @@
   "Subsetting": {
    "id": "Subsetting",
    "type": "object",
-   "description": "Subsetting configuration for this BackendService. Currently this is applicable only for Internal TCP/UDP load balancing and Internal HTTP(S) load balancing.",
+   "description": "Subsetting configuration for this BackendService. Currently this is applicable only for Internal TCP/UDP load balancing, Internal HTTP(S) load balancing and Traffic Director.",
    "properties": {
     "policy": {
      "type": "string",
@@ -36208,7 +36335,7 @@
     },
     "nextPageToken": {
      "type": "string",
-     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results. In special cases listUsable may return 0 subnetworks and nextPageToken which still should be used to get the next page of results."
     },
     "selfLink": {
      "type": "string",
@@ -41297,7 +41424,7 @@
      "id": "compute.firewallPolicies.list",
      "path": "locations/global/firewallPolicies",
      "httpMethod": "GET",
-     "description": "Lists all the policies that have been configured for the specified project.",
+     "description": "Lists all the policies that have been configured for the specified folder or organization.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -48461,7 +48588,7 @@
       },
       "secureTags": {
        "type": "string",
-       "description": "Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 50.",
+       "description": "DEPRECATED: Please use resource.secure_tag instead. Secure tags to apply to this instance. These can be later modified by the update method. Maximum number of secure tags allowed is 50.",
        "repeated": true,
        "location": "query"
       },
@@ -49799,7 +49926,7 @@
      "parameters": {
       "clearSecureTag": {
        "type": "boolean",
-       "description": "Whether to clear secure tags from the instance.\n\nThis property is mutually exclusive with the secure_tag property; you can only specify one or the other, but not both.",
+       "description": "Whether to clear secure tags from the instance.\n\nThis property if set to true will clear secure tags regardless of the resource.secure_tags.",
        "location": "query"
       },
       "instance": {
@@ -49857,7 +49984,7 @@
       },
       "secureTags": {
        "type": "string",
-       "description": "Secure tags to apply to this instance. Maximum number of secure tags allowed is 50.",
+       "description": "DEPRECATED: Please use resource.secure_tag instead. Secure tags to apply to this instance. Maximum number of secure tags allowed is 50.",
        "repeated": true,
        "location": "query"
       },
@@ -52804,6 +52931,18 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
+      },
+      "maxPriority": {
+       "type": "integer",
+       "description": "When rule.priority is not specified, auto choose a unused priority between minPriority and maxPriority\u003e. This field is exclusive with rule.priority.",
+       "format": "int32",
+       "location": "query"
+      },
+      "minPriority": {
+       "type": "integer",
+       "description": "When rule.priority is not specified, auto choose a unused priority between minPriority and maxPriority\u003e. This field is exclusive with rule.priority.",
+       "format": "int32",
+       "location": "query"
       },
       "project": {
        "type": "string",
@@ -61622,6 +61761,42 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute"
      ]
+    },
+    "recommendLocations": {
+     "id": "compute.regionInstances.recommendLocations",
+     "path": "projects/{project}/regions/{region}/instances/recommendLocations",
+     "httpMethod": "POST",
+     "description": "Returns recommended locations (zones in a region) for specified sets of homogenous instances.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region"
+     ],
+     "request": {
+      "$ref": "RegionInstancesRecommendLocationsResource"
+     },
+     "response": {
+      "$ref": "RegionInstancesRecommendLocationsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
     }
    }
   },
@@ -62312,6 +62487,18 @@
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
+      },
+      "maxPriority": {
+       "type": "integer",
+       "description": "When rule.priority is not specified, auto choose a unused priority between minPriority and maxPriority\u003e. This field is exclusive with rule.priority.",
+       "format": "int32",
+       "location": "query"
+      },
+      "minPriority": {
+       "type": "integer",
+       "description": "When rule.priority is not specified, auto choose a unused priority between minPriority and maxPriority\u003e. This field is exclusive with rule.priority.",
+       "format": "int32",
+       "location": "query"
       },
       "project": {
        "type": "string",

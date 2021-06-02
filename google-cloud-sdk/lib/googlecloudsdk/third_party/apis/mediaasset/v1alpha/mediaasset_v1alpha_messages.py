@@ -25,6 +25,7 @@ class Action(_messages.Message):
     assetTransformation: Status of asset transformation, if this action is for
       asset transformation.
     createTime: The creation time.
+    derivedAsset: Status of derived asset action.
     labels: The labels associated with this resource. Each label is a key-
       value pair.
     name: Required. The resource name of the action, in the following form: `p
@@ -62,10 +63,11 @@ class Action(_messages.Message):
 
   assetTransformation = _messages.MessageField('TransformationStatus', 1)
   createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  rule = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  derivedAsset = _messages.MessageField('DerivedAssetStatus', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  rule = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class Annotation(_messages.Message):
@@ -856,7 +858,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class CloudPubSubNotificationConfig(_messages.Message):
-  r"""A CloudPubSubNotificationConfig configure Pub/Sub support for an
+  r"""A CloudPubSubNotificationConfig configures Pub/Sub support for an
   AssetType that this Rule attached to.
 
   Fields:
@@ -973,6 +975,84 @@ class ComplexType(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+
+
+class DerivedAssetConfig(_messages.Message):
+  r"""A DerivedAssetConfig configures the associated AssetType to manage the
+  derived assets for its Assets. The assets under the associated AssetType are
+  owners of the derived assets. The derived assets are linked to the owners
+  via the links in the owner assets.
+
+  Messages:
+    MetadataValue: Required. Key-value pairs for how to set the metadata in
+      the derived assets. The key maps to the metadata in the derived assets.
+      The value is interpreted as a literal or a path within the owner asset
+      if it's prefixed by "$asset.", e.g. "$asset.file.url".
+
+  Fields:
+    metadata: Required. Key-value pairs for how to set the metadata in the
+      derived assets. The key maps to the metadata in the derived assets. The
+      value is interpreted as a literal or a path within the owner asset if
+      it's prefixed by "$asset.", e.g. "$asset.file.url".
+    owningLink: Required. The link in the owner asset.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Required. Key-value pairs for how to set the metadata in the derived
+    assets. The key maps to the metadata in the derived assets. The value is
+    interpreted as a literal or a path within the owner asset if it's prefixed
+    by "$asset.", e.g. "$asset.file.url".
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metadata = _messages.MessageField('MetadataValue', 1)
+  owningLink = _messages.StringField(2)
+
+
+class DerivedAssetStatus(_messages.Message):
+  r"""Status of derived asset action.
+
+  Enums:
+    StateValueValuesEnum: State of the derived asset action.
+
+  Fields:
+    state: State of the derived asset action.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the derived asset action.
+
+    Values:
+      STATE_UNSPECIFIED: State of the derived asset action is unspecified.
+      QUEUED: Derived asset action is queued.
+      RUNNING: Derived asset action is in running state.
+      COMPLETED: Derived asset action has been completed.
+    """
+    STATE_UNSPECIFIED = 0
+    QUEUED = 1
+    RUNNING = 2
+    COMPLETED = 3
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
 
 
 class Empty(_messages.Message):
@@ -1576,11 +1656,13 @@ class LinkConfig(_messages.Message):
     assetType: Reference to the asset type name of the linked asset, in the
       following form:
       `projects/{project}/locations/{location}/assetTypes/{name}`.
+    owner: Output only. The owner of the link, if it's updated by the system.
     required: If true, this asset link is required during asset creation.
   """
 
   assetType = _messages.StringField(1)
-  required = _messages.BooleanField(2)
+  owner = _messages.StringField(2)
+  required = _messages.BooleanField(3)
 
 
 class LinkInfo(_messages.Message):
@@ -2029,12 +2111,14 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsPatchR
       annotation `projects/{project}/locations/{location}/assetTypes/{asset_ty
       pe}/assets/{asset}/annotationSets/{annotation_set}/annotations/{annotati
       on}`.
-    updateMask: Required. The list of fields to be updated.
+    oldUpdateMask: this is temporary
+    updateMask: Required. Comma-separated list of fields to be updated.
   """
 
   annotation = _messages.MessageField('Annotation', 1)
   name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
+  oldUpdateMask = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsCreateRequest(_messages.Message):
@@ -2123,12 +2207,14 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsPatchRequest(_mes
       characters maximum 2. only contains letters, digits, underscore and
       hyphen 3. starts with a letter if length == 1, starts with a letter or
       underscore if length > 1
-    updateMask: Required. The list of fields to be updated.
+    oldUpdateMask: this is temporary
+    updateMask: Required. Comma-separated list of fields to be updated.
   """
 
   annotationSet = _messages.MessageField('AnnotationSet', 1)
   name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
+  oldUpdateMask = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsCreateRequest(_messages.Message):
@@ -2289,6 +2375,7 @@ class MediaassetProjectsLocationsAssetTypesAssetsLroUpdateRequest(_messages.Mess
       character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
+    oldUpdateMask: this is temporary
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2300,17 +2387,18 @@ class MediaassetProjectsLocationsAssetTypesAssetsLroUpdateRequest(_messages.Mess
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Asset resource by the update. The fields specified in
-      the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
+    updateMask: Required. Comma-separated list of fields is used to specify
+      the fields to be overwritten in the Asset resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
   """
 
   asset = _messages.MessageField('Asset', 1)
   name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
+  oldUpdateMask = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsPatchRequest(_messages.Message):
@@ -2324,6 +2412,7 @@ class MediaassetProjectsLocationsAssetTypesAssetsPatchRequest(_messages.Message)
       character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
+    oldUpdateMask: this is temporary
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2335,17 +2424,18 @@ class MediaassetProjectsLocationsAssetTypesAssetsPatchRequest(_messages.Message)
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Asset resource by the update. The fields specified in
-      the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
+    updateMask: Required. Comma-separated list of fields is used to specify
+      the fields to be overwritten in the Asset resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
   """
 
   asset = _messages.MessageField('Asset', 1)
   name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
+  oldUpdateMask = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsSetIamPolicyRequest(_messages.Message):
@@ -2590,6 +2680,7 @@ class MediaassetProjectsLocationsAssetTypesPatchRequest(_messages.Message):
       minimum, 63 characters maximum 2. only contains letters, digits,
       underscore and hyphen 3. starts with a letter if length == 1, starts
       with a letter or underscore if length > 1
+    oldUpdateMask: this is temporary
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2601,17 +2692,18 @@ class MediaassetProjectsLocationsAssetTypesPatchRequest(_messages.Message):
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the AssetType resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      will be overwritten if it is in the mask. If the user does not provide a
-      mask then all fields will be overwritten.
+    updateMask: Comma-separated list of fields is used to specify the fields
+      to be overwritten in the AssetType resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
   """
 
   assetType = _messages.MessageField('AssetType', 1)
   name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
+  oldUpdateMask = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
 
 
 class MediaassetProjectsLocationsAssetTypesRulesCreateRequest(_messages.Message):
@@ -2688,13 +2780,15 @@ class MediaassetProjectsLocationsAssetTypesRulesPatchRequest(_messages.Message):
       1 character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
+    oldUpdateMask: this is temporary
     rule: A Rule resource to be passed as the request body.
-    updateMask: Required. The list of fields to be updated.
+    updateMask: Required. Comma-separated list of fields to be updated.
   """
 
   name = _messages.StringField(1, required=True)
-  rule = _messages.MessageField('Rule', 2)
-  updateMask = _messages.StringField(3)
+  oldUpdateMask = _messages.StringField(2)
+  rule = _messages.MessageField('Rule', 3)
+  updateMask = _messages.StringField(4)
 
 
 class MediaassetProjectsLocationsAssetTypesSetIamPolicyRequest(_messages.Message):
@@ -2845,6 +2939,7 @@ class MediaassetProjectsLocationsComplexTypesPatchRequest(_messages.Message):
       character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
+    oldUpdateMask: this is temporary
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2856,17 +2951,18 @@ class MediaassetProjectsLocationsComplexTypesPatchRequest(_messages.Message):
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the ComplexType resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      will be overwritten if it is in the mask. If the user does not provide a
-      mask then all fields will be overwritten.
+    updateMask: Comma-separated list of fields is used to specify the fields
+      to be overwritten in the ComplexType resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
   """
 
   complexType = _messages.MessageField('ComplexType', 1)
   name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
+  oldUpdateMask = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
 
 
 class MediaassetProjectsLocationsComplexTypesSetIamPolicyRequest(_messages.Message):
@@ -3099,6 +3195,7 @@ class MediaassetProjectsLocationsTransformersPatchRequest(_messages.Message):
       are: 1. 1 character minimum, 63 characters maximum 2. only contains
       letters, digits, underscore and hyphen 3. starts with a letter if length
       == 1, starts with a letter or underscore if length > 1
+    oldUpdateMask: this is temporary
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -3111,17 +3208,18 @@ class MediaassetProjectsLocationsTransformersPatchRequest(_messages.Message):
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     transformer: A Transformer resource to be passed as the request body.
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the Transformer resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      will be overwritten if it is in the mask. If the user does not provide a
-      mask then all fields will be overwritten.
+    updateMask: Comma-separated list of fields is used to specify the fields
+      to be overwritten in the Transformer resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
   """
 
   name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  transformer = _messages.MessageField('Transformer', 3)
-  updateMask = _messages.StringField(4)
+  oldUpdateMask = _messages.StringField(2)
+  requestId = _messages.StringField(3)
+  transformer = _messages.MessageField('Transformer', 4)
+  updateMask = _messages.StringField(5)
 
 
 class MediaassetProjectsLocationsTransformersSetIamPolicyRequest(_messages.Message):
@@ -3162,12 +3260,14 @@ class MetadataConfig(_messages.Message):
   Fields:
     complexType: Reference to the complex type name, in the following form:
       `projects/{project}/locations/{location}/complexTypes/{name}`.
+    owner: Output only. The owner of the metadata, set by the system.
     required: If true, this asset metadata is required to be specified during
       asset creation.
   """
 
   complexType = _messages.StringField(1)
-  required = _messages.BooleanField(2)
+  owner = _messages.StringField(2)
+  required = _messages.BooleanField(3)
 
 
 class MetadataInfo(_messages.Message):
@@ -3372,6 +3472,8 @@ class Rule(_messages.Message):
 
   Fields:
     createTime: Output only. The creation time of the rule.
+    derivedAsset: Configures the associated AssetType to manage the derived
+      assets for its Assets.
     labels: The labels associated with this resource. Each label is a key-
       value pair.
     name: A user-specified resource name of the rule
@@ -3383,9 +3485,10 @@ class Rule(_messages.Message):
     notification: Configures notifications for changes to resources nested
       under the parent AssetType (e.g., assets, actions, and annotations).
     pubsubNotification: https://cloud.google.com/pubsub/docs/overview
-      Configure the associated AssetType to publish event messages using
+      Configures the associated AssetType to publish event messages using
       Pub/Sub.
-    transformation: Configure the associated AssetType to invoke transformers.
+    transformation: Configures the associated AssetType to invoke
+      transformers.
     updateTime: Output only. The latest update time of the rule.
   """
 
@@ -3415,34 +3518,35 @@ class Rule(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  notification = _messages.MessageField('NotificationConfig', 4)
-  pubsubNotification = _messages.MessageField('CloudPubSubNotificationConfig', 5)
-  transformation = _messages.MessageField('RuleTransformationConfig', 6)
-  updateTime = _messages.StringField(7)
+  derivedAsset = _messages.MessageField('DerivedAssetConfig', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  notification = _messages.MessageField('NotificationConfig', 5)
+  pubsubNotification = _messages.MessageField('CloudPubSubNotificationConfig', 6)
+  transformation = _messages.MessageField('RuleTransformationConfig', 7)
+  updateTime = _messages.StringField(8)
 
 
 class RuleTransformationConfig(_messages.Message):
-  r"""A RuleTransformationConfig configure the associated AssetType to invoke
+  r"""A RuleTransformationConfig configures the associated AssetType to invoke
   transformers on its Assets.
 
   Messages:
-    InputsValue: Key-value pairs representing input parameters to the
+    InputsValue: Required. Key-value pairs representing input parameters to
+      the transformers. The key maps to the transformer input parameter name.
+      The value is interpreted as a literal or a path within asset if it's
+      prefixed by "$asset.", e.g. "$asset.file.url".
+    OutputsValue: Required. Key-value pairs representing output parameters
+      from the transformers. The key maps to the transformer output parameter
+      name. The value will be the path to the metadata in the asset to which
+      this output should be assigned.
+
+  Fields:
+    inputs: Required. Key-value pairs representing input parameters to the
       transformers. The key maps to the transformer input parameter name. The
       value is interpreted as a literal or a path within asset if it's
       prefixed by "$asset.", e.g. "$asset.file.url".
-    OutputsValue: Key-value pairs representing output parameters from the
-      transformers. The key maps to the transformer output parameter name. The
-      value will be the path to the metadata in the asset to which this output
-      should be assigned.
-
-  Fields:
-    inputs: Key-value pairs representing input parameters to the transformers.
-      The key maps to the transformer input parameter name. The value is
-      interpreted as a literal or a path within asset if it's prefixed by
-      "$asset.", e.g. "$asset.file.url".
-    outputs: Key-value pairs representing output parameters from the
+    outputs: Required. Key-value pairs representing output parameters from the
       transformers. The key maps to the transformer output parameter name. The
       value will be the path to the metadata in the asset to which this output
       should be assigned.
@@ -3453,10 +3557,10 @@ class RuleTransformationConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class InputsValue(_messages.Message):
-    r"""Key-value pairs representing input parameters to the transformers. The
-    key maps to the transformer input parameter name. The value is interpreted
-    as a literal or a path within asset if it's prefixed by "$asset.", e.g.
-    "$asset.file.url".
+    r"""Required. Key-value pairs representing input parameters to the
+    transformers. The key maps to the transformer input parameter name. The
+    value is interpreted as a literal or a path within asset if it's prefixed
+    by "$asset.", e.g. "$asset.file.url".
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -3480,10 +3584,10 @@ class RuleTransformationConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OutputsValue(_messages.Message):
-    r"""Key-value pairs representing output parameters from the transformers.
-    The key maps to the transformer output parameter name. The value will be
-    the path to the metadata in the asset to which this output should be
-    assigned.
+    r"""Required. Key-value pairs representing output parameters from the
+    transformers. The key maps to the transformer output parameter name. The
+    value will be the path to the metadata in the asset to which this output
+    should be assigned.
 
     Messages:
       AdditionalProperty: An additional property for a OutputsValue object.

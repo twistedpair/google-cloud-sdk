@@ -25,6 +25,7 @@ import boto3
 import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
@@ -41,6 +42,11 @@ MAX_PUT_OBJECT_SIZE = 5 * (1024**3)  # 5 GiB
 BOTO3_CLIENT_LOCK = threading.Lock()
 
 
+def _raise_if_not_found_error(error, resource_name):
+  if error.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
+    raise errors.NotFoundError('Not found: {}'.format(resource_name))
+
+
 def _catch_client_error_raise_s3_api_error(format_str=None):
   """Decorator that catches botocore ClientErrors and raises S3ApiErrors.
 
@@ -55,7 +61,8 @@ def _catch_client_error_raise_s3_api_error(format_str=None):
   """
 
   return errors.catch_error_raise_cloud_api_error(
-      botocore.exceptions.ClientError, errors.S3ApiError, format_str=format_str)
+      [(botocore.exceptions.ClientError, errors.S3ApiError)],
+      format_str=format_str)
 
 
 _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT = {
@@ -217,6 +224,8 @@ class S3Api(cloud_api.CloudApi):
       metadata.update(self.client.get_bucket_location(
           Bucket=bucket_name))
     except botocore.exceptions.ClientError as error:
+      _raise_if_not_found_error(error, bucket_name)
+
       metadata['LocationConstraint'] = errors.S3ApiError(error)
 
     if fields_scope is not cloud_api.FieldsScope.SHORT:
@@ -255,7 +264,7 @@ class S3Api(cloud_api.CloudApi):
                    request_config=None,
                    fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
-    del fields_scope  # Unused. API returns nothing for these put requests.
+    del fields_scope, request_config  # Unused.
 
     if ('FullACLConfiguration' in bucket_resource.metadata or
         'ACL' in bucket_resource.metadata):
@@ -270,6 +279,7 @@ class S3Api(cloud_api.CloudApi):
         kwargs['Bucket'] = bucket_resource.name
         self.client.put_bucket_acl(**kwargs)
       except botocore.exceptions.ClientError as error:
+        _raise_if_not_found_error(error, bucket_resource.name)
         # Don't return any ACL information in case the failure affected both
         # metadata keys.
         bucket_resource.metadata.pop('FullACLConfiguration', None)
@@ -321,6 +331,7 @@ class S3Api(cloud_api.CloudApi):
       try:
         patch_function(**patch_kwargs)
       except botocore.exceptions.ClientError as error:
+        _raise_if_not_found_error(error, bucket_resource.name)
         log.error(errors.S3ApiError(error))
         del bucket_resource.metadata[metadata_key]
 
@@ -436,7 +447,6 @@ class S3Api(cloud_api.CloudApi):
                                                  resource.generation)
     return complete_resource.metadata.get('ContentEncoding')
 
-  # pylint: disable=unused-argument
   @_catch_client_error_raise_s3_api_error()
   def download_object(self,
                       cloud_resource,
@@ -490,7 +500,6 @@ class S3Api(cloud_api.CloudApi):
 
     # TODO(b/161437901): Handle resumed download.
     # TODO(b/161460749): Handle download retries.
-    # pylint:enable=unused-argument
 
   @_catch_client_error_raise_s3_api_error()
   def delete_object(self, object_url, request_config=None):
@@ -520,11 +529,10 @@ class S3Api(cloud_api.CloudApi):
     try:
       object_dict = self.client.head_object(**request)
     except botocore.exceptions.ClientError as e:
-      if e.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
-        # Allows custom error handling.
-        raise errors.NotFoundError('Object not found: {}'.format(
-            storage_url.CloudUrl(storage_url.ProviderPrefix.S3, bucket_name,
-                                 object_name, generation).url_string))
+      _raise_if_not_found_error(
+          e,
+          storage_url.CloudUrl(storage_url.ProviderPrefix.S3, bucket_name,
+                               object_name, generation).url_string)
       raise e
 
     # User requested ACL's with FieldsScope.FULL.
@@ -599,10 +607,17 @@ class S3Api(cloud_api.CloudApi):
                     source_stream,
                     destination_resource,
                     progress_callback=None,
-                    request_config=None):
+                    request_config=None,
+                    serialization_data=None,
+                    tracker_callback=None,
+                    upload_strategy=cloud_api.UploadStrategy.SIMPLE):
     """See super class."""
-    # TODO(b/160998556): Implement resumable upload.
-    del progress_callback
+    del progress_callback, serialization_data, tracker_callback
+
+    if upload_strategy != cloud_api.UploadStrategy.SIMPLE:
+      raise command_errors.Error(
+          'Invalid upload strategy: {}.'.format(upload_strategy.value))
+
     if request_config is None:
       request_config = cloud_api.RequestConfig()
 

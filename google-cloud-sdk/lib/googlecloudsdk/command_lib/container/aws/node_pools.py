@@ -100,6 +100,12 @@ class NodePoolsClient(object):
     ssh_config = self._AddAwsNodePoolSshConfig(np)
     ssh_config.ec2KeyPair = args.key_pair_name
 
+    if args.tags:
+      tag_type = type(np).TagsValue.AdditionalProperty
+      np.tags = type(np).TagsValue(additionalProperties=[
+          tag_type(key=k, value=v) for k, v in args.tags.items()
+      ])
+
     return self.service.Create(req)
 
   def Delete(self, node_pool_ref, args):

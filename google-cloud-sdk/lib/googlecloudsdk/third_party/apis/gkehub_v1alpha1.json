@@ -596,6 +596,10 @@
         "logDeniesEnabled": {
           "description": "Logs all denies and dry run failures.",
           "type": "boolean"
+        },
+        "mutationEnabled": {
+          "description": "Enable users to try out mutation for PolicyController.",
+          "type": "boolean"
         }
       }
     },
@@ -1503,6 +1507,22 @@
         },
         "gatekeeperAudit": {
           "description": "Status of gatekeeper-audit deployment.",
+          "type": "string",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "gatekeeperMutation": {
+          "description": "Status of the pod serving the mutation webhook.",
           "type": "string",
           "enumDescriptions": [
             "Deployment's state cannot be determined",

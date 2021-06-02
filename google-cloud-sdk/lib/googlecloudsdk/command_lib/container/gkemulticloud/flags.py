@@ -236,36 +236,60 @@ def AddRootVolumeSize(parser, required=True):
   parser.add_argument(
       '--root-volume-size',
       required=required,
-      type=int,
-      help='Size of the root volume in GiB.')
+      type=arg_parsers.BinarySize(
+          suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB'],
+          default_unit='Gi'),
+      help="""
+        Size of the root volume. The value must be a whole number
+        followed by a size unit of ``GB'' for gigabyte, or ``TB'' for
+        terabyte. If no size unit is specified, GB is assumed.
+        """)
 
 
 def GetRootVolumeSize(args):
-  return getattr(args, 'root_volume_size', None)
+  size = getattr(args, 'root_volume_size', None)
+  if not size:
+    return None
+
+  # Volume sizes are currently in GB, argument is in B.
+  return int(size) >> 30
 
 
 def AddMainVolumeSize(parser, required=True):
   parser.add_argument(
       '--main-volume-size',
       required=required,
-      type=int,
-      help='Size of the main volume in GiB.')
+      type=arg_parsers.BinarySize(
+          suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB'],
+          default_unit='Gi'),
+      help="""
+        Size of the main volume. The value must be a whole number
+        followed by a size unit of ``GB'' for gigabyte, or ``TB'' for
+        terabyte. If no size unit is specified, GB is assumed.
+        """)
 
 
 def GetMainVolumeSize(args):
-  return getattr(args, 'main_volume_size', None)
+  size = getattr(args, 'main_volume_size', None)
+  if not size:
+    return None
+
+  # Volume sizes are currently in GB, argument is in B.
+  return int(size) >> 30
 
 
-def AddTags(parser):
+def AddTags(parser, noun):
+  help_text = """\
+  Applies the given tags (comma separated) on the {0}. Example:
+
+    $ {{command}} EXAMPLE_{1} --tags=tag1=one,tag2=two
+  """.format(noun, noun.replace(' ', '_').upper())
+
   parser.add_argument(
       '--tags',
       type=arg_parsers.ArgDict(min_length=1),
       metavar='TAG',
-      help="""\
-Applies the given tags (comma separated) on the Azure resources. Example:
-
-  $ {command} my-instance --tags=tag1=one,tag2=two
-""")
+      help=help_text)
 
 
 def GetTags(args):

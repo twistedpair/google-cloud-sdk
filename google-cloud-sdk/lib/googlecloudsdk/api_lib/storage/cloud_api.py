@@ -36,6 +36,12 @@ class DownloadStrategy(enum.Enum):
   RESUMABLE = 'resumable'
 
 
+class UploadStrategy(enum.Enum):
+  """Enum class for specifying upload strategy."""
+  SIMPLE = 'simple'
+  RESUMABLE = 'resumable'
+
+
 class FieldsScope(enum.Enum):
   """Values used to determine fields and projection values for API calls."""
   FULL = 1
@@ -395,7 +401,10 @@ class CloudApi(object):
                     source_stream,
                     destination_resource,
                     progress_callback=None,
-                    request_config=None):
+                    request_config=None,
+                    serialization_data=None,
+                    tracker_callback=None,
+                    upload_strategy=UploadStrategy.SIMPLE):
     """Uploads object data and metadata.
 
     Args:
@@ -407,6 +416,11 @@ class CloudApi(object):
           total_size).
       request_config (RequestConfig): Object containing general API function
           arguments. Subclasses for specific cloud providers are available.
+      serialization_data (dict): API-specific data needed to resume an upload.
+          Only used with UploadStrategy.RESUMABLE.
+      tracker_callback (Callable[[dict], None]): Function that writes a tracker
+          file with serialization data. Only used with UploadStrategy.RESUMABLE.
+      upload_strategy (UploadStrategy): Strategy to use for this upload.
 
     Returns:
       resource_reference.ObjectResource with uploaded object's metadata.

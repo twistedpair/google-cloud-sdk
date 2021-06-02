@@ -1319,6 +1319,12 @@ class ServerlessOperations(object):
       except api_exceptions.HttpConflictError:
         raise serverless_exceptions.DeploymentFailedError(
             'Job [{}] already exists.'.format(job_ref.Name()))
+      except api_exceptions.HttpError as e:
+        if e.status_code == 429:  # resource exhausted
+          raise serverless_exceptions.DeploymentFailedError(
+              'Too many jobs are already running. Please wait until a job '
+              'completes before creating a new one.')
+        raise e
 
     if not asyn:
       getter = functools.partial(self.GetJob, job_ref)

@@ -38,13 +38,12 @@ def AddClusterConnectionCommonArgs(parser):
       '--gke-uri',
       type=str,
       help=textwrap.dedent("""\
-          The URI of the GKE cluster; for example,
-          'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
-          The URI can obtain by calling:
-              gcloud container clusters list --uri
-          This is only valid if the represented cluster is a GKE cluster. The
-          provided URI will be validated to confirm that it maps to the valid
-          GKE cluster.
+          The URI of a GKE cluster that you want to register to Hub; for example,
+          'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'.
+          To obtain the URI, you can run 'gcloud container clusters list --uri'.
+          Note that this should only be provided if the cluster being registered
+          is a GKE cluster. The service will validate the provided URI to
+          confirm that it maps to a valid GKE cluster."
         """),
   )
   group.add_argument(

@@ -261,7 +261,11 @@ class DialogflowProjectsAgentEnvironmentsIntentsListRequest(_messages.Message):
     pageToken: Optional. The next_page_token value returned from a previous
       list request.
     parent: Required. The agent to list all intents from. Format:
-      `projects//agent`.
+      `projects//agent` or `projects//locations//agent`. Alternatively, you
+      can specify the environment to list intents for. Format:
+      `projects//agent/environments/` or
+      `projects//locations//agent/environments/`. Note: training phrases of
+      the intents will not be returned for non-draft environment.
   """
 
   class IntentViewValueValuesEnum(_messages.Enum):
@@ -745,7 +749,11 @@ class DialogflowProjectsAgentIntentsListRequest(_messages.Message):
     pageToken: Optional. The next_page_token value returned from a previous
       list request.
     parent: Required. The agent to list all intents from. Format:
-      `projects//agent`.
+      `projects//agent` or `projects//locations//agent`. Alternatively, you
+      can specify the environment to list intents for. Format:
+      `projects//agent/environments/` or
+      `projects//locations//agent/environments/`. Note: training phrases of
+      the intents will not be returned for non-draft environment.
   """
 
   class IntentViewValueValuesEnum(_messages.Enum):
@@ -2059,6 +2067,50 @@ class DialogflowProjectsLocationsAgentEnvironmentsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DialogflowProjectsLocationsAgentEnvironmentsIntentsListRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsAgentEnvironmentsIntentsListRequest object.
+
+  Enums:
+    IntentViewValueValuesEnum: Optional. The resource view to apply to the
+      returned intent.
+
+  Fields:
+    intentView: Optional. The resource view to apply to the returned intent.
+    languageCode: Optional. The language used to access language-specific
+      data. If not specified, the agent's default language is used. For more
+      information, see [Multilingual intent and entity
+      data](https://cloud.google.com/dialogflow/docs/agents-
+      multilingual#intent-entity).
+    pageSize: Optional. The maximum number of items to return in a single
+      page. By default 100 and at most 1000.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The agent to list all intents from. Format:
+      `projects//agent` or `projects//locations//agent`. Alternatively, you
+      can specify the environment to list intents for. Format:
+      `projects//agent/environments/` or
+      `projects//locations//agent/environments/`. Note: training phrases of
+      the intents will not be returned for non-draft environment.
+  """
+
+  class IntentViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The resource view to apply to the returned intent.
+
+    Values:
+      INTENT_VIEW_UNSPECIFIED: Training phrases field is not populated in the
+        response.
+      INTENT_VIEW_FULL: All fields are populated.
+    """
+    INTENT_VIEW_UNSPECIFIED = 0
+    INTENT_VIEW_FULL = 1
+
+  intentView = _messages.EnumField('IntentViewValueValuesEnum', 1)
+  languageCode = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DialogflowProjectsLocationsAgentEnvironmentsListRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsAgentEnvironmentsListRequest object.
 
@@ -2522,7 +2574,11 @@ class DialogflowProjectsLocationsAgentIntentsListRequest(_messages.Message):
     pageToken: Optional. The next_page_token value returned from a previous
       list request.
     parent: Required. The agent to list all intents from. Format:
-      `projects//agent`.
+      `projects//agent` or `projects//locations//agent`. Alternatively, you
+      can specify the environment to list intents for. Format:
+      `projects//agent/environments/` or
+      `projects//locations//agent/environments/`. Note: training phrases of
+      the intents will not be returned for non-draft environment.
   """
 
   class IntentViewValueValuesEnum(_messages.Enum):
@@ -3591,6 +3647,42 @@ class GoogleCloudDialogflowCxV3BatchRunTestCasesResponse(_messages.Message):
   """
 
   results = _messages.MessageField('GoogleCloudDialogflowCxV3TestCaseResult', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3ContinuousTestResult(_messages.Message):
+  r"""Represents a result from running a test case in an agent environment.
+
+  Enums:
+    ResultValueValuesEnum: The result of this continuous test run, i.e.
+      whether all the tests in this continuous test run pass or not.
+
+  Fields:
+    name: The resource name for the continuous test result. Format:
+      `projects//locations//agents//environments//continuousTestResults/`.
+    result: The result of this continuous test run, i.e. whether all the tests
+      in this continuous test run pass or not.
+    runTime: Time when the continuous testing run starts.
+    testCaseResults: A list of individual test case results names in this
+      continuous test run.
+  """
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""The result of this continuous test run, i.e. whether all the tests in
+    this continuous test run pass or not.
+
+    Values:
+      AGGREGATED_TEST_RESULT_UNSPECIFIED: Not specified. Should never be used.
+      PASSED: All the tests passed.
+      FAILED: At least one test did not pass.
+    """
+    AGGREGATED_TEST_RESULT_UNSPECIFIED = 0
+    PASSED = 1
+    FAILED = 2
+
+  name = _messages.StringField(1)
+  result = _messages.EnumField('ResultValueValuesEnum', 2)
+  runTime = _messages.StringField(3)
+  testCaseResults = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3ConversationTurn(_messages.Message):
@@ -4835,6 +4927,27 @@ class GoogleCloudDialogflowCxV3ResponseMessageText(_messages.Message):
   text = _messages.StringField(2, repeated=True)
 
 
+class GoogleCloudDialogflowCxV3RunContinuousTestMetadata(_messages.Message):
+  r"""Metadata returned for the Environments.RunContinuousTest long running
+  operation.
+
+  Fields:
+    errors: The test errors.
+  """
+
+  errors = _messages.MessageField('GoogleCloudDialogflowCxV3TestError', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3RunContinuousTestResponse(_messages.Message):
+  r"""The response message for Environments.RunContinuousTest.
+
+  Fields:
+    continuousTestResult: The result for a continuous test run.
+  """
+
+  continuousTestResult = _messages.MessageField('GoogleCloudDialogflowCxV3ContinuousTestResult', 1)
+
+
 class GoogleCloudDialogflowCxV3RunTestCaseMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.RunTestCase long running operation.
   """
@@ -5403,6 +5516,42 @@ class GoogleCloudDialogflowCxV3beta1BatchRunTestCasesResponse(_messages.Message)
   """
 
   results = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestCaseResult', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1ContinuousTestResult(_messages.Message):
+  r"""Represents a result from running a test case in an agent environment.
+
+  Enums:
+    ResultValueValuesEnum: The result of this continuous test run, i.e.
+      whether all the tests in this continuous test run pass or not.
+
+  Fields:
+    name: The resource name for the continuous test result. Format:
+      `projects//locations//agents//environments//continuousTestResults/`.
+    result: The result of this continuous test run, i.e. whether all the tests
+      in this continuous test run pass or not.
+    runTime: Time when the continuous testing run starts.
+    testCaseResults: A list of individual test case results names in this
+      continuous test run.
+  """
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""The result of this continuous test run, i.e. whether all the tests in
+    this continuous test run pass or not.
+
+    Values:
+      AGGREGATED_TEST_RESULT_UNSPECIFIED: Not specified. Should never be used.
+      PASSED: All the tests passed.
+      FAILED: At least one test did not pass.
+    """
+    AGGREGATED_TEST_RESULT_UNSPECIFIED = 0
+    PASSED = 1
+    FAILED = 2
+
+  name = _messages.StringField(1)
+  result = _messages.EnumField('ResultValueValuesEnum', 2)
+  runTime = _messages.StringField(3)
+  testCaseResults = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3beta1ConversationTurn(_messages.Message):
@@ -6647,6 +6796,27 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessageText(_messages.Message):
   text = _messages.StringField(2, repeated=True)
 
 
+class GoogleCloudDialogflowCxV3beta1RunContinuousTestMetadata(_messages.Message):
+  r"""Metadata returned for the Environments.RunContinuousTest long running
+  operation.
+
+  Fields:
+    errors: The test errors.
+  """
+
+  errors = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestError', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1RunContinuousTestResponse(_messages.Message):
+  r"""The response message for Environments.RunContinuousTest.
+
+  Fields:
+    continuousTestResult: The result for a continuous test run.
+  """
+
+  continuousTestResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ContinuousTestResult', 1)
+
+
 class GoogleCloudDialogflowCxV3beta1RunTestCaseMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.RunTestCase long running operation.
   """
@@ -7622,8 +7792,8 @@ class GoogleCloudDialogflowV2AutomatedAgentReply(_messages.Message):
   r"""Represents a response from an automated agent.
 
   Fields:
-    detectIntentResponse: Response of the Dialogflow Sessions.DetectIntent
-      call.
+    detectIntentResponse: Required. Response of the Dialogflow
+      Sessions.DetectIntent call.
   """
 
   detectIntentResponse = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentResponse', 1)
@@ -10663,6 +10833,8 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
       values have been collected. - `true` if all required parameter values
       have been collected, or if the matched intent doesn't contain any
       required parameters.
+    cancelsSlotFilling: Indicates whether the conversational query triggers a
+      cancellation for slot filling.
     diagnosticInfo: Free-form diagnostic information for the associated detect
       intent request. The fields of this data can change without notice, so
       you should not write code that depends on its structure. The data may
@@ -10811,19 +10983,20 @@ class GoogleCloudDialogflowV2QueryResult(_messages.Message):
 
   action = _messages.StringField(1)
   allRequiredParamsPresent = _messages.BooleanField(2)
-  diagnosticInfo = _messages.MessageField('DiagnosticInfoValue', 3)
-  fulfillmentMessages = _messages.MessageField('GoogleCloudDialogflowV2IntentMessage', 4, repeated=True)
-  fulfillmentText = _messages.StringField(5)
-  intent = _messages.MessageField('GoogleCloudDialogflowV2Intent', 6)
-  intentDetectionConfidence = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
-  languageCode = _messages.StringField(8)
-  outputContexts = _messages.MessageField('GoogleCloudDialogflowV2Context', 9, repeated=True)
-  parameters = _messages.MessageField('ParametersValue', 10)
-  queryText = _messages.StringField(11)
-  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowV2SentimentAnalysisResult', 12)
-  speechRecognitionConfidence = _messages.FloatField(13, variant=_messages.Variant.FLOAT)
-  webhookPayload = _messages.MessageField('WebhookPayloadValue', 14)
-  webhookSource = _messages.StringField(15)
+  cancelsSlotFilling = _messages.BooleanField(3)
+  diagnosticInfo = _messages.MessageField('DiagnosticInfoValue', 4)
+  fulfillmentMessages = _messages.MessageField('GoogleCloudDialogflowV2IntentMessage', 5, repeated=True)
+  fulfillmentText = _messages.StringField(6)
+  intent = _messages.MessageField('GoogleCloudDialogflowV2Intent', 7)
+  intentDetectionConfidence = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  languageCode = _messages.StringField(9)
+  outputContexts = _messages.MessageField('GoogleCloudDialogflowV2Context', 10, repeated=True)
+  parameters = _messages.MessageField('ParametersValue', 11)
+  queryText = _messages.StringField(12)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowV2SentimentAnalysisResult', 13)
+  speechRecognitionConfidence = _messages.FloatField(14, variant=_messages.Variant.FLOAT)
+  webhookPayload = _messages.MessageField('WebhookPayloadValue', 15)
+  webhookSource = _messages.StringField(16)
 
 
 class GoogleCloudDialogflowV2ReloadDocumentRequest(_messages.Message):
@@ -13468,6 +13641,8 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
       values have been collected. - `true` if all required parameter values
       have been collected, or if the matched intent doesn't contain any
       required parameters.
+    cancelsSlotFilling: Indicates whether the conversational query triggers a
+      cancellation for slot filling.
     diagnosticInfo: Free-form diagnostic information for the associated detect
       intent request. The fields of this data can change without notice, so
       you should not write code that depends on its structure. The data may
@@ -13618,20 +13793,21 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
 
   action = _messages.StringField(1)
   allRequiredParamsPresent = _messages.BooleanField(2)
-  diagnosticInfo = _messages.MessageField('DiagnosticInfoValue', 3)
-  fulfillmentMessages = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessage', 4, repeated=True)
-  fulfillmentText = _messages.StringField(5)
-  intent = _messages.MessageField('GoogleCloudDialogflowV2beta1Intent', 6)
-  intentDetectionConfidence = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
-  knowledgeAnswers = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAnswers', 8)
-  languageCode = _messages.StringField(9)
-  outputContexts = _messages.MessageField('GoogleCloudDialogflowV2beta1Context', 10, repeated=True)
-  parameters = _messages.MessageField('ParametersValue', 11)
-  queryText = _messages.StringField(12)
-  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowV2beta1SentimentAnalysisResult', 13)
-  speechRecognitionConfidence = _messages.FloatField(14, variant=_messages.Variant.FLOAT)
-  webhookPayload = _messages.MessageField('WebhookPayloadValue', 15)
-  webhookSource = _messages.StringField(16)
+  cancelsSlotFilling = _messages.BooleanField(3)
+  diagnosticInfo = _messages.MessageField('DiagnosticInfoValue', 4)
+  fulfillmentMessages = _messages.MessageField('GoogleCloudDialogflowV2beta1IntentMessage', 5, repeated=True)
+  fulfillmentText = _messages.StringField(6)
+  intent = _messages.MessageField('GoogleCloudDialogflowV2beta1Intent', 7)
+  intentDetectionConfidence = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  knowledgeAnswers = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAnswers', 9)
+  languageCode = _messages.StringField(10)
+  outputContexts = _messages.MessageField('GoogleCloudDialogflowV2beta1Context', 11, repeated=True)
+  parameters = _messages.MessageField('ParametersValue', 12)
+  queryText = _messages.StringField(13)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowV2beta1SentimentAnalysisResult', 14)
+  speechRecognitionConfidence = _messages.FloatField(15, variant=_messages.Variant.FLOAT)
+  webhookPayload = _messages.MessageField('WebhookPayloadValue', 16)
+  webhookSource = _messages.StringField(17)
 
 
 class GoogleCloudDialogflowV2beta1Sentiment(_messages.Message):

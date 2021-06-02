@@ -30,6 +30,7 @@ from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import gcs_api
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks import task_executor
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_upload_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_composite_upload_task
@@ -82,8 +83,8 @@ class FileUploadTask(task.Task):
     should_perform_single_transfer = (
         size < self._composite_upload_threshold or
         not self._composite_upload_threshold or
-        cloud_api.Capability.COMPOSE_OBJECTS not in api_capabilties
-        # TODO(b/183017513): Only perform composite uploads with parallelism.
+        cloud_api.Capability.COMPOSE_OBJECTS not in api_capabilties or
+        not task_executor.should_use_parallelism()
     )
 
     if should_perform_single_transfer:

@@ -475,12 +475,13 @@ def GetScheduling(args,
                   skip_defaults,
                   support_node_affinity=False,
                   support_min_node_cpu=True,
-                  support_location_hint=False):
+                  support_location_hint=False,
+                  support_node_project=False):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
   if support_node_affinity:
     node_affinities = sole_tenancy_util.GetSchedulingNodeAffinityListFromArgs(
-        args, client.messages)
+        args, client.messages, support_node_project)
   min_node_cpu = None
   if support_min_node_cpu:
     min_node_cpu = args.min_node_cpu

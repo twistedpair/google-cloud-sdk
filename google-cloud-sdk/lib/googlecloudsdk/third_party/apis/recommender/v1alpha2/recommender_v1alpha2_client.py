@@ -103,7 +103,7 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type.
+      r"""Lists insights for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified insight type.
 
       Args:
         request: (RecommenderBillingAccountsLocationsInsightTypesInsightsListRequest) input message
@@ -258,7 +258,7 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender.
+      r"""Lists recommendations for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderBillingAccountsLocationsRecommendersRecommendationsListRequest) input message
@@ -487,7 +487,7 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type.
+      r"""Lists insights for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified insight type.
 
       Args:
         request: (RecommenderFoldersLocationsInsightTypesInsightsListRequest) input message
@@ -642,7 +642,7 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender.
+      r"""Lists recommendations for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderFoldersLocationsRecommendersRecommendationsListRequest) input message
@@ -871,7 +871,7 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type.
+      r"""Lists insights for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified insight type.
 
       Args:
         request: (RecommenderOrganizationsLocationsInsightTypesInsightsListRequest) input message
@@ -1026,7 +1026,7 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender.
+      r"""Lists recommendations for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderOrganizationsLocationsRecommendersRecommendationsListRequest) input message
@@ -1255,7 +1255,7 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type.
+      r"""Lists insights for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified insight type.
 
       Args:
         request: (RecommenderProjectsLocationsInsightTypesInsightsListRequest) input message
@@ -1447,7 +1447,7 @@ class RecommenderV1alpha2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender.
+      r"""Lists recommendations for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsListRequest) input message

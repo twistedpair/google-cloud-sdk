@@ -19,6 +19,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import base64
+import glob
 import json
 import os
 import os.path
@@ -26,7 +27,9 @@ import re
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import yaml_parsing
+from googlecloudsdk.api_lib.run import service as k8s_service
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.auth import auth_util
 from googlecloudsdk.command_lib.code import yaml_helper
 from googlecloudsdk.command_lib.iam import iam_util
@@ -41,6 +44,7 @@ import six
 
 IAM_MESSAGE_MODULE = apis.GetMessagesModule('iam', 'v1')
 CRM_MESSAGE_MODULE = apis.GetMessagesModule('cloudresourcemanager', 'v1')
+RUN_MESSAGES_MODULE = apis.GetMessagesModule('run', 'v1')
 
 
 class InvalidLocationError(exceptions.Error):
@@ -181,12 +185,37 @@ class Settings(DataObject):
 
     image = _DefaultImageName(service_name)
 
+    dockerfile_arg_default = 'Dockerfile'
+    builder = DockerfileBuilder(
+        dockerfile=os.path.abspath(dockerfile_arg_default))
+
     return cls(
+        builder=builder,
         cloudsql_instances=[],
         context=os.path.abspath(files.GetCWD()),
         image=image,
         service_name=service_name,
     )
+
+  def WithServiceYaml(self, yaml_path):
+    """Overrides settings with service.yaml and returns a new Settings object."""
+    yaml_dict = yaml.load_path(yaml_path)
+    message = messages_util.DictToMessageWithErrorCheck(
+        yaml_dict, RUN_MESSAGES_MODULE.Service)
+    knative_service = k8s_service.Service(message, RUN_MESSAGES_MODULE)
+
+    replacements = {}
+    # Planned attributes in
+    # http://doc/1ah6LB9we-FSEhcBZ7_4XQlnOPClTyyQW_O3Q5WNUuJc#bookmark=id.j3st2l8a3s19
+    try:
+      [container] = knative_service.spec.template.spec.containers
+    except ValueError:
+      raise exceptions.Error('knative Service must have exactly one container.')
+
+    for var in container.env:
+      replacements.setdefault('env_vars', {})[var.name] = var.value
+
+    return self.replace(**replacements)
 
   def WithArgs(self, args):
     """Overrides settings with args and returns a new Settings object."""
@@ -228,8 +257,7 @@ class Settings(DataObject):
       elif args.IsKnownAndSpecified('appengine'):
         context = replacements.get('context', self.context)
         replacements['builder'] = _GaeBuilder(context)
-      else:
-        # This is the default value, to be moved up to Defaults.
+      elif args.IsKnownAndSpecified('dockerfile'):
         replacements['builder'] = DockerfileBuilder(
             dockerfile=os.path.abspath(args.dockerfile))
 
@@ -245,10 +273,27 @@ class Settings(DataObject):
       _CheckDockerfilePath(self.builder.dockerfile, self.context)
 
 
+def _ChooseExistingServiceYaml(arg):
+  """Rules for choosing a service.yaml file depending on SERVICE_CONFIG arg."""
+  if arg is not None:
+    if os.path.exists(arg):
+      return arg
+    raise ValueError("file '{}' not found".format(arg))
+  for pattern in [
+      '*service.dev.yaml', '*service.dev.yml', '*service.yaml', '*service.yml',
+  ]:
+    matches = glob.glob(pattern)
+    if matches:
+      return sorted(matches)[0]
+  return None
+
+
 def AssembleSettings(args):
   """Layer the default values, service.yaml values, and cmdline overrides."""
   settings = Settings.Defaults()
-  # (here's where we'll optionally set from service.yaml)
+  yaml_file = _ChooseExistingServiceYaml(getattr(args, 'service_config', None))
+  if yaml_file:
+    settings = settings.WithServiceYaml(yaml_file)
   settings = settings.WithArgs(args)
   settings.Validate()
   return settings

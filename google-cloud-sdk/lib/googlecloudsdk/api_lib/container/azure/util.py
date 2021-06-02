@@ -96,6 +96,12 @@ class _AzureClientBase(object):
     raise NotImplementedError(
         'GetListResultsField() method not implemented for this type')
 
+  def _CreateAzureDiskTemplate(self, size_gib):
+    # Using this to hide the 'v1alpha' that shows up in the type.
+    version = GetApiVersionForTrack(self.track).capitalize()
+    msg = 'GoogleCloudGkemulticloud{}AzureDiskTemplate'.format(version)
+    return getattr(self.messages, msg)(sizeGib=size_gib)
+
 
 class ClustersClient(_AzureClientBase):
   """Client for Azure Clusters in the gkemulticloud API."""
@@ -192,12 +198,6 @@ class ClustersClient(_AzureClientBase):
     req.controlPlane = cp
     return cp
 
-  def _CreateAzureDiskTemplate(self, size_gib):
-    # Using this to hide the 'v1alpha' that shows up in the type.
-    version = GetApiVersionForTrack(self.track).capitalize()
-    msg = 'GoogleCloudGkemulticloud{}AzureDiskTemplate'.format(version)
-    return getattr(self.messages, msg)(sizeGib=size_gib)
-
   def _CreateSshConfig(self, **kwargs):
     # Using this to hide the 'v1alpha' that shows up in the type.
     version = GetApiVersionForTrack(self.track).capitalize()
@@ -253,6 +253,7 @@ class NodePoolsClient(_AzureClientBase):
              subnet_id=None,
              vm_size=None,
              ssh_public_key=None,
+             root_volume_size=None,
              tags=None,
              validate_only=None,
              min_nodes=None,
@@ -275,6 +276,10 @@ class NodePoolsClient(_AzureClientBase):
         maxNodeCount=max_nodes, minNodeCount=min_nodes)
     nodepool.sshConfig = type(nodepool).sshConfig.type(
         authorizedKey=ssh_public_key)
+
+    if root_volume_size:
+      nodepool.rootVolume = self._CreateAzureDiskTemplate(root_volume_size)
+
     if tags:
       tag_type = type(nodepool).TagsValue.AdditionalProperty
       nodepool.tags = type(nodepool).TagsValue(additionalProperties=[

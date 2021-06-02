@@ -79,6 +79,7 @@ def _thread_worker(task_queue, task_output_queue, task_status_queue,
     # If any exception is raised, it will prevent the executor from exiting.
     except Exception as exception:
       log.error(exception)
+      log.debug(exception, exc_info=sys.exc_info())
       if task_wrapper.task.report_error:
         task_output = task.Output(
             additional_task_iterators=None,

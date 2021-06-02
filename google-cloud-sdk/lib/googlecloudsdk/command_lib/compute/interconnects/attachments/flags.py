@@ -24,6 +24,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 _BANDWIDTH_CHOICES = collections.OrderedDict([
     ('50m', '50 Mbit/s'),
@@ -86,7 +87,14 @@ def InterconnectAttachmentArgumentForRouter(required=False,
 
 
 def AddAdminEnabled(parser, default_behavior=True, update=False):
-  """Adds adminEnabled flag to the argparse.ArgumentParser."""
+  """Adds adminEnabled flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+    default_behavior: A boolean indicates whether command allows user to set
+      Administrative status.
+    update: A boolean indicates whether the incoming request is update.
+  """
   group = parser.add_group(mutex=True, required=False, help='')
   if update:
     # Update command
@@ -126,7 +134,12 @@ def AddAdminEnabled(parser, default_behavior=True, update=False):
 
 
 def AddBandwidth(parser, required):
-  """Adds bandwidth flag to the argparse.ArgumentParser."""
+  """Adds bandwidth flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+    required: A boolean indicates whether the Bandwidth is required.
+  """
   help_text = """\
       Provisioned capacity of the attachment.
       """
@@ -141,7 +154,11 @@ def AddBandwidth(parser, required):
 
 
 def AddVlan(parser):
-  """Adds vlan flag to the argparse.ArgumentParser."""
+  """Adds vlan flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
   parser.add_argument(
       '--vlan',
       type=int,
@@ -152,7 +169,11 @@ def AddVlan(parser):
 
 
 def AddPartnerAsn(parser):
-  """Adds partner asn flag to the argparse.ArgumentParser."""
+  """Adds partner asn flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
   parser.add_argument(
       '--partner-asn',
       type=int,
@@ -163,7 +184,12 @@ def AddPartnerAsn(parser):
 
 
 def AddPartnerMetadata(parser, required=True):
-  """Adds partner metadata flags to the argparse.ArgumentParser."""
+  """Adds partner metadata flags to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+    required: A boolean indicates whether the PartnerMetadata is required.
+  """
   group = parser.add_group(
       mutex=False, required=required, help='Partner metadata.')
   group.add_argument(
@@ -192,7 +218,11 @@ def AddPartnerMetadata(parser, required=True):
 
 
 def AddPairingKey(parser):
-  """Adds pairing key flag to the argparse.ArgumentParser."""
+  """Adds pairing key flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
   parser.add_argument(
       '--pairing-key',
       required=True,
@@ -203,7 +233,11 @@ def AddPairingKey(parser):
 
 
 def AddEdgeAvailabilityDomain(parser):
-  """Adds edge-availability-domain flag to the argparse.ArgumentParser."""
+  """Adds edge-availability-domain flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
   parser.add_argument(
       '--edge-availability-domain',
       choices=_EDGE_AVAILABILITY_DOMAIN_CHOICES,
@@ -224,14 +258,22 @@ def AddEdgeAvailabilityDomain(parser):
 
 
 def AddDescription(parser):
-  """Adds description flag to the argparse.ArgumentParser."""
+  """Adds description flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
   parser.add_argument(
       '--description',
       help='Human-readable plain-text description of attachment.')
 
 
 def AddCandidateSubnets(parser):
-  """Adds candidate subnets flag to the argparse.ArgumetnParser."""
+  """Adds candidate subnets flag to the argparse.ArgumetnParser.
+
+  Args:
+    parser: The argparse parser.
+  """
   parser.add_argument(
       '--candidate-subnets',
       type=arg_parsers.ArgList(max_length=16),
@@ -249,7 +291,11 @@ def AddCandidateSubnets(parser):
 
 
 def AddDryRun(parser):
-  """Adds dry-run flag to the argparse.ArgumentParser."""
+  """Adds dry-run flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
   parser.add_argument(
       '--dry-run',
       default=None,
@@ -258,7 +304,11 @@ def AddDryRun(parser):
 
 
 def AddMtu(parser):
-  """Adds mtu flag to the argparse.ArgumentParser."""
+  """Adds mtu flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
   parser.add_argument(
       '--mtu',
       type=int,
@@ -270,7 +320,11 @@ def AddMtu(parser):
 
 
 def AddEncryption(parser):
-  """Adds encryption flag to the argparse.ArgumentParser."""
+  """Adds encryption flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
   parser.add_argument(
       '--encryption',
       hidden=True,
@@ -296,7 +350,14 @@ def AddEncryption(parser):
 
 
 def GetAdminEnabledFlag(args):
-  """Determines value of admin_enabled/enable_admin flag."""
+  """Determines value of admin_enabled/enable_admin flag.
+
+  Args:
+    args: A list of arguments to be parsed.
+
+  Returns:
+    A boolean indicates whether admin mode is enabled in Arguments.
+  """
   return args.enable_admin if args.enable_admin is not None else args.admin_enabled
 
 
@@ -331,3 +392,76 @@ def GetAddressRef(resources, name, region, project):
           'project': project,
           'region': region
       })
+
+
+def AddStackType(parser):
+  """Adds stack-type flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--stack-type',
+      choices={
+          'IPV4_ONLY':
+              'Only IPv4 protocol is enabled on this interconnect.',
+          'IPV4_IPV6':
+              'Both IPv4 and IPv6 protocols are enabled on this interconnect.',
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help=('The stack type of the protocol(s) enabled on this interconnect '
+            'attachment.'))
+
+
+def AddCandidateIpv6Subnets(parser):
+  """Adds candidate ipv6 subnets flag to the argparse.ArgumetnParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--candidate-ipv6-subnets',
+      type=arg_parsers.ArgList(max_length=16),
+      metavar='IPV6_SUBNET',
+      help="""\
+      Up to 16 candidate prefixes that control the allocation of
+      `cloudRouterIpv6Address` and `customerRouterIpv6Address` for this
+      attachment. Each prefix must be in the Global Unique Address (GUA)
+      space. It is highly recommended that it be in a range owned by the
+      requestor. A GUA in a range owned by Google will cause the request to
+      fail. Google will select an available prefix from the supplied
+      candidates or fail the request. If not supplied, a /125 from a
+      Google-owned GUA block will be selected.""",
+      default=[])
+
+
+def AddCloudRouterIpv6InterfaceId(parser):
+  """Adds cloud router ipv6 interface id flag to the argparse.ArgumetnParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--cloud-router-ipv6-interface-id',
+      metavar='INTERFACE_ID',
+      help="""\
+      If supplied, the interface id (index within the subnet) to be used for the
+      cloud router address. The id must be in the range of 1 to 6. If a subnet
+      mask is supplied, it must be /125, and the subnet should either be 0 or
+      match the selected subnet.""")
+
+
+def AddCustomerRouterIpv6InterfaceId(parser):
+  """Adds customer router ipv6 interface id flag to the argparse.ArgumetnParser.
+
+  Args:
+    parser: The argparse parser.
+  """
+  parser.add_argument(
+      '--customer-router-ipv6-interface-id',
+      metavar='PEER_INTERFACE_ID',
+      help="""\
+      If supplied, the interface id (index within the subnet) to be used for the
+      customer router address. The id must be in the range of 1 to 6. If a
+      subnet mask is supplied, it must be /125, and the subnet should either be
+      0 or match the selected subnet.""")

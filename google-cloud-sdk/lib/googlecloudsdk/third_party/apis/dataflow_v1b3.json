@@ -2613,6 +2613,10 @@
         "stagingLocation": {
           "description": "The Cloud Storage path for staging local files. Must be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
           "type": "string"
+        },
+        "sdkContainerImage": {
+          "description": "Docker registry location of container image to use for the 'worker harness. Default is the container for the version of the SDK. Note this field is only valid for portable pipelines.",
+          "type": "string"
         }
       }
     },

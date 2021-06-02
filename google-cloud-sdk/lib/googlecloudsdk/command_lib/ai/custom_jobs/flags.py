@@ -60,7 +60,7 @@ _CUSTOM_JOB_CONFIG = base.Argument(
             command:
             - start"""))
 
-_WORKER_POOL_SPEC = base.Argument(
+_WORKER_POOL_SPEC_BETA = base.Argument(
     '--worker-pool-spec',
     action='append',
     type=arg_parsers.ArgDict(
@@ -95,6 +95,38 @@ _WORKER_POOL_SPEC = base.Argument(
       `--worker-pool-spec=replica-count=1,machine-type=n1-highmem-2,container-image-uri=gcr.io/ucaip-test/ucaip-training-test`
       """))
 
+_WORKER_POOL_SPEC_GA = base.Argument(
+    '--worker-pool-spec',
+    action='append',
+    type=arg_parsers.ArgDict(
+        # TODO(b/184350069): check `machine－type` specified for non-empty spec.
+        spec={
+            'replica-count': int,
+            'machine-type': str,
+            'container-image-uri': str,
+            'executor-image-uri': str,
+            'python-module': str,
+        }),
+    metavar='WORKER_POOL_SPEC',
+    help=textwrap.dedent("""\
+      Define the worker pool configuration used by the custom job. You can
+      specify multiple worker pool specs in order to create a custom job with
+      multiple worker pools. For more details, please refer to
+      https://cloud.google.com/ai-platform-unified/docs/training/distributed-training#configuring_a_distributed_training_job
+
+      The spec can contain the following fields, which are listed with
+      corresponding fields in the WorkerPoolSpec API message:
+
+      *machine-type*::: (Required): machineSpec.machineType
+      *replica-count*::: replicaCount
+      *container-image-uri*::: containerSpec.imageUri
+      *executor-image-uri*::: pythonPackageSpec.executorImageUri
+      *python-module*::: pythonPackageSpec.pythonModule
+
+      For example:
+      `--worker-pool-spec=replica-count=1,machine-type=n1-highmem-2,container-image-uri=gcr.io/ucaip-test/ucaip-training-test`
+      """))
+
 _CUSTOM_JOB_COMMAND = base.Argument(
     '--command',
     type=arg_parsers.ArgList(),
@@ -112,7 +144,7 @@ _CUSTOM_JOB_ARGS = base.Argument(
     help='Comma-separated arguments passed to containers or python tasks.')
 
 
-def AddCreateCustomJobFlags(parser):
+def AddCreateCustomJobFlags(parser, version=constants.BETA_VERSION):
   """Adds flags related to create a custom job."""
   shared_flags.AddRegionResourceArg(parser, 'to create a custom job')
   shared_flags.TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
@@ -126,7 +158,10 @@ def AddCreateCustomJobFlags(parser):
   worker_pool_spec_group = base.ArgumentGroup(
       help='Worker pool specification.', required=True)
   worker_pool_spec_group.AddArgument(_CUSTOM_JOB_CONFIG)
-  worker_pool_spec_group.AddArgument(_WORKER_POOL_SPEC)
+  if version == constants.GA_VERSION:
+    worker_pool_spec_group.AddArgument(_WORKER_POOL_SPEC_GA)
+  else:
+    worker_pool_spec_group.AddArgument(_WORKER_POOL_SPEC_BETA)
   worker_pool_spec_group.AddToParser(parser)
 
 

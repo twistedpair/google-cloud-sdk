@@ -65,6 +65,7 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_knowledgeBases = self.ProjectsKnowledgeBasesService(self)
     self.projects_locations_agent_entityTypes_entities = self.ProjectsLocationsAgentEntityTypesEntitiesService(self)
     self.projects_locations_agent_entityTypes = self.ProjectsLocationsAgentEntityTypesService(self)
+    self.projects_locations_agent_environments_intents = self.ProjectsLocationsAgentEnvironmentsIntentsService(self)
     self.projects_locations_agent_environments_users_sessions_contexts = self.ProjectsLocationsAgentEnvironmentsUsersSessionsContextsService(self)
     self.projects_locations_agent_environments_users_sessions_entityTypes = self.ProjectsLocationsAgentEnvironmentsUsersSessionsEntityTypesService(self)
     self.projects_locations_agent_environments_users_sessions = self.ProjectsLocationsAgentEnvironmentsUsersSessionsService(self)
@@ -3370,6 +3371,43 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='googleCloudDialogflowV2EntityType',
         request_type_name='DialogflowProjectsLocationsAgentEntityTypesPatchRequest',
         response_type_name='GoogleCloudDialogflowV2EntityType',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAgentEnvironmentsIntentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_agent_environments_intents resource."""
+
+    _NAME = 'projects_locations_agent_environments_intents'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsAgentEnvironmentsIntentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Returns the list of all intents in the specified agent.
+
+      Args:
+        request: (DialogflowProjectsLocationsAgentEnvironmentsIntentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListIntentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/intents',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.agent.environments.intents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['intentView', 'languageCode', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/intents',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsAgentEnvironmentsIntentsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListIntentsResponse',
         supports_download=False,
     )
 

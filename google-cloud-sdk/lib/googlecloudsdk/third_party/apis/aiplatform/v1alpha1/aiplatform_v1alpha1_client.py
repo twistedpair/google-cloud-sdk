@@ -68,6 +68,10 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     self.projects_locations_indexEndpoints = self.ProjectsLocationsIndexEndpointsService(self)
     self.projects_locations_indexes_operations = self.ProjectsLocationsIndexesOperationsService(self)
     self.projects_locations_indexes = self.ProjectsLocationsIndexesService(self)
+    self.projects_locations_metadataStores_artifacts = self.ProjectsLocationsMetadataStoresArtifactsService(self)
+    self.projects_locations_metadataStores_contexts = self.ProjectsLocationsMetadataStoresContextsService(self)
+    self.projects_locations_metadataStores_executions = self.ProjectsLocationsMetadataStoresExecutionsService(self)
+    self.projects_locations_metadataStores = self.ProjectsLocationsMetadataStoresService(self)
     self.projects_locations_migratableResources_operations = self.ProjectsLocationsMigratableResourcesOperationsService(self)
     self.projects_locations_migratableResources = self.ProjectsLocationsMigratableResourcesService(self)
     self.projects_locations_modelDeploymentMonitoringJobs_operations = self.ProjectsLocationsModelDeploymentMonitoringJobsOperationsService(self)
@@ -2577,6 +2581,60 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ReadFeatureValues(self, request, global_params=None):
+      r"""Reads Feature values of a specific entity of an EntityType. For reading feature values of multiple entities of an EntityType, please use StreamingReadFeatureValues.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeaturestoresEntityTypesReadFeatureValuesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ReadFeatureValuesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReadFeatureValues')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReadFeatureValues.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:readFeatureValues',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featurestores.entityTypes.readFeatureValues',
+        ordered_params=['entityType'],
+        path_params=['entityType'],
+        query_params=[],
+        relative_path='v1alpha1/{+entityType}:readFeatureValues',
+        request_field='googleCloudAiplatformV1alpha1ReadFeatureValuesRequest',
+        request_type_name='AiplatformProjectsLocationsFeaturestoresEntityTypesReadFeatureValuesRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ReadFeatureValuesResponse',
+        supports_download=False,
+    )
+
+    def StreamingReadFeatureValues(self, request, global_params=None):
+      r"""Reads Feature values for multiple entities. Depending on their size, data for different entities may be broken up across multiple responses.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatureValuesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ReadFeatureValuesResponse) The response message.
+      """
+      config = self.GetMethodConfig('StreamingReadFeatureValues')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StreamingReadFeatureValues.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}/entityTypes/{entityTypesId}:streamingReadFeatureValues',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featurestores.entityTypes.streamingReadFeatureValues',
+        ordered_params=['entityType'],
+        path_params=['entityType'],
+        query_params=[],
+        relative_path='v1alpha1/{+entityType}:streamingReadFeatureValues',
+        request_field='googleCloudAiplatformV1alpha1StreamingReadFeatureValuesRequest',
+        request_type_name='AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatureValuesRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ReadFeatureValuesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsFeaturestoresOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_featurestores_operations resource."""
 
@@ -3656,6 +3714,613 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsMetadataStoresArtifactsService(base_api.BaseApiService):
+    """Service class for the projects_locations_metadataStores_artifacts resource."""
+
+    _NAME = 'projects_locations_metadataStores_artifacts'
+
+    def __init__(self, client):
+      super(AiplatformV1alpha1.ProjectsLocationsMetadataStoresArtifactsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an Artifact associated with a MetadataStore.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresArtifactsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Artifact) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/artifacts',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.artifacts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['artifactId'],
+        relative_path='v1alpha1/{+parent}/artifacts',
+        request_field='googleCloudAiplatformV1alpha1Artifact',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresArtifactsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Artifact',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a specific Artifact.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresArtifactsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Artifact) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/artifacts/{artifactsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.metadataStores.artifacts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresArtifactsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Artifact',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Artifacts in the MetadataStore.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresArtifactsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListArtifactsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/artifacts',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.metadataStores.artifacts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/artifacts',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresArtifactsListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListArtifactsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a stored Artifact.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Artifact) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/artifacts/{artifactsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.metadataStores.artifacts.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudAiplatformV1alpha1Artifact',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Artifact',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMetadataStoresContextsService(base_api.BaseApiService):
+    """Service class for the projects_locations_metadataStores_contexts resource."""
+
+    _NAME = 'projects_locations_metadataStores_contexts'
+
+    def __init__(self, client):
+      super(AiplatformV1alpha1.ProjectsLocationsMetadataStoresContextsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddContextArtifactsAndExecutions(self, request, global_params=None):
+      r"""Adds a set of Artifacts and Executions to a Context. If any of the Artifacts or Executions have already been added to a Context, they are simply skipped.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresContextsAddContextArtifactsAndExecutionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1AddContextArtifactsAndExecutionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('AddContextArtifactsAndExecutions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddContextArtifactsAndExecutions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/contexts/{contextsId}:addContextArtifactsAndExecutions',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.contexts.addContextArtifactsAndExecutions',
+        ordered_params=['context'],
+        path_params=['context'],
+        query_params=[],
+        relative_path='v1alpha1/{+context}:addContextArtifactsAndExecutions',
+        request_field='googleCloudAiplatformV1alpha1AddContextArtifactsAndExecutionsRequest',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresContextsAddContextArtifactsAndExecutionsRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1AddContextArtifactsAndExecutionsResponse',
+        supports_download=False,
+    )
+
+    def AddContextChildren(self, request, global_params=None):
+      r"""Adds a set of Contexts as children to a parent Context. If any of the child Contexts have already been added to the parent Context, they are simply skipped. If this call would create a cycle or cause any Context to have more than 10 parents, the request will fail with an INVALID_ARGUMENT error.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresContextsAddContextChildrenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1AddContextChildrenResponse) The response message.
+      """
+      config = self.GetMethodConfig('AddContextChildren')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddContextChildren.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/contexts/{contextsId}:addContextChildren',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.contexts.addContextChildren',
+        ordered_params=['context'],
+        path_params=['context'],
+        query_params=[],
+        relative_path='v1alpha1/{+context}:addContextChildren',
+        request_field='googleCloudAiplatformV1alpha1AddContextChildrenRequest',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresContextsAddContextChildrenRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1AddContextChildrenResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Context associated with a MetadataStore.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresContextsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Context) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/contexts',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.contexts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['contextId'],
+        relative_path='v1alpha1/{+parent}/contexts',
+        request_field='googleCloudAiplatformV1alpha1Context',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresContextsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Context',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a specific Context.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresContextsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Context) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/contexts/{contextsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.metadataStores.contexts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresContextsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Context',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Contexts on the MetadataStore.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresContextsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListContextsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/contexts',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.metadataStores.contexts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/contexts',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresContextsListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListContextsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a stored Context.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresContextsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Context) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/contexts/{contextsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.metadataStores.contexts.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudAiplatformV1alpha1Context',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresContextsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Context',
+        supports_download=False,
+    )
+
+    def QueryContextLineageSubgraph(self, request, global_params=None):
+      r"""Retrieves Artifacts and Executions within the specified Context, connected by Event edges and returned as a LineageSubgraph.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresContextsQueryContextLineageSubgraphRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1LineageSubgraph) The response message.
+      """
+      config = self.GetMethodConfig('QueryContextLineageSubgraph')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryContextLineageSubgraph.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/contexts/{contextsId}:queryContextLineageSubgraph',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.metadataStores.contexts.queryContextLineageSubgraph',
+        ordered_params=['context'],
+        path_params=['context'],
+        query_params=[],
+        relative_path='v1alpha1/{+context}:queryContextLineageSubgraph',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresContextsQueryContextLineageSubgraphRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1LineageSubgraph',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMetadataStoresExecutionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_metadataStores_executions resource."""
+
+    _NAME = 'projects_locations_metadataStores_executions'
+
+    def __init__(self, client):
+      super(AiplatformV1alpha1.ProjectsLocationsMetadataStoresExecutionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddExecutionEvents(self, request, global_params=None):
+      r"""Adds Events to the specified Execution. An Event indicates whether an Artifact was used as an input or output for an Execution. If an Event already exists between the Execution and the Artifact, the Event is skipped.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresExecutionsAddExecutionEventsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1AddExecutionEventsResponse) The response message.
+      """
+      config = self.GetMethodConfig('AddExecutionEvents')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddExecutionEvents.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/executions/{executionsId}:addExecutionEvents',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.executions.addExecutionEvents',
+        ordered_params=['execution'],
+        path_params=['execution'],
+        query_params=[],
+        relative_path='v1alpha1/{+execution}:addExecutionEvents',
+        request_field='googleCloudAiplatformV1alpha1AddExecutionEventsRequest',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsAddExecutionEventsRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1AddExecutionEventsResponse',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates an Execution associated with a MetadataStore.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresExecutionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Execution) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/executions',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.executions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['executionId'],
+        relative_path='v1alpha1/{+parent}/executions',
+        request_field='googleCloudAiplatformV1alpha1Execution',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Execution',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a specific Execution.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresExecutionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Execution) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/executions/{executionsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.metadataStores.executions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Execution',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Executions in the MetadataStore.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresExecutionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListExecutionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/executions',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.metadataStores.executions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/executions',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListExecutionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a stored Execution.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1Execution) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/executions/{executionsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.metadataStores.executions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudAiplatformV1alpha1Execution',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1Execution',
+        supports_download=False,
+    )
+
+    def QueryExecutionInputsAndOutputs(self, request, global_params=None):
+      r"""Obtains the set of input and output Artifacts for this Execution, in the form of LineageSubgraph that also contains the Execution and connecting Events.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresExecutionsQueryExecutionInputsAndOutputsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1LineageSubgraph) The response message.
+      """
+      config = self.GetMethodConfig('QueryExecutionInputsAndOutputs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryExecutionInputsAndOutputs.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/executions/{executionsId}:queryExecutionInputsAndOutputs',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.metadataStores.executions.queryExecutionInputsAndOutputs',
+        ordered_params=['execution'],
+        path_params=['execution'],
+        query_params=[],
+        relative_path='v1alpha1/{+execution}:queryExecutionInputsAndOutputs',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsQueryExecutionInputsAndOutputsRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1LineageSubgraph',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMetadataStoresService(base_api.BaseApiService):
+    """Service class for the projects_locations_metadataStores resource."""
+
+    _NAME = 'projects_locations_metadataStores'
+
+    def __init__(self, client):
+      super(AiplatformV1alpha1.ProjectsLocationsMetadataStoresService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Initializes a MetadataStore, including allocation of resources.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['metadataStoreId'],
+        relative_path='v1alpha1/{+parent}/metadataStores',
+        request_field='googleCloudAiplatformV1alpha1MetadataStore',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single MetadataStore.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.metadataStores.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['force'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a specific MetadataStore.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1MetadataStore) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.metadataStores.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1MetadataStore',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists MetadataStores for a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListMetadataStoresResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/metadataStores',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.metadataStores.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/metadataStores',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListMetadataStoresResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMigratableResourcesOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_migratableResources_operations resource."""
 
@@ -3812,7 +4477,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
           }
 
     def BatchMigrate(self, request, global_params=None):
-      r"""Batch migrates resources from ml.googleapis.com, automl.googleapis.com, and datalabeling.googleapis.com to AI Platform (Unified).
+      r"""Batch migrates resources from ml.googleapis.com, automl.googleapis.com, and datalabeling.googleapis.com to Vertex AI.
 
       Args:
         request: (AiplatformProjectsLocationsMigratableResourcesBatchMigrateRequest) input message
@@ -3839,7 +4504,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""Searches all of the resources in automl.googleapis.com, datalabeling.googleapis.com and ml.googleapis.com that can be migrated to AI Platform's given location.
+      r"""Searches all of the resources in automl.googleapis.com, datalabeling.googleapis.com and ml.googleapis.com that can be migrated to Vertex AI's given location.
 
       Args:
         request: (AiplatformProjectsLocationsMigratableResourcesSearchRequest) input message
@@ -4206,6 +4871,33 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1alpha1ResumeModelDeploymentMonitoringJobRequest',
         request_type_name='AiplatformProjectsLocationsModelDeploymentMonitoringJobsResumeRequest',
         response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def SearchModelDeploymentMonitoringStatsAnomalies(self, request, global_params=None):
+      r"""Searches Model Monitoring Statistics generated within a given time window.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelDeploymentMonitoringJobsSearchModelDeploymentMonitoringStatsAnomaliesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1SearchModelDeploymentMonitoringStatsAnomaliesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchModelDeploymentMonitoringStatsAnomalies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchModelDeploymentMonitoringStatsAnomalies.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/modelDeploymentMonitoringJobs/{modelDeploymentMonitoringJobsId}:searchModelDeploymentMonitoringStatsAnomalies',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.modelDeploymentMonitoringJobs.searchModelDeploymentMonitoringStatsAnomalies',
+        ordered_params=['modelDeploymentMonitoringJob'],
+        path_params=['modelDeploymentMonitoringJob'],
+        query_params=[],
+        relative_path='v1alpha1/{+modelDeploymentMonitoringJob}:searchModelDeploymentMonitoringStatsAnomalies',
+        request_field='googleCloudAiplatformV1alpha1SearchModelDeploymentMonitoringStatsAnomaliesRequest',
+        request_type_name='AiplatformProjectsLocationsModelDeploymentMonitoringJobsSearchModelDeploymentMonitoringStatsAnomaliesRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1SearchModelDeploymentMonitoringStatsAnomaliesResponse',
         supports_download=False,
     )
 
@@ -4773,7 +5465,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Upload(self, request, global_params=None):
-      r"""Uploads a Model artifact into AI Platform.
+      r"""Uploads a Model artifact into Vertex AI.
 
       Args:
         request: (AiplatformProjectsLocationsModelsUploadRequest) input message
@@ -5098,6 +5790,141 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
       super(AiplatformV1alpha1.ProjectsLocationsPipelineJobsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels a PipelineJob. Starts asynchronous cancellation on the PipelineJob. The server makes a best effort to cancel the pipeline, but success is not guaranteed. Clients can use PipelineService.GetPipelineJob or other methods to check whether the cancellation succeeded or whether the pipeline completed despite cancellation. On successful cancellation, the PipelineJob is not deleted; instead it becomes a pipeline with a PipelineJob.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`, and PipelineJob.state is set to `CANCELLED`.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/pipelineJobs/{pipelineJobsId}:cancel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.pipelineJobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:cancel',
+        request_field='googleCloudAiplatformV1alpha1CancelPipelineJobRequest',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a PipelineJob. A PipelineJob will run immediately when created.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1PipelineJob) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/pipelineJobs',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.pipelineJobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pipelineJobId'],
+        relative_path='v1alpha1/{+parent}/pipelineJobs',
+        request_field='googleCloudAiplatformV1alpha1PipelineJob',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1PipelineJob',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a PipelineJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/pipelineJobs/{pipelineJobsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.pipelineJobs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a PipelineJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1PipelineJob) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/pipelineJobs/{pipelineJobsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.pipelineJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1PipelineJob',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists PipelineJobs in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1ListPipelineJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/pipelineJobs',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.pipelineJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/pipelineJobs',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsListRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1ListPipelineJobsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsSpecialistPoolsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_specialistPools_operations resource."""
@@ -5933,7 +6760,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Suggest(self, request, global_params=None):
-      r"""Adds one or more Trials to a Study, with parameter values suggested by AI Platform Vizier. Returns a long-running operation associated with the generation of Trial suggestions. When this long-running operation succeeds, it will contain a SuggestTrialsResponse.
+      r"""Adds one or more Trials to a Study, with parameter values suggested by Vertex Vizier. Returns a long-running operation associated with the generation of Trial suggestions. When this long-running operation succeeds, it will contain a SuggestTrialsResponse.
 
       Args:
         request: (AiplatformProjectsLocationsStudiesTrialsSuggestRequest) input message

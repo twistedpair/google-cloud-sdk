@@ -157,6 +157,11 @@ class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):
   r"""A CloudfunctionsProjectsLocationsFunctionsListRequest object.
 
   Fields:
+    filter: The filter for Functions that match the filter expression,
+      following the syntax outlined in https://google.aip.dev/160.
+    orderBy: The sorting order of the resources returned. Value should be a
+      comma separated list of fields. The default sorting oder is ascending.
+      See https://google.aip.dev/132#ordering.
     pageSize: Maximum number of functions to return per call.
     pageToken: The value returned by the last `ListFunctionsResponse`;
       indicates that this is a continuation of a prior `ListFunctions` call,
@@ -169,9 +174,11 @@ class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):
       locations along with the names of any unreachable locations.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class CloudfunctionsProjectsLocationsFunctionsPatchRequest(_messages.Message):
@@ -418,31 +425,6 @@ class GenerateUploadUrlResponse(_messages.Message):
 
 
 class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: API version used to start the operation.
-    cancelRequested: Identifies whether the user has requested cancellation of
-      the operation. Operations that have successfully been cancelled have
-      Operation.error value with a google.rpc.Status.code of 1, corresponding
-      to `Code.CANCELLED`.
-    createTime: The time the operation was created.
-    endTime: The time the operation finished running.
-    statusDetail: Human-readable status of the operation, if any.
-    target: Server-defined resource path for the target of the operation.
-    verb: Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  cancelRequested = _messages.BooleanField(2)
-  createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  statusDetail = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
-class GoogleCloudFunctionsV2mainOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
   Fields:

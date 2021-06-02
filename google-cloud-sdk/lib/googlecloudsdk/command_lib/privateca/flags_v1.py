@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.privateca import exceptions as privateca_exceptions
 from googlecloudsdk.command_lib.privateca import preset_profiles
 from googlecloudsdk.command_lib.privateca import text_utils
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -266,8 +267,15 @@ def AddInlineX509ParametersFlags(parser, is_ca_command,
   group.AddToParser(parser)
 
 
-def AddIdentityConstraintsFlags(parser):
-  """Adds flags for expressing identity constraints."""
+def AddIdentityConstraintsFlags(parser, require_passthrough_flags=True):
+  """Adds flags for expressing identity constraints.
+
+  Args:
+    parser: The argparse object to add the flags to.
+    require_passthrough_flags: Whether the boolean --copy-* flags should be
+    required.
+  """
+
   base.Argument(
       '--identity-cel-expression',
       help='A CEL expression that will be evaluated against the identity '
@@ -281,7 +289,7 @@ def AddIdentityConstraintsFlags(parser):
             '--no-copy-subject to drop any caller-specifed subjects from the '
             'certificate request.'),
       action='store_true',
-      required=True).AddToParser(parser)
+      required=require_passthrough_flags).AddToParser(parser)
   base.Argument(
       '--copy-sans',
       help=(
@@ -290,7 +298,7 @@ def AddIdentityConstraintsFlags(parser):
           'Specify --no-copy-sans to drop any caller-specified SANs in the '
           'certificate request.'),
       action='store_true',
-      required=True).AddToParser(parser)
+      required=require_passthrough_flags).AddToParser(parser)
 
 
 def GetKnownExtensionMapping():
@@ -324,7 +332,11 @@ def _StrToKnownExtension(arg_name, val):
 
 
 def AddExtensionConstraintsFlags(parser):
-  """Adds flags for expressing extension constraints."""
+  """Adds flags for expressing extension constraints.
+
+  Args:
+    parser: The argparser to add the arguments to.
+  """
   extension_group = parser.add_group(
       mutex=True,
       required=False,
@@ -353,7 +365,70 @@ def AddExtensionConstraintsFlags(parser):
   base.Argument(
       '--copy-all-requested-extensions',
       help=('If this is set, all extensions specified in the certificate '
-            ' request eill be copied into the signed certificate.'),
+            ' request will be copied into the signed certificate.'),
+      action='store_const',
+      const=True,
+  ).AddToParser(extension_group)
+
+
+def AddExtensionConstraintsFlagsForUpdate(parser):
+  """Adds flags for updating extension constraints.
+
+  Args:
+    parser: The argparser to add the arguments to.
+  """
+  extension_group_help = 'Constraints on requested X.509 extensions.'
+
+  extension_group = parser.add_group(
+      mutex=True, required=False, help=extension_group_help)
+  copy_group = extension_group.add_group(
+      mutex=False,
+      required=False,
+      help=('Specify exact x509 extensions to copy by OID or known extension.'))
+
+  oid_group = copy_group.add_group(
+      mutex=True,
+      required=False,
+      help=('Constraints on unknown extensions by their OIDs.'))
+
+  base.Argument(
+      '--copy-extensions-by-oid',
+      help='If this is set, then extensions with the given OIDs will be copied '
+      'from the certificate request into the signed certificate.',
+      type=arg_parsers.ArgList(element_type=_StrToObjectId),
+      metavar='OBJECT_ID').AddToParser(oid_group)
+  base.Argument(
+      '--drop-oid-extensions',
+      help=('If this is set, then all existing OID extensions will be removed '
+            'from the template, prohibiting any extensions specified by '
+            'OIDs to be specified by the requester.'),
+      action='store_const',
+      const=True).AddToParser(oid_group)
+
+  known_group = copy_group.add_group(
+      mutex=True, required=False, help=('Constraints on known extensions.'))
+
+  known_extensions = GetKnownExtensionMapping()
+  base.Argument(
+      '--copy-known-extensions',
+      help='If this is set, then the given extensions will be copied '
+      'from the certificate request into the signed certificate.',
+      type=arg_parsers.ArgList(choices=known_extensions.keys()),
+      metavar='KNOWN_EXTENSIONS').AddToParser(known_group)
+  base.Argument(
+      '--drop-known-extensions',
+      help=(
+          'If this is set, then all known extensions will be '
+          'removed from the template, prohibiting any known x509 extensions to '
+          'be specified by the requester.'),
+      action='store_const',
+      const=True).AddToParser(known_group)
+
+  base.Argument(
+      '--copy-all-requested-extensions',
+      help=('If this is set, all extensions, whether known or specified by '
+            'OID, that are specified in the certificate request will be copied '
+            'into the signed certificate.'),
       action='store_const',
       const=True,
   ).AddToParser(extension_group)
@@ -379,16 +454,6 @@ def ParseIdentityConstraints(args):
   """Parses the identity flags into a CertificateIdentityConstraints object."""
   messages = privateca_base.GetMessagesModule('v1')
 
-  missing_subject_conf = (
-      'Neither copy-sans nor copy-subject was specified.This means that all '
-      'certificate requests that use this template must use identity '
-      'reflection.')
-  if not args.copy_subject and not args.copy_sans and not console_io.PromptContinue(
-      message=missing_subject_conf, default=True):
-    raise exceptions.InvalidArgumentException(
-        'copy-subject/copy-san',
-        'User aborted due to invalid subject configuration.')
-
   return messages.CertificateIdentityConstraints(
       allowSubjectPassthrough=args.copy_subject,
       allowSubjectAltNamesPassthrough=args.copy_sans,
@@ -397,19 +462,34 @@ def ParseIdentityConstraints(args):
 
 
 def ParseExtensionConstraints(args):
-  """Parse extension constraints flags into CertificateExtensionConstraints API message."""
+  """Parse extension constraints flags into CertificateExtensionConstraints API message.
+
+  Assumes that the parser defined by args has the flags
+  copy_all_requested_extensions, copy_known_extesnions, and
+  copy-extensions-by-oid. Also supports drop_known_extensions and
+  drop_oid_extensions for clearing the extension lists.
+
+  Args:
+    args: The argparse object to read flags from.
+
+  Returns:
+    The CertificateExtensionConstraints API message.
+  """
   if args.IsSpecified('copy_all_requested_extensions'):
     return None
+
   messages = privateca_base.GetMessagesModule('v1')
   known_exts = []
-  if args.IsSpecified('copy_known_extensions'):
+  if not args.IsKnownAndSpecified('drop_known_extensions') and args.IsSpecified(
+      'copy_known_extensions'):
     known_exts = [
         _StrToKnownExtension('--copy-known-extensions', ext)
         for ext in args.copy_known_extensions
     ]
 
   oids = []
-  if args.IsSpecified('copy_extensions_by_oid'):
+  if not args.IsKnownAndSpecified('drop_oid_extensions') and args.IsSpecified(
+      'copy_extensions_by_oid'):
     oids = args.copy_extensions_by_oid
 
   return messages.CertificateExtensionConstraints(
@@ -492,6 +572,40 @@ def ParseSanFlags(args):
       dnsNames=dns_names,
       ipAddresses=ip_addresses,
       uris=uris)
+
+
+def ValidateIdentityConstraints(args,
+                                existing_copy_subj=False,
+                                existing_copy_sans=False,
+                                for_update=False):
+  """Validates the template identity constraints flags.
+
+  Args:
+    args: the parser for the flag. Expected to have copy_sans and copy_subject
+      registered as flags
+    existing_copy_subj: A pre-existing value for the subject value,
+      if applicable.
+    existing_copy_sans: A pre-existing value for the san value, if applicable.
+    for_update: Whether the validation is for an update to a template.
+  """
+  copy_san = args.copy_sans or (not args.IsSpecified('copy_sans') and
+                                existing_copy_sans)
+  copy_subj = args.copy_subject or (not args.IsSpecified('copy_subject') and
+                                    existing_copy_subj)
+
+  if for_update:
+    missing_identity_conf_msg = (
+        'The resulting updated template will have no subject or SAN '
+        'passthroughs. ')
+  else:
+    missing_identity_conf_msg = (
+        'Neither copy-sans nor copy-subject was specified. ')
+  missing_identity_conf_msg += (
+      'This means that all certificate requests that use this template must '
+      'use identity reflection.')
+  if not copy_san and not copy_subj and not console_io.PromptContinue(
+      message=missing_identity_conf_msg, default=True):
+    raise privateca_exceptions.UserAbortException('Aborted by user.')
 
 
 def ValidateSubjectConfig(subject_config, is_ca):

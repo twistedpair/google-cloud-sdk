@@ -542,8 +542,8 @@ class CloudassetAssetsListRequest(_messages.Message):
       return the next page of assets.
     parent: Required. Name of the organization or project the assets belong
       to. Format: "organizations/[organization-number]" (such as
-      "organizations/123"), "projects/[project-number]" (such as "projects/my-
-      project-id"), or "projects/[project-id]" (such as "projects/12345").
+      "organizations/123"), "projects/[project-id]" (such as "projects/my-
+      project-id"), or "projects/[project-number]" (such as "projects/12345").
     readTime: Timestamp to take an asset snapshot. This can only be set to a
       timestamp between the current time and the current time minus 35 days
       (inclusive). If not specified, the current time will be used. Due to
@@ -734,10 +734,10 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
       to all the [searchable asset types](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types#searchable_asset_types). Regular
       expressions are also supported. For example: *
-      "compute.googleapis.com.*" snapshots resources whose asset type starts
-      with "compute.googleapis.com". * ".*Instance" snapshots resources whose
-      asset type ends with "Instance". * ".*Instance.*" snapshots resources
-      whose asset type contains "Instance". See
+      "compute.googleapis.com.*" snapshots IAM policies attached to asset type
+      starts with "compute.googleapis.com". * ".*Instance" snapshots IAM
+      policies attached to asset type ends with "Instance". * ".*Instance.*"
+      snapshots IAM policies attached to asset type contains "Instance". See
       [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
       regular expression syntax. If the regular expression does not match any
       supported asset type, an INVALID_ARGUMENT error will be returned.

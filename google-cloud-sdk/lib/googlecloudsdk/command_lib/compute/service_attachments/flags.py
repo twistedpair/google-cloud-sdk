@@ -46,7 +46,7 @@ def AddDescription(parser):
       help='An optional, textual description for the service attachment.')
 
 
-def AddConnectionPreference(parser):
+def AddConnectionPreference(parser, is_update=False):
   connection_preference_choices = {
       'ACCEPT_AUTOMATIC':
           'Always accept connection requests from consumers automatically.',
@@ -59,7 +59,7 @@ def AddConnectionPreference(parser):
       '--connection-preference',
       choices=connection_preference_choices,
       type=lambda x: x.replace('-', '_').upper(),
-      default='ACCEPT_AUTOMATIC',
+      default=None if is_update else 'ACCEPT_AUTOMATIC',
       help="This defines the service attachment's connection preference.")
 
 
@@ -67,7 +67,7 @@ def AddEnableProxyProtocolForCreate(parser):
   parser.add_argument(
       '--enable-proxy-protocol',
       action='store_true',
-      default=None,
+      default=False,
       help="""\
       If True, then enable the proxy protocol which is for supplying client
       TCP/IP address data in TCP connections that traverse proxies on their way

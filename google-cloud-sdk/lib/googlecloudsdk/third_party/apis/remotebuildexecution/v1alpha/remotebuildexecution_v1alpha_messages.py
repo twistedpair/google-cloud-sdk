@@ -927,10 +927,14 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
         container available for use during execution.
       CONFIG_MISMATCH: Container Manager is enabled, but there was no matching
         container available for execution.
+      CONFIG_MISSING_CONTAINER: Container Manager is enabled and we attempted
+        to execute on a matching container, but the container was no longer
+        running. The task was retried without an async container.
     """
     CONFIG_NONE = 0
     CONFIG_MATCH = 1
     CONFIG_MISMATCH = 2
+    CONFIG_MISSING_CONTAINER = 3
 
   class OutputLocationValueValuesEnum(_messages.Enum):
     r"""Indicates whether output files and/or output directories were found
@@ -1065,6 +1069,9 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
       DOCKER_IMAGE_VPCSC_PERMISSION_DENIED: Docker failed because a request
         was denied by the organization's policy.
       WORKING_DIR_NOT_RELATIVE: Working directory is not relative
+      DOCKER_MISSING_CONTAINER: Docker cannot find the container specified in
+        the command. This error is likely to only occur if an asynchronous
+        container is not running when the command is run.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1108,6 +1115,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     LOCAL_CONTAINER_MANAGER_NOT_RUNNING = 39
     DOCKER_IMAGE_VPCSC_PERMISSION_DENIED = 40
     WORKING_DIR_NOT_RELATIVE = 41
+    DOCKER_MISSING_CONTAINER = 42
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -1120,11 +1128,34 @@ class GoogleDevtoolsRemotebuildbotResourceUsage(_messages.Message):
     cpuUsedPercent: A number attribute.
     diskUsage: A GoogleDevtoolsRemotebuildbotResourceUsageStat attribute.
     memoryUsage: A GoogleDevtoolsRemotebuildbotResourceUsageStat attribute.
+    totalDiskIoStats: A GoogleDevtoolsRemotebuildbotResourceUsageIOStats
+      attribute.
   """
 
   cpuUsedPercent = _messages.FloatField(1)
   diskUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 2)
   memoryUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 3)
+  totalDiskIoStats = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageIOStats', 4)
+
+
+class GoogleDevtoolsRemotebuildbotResourceUsageIOStats(_messages.Message):
+  r"""A GoogleDevtoolsRemotebuildbotResourceUsageIOStats object.
+
+  Fields:
+    readBytesCount: A string attribute.
+    readCount: A string attribute.
+    readTimeMs: A string attribute.
+    writeBytesCount: A string attribute.
+    writeCount: A string attribute.
+    writeTimeMs: A string attribute.
+  """
+
+  readBytesCount = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
+  readCount = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+  readTimeMs = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  writeBytesCount = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  writeCount = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  writeTimeMs = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
 
 
 class GoogleDevtoolsRemotebuildbotResourceUsageStat(_messages.Message):

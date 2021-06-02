@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210510",
+ "revision": "20210521",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1654,6 +1654,10 @@
      "$ref": "TableReference",
      "description": "[Output-only] The DDL target table. Present only for CREATE/DROP TABLE/VIEW and DROP ALL ROW ACCESS POLICIES queries."
     },
+    "dmlStats": {
+     "type": "any",
+     "description": "[Output-only] Detailed statistics for DML statements Present only for DML statements INSERT, UPDATE, DELETE or TRUNCATE."
+    },
     "estimatedBytesProcessed": {
      "type": "string",
      "description": "[Output-only] The original estimate of bytes processed for the job.",
@@ -2179,6 +2183,10 @@
      "type": "boolean",
      "description": "Whether the query result was fetched from the query cache."
     },
+    "dmlStats": {
+     "type": "any",
+     "description": "[Output-only] Detailed statistics for DML statements Present only for DML statements INSERT, UPDATE, DELETE or TRUNCATE."
+    },
     "errors": {
      "type": "array",
      "description": "[Output-only] The first errors or warnings encountered during the running of the job. The final message includes the number of errors that caused the process to stop. Errors here do not necessarily mean that the job has completed or was unsuccessful.",
@@ -2414,11 +2422,11 @@
    "properties": {
     "baseTableReference": {
      "$ref": "TableReference",
-     "description": "[Required] Reference describing the ID of the table that is snapshotted."
+     "description": "[Required] Reference describing the ID of the table that was snapshot."
     },
     "snapshotTime": {
      "type": "string",
-     "description": "[Required] The time at which the base table was snapshot.",
+     "description": "[Required] The time at which the base table was snapshot. This value is reported in the JSON response using RFC3339 format.",
      "format": "date-time"
     }
    }
@@ -2965,6 +2973,10 @@
     "query": {
      "type": "string",
      "description": "[Required] A query that BigQuery executes when the view is referenced."
+    },
+    "useExplicitColumnNames": {
+     "type": "boolean",
+     "description": "True if the column names are explicitly specified. For example by using the 'CREATE VIEW v(c1, c2) AS ...' syntax. Can only be set using BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-reference/"
     },
     "useLegacySql": {
      "type": "boolean",

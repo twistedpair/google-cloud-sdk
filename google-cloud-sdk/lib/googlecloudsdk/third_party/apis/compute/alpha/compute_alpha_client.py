@@ -2178,7 +2178,7 @@ Example request body:
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the policies that have been configured for the specified project.
+      r"""Lists all the policies that have been configured for the specified folder or organization.
 
       Args:
         request: (ComputeFirewallPoliciesListRequest) input message
@@ -9145,7 +9145,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id='compute.networkFirewallPolicies.addRule',
         ordered_params=['project', 'firewallPolicy'],
         path_params=['firewallPolicy', 'project'],
-        query_params=['requestId'],
+        query_params=['maxPriority', 'minPriority', 'requestId'],
         relative_path='projects/{project}/global/firewallPolicies/{firewallPolicy}/addRule',
         request_field='firewallPolicyRule',
         request_type_name='ComputeNetworkFirewallPoliciesAddRuleRequest',
@@ -14347,6 +14347,32 @@ You can specify a maximum of 1000 instances with this method per request.
         supports_download=False,
     )
 
+    def RecommendLocations(self, request, global_params=None):
+      r"""Returns recommended locations (zones in a region) for specified sets of homogenous instances.
+
+      Args:
+        request: (ComputeRegionInstancesRecommendLocationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionInstancesRecommendLocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('RecommendLocations')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RecommendLocations.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstances.recommendLocations',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instances/recommendLocations',
+        request_field='regionInstancesRecommendLocationsResource',
+        request_type_name='ComputeRegionInstancesRecommendLocationsRequest',
+        response_type_name='RegionInstancesRecommendLocationsResponse',
+        supports_download=False,
+    )
+
   class RegionInstantSnapshotsService(base_api.BaseApiService):
     """Service class for the regionInstantSnapshots resource."""
 
@@ -14761,7 +14787,7 @@ For more information, see Deleting instantSnapshots.
         method_id='compute.regionNetworkFirewallPolicies.addRule',
         ordered_params=['project', 'region', 'firewallPolicy'],
         path_params=['firewallPolicy', 'project', 'region'],
-        query_params=['requestId'],
+        query_params=['maxPriority', 'minPriority', 'requestId'],
         relative_path='projects/{project}/regions/{region}/firewallPolicies/{firewallPolicy}/addRule',
         request_field='firewallPolicyRule',
         request_type_name='ComputeRegionNetworkFirewallPoliciesAddRuleRequest',

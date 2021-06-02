@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -147,3 +148,148 @@ def NetworkArgumentForOtherResource(short_help,
       global_collection='compute.networks',
       short_help=short_help,
       detailed_help=detailed_help)
+
+
+def NetworkFirewallPolicyRuleArgument(required=False,
+                                      plural=False,
+                                      operation=None):
+  return compute_flags.ResourceArgument(
+      name='priority',
+      resource_name='network firewall policy rule',
+      completer=NetworkFirewallPoliciesCompleter,
+      plural=plural,
+      required=required,
+      global_collection='compute.networkFirewallPolicies',
+      short_help='Priority of the network firewall policy rule to {}.'.format(
+          operation))
+
+
+def AddAction(parser, required=True):
+  """Adds the action argument to the argparse."""
+  parser.add_argument(
+      '--action',
+      choices=['allow', 'deny', 'goto_next'],
+      type=lambda x: x.lower(),
+      required=required,
+      help='Action to take if the request matches the match condition.')
+
+
+def AddFirewallPolicy(parser, required=True, operation=None):
+  """Adds the network firewall policy argument to the argparse."""
+  parser.add_argument(
+      '--firewall-policy',
+      required=required,
+      help='Firewall policy name into which this rules should be '
+      '{}.'.format(operation))
+
+
+def AddSrcIpRanges(parser, required=False):
+  """Adds the source IP ranges."""
+  parser.add_argument(
+      '--src-ip-ranges',
+      type=arg_parsers.ArgList(),
+      required=required,
+      metavar='SRC_IP_RANGE',
+      help=('Source IP ranges to match for this rule. '
+            'Can only be specified if DIRECTION is ingress.'))
+
+
+def AddDestIpRanges(parser, required=False):
+  """Adds the destination IP ranges."""
+  parser.add_argument(
+      '--dest-ip-ranges',
+      type=arg_parsers.ArgList(),
+      required=required,
+      metavar='DEST_IP_RANGE',
+      help=('Destination IP ranges to match for this rule. '
+            'Can only be specified if DIRECTION is egress.'))
+
+
+def AddLayer4Configs(parser, required=False):
+  """Adds the layer4 configs."""
+  parser.add_argument(
+      '--layer4-configs',
+      type=arg_parsers.ArgList(),
+      required=required,
+      metavar='LAYER4_CONFIG',
+      help=('A list of destination protocols and ports to which the firewall '
+            'rule will apply.'))
+
+
+def AddDirection(parser, required=False):
+  """Adds the direction of the traffic to which the rule is applied."""
+  parser.add_argument(
+      '--direction',
+      required=required,
+      choices=['INGRESS', 'EGRESS'],
+      help=(
+          'Direction of the traffic the rule is applied. The default is to apply on incoming traffic.'
+      ))
+
+
+def AddEnableLogging(parser, required=False):
+  """Adds the option to enable logging."""
+  parser.add_argument(
+      '--enable-logging',
+      required=required,
+      action=arg_parsers.StoreTrueFalseAction,
+      help=('Use this flag to enable logging of connections that allowed or '
+            'denied by this rule.'))
+
+
+def AddDisabled(parser, required=False):
+  """Adds the option to disable the rule."""
+  parser.add_argument(
+      '--disabled',
+      required=required,
+      action=arg_parsers.StoreTrueFalseAction,
+      help=('Use this flag to disable the rule. Disabled rules will not affect '
+            'traffic.'))
+
+
+def AddTargetServiceAccounts(parser, required=False):
+  """Adds the target service accounts for the rule."""
+  parser.add_argument(
+      '--target-service-accounts',
+      type=arg_parsers.ArgList(),
+      metavar='TARGET_SERVICE_ACCOUNTS',
+      required=required,
+      help=('List of target service accounts for the rule.'))
+
+
+def AddDescription(parser, required=False):
+  """Adds the description of this rule."""
+  parser.add_argument(
+      '--description',
+      required=required,
+      help=('An optional, textual description for the rule.'))
+
+
+def AddSrcSecureTags(parser, required=False):
+  """Adds a  source secure tag to this rule."""
+  parser.add_argument(
+      '--src-secure-tags',
+      type=arg_parsers.ArgList(),
+      metavar='SOURCE_SECURE_TAGS',
+      required=required,
+      help=('An optional, list of source secure tags with a name of the '
+            'format tagValues/'))
+
+
+def AddTargetSecureTags(parser, required=False):
+  """Adds a target secure tag to this rule."""
+  parser.add_argument(
+      '--target-secure-tags',
+      type=arg_parsers.ArgList(),
+      metavar='TARGET_SECURE_TAGS',
+      required=required,
+      help=('An optional, list of source secure tags with a name of the '
+            'format tagValues/'))
+
+
+def AddNewPriority(parser, operation=None):
+  """Adds the new firewall policy rule priority to the argparse."""
+  parser.add_argument(
+      '--new-priority',
+      help=('New priority for the rule to {}. Valid in [0, 65535]. '.format(
+          operation)))

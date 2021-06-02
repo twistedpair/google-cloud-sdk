@@ -166,6 +166,584 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CommonFeatureSpec(_messages.Message):
+  r"""CommonFeatureSpec contains Hub-wide configuration information
+
+  Fields:
+    helloworld: Hello World-specific spec.
+    multiclusteringress: Multicluster Ingress-specific spec.
+  """
+
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 1)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 2)
+
+
+class CommonFeatureState(_messages.Message):
+  r"""CommonFeatureState contains Hub-wide Feature status information.
+
+  Fields:
+    helloworld: Hello World-specific state.
+    state: Output only. The "running state" of the Feature in this Hub.
+  """
+
+  helloworld = _messages.MessageField('HelloWorldFeatureState', 1)
+  state = _messages.MessageField('FeatureState', 2)
+
+
+class ConfigManagementConfigSync(_messages.Message):
+  r"""Configuration for Config Sync
+
+  Fields:
+    git: Git repo configuration for the cluster.
+    sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
+      or "unstructured" mode.
+  """
+
+  git = _messages.MessageField('ConfigManagementGitConfig', 1)
+  sourceFormat = _messages.StringField(2)
+
+
+class ConfigManagementConfigSyncDeploymentState(_messages.Message):
+  r"""The state of ConfigSync's deployment on a cluster
+
+  Enums:
+    GitSyncValueValuesEnum: Deployment state of the git-sync pod
+    ImporterValueValuesEnum: Deployment state of the importer pod
+    MonitorValueValuesEnum: Deployment state of the monitor pod
+    ReconcilerManagerValueValuesEnum: Deployment state of reconciler-manager
+      pod
+    RootReconcilerValueValuesEnum: Deployment state of root-reconciler
+    SyncerValueValuesEnum: Deployment state of the syncer pod
+
+  Fields:
+    gitSync: Deployment state of the git-sync pod
+    importer: Deployment state of the importer pod
+    monitor: Deployment state of the monitor pod
+    reconcilerManager: Deployment state of reconciler-manager pod
+    rootReconciler: Deployment state of root-reconciler
+    syncer: Deployment state of the syncer pod
+  """
+
+  class GitSyncValueValuesEnum(_messages.Enum):
+    r"""Deployment state of the git-sync pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class ImporterValueValuesEnum(_messages.Enum):
+    r"""Deployment state of the importer pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class MonitorValueValuesEnum(_messages.Enum):
+    r"""Deployment state of the monitor pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class ReconcilerManagerValueValuesEnum(_messages.Enum):
+    r"""Deployment state of reconciler-manager pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class RootReconcilerValueValuesEnum(_messages.Enum):
+    r"""Deployment state of root-reconciler
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class SyncerValueValuesEnum(_messages.Enum):
+    r"""Deployment state of the syncer pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  gitSync = _messages.EnumField('GitSyncValueValuesEnum', 1)
+  importer = _messages.EnumField('ImporterValueValuesEnum', 2)
+  monitor = _messages.EnumField('MonitorValueValuesEnum', 3)
+  reconcilerManager = _messages.EnumField('ReconcilerManagerValueValuesEnum', 4)
+  rootReconciler = _messages.EnumField('RootReconcilerValueValuesEnum', 5)
+  syncer = _messages.EnumField('SyncerValueValuesEnum', 6)
+
+
+class ConfigManagementConfigSyncState(_messages.Message):
+  r"""State information for ConfigSync
+
+  Fields:
+    deploymentState: Information about the deployment of ConfigSync, including
+      the version of the various Pods deployed
+    syncState: The state of ConfigSync's process to sync configs to a cluster
+    version: The version of ConfigSync deployed
+  """
+
+  deploymentState = _messages.MessageField('ConfigManagementConfigSyncDeploymentState', 1)
+  syncState = _messages.MessageField('ConfigManagementSyncState', 2)
+  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 3)
+
+
+class ConfigManagementConfigSyncVersion(_messages.Message):
+  r"""Specific versioning information pertaining to ConfigSync's Pods
+
+  Fields:
+    gitSync: Version of the deployed git-sync pod
+    importer: Version of the deployed importer pod
+    monitor: Version of the deployed monitor pod
+    reconcilerManager: Version of the deployed reconciler-manager pod
+    rootReconciler: Version of the deployed reconciler container in root-
+      reconciler pod
+    syncer: Version of the deployed syncer pod
+  """
+
+  gitSync = _messages.StringField(1)
+  importer = _messages.StringField(2)
+  monitor = _messages.StringField(3)
+  reconcilerManager = _messages.StringField(4)
+  rootReconciler = _messages.StringField(5)
+  syncer = _messages.StringField(6)
+
+
+class ConfigManagementErrorResource(_messages.Message):
+  r"""Model for a config file in the git repo with an associated Sync error
+
+  Fields:
+    resourceGvk: Group/version/kind of the resource that is causing an error
+    resourceName: Metadata name of the resource that is causing an error
+    resourceNamespace: Namespace of the resource that is causing an error
+    sourcePath: Path in the git repo of the erroneous config
+  """
+
+  resourceGvk = _messages.MessageField('ConfigManagementGroupVersionKind', 1)
+  resourceName = _messages.StringField(2)
+  resourceNamespace = _messages.StringField(3)
+  sourcePath = _messages.StringField(4)
+
+
+class ConfigManagementGatekeeperDeploymentState(_messages.Message):
+  r"""State of Policy Controller installation.
+
+  Enums:
+    GatekeeperAuditValueValuesEnum: Status of gatekeeper-audit deployment.
+    GatekeeperControllerManagerStateValueValuesEnum: Status of gatekeeper-
+      controller-manager pod.
+
+  Fields:
+    gatekeeperAudit: Status of gatekeeper-audit deployment.
+    gatekeeperControllerManagerState: Status of gatekeeper-controller-manager
+      pod.
+  """
+
+  class GatekeeperAuditValueValuesEnum(_messages.Enum):
+    r"""Status of gatekeeper-audit deployment.
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class GatekeeperControllerManagerStateValueValuesEnum(_messages.Enum):
+    r"""Status of gatekeeper-controller-manager pod.
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  gatekeeperAudit = _messages.EnumField('GatekeeperAuditValueValuesEnum', 1)
+  gatekeeperControllerManagerState = _messages.EnumField('GatekeeperControllerManagerStateValueValuesEnum', 2)
+
+
+class ConfigManagementGitConfig(_messages.Message):
+  r"""Git repo configuration for a single cluster.
+
+  Fields:
+    gcpServiceAccountEmail: The GCP Service Account Email used for auth when
+      secret_type is gcpServiceAccount.
+    httpsProxy: URL for the HTTPS proxy to be used when communicating with the
+      Git repo.
+    policyDir: The path within the Git repository that represents the top
+      level of the repo to sync. Default: the root directory of the
+      repository.
+    secretType: Type of secret configured for access to the Git repo.
+    syncBranch: The branch of the repository to sync from. Default: master.
+    syncRepo: The URL of the Git repository to use as the source of truth.
+    syncRev: Git revision (tag or hash) to check out. Default HEAD.
+    syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
+  """
+
+  gcpServiceAccountEmail = _messages.StringField(1)
+  httpsProxy = _messages.StringField(2)
+  policyDir = _messages.StringField(3)
+  secretType = _messages.StringField(4)
+  syncBranch = _messages.StringField(5)
+  syncRepo = _messages.StringField(6)
+  syncRev = _messages.StringField(7)
+  syncWaitSecs = _messages.IntegerField(8)
+
+
+class ConfigManagementGroupVersionKind(_messages.Message):
+  r"""A Kubernetes object's GVK
+
+  Fields:
+    group: Kubernetes Group
+    kind: Kubernetes Kind
+    version: Kubernetes Version
+  """
+
+  group = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  version = _messages.StringField(3)
+
+
+class ConfigManagementHierarchyControllerConfig(_messages.Message):
+  r"""Configuration for Hierarchy Controller
+
+  Fields:
+    enableHierarchicalResourceQuota: Whether hierarchical resource quota is
+      enabled in this cluster.
+    enablePodTreeLabels: Whether pod tree labels are enabled in this cluster.
+    enabled: Whether Hierarchy Controller is enabled in this cluster.
+  """
+
+  enableHierarchicalResourceQuota = _messages.BooleanField(1)
+  enablePodTreeLabels = _messages.BooleanField(2)
+  enabled = _messages.BooleanField(3)
+
+
+class ConfigManagementHierarchyControllerDeploymentState(_messages.Message):
+  r"""Deployment state for Hierarchy Controller
+
+  Enums:
+    ExtensionValueValuesEnum: The deployment state for Hierarchy Controller
+      extension (e.g. v0.7.0-hc.1)
+    HncValueValuesEnum: The deployment state for open source HNC (e.g.
+      v0.7.0-hc.0)
+
+  Fields:
+    extension: The deployment state for Hierarchy Controller extension (e.g.
+      v0.7.0-hc.1)
+    hnc: The deployment state for open source HNC (e.g. v0.7.0-hc.0)
+  """
+
+  class ExtensionValueValuesEnum(_messages.Enum):
+    r"""The deployment state for Hierarchy Controller extension (e.g.
+    v0.7.0-hc.1)
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class HncValueValuesEnum(_messages.Enum):
+    r"""The deployment state for open source HNC (e.g. v0.7.0-hc.0)
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  extension = _messages.EnumField('ExtensionValueValuesEnum', 1)
+  hnc = _messages.EnumField('HncValueValuesEnum', 2)
+
+
+class ConfigManagementHierarchyControllerState(_messages.Message):
+  r"""State for Hierarchy Controller
+
+  Fields:
+    state: The deployment state for Hierarchy Controller
+    version: The version for Hierarchy Controller
+  """
+
+  state = _messages.MessageField('ConfigManagementHierarchyControllerDeploymentState', 1)
+  version = _messages.MessageField('ConfigManagementHierarchyControllerVersion', 2)
+
+
+class ConfigManagementHierarchyControllerVersion(_messages.Message):
+  r"""Version for Hierarchy Controller
+
+  Fields:
+    extension: Version for Hierarchy Controller extension
+    hnc: Version for open source HNC
+  """
+
+  extension = _messages.StringField(1)
+  hnc = _messages.StringField(2)
+
+
+class ConfigManagementInstallError(_messages.Message):
+  r"""Errors pertaining to the installation of ACM
+
+  Fields:
+    errorMessage: A string representing the user facing error message
+  """
+
+  errorMessage = _messages.StringField(1)
+
+
+class ConfigManagementMembershipSpec(_messages.Message):
+  r"""**Anthos Config Management**: Configuration for a single cluster.
+  Intended to parallel the ConfigManagement CR.
+
+  Fields:
+    configSync: Config Sync configuration for the cluster.
+    hierarchyController: Hierarchy Controller configuration for the cluster.
+    policyController: Policy Controller configuration for the cluster.
+    version: Version of ACM installed.
+  """
+
+  configSync = _messages.MessageField('ConfigManagementConfigSync', 1)
+  hierarchyController = _messages.MessageField('ConfigManagementHierarchyControllerConfig', 2)
+  policyController = _messages.MessageField('ConfigManagementPolicyController', 3)
+  version = _messages.StringField(4)
+
+
+class ConfigManagementMembershipState(_messages.Message):
+  r"""**Anthos Config Management**: State for a single cluster.
+
+  Fields:
+    clusterName: The user-defined name for the cluster used by
+      ClusterSelectors to group clusters together. This should match
+      Membership's membership_name, unless the user installed ACM on the
+      cluster manually prior to enabling the ACM hub feature. Unique within a
+      Anthos Config Management installation.
+    configSyncState: Current sync status
+    hierarchyControllerState: Hierarchy Controller status
+    membershipSpec: Membership configuration in the cluster. This represents
+      the actual state in the cluster, while the MembershipSpec in the
+      FeatureSpec represents the intended state
+    operatorState: Current install status of ACM's Operator
+    policyControllerState: PolicyController status
+  """
+
+  clusterName = _messages.StringField(1)
+  configSyncState = _messages.MessageField('ConfigManagementConfigSyncState', 2)
+  hierarchyControllerState = _messages.MessageField('ConfigManagementHierarchyControllerState', 3)
+  membershipSpec = _messages.MessageField('ConfigManagementMembershipSpec', 4)
+  operatorState = _messages.MessageField('ConfigManagementOperatorState', 5)
+  policyControllerState = _messages.MessageField('ConfigManagementPolicyControllerState', 6)
+
+
+class ConfigManagementOperatorState(_messages.Message):
+  r"""State information for an ACM's Operator
+
+  Enums:
+    DeploymentStateValueValuesEnum: The state of the Operator's deployment
+
+  Fields:
+    deploymentState: The state of the Operator's deployment
+    errors: Install errors.
+    version: The semenatic version number of the operator
+  """
+
+  class DeploymentStateValueValuesEnum(_messages.Enum):
+    r"""The state of the Operator's deployment
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  deploymentState = _messages.EnumField('DeploymentStateValueValuesEnum', 1)
+  errors = _messages.MessageField('ConfigManagementInstallError', 2, repeated=True)
+  version = _messages.StringField(3)
+
+
+class ConfigManagementPolicyController(_messages.Message):
+  r"""Configuration for Policy Controller
+
+  Fields:
+    auditIntervalSeconds: Sets the interval for Policy Controller Audit Scans
+      (in seconds). When set to 0, this disables audit functionality
+      altogether.
+    enabled: Enables the installation of Policy Controller. If false, the rest
+      of PolicyController fields take no effect.
+    exemptableNamespaces: The set of namespaces that are excluded from Policy
+      Controller checks. Namespaces do not need to currently exist on the
+      cluster.
+    logDeniesEnabled: Logs all denies and dry run failures.
+    referentialRulesEnabled: Enables the ability to use Constraint Templates
+      that reference to objects other than the object currently being
+      evaluated.
+    templateLibraryInstalled: Installs the default template library along with
+      Policy Controller.
+  """
+
+  auditIntervalSeconds = _messages.IntegerField(1)
+  enabled = _messages.BooleanField(2)
+  exemptableNamespaces = _messages.StringField(3, repeated=True)
+  logDeniesEnabled = _messages.BooleanField(4)
+  referentialRulesEnabled = _messages.BooleanField(5)
+  templateLibraryInstalled = _messages.BooleanField(6)
+
+
+class ConfigManagementPolicyControllerState(_messages.Message):
+  r"""State for PolicyControllerState.
+
+  Fields:
+    deploymentState: The state about the policy controller installation.
+    version: The version of Gatekeeper Policy Controller deployed.
+  """
+
+  deploymentState = _messages.MessageField('ConfigManagementGatekeeperDeploymentState', 1)
+  version = _messages.MessageField('ConfigManagementPolicyControllerVersion', 2)
+
+
+class ConfigManagementPolicyControllerVersion(_messages.Message):
+  r"""The build version of Gatekeeper Policy Controller is using.
+
+  Fields:
+    version: The gatekeeper image tag that is composed of ACM version, git
+      tag, build number.
+  """
+
+  version = _messages.StringField(1)
+
+
+class ConfigManagementSyncError(_messages.Message):
+  r"""An ACM created error representing a problem syncing configurations
+
+  Fields:
+    code: An ACM defined error code
+    errorMessage: A description of the error
+    errorResources: A list of config(s) associated with the error, if any
+  """
+
+  code = _messages.StringField(1)
+  errorMessage = _messages.StringField(2)
+  errorResources = _messages.MessageField('ConfigManagementErrorResource', 3, repeated=True)
+
+
+class ConfigManagementSyncState(_messages.Message):
+  r"""State indicating an ACM's progress syncing configurations to a cluster
+
+  Enums:
+    CodeValueValuesEnum: Sync status code
+
+  Fields:
+    code: Sync status code
+    errors: A list of errors resulting from problematic configs. This list
+      will be truncated after 100 errors, although it is unlikely for that
+      many errors to simultaneously exist.
+    importToken: Token indicating the state of the importer.
+    lastSync: Timestamp of when ACM last successfully synced the repo The time
+      format is specified in https://golang.org/pkg/time/#Time.String This
+      field is being deprecated. Use last_sync_time instead. (b/154053616)
+    lastSyncTime: Timestamp type of when ACM last successfully synced the repo
+    sourceToken: Token indicating the state of the repo.
+    syncToken: Token indicating the state of the syncer.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Sync status code
+
+    Values:
+      SYNC_CODE_UNSPECIFIED: ACM cannot determine a sync code
+      SYNCED: ACM successfully synced the git Repo with the cluster
+      PENDING: ACM is in the progress of syncing a new change
+      ERROR: Indicates an error configuring ACM, and user action is required
+      NOT_CONFIGURED: ACM has been installed (operator manifest deployed), but
+        not configured.
+      NOT_INSTALLED: ACM has not been installed (no operator pod found)
+      UNAUTHORIZED: Error authorizing with the cluster
+      UNREACHABLE: Cluster could not be reached
+    """
+    SYNC_CODE_UNSPECIFIED = 0
+    SYNCED = 1
+    PENDING = 2
+    ERROR = 3
+    NOT_CONFIGURED = 4
+    NOT_INSTALLED = 5
+    UNAUTHORIZED = 6
+    UNREACHABLE = 7
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  errors = _messages.MessageField('ConfigManagementSyncError', 2, repeated=True)
+  importToken = _messages.StringField(3)
+  lastSync = _messages.StringField(4)
+  lastSyncTime = _messages.StringField(5)
+  sourceToken = _messages.StringField(6)
+  syncToken = _messages.StringField(7)
+
+
 class ConnectAgentResource(_messages.Message):
   r"""ConnectAgentResource represents a Kubernetes resource manifest for
   Connect Agent deployment.
@@ -225,6 +803,247 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class Feature(_messages.Message):
+  r"""Feature represents the settings and status of any Hub Feature.
+
+  Messages:
+    LabelsValue: GCP labels for this Feature.
+    MembershipSpecsValue: Optional. Membership-specific configuration for this
+      Feature. If this Feature does not support any per-Membership
+      configuration, this field may be unused. The keys indicate which
+      Membership the configuration is for, in the form:
+      projects/{p}/locations/{l}/memberships/{m} Where {p} is the project, {l}
+      is a valid location and {m} is a valid Membership in this project at
+      that location. {p} WILL match the Feature's project. {p} will always be
+      returned as the project number, but the project ID is also accepted
+      during input. If the same Membership is specified in the map twice
+      (using the project ID form, and the project number form), exactly ONE of
+      the entries will be saved, with no guarantees as to which. For this
+      reason, it is recommended the same format be used for all entries when
+      mutating a Feature.
+    MembershipStatesValue: Output only. Membership-specific Feature status. If
+      this Feature does report any per-Membership status, this field may be
+      unused. The keys indicate which Membership the state is for, in the
+      form: projects/{p}/locations/{l}/memberships/{m} Where {p} is the
+      project number, {l} is a valid location and {m} is a valid Membership in
+      this project at that location. {p} MUST match the Feature's project
+      number.
+
+  Fields:
+    createTime: Output only. When the Feature resource was created.
+    deleteTime: Output only. When the Feature resource was deleted.
+    labels: GCP labels for this Feature.
+    membershipSpecs: Optional. Membership-specific configuration for this
+      Feature. If this Feature does not support any per-Membership
+      configuration, this field may be unused. The keys indicate which
+      Membership the configuration is for, in the form:
+      projects/{p}/locations/{l}/memberships/{m} Where {p} is the project, {l}
+      is a valid location and {m} is a valid Membership in this project at
+      that location. {p} WILL match the Feature's project. {p} will always be
+      returned as the project number, but the project ID is also accepted
+      during input. If the same Membership is specified in the map twice
+      (using the project ID form, and the project number form), exactly ONE of
+      the entries will be saved, with no guarantees as to which. For this
+      reason, it is recommended the same format be used for all entries when
+      mutating a Feature.
+    membershipStates: Output only. Membership-specific Feature status. If this
+      Feature does report any per-Membership status, this field may be unused.
+      The keys indicate which Membership the state is for, in the form:
+      projects/{p}/locations/{l}/memberships/{m} Where {p} is the project
+      number, {l} is a valid location and {m} is a valid Membership in this
+      project at that location. {p} MUST match the Feature's project number.
+    name: Output only. The full, unique name of this Feature resource in the
+      format `projects/*/locations/*/features/*`.
+    resourceState: Output only. State of the Feature resource itself.
+    spec: Optional. Hub-wide Feature configuration. If this Feature does not
+      support any Hub-wide configuration, this field may be unused.
+    state: Output only. The Hub-wide Feature state.
+    updateTime: Output only. When the Feature resource was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""GCP labels for this Feature.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipSpecsValue(_messages.Message):
+    r"""Optional. Membership-specific configuration for this Feature. If this
+    Feature does not support any per-Membership configuration, this field may
+    be unused. The keys indicate which Membership the configuration is for, in
+    the form: projects/{p}/locations/{l}/memberships/{m} Where {p} is the
+    project, {l} is a valid location and {m} is a valid Membership in this
+    project at that location. {p} WILL match the Feature's project. {p} will
+    always be returned as the project number, but the project ID is also
+    accepted during input. If the same Membership is specified in the map
+    twice (using the project ID form, and the project number form), exactly
+    ONE of the entries will be saved, with no guarantees as to which. For this
+    reason, it is recommended the same format be used for all entries when
+    mutating a Feature.
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipSpecsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MembershipSpecsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipSpecsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A MembershipFeatureSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('MembershipFeatureSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipStatesValue(_messages.Message):
+    r"""Output only. Membership-specific Feature status. If this Feature does
+    report any per-Membership status, this field may be unused. The keys
+    indicate which Membership the state is for, in the form:
+    projects/{p}/locations/{l}/memberships/{m} Where {p} is the project
+    number, {l} is a valid location and {m} is a valid Membership in this
+    project at that location. {p} MUST match the Feature's project number.
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MembershipStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A MembershipFeatureState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('MembershipFeatureState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 4)
+  membershipStates = _messages.MessageField('MembershipStatesValue', 5)
+  name = _messages.StringField(6)
+  resourceState = _messages.MessageField('FeatureResourceState', 7)
+  spec = _messages.MessageField('CommonFeatureSpec', 8)
+  state = _messages.MessageField('CommonFeatureState', 9)
+  updateTime = _messages.StringField(10)
+
+
+class FeatureResourceState(_messages.Message):
+  r"""FeatureResourceState describes the state of a Feature *resource* in the
+  GkeHub API. See `FeatureState` for the "running state" of the Feature in the
+  Hub and across Memberships.
+
+  Enums:
+    StateValueValuesEnum: The current state of the Feature resource in the Hub
+      API.
+
+  Fields:
+    state: The current state of the Feature resource in the Hub API.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current state of the Feature resource in the Hub API.
+
+    Values:
+      STATE_UNSPECIFIED: State is unknown or not set.
+      ENABLING: The Feature is being enabled, and the Feature resource is
+        being created. Once complete, the corresponding Feature will be
+        enabled in this Hub.
+      ACTIVE: The Feature is enabled in this Hub, and the Feature resource is
+        fully available.
+      DISABLING: The Feature is being disabled in this Hub, and the Feature
+        resource is being deleted.
+      UPDATING: The Feature resource is being updated.
+      SERVICE_UPDATING: The Feature resource is being updated by the Hub
+        Service.
+    """
+    STATE_UNSPECIFIED = 0
+    ENABLING = 1
+    ACTIVE = 2
+    DISABLING = 3
+    UPDATING = 4
+    SERVICE_UPDATING = 5
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+
+
+class FeatureState(_messages.Message):
+  r"""FeatureState describes the high-level state of a Feature. It may be used
+  to describe a Feature's state at the environ-level, or per-membershop,
+  depending on the context.
+
+  Enums:
+    CodeValueValuesEnum: The high-level, machine-readable status of this
+      Feature.
+
+  Fields:
+    code: The high-level, machine-readable status of this Feature.
+    description: A human-readable description of the current status.
+    updateTime: The time this status and any related Feature-specific details
+      were updated.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The high-level, machine-readable status of this Feature.
+
+    Values:
+      CODE_UNSPECIFIED: Unknown or not set.
+      OK: The Feature is operating normally.
+      WARNING: The Feature has encountered an issue, and is operating in a
+        degraded state. The Feature may need intervention to return to normal
+        operation. See the description and any associated Feature-specific
+        details for more information.
+      ERROR: The Feature is not operating or is in a severely degraded state.
+        The Feature may need intervention to return to normal operation. See
+        the description and any associated Feature-specific details for more
+        information.
+    """
+    CODE_UNSPECIFIED = 0
+    OK = 1
+    WARNING = 2
+    ERROR = 3
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  description = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+
+
 class GenerateConnectManifestResponse(_messages.Message):
   r"""GenerateConnectManifestResponse contains manifest information for
   installing/upgrading a Connect agent.
@@ -248,6 +1067,178 @@ class GkeCluster(_messages.Message):
   """
 
   resourceLink = _messages.StringField(1)
+
+
+class GkehubProjectsLocationsFeaturesCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesCreateRequest object.
+
+  Fields:
+    feature: A Feature resource to be passed as the request body.
+    featureId: The ID of the feature to create.
+    parent: The parent (project and location) where the Feature will be
+      created. Specified in the format `projects/*/locations/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  feature = _messages.MessageField('Feature', 1)
+  featureId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class GkehubProjectsLocationsFeaturesDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesDeleteRequest object.
+
+  Fields:
+    force: If set to true, the delete will ignore any outstanding resources
+      for this Feature (that is, `FeatureState.has_resources` is set to true).
+      These resources will NOT be cleaned up or modified in any way.
+    name: The Feature resource name in the format
+      `projects/*/locations/*/features/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class GkehubProjectsLocationsFeaturesGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesGetRequest object.
+
+  Fields:
+    name: The Feature resource name in the format
+      `projects/*/locations/*/features/*`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsFeaturesListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesListRequest object.
+
+  Fields:
+    filter: Lists Features that match the filter expression, following the
+      syntax outlined in https://google.aip.dev/160. Examples: - Feature with
+      the name "servicemesh" in project "foo-proj": name = "projects/foo-
+      proj/locations/global/features/servicemesh" - Features that have a label
+      called `foo`: labels.foo:* - Features that have a label called `foo`
+      whose value is `bar`: labels.foo = bar
+    orderBy: One or more fields to compare and use to sort the output. See
+      https://google.aip.dev/132#ordering.
+    pageSize: When requesting a 'page' of resources, `page_size` specifies
+      number of resources to return. If unspecified or set to 0, all resources
+      will be returned.
+    pageToken: Token returned by previous call to `ListFeatures` which
+      specifies the position in the list from where to continue listing the
+      resources.
+    parent: The parent (project and location) where the Features will be
+      listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class GkehubProjectsLocationsFeaturesPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesPatchRequest object.
+
+  Fields:
+    feature: A Feature resource to be passed as the request body.
+    name: The Feature resource name in the format
+      `projects/*/locations/*/features/*`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Mask of fields to update.
+  """
+
+  feature = _messages.MessageField('Feature', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class GkehubProjectsLocationsFeaturesSetIamPolicyRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkehubProjectsLocationsFeaturesTestIamPermissionsRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsFeaturesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class GkehubProjectsLocationsGetRequest(_messages.Message):
@@ -590,6 +1581,147 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
+class HelloWorldFeatureSpec(_messages.Message):
+  r"""**Hello World**: The Hub-wide input for the HelloWorld feature.
+
+  Fields:
+    customConfig: Custom config for the HelloWorld controller codelab. This
+      should be a textpb string.
+    featureTest: Message to hold fields to use in feature e2e create/mutate
+      testing.
+  """
+
+  customConfig = _messages.StringField(1)
+  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
+
+
+class HelloWorldFeatureState(_messages.Message):
+  r"""**Hello World**: An empty state left as an example Hub-wide Feature
+  state.
+  """
+
+
+
+class HelloWorldFeatureTest(_messages.Message):
+  r"""Represents message used in feature e2e create/mutate testing.
+
+  Enums:
+    ThirdValueValuesEnum:
+
+  Messages:
+    FifthValue: A FifthValue object.
+    NinthValue: Map field.
+
+  Fields:
+    eighth: Repeated field.
+    fifth: A FifthValue attribute.
+    first: Singular scaler field.
+    fourth: Singular Message fields.
+    ninth: Map field.
+    second: Singular scaler field.
+    seventh: A string attribute.
+    sixth: A string attribute.
+    third: A ThirdValueValuesEnum attribute.
+  """
+
+  class ThirdValueValuesEnum(_messages.Enum):
+    r"""ThirdValueValuesEnum enum type.
+
+    Values:
+      BAR_UNSPECIFIED: <no description>
+      FIRST: <no description>
+      SECOND: <no description>
+    """
+    BAR_UNSPECIFIED = 0
+    FIRST = 1
+    SECOND = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FifthValue(_messages.Message):
+    r"""A FifthValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a FifthValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FifthValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NinthValue(_messages.Message):
+    r"""Map field.
+
+    Messages:
+      AdditionalProperty: An additional property for a NinthValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type NinthValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NinthValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A HelloWorldFooBar attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('HelloWorldFooBar', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  eighth = _messages.MessageField('HelloWorldFooBar', 1, repeated=True)
+  fifth = _messages.MessageField('FifthValue', 2)
+  first = _messages.StringField(3)
+  fourth = _messages.StringField(4)
+  ninth = _messages.MessageField('NinthValue', 5)
+  second = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  seventh = _messages.StringField(7)
+  sixth = _messages.IntegerField(8)
+  third = _messages.EnumField('ThirdValueValuesEnum', 9)
+
+
+class HelloWorldFooBar(_messages.Message):
+  r"""Nested Message.
+
+  Fields:
+    first: A string attribute.
+    second: A integer attribute.
+  """
+
+  first = _messages.StringField(1)
+  second = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class HelloWorldMembershipSpec(_messages.Message):
+  r"""**Hello World**: An empty spec left as an example membership-specific
+  Feature Spec.
+  """
+
+
+
+class HelloWorldMembershipState(_messages.Message):
+  r"""**Hello World**: An empty state left as an example membership-specific
+  Feature state.
+  """
+
+
+
 class KubernetesMetadata(_messages.Message):
   r"""KubernetesMetadata provides informational metadata for Memberships
   representing Kubernetes clusters.
@@ -655,6 +1787,20 @@ class KubernetesResource(_messages.Message):
   membershipCrManifest = _messages.StringField(2)
   membershipResources = _messages.MessageField('ResourceManifest', 3, repeated=True)
   resourceOptions = _messages.MessageField('ResourceOptions', 4)
+
+
+class ListFeaturesResponse(_messages.Message):
+  r"""Response message for the `GkeHub.ListFeatures` method.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListFeatures` method. The value of an empty string means that there are
+      no more resources to return.
+    resources: The list of matching Features
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resources = _messages.MessageField('Feature', 2, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -904,6 +2050,34 @@ class MembershipEndpoint(_messages.Message):
   kubernetesResource = _messages.MessageField('KubernetesResource', 3)
 
 
+class MembershipFeatureSpec(_messages.Message):
+  r"""MembershipFeatureSpec contains configuration information for a single
+  Membership.
+
+  Fields:
+    configmanagement: Config Management-specific spec.
+    helloworld: Hello World-specific spec.
+  """
+
+  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 1)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 2)
+
+
+class MembershipFeatureState(_messages.Message):
+  r"""MembershipFeatureState contains Feature status information for a single
+  Membership.
+
+  Fields:
+    configmanagement: Config Management-specific state.
+    helloworld: Hello World-specific state.
+    state: The high-level state of this Feature for a single membership.
+  """
+
+  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 1)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 2)
+  state = _messages.MessageField('FeatureState', 3)
+
+
 class MembershipState(_messages.Message):
   r"""MembershipState describes the state of a Membership resource.
 
@@ -934,6 +2108,19 @@ class MembershipState(_messages.Message):
     SERVICE_UPDATING = 5
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
+class MultiClusterIngressFeatureSpec(_messages.Message):
+  r"""**Multi-cluster Ingress**: The configuration for the MultiClusterIngress
+  feature.
+
+  Fields:
+    configMembership: Fully-qualified Membership name which hosts the
+      MultiClusterIngress CRD. Example: `projects/foo-
+      proj/locations/global/memberships/bar`
+  """
+
+  configMembership = _messages.StringField(1)
 
 
 class Operation(_messages.Message):

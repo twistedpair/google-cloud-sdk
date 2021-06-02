@@ -188,18 +188,20 @@ class Cluster(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: The default value. This value should never be used.
-      ACTIVE: The cluster is ready.
-      CREATING: The cluster is being created.
-      UPDATING: The cluster is being updated.
-      DELETING: The cluster is being deleted.
-      FAILED: The cluster is in failed state.
+      ACTIVE: The Cluster is operational and can be used by the user.
+      CREATING: The Cluster is being deployed.
+      UPDATING: Adding or removing of a node to the cluster, any other cluster
+        specific updates.
+      DELETING: The Cluster is being deleted.
+      REPAIRING: The Cluster is undergoing maintenance, for example: a failed
+        node is getting replaced.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     UPDATING = 3
     DELETING = 4
-    FAILED = 5
+    REPAIRING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -492,12 +494,13 @@ class NetworkConfig(_messages.Message):
     managementCidr: Required. Management CIDR used by VMWare management
       appliances.
     network: Required. The relative resource name of the consumer VPC network
-      this private cloud is attached to. The name is specified in the
-      following form: `projects/{project}/global/networks/{network_id}`.
+      this private cloud is attached to. Specify the name in the following
+      form: `projects/{project}/global/networks/{network_id}` where
+      `{project}` can either be a project number or a project ID.
     serviceNetwork: Output only. The relative resource name of the service VPC
       network this private cloud is attached to. The name is specified in the
       following form:
-      `projects/{service_project}/global/networks/{network_id}`.
+      `projects/{service_project_number}/global/networks/{network_id}`.
   """
 
   managementCidr = _messages.StringField(1)

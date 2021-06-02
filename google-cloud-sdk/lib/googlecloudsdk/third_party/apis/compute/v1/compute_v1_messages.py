@@ -3149,7 +3149,7 @@ class BackendService(_messages.Message):
       the backend service is referenced by a URL map that is bound to target
       gRPC proxy.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
-      default is NONE.  When the loadBalancingScheme is EXTERNAL: * For
+      default is NONE.  When the loadBalancingScheme is EXTERNAL:  * For
       Network Load Balancing, the possible values are NONE, CLIENT_IP,
       CLIENT_IP_PROTO, or  CLIENT_IP_PORT_PROTO. * For all other load
       balancers that use loadBalancingScheme=EXTERNAL, the possible values are
@@ -3323,7 +3323,7 @@ class BackendService(_messages.Message):
       service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     selfLink: [Output Only] Server-defined URL for the resource.
     sessionAffinity: Type of session affinity to use. The default is NONE.
-      When the loadBalancingScheme is EXTERNAL: * For Network Load Balancing,
+      When the loadBalancingScheme is EXTERNAL:  * For Network Load Balancing,
       the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
       CLIENT_IP_PORT_PROTO. * For all other load balancers that use
       loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP,
@@ -3433,7 +3433,7 @@ class BackendService(_messages.Message):
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     r"""Type of session affinity to use. The default is NONE.  When the
-    loadBalancingScheme is EXTERNAL: * For Network Load Balancing, the
+    loadBalancingScheme is EXTERNAL:  * For Network Load Balancing, the
     possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
     CLIENT_IP_PORT_PROTO. * For all other load balancers that use
     loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or
@@ -24750,7 +24750,7 @@ class FixedOrPercent(_messages.Message):
       the calculated value is percent/100 * targetSize. For example, the
       calculated value of a 80% of a managed instance group with 150 instances
       would be (80/100 * 150) = 120 VM instances. If there is a remainder, the
-      number is rounded up.
+      number is rounded.
     fixed: Specifies a fixed number of VM instances. This must be a positive
       integer.
     percent: Specifies a percentage of instances between 0 to 100%, inclusive.
@@ -27488,8 +27488,9 @@ class HttpRouteAction(_messages.Message):
       backend service, delays can be introduced by Loadbalancer on a
       percentage of requests before sending those request to the backend
       service. Similarly requests from clients can be aborted by the
-      Loadbalancer for a percentage of requests. timeout and retry_policy will
-      be ignored by clients that are configured with a fault_injection_policy.
+      Loadbalancer for a percentage of requests. For the requests impacted by
+      fault injection, timeout and retry_policy will be ignored by clients
+      that are configured with a fault_injection_policy.
     maxStreamDuration: Specifies the maximum duration (timeout) for streams on
       the selected route. Unlike the timeout field where the timeout duration
       starts from the time the request has been fully processed (i.e. end-of-
@@ -29536,7 +29537,7 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     maxSurge: The maximum number of instances that can be created above the
       specified targetSize during the update process. This value can be either
       a fixed number or, if the group has 10 or more instances, a percentage.
-      If you set a percentage, the number of instances is rounded up if
+      If you set a percentage, the number of instances is rounded if
       necessary. The default value for maxSurge is a fixed value equal to the
       number of zones in which the managed instance group operates.  At least
       one of either maxSurge or maxUnavailable must be greater than 0. Learn
@@ -29549,7 +29550,7 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       is no health check on the group, then the instance only needs to have a
       status of RUNNING to be considered available.  This value can be either
       a fixed number or, if the group has 10 or more instances, a percentage.
-      If you set a percentage, the number of instances is rounded up if
+      If you set a percentage, the number of instances is rounded if
       necessary. The default value for maxUnavailable is a fixed value equal
       to the number of zones in which the managed instance group operates.  At
       least one of either maxSurge or maxUnavailable must be greater than 0.
@@ -29654,7 +29655,7 @@ class InstanceGroupManagerVersion(_messages.Message):
       minimum of either targetSize.fixed or instanceGroupManager.targetSize is
       used.  - if expressed as a percent, the targetSize would be
       (targetSize.percent/100 * InstanceGroupManager.targetSize) If there is a
-      remainder, the number is rounded up.  If unset, this version will update
+      remainder, the number is rounded.  If unset, this version will update
       any remaining instances not updated by another version. Read Starting a
       canary update for more information.
   """
@@ -33061,9 +33062,10 @@ class InterconnectOutageNotification(_messages.Message):
       the following values:  - ACTIVE: This outage notification is active. The
       event could be in the past, present, or future. See start_time and
       end_time for scheduling.  - CANCELLED: The outage associated with this
-      notification was cancelled before the outage was due to start. Note that
-      the versions of this enum prefixed with "NS_" have been deprecated in
-      favor of the unprefixed values.
+      notification was cancelled before the outage was due to start.  -
+      COMPLETED: The outage associated with this notification is complete.
+      Note that the versions of this enum prefixed with "NS_" have been
+      deprecated in favor of the unprefixed values.
 
   Fields:
     affectedCircuits: If issue_type is IT_PARTIAL_OUTAGE, a list of the
@@ -33088,9 +33090,10 @@ class InterconnectOutageNotification(_messages.Message):
       values:  - ACTIVE: This outage notification is active. The event could
       be in the past, present, or future. See start_time and end_time for
       scheduling.  - CANCELLED: The outage associated with this notification
-      was cancelled before the outage was due to start. Note that the versions
-      of this enum prefixed with "NS_" have been deprecated in favor of the
-      unprefixed values.
+      was cancelled before the outage was due to start.  - COMPLETED: The
+      outage associated with this notification is complete.  Note that the
+      versions of this enum prefixed with "NS_" have been deprecated in favor
+      of the unprefixed values.
   """
 
   class IssueTypeValueValuesEnum(_messages.Enum):
@@ -33129,7 +33132,8 @@ class InterconnectOutageNotification(_messages.Message):
     values:  - ACTIVE: This outage notification is active. The event could be
     in the past, present, or future. See start_time and end_time for
     scheduling.  - CANCELLED: The outage associated with this notification was
-    cancelled before the outage was due to start. Note that the versions of
+    cancelled before the outage was due to start.  - COMPLETED: The outage
+    associated with this notification is complete.  Note that the versions of
     this enum prefixed with "NS_" have been deprecated in favor of the
     unprefixed values.
 
@@ -40459,6 +40463,7 @@ class Quota(_messages.Message):
       COMMITTED_NVIDIA_P4_GPUS: <no description>
       COMMITTED_NVIDIA_T4_GPUS: <no description>
       COMMITTED_NVIDIA_V100_GPUS: <no description>
+      COMMITTED_P2D_CPUS: <no description>
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -40507,6 +40512,7 @@ class Quota(_messages.Message):
       NVIDIA_T4_GPUS: <no description>
       NVIDIA_T4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
+      P2D_CPUS: <no description>
       PACKET_MIRRORINGS: <no description>
       PD_EXTREME_TOTAL_PROVISIONED_IOPS: <no description>
       PREEMPTIBLE_CPUS: <no description>
@@ -40577,98 +40583,100 @@ class Quota(_messages.Message):
     COMMITTED_NVIDIA_P4_GPUS = 22
     COMMITTED_NVIDIA_T4_GPUS = 23
     COMMITTED_NVIDIA_V100_GPUS = 24
-    CPUS = 25
-    CPUS_ALL_REGIONS = 26
-    DISKS_TOTAL_GB = 27
-    E2_CPUS = 28
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 29
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 30
-    EXTERNAL_VPN_GATEWAYS = 31
-    FIREWALLS = 32
-    FORWARDING_RULES = 33
-    GLOBAL_INTERNAL_ADDRESSES = 34
-    GPUS_ALL_REGIONS = 35
-    HEALTH_CHECKS = 36
-    IMAGES = 37
-    INSTANCES = 38
-    INSTANCE_GROUPS = 39
-    INSTANCE_GROUP_MANAGERS = 40
-    INSTANCE_TEMPLATES = 41
-    INTERCONNECTS = 42
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 43
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 44
-    INTERCONNECT_TOTAL_GBPS = 45
-    INTERNAL_ADDRESSES = 46
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 47
-    IN_PLACE_SNAPSHOTS = 48
-    IN_USE_ADDRESSES = 49
-    IN_USE_BACKUP_SCHEDULES = 50
-    IN_USE_SNAPSHOT_SCHEDULES = 51
-    LOCAL_SSD_TOTAL_GB = 52
-    M1_CPUS = 53
-    M2_CPUS = 54
-    MACHINE_IMAGES = 55
-    N2A_CPUS = 56
-    N2D_CPUS = 57
-    N2_CPUS = 58
-    NETWORKS = 59
-    NETWORK_ENDPOINT_GROUPS = 60
-    NETWORK_FIREWALL_POLICIES = 61
-    NODE_GROUPS = 62
-    NODE_TEMPLATES = 63
-    NVIDIA_A100_GPUS = 64
-    NVIDIA_K80_GPUS = 65
-    NVIDIA_P100_GPUS = 66
-    NVIDIA_P100_VWS_GPUS = 67
-    NVIDIA_P4_GPUS = 68
-    NVIDIA_P4_VWS_GPUS = 69
-    NVIDIA_T4_GPUS = 70
-    NVIDIA_T4_VWS_GPUS = 71
-    NVIDIA_V100_GPUS = 72
-    PACKET_MIRRORINGS = 73
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 74
-    PREEMPTIBLE_CPUS = 75
-    PREEMPTIBLE_LOCAL_SSD_GB = 76
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 77
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 78
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 79
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 80
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 81
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 82
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 83
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 84
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 85
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 86
-    PUBLIC_ADVERTISED_PREFIXES = 87
-    PUBLIC_DELEGATED_PREFIXES = 88
-    REGIONAL_AUTOSCALERS = 89
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 90
-    RESERVATIONS = 91
-    RESOURCE_POLICIES = 92
-    ROUTERS = 93
-    ROUTES = 94
-    SECURITY_POLICIES = 95
-    SECURITY_POLICIES_PER_REGION = 96
-    SECURITY_POLICY_CEVAL_RULES = 97
-    SECURITY_POLICY_RULES = 98
-    SECURITY_POLICY_RULES_PER_REGION = 99
-    SNAPSHOTS = 100
-    SSD_TOTAL_GB = 101
-    SSL_CERTIFICATES = 102
-    STATIC_ADDRESSES = 103
-    STATIC_BYOIP_ADDRESSES = 104
-    SUBNETWORKS = 105
-    TARGET_HTTPS_PROXIES = 106
-    TARGET_HTTP_PROXIES = 107
-    TARGET_INSTANCES = 108
-    TARGET_POOLS = 109
-    TARGET_SSL_PROXIES = 110
-    TARGET_TCP_PROXIES = 111
-    TARGET_VPN_GATEWAYS = 112
-    URL_MAPS = 113
-    VPN_GATEWAYS = 114
-    VPN_TUNNELS = 115
-    XPN_SERVICE_PROJECTS = 116
+    COMMITTED_P2D_CPUS = 25
+    CPUS = 26
+    CPUS_ALL_REGIONS = 27
+    DISKS_TOTAL_GB = 28
+    E2_CPUS = 29
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 30
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 31
+    EXTERNAL_VPN_GATEWAYS = 32
+    FIREWALLS = 33
+    FORWARDING_RULES = 34
+    GLOBAL_INTERNAL_ADDRESSES = 35
+    GPUS_ALL_REGIONS = 36
+    HEALTH_CHECKS = 37
+    IMAGES = 38
+    INSTANCES = 39
+    INSTANCE_GROUPS = 40
+    INSTANCE_GROUP_MANAGERS = 41
+    INSTANCE_TEMPLATES = 42
+    INTERCONNECTS = 43
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 44
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 45
+    INTERCONNECT_TOTAL_GBPS = 46
+    INTERNAL_ADDRESSES = 47
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 48
+    IN_PLACE_SNAPSHOTS = 49
+    IN_USE_ADDRESSES = 50
+    IN_USE_BACKUP_SCHEDULES = 51
+    IN_USE_SNAPSHOT_SCHEDULES = 52
+    LOCAL_SSD_TOTAL_GB = 53
+    M1_CPUS = 54
+    M2_CPUS = 55
+    MACHINE_IMAGES = 56
+    N2A_CPUS = 57
+    N2D_CPUS = 58
+    N2_CPUS = 59
+    NETWORKS = 60
+    NETWORK_ENDPOINT_GROUPS = 61
+    NETWORK_FIREWALL_POLICIES = 62
+    NODE_GROUPS = 63
+    NODE_TEMPLATES = 64
+    NVIDIA_A100_GPUS = 65
+    NVIDIA_K80_GPUS = 66
+    NVIDIA_P100_GPUS = 67
+    NVIDIA_P100_VWS_GPUS = 68
+    NVIDIA_P4_GPUS = 69
+    NVIDIA_P4_VWS_GPUS = 70
+    NVIDIA_T4_GPUS = 71
+    NVIDIA_T4_VWS_GPUS = 72
+    NVIDIA_V100_GPUS = 73
+    P2D_CPUS = 74
+    PACKET_MIRRORINGS = 75
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 76
+    PREEMPTIBLE_CPUS = 77
+    PREEMPTIBLE_LOCAL_SSD_GB = 78
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 79
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 80
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 81
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 82
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 83
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 84
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 85
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 86
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 87
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 88
+    PUBLIC_ADVERTISED_PREFIXES = 89
+    PUBLIC_DELEGATED_PREFIXES = 90
+    REGIONAL_AUTOSCALERS = 91
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 92
+    RESERVATIONS = 93
+    RESOURCE_POLICIES = 94
+    ROUTERS = 95
+    ROUTES = 96
+    SECURITY_POLICIES = 97
+    SECURITY_POLICIES_PER_REGION = 98
+    SECURITY_POLICY_CEVAL_RULES = 99
+    SECURITY_POLICY_RULES = 100
+    SECURITY_POLICY_RULES_PER_REGION = 101
+    SNAPSHOTS = 102
+    SSD_TOTAL_GB = 103
+    SSL_CERTIFICATES = 104
+    STATIC_ADDRESSES = 105
+    STATIC_BYOIP_ADDRESSES = 106
+    SUBNETWORKS = 107
+    TARGET_HTTPS_PROXIES = 108
+    TARGET_HTTP_PROXIES = 109
+    TARGET_INSTANCES = 110
+    TARGET_POOLS = 111
+    TARGET_SSL_PROXIES = 112
+    TARGET_TCP_PROXIES = 113
+    TARGET_VPN_GATEWAYS = 114
+    URL_MAPS = 115
+    VPN_GATEWAYS = 116
+    VPN_TUNNELS = 117
+    XPN_SERVICE_PROJECTS = 118
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -42129,7 +42137,10 @@ class ReservationAffinity(_messages.Message):
     key: Corresponds to the label key of a reservation resource. To target a
       SPECIFIC_RESERVATION by name, specify googleapis.com/reservation-name as
       the key and specify the name of your reservation as its value.
-    values: Corresponds to the label values of a reservation resource.
+    values: Corresponds to the label values of a reservation resource. This
+      can be either a name to a reservation in the same project or
+      "projects/different-project/reservations/some-reservation-name" to
+      target a shared reservation in the same zone but in a different project.
   """
 
   class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
@@ -43946,6 +43957,14 @@ class RouterBgp(_messages.Message):
       ASN, either 16-bit or 32-bit. The value will be fixed for this router
       resource. All VPN tunnels that link to this router will have the same
       local ASN.
+    keepaliveInterval: The interval in seconds between BGP keepalive messages
+      that are sent to the peer. Hold time is three times the interval at
+      which keepalive messages are sent, and the hold time is the maximum
+      number of seconds allowed to elapse between successive keepalive
+      messages that BGP receives from a peer. BGP will use the smaller of
+      either the local hold time value or the peer's hold time value as the
+      hold time for the BGP connection between the two peers. If set, this
+      value must be between 20 and 60. The default is 20.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -43971,6 +43990,7 @@ class RouterBgp(_messages.Message):
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   asn = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  keepaliveInterval = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
 
 
 class RouterBgpPeer(_messages.Message):
@@ -43980,6 +44000,10 @@ class RouterBgpPeer(_messages.Message):
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
+    EnableValueValuesEnum: The status of the BGP peer connection. If set to
+      FALSE, any active session with the peer is terminated and all associated
+      routing information is removed. If set to TRUE, the peer connection can
+      be established with routing information. The default is TRUE.
     ManagementTypeValueValuesEnum: [Output Only] The resource that configures
       and manages this BGP peer.  - MANAGED_BY_USER is the default value and
       can be managed by you or other users  - MANAGED_BY_ATTACHMENT is a BGP
@@ -44008,6 +44032,10 @@ class RouterBgpPeer(_messages.Message):
     advertisedRoutePriority: The priority of routes advertised to this BGP
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
+    enable: The status of the BGP peer connection. If set to FALSE, any active
+      session with the peer is terminated and all associated routing
+      information is removed. If set to TRUE, the peer connection can be
+      established with routing information. The default is TRUE.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
@@ -44048,6 +44076,19 @@ class RouterBgpPeer(_messages.Message):
     """
     ALL_SUBNETS = 0
 
+  class EnableValueValuesEnum(_messages.Enum):
+    r"""The status of the BGP peer connection. If set to FALSE, any active
+    session with the peer is terminated and all associated routing information
+    is removed. If set to TRUE, the peer connection can be established with
+    routing information. The default is TRUE.
+
+    Values:
+      FALSE: <no description>
+      TRUE: <no description>
+    """
+    FALSE = 0
+    TRUE = 1
+
   class ManagementTypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The resource that configures and manages this BGP peer.
     - MANAGED_BY_USER is the default value and can be managed by you or other
@@ -44068,12 +44109,13 @@ class RouterBgpPeer(_messages.Message):
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  interfaceName = _messages.StringField(5)
-  ipAddress = _messages.StringField(6)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 7)
-  name = _messages.StringField(8)
-  peerAsn = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(10)
+  enable = _messages.EnumField('EnableValueValuesEnum', 5)
+  interfaceName = _messages.StringField(6)
+  ipAddress = _messages.StringField(7)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 8)
+  name = _messages.StringField(9)
+  peerAsn = _messages.IntegerField(10, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(11)
 
 
 class RouterInterface(_messages.Message):
@@ -44996,6 +45038,7 @@ class SecurityPolicy(_messages.Message):
   resource_for {$api_version}.securityPolicies ==)
 
   Fields:
+    advancedOptionsConfig: A SecurityPolicyAdvancedOptionsConfig attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -45026,14 +45069,51 @@ class SecurityPolicy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  fingerprint = _messages.BytesField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#securityPolicy')
-  name = _messages.StringField(6)
-  rules = _messages.MessageField('SecurityPolicyRule', 7, repeated=True)
-  selfLink = _messages.StringField(8)
+  advancedOptionsConfig = _messages.MessageField('SecurityPolicyAdvancedOptionsConfig', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  fingerprint = _messages.BytesField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default='compute#securityPolicy')
+  name = _messages.StringField(7)
+  rules = _messages.MessageField('SecurityPolicyRule', 8, repeated=True)
+  selfLink = _messages.StringField(9)
+
+
+class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
+  r"""A SecurityPolicyAdvancedOptionsConfig object.
+
+  Enums:
+    JsonParsingValueValuesEnum:
+    LogLevelValueValuesEnum:
+
+  Fields:
+    jsonParsing: A JsonParsingValueValuesEnum attribute.
+    logLevel: A LogLevelValueValuesEnum attribute.
+  """
+
+  class JsonParsingValueValuesEnum(_messages.Enum):
+    r"""JsonParsingValueValuesEnum enum type.
+
+    Values:
+      DISABLED: <no description>
+      STANDARD: <no description>
+    """
+    DISABLED = 0
+    STANDARD = 1
+
+  class LogLevelValueValuesEnum(_messages.Enum):
+    r"""LogLevelValueValuesEnum enum type.
+
+    Values:
+      NORMAL: <no description>
+      VERBOSE: <no description>
+    """
+    NORMAL = 0
+    VERBOSE = 1
+
+  jsonParsing = _messages.EnumField('JsonParsingValueValuesEnum', 1)
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 2)
 
 
 class SecurityPolicyList(_messages.Message):
@@ -51550,7 +51630,9 @@ class UsableSubnetworksAggregatedList(_messages.Message):
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
+      their own nextPageToken to continue paging through the results. In
+      special cases listUsable may return 0 subnetworks and nextPageToken
+      which still should be used to get the next page of results.
     selfLink: [Output Only] Server-defined URL for this resource.
     warning: [Output Only] Informational warning message.
   """

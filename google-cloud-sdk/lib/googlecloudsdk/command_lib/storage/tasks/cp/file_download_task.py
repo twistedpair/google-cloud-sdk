@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks import task_executor
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_sliced_download_task
@@ -110,7 +111,8 @@ def _should_perform_sliced_download(resource):
   api_capabilities = api_factory.get_capabilities(resource.storage_url.scheme)
   return (resource.size and threshold != 0 and resource.size > threshold and
           component_size and
-          cloud_api.Capability.SLICED_DOWNLOAD in api_capabilities)
+          cloud_api.Capability.SLICED_DOWNLOAD in api_capabilities and
+          task_executor.should_use_parallelism())
 
 
 class FileDownloadTask(task.Task):

@@ -46,12 +46,12 @@ USER_PROJECT_OVERRIDE_ERR_MSG = ('Grant the caller the Owner or Editor role, or'
 class QuotaHandlerMixin(object):
   """Mixin for handling quota project."""
 
-  def QuotaProject(self, enable_resource_quota, force_resource_quota,
+  def QuotaProject(self, enable_resource_quota,
                    allow_account_impersonation, use_google_auth):
-    if not (enable_resource_quota or force_resource_quota):
+    if not enable_resource_quota:
       return None
     creds = store.LoadIfEnabled(allow_account_impersonation, use_google_auth)
-    return core_creds.GetQuotaProject(creds, force_resource_quota)
+    return core_creds.GetQuotaProject(creds)
 
   def QuotaWrappedRequest(self,
                           http_client,
@@ -68,7 +68,6 @@ class QuotaHandlerMixin(object):
   def WrapQuota(self,
                 http_client,
                 enable_resource_quota,
-                force_resource_quota,
                 allow_account_impersonation,
                 use_google_auth):
     """Returns a http_client with quota project handling.
@@ -79,9 +78,6 @@ class QuotaHandlerMixin(object):
         the quota of the project being operated on. For some APIs we want to use
         gcloud's quota, so you can explicitly disable that behavior by passing
         False here.
-      force_resource_quota: bool, If true resource project quota will be used by
-        this client regardless of the settings in gcloud. This should be used
-        for newer APIs that cannot work with legacy project quota.
       allow_account_impersonation: bool, True to allow use of impersonated
         service account credentials for calls made with this client. If False,
         the active user credentials will always be used.

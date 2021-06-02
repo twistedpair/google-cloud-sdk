@@ -25,8 +25,8 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
-# Hard-coded locations to use if the call to ListLocations fails.
-_FallbackLocations = [
+# The subset of privateca locations where the v1beta1 API is available.
+_BetaLocations = [
     'asia-southeast1',
     'europe-west1',
     'europe-west4',
@@ -34,12 +34,48 @@ _FallbackLocations = [
     'us-east1',
     'us-west1',
 ]
+# The list of locations where the v1 API is available. Used as a fallback in
+# case the ListLocations API is down.
+_V1Locations = [
+    'asia-east1',
+    'asia-east2',
+    'asia-northeast1',
+    'asia-northeast2',
+    'asia-northeast3',
+    'asia-south1',
+    'asia-southeast1',
+    'asia-southeast2',
+    'australia-southeast1',
+    'europe-north1',
+    'europe-west1',
+    'europe-west2',
+    'europe-west3',
+    'europe-west4',
+    'europe-west6',
+    'northamerica-northeast1',
+    'southamerica-east1',
+    'us-central1',
+    'us-east1',
+    'us-east4',
+    'us-west1',
+    'us-west2',
+    'us-west3',
+    'us-west4',
+]
 
 
 def GetSupportedLocations(version='v1beta1'):
   """Gets a list of supported Private CA locations for the current project."""
-  client = base.GetClientInstance(api_version=version)
-  messages = base.GetMessagesModule(api_version=version)
+  if version == 'v1beta1':
+    # The beta API is only supported in a fixed list of locations, regardless of
+    # what the ListLocations API returns.
+    return _BetaLocations
+  if version != 'v1':
+    raise exceptions.NotYetImplementedError(
+        'Unknown API version: {}'.format(version))
+
+  client = base.GetClientInstance(api_version='v1')
+  messages = base.GetMessagesModule(api_version='v1')
 
   project = properties.VALUES.core.project.GetOrFail()
 
@@ -51,4 +87,4 @@ def GetSupportedLocations(version='v1beta1'):
   except exceptions.HttpError as e:
     log.debug('ListLocations failed: %r.', e)
     log.debug('Falling back to hard-coded list.')
-    return _FallbackLocations
+    return _V1Locations

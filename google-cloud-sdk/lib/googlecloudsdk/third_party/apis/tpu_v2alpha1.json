@@ -446,11 +446,6 @@
           "items": {
             "$ref": "Symptom"
           }
-        },
-        "useTpuVm": {
-          "description": "Output only.",
-          "readOnly": true,
-          "type": "boolean"
         }
       }
     },
@@ -543,15 +538,6 @@
       "description": "A node-attached disk resource. Next ID: 8;",
       "type": "object",
       "properties": {
-        "sourceImage": {
-          "description": "Specifies the image full path of the disk. For example: \"projects\/my-project\/global\/images\/my-image\".",
-          "type": "string"
-        },
-        "diskSizeGb": {
-          "description": "Specifies the size of the disk in base-2 GB. The size must be at least 10 GB.",
-          "type": "string",
-          "format": "int64"
-        },
         "sourceDisk": {
           "description": "Specifies the full path to an existing disk. For example: \"projects\/my-project\/zones\/us-central1-c\/disks\/my-disk\".",
           "type": "string"
@@ -569,24 +555,7 @@
             "READ_WRITE",
             "READ_ONLY"
           ]
-        },
-        "initializeParams": {
-          "description": "Specifies the parameters for a new disk that will be created alongside the new TPU node. You can only specify source_disk or this.",
-          "$ref": "DiskInitializeParams"
-        },
-        "index": {
-          "description": "Output only. A one-based index to this disk.",
-          "readOnly": true,
-          "type": "integer",
-          "format": "int32"
         }
-      }
-    },
-    "DiskInitializeParams": {
-      "id": "DiskInitializeParams",
-      "description": "DiskInitializeParams contains information to create new disks.",
-      "type": "object",
-      "properties": {
       }
     },
     "Symptom": {

@@ -46,18 +46,10 @@ class AttachedDisk(_messages.Message):
       data_disks.
 
   Fields:
-    diskSizeGb: Specifies the size of the disk in base-2 GB. The size must be
-      at least 10 GB.
-    index: Output only. A one-based index to this disk.
-    initializeParams: Specifies the parameters for a new disk that will be
-      created alongside the new TPU node. You can only specify source_disk or
-      this.
     mode: The mode in which to attach this disk. If not specified, the default
       is READ_WRITE mode. Only applicable to data_disks.
     sourceDisk: Specifies the full path to an existing disk. For example:
       "projects/my-project/zones/us-central1-c/disks/my-disk".
-    sourceImage: Specifies the image full path of the disk. For example:
-      "projects/my-project/global/images/my-image".
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -75,16 +67,8 @@ class AttachedDisk(_messages.Message):
     READ_WRITE = 1
     READ_ONLY = 2
 
-  diskSizeGb = _messages.IntegerField(1)
-  index = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('DiskInitializeParams', 3)
-  mode = _messages.EnumField('ModeValueValuesEnum', 4)
-  sourceDisk = _messages.StringField(5)
-  sourceImage = _messages.StringField(6)
-
-
-class DiskInitializeParams(_messages.Message):
-  r"""DiskInitializeParams contains information to create new disks."""
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  sourceDisk = _messages.StringField(2)
 
 
 class Empty(_messages.Message):
@@ -401,7 +385,6 @@ class Node(_messages.Message):
     symptoms: Output only. The Symptoms that have occurred to the TPU Node.
     tags: Tags to apply to the TPU Node. Tags are used to identify valid
       sources or targets for network firewalls.
-    useTpuVm: Output only.
   """
 
   class ApiVersionValueValuesEnum(_messages.Enum):
@@ -544,7 +527,6 @@ class Node(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 18)
   symptoms = _messages.MessageField('Symptom', 19, repeated=True)
   tags = _messages.StringField(20, repeated=True)
-  useTpuVm = _messages.BooleanField(21)
 
 
 class Operation(_messages.Message):

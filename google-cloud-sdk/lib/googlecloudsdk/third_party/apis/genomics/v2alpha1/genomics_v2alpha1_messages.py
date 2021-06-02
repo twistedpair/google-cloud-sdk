@@ -422,23 +422,6 @@ class CheckInResponse(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
 
 
-class ComputeEngine(_messages.Message):
-  r"""Describes a Compute Engine resource that is being managed by a running
-  pipeline.
-
-  Fields:
-    diskNames: The names of the disks that were created for this pipeline.
-    instanceName: The instance on which the operation is running.
-    machineType: The machine type of the instance.
-    zone: The availability zone in which the instance resides.
-  """
-
-  diskNames = _messages.StringField(1, repeated=True)
-  instanceName = _messages.StringField(2)
-  machineType = _messages.StringField(3)
-  zone = _messages.StringField(4)
-
-
 class ContainerKilledEvent(_messages.Message):
   r"""An event generated when a container is forcibly terminated by the
   worker. Currently, this only occurs when the container outlives the timeout
@@ -811,17 +794,11 @@ class GenomicsProjectsOperationsListRequest(_messages.Message):
       Once the pipeline finishes, the value is the standard Google error code.
       * labels.key or labels."key with space" where key is a label key. *
       done: If the pipeline is running, this value is false. Once the pipeline
-      finishes, the value is true. In v1 and v1alpha2, the following filter
-      fields are supported: * projectId: Required. Corresponds to
-      OperationMetadata.projectId. * createTime: The time this job was
-      created, in seconds from the
-      [epoch](http://en.wikipedia.org/wiki/Unix_time). Can use `>=` and/or
-      `<=` operators. * status: Can be `RUNNING`, `SUCCESS`, `FAILURE`, or
-      `CANCELED`. Only one status may be specified. * labels.key where key is
-      a label key. Examples: * `projectId = my-project AND createTime >=
-      1432140000` * `projectId = my-project AND createTime >= 1432140000 AND
-      createTime <= 1432150000 AND status = RUNNING` * `projectId = my-project
-      AND labels.color = *` * `projectId = my-project AND labels.color = red`
+      finishes, the value is true. Examples: * `projectId = my-project AND
+      createTime >= 1432140000` * `projectId = my-project AND createTime >=
+      1432140000 AND createTime <= 1432150000 AND status = RUNNING` *
+      `projectId = my-project AND labels.color = *` * `projectId = my-project
+      AND labels.color = red`
     name: The name of the operation's parent resource.
     pageSize: The maximum number of results to return. The maximum value is
       256.
@@ -1062,145 +1039,6 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class OperationEvent(_messages.Message):
-  r"""An event that occurred during an Operation.
-
-  Fields:
-    description: Required description of event.
-    endTime: Optional time of when event finished. An event can have a start
-      time and no finish time. If an event has a finish time, there must be a
-      start time.
-    startTime: Optional time of when event started.
-  """
-
-  description = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
-
-
-class OperationMetadata(_messages.Message):
-  r"""Metadata describing an Operation.
-
-  Messages:
-    LabelsValue: Optionally provided by the caller when submitting the request
-      that creates the operation.
-    RequestValue: The original request that started the operation. Note that
-      this will be in current version of the API. If the operation was started
-      with v1beta2 API and a GetOperation is performed on v1 API, a v1 request
-      will be returned.
-    RuntimeMetadataValue: Runtime metadata on this Operation.
-
-  Fields:
-    clientId: This field is deprecated. Use `labels` instead. Optionally
-      provided by the caller when submitting the request that creates the
-      operation.
-    createTime: The time at which the job was submitted to the Genomics
-      service.
-    endTime: The time at which the job stopped running.
-    events: Optional event messages that were generated during the job's
-      execution. This also contains any warnings that were generated during
-      import or export.
-    labels: Optionally provided by the caller when submitting the request that
-      creates the operation.
-    projectId: The Google Cloud Project in which the job is scoped.
-    request: The original request that started the operation. Note that this
-      will be in current version of the API. If the operation was started with
-      v1beta2 API and a GetOperation is performed on v1 API, a v1 request will
-      be returned.
-    runtimeMetadata: Runtime metadata on this Operation.
-    startTime: The time at which the job began to run.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optionally provided by the caller when submitting the request that
-    creates the operation.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RequestValue(_messages.Message):
-    r"""The original request that started the operation. Note that this will
-    be in current version of the API. If the operation was started with
-    v1beta2 API and a GetOperation is performed on v1 API, a v1 request will
-    be returned.
-
-    Messages:
-      AdditionalProperty: An additional property for a RequestValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RequestValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RuntimeMetadataValue(_messages.Message):
-    r"""Runtime metadata on this Operation.
-
-    Messages:
-      AdditionalProperty: An additional property for a RuntimeMetadataValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RuntimeMetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  clientId = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  events = _messages.MessageField('OperationEvent', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  projectId = _messages.StringField(6)
-  request = _messages.MessageField('RequestValue', 7)
-  runtimeMetadata = _messages.MessageField('RuntimeMetadataValue', 8)
-  startTime = _messages.StringField(9)
-
-
 class PersistentDisk(_messages.Message):
   r"""Configuration for a persistent disk to be attached to the VM. See
   https://cloud.google.com/compute/docs/disks/performance for more information
@@ -1386,17 +1224,6 @@ class RunPipelineResponse(_messages.Message):
   result field on success.
   """
 
-
-
-class RuntimeMetadata(_messages.Message):
-  r"""Runtime metadata that will be populated in the runtimeMetadata field of
-  the Operation associated with a RunPipeline execution.
-
-  Fields:
-    computeEngine: Execution information specific to Google Compute Engine.
-  """
-
-  computeEngine = _messages.MessageField('ComputeEngine', 1)
 
 
 class Secret(_messages.Message):

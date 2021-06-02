@@ -734,45 +734,6 @@ class DatastreamProjectsLocationsStreamsPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(6)
 
 
-class DatastreamProjectsLocationsStreamsPauseRequest(_messages.Message):
-  r"""A DatastreamProjectsLocationsStreamsPauseRequest object.
-
-  Fields:
-    name: Name of the Stream resource to pause.
-    pauseStreamRequest: A PauseStreamRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  pauseStreamRequest = _messages.MessageField('PauseStreamRequest', 2)
-
-
-class DatastreamProjectsLocationsStreamsResumeRequest(_messages.Message):
-  r"""A DatastreamProjectsLocationsStreamsResumeRequest object.
-
-  Fields:
-    name: Name of the Stream resource to resume.
-    resumeStreamRequest: A ResumeStreamRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  resumeStreamRequest = _messages.MessageField('ResumeStreamRequest', 2)
-
-
-class DatastreamProjectsLocationsStreamsStartRequest(_messages.Message):
-  r"""A DatastreamProjectsLocationsStreamsStartRequest object.
-
-  Fields:
-    name: Name of the Stream resource to start.
-    startStreamRequest: A StartStreamRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  startStreamRequest = _messages.MessageField('StartStreamRequest', 2)
-
-
 class DestinationConfig(_messages.Message):
   r"""The configuration of the stream destination.
 
@@ -1574,10 +1535,6 @@ class OracleTable(_messages.Message):
   tableName = _messages.StringField(2)
 
 
-class PauseStreamRequest(_messages.Message):
-  r"""Request message for 'PauseStream' request."""
-
-
 class PrivateConnection(_messages.Message):
   r"""The PrivateConnection resource is used to establish private connectivity
   between Datastream and a customer's network.
@@ -1658,10 +1615,6 @@ class PrivateConnectivity(_messages.Message):
   """
 
   privateConnectionName = _messages.StringField(1)
-
-
-class ResumeStreamRequest(_messages.Message):
-  r"""Request message for 'ResumeStream' request."""
 
 
 class Route(_messages.Message):
@@ -1790,10 +1743,6 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
-
-
-class StartStreamRequest(_messages.Message):
-  r"""Request message for 'StartStream' request."""
 
 
 class StaticServiceIpConnectivity(_messages.Message):

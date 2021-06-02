@@ -14,25 +14,287 @@ from apitools.base.py import extra_types
 package = 'genomics'
 
 
-class CancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
-
-
-class ComputeEngine(_messages.Message):
-  r"""Describes a Compute Engine resource that is being managed by a running
-  pipeline.
+class Accelerator(_messages.Message):
+  r"""Carries information about an accelerator that can be attached to a VM.
 
   Fields:
-    diskNames: The names of the disks that were created for this pipeline.
-    instanceName: The instance on which the operation is running.
-    machineType: The machine type of the instance.
-    zone: The availability zone in which the instance resides.
+    count: How many accelerators of this type to attach.
+    type: The accelerator type string (for example, "nvidia-tesla-k80"). Only
+      NVIDIA GPU accelerators are currently supported. If an NVIDIA GPU is
+      attached, the required runtime libraries will be made available to all
+      containers under `/usr/local/nvidia`. The driver version to install must
+      be specified using the NVIDIA driver version parameter on the virtual
+      machine specification. Note that attaching a GPU increases the worker VM
+      startup time by a few minutes.
   """
 
-  diskNames = _messages.StringField(1, repeated=True)
-  instanceName = _messages.StringField(2)
-  machineType = _messages.StringField(3)
-  zone = _messages.StringField(4)
+  count = _messages.IntegerField(1)
+  type = _messages.StringField(2)
+
+
+class Action(_messages.Message):
+  r"""Specifies a single action that runs a Docker container.
+
+  Enums:
+    FlagsValueListEntryValuesEnum:
+
+  Messages:
+    EnvironmentValue: The environment to pass into the container. This
+      environment is merged with values specified in the
+      google.genomics.v2alpha1.Pipeline message, overwriting any duplicate
+      values. In addition to the values passed here, a few other values are
+      automatically injected into the environment. These cannot be hidden or
+      overwritten. `GOOGLE_PIPELINE_FAILED` will be set to "1" if the pipeline
+      failed because an action has exited with a non-zero status (and did not
+      have the `IGNORE_EXIT_STATUS` flag set). This can be used to determine
+      if additional debug or logging actions should execute.
+      `GOOGLE_LAST_EXIT_STATUS` will be set to the exit status of the last
+      non-background action that executed. This can be used by workflow engine
+      authors to determine whether an individual action has succeeded or
+      failed.
+    LabelsValue: Labels to associate with the action. This field is provided
+      to assist workflow engine authors in identifying actions (for example,
+      to indicate what sort of action they perform, such as localization or
+      debugging). They are returned in the operation metadata, but are
+      otherwise ignored.
+    PortMappingsValue: A map of containers to host port mappings for this
+      container. If the container already specifies exposed ports, use the
+      `PUBLISH_EXPOSED_PORTS` flag instead. The host port number must be less
+      than 65536. If it is zero, an unused random port is assigned. To
+      determine the resulting port number, consult the `ContainerStartedEvent`
+      in the operation metadata.
+
+  Fields:
+    commands: If specified, overrides the `CMD` specified in the container. If
+      the container also has an `ENTRYPOINT` the values are used as entrypoint
+      arguments. Otherwise, they are used as a command and arguments to run
+      inside the container.
+    credentials: If the specified image is hosted on a private registry other
+      than Google Container Registry, the credentials required to pull the
+      image must be specified here as an encrypted secret. The secret must
+      decrypt to a JSON-encoded dictionary containing both `username` and
+      `password` keys.
+    encryptedEnvironment: The encrypted environment to pass into the
+      container. This environment is merged with values specified in the
+      google.genomics.v2alpha1.Pipeline message, overwriting any duplicate
+      values. The secret must decrypt to a JSON-encoded dictionary where key-
+      value pairs serve as environment variable names and their values. The
+      decoded environment variables can overwrite the values specified by the
+      `environment` field.
+    entrypoint: If specified, overrides the `ENTRYPOINT` specified in the
+      container.
+    environment: The environment to pass into the container. This environment
+      is merged with values specified in the google.genomics.v2alpha1.Pipeline
+      message, overwriting any duplicate values. In addition to the values
+      passed here, a few other values are automatically injected into the
+      environment. These cannot be hidden or overwritten.
+      `GOOGLE_PIPELINE_FAILED` will be set to "1" if the pipeline failed
+      because an action has exited with a non-zero status (and did not have
+      the `IGNORE_EXIT_STATUS` flag set). This can be used to determine if
+      additional debug or logging actions should execute.
+      `GOOGLE_LAST_EXIT_STATUS` will be set to the exit status of the last
+      non-background action that executed. This can be used by workflow engine
+      authors to determine whether an individual action has succeeded or
+      failed.
+    flags: The set of flags to apply to this action.
+    imageUri: Required. The URI to pull the container image from. Note that
+      all images referenced by actions in the pipeline are pulled before the
+      first action runs. If multiple actions reference the same image, it is
+      only pulled once, ensuring that the same image is used for all actions
+      in a single pipeline. The image URI can be either a complete host and
+      image specification (e.g., quay.io/biocontainers/samtools), a library
+      and image name (e.g., google/cloud-sdk) or a bare image name ('bash') to
+      pull from the default library. No schema is required in any of these
+      cases. If the specified image is not public, the service account
+      specified for the Virtual Machine must have access to pull the images
+      from GCR, or appropriate credentials must be specified in the
+      google.genomics.v2alpha1.Action.credentials field.
+    labels: Labels to associate with the action. This field is provided to
+      assist workflow engine authors in identifying actions (for example, to
+      indicate what sort of action they perform, such as localization or
+      debugging). They are returned in the operation metadata, but are
+      otherwise ignored.
+    mounts: A list of mounts to make available to the action. In addition to
+      the values specified here, every action has a special virtual disk
+      mounted under `/google` that contains log files and other operational
+      components. - /google/logs All logs written during the pipeline
+      execution. - /google/logs/output The combined standard output and
+      standard error of all actions run as part of the pipeline execution. -
+      /google/logs/action/*/stdout The complete contents of each individual
+      action's standard output. - /google/logs/action/*/stderr The complete
+      contents of each individual action's standard error output.
+    name: An optional name for the container. The container hostname will be
+      set to this name, making it useful for inter-container communication.
+      The name must contain only upper and lowercase alphanumeric characters
+      and hyphens and cannot start with a hyphen.
+    pidNamespace: An optional identifier for a PID namespace to run the action
+      inside. Multiple actions should use the same string to share a
+      namespace. If unspecified, a separate isolated namespace is used.
+    portMappings: A map of containers to host port mappings for this
+      container. If the container already specifies exposed ports, use the
+      `PUBLISH_EXPOSED_PORTS` flag instead. The host port number must be less
+      than 65536. If it is zero, an unused random port is assigned. To
+      determine the resulting port number, consult the `ContainerStartedEvent`
+      in the operation metadata.
+    timeout: The maximum amount of time to give the action to complete. If the
+      action fails to complete before the timeout, it will be terminated and
+      the exit status will be non-zero. The pipeline will continue or
+      terminate based on the rules defined by the `ALWAYS_RUN` and
+      `IGNORE_EXIT_STATUS` flags.
+  """
+
+  class FlagsValueListEntryValuesEnum(_messages.Enum):
+    r"""FlagsValueListEntryValuesEnum enum type.
+
+    Values:
+      FLAG_UNSPECIFIED: Unspecified flag.
+      IGNORE_EXIT_STATUS: Normally, a non-zero exit status causes the pipeline
+        to fail. This flag allows execution of other actions to continue
+        instead.
+      RUN_IN_BACKGROUND: This flag allows an action to continue running in the
+        background while executing subsequent actions. This is useful to
+        provide services to other actions (or to provide debugging support
+        tools like SSH servers).
+      ALWAYS_RUN: By default, after an action fails, no further actions are
+        run. This flag indicates that this action must be run even if the
+        pipeline has already failed. This is useful for actions that copy
+        output files off of the VM or for debugging. Note that no actions will
+        be run if image prefetching fails.
+      ENABLE_FUSE: Enable access to the FUSE device for this action.
+        Filesystems can then be mounted into disks shared with other actions.
+        The other actions do not need the `ENABLE_FUSE` flag to access the
+        mounted filesystem. This has the effect of causing the container to be
+        executed with `CAP_SYS_ADMIN` and exposes `/dev/fuse` to the
+        container, so use it only for containers you trust.
+      PUBLISH_EXPOSED_PORTS: Exposes all ports specified by `EXPOSE`
+        statements in the container. To discover the host side port numbers,
+        consult the `ACTION_STARTED` event in the operation metadata.
+      DISABLE_IMAGE_PREFETCH: All container images are typically downloaded
+        before any actions are executed. This helps prevent typos in URIs or
+        issues like lack of disk space from wasting large amounts of compute
+        resources. If set, this flag prevents the worker from downloading the
+        image until just before the action is executed.
+      DISABLE_STANDARD_ERROR_CAPTURE: A small portion of the container's
+        standard error stream is typically captured and returned inside the
+        `ContainerStoppedEvent`. Setting this flag disables this
+        functionality.
+      BLOCK_EXTERNAL_NETWORK: Prevents the container from accessing the
+        external network.
+    """
+    FLAG_UNSPECIFIED = 0
+    IGNORE_EXIT_STATUS = 1
+    RUN_IN_BACKGROUND = 2
+    ALWAYS_RUN = 3
+    ENABLE_FUSE = 4
+    PUBLISH_EXPOSED_PORTS = 5
+    DISABLE_IMAGE_PREFETCH = 6
+    DISABLE_STANDARD_ERROR_CAPTURE = 7
+    BLOCK_EXTERNAL_NETWORK = 8
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentValue(_messages.Message):
+    r"""The environment to pass into the container. This environment is merged
+    with values specified in the google.genomics.v2alpha1.Pipeline message,
+    overwriting any duplicate values. In addition to the values passed here, a
+    few other values are automatically injected into the environment. These
+    cannot be hidden or overwritten. `GOOGLE_PIPELINE_FAILED` will be set to
+    "1" if the pipeline failed because an action has exited with a non-zero
+    status (and did not have the `IGNORE_EXIT_STATUS` flag set). This can be
+    used to determine if additional debug or logging actions should execute.
+    `GOOGLE_LAST_EXIT_STATUS` will be set to the exit status of the last non-
+    background action that executed. This can be used by workflow engine
+    authors to determine whether an individual action has succeeded or failed.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvironmentValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type EnvironmentValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels to associate with the action. This field is provided to assist
+    workflow engine authors in identifying actions (for example, to indicate
+    what sort of action they perform, such as localization or debugging). They
+    are returned in the operation metadata, but are otherwise ignored.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PortMappingsValue(_messages.Message):
+    r"""A map of containers to host port mappings for this container. If the
+    container already specifies exposed ports, use the `PUBLISH_EXPOSED_PORTS`
+    flag instead. The host port number must be less than 65536. If it is zero,
+    an unused random port is assigned. To determine the resulting port number,
+    consult the `ContainerStartedEvent` in the operation metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a PortMappingsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type PortMappingsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PortMappingsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A integer attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  commands = _messages.StringField(1, repeated=True)
+  credentials = _messages.MessageField('Secret', 2)
+  encryptedEnvironment = _messages.MessageField('Secret', 3)
+  entrypoint = _messages.StringField(4)
+  environment = _messages.MessageField('EnvironmentValue', 5)
+  flags = _messages.EnumField('FlagsValueListEntryValuesEnum', 6, repeated=True)
+  imageUri = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  mounts = _messages.MessageField('Mount', 9, repeated=True)
+  name = _messages.StringField(10)
+  pidNamespace = _messages.StringField(11)
+  portMappings = _messages.MessageField('PortMappingsValue', 12)
+  timeout = _messages.StringField(13)
 
 
 class ContainerKilledEvent(_messages.Message):
@@ -120,134 +382,6 @@ class ContainerStoppedEvent(_messages.Message):
   stderr = _messages.StringField(3)
 
 
-class ControllerConfig(_messages.Message):
-  r"""Stores the information that the controller will fetch from the server in
-  order to run. Should only be used by VMs created by the Pipelines Service
-  and not by end users.
-
-  Messages:
-    DisksValue: A DisksValue object.
-    GcsSinksValue: A GcsSinksValue object.
-    GcsSourcesValue: A GcsSourcesValue object.
-    VarsValue: A VarsValue object.
-
-  Fields:
-    cmd: A string attribute.
-    disks: A DisksValue attribute.
-    gcsLogPath: A string attribute.
-    gcsSinks: A GcsSinksValue attribute.
-    gcsSources: A GcsSourcesValue attribute.
-    image: A string attribute.
-    machineType: A string attribute.
-    vars: A VarsValue attribute.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DisksValue(_messages.Message):
-    r"""A DisksValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a DisksValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type DisksValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DisksValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class GcsSinksValue(_messages.Message):
-    r"""A GcsSinksValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a GcsSinksValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type GcsSinksValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a GcsSinksValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RepeatedString attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RepeatedString', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class GcsSourcesValue(_messages.Message):
-    r"""A GcsSourcesValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a GcsSourcesValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type GcsSourcesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a GcsSourcesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A RepeatedString attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('RepeatedString', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class VarsValue(_messages.Message):
-    r"""A VarsValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a VarsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type VarsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a VarsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  cmd = _messages.StringField(1)
-  disks = _messages.MessageField('DisksValue', 2)
-  gcsLogPath = _messages.StringField(3)
-  gcsSinks = _messages.MessageField('GcsSinksValue', 4)
-  gcsSources = _messages.MessageField('GcsSourcesValue', 5)
-  image = _messages.StringField(6)
-  machineType = _messages.StringField(7)
-  vars = _messages.MessageField('VarsValue', 8)
-
-
 class DelayedEvent(_messages.Message):
   r"""An event generated whenever a resource limitation or transient error
   delays execution of a pipeline that was otherwise ready to run.
@@ -267,87 +401,30 @@ class DelayedEvent(_messages.Message):
 
 
 class Disk(_messages.Message):
-  r"""A Google Compute Engine disk resource specification.
-
-  Enums:
-    TypeValueValuesEnum: Required. The type of the disk to create.
-
-  Fields:
-    autoDelete: Deprecated. Disks created by the Pipelines API will be deleted
-      at the end of the pipeline run, regardless of what this field is set to.
-    mountPoint: Required at create time and cannot be overridden at run time.
-      Specifies the path in the docker container where files on this disk
-      should be located. For example, if `mountPoint` is `/mnt/disk`, and the
-      parameter has `localPath` `inputs/file.txt`, the docker container can
-      access the data at `/mnt/disk/inputs/file.txt`.
-    name: Required. The name of the disk that can be used in the pipeline
-      parameters. Must be 1 - 63 characters. The name "boot" is reserved for
-      system use.
-    readOnly: Specifies how a sourced-base persistent disk will be mounted.
-      See https://cloud.google.com/compute/docs/disks/persistent-
-      disks#use_multi_instances for more details. Can only be set at create
-      time.
-    sizeGb: The size of the disk. Defaults to 500 (GB). This field is not
-      applicable for local SSD.
-    source: The full or partial URL of the persistent disk to attach. See
-      https://cloud.google.com/compute/docs/reference/latest/instances#resourc
-      e and https://cloud.google.com/compute/docs/disks/persistent-
-      disks#snapshots for more details.
-    type: Required. The type of the disk to create.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of the disk to create.
-
-    Values:
-      TYPE_UNSPECIFIED: Default disk type. Use one of the other options below.
-      PERSISTENT_HDD: Specifies a Google Compute Engine persistent hard disk.
-        See https://cloud.google.com/compute/docs/disks/#pdspecs for details.
-      PERSISTENT_SSD: Specifies a Google Compute Engine persistent solid-state
-        disk. See https://cloud.google.com/compute/docs/disks/#pdspecs for
-        details.
-      LOCAL_SSD: Specifies a Google Compute Engine local SSD. See
-        https://cloud.google.com/compute/docs/disks/local-ssd for details.
-    """
-    TYPE_UNSPECIFIED = 0
-    PERSISTENT_HDD = 1
-    PERSISTENT_SSD = 2
-    LOCAL_SSD = 3
-
-  autoDelete = _messages.BooleanField(1)
-  mountPoint = _messages.StringField(2)
-  name = _messages.StringField(3)
-  readOnly = _messages.BooleanField(4)
-  sizeGb = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  source = _messages.StringField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-
-
-class DockerExecutor(_messages.Message):
-  r"""The Docker execuctor specification.
+  r"""Carries information about a disk that can be attached to a VM. See
+  https://cloud.google.com/compute/docs/disks/performance for more information
+  about disk type, size, and performance considerations. Specify either
+  `Volume` or `Disk`, but not both.
 
   Fields:
-    cmd: Required. The command or newline delimited script to run. The command
-      string will be executed within a bash shell. If the command exits with a
-      non-zero exit code, output parameter de-localization will be skipped and
-      the pipeline operation's `error` field will be populated. Maximum
-      command string length is 16384.
-    imageName: Required. Image name from either Docker Hub or Google Container
-      Registry. Users that run pipelines must have READ access to the image.
+    name: A user-supplied name for the disk. Used when mounting the disk into
+      actions. The name must contain only upper and lowercase alphanumeric
+      characters and hyphens and cannot start with a hyphen.
+    sizeGb: The size, in GB, of the disk to attach. If the size is not
+      specified, a default is chosen to ensure reasonable I/O performance. If
+      the disk type is specified as `local-ssd`, multiple local drives are
+      automatically combined to provide the requested size. Note, however,
+      that each physical SSD is 375GB in size, and no more than 8 drives can
+      be attached to a single instance.
+    sourceImage: An optional image to put on the disk before attaching it to
+      the VM.
+    type: The Compute Engine disk type. If unspecified, `pd-standard` is used.
   """
 
-  cmd = _messages.StringField(1)
-  imageName = _messages.StringField(2)
-
-
-class Empty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
-  """
-
+  name = _messages.StringField(1)
+  sizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  sourceImage = _messages.StringField(3)
+  type = _messages.StringField(4)
 
 
 class Event(_messages.Message):
@@ -392,6 +469,24 @@ class Event(_messages.Message):
   description = _messages.StringField(1)
   details = _messages.MessageField('DetailsValue', 2)
   timestamp = _messages.StringField(3)
+
+
+class ExistingDisk(_messages.Message):
+  r"""Configuration for an existing disk to be attached to the VM.
+
+  Fields:
+    disk: If `disk` contains slashes, the Cloud Life Sciences API assumes that
+      it is a complete URL for the disk. If `disk` does not contain slashes,
+      the Cloud Life Sciences API assumes that the disk is a zonal disk and a
+      URL will be generated of the form `zones//disks/`, where `` is the zone
+      in which the instance is allocated. The disk must be ext4 formatted. If
+      all `Mount` references to this disk have the `read_only` flag set to
+      true, the disk will be attached in `read-only` mode and can be shared
+      with other instances. Otherwise, the disk will be available for writing
+      but cannot be shared.
+  """
+
+  disk = _messages.StringField(1)
 
 
 class FailedEvent(_messages.Message):
@@ -517,314 +612,28 @@ class FailedEvent(_messages.Message):
   code = _messages.EnumField('CodeValueValuesEnum', 2)
 
 
-class GenomicsOperationsCancelRequest(_messages.Message):
-  r"""A GenomicsOperationsCancelRequest object.
-
-  Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class GenomicsOperationsGetRequest(_messages.Message):
-  r"""A GenomicsOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class GenomicsOperationsListRequest(_messages.Message):
-  r"""A GenomicsOperationsListRequest object.
-
-  Fields:
-    filter: A string for filtering Operations. In v2alpha1, the following
-      filter fields are supported: * createTime: The time this job was created
-      * events: The set of event (names) that have occurred while running the
-      pipeline. The : operator can be used to determine if a particular event
-      has occurred. * error: If the pipeline is running, this value is NULL.
-      Once the pipeline finishes, the value is the standard Google error code.
-      * labels.key or labels."key with space" where key is a label key. *
-      done: If the pipeline is running, this value is false. Once the pipeline
-      finishes, the value is true. In v1 and v1alpha2, the following filter
-      fields are supported: * projectId: Required. Corresponds to
-      OperationMetadata.projectId. * createTime: The time this job was
-      created, in seconds from the
-      [epoch](http://en.wikipedia.org/wiki/Unix_time). Can use `>=` and/or
-      `<=` operators. * status: Can be `RUNNING`, `SUCCESS`, `FAILURE`, or
-      `CANCELED`. Only one status may be specified. * labels.key where key is
-      a label key. Examples: * `projectId = my-project AND createTime >=
-      1432140000` * `projectId = my-project AND createTime >= 1432140000 AND
-      createTime <= 1432150000 AND status = RUNNING` * `projectId = my-project
-      AND labels.color = *` * `projectId = my-project AND labels.color = red`
-    name: The name of the operation's parent resource.
-    pageSize: The maximum number of results to return. The maximum value is
-      256.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
-class GenomicsPipelinesDeleteRequest(_messages.Message):
-  r"""A GenomicsPipelinesDeleteRequest object.
-
-  Fields:
-    pipelineId: Caller must have WRITE access to the project in which this
-      pipeline is defined.
-  """
-
-  pipelineId = _messages.StringField(1, required=True)
-
-
-class GenomicsPipelinesGetControllerConfigRequest(_messages.Message):
-  r"""A GenomicsPipelinesGetControllerConfigRequest object.
-
-  Fields:
-    operationId: The operation to retrieve controller configuration for.
-    validationToken: A string attribute.
-  """
-
-  operationId = _messages.StringField(1)
-  validationToken = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
-
-
-class GenomicsPipelinesGetRequest(_messages.Message):
-  r"""A GenomicsPipelinesGetRequest object.
-
-  Fields:
-    pipelineId: Caller must have READ access to the project in which this
-      pipeline is defined.
-  """
-
-  pipelineId = _messages.StringField(1, required=True)
-
-
-class GenomicsPipelinesListRequest(_messages.Message):
-  r"""A GenomicsPipelinesListRequest object.
-
-  Fields:
-    namePrefix: Pipelines with names that match this prefix should be
-      returned. If unspecified, all pipelines in the project, up to
-      `pageSize`, will be returned.
-    pageSize: Number of pipelines to return at once. Defaults to 256, and max
-      is 2048.
-    pageToken: Token to use to indicate where to start getting results. If
-      unspecified, returns the first page of results.
-    projectId: Required. The name of the project to search for pipelines.
-      Caller must have READ access to this project.
-  """
-
-  namePrefix = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  projectId = _messages.StringField(4)
-
-
-class ListOperationsResponse(_messages.Message):
-  r"""The response message for Operations.ListOperations.
-
-  Fields:
-    nextPageToken: The standard List next-page token.
-    operations: A list of operations that matches the specified filter in the
-      request.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('Operation', 2, repeated=True)
-
-
-class ListPipelinesResponse(_messages.Message):
-  r"""The response of ListPipelines. Contains at most `pageSize` pipelines. If
-  it contains `pageSize` pipelines, and more pipelines exist, then
-  `nextPageToken` will be populated and should be used as the `pageToken`
-  argument to a subsequent ListPipelines request.
-
-  Fields:
-    nextPageToken: The token to use to get the next page of results.
-    pipelines: The matched pipelines.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  pipelines = _messages.MessageField('Pipeline', 2, repeated=True)
-
-
-class LocalCopy(_messages.Message):
-  r"""LocalCopy defines how a remote file should be copied to and from the VM.
-
-  Fields:
-    disk: Required. The name of the disk where this parameter is located. Can
-      be the name of one of the disks specified in the Resources field, or
-      "boot", which represents the Docker instance's boot disk and has a mount
-      point of `/`.
-    path: Required. The path within the user's docker container where this
-      input should be localized to and from, relative to the specified disk's
-      mount point. For example: file.txt,
-  """
-
-  disk = _messages.StringField(1)
-  path = _messages.StringField(2)
-
-
-class LoggingOptions(_messages.Message):
-  r"""The logging options for the pipeline run.
-
-  Fields:
-    gcsPath: The location in Google Cloud Storage to which the pipeline logs
-      will be copied. Can be specified as a fully qualified directory path, in
-      which case logs will be output with a unique identifier as the filename
-      in that directory, or as a fully specified path, which must end in
-      `.log`, in which case that path will be used, and the user must ensure
-      that logs are not overwritten. Stdout and stderr logs from the run are
-      also generated and output as `-stdout.log` and `-stderr.log`.
-  """
-
-  gcsPath = _messages.StringField(1)
-
-
-class Operation(_messages.Message):
-  r"""This resource represents a long-running operation that is the result of
-  a network API call.
+class Metadata(_messages.Message):
+  r"""Carries information about the pipeline execution that is returned in the
+  long running operation's metadata field.
 
   Messages:
-    MetadataValue: An OperationMetadata or Metadata object. This will always
-      be returned with the Operation.
-    ResponseValue: An Empty object.
+    LabelsValue: The user-defined labels associated with this operation.
 
   Fields:
-    done: If the value is `false`, it means the operation is still in
-      progress. If `true`, the operation is completed, and either `error` or
-      `response` is available.
-    error: The error result of the operation in case of failure or
-      cancellation.
-    metadata: An OperationMetadata or Metadata object. This will always be
-      returned with the Operation.
-    name: The server-assigned name, which is only unique within the same
-      service that originally returns it. For example:
-      `operations/CJHU7Oi_ChDrveSpBRjfuL-qzoWAgEw`
-    response: An Empty object.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""An OperationMetadata or Metadata object. This will always be returned
-    with the Operation.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ResponseValue(_messages.Message):
-    r"""An Empty object.
-
-    Messages:
-      AdditionalProperty: An additional property for a ResponseValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ResponseValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  done = _messages.BooleanField(1)
-  error = _messages.MessageField('Status', 2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
-  response = _messages.MessageField('ResponseValue', 5)
-
-
-class OperationEvent(_messages.Message):
-  r"""An event that occurred during an Operation.
-
-  Fields:
-    description: Required description of event.
-    endTime: Optional time of when event finished. An event can have a start
-      time and no finish time. If an event has a finish time, there must be a
-      start time.
-    startTime: Optional time of when event started.
-  """
-
-  description = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  startTime = _messages.StringField(3)
-
-
-class OperationMetadata(_messages.Message):
-  r"""Metadata describing an Operation.
-
-  Messages:
-    LabelsValue: Optionally provided by the caller when submitting the request
-      that creates the operation.
-    RequestValue: The original request that started the operation. Note that
-      this will be in current version of the API. If the operation was started
-      with v1beta2 API and a GetOperation is performed on v1 API, a v1 request
-      will be returned.
-    RuntimeMetadataValue: Runtime metadata on this Operation.
-
-  Fields:
-    clientId: This field is deprecated. Use `labels` instead. Optionally
-      provided by the caller when submitting the request that creates the
-      operation.
-    createTime: The time at which the job was submitted to the Genomics
-      service.
-    endTime: The time at which the job stopped running.
-    events: Optional event messages that were generated during the job's
-      execution. This also contains any warnings that were generated during
-      import or export.
-    labels: Optionally provided by the caller when submitting the request that
-      creates the operation.
-    projectId: The Google Cloud Project in which the job is scoped.
-    request: The original request that started the operation. Note that this
-      will be in current version of the API. If the operation was started with
-      v1beta2 API and a GetOperation is performed on v1 API, a v1 request will
-      be returned.
-    runtimeMetadata: Runtime metadata on this Operation.
-    startTime: The time at which the job began to run.
+    createTime: The time at which the operation was created by the API.
+    endTime: The time at which execution was completed and resources were
+      cleaned up.
+    events: The list of events that have happened so far during the execution
+      of this operation.
+    labels: The user-defined labels associated with this operation.
+    pipeline: The pipeline this operation represents.
+    startTime: The first time at which resources were allocated to execute the
+      pipeline.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optionally provided by the caller when submitting the request that
-    creates the operation.
+    r"""The user-defined labels associated with this operation.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -846,210 +655,148 @@ class OperationMetadata(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RequestValue(_messages.Message):
-    r"""The original request that started the operation. Note that this will
-    be in current version of the API. If the operation was started with
-    v1beta2 API and a GetOperation is performed on v1 API, a v1 request will
-    be returned.
+  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  events = _messages.MessageField('Event', 3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  pipeline = _messages.MessageField('Pipeline', 5)
+  startTime = _messages.StringField(6)
 
-    Messages:
-      AdditionalProperty: An additional property for a RequestValue object.
 
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
+class Mount(_messages.Message):
+  r"""Carries information about a particular disk mount inside a container.
 
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RequestValue object.
+  Fields:
+    disk: The name of the disk to mount, as specified in the resources
+      section.
+    path: The path to mount the disk inside the container.
+    readOnly: If true, the disk is mounted read-only inside the container.
+  """
 
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
+  disk = _messages.StringField(1)
+  path = _messages.StringField(2)
+  readOnly = _messages.BooleanField(3)
 
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
 
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+class NFSMount(_messages.Message):
+  r"""Configuration for an `NFSMount` to be attached to the VM.
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RuntimeMetadataValue(_messages.Message):
-    r"""Runtime metadata on this Operation.
+  Fields:
+    target: A target NFS mount. The target must be specified as
+      `address:/mount".
+  """
 
-    Messages:
-      AdditionalProperty: An additional property for a RuntimeMetadataValue
-        object.
+  target = _messages.StringField(1)
 
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
 
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RuntimeMetadataValue object.
+class Network(_messages.Message):
+  r"""VM networking options.
 
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
+  Fields:
+    name: The network name to attach the VM's network interface to. The value
+      will be prefixed with `global/networks/` unless it contains a `/`, in
+      which case it is assumed to be a fully specified network resource URL.
+      If unspecified, the global default network is used.
+    subnetwork: If the specified network is configured for custom subnet
+      creation, the name of the subnetwork to attach the instance to must be
+      specified here. The value is prefixed with `regions/*/subnetworks/`
+      unless it contains a `/`, in which case it is assumed to be a fully
+      specified subnetwork resource URL. If the `*` character appears in the
+      value, it is replaced with the region that the virtual machine has been
+      allocated in.
+    usePrivateAddress: If set to true, do not attach a public IP address to
+      the VM. Note that without a public IP address, additional configuration
+      is required to allow the VM to access Google services. See
+      https://cloud.google.com/vpc/docs/configure-private-google-access for
+      more information.
+  """
 
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
+  name = _messages.StringField(1)
+  subnetwork = _messages.StringField(2)
+  usePrivateAddress = _messages.BooleanField(3)
 
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clientId = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  events = _messages.MessageField('OperationEvent', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  projectId = _messages.StringField(6)
-  request = _messages.MessageField('RequestValue', 7)
-  runtimeMetadata = _messages.MessageField('RuntimeMetadataValue', 8)
-  startTime = _messages.StringField(9)
+class PersistentDisk(_messages.Message):
+  r"""Configuration for a persistent disk to be attached to the VM. See
+  https://cloud.google.com/compute/docs/disks/performance for more information
+  about disk type, size, and performance considerations.
+
+  Fields:
+    sizeGb: The size, in GB, of the disk to attach. If the size is not
+      specified, a default is chosen to ensure reasonable I/O performance. If
+      the disk type is specified as `local-ssd`, multiple local drives are
+      automatically combined to provide the requested size. Note, however,
+      that each physical SSD is 375GB in size, and no more than 8 drives can
+      be attached to a single instance.
+    sourceImage: An image to put on the disk before attaching it to the VM.
+    type: The Compute Engine disk type. If unspecified, `pd-standard` is used.
+  """
+
+  sizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  sourceImage = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 class Pipeline(_messages.Message):
-  r"""The pipeline object. Represents a transformation from a set of input
-  parameters to a set of output parameters. The transformation is defined as a
-  docker image and command to run within that image. Each pipeline is run on a
-  Google Compute Engine VM. A pipeline can be created with the `create` method
-  and then later run with the `run` method, or a pipeline can be defined and
-  run all at once with the `run` method.
+  r"""Specifies a series of actions to execute, expressed as Docker
+  containers.
+
+  Messages:
+    EnvironmentValue: The environment to pass into every action. Each action
+      can also specify additional environment variables but cannot delete an
+      entry from this map (though they can overwrite it with a different
+      value).
 
   Fields:
-    description: User-specified description.
-    docker: Specifies the docker run information.
-    inputParameters: Input parameters of the pipeline.
-    name: Required. A user specified pipeline name that does not have to be
-      unique. This name can be used for filtering Pipelines in ListPipelines.
-    outputParameters: Output parameters of the pipeline.
-    pipelineId: Unique pipeline id that is generated by the service when
-      CreatePipeline is called. Cannot be specified in the Pipeline used in
-      the CreatePipelineRequest, and will be populated in the response to
-      CreatePipeline and all subsequent Get and List calls. Indicates that the
-      service has registered this pipeline.
-    projectId: Required. The project in which to create the pipeline. The
-      caller must have WRITE access.
-    resources: Required. Specifies resource requirements for the pipeline run.
-      Required fields: * minimumCpuCores * minimumRamGb
+    actions: The list of actions to execute, in the order they are specified.
+    encryptedEnvironment: The encrypted environment to pass into every action.
+      Each action can also specify its own encrypted environment. The secret
+      must decrypt to a JSON-encoded dictionary where key-value pairs serve as
+      environment variable names and their values. The decoded environment
+      variables can overwrite the values specified by the `environment` field.
+    environment: The environment to pass into every action. Each action can
+      also specify additional environment variables but cannot delete an entry
+      from this map (though they can overwrite it with a different value).
+    resources: The resources required for execution.
+    timeout: The maximum amount of time to give the pipeline to complete. This
+      includes the time spent waiting for a worker to be allocated. If the
+      pipeline fails to complete before the timeout, it will be cancelled and
+      the error code will be set to DEADLINE_EXCEEDED. If unspecified, it will
+      default to 7 days.
   """
 
-  description = _messages.StringField(1)
-  docker = _messages.MessageField('DockerExecutor', 2)
-  inputParameters = _messages.MessageField('PipelineParameter', 3, repeated=True)
-  name = _messages.StringField(4)
-  outputParameters = _messages.MessageField('PipelineParameter', 5, repeated=True)
-  pipelineId = _messages.StringField(6)
-  projectId = _messages.StringField(7)
-  resources = _messages.MessageField('PipelineResources', 8)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentValue(_messages.Message):
+    r"""The environment to pass into every action. Each action can also
+    specify additional environment variables but cannot delete an entry from
+    this map (though they can overwrite it with a different value).
 
+    Messages:
+      AdditionalProperty: An additional property for a EnvironmentValue
+        object.
 
-class PipelineParameter(_messages.Message):
-  r"""Parameters facilitate setting and delivering data into the pipeline's
-  execution environment. They are defined at create time, with optional
-  defaults, and can be overridden at run time. If `localCopy` is unset, then
-  the parameter specifies a string that is passed as-is into the pipeline, as
-  the value of the environment variable with the given name. A default value
-  can be optionally specified at create time. The default can be overridden at
-  run time using the inputs map. If no default is given, a value must be
-  supplied at runtime. If `localCopy` is defined, then the parameter specifies
-  a data source or sink, both in Google Cloud Storage and on the Docker
-  container where the pipeline computation is run. The service account
-  associated with the Pipeline (by default the project's Compute Engine
-  service account) must have access to the Google Cloud Storage paths. At run
-  time, the Google Cloud Storage paths can be overridden if a default was
-  provided at create time, or must be set otherwise. The pipeline runner
-  should add a key/value pair to either the inputs or outputs map. The
-  indicated data copies will be carried out before/after pipeline execution,
-  just as if the corresponding arguments were provided to `gsutil cp`. For
-  example: Given the following `PipelineParameter`, specified in the
-  `inputParameters` list: ``` {name: "input_file", localCopy: {path:
-  "file.txt", disk: "pd1"}} ``` where `disk` is defined in the
-  `PipelineResources` object as: ``` {name: "pd1", mountPoint: "/mnt/disk/"}
-  ``` We create a disk named `pd1`, mount it on the host VM, and map
-  `/mnt/pd1` to `/mnt/disk` in the docker container. At runtime, an entry for
-  `input_file` would be required in the inputs map, such as: ```
-  inputs["input_file"] = "gs://my-bucket/bar.txt" ``` This would generate the
-  following gsutil call: ``` gsutil cp gs://my-bucket/bar.txt
-  /mnt/pd1/file.txt ``` The file `/mnt/pd1/file.txt` maps to
-  `/mnt/disk/file.txt` in the Docker container. Acceptable paths are: Google
-  Cloud storage pathLocal path file file glob directory For outputs, the
-  direction of the copy is reversed: ``` gsutil cp /mnt/disk/file.txt gs://my-
-  bucket/bar.txt ``` Acceptable paths are: Local pathGoogle Cloud Storage path
-  file file file directory - directory must already exist glob directory -
-  directory will be created if it doesn't exist One restriction due to docker
-  limitations, is that for outputs that are found on the boot disk, the local
-  path cannot be a glob and must be a file.
+    Fields:
+      additionalProperties: Additional properties of type EnvironmentValue
+    """
 
-  Fields:
-    defaultValue: The default value for this parameter. Can be overridden at
-      runtime. If `localCopy` is present, then this must be a Google Cloud
-      Storage path beginning with `gs://`.
-    description: Human-readable description.
-    localCopy: If present, this parameter is marked for copying to and from
-      the VM. `LocalCopy` indicates where on the VM the file should be. The
-      value given to this parameter (either at runtime or using
-      `defaultValue`) must be the remote path where the file should be.
-    name: Required. Name of the parameter - the pipeline runner uses this
-      string as the key to the input and output maps in RunPipeline.
-  """
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentValue object.
 
-  defaultValue = _messages.StringField(1)
-  description = _messages.StringField(2)
-  localCopy = _messages.MessageField('LocalCopy', 3)
-  name = _messages.StringField(4)
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
 
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
 
-class PipelineResources(_messages.Message):
-  r"""The system resources for the pipeline run.
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  Fields:
-    acceleratorCount: Optional. The number of accelerators of the specified
-      type to attach. By specifying this parameter, you will download and
-      install the following third-party software onto your managed Compute
-      Engine instances: NVIDIA(R) Tesla(R) drivers and NVIDIA(R) CUDA toolkit.
-    acceleratorType: Optional. The Compute Engine defined accelerator type. By
-      specifying this parameter, you will download and install the following
-      third-party software onto your managed Compute Engine instances:
-      NVIDIA(R) Tesla(R) drivers and NVIDIA(R) CUDA toolkit. Please see
-      https://cloud.google.com/compute/docs/gpus/ for a list of available
-      accelerator types.
-    bootDiskSizeGb: The size of the boot disk. Defaults to 10 (GB).
-    disks: Disks to attach.
-    minimumCpuCores: The minimum number of cores to use. Defaults to 1.
-    minimumRamGb: The minimum amount of RAM to use. Defaults to 3.75 (GB)
-    noAddress: Whether to assign an external IP to the instance. This is an
-      experimental feature that may go away. Defaults to false. Corresponds to
-      `--no_address` flag for [gcloud compute instances create] (https://cloud
-      .google.com/sdk/gcloud/reference/compute/instances/create). In order to
-      use this, must be true for both create time and run time. Cannot be true
-      at run time if false at create time. If you need to ssh into a private
-      IP VM for debugging, you can ssh to a public VM and then ssh into the
-      private VM's Internal IP. If noAddress is set, this pipeline run may
-      only load docker images from Google Container Registry and not Docker
-      Hub. Before using this, you must [configure access to Google services
-      from internal IPs](https://cloud.google.com/compute/docs/configure-
-      private-google-
-      access#configuring_access_to_google_services_from_internal_ips).
-    preemptible: Whether to use preemptible VMs. Defaults to `false`. In order
-      to use this, must be true for both create time and run time. Cannot be
-      true at run time if false at create time.
-    zones: List of Google Compute Engine availability zones to which resource
-      creation will restricted. If empty, any zone may be chosen.
-  """
-
-  acceleratorCount = _messages.IntegerField(1)
-  acceleratorType = _messages.StringField(2)
-  bootDiskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  disks = _messages.MessageField('Disk', 4, repeated=True)
-  minimumCpuCores = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  minimumRamGb = _messages.FloatField(6)
-  noAddress = _messages.BooleanField(7)
-  preemptible = _messages.BooleanField(8)
-  zones = _messages.StringField(9, repeated=True)
+  actions = _messages.MessageField('Action', 1, repeated=True)
+  encryptedEnvironment = _messages.MessageField('Secret', 2)
+  environment = _messages.MessageField('EnvironmentValue', 3)
+  resources = _messages.MessageField('Resources', 4)
+  timeout = _messages.StringField(5)
 
 
 class PullStartedEvent(_messages.Message):
@@ -1072,190 +819,23 @@ class PullStoppedEvent(_messages.Message):
   imageUri = _messages.StringField(1)
 
 
-class RepeatedString(_messages.Message):
-  r"""A RepeatedString object.
+class Resources(_messages.Message):
+  r"""The system resources for the pipeline run. At least one zone or region
+  must be specified or the pipeline run will fail.
 
   Fields:
-    values: A string attribute.
+    projectId: The project ID to allocate resources in.
+    regions: The list of regions allowed for VM allocation. If set, the
+      `zones` field must not be set.
+    virtualMachine: The virtual machine specification.
+    zones: The list of zones allowed for VM allocation. If set, the `regions`
+      field must not be set.
   """
 
-  values = _messages.StringField(1, repeated=True)
-
-
-class RunPipelineArgs(_messages.Message):
-  r"""The pipeline run arguments.
-
-  Messages:
-    InputsValue: Pipeline input arguments; keys are defined in the pipeline
-      documentation. All input parameters that do not have default values must
-      be specified. If parameters with defaults are specified here, the
-      defaults will be overridden.
-    LabelsValue: Labels to apply to this pipeline run. Labels will also be
-      applied to compute resources (VM, disks) created by this pipeline run.
-      When listing operations, operations can filtered by labels. Label keys
-      may not be empty; label values may be empty. Non-empty labels must be
-      1-63 characters long, and comply with [RFC1035]
-      (https://www.ietf.org/rfc/rfc1035.txt). Specifically, the name must be
-      1-63 characters long and match the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
-      lowercase letter, and all following characters must be a dash, lowercase
-      letter, or digit, except the last character, which cannot be a dash.
-    OutputsValue: Pipeline output arguments; keys are defined in the pipeline
-      documentation. All output parameters of without default values must be
-      specified. If parameters with defaults are specified here, the defaults
-      will be overridden.
-
-  Fields:
-    clientId: This field is deprecated. Use `labels` instead. Client-specified
-      pipeline operation identifier.
-    inputs: Pipeline input arguments; keys are defined in the pipeline
-      documentation. All input parameters that do not have default values must
-      be specified. If parameters with defaults are specified here, the
-      defaults will be overridden.
-    keepVmAliveOnFailureDuration: How long to keep the VM up after a failure
-      (for example docker command failed, copying input or output files
-      failed, etc). While the VM is up, one can ssh into the VM to debug.
-      Default is 0; maximum allowed value is 1 day.
-    labels: Labels to apply to this pipeline run. Labels will also be applied
-      to compute resources (VM, disks) created by this pipeline run. When
-      listing operations, operations can filtered by labels. Label keys may
-      not be empty; label values may be empty. Non-empty labels must be 1-63
-      characters long, and comply with [RFC1035]
-      (https://www.ietf.org/rfc/rfc1035.txt). Specifically, the name must be
-      1-63 characters long and match the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
-      lowercase letter, and all following characters must be a dash, lowercase
-      letter, or digit, except the last character, which cannot be a dash.
-    logging: Required. Logging options. Used by the service to communicate
-      results to the user.
-    outputs: Pipeline output arguments; keys are defined in the pipeline
-      documentation. All output parameters of without default values must be
-      specified. If parameters with defaults are specified here, the defaults
-      will be overridden.
-    projectId: Required. The project in which to run the pipeline. The caller
-      must have WRITER access to all Google Cloud services and resources (e.g.
-      Google Compute Engine) will be used.
-    resources: Specifies resource requirements/overrides for the pipeline run.
-    serviceAccount: The Google Cloud Service Account that will be used to
-      access data and services. By default, the compute service account
-      associated with `projectId` is used.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class InputsValue(_messages.Message):
-    r"""Pipeline input arguments; keys are defined in the pipeline
-    documentation. All input parameters that do not have default values must
-    be specified. If parameters with defaults are specified here, the defaults
-    will be overridden.
-
-    Messages:
-      AdditionalProperty: An additional property for a InputsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type InputsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a InputsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels to apply to this pipeline run. Labels will also be applied to
-    compute resources (VM, disks) created by this pipeline run. When listing
-    operations, operations can filtered by labels. Label keys may not be
-    empty; label values may be empty. Non-empty labels must be 1-63 characters
-    long, and comply with [RFC1035] (https://www.ietf.org/rfc/rfc1035.txt).
-    Specifically, the name must be 1-63 characters long and match the regular
-    expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character
-    must be a lowercase letter, and all following characters must be a dash,
-    lowercase letter, or digit, except the last character, which cannot be a
-    dash.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class OutputsValue(_messages.Message):
-    r"""Pipeline output arguments; keys are defined in the pipeline
-    documentation. All output parameters of without default values must be
-    specified. If parameters with defaults are specified here, the defaults
-    will be overridden.
-
-    Messages:
-      AdditionalProperty: An additional property for a OutputsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type OutputsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a OutputsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  clientId = _messages.StringField(1)
-  inputs = _messages.MessageField('InputsValue', 2)
-  keepVmAliveOnFailureDuration = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  logging = _messages.MessageField('LoggingOptions', 5)
-  outputs = _messages.MessageField('OutputsValue', 6)
-  projectId = _messages.StringField(7)
-  resources = _messages.MessageField('PipelineResources', 8)
-  serviceAccount = _messages.MessageField('ServiceAccount', 9)
-
-
-class RunPipelineRequest(_messages.Message):
-  r"""The request to run a pipeline. If `pipelineId` is specified, it refers
-  to a saved pipeline created with CreatePipeline and set as the `pipelineId`
-  of the returned Pipeline object. If `ephemeralPipeline` is specified, that
-  pipeline is run once with the given args and not saved. It is an error to
-  specify both `pipelineId` and `ephemeralPipeline`. `pipelineArgs` must be
-  specified.
-
-  Fields:
-    ephemeralPipeline: A new pipeline object to run once and then delete.
-    pipelineArgs: The arguments to use when running this pipeline.
-    pipelineId: The already created pipeline to run.
-  """
-
-  ephemeralPipeline = _messages.MessageField('Pipeline', 1)
-  pipelineArgs = _messages.MessageField('RunPipelineArgs', 2)
-  pipelineId = _messages.StringField(3)
+  projectId = _messages.StringField(1)
+  regions = _messages.StringField(2, repeated=True)
+  virtualMachine = _messages.MessageField('VirtualMachine', 3)
+  zones = _messages.StringField(4, repeated=True)
 
 
 class RunPipelineResponse(_messages.Message):
@@ -1265,162 +845,36 @@ class RunPipelineResponse(_messages.Message):
 
 
 
-class RuntimeMetadata(_messages.Message):
-  r"""Runtime metadata that will be populated in the runtimeMetadata field of
-  the Operation associated with a RunPipeline execution.
+class Secret(_messages.Message):
+  r"""Holds encrypted information that is only decrypted and stored in RAM by
+  the worker VM when running the pipeline.
 
   Fields:
-    computeEngine: Execution information specific to Google Compute Engine.
+    cipherText: The value of the cipherText response from the `encrypt`
+      method. This field is intentionally unaudited.
+    keyName: The name of the Cloud KMS key that will be used to decrypt the
+      secret value. The VM service account must have the required permissions
+      and authentication scopes to invoke the `decrypt` method on the
+      specified key.
   """
 
-  computeEngine = _messages.MessageField('ComputeEngine', 1)
+  cipherText = _messages.StringField(1)
+  keyName = _messages.StringField(2)
 
 
 class ServiceAccount(_messages.Message):
-  r"""A Google Cloud Service Account.
+  r"""Carries information about a Google Cloud service account.
 
   Fields:
-    email: Email address of the service account. Defaults to `default`, which
-      uses the compute service account associated with the project.
-    scopes: List of scopes to be enabled for this service account on the VM.
-      The following scopes are automatically included: *
-      https://www.googleapis.com/auth/compute *
-      https://www.googleapis.com/auth/devstorage.full_control *
-      https://www.googleapis.com/auth/genomics *
-      https://www.googleapis.com/auth/logging.write *
-      https://www.googleapis.com/auth/monitoring.write
+    email: Email address of the service account. If not specified, the default
+      Compute Engine service account for the project will be used.
+    scopes: List of scopes to be enabled for this service account on the VM,
+      in addition to the cloud-platform API scope that will be added by
+      default.
   """
 
   email = _messages.StringField(1)
   scopes = _messages.StringField(2, repeated=True)
-
-
-class SetOperationStatusRequest(_messages.Message):
-  r"""Request to set operation status. Should only be used by VMs created by
-  the Pipelines Service and not by end users.
-
-  Enums:
-    ErrorCodeValueValuesEnum:
-
-  Fields:
-    errorCode: A ErrorCodeValueValuesEnum attribute.
-    errorMessage: A string attribute.
-    operationId: A string attribute.
-    timestampEvents: A TimestampEvent attribute.
-    validationToken: A string attribute.
-  """
-
-  class ErrorCodeValueValuesEnum(_messages.Enum):
-    r"""ErrorCodeValueValuesEnum enum type.
-
-    Values:
-      OK: Not an error; returned on success HTTP Mapping: 200 OK
-      CANCELLED: The operation was cancelled, typically by the caller. HTTP
-        Mapping: 499 Client Closed Request
-      UNKNOWN: Unknown error. For example, this error may be returned when a
-        `Status` value received from another address space belongs to an error
-        space that is not known in this address space. Also errors raised by
-        APIs that do not return enough error information may be converted to
-        this error. HTTP Mapping: 500 Internal Server Error
-      INVALID_ARGUMENT: The client specified an invalid argument. Note that
-        this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates
-        arguments that are problematic regardless of the state of the system
-        (e.g., a malformed file name). HTTP Mapping: 400 Bad Request
-      DEADLINE_EXCEEDED: The deadline expired before the operation could
-        complete. For operations that change the state of the system, this
-        error may be returned even if the operation has completed
-        successfully. For example, a successful response from a server could
-        have been delayed long enough for the deadline to expire. HTTP
-        Mapping: 504 Gateway Timeout
-      NOT_FOUND: Some requested entity (e.g., file or directory) was not
-        found. Note to server developers: if a request is denied for an entire
-        class of users, such as gradual feature rollout or undocumented
-        allowlist, `NOT_FOUND` may be used. If a request is denied for some
-        users within a class of users, such as user-based access control,
-        `PERMISSION_DENIED` must be used. HTTP Mapping: 404 Not Found
-      ALREADY_EXISTS: The entity that a client attempted to create (e.g., file
-        or directory) already exists. HTTP Mapping: 409 Conflict
-      PERMISSION_DENIED: The caller does not have permission to execute the
-        specified operation. `PERMISSION_DENIED` must not be used for
-        rejections caused by exhausting some resource (use
-        `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED`
-        must not be used if the caller can not be identified (use
-        `UNAUTHENTICATED` instead for those errors). This error code does not
-        imply the request is valid or the requested entity exists or satisfies
-        other pre-conditions. HTTP Mapping: 403 Forbidden
-      UNAUTHENTICATED: The request does not have valid authentication
-        credentials for the operation. HTTP Mapping: 401 Unauthorized
-      RESOURCE_EXHAUSTED: Some resource has been exhausted, perhaps a per-user
-        quota, or perhaps the entire file system is out of space. HTTP
-        Mapping: 429 Too Many Requests
-      FAILED_PRECONDITION: The operation was rejected because the system is
-        not in a state required for the operation's execution. For example,
-        the directory to be deleted is non-empty, an rmdir operation is
-        applied to a non-directory, etc. Service implementors can use the
-        following guidelines to decide between `FAILED_PRECONDITION`,
-        `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
-        retry just the failing call. (b) Use `ABORTED` if the client should
-        retry at a higher level. For example, when a client-specified test-
-        and-set fails, indicating the client should restart a read-modify-
-        write sequence. (c) Use `FAILED_PRECONDITION` if the client should not
-        retry until the system state has been explicitly fixed. For example,
-        if an "rmdir" fails because the directory is non-empty,
-        `FAILED_PRECONDITION` should be returned since the client should not
-        retry unless the files are deleted from the directory. HTTP Mapping:
-        400 Bad Request
-      ABORTED: The operation was aborted, typically due to a concurrency issue
-        such as a sequencer check failure or transaction abort. See the
-        guidelines above for deciding between `FAILED_PRECONDITION`,
-        `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 409 Conflict
-      OUT_OF_RANGE: The operation was attempted past the valid range. E.g.,
-        seeking or reading past end-of-file. Unlike `INVALID_ARGUMENT`, this
-        error indicates a problem that may be fixed if the system state
-        changes. For example, a 32-bit file system will generate
-        `INVALID_ARGUMENT` if asked to read at an offset that is not in the
-        range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read
-        from an offset past the current file size. There is a fair bit of
-        overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`. We recommend
-        using `OUT_OF_RANGE` (the more specific error) when it applies so that
-        callers who are iterating through a space can easily look for an
-        `OUT_OF_RANGE` error to detect when they are done. HTTP Mapping: 400
-        Bad Request
-      UNIMPLEMENTED: The operation is not implemented or is not
-        supported/enabled in this service. HTTP Mapping: 501 Not Implemented
-      INTERNAL: Internal errors. This means that some invariants expected by
-        the underlying system have been broken. This error code is reserved
-        for serious errors. HTTP Mapping: 500 Internal Server Error
-      UNAVAILABLE: The service is currently unavailable. This is most likely a
-        transient condition, which can be corrected by retrying with a
-        backoff. Note that it is not always safe to retry non-idempotent
-        operations. See the guidelines above for deciding between
-        `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 503
-        Service Unavailable
-      DATA_LOSS: Unrecoverable data loss or corruption. HTTP Mapping: 500
-        Internal Server Error
-    """
-    OK = 0
-    CANCELLED = 1
-    UNKNOWN = 2
-    INVALID_ARGUMENT = 3
-    DEADLINE_EXCEEDED = 4
-    NOT_FOUND = 5
-    ALREADY_EXISTS = 6
-    PERMISSION_DENIED = 7
-    UNAUTHENTICATED = 8
-    RESOURCE_EXHAUSTED = 9
-    FAILED_PRECONDITION = 10
-    ABORTED = 11
-    OUT_OF_RANGE = 12
-    UNIMPLEMENTED = 13
-    INTERNAL = 14
-    UNAVAILABLE = 15
-    DATA_LOSS = 16
-
-  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
-  errorMessage = _messages.StringField(2)
-  operationId = _messages.StringField(3)
-  timestampEvents = _messages.MessageField('TimestampEvent', 4, repeated=True)
-  validationToken = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1486,70 +940,6 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
-class Status(_messages.Message):
-  r"""The `Status` type defines a logical error model that is suitable for
-  different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details. You can
-  find out more about this error model and how to work with it in the [API
-  Design Guide](https://cloud.google.com/apis/design/errors).
-
-  Messages:
-    DetailsValueListEntry: A DetailsValueListEntry object.
-
-  Fields:
-    code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details. There is a
-      common set of message types for APIs to use.
-    message: A developer-facing error message, which should be in English. Any
-      user-facing error message should be localized and sent in the
-      google.rpc.Status.details field, or localized by the client.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DetailsValueListEntry(_messages.Message):
-    r"""A DetailsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a DetailsValueListEntry
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DetailsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
-  message = _messages.StringField(3)
-
-
-class TimestampEvent(_messages.Message):
-  r"""Stores the list of events and times they occured for major events in job
-  execution.
-
-  Fields:
-    description: String indicating the type of event
-    timestamp: The time this event occured.
-  """
-
-  description = _messages.StringField(1)
-  timestamp = _messages.StringField(2)
-
-
 class UnexpectedExitStatusEvent(_messages.Message):
   r"""An event generated when the execution of a container results in a non-
   zero exit status that was not otherwise ignored. Execution will continue,
@@ -1563,6 +953,149 @@ class UnexpectedExitStatusEvent(_messages.Message):
 
   actionId = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   exitStatus = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class VirtualMachine(_messages.Message):
+  r"""Carries information about a Compute Engine VM resource.
+
+  Messages:
+    LabelsValue: Optional set of labels to apply to the VM and any attached
+      disk resources. These labels must adhere to the [name and value
+      restrictions](https://cloud.google.com/compute/docs/labeling-resources)
+      on VM labels imposed by Compute Engine. Labels keys with the prefix
+      'google-' are reserved for use by Google. Labels applied at creation
+      time to the VM. Applied on a best-effort basis to attached disk
+      resources shortly after VM creation.
+
+  Fields:
+    accelerators: The list of accelerators to attach to the VM.
+    bootDiskSizeGb: The size of the boot disk, in GB. The boot disk must be
+      large enough to accommodate all of the Docker images from each action in
+      the pipeline at the same time. If not specified, a small but reasonable
+      default value is used.
+    bootImage: The host operating system image to use. Currently, only
+      Container-Optimized OS images can be used. The default value is
+      `projects/cos-cloud/global/images/family/cos-stable`, which selects the
+      latest stable release of Container-Optimized OS. This option is provided
+      to allow testing against the beta release of the operating system to
+      ensure that the new version does not interact negatively with production
+      pipelines. To test a pipeline against the beta release of Container-
+      Optimized OS, use the value `projects/cos-
+      cloud/global/images/family/cos-beta`.
+    cpuPlatform: The CPU platform to request. An instance based on a newer
+      platform can be allocated, but never one with fewer capabilities. The
+      value of this parameter must be a valid Compute Engine CPU platform name
+      (such as "Intel Skylake"). This parameter is only useful for carefully
+      optimized work loads where the CPU platform has a significant impact.
+      For more information about the effect of this parameter, see
+      https://cloud.google.com/compute/docs/instances/specify-min-cpu-
+      platform.
+    disks: The list of disks to create and attach to the VM. Specify either
+      the `volumes[]` field or the `disks[]` field, but not both.
+    dockerCacheImages: The Compute Engine Disk Images to use as a Docker
+      cache. The disks will be mounted into the Docker folder in a way that
+      the images present in the cache will not need to be pulled. The digests
+      of the cached images must match those of the tags used or the latest
+      version will still be pulled. The root directory of the ext4 image must
+      contain `image` and `overlay2` directories copied from the Docker
+      directory of a VM where the desired Docker images have already been
+      pulled. Any images pulled that are not cached will be stored on the
+      first cache disk instead of the boot disk. Only a single image is
+      supported.
+    enableStackdriverMonitoring: Whether Stackdriver monitoring should be
+      enabled on the VM.
+    labels: Optional set of labels to apply to the VM and any attached disk
+      resources. These labels must adhere to the [name and value
+      restrictions](https://cloud.google.com/compute/docs/labeling-resources)
+      on VM labels imposed by Compute Engine. Labels keys with the prefix
+      'google-' are reserved for use by Google. Labels applied at creation
+      time to the VM. Applied on a best-effort basis to attached disk
+      resources shortly after VM creation.
+    machineType: Required. The machine type of the virtual machine to create.
+      Must be the short name of a standard machine type (such as
+      "n1-standard-1") or a custom machine type (such as "custom-1-4096",
+      where "1" indicates the number of vCPUs and "4096" indicates the memory
+      in MB). See [Creating an instance with a custom machine
+      type](https://cloud.google.com/compute/docs/instances/creating-instance-
+      with-custom-machine-type#create) for more specifications on creating a
+      custom machine type.
+    network: The VM network configuration.
+    nvidiaDriverVersion: The NVIDIA driver version to use when attaching an
+      NVIDIA GPU accelerator. The version specified here must be compatible
+      with the GPU libraries contained in the container being executed, and
+      must be one of the drivers hosted in the `nvidia-drivers-us-public`
+      bucket on Google Cloud Storage.
+    preemptible: If true, allocate a preemptible VM.
+    serviceAccount: The service account to install on the VM. This account
+      does not need any permissions other than those required by the pipeline.
+    volumes: The list of disks and other storage to create or attach to the
+      VM. Specify either the `volumes[]` field or the `disks[]` field, but not
+      both.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional set of labels to apply to the VM and any attached disk
+    resources. These labels must adhere to the [name and value
+    restrictions](https://cloud.google.com/compute/docs/labeling-resources) on
+    VM labels imposed by Compute Engine. Labels keys with the prefix 'google-'
+    are reserved for use by Google. Labels applied at creation time to the VM.
+    Applied on a best-effort basis to attached disk resources shortly after VM
+    creation.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
+  bootDiskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  bootImage = _messages.StringField(3)
+  cpuPlatform = _messages.StringField(4)
+  disks = _messages.MessageField('Disk', 5, repeated=True)
+  dockerCacheImages = _messages.StringField(6, repeated=True)
+  enableStackdriverMonitoring = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  machineType = _messages.StringField(9)
+  network = _messages.MessageField('Network', 10)
+  nvidiaDriverVersion = _messages.StringField(11)
+  preemptible = _messages.BooleanField(12)
+  serviceAccount = _messages.MessageField('ServiceAccount', 13)
+  volumes = _messages.MessageField('Volume', 14, repeated=True)
+
+
+class Volume(_messages.Message):
+  r"""Carries information about storage that can be attached to a VM. Specify
+  either `Volume` or `Disk`, but not both.
+
+  Fields:
+    existingDisk: Configuration for a existing disk.
+    nfsMount: Configuration for an NFS mount.
+    persistentDisk: Configuration for a persistent disk.
+    volume: A user-supplied name for the volume. Used when mounting the volume
+      into `Actions`. The name must contain only upper and lowercase
+      alphanumeric characters and hyphens and cannot start with a hyphen.
+  """
+
+  existingDisk = _messages.MessageField('ExistingDisk', 1)
+  nfsMount = _messages.MessageField('NFSMount', 2)
+  persistentDisk = _messages.MessageField('PersistentDisk', 3)
+  volume = _messages.StringField(4)
 
 
 class WorkerAssignedEvent(_messages.Message):

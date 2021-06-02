@@ -37,10 +37,10 @@ class AwsS3Data(_messages.Message):
   AwsS3Data resource, an object's name is the S3 object's key name.
 
   Fields:
-    awsAccessKey: Required. Input only. AWS access key used to sign the API
-      requests to the AWS S3 bucket. Permissions on the bucket must be granted
-      to the access ID of the AWS access key. For information on our data
-      retention policy for user credentials, see [User credentials](/storage-
+    awsAccessKey: Input only. AWS access key used to sign the API requests to
+      the AWS S3 bucket. Permissions on the bucket must be granted to the
+      access ID of the AWS access key. For information on our data retention
+      policy for user credentials, see [User credentials](/storage-
       transfer/docs/data-retention#user-credentials).
     bucketName: Required. S3 Bucket name (see [Creating a
       bucket](https://docs.aws.amazon.com/AmazonS3/latest/dev/create-bucket-

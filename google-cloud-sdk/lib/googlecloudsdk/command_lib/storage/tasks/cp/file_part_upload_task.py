@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import contextlib
 import os
 import threading
 
@@ -38,7 +39,9 @@ from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import scaled_integer
 
 
 UploadedComponent = collections.namedtuple(
@@ -67,10 +70,17 @@ class FilePartUploadTask(file_part_task.FilePartTask):
       number of components.
   """
 
-  def execute(self, task_status_queue=None):
-    """Performs upload."""
+  def _should_do_resumable_upload(self, api):
+    resumable_threshold = scaled_integer.ParseInteger(
+        properties.VALUES.storage.resumable_threshold.Get())
+    return (
+        self._length >= resumable_threshold and
+        cloud_api.Capability.RESUMABLE_UPLOAD in api.capabilities
+    )
+
+  def _get_progress_callback(self, task_status_queue):
     if task_status_queue:
-      progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
+      return progress_callbacks.FilesAndBytesProgressCallback(
           status_queue=task_status_queue,
           offset=self._offset,
           length=self._length,
@@ -82,48 +92,74 @@ class FilePartUploadTask(file_part_task.FilePartTask):
           process_id=os.getpid(),
           thread_id=threading.get_ident(),
       )
-    else:
-      progress_callback = None
 
+  @contextlib.contextmanager
+  def _progress_reporting_stream(self, digesters, task_status_queue):
+    progress_callback = self._get_progress_callback(task_status_queue)
     source_stream = files.BinaryFileReader(
         self._source_resource.storage_url.object_name)
+    wrapped_stream = file_part.FilePart(
+        source_stream, self._offset, self._length, digesters=digesters,
+        progress_callback=progress_callback)
+
+    try:
+      yield wrapped_stream
+    finally:
+      wrapped_stream.close()
+
+  def _get_digesters(self):
     provider = self._destination_resource.storage_url.scheme
+    check_hashes = properties.CheckHashes(
+        properties.VALUES.storage.check_hashes.Get())
 
-    # Do not compute hashes if the user provided an md5, or if the upload uses
-    # boto3, which performs its own unskippable validation.
     if (self._source_resource.md5_hash or
-        provider == storage_url.ProviderPrefix.S3):
-      digesters = {}
-    else:
-      digesters = {hash_util.HashAlgorithm.MD5: hash_util.get_md5()}
+        # Boto3 implements its own unskippable validation.
+        provider == storage_url.ProviderPrefix.S3 or
+        check_hashes == properties.CheckHashes.NEVER):
+      return {}
+    return {hash_util.HashAlgorithm.MD5: hash_util.get_md5()}
 
-    with file_part.FilePart(
-        source_stream,
-        self._offset,
-        self._length,
-        digesters=digesters,
-        progress_callback=progress_callback) as upload_stream:
-      destination_resource = api_factory.get_api(provider).upload_object(
-          upload_stream,
-          self._destination_resource,
-          request_config=cloud_api.RequestConfig(
-              md5_hash=self._source_resource.md5_hash, size=self._length))
+  def _validate_uploaded_object(self, digesters, destination_resource,
+                                task_status_queue):
+    if not digesters:
+      return
+    calculated_digest = hash_util.get_base64_hash_digest_string(
+        digesters[hash_util.HashAlgorithm.MD5])
+    try:
+      hash_util.validate_object_hashes_match(
+          self._source_resource.storage_url, calculated_digest,
+          destination_resource.md5_hash)
+    except errors.HashMismatchError:
+      delete_object_task.DeleteObjectTask(
+          destination_resource.storage_url).execute(
+              task_status_queue=task_status_queue)
+      raise
 
-    if digesters:
-      calculated_digest = hash_util.get_base64_hash_digest_string(
-          digesters[hash_util.HashAlgorithm.MD5])
-      try:
-        hash_util.validate_object_hashes_match(
-            self._source_resource.storage_url, calculated_digest,
-            destination_resource.md5_hash)
-      except errors.HashMismatchError:
-        delete_object_task.DeleteObjectTask(
-            destination_resource.storage_url).execute(
-                task_status_queue=task_status_queue)
-        raise
+  def execute(self, task_status_queue=None):
+    """Performs upload."""
+    digesters = self._get_digesters()
+    provider = self._destination_resource.storage_url.scheme
+    api = api_factory.get_api(provider)
+    request_config = cloud_api.RequestConfig(
+        md5_hash=self._source_resource.md5_hash, size=self._length)
 
-    if progress_callback:
-      progress_callback(self._offset + self._length)
+    with self._progress_reporting_stream(digesters,
+                                         task_status_queue) as upload_stream:
+      if self._should_do_resumable_upload(api):
+        destination_resource = api.upload_object(
+            upload_stream,
+            self._destination_resource,
+            request_config=request_config,
+            upload_strategy=cloud_api.UploadStrategy.RESUMABLE)
+      else:
+        destination_resource = api.upload_object(
+            upload_stream,
+            self._destination_resource,
+            request_config=request_config,
+            upload_strategy=cloud_api.UploadStrategy.SIMPLE)
+
+      self._validate_uploaded_object(
+          digesters, destination_resource, task_status_queue)
 
     if self._component_number is not None:
       return task.Output(

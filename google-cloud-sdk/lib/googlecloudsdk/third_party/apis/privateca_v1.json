@@ -471,7 +471,7 @@
           "$ref": "ObjectId"
         },
         "critical": {
-          "description": "Required. Indicates whether or not this extension is critical (i.e., if the client does not know how to handle this extension, the client should consider this to be an error).",
+          "description": "Optional. Indicates whether or not this extension is critical (i.e., if the client does not know how to handle this extension, the client should consider this to be an error).",
           "type": "boolean"
         },
         "value": {
@@ -1314,11 +1314,11 @@
       "type": "object",
       "properties": {
         "allowCsrBasedIssuance": {
-          "description": "Required. When true, allows callers to create Certificates by specifying a CSR.",
+          "description": "Optional. When true, allows callers to create Certificates by specifying a CSR.",
           "type": "boolean"
         },
         "allowConfigBasedIssuance": {
-          "description": "Required. When true, allows callers to create Certificates by specifying a CertificateConfig.",
+          "description": "Optional. When true, allows callers to create Certificates by specifying a CertificateConfig.",
           "type": "boolean"
         }
       }
@@ -1408,11 +1408,11 @@
       "type": "object",
       "properties": {
         "publishCaCert": {
-          "description": "Required. When true, publishes each CertificateAuthority's CA certificate and includes its URL in the \"Authority Information Access\" X.509 extension in all issued Certificates. If this is false, the CA certificate will not be published and the corresponding X.509 extension will not be written in issued certificates.",
+          "description": "Optional. When true, publishes each CertificateAuthority's CA certificate and includes its URL in the \"Authority Information Access\" X.509 extension in all issued Certificates. If this is false, the CA certificate will not be published and the corresponding X.509 extension will not be written in issued certificates.",
           "type": "boolean"
         },
         "publishCrl": {
-          "description": "Required. When true, publishes each CertificateAuthority's CRL and includes its URL in the \"CRL Distribution Points\" X.509 extension in all issued Certificates. If this is false, CRLs will not be published and the corresponding X.509 extension will not be written in issued certificates. CRLs will expire 7 days from their creation. However, we will rebuild daily. CRLs are also rebuilt shortly after a certificate is revoked.",
+          "description": "Optional. When true, publishes each CertificateAuthority's CRL and includes its URL in the \"CRL Distribution Points\" X.509 extension in all issued Certificates. If this is false, CRLs will not be published and the corresponding X.509 extension will not be written in issued certificates. CRLs will expire 7 days from their creation. However, we will rebuild daily. CRLs are also rebuilt shortly after a certificate is revoked.",
           "type": "boolean"
         }
       }

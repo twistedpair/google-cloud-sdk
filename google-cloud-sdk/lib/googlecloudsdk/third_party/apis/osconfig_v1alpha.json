@@ -1087,6 +1087,10 @@
             "SUCCEEDED",
             "FAILED"
           ]
+        },
+        "errorMessage": {
+          "description": "An error message recorded during the execution of this step. Only populated when outcome is FAILED.",
+          "type": "string"
         }
       }
     },

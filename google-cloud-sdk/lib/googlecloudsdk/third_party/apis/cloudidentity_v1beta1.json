@@ -844,7 +844,7 @@
           "type": "string"
         },
         "namespace": {
-          "description": "The namespace in which the entity exists. If not specified, the `EntityKey` represents a Google-managed entity such as a Google user or a Google Group. If specified, the `EntityKey` represents an external-identity-mapped group. The namespace must correspond to an identity source created in Admin Console and must be in the form of `identitysources\/{identity_source_id}.",
+          "description": "The namespace in which the entity exists. If not specified, the `EntityKey` represents a Google-managed entity such as a Google user or a Google Group. If specified, the `EntityKey` represents an external-identity-mapped group. The namespace must correspond to an identity source created in Admin Console and must be in the form of `identitysources\/{identity_source_id}`.",
           "type": "string"
         }
       }
@@ -2599,7 +2599,7 @@
               "type": "string"
             },
             "updateMask": {
-              "description": "Required. The fully-qualified names of fields to update. May only contain the following fields: `display_name`, `description`.",
+              "description": "Required. The fully-qualified names of fields to update. May only contain the following fields: `display_name`, `description`, `labels`.",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"
@@ -2658,7 +2658,7 @@
               "type": "string"
             },
             "groupKey.namespace": {
-              "description": "The namespace in which the entity exists. If not specified, the `EntityKey` represents a Google-managed entity such as a Google user or a Google Group. If specified, the `EntityKey` represents an external-identity-mapped group. The namespace must correspond to an identity source created in Admin Console and must be in the form of `identitysources\/{identity_source_id}.",
+              "description": "The namespace in which the entity exists. If not specified, the `EntityKey` represents a Google-managed entity such as a Google user or a Google Group. If specified, the `EntityKey` represents an external-identity-mapped group. The namespace must correspond to an identity source created in Admin Console and must be in the form of `identitysources\/{identity_source_id}`.",
               "location": "query",
               "type": "string"
             }
@@ -2879,7 +2879,7 @@
                   "type": "string"
                 },
                 "memberKey.namespace": {
-                  "description": "The namespace in which the entity exists. If not specified, the `EntityKey` represents a Google-managed entity such as a Google user or a Google Group. If specified, the `EntityKey` represents an external-identity-mapped group. The namespace must correspond to an identity source created in Admin Console and must be in the form of `identitysources\/{identity_source_id}.",
+                  "description": "The namespace in which the entity exists. If not specified, the `EntityKey` represents a Google-managed entity such as a Google user or a Google Group. If specified, the `EntityKey` represents an external-identity-mapped group. The namespace must correspond to an identity source created in Admin Console and must be in the form of `identitysources\/{identity_source_id}`.",
                   "location": "query",
                   "type": "string"
                 }

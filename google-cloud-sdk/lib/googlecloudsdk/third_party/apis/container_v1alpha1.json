@@ -478,6 +478,14 @@
         "nodePoolDefaults": {
           "description": "Default NodePool settings for the entire cluster. These settings are overridden if specified on the specific NodePool object.",
           "$ref": "NodePoolDefaults"
+        },
+        "loggingConfig": {
+          "description": "Logging configuration for the cluster.",
+          "$ref": "LoggingConfig"
+        },
+        "monitoringConfig": {
+          "description": "Monitoring configuration for the cluster.",
+          "$ref": "MonitoringConfig"
         }
       }
     },
@@ -1146,7 +1154,7 @@
     },
     "NodePool": {
       "id": "NodePool",
-      "description": "NodePool contains the name and configuration for a cluster's node pool. Node pools are a set of nodes (i.e. VM's), with a common configuration and specification, under the control of the cluster master. They may have a set of Kubernetes labels applied to them, which may be used to reference them during pod scheduling. They may also be resized up or down, to accommodate the workload.",
+      "description": "NodePool contains the name and configuration for a cluster's node pool. Node pools are a set of nodes (i.e. VM's), with a common configuration and specification, under the control of the cluster master. They may have a set of Kubernetes labels applied to them, which may be used to reference them during pod scheduling. They may also be resized up or down, to accommodate the workload. These upgrade settings control the level of parallelism and the level of disruption caused by an upgrade. maxUnavailable controls the number of nodes that can be simultaneously unavailable. maxSurge controls the number of additional nodes that can be added to the node pool temporarily for the time of the upgrade to increase the number of available nodes. (maxUnavailable + maxSurge) determines the level of parallelism (how many nodes are being upgraded at the same time). Note: upgrades inevitably introduce some disruption since workloads need to be moved from old nodes to new, upgraded ones. Even if maxUnavailable=0, this holds true. (Disruption stays within the limits of PodDisruptionBudget, if it is configured.) For example, a 5-node pool is created with maxSurge set to 2 and maxUnavailable set to 1. During an upgrade, GKE creates 2 upgraded nodes, then brings down up to 3 existing nodes after the upgraded nodes are ready. GKE will only bring down 1 node at a time.",
       "type": "object",
       "properties": {
         "name": {
@@ -1435,7 +1443,6 @@
     },
     "UpgradeSettings": {
       "id": "UpgradeSettings",
-      "description": "These upgrade settings control the level of parallelism and the level of disruption caused by an upgrade. maxUnavailable controls the number of nodes that can be simultaneously unavailable. maxSurge controls the number of additional nodes that can be added to the node pool temporarily for the time of the upgrade to increase the number of available nodes. (maxUnavailable + maxSurge) determines the level of parallelism (how many nodes are being upgraded at the same time). Note: upgrades inevitably introduce some disruption since workloads need to be moved from old nodes to new, upgraded ones. Even if maxUnavailable=0, this holds true. (Disruption stays within the limits of PodDisruptionBudget, if it is configured.) For example, a 5-node pool is created with maxSurge set to 2 and maxUnavailable set to 1. During an upgrade, GKE creates 2 upgraded nodes, then brings down up to 3 existing nodes after the upgraded nodes are ready. GKE will only bring down 1 node at a time.",
       "type": "object",
       "properties": {
         "maxSurge": {
@@ -1447,6 +1454,62 @@
           "description": "The maximum number of nodes that can be simultaneously unavailable during the upgrade process. A node is considered available if its status is Ready.",
           "type": "integer",
           "format": "int32"
+        },
+        "strategy": {
+          "description": "Update strategy of the node pool.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Rolling update is the traditional way of updating node pool. max_surge and max_unavailable determines the level of update parallelism.",
+            "Blue\/green update."
+          ],
+          "enum": [
+            "NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED",
+            "ROLLING",
+            "BLUE_GREEN"
+          ]
+        },
+        "blueGreenSettings": {
+          "description": "Settings for blue\/green update strategy.",
+          "$ref": "BlueGreenSettings"
+        }
+      }
+    },
+    "BlueGreenSettings": {
+      "id": "BlueGreenSettings",
+      "description": "Settings for blue\/green update.",
+      "type": "object",
+      "properties": {
+        "standardRolloutPolicy": {
+          "description": "Standard policy for the blue\/green update.",
+          "$ref": "StandardRolloutPolicy"
+        },
+        "nodePoolSoakDuration": {
+          "description": "Time needed after draining entire blue pool. After this period, blue pool will be cleaned up. Default is 1 day.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "StandardRolloutPolicy": {
+      "id": "StandardRolloutPolicy",
+      "description": "Standard rollout policy is the default policy for blue\/green.",
+      "type": "object",
+      "properties": {
+        "batchPercentage": {
+          "description": "Percentage of the bool pool nodes to drain in a batch. The range of this field should be (0.0, 1.0].",
+          "type": "number",
+          "format": "float"
+        },
+        "batchNodeCount": {
+          "description": "Number of blue nodes to drain in a batch.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "batchSoakDuration": {
+          "description": "Soak time after each batch gets drained. Default to zero.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -2470,6 +2533,92 @@
         }
       }
     },
+    "LoggingConfig": {
+      "id": "LoggingConfig",
+      "description": "LoggingConfig is cluster logging configuration.",
+      "type": "object",
+      "properties": {
+        "componentConfig": {
+          "description": "Logging components configuration",
+          "$ref": "LoggingComponentConfig"
+        }
+      }
+    },
+    "LoggingComponentConfig": {
+      "id": "LoggingComponentConfig",
+      "description": "LoggingComponentConfig is cluster logging component configuration.",
+      "type": "object",
+      "properties": {
+        "enableComponents": {
+          "description": "Select components to collect logs",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Default value. This shouldn't be used.",
+              "system components",
+              "workloads",
+              "kube-apiserver",
+              "kube-scheduler",
+              "kube-controller-manager",
+              "kube-addon-manager"
+            ],
+            "enum": [
+              "COMPONENT_UNSPECIFIED",
+              "SYSTEM_COMPONENTS",
+              "WORKLOADS",
+              "APISERVER",
+              "SCHEDULER",
+              "CONTROLLER_MANAGER",
+              "ADDON_MANAGER"
+            ]
+          }
+        }
+      }
+    },
+    "MonitoringConfig": {
+      "id": "MonitoringConfig",
+      "description": "MonitoringConfig is cluster monitoring configuration.",
+      "type": "object",
+      "properties": {
+        "componentConfig": {
+          "description": "Monitoring components configuration",
+          "$ref": "MonitoringComponentConfig"
+        }
+      }
+    },
+    "MonitoringComponentConfig": {
+      "id": "MonitoringComponentConfig",
+      "description": "MonitoringComponentConfig is cluster monitoring component configuration.",
+      "type": "object",
+      "properties": {
+        "enableComponents": {
+          "description": "Select components to collect metrics",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Default value. This shouldn't be used.",
+              "system components",
+              "workloads",
+              "kube-apiserver",
+              "kube-scheduler",
+              "kube-controller-manager",
+              "google prometheus engine"
+            ],
+            "enum": [
+              "COMPONENT_UNSPECIFIED",
+              "SYSTEM_COMPONENTS",
+              "WORKLOADS",
+              "APISERVER",
+              "SCHEDULER",
+              "CONTROLLER_MANAGER",
+              "GOOGLE_PROMETHEUS_ENGINE"
+            ]
+          }
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -2978,6 +3127,14 @@
         "desiredAuthenticatorGroupsConfig": {
           "description": "AuthenticatorGroupsConfig specifies the config for the cluster security groups settings.",
           "$ref": "AuthenticatorGroupsConfig"
+        },
+        "desiredLoggingConfig": {
+          "description": "The desired logging configuration.",
+          "$ref": "LoggingConfig"
+        },
+        "desiredMonitoringConfig": {
+          "description": "The desired monitoring configuration.",
+          "$ref": "MonitoringConfig"
         }
       }
     },

@@ -1681,7 +1681,9 @@ class Translation(_messages.Message):
       id}/locations/{location-id}/models/general/nmt` then `model` here would
       be normalized to `projects/{project-number}/locations/{location-
       id}/models/general/nmt`.
-    translatedText: Text translated into the target language.
+    translatedText: Text translated into the target language. If an error
+      occurs during translation, this field might be excluded from the
+      response.
   """
 
   detectedLanguageCode = _messages.StringField(1)

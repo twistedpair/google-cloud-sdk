@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import re
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
@@ -29,9 +30,12 @@ from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import map_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+
+import six
 
 SOURCE_REGEX = re.compile('gs://([^/]+)/(.*)')
 SOURCE_ERROR_MESSAGE = (
@@ -62,10 +66,25 @@ CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
 CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
 
 
-def _GetSource(source_arg):
-  """Parses the source bucket and object from the --source flag."""
+def _GetSource(source_arg, is_new_function):
+  """Parses the source bucket and object from the --source flag.
+
+  Currently only Cloud Storage location source is supported.
+
+  Args:
+    source_arg: str, the passed in source flag argument. Either with gs://,
+      https://, or local file system
+    is_new_function: bool, true if function does not exist yet
+
+  Returns:
+    source_bucket: str, source bucket name
+    source_object: str, source object path
+  """
   if not source_arg:
-    raise exceptions.FunctionsError(SOURCE_ERROR_MESSAGE)
+    if is_new_function:
+      raise exceptions.FunctionsError(SOURCE_ERROR_MESSAGE)
+    else:
+      return None, None
 
   source_match = SOURCE_REGEX.match(source_arg)
   if not source_match:
@@ -75,7 +94,16 @@ def _GetSource(source_arg):
 
 
 def _GetServiceConfig(args, messages):
-  """Constructs a ServiceConfig message from the command-line arguments."""
+  """Constructs a ServiceConfig message from the command-line arguments.
+
+  Args:
+    args: [str], The arguments from the command line
+    messages: messages module, the gcf v2 message stubs
+
+  Returns:
+    vpc_connector: str, the vpc connector name
+    vpc_egress_settings: VpcConnectorEgressSettingsValueValuesEnum, enum value
+  """
   env_var_flags = map_util.GetMapFlagsFromArgs('env-vars', args)
   env_vars = map_util.ApplyMapFlags({}, **env_var_flags)
 
@@ -96,11 +124,20 @@ def _GetServiceConfig(args, messages):
               messages.ServiceConfig.EnvironmentVariablesValue
               .AdditionalProperty(key=key, value=value)
               for key, value in sorted(env_vars.items())
-          ]))
+          ])), ['service_config.available_memory_mb'] if args.memory else []
 
 
 def _GetEventTrigger(args, messages):
-  """Constructs an EventTrigger message from the command-line arguments."""
+  """Constructs an EventTrigger message from the command-line arguments.
+
+  Args:
+    args: [str], The arguments from the command line
+    messages: messages module, the gcf v2 message stubs
+
+  Returns:
+    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
+      events sent from another service
+  """
   if not args.trigger_topic and not args.trigger_event_filters:
     return None
 
@@ -131,7 +168,15 @@ def _GetEventTrigger(args, messages):
 
 
 def _GetSignatureType(args, event_trigger):
-  """Determines the function signature type from the command-line arguments."""
+  """Determines the function signature type from the command-line arguments.
+
+  Args:
+    args: [str], The arguments from the command line
+    event_trigger:
+
+  Returns:
+    signature_type: str, the desired functions signature type
+  """
   if args.IsSpecified('trigger_http') or not event_trigger:
     if args.IsSpecified('signature_type') and args.signature_type != 'http':
       raise exceptions.FunctionsError(
@@ -145,9 +190,21 @@ def _GetSignatureType(args, event_trigger):
     return 'cloudevent'
 
 
-def _GetBuildConfig(args, messages, event_trigger):
-  """Constructs a BuildConfig message from the command-line arguments."""
-  source_bucket, source_object = _GetSource(args.source)
+def _GetBuildConfig(args, messages, event_trigger, is_new_function):
+  """Constructs a BuildConfig message from the command-line arguments.
+
+  Args:
+    args: [str], The arguments from the command line
+    messages: messages module, the gcf v2 message stubs
+    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
+      events sent from another service
+    is_new_function: bool, true if function does not exist yet
+
+  Returns:
+    build_config: cloudfunctions_v2alpha_messages.BuildConfig, describes the
+      build step for the function
+  """
+  source_bucket, source_object = _GetSource(args.source, is_new_function)
 
   build_env_var_flags = map_util.GetMapFlagsFromArgs('build-env-vars', args)
   build_env_vars = map_util.ApplyMapFlags({}, **build_env_var_flags)
@@ -222,8 +279,21 @@ def _GetLabels(args, messages):
   ])
 
 
-def _SetInvokerPermissions(args, service_ref):
-  """Add the IAM binding for the invoker role on the Cloud Run service, if applicable."""
+def _SetInvokerPermissions(args, function):
+  """Add the IAM binding for the invoker role on the Cloud Run service, if applicable.
+
+  Args:
+    args: [str], The arguments from the command line
+    function: cloudfunctions_v2alpha_messages.Function, recently created or
+      updated GCF function
+
+  Returns:
+    None
+  """
+  service_ref_one_platform = resources.REGISTRY.ParseRelativeName(
+      function.serviceConfig.service,
+      CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
+
   if args.trigger_http:
     allow_unauthenticated = flags.ShouldEnsureAllUsersInvoke(args)
     if not allow_unauthenticated and not flags.ShouldDenyAllUsersInvoke(args):
@@ -235,17 +305,41 @@ def _SetInvokerPermissions(args, service_ref):
 
     if allow_unauthenticated:
       run_connection_context = connection_context.RegionalConnectionContext(
-          service_ref.locationsId, global_methods.SERVERLESS_API_NAME,
+          service_ref_one_platform.locationsId,
+          global_methods.SERVERLESS_API_NAME,
           global_methods.SERVERLESS_API_VERSION)
       with serverless_operations.Connect(run_connection_context) as operations:
         service_ref_k8s = resources.REGISTRY.ParseRelativeName(
             'namespaces/{}/services/{}'.format(
-                properties.VALUES.core.project.GetOrFail(), service_ref.Name()),
+                properties.VALUES.core.project.GetOrFail(),
+                service_ref_one_platform.Name()),
             CLOUD_RUN_SERVICE_COLLECTION_K8S)
         operations.AddOrRemoveIamPolicyBinding(
             service_ref_k8s,
             member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
             role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE)
+
+
+def _GetFunction(client, messages, function_ref):
+  """Get function and return None if doesn't exist.
+
+  Args:
+    client: apitools client, the gcf v2 api client
+    messages: messages module, the gcf v2 message stubs
+    function_ref: gcf v2 functions resource reference
+
+  Returns:
+    function: cloudfunctions_v2alpha_messages.Function, fetched gcf v2 function
+  """
+  try:
+    # We got response for a GET request, so a function exists.
+    return client.projects_locations_functions.Get(
+        messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
+            name=function_ref.RelativeName()))
+  except apitools_exceptions.HttpError as error:
+    if error.status_code == six.moves.http_client.NOT_FOUND:
+      return None
+    raise
 
 
 def Run(args, release_track):
@@ -257,22 +351,42 @@ def Run(args, release_track):
 
   _ValidateLegacyV1Flags(args)
 
-  event_trigger = _GetEventTrigger(args, messages)
+  fetched_function = _GetFunction(client, messages, function_ref)
+  is_new_function = fetched_function is None
 
+  event_trigger = _GetEventTrigger(args, messages)
+  build_config = _GetBuildConfig(args, messages, event_trigger,
+                                 is_new_function)
+
+  service_config, service_updated_fields = _GetServiceConfig(args, messages)
+
+  # cs/symbol:google.cloud.functions.v2main.Function$
   function = messages.Function(
       name=function_ref.RelativeName(),
-      buildConfig=_GetBuildConfig(args, messages, event_trigger),
+      buildConfig=build_config,
       eventTrigger=event_trigger,
-      serviceConfig=_GetServiceConfig(args, messages),
+      serviceConfig=service_config,
       labels=_GetLabels(args, messages))
 
-  create_request = messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
-      parent='projects/%s/locations/%s' %
-      (properties.VALUES.core.project.GetOrFail(), args.region),
-      functionId=function_ref.Name(),
-      function=function)
+  if is_new_function:
+    function_parent = 'projects/%s/locations/%s' % (
+        properties.VALUES.core.project.GetOrFail(),
+        properties.VALUES.functions.region.GetOrFail())
 
-  operation = client.projects_locations_functions.Create(create_request)
+    create_request = messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
+        parent=function_parent,
+        functionId=function_ref.Name(),
+        function=function)
+    operation = client.projects_locations_functions.Create(create_request)
+  else:
+    update_mask = ','.join(service_updated_fields)
+
+    update_request = messages.CloudfunctionsProjectsLocationsFunctionsPatchRequest(
+        name=function_ref.RelativeName(),
+        updateMask=update_mask,
+        function=function)
+
+    operation = client.projects_locations_functions.Patch(update_request)
 
   api_util.WaitForOperation(client, messages, operation,
                             'Deploying function (may take a while)')
@@ -281,9 +395,12 @@ def Run(args, release_track):
       messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
           name=function_ref.RelativeName()))
 
-  service_ref_one_platform = resources.REGISTRY.ParseRelativeName(
-      function.serviceConfig.service, CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
+  _SetInvokerPermissions(args, function)
 
-  _SetInvokerPermissions(args, service_ref_one_platform)
+  log.status.Print(
+      'You can view your function in the Cloud Console here: ' +
+      'https://console.cloud.google.com/functions/details/{}/{}?project={}\n'
+      .format(properties.VALUES.functions.region.GetOrFail(),
+              function_ref.Name(), properties.VALUES.core.project.GetOrFail()))
 
   return function

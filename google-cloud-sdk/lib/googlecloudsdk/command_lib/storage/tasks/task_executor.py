@@ -65,6 +65,20 @@ def _execute_tasks_sequential(task_iterator,
   return messages_from_current_task_iterator
 
 
+def should_use_parallelism():
+  """Checks execution settings to determine if parallelism should be used.
+
+  This function is called in some tasks to determine how they are being
+  executed, and should include as many of the relevant conditions as possible.
+
+  Returns:
+    True if parallel execution should be used, False otherwise.
+  """
+  process_count = properties.VALUES.storage.process_count.GetInt()
+  thread_count = properties.VALUES.storage.thread_count.GetInt()
+  return process_count > 1 or thread_count > 1
+
+
 def execute_tasks(task_iterator,
                   parallelizable=False,
                   task_status_queue=None,
@@ -88,14 +102,15 @@ def execute_tasks(task_iterator,
   optimize_parameters_util.detect_and_set_best_config(
       is_estimated_multi_file_workload=(
           plurality_checkable_task_iterator.is_plural()))
-  process_count = properties.VALUES.storage.process_count.GetInt()
-  thread_count = properties.VALUES.storage.thread_count.GetInt()
 
-  if parallelizable and (process_count > 1 or thread_count > 1):
+  # Some tasks operate under the assumption that they will only be executed when
+  # parallelizable is True, and use should_use_parallelism to determine how they
+  # are executed.
+  if parallelizable and should_use_parallelism():
     exit_code = task_graph_executor.TaskGraphExecutor(
         plurality_checkable_task_iterator,
-        max_process_count=process_count,
-        thread_count=thread_count,
+        max_process_count=properties.VALUES.storage.process_count.GetInt(),
+        thread_count=properties.VALUES.storage.thread_count.GetInt(),
         task_status_queue=task_status_queue,
         progress_type=progress_type).run()
   else:

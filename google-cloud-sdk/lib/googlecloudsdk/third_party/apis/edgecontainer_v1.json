@@ -429,8 +429,8 @@
           "description": "Canonical resource name of the node that this machine is responsible for hosting e.g. projects\/{project}\/locations\/{location}\/clusters\/{cluster_id}\/nodePools\/{pool_id}\/{node}, Or empty if the machine is not assigned to assume the role of a node.",
           "type": "string"
         },
-        "location": {
-          "description": "The Google Edge Cloud location of this machine.",
+        "zone": {
+          "description": "The Google Edge Cloud zone of this machine.",
           "type": "string"
         }
       }

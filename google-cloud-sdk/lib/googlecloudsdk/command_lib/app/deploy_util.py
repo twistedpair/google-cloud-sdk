@@ -489,11 +489,6 @@ def ArgsDeploy(parser):
             'with the deployment. If this argument is not specified, the '
             "application's default code bucket is used."))
   parser.add_argument(
-      '--service-account',
-      help=('The service account that this deployed version will run as. '
-            'If this argument is not specified, the App Engine default '
-            'service account will be used for your current deployed version.'))
-  parser.add_argument(
       'deployables',
       nargs='*',
       help="""\
@@ -580,7 +575,8 @@ def RunDeploy(
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
     parallel_build=True,
     flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
-    use_legacy_apis=False):
+    use_legacy_apis=False,
+    service_account=None):
   """Perform a deployment based on the given args.
 
   Args:
@@ -601,6 +597,8 @@ def RunDeploy(
     use_legacy_apis: bool, if true, use the legacy deprecated admin-console-hr
       superapp for queue.yaml and cron.yaml uploads instead of Cloud Tasks &
       Cloud Scheduler FEs.
+    service_account: string, the identity that the deployed version will run as,
+      if not set, will use the App Engine default service account instead.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -650,7 +648,8 @@ def RunDeploy(
     # Tell the user what is going to happen, and ask them to confirm.
     version_id = args.version or util.GenerateVersionId()
     deployed_urls = output_helpers.DisplayProposedDeployment(
-        app, project, services, configs, version_id, deploy_options.promote)
+        app, project, services, configs, version_id, deploy_options.promote,
+        service_account)
     console_io.PromptContinue(cancel_on_no=True)
     if service_infos:
       # Do generic app setup if deploying any services.
@@ -689,7 +688,7 @@ def RunDeploy(
           wait_for_stop_version=wait_for_stop_version,
           flex_image_build_option=flex_image_build_option,
           ignore_file=args.ignore_file,
-          service_account=args.service_account)
+          service_account=service_account)
       new_versions.append(new_version)
       log.status.Print('Deployed service [{0}] to [{1}]'.format(
           service.service_id, deployed_urls[service.service_id]))

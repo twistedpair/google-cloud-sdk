@@ -34,7 +34,7 @@ DEFAULT_TABLE_FORMAT = 'table(level,name,execution_id,time_utc,log)'
 
 def _Run(args):
   """Display log entries produced by Google Cloud Functions."""
-  region = properties.VALUES.functions.region.Get()
+  region = properties.VALUES.functions.region.GetOrFail()
   log_filter = [
       'resource.type="cloud_function"',
       'resource.labels.region="%s"' % region, 'logName:"cloud-functions"'
@@ -68,7 +68,7 @@ def _Run(args):
       client.projects_locations_functions.Get(
           messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
               name='projects/%s/locations/%s/functions/%s' %
-              (properties.VALUES.core.project.Get(required=True), region,
+              (properties.VALUES.core.project.GetOrFail(), region,
                args.name)))
     except (HttpForbiddenError, HttpNotFoundError):
       # The function doesn't exist in the given region.

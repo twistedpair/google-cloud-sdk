@@ -5,6 +5,71 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 343.0.0 (2021-06-02)
+
+### Breaking Changes
+
+*   **(Certificate Authority Service)** Updated `gcloud beta privateca` to only allow managing resources in the 6
+  supported locations. For more information, see
+  <https://cloud.google.com/certificate-authority-service/docs/locations>.
+*   **(Cloud Run)** If platform is not specified via flags or config, `gcloud run` commands that
+  require a platform will now default to `managed` instead of prompting to
+  select a platform.
+
+
+### AI
+
+* Promoted `gcloud ai custom-jobs` to GA.
+
+### Artifact Registry
+
+* Added Python repo creation with `gcloud artifacts repositories create`.
+* Added print-settings command for Python repositories.
+
+### BigQuery
+
+* Disable non-fedarated AWS connection type.
+* New module credential_loader encapsulate credential and auth related functions for BQCLI. The main entrypoint for these functions is credential_loader.GetCredentialsFromFlags (moved from _GetCredentialsFromFlags).  Note the removed underscore in addition to the module path change.
+* Minor bug fixes and dependency updates.
+
+### Cloud Datastream
+
+* Added `gcloud beta connection-profiles` which contains create, delete,
+  describe and list for Datastream connection profile objects.
+* Added `gcloud beta locations fetch-static-ips` which returns a
+  list of static IPs used by Datastream for a specific location.
+* Fixed issue where `gcloud beta connection-profiles list`
+  returned partial information in the list formatting.
+
+### Cloud Functions
+
+* Update logging message for `gcloud functions deploy` to print Cloud Build log URL.
+
+### Cloud Pub/Sub
+
+* Modified the output of `gcloud beta pubsub schemas validate-schema` on the successful validation of a schema to text indicating the success rather than the empty response returned by the service.
+* Modified the output of `gcloud beta pubsub schemas validate-message` on the successful validation of a message to text indicating the success rather than the empty response returned by the service.
+* Added `gcloud beta pubsub lite-subscriptions ack-up-to` which allows the user to acknowledge messages on a specified Pub/Sub Lite subscription.
+
+### Compute Engine
+
+* Promoted `--scopes`, `--no-scopes, `, `--service-account` and `--no-service-account` flags to GA for `gcloud compute instances import`.
+* Updated `gcloud beta compute service-attachment` to fix the default values of `--enable-proxy-protocol` and `--connection-preference`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.51.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kubernetes Engine
+
+* Added `--threads-per-core` flag to `gcloud container clusters create` and `gcloud container node-pools create` commands.
+* Fixed issue for 0 node clusters relating to misleading output of node versioning in `gcloud container clusters list`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 342.0.0 (2021-05-25)
 
 ### App Engine

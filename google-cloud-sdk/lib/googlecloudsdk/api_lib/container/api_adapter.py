@@ -780,7 +780,8 @@ class UpdateClusterOptions(object):
                add_cross_connect_subnetworks=None,
                remove_cross_connect_subnetworks=None,
                clear_cross_connect_subnetworks=None,
-               enable_service_externalips=None):
+               enable_service_externalips=None,
+               security_group=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -865,6 +866,7 @@ class UpdateClusterOptions(object):
     self.remove_cross_connect_subnetworks = remove_cross_connect_subnetworks
     self.clear_cross_connect_subnetworks = clear_cross_connect_subnetworks
     self.enable_service_externalips = enable_service_externalips
+    self.security_group = security_group
 
 
 class SetMasterAuthOptions(object):
@@ -3398,6 +3400,11 @@ class V1Beta1Adapter(V1Adapter):
       cluster.privateClusterConfig.masterGlobalAccessConfig = \
           self.messages.PrivateClusterMasterGlobalAccessConfig(
               enabled=options.enable_master_global_access)
+    if options.security_group is not None:
+      # The presence of the --security_group="foo" flag implies enabled=True.
+      cluster.authenticatorGroupsConfig = (
+          self.messages.AuthenticatorGroupsConfig(
+              enabled=True, securityGroup=options.security_group))
     _AddPSCPrivateClustersOptionsToClusterForCreateCluster(
         cluster, options, self.messages)
 
@@ -3517,6 +3524,12 @@ class V1Beta1Adapter(V1Adapter):
               .enable_experimental_vertical_pod_autoscaling))
       if options.enable_experimental_vertical_pod_autoscaling:
         update.desiredVerticalPodAutoscaling.enabled = True
+
+    if options.security_group is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAuthenticatorGroupsConfig=self.messages.
+          AuthenticatorGroupsConfig(enabled=True,
+                                    securityGroup=options.security_group))
 
     master = _GetMasterForClusterUpdate(options, self.messages)
     if master is not None:
@@ -3884,6 +3897,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.privateClusterConfig.masterGlobalAccessConfig = \
           self.messages.PrivateClusterMasterGlobalAccessConfig(
               enabled=options.enable_master_global_access)
+    if options.security_group is not None:
+      # The presence of the --security_group="foo" flag implies enabled=True.
+      cluster.authenticatorGroupsConfig = (
+          self.messages.AuthenticatorGroupsConfig(
+              enabled=True, securityGroup=options.security_group))
     _AddPSCPrivateClustersOptionsToClusterForCreateCluster(
         cluster, options, self.messages)
 
@@ -4004,6 +4022,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
               .enable_experimental_vertical_pod_autoscaling))
       if options.enable_experimental_vertical_pod_autoscaling:
         update.desiredVerticalPodAutoscaling.enabled = True
+
+    if options.security_group is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAuthenticatorGroupsConfig=self.messages
+          .AuthenticatorGroupsConfig(enabled=True,
+                                     securityGroup=options.security_group))
 
     master = _GetMasterForClusterUpdate(options, self.messages)
     if master is not None:

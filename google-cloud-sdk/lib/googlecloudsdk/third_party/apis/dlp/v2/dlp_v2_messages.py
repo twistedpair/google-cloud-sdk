@@ -438,7 +438,7 @@ class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
     r"""The type of job. Defaults to `DlpJobType.INSPECT`
 
     Values:
-      DLP_JOB_TYPE_UNSPECIFIED: Unused
+      DLP_JOB_TYPE_UNSPECIFIED: Defaults to INSPECT_JOB.
       INSPECT_JOB: The job inspected Google Cloud for sensitive data.
       RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
     """
@@ -613,6 +613,10 @@ class DlpOrganizationsLocationsJobTriggersGetRequest(_messages.Message):
 class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsJobTriggersListRequest object.
 
+  Enums:
+    TypeValueValuesEnum: The type of jobs. Will use `DlpJobType.INSPECT` if
+      not set.
+
   Fields:
     filter: Allows filtering. Supported syntax: * Filter expressions are made
       up of one or more restrictions. * Restrictions can be combined by `AND`
@@ -653,7 +657,20 @@ class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
       west3
+    type: The type of jobs. Will use `DlpJobType.INSPECT` if not set.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of jobs. Will use `DlpJobType.INSPECT` if not set.
+
+    Values:
+      DLP_JOB_TYPE_UNSPECIFIED: Defaults to INSPECT_JOB.
+      INSPECT_JOB: The job inspected Google Cloud for sensitive data.
+      RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
+    """
+    DLP_JOB_TYPE_UNSPECIFIED = 0
+    INSPECT_JOB = 1
+    RISK_ANALYSIS_JOB = 2
 
   filter = _messages.StringField(1)
   locationId = _messages.StringField(2)
@@ -661,6 +678,7 @@ class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
   parent = _messages.StringField(6, required=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class DlpOrganizationsLocationsJobTriggersPatchRequest(_messages.Message):
@@ -1180,7 +1198,7 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
     r"""The type of job. Defaults to `DlpJobType.INSPECT`
 
     Values:
-      DLP_JOB_TYPE_UNSPECIFIED: Unused
+      DLP_JOB_TYPE_UNSPECIFIED: Defaults to INSPECT_JOB.
       INSPECT_JOB: The job inspected Google Cloud for sensitive data.
       RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
     """
@@ -1393,6 +1411,10 @@ class DlpProjectsJobTriggersGetRequest(_messages.Message):
 class DlpProjectsJobTriggersListRequest(_messages.Message):
   r"""A DlpProjectsJobTriggersListRequest object.
 
+  Enums:
+    TypeValueValuesEnum: The type of jobs. Will use `DlpJobType.INSPECT` if
+      not set.
+
   Fields:
     filter: Allows filtering. Supported syntax: * Filter expressions are made
       up of one or more restrictions. * Restrictions can be combined by `AND`
@@ -1433,7 +1455,20 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
       west3
+    type: The type of jobs. Will use `DlpJobType.INSPECT` if not set.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of jobs. Will use `DlpJobType.INSPECT` if not set.
+
+    Values:
+      DLP_JOB_TYPE_UNSPECIFIED: Defaults to INSPECT_JOB.
+      INSPECT_JOB: The job inspected Google Cloud for sensitive data.
+      RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
+    """
+    DLP_JOB_TYPE_UNSPECIFIED = 0
+    INSPECT_JOB = 1
+    RISK_ANALYSIS_JOB = 2
 
   filter = _messages.StringField(1)
   locationId = _messages.StringField(2)
@@ -1441,6 +1476,7 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
   parent = _messages.StringField(6, required=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class DlpProjectsJobTriggersPatchRequest(_messages.Message):
@@ -1775,7 +1811,7 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
     r"""The type of job. Defaults to `DlpJobType.INSPECT`
 
     Values:
-      DLP_JOB_TYPE_UNSPECIFIED: Unused
+      DLP_JOB_TYPE_UNSPECIFIED: Defaults to INSPECT_JOB.
       INSPECT_JOB: The job inspected Google Cloud for sensitive data.
       RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
     """
@@ -2003,6 +2039,10 @@ class DlpProjectsLocationsJobTriggersHybridInspectRequest(_messages.Message):
 class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
   r"""A DlpProjectsLocationsJobTriggersListRequest object.
 
+  Enums:
+    TypeValueValuesEnum: The type of jobs. Will use `DlpJobType.INSPECT` if
+      not set.
+
   Fields:
     filter: Allows filtering. Supported syntax: * Filter expressions are made
       up of one or more restrictions. * Restrictions can be combined by `AND`
@@ -2043,7 +2083,20 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       identifier `example-project`, and specifies the `europe-west3` location
       for processing data: parent=projects/example-project/locations/europe-
       west3
+    type: The type of jobs. Will use `DlpJobType.INSPECT` if not set.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of jobs. Will use `DlpJobType.INSPECT` if not set.
+
+    Values:
+      DLP_JOB_TYPE_UNSPECIFIED: Defaults to INSPECT_JOB.
+      INSPECT_JOB: The job inspected Google Cloud for sensitive data.
+      RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
+    """
+    DLP_JOB_TYPE_UNSPECIFIED = 0
+    INSPECT_JOB = 1
+    RISK_ANALYSIS_JOB = 2
 
   filter = _messages.StringField(1)
   locationId = _messages.StringField(2)
@@ -2051,6 +2104,7 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)
   parent = _messages.StringField(6, required=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class DlpProjectsLocationsJobTriggersPatchRequest(_messages.Message):
@@ -3687,7 +3741,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
     r"""The type of job.
 
     Values:
-      DLP_JOB_TYPE_UNSPECIFIED: Unused
+      DLP_JOB_TYPE_UNSPECIFIED: Defaults to INSPECT_JOB.
       INSPECT_JOB: The job inspected Google Cloud for sensitive data.
       RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
     """

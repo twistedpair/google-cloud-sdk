@@ -195,6 +195,19 @@ class CommonFlags(FlagDefs):
         help='Add a readiness probe to the list of containers that delays '
         'deployment stabilization until the application app has bound to $PORT')
 
+  def AddServiceYamlPositionalArg(self):
+    self._AddFlag(
+        'service_config',
+        metavar='SERVICE_CONFIG',
+        nargs='?',
+        type=arg_parsers.YAMLFileContents(),
+        help=(
+            'service.yaml filename override. Defaults to the first file '
+            'matching ```*service.dev.yaml``` then ```*service.yaml```, if any '
+            'exist.'
+        ),
+    )
+
   def _GetGroup(self, klass):
     if klass not in self._group_cache:
       group = klass()
@@ -213,6 +226,7 @@ class CommonFlags(FlagDefs):
     return self._GetGroup(BuilderFlags)
 
   def AddBetaFlags(self):
+    """Set up flags that are for alpha and beta tracks."""
     self.BuildersGroup().AddDockerfile()
     self.AddSource()
     self.AddLocalPort()
@@ -221,6 +235,8 @@ class CommonFlags(FlagDefs):
     self.AddReadinessProbe()
 
   def AddAlphaFlags(self):
+    """Set up flags that are for alpha track only."""
+    self.AddServiceYamlPositionalArg()
     self.AddCloudsqlInstances()
     self.AddServiceName()
     self.AddImage()

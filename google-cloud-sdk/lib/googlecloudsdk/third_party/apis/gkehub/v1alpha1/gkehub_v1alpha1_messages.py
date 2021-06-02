@@ -1030,11 +1030,14 @@ class GatekeeperDeploymentState(_messages.Message):
     GatekeeperAuditValueValuesEnum: Status of gatekeeper-audit deployment.
     GatekeeperControllerManagerStateValueValuesEnum: Status of gatekeeper-
       controller-manager pod.
+    GatekeeperMutationValueValuesEnum: Status of the pod serving the mutation
+      webhook.
 
   Fields:
     gatekeeperAudit: Status of gatekeeper-audit deployment.
     gatekeeperControllerManagerState: Status of gatekeeper-controller-manager
       pod.
+    gatekeeperMutation: Status of the pod serving the mutation webhook.
   """
 
   class GatekeeperAuditValueValuesEnum(_messages.Enum):
@@ -1065,8 +1068,23 @@ class GatekeeperDeploymentState(_messages.Message):
     INSTALLED = 2
     ERROR = 3
 
+  class GatekeeperMutationValueValuesEnum(_messages.Enum):
+    r"""Status of the pod serving the mutation webhook.
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
   gatekeeperAudit = _messages.EnumField('GatekeeperAuditValueValuesEnum', 1)
   gatekeeperControllerManagerState = _messages.EnumField('GatekeeperControllerManagerStateValueValuesEnum', 2)
+  gatekeeperMutation = _messages.EnumField('GatekeeperMutationValueValuesEnum', 3)
 
 
 class GitConfig(_messages.Message):
@@ -2097,6 +2115,7 @@ class PolicyController(_messages.Message):
       Controller checks. Namespaces do not need to currently exist on the
       cluster.
     logDeniesEnabled: Logs all denies and dry run failures.
+    mutationEnabled: Enable users to try out mutation for PolicyController.
     referentialRulesEnabled: Enables the ability to use Constraint Templates
       that reference to objects other than the object currently being
       evaluated.
@@ -2108,8 +2127,9 @@ class PolicyController(_messages.Message):
   enabled = _messages.BooleanField(2)
   exemptableNamespaces = _messages.StringField(3, repeated=True)
   logDeniesEnabled = _messages.BooleanField(4)
-  referentialRulesEnabled = _messages.BooleanField(5)
-  templateLibraryInstalled = _messages.BooleanField(6)
+  mutationEnabled = _messages.BooleanField(5)
+  referentialRulesEnabled = _messages.BooleanField(6)
+  templateLibraryInstalled = _messages.BooleanField(7)
 
 
 class PolicyControllerState(_messages.Message):

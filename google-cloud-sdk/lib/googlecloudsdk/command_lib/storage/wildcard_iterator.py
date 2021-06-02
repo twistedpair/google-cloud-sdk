@@ -251,6 +251,39 @@ class CloudWildcardIterator(WildcardIterator):
             continue
           yield resource
 
+  def _get_regex_patterns(self, wildcard_pattern):
+    """Returns list of regex patterns derived from the wildcard patterns.
+
+    Args:
+      wildcard_pattern (str): A wilcard_pattern to filter the resources.
+
+    Returns:
+      List of compiled regex patterns.
+
+    This translates the wildcard_pattern and also creates some additional
+    patterns so that we can treat ** in a/b/c/**/d.txt as zero or more folders.
+    This means, a/b/c/d.txt will also be returned along with a/b/c/e/f/d.txt.
+    """
+    # Case 1: The original pattern should always be present.
+    wildcard_patterns = [wildcard_pattern]
+    if '/**/' in wildcard_pattern:
+      # Case 2: Will fetch object gs://bucket/dir1/a.txt if pattern is
+      # gs://bucket/dir1/**/a.txt
+      updated_pattern = wildcard_pattern.replace('/**/', '/')
+      wildcard_patterns.append(updated_pattern)
+    else:
+      updated_pattern = wildcard_pattern
+
+    for pattern in (wildcard_pattern, updated_pattern):
+      if pattern.startswith('**/'):
+        # Case 3 (using wildcard_pattern): Will fetch object gs://bucket/a.txt
+        # if pattern is gs://bucket/**/a.txt. Note that '/**/' will match
+        # '/a.txt' not 'a.txt'.
+        # Case 4:(using updated_pattern) Will fetch gs://bucket/dir1/dir2/a.txt
+        # if the pattern is gs://bucket/**/dir1/**/a.txt
+        wildcard_patterns.append(pattern[3:])
+    return [re.compile(fnmatch.translate(p)) for p in wildcard_patterns]
+
   def _filter_resources(self, resource_iterator, wildcard_pattern):
     """Filter out resources that do not match the wildcard_pattern.
 
@@ -262,8 +295,7 @@ class CloudWildcardIterator(WildcardIterator):
     Yields:
       resource_reference.Resource objects matching the wildcard_pattern
     """
-    regex_string = fnmatch.translate(wildcard_pattern)
-    regex_pattern = re.compile(regex_string)
+    regex_patterns = self._get_regex_patterns(wildcard_pattern)
     for resource in resource_iterator:
       if isinstance(resource, resource_reference.PrefixResource):
         object_name = (
@@ -277,8 +309,10 @@ class CloudWildcardIterator(WildcardIterator):
           resource.storage_url.generation != self._url.generation):
         # Filter based on generation, if generation is present in the request.
         continue
-      if regex_pattern.match(object_name):
-        yield resource
+      for regex_pattern in regex_patterns:
+        if regex_pattern.match(object_name):
+          yield resource
+          break
 
   def _fetch_buckets(self):
     """Fetch the bucket(s) corresponding to the url.

@@ -241,6 +241,10 @@ class Instance(_messages.Message):
       STANDARD_HA tier, instances will be created across two zones for
       protection against zonal failures. If alternative_location_id is also
       provided, it must be different from location_id.
+    maintenancePolicy: Optional. The maintenance policy for the instance. If
+      not provided, maintenance events can be performed at any time.
+    maintenanceSchedule: Output only. Date and time of upcoming maintenance
+      events which have been scheduled.
     memorySizeGb: Required. Redis memory size in GiB.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
@@ -419,18 +423,20 @@ class Instance(_messages.Message):
   host = _messages.StringField(8)
   labels = _messages.MessageField('LabelsValue', 9)
   locationId = _messages.StringField(10)
-  memorySizeGb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  name = _messages.StringField(12)
-  persistenceIamIdentity = _messages.StringField(13)
-  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 15)
-  redisVersion = _messages.StringField(16)
-  reservedIpRange = _messages.StringField(17)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 18, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  statusMessage = _messages.StringField(20)
-  tier = _messages.EnumField('TierValueValuesEnum', 21)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 22)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 11)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 12)
+  memorySizeGb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  name = _messages.StringField(14)
+  persistenceIamIdentity = _messages.StringField(15)
+  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 17)
+  redisVersion = _messages.StringField(18)
+  reservedIpRange = _messages.StringField(19)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 20, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  statusMessage = _messages.StringField(22)
+  tier = _messages.EnumField('TierValueValuesEnum', 23)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 24)
 
 
 class InstanceAuthString(_messages.Message):
@@ -575,6 +581,47 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class MaintenancePolicy(_messages.Message):
+  r"""Maintenance policy for an instance.
+
+  Fields:
+    createTime: Output only. The time when the policy was created.
+    description: Optional. Description of what this policy is for.
+      Create/Update methods return INVALID_ARGUMENT if the length is greater
+      than 512.
+    updateTime: Output only. The time when the policy was last updated.
+    weeklyMaintenanceWindow: Optional. Maintenance window that is applied to
+      resources covered by this policy. Minimum 1. For the current version,
+      the maximum number of weekly_window is expected to be one.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+  weeklyMaintenanceWindow = _messages.MessageField('WeeklyMaintenanceWindow', 4, repeated=True)
+
+
+class MaintenanceSchedule(_messages.Message):
+  r"""Upcoming maintenance schedule. If no maintenance is scheduled, fields
+  are not populated.
+
+  Fields:
+    canReschedule: If the scheduled maintenance can be rescheduled, default is
+      true.
+    endTime: Output only. The end time of any upcoming scheduled maintenance
+      for this instance.
+    scheduleDeadlineTime: Output only. The deadline that the maintenance
+      schedule start time can not go beyond, including reschedule.
+    startTime: Output only. The start time of any upcoming scheduled
+      maintenance for this instance.
+  """
+
+  canReschedule = _messages.BooleanField(1)
+  endTime = _messages.StringField(2)
+  scheduleDeadlineTime = _messages.StringField(3)
+  startTime = _messages.StringField(4)
 
 
 class Operation(_messages.Message):
@@ -864,6 +911,21 @@ class RedisProjectsLocationsInstancesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class RedisProjectsLocationsInstancesRescheduleMaintenanceRequest(_messages.Message):
+  r"""A RedisProjectsLocationsInstancesRescheduleMaintenanceRequest object.
+
+  Fields:
+    name: Required. Redis instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+    rescheduleMaintenanceRequest: A RescheduleMaintenanceRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rescheduleMaintenanceRequest = _messages.MessageField('RescheduleMaintenanceRequest', 2)
+
+
 class RedisProjectsLocationsInstancesUpgradeRequest(_messages.Message):
   r"""A RedisProjectsLocationsInstancesUpgradeRequest object.
 
@@ -943,6 +1005,42 @@ class RedisProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class RescheduleMaintenanceRequest(_messages.Message):
+  r"""Request for RescheduleMaintenance.
+
+  Enums:
+    RescheduleTypeValueValuesEnum: Required. If reschedule type is
+      SPECIFIC_TIME, must set up schedule_time as well.
+
+  Fields:
+    rescheduleType: Required. If reschedule type is SPECIFIC_TIME, must set up
+      schedule_time as well.
+    scheduleTime: Optional. Timestamp when the maintenance shall be
+      rescheduled to if reschedule_type=SPECIFIC_TIME, in RFC 3339 format, for
+      example `2012-11-15T16:19:00.094Z`.
+  """
+
+  class RescheduleTypeValueValuesEnum(_messages.Enum):
+    r"""Required. If reschedule type is SPECIFIC_TIME, must set up
+    schedule_time as well.
+
+    Values:
+      RESCHEDULE_TYPE_UNSPECIFIED: Not set.
+      IMMEDIATE: If the user wants to schedule the maintenance to happen now.
+      NEXT_AVAILABLE_WINDOW: If the user wants to use the existing maintenance
+        policy to find the next available window.
+      SPECIFIC_TIME: If the user wants to reschedule the maintenance to a
+        specific time.
+    """
+    RESCHEDULE_TYPE_UNSPECIFIED = 0
+    IMMEDIATE = 1
+    NEXT_AVAILABLE_WINDOW = 2
+    SPECIFIC_TIME = 3
+
+  rescheduleType = _messages.EnumField('RescheduleTypeValueValuesEnum', 1)
+  scheduleTime = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1059,6 +1157,27 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
+      choose to allow the value "24:00:00" for scenarios like business closing
+      time.
+    minutes: Minutes of hour of day. Must be from 0 to 59.
+    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
+    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
+      API may allow the value 60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class TlsCertificate(_messages.Message):
   r"""TlsCertificate Resource
 
@@ -1090,6 +1209,48 @@ class UpgradeInstanceRequest(_messages.Message):
   """
 
   redisVersion = _messages.StringField(1)
+
+
+class WeeklyMaintenanceWindow(_messages.Message):
+  r"""Time window in which disruptive maintenance updates occur. Non-
+  disruptive updates can occur inside or outside this window.
+
+  Enums:
+    DayValueValuesEnum: Required. The day of week that maintenance updates
+      occur.
+
+  Fields:
+    day: Required. The day of week that maintenance updates occur.
+    duration: Output only. Duration of the maintenance window. The current
+      window is fixed at 3 hours.
+    startTime: Required. Start time of the window in UTC time.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Required. The day of week that maintenance updates occur.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  duration = _messages.StringField(2)
+  startTime = _messages.MessageField('TimeOfDay', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

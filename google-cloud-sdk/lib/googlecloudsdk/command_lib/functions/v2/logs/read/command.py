@@ -40,7 +40,7 @@ def _Run(args, release_track):
   if args.execution_id:
     raise exceptions.FunctionsError(EXECUTION_ID_NOT_SUPPORTED)
 
-  region = properties.VALUES.functions.region.Get()
+  region = properties.VALUES.functions.region.GetOrFail()
   log_filter = [
       'resource.type="cloud_run_revision"',
       'resource.labels.location="%s"' % region, 'logName:"run.googleapis.com"'
@@ -72,7 +72,7 @@ def _Run(args, release_track):
       client.projects_locations_functions.Get(
           messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
               name='projects/%s/locations/%s/functions/%s' %
-              (properties.VALUES.core.project.Get(required=True), region,
+              (properties.VALUES.core.project.GetOrFail(), region,
                args.name)))
     except (HttpForbiddenError, HttpNotFoundError):
       # The function doesn't exist in the given region.

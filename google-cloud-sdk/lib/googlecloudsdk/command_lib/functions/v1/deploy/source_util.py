@@ -112,7 +112,7 @@ def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None):
 def _GenerateRemoteZipFileName(function_name):
   suffix = ''.join(random.choice(string.ascii_lowercase) for _ in range(12))
   return '{0}-{1}-{2}.zip'.format(
-      properties.VALUES.functions.region.Get(), function_name, suffix)
+      properties.VALUES.functions.region.GetOrFail(), function_name, suffix)
 
 
 def _UploadFileToGcs(source, function_ref, stage_bucket):

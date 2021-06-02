@@ -23,6 +23,7 @@ import enum
 import hashlib
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core.updater import installers
 
 
@@ -133,3 +134,29 @@ def validate_object_hashes_match(object_url, source_hash, destination_hash):
         'Source hash {} does not match destination hash {}'
         ' for object {}.'.format(source_hash, destination_hash, object_url))
   # TODO(b/172048376): Check crc32c if md5 not available.
+
+
+def update_digesters(digesters, data):
+  """Updates every hash object with new data in a dict of digesters."""
+  for hash_object in digesters.values():
+    hash_object.update(data)
+
+
+def copy_digesters(digesters):
+  """Returns copy of provided digesters since deepcopying doesn't work."""
+  result = {}
+  for hash_algorithm in digesters:
+    result[hash_algorithm] = digesters[hash_algorithm].copy()
+  return result
+
+
+def reset_digesters(digesters):
+  """Clears the data from every hash object in a dict of digesters."""
+  for hash_algorithm in digesters:
+    if hash_algorithm is HashAlgorithm.MD5:
+      digesters[hash_algorithm] = get_md5()
+    elif hash_algorithm is HashAlgorithm.CRC32C:
+      digesters[hash_algorithm] = crc32c.get_crc32c()
+    else:
+      raise ValueError('Unknown hash algorithm found in digesters: {}'.format(
+          hash_algorithm))

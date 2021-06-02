@@ -194,7 +194,78 @@ def TimeoutInterceptor():
   return ClientCallDetailsInterceptor(AddTimeout)
 
 
-class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
+class WrappedStreamingResponse(grpc.Call, grpc.Future):
+  """Wrapped streaming response.
+
+  Attributes:
+    _response: A grpc.Call/grpc.Future instance representing a service response.
+    _fn: Function called on each iteration of this iterator. Takes a lambda
+         that produces the next response in the _response iterator.
+  """
+
+  def __init__(self, response, fn):
+    self._response = response
+    self._fn = fn
+
+  def initial_metadata(self):
+    return self._response.initial_metadata()
+
+  def trailing_metadata(self):
+    return self._response.trailing_metadata()
+
+  def code(self):
+    return self._response.code()
+
+  def details(self):
+    return self._response.details()
+
+  def debug_error_string(self):
+    return self._response.debug_error_string()
+
+  def cancel(self):
+    return self._response.cancel()
+
+  def cancelled(self):
+    return self._response.cancelled()
+
+  def running(self):
+    return self._response.running()
+
+  def done(self):
+    return self._response.done()
+
+  def result(self, timeout=None):
+    return self._response.result(timeout=timeout)
+
+  def exception(self, timeout=None):
+    return self._response.exception(timeout=timeout)
+
+  def traceback(self, timeout=None):
+    return self._response.traceback(timeout=timeout)
+
+  def add_done_callback(self, fn):
+    return self._response.add_done_callback(fn)
+
+  def add_callback(self, callback):
+    return self._response.add_callback(callback)
+
+  def is_active(self):
+    return self._response.is_active()
+
+  def time_remaining(self):
+    return self._response.time_remaining()
+
+  def __iter__(self):
+    return self
+
+  def __next__(self):
+    return self._fn(lambda: next(self._response))
+
+
+class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor,
+                         grpc.UnaryStreamClientInterceptor,
+                         grpc.StreamUnaryClientInterceptor,
+                         grpc.StreamStreamClientInterceptor):
   """Logging Interceptor for logging requests and responses.
 
   Logging is enabled if the --log-http flag is provided on any command.
@@ -268,6 +339,55 @@ class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
     log.status.Print('---- response end ----')
     log.status.Print('----------------------')
 
+  def log_requests(self, client_call_details, request_iterator):
+    for request in request_iterator:
+      self.log_request(client_call_details, request)
+      yield request
+
+  def log_streaming_response(self, responses, response, time_taken):
+    """Logs information about the response.
+
+    Args:
+        responses: A grpc.Call/grpc.Future instance representing a service
+            response.
+        response: response to log.
+        time_taken: time, in seconds, it took for the RPC to complete.
+    """
+    log.status.Print('---- response start ----')
+    log.status.Print('-- headers start --')
+    log.status.Print('-- initial metadata --')
+    self.log_metadata(responses.initial_metadata())
+    log.status.Print('-- headers end --')
+    log.status.Print('-- body start --')
+    log.status.Print('{}'.format(response))
+    log.status.Print('-- body end --')
+    log.status.Print(
+        'total time (response): {0:.3f} secs'.format(time_taken))
+    log.status.Print('---- response end ----')
+    log.status.Print('----------------------')
+
+  def log_responses(self, responses):
+    def OnDone(response):
+      log.status.Print('---- response start ----')
+      log.status.Print('code: {}'.format(response.code()))
+      log.status.Print('-- headers start --')
+      log.status.Print('details: {}'.format(response.details()))
+      log.status.Print('-- trailing metadata --')
+      self.log_metadata(response.trailing_metadata())
+      log.status.Print('-- headers end --')
+      log.status.Print('---- response end ----')
+      log.status.Print('----------------------')
+
+    def LogResponse(result_generator_func):
+      start_time = time.time()
+      response = result_generator_func()
+      time_taken = time.time() - start_time
+      self.log_streaming_response(responses, response, time_taken)
+      return response
+
+    responses.add_done_callback(OnDone)
+    return WrappedStreamingResponse(responses, LogResponse)
+
   def intercept_unary_unary(self, continuation, client_call_details, request):
     """Intercepts and logs API interactions.
 
@@ -288,6 +408,35 @@ class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor):
 
     self.log_response(response, time_taken)
     return response
+
+  def intercept_unary_stream(self, continuation, client_call_details,
+                             request):
+    """Intercepts a unary-stream invocation."""
+    self.log_request(client_call_details, request)
+    response = continuation(client_call_details, request)
+    return self.log_responses(response)
+
+  def intercept_stream_unary(self, continuation, client_call_details,
+                             request_iterator):
+    """Intercepts a stream-unary invocation asynchronously."""
+    start_time = time.time()
+    response = continuation(
+        client_call_details,
+        self.log_requests(client_call_details, request_iterator))
+    time_taken = time.time() - start_time
+    self.log_response(response, time_taken)
+    return response
+
+  def intercept_stream_stream(self, continuation, client_call_details,
+                              request_iterator):
+    """Intercepts a stream-stream invocation."""
+    log.status.Print('initiating request')
+
+    response = continuation(
+        client_call_details,
+        self.log_requests(client_call_details, request_iterator))
+
+    return self.log_responses(response)
 
 
 class RPCDurationReporterInterceptor(grpc.UnaryUnaryClientInterceptor):

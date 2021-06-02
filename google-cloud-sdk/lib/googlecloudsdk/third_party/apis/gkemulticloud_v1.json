@@ -346,10 +346,6 @@
           "description": "The AWS instance type.",
           "type": "string"
         },
-        "ec2KeyPair": {
-          "description": "The name of the EC2 key pair used to login into control plane nodes.",
-          "type": "string"
-        },
         "sshConfig": {
           "description": "The SSH configuration.",
           "$ref": "GoogleCloudGkemulticloudV1AwsSshConfig"
@@ -503,7 +499,7 @@
           "description": "The OIDC issuer URL for this cluster.",
           "type": "string"
         },
-        "worloadPool": {
+        "workloadPool": {
           "description": "The Workload Identity Pool associated to the cluster.",
           "type": "string"
         },
@@ -537,7 +533,7 @@
       "type": "object",
       "properties": {
         "kubeconfig": {
-          "description": "The admin kubeconfig.",
+          "description": "The admin kubeconfig. The generated client credentials expire after 20 hours.",
           "type": "string"
         }
       }
@@ -570,10 +566,6 @@
         },
         "instanceType": {
           "description": "The AWS instance type.",
-          "type": "string"
-        },
-        "ec2KeyPair": {
-          "description": "The name of the EC2 key pair used to login into instances created using this node pool.",
           "type": "string"
         },
         "sshConfig": {
@@ -862,6 +854,13 @@
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AwsK8sVersionInfo"
           }
+        },
+        "supportedAwsRegions": {
+          "description": "The list of supported AWS regions.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1077,11 +1076,6 @@
           "description": "The Azure VM size name. Example: Standard_DS2_v2. For available VM sizes, see https:\/\/docs.microsoft.com\/en-us\/azure\/virtual-machines\/vm-naming-conventions.",
           "type": "string"
         },
-        "sshPublicKey": {
-          "description": "The SSH public key data for the control plane VM.",
-          "type": "string",
-          "format": "byte"
-        },
         "sshConfig": {
           "description": "The SSH configuration.",
           "$ref": "GoogleCloudGkemulticloudV1AzureSshConfig"
@@ -1221,7 +1215,7 @@
       "type": "object",
       "properties": {
         "kubeconfig": {
-          "description": "The admin kubeconfig.",
+          "description": "The admin kubeconfig. The generated client credentials expire after 20 hours.",
           "type": "string"
         }
       }
@@ -1250,11 +1244,6 @@
         "vmSize": {
           "description": "The Azure VM size name. Example: Standard_DS2_v2. For available VM sizes, see https:\/\/docs.microsoft.com\/en-us\/azure\/virtual-machines\/vm-naming-conventions.",
           "type": "string"
-        },
-        "sshPublicKey": {
-          "description": "The SSH public key data for the node pool VM.",
-          "type": "string",
-          "format": "byte"
         },
         "sshConfig": {
           "description": "The SSH configuration.",
@@ -1442,6 +1431,13 @@
           "type": "array",
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AzureK8sVersionInfo"
+          }
+        },
+        "supportedAzureRegions": {
+          "description": "The list of supported Azure regions.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

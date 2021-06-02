@@ -307,8 +307,6 @@ class BackendRule(_messages.Message):
     jwtAudience: The JWT audience is used when generating a JWT ID token for
       the backend. This ID token will be added in the HTTP "authorization"
       header, and sent to the backend.
-    minDeadline: Minimum deadline in seconds needed for this method. Calls
-      having deadline value lower than this will be rejected.
     operationDeadline: The number of seconds to wait for the completion of a
       long running operation. The default is no deadline.
     pathTranslation: A PathTranslationValueValuesEnum attribute.
@@ -363,11 +361,10 @@ class BackendRule(_messages.Message):
   deadline = _messages.FloatField(2)
   disableAuth = _messages.BooleanField(3)
   jwtAudience = _messages.StringField(4)
-  minDeadline = _messages.FloatField(5)
-  operationDeadline = _messages.FloatField(6)
-  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 7)
-  protocol = _messages.StringField(8)
-  selector = _messages.StringField(9)
+  operationDeadline = _messages.FloatField(5)
+  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 6)
+  protocol = _messages.StringField(7)
+  selector = _messages.StringField(8)
 
 
 class Billing(_messages.Message):

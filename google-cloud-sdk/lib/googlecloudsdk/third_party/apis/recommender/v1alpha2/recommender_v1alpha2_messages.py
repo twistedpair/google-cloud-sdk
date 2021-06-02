@@ -550,7 +550,7 @@ class GoogleCloudRecommenderV1alpha2Operation(_messages.Message):
       set, an implicit AND must be performed.
 
   Fields:
-    action: Type of this operation. Contains one of 'and', 'remove',
+    action: Type of this operation. Contains one of 'add', 'remove',
       'replace', 'move', 'copy', 'test' and 'custom' operations. This field is
       case-insensitive and always populated.
     customAction: Needed if action is 'custom'. The subtype of a custom

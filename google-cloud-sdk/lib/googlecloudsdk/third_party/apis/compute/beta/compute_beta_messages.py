@@ -2863,6 +2863,8 @@ class BackendBucket(_messages.Message):
       proxied responses.
     description: An optional textual description of the resource; provided by
       the client when the resource is created.
+    edgeSecurityPolicy: [Output Only] The resource URL for the edge security
+      policy associated with this backend bucket.
     enableCdn: If true, enable Cloud CDN for this BackendBucket.
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
@@ -2894,11 +2896,12 @@ class BackendBucket(_messages.Message):
   creationTimestamp = _messages.StringField(4)
   customResponseHeaders = _messages.StringField(5, repeated=True)
   description = _messages.StringField(6)
-  enableCdn = _messages.BooleanField(7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default='compute#backendBucket')
-  name = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
+  edgeSecurityPolicy = _messages.StringField(7)
+  enableCdn = _messages.BooleanField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default='compute#backendBucket')
+  name = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
 
 
 class BackendBucketCdnPolicy(_messages.Message):
@@ -3284,7 +3287,7 @@ class BackendService(_messages.Message):
       the backend service is referenced by a URL map that is bound to target
       gRPC proxy.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
-      default is NONE.  When the loadBalancingScheme is EXTERNAL: * For
+      default is NONE.  When the loadBalancingScheme is EXTERNAL:  * For
       Network Load Balancing, the possible values are NONE, CLIENT_IP,
       CLIENT_IP_PROTO, or  CLIENT_IP_PORT_PROTO. * For all other load
       balancers that use loadBalancingScheme=EXTERNAL, the possible values are
@@ -3339,6 +3342,8 @@ class BackendService(_messages.Message):
       proxied responses.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    edgeSecurityPolicy: [Output Only] The resource URL for the edge security
+      policy associated with this backend service.
     enableCDN: If true, enables Cloud CDN for the backend service. Only
       applicable if the loadBalancingScheme is EXTERNAL and the protocol is
       HTTP or HTTPS.
@@ -3462,7 +3467,7 @@ class BackendService(_messages.Message):
       service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     selfLink: [Output Only] Server-defined URL for the resource.
     sessionAffinity: Type of session affinity to use. The default is NONE.
-      When the loadBalancingScheme is EXTERNAL: * For Network Load Balancing,
+      When the loadBalancingScheme is EXTERNAL:  * For Network Load Balancing,
       the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
       CLIENT_IP_PORT_PROTO. * For all other load balancers that use
       loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP,
@@ -3586,7 +3591,7 @@ class BackendService(_messages.Message):
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     r"""Type of session affinity to use. The default is NONE.  When the
-    loadBalancingScheme is EXTERNAL: * For Network Load Balancing, the
+    loadBalancingScheme is EXTERNAL:  * For Network Load Balancing, the
     possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
     CLIENT_IP_PORT_PROTO. * For all other load balancers that use
     loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or
@@ -3630,30 +3635,31 @@ class BackendService(_messages.Message):
   customRequestHeaders = _messages.StringField(10, repeated=True)
   customResponseHeaders = _messages.StringField(11, repeated=True)
   description = _messages.StringField(12)
-  enableCDN = _messages.BooleanField(13)
-  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 14)
-  fingerprint = _messages.BytesField(15)
-  healthChecks = _messages.StringField(16, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 17)
-  id = _messages.IntegerField(18, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(19, default='compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 20)
-  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 21)
-  logConfig = _messages.MessageField('BackendServiceLogConfig', 22)
-  maxStreamDuration = _messages.MessageField('Duration', 23)
-  name = _messages.StringField(24)
-  network = _messages.StringField(25)
-  outlierDetection = _messages.MessageField('OutlierDetection', 26)
-  port = _messages.IntegerField(27, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(28)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 29)
-  region = _messages.StringField(30)
-  securityPolicy = _messages.StringField(31)
-  securitySettings = _messages.MessageField('SecuritySettings', 32)
-  selfLink = _messages.StringField(33)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 34)
-  subsetting = _messages.MessageField('Subsetting', 35)
-  timeoutSec = _messages.IntegerField(36, variant=_messages.Variant.INT32)
+  edgeSecurityPolicy = _messages.StringField(13)
+  enableCDN = _messages.BooleanField(14)
+  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 15)
+  fingerprint = _messages.BytesField(16)
+  healthChecks = _messages.StringField(17, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 18)
+  id = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(20, default='compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 21)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 22)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 23)
+  maxStreamDuration = _messages.MessageField('Duration', 24)
+  name = _messages.StringField(25)
+  network = _messages.StringField(26)
+  outlierDetection = _messages.MessageField('OutlierDetection', 27)
+  port = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(29)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 30)
+  region = _messages.StringField(31)
+  securityPolicy = _messages.StringField(32)
+  securitySettings = _messages.MessageField('SecuritySettings', 33)
+  selfLink = _messages.StringField(34)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 35)
+  subsetting = _messages.MessageField('Subsetting', 36)
+  timeoutSec = _messages.IntegerField(37, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -6301,6 +6307,33 @@ class ComputeBackendBucketsPatchRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeBackendBucketsSetEdgeSecurityPolicyRequest(_messages.Message):
+  r"""A ComputeBackendBucketsSetEdgeSecurityPolicyRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendService resource to which the security
+      policy should be set. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicyReference: A SecurityPolicyReference resource to be passed
+      as the request body.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 4)
+
+
 class ComputeBackendBucketsSetIamPolicyRequest(_messages.Message):
   r"""A ComputeBackendBucketsSetIamPolicyRequest object.
 
@@ -6616,6 +6649,33 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeBackendServicesSetEdgeSecurityPolicyRequest(_messages.Message):
+  r"""A ComputeBackendServicesSetEdgeSecurityPolicyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the edge
+      security policy should be set. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicyReference: A SecurityPolicyReference resource to be passed
+      as the request body.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 4)
 
 
 class ComputeBackendServicesSetSecurityPolicyRequest(_messages.Message):
@@ -27381,7 +27441,7 @@ class FixedOrPercent(_messages.Message):
       the calculated value is percent/100 * targetSize. For example, the
       calculated value of a 80% of a managed instance group with 150 instances
       would be (80/100 * 150) = 120 VM instances. If there is a remainder, the
-      number is rounded up.
+      number is rounded.
     fixed: Specifies a fixed number of VM instances. This must be a positive
       integer.
     percent: Specifies a percentage of instances between 0 to 100%, inclusive.
@@ -30194,8 +30254,9 @@ class HttpRouteAction(_messages.Message):
       backend service, delays can be introduced by Loadbalancer on a
       percentage of requests before sending those request to the backend
       service. Similarly requests from clients can be aborted by the
-      Loadbalancer for a percentage of requests. timeout and retry_policy will
-      be ignored by clients that are configured with a fault_injection_policy.
+      Loadbalancer for a percentage of requests. For the requests impacted by
+      fault injection, timeout and retry_policy will be ignored by clients
+      that are configured with a fault_injection_policy.
     maxStreamDuration: Specifies the maximum duration (timeout) for streams on
       the selected route. Unlike the timeout field where the timeout duration
       starts from the time the request has been fully processed (i.e. end-of-
@@ -32342,7 +32403,7 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     maxSurge: The maximum number of instances that can be created above the
       specified targetSize during the update process. This value can be either
       a fixed number or, if the group has 10 or more instances, a percentage.
-      If you set a percentage, the number of instances is rounded up if
+      If you set a percentage, the number of instances is rounded if
       necessary. The default value for maxSurge is a fixed value equal to the
       number of zones in which the managed instance group operates.  At least
       one of either maxSurge or maxUnavailable must be greater than 0. Learn
@@ -32355,7 +32416,7 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       is no health check on the group, then the instance only needs to have a
       status of RUNNING to be considered available.  This value can be either
       a fixed number or, if the group has 10 or more instances, a percentage.
-      If you set a percentage, the number of instances is rounded up if
+      If you set a percentage, the number of instances is rounded if
       necessary. The default value for maxUnavailable is a fixed value equal
       to the number of zones in which the managed instance group operates.  At
       least one of either maxSurge or maxUnavailable must be greater than 0.
@@ -32491,7 +32552,7 @@ class InstanceGroupManagerVersion(_messages.Message):
       minimum of either targetSize.fixed or instanceGroupManager.targetSize is
       used.  - if expressed as a percent, the targetSize would be
       (targetSize.percent/100 * InstanceGroupManager.targetSize) If there is a
-      remainder, the number is rounded up.  If unset, this version will update
+      remainder, the number is rounded.  If unset, this version will update
       any remaining instances not updated by another version. Read Starting a
       canary update for more information.
   """
@@ -36098,9 +36159,10 @@ class InterconnectOutageNotification(_messages.Message):
       the following values:  - ACTIVE: This outage notification is active. The
       event could be in the past, present, or future. See start_time and
       end_time for scheduling.  - CANCELLED: The outage associated with this
-      notification was cancelled before the outage was due to start. Note that
-      the versions of this enum prefixed with "NS_" have been deprecated in
-      favor of the unprefixed values.
+      notification was cancelled before the outage was due to start.  -
+      COMPLETED: The outage associated with this notification is complete.
+      Note that the versions of this enum prefixed with "NS_" have been
+      deprecated in favor of the unprefixed values.
 
   Fields:
     affectedCircuits: If issue_type is IT_PARTIAL_OUTAGE, a list of the
@@ -36125,9 +36187,10 @@ class InterconnectOutageNotification(_messages.Message):
       values:  - ACTIVE: This outage notification is active. The event could
       be in the past, present, or future. See start_time and end_time for
       scheduling.  - CANCELLED: The outage associated with this notification
-      was cancelled before the outage was due to start. Note that the versions
-      of this enum prefixed with "NS_" have been deprecated in favor of the
-      unprefixed values.
+      was cancelled before the outage was due to start.  - COMPLETED: The
+      outage associated with this notification is complete.  Note that the
+      versions of this enum prefixed with "NS_" have been deprecated in favor
+      of the unprefixed values.
   """
 
   class IssueTypeValueValuesEnum(_messages.Enum):
@@ -36166,7 +36229,8 @@ class InterconnectOutageNotification(_messages.Message):
     values:  - ACTIVE: This outage notification is active. The event could be
     in the past, present, or future. See start_time and end_time for
     scheduling.  - CANCELLED: The outage associated with this notification was
-    cancelled before the outage was due to start. Note that the versions of
+    cancelled before the outage was due to start.  - COMPLETED: The outage
+    associated with this notification is complete.  Note that the versions of
     this enum prefixed with "NS_" have been deprecated in favor of the
     unprefixed values.
 
@@ -43852,6 +43916,7 @@ class Quota(_messages.Message):
       COMMITTED_NVIDIA_P4_GPUS: <no description>
       COMMITTED_NVIDIA_T4_GPUS: <no description>
       COMMITTED_NVIDIA_V100_GPUS: <no description>
+      COMMITTED_P2D_CPUS: <no description>
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -43900,6 +43965,7 @@ class Quota(_messages.Message):
       NVIDIA_T4_GPUS: <no description>
       NVIDIA_T4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
+      P2D_CPUS: <no description>
       PACKET_MIRRORINGS: <no description>
       PD_EXTREME_TOTAL_PROVISIONED_IOPS: <no description>
       PREEMPTIBLE_CPUS: <no description>
@@ -43971,99 +44037,101 @@ class Quota(_messages.Message):
     COMMITTED_NVIDIA_P4_GPUS = 22
     COMMITTED_NVIDIA_T4_GPUS = 23
     COMMITTED_NVIDIA_V100_GPUS = 24
-    CPUS = 25
-    CPUS_ALL_REGIONS = 26
-    DISKS_TOTAL_GB = 27
-    E2_CPUS = 28
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 29
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 30
-    EXTERNAL_VPN_GATEWAYS = 31
-    FIREWALLS = 32
-    FORWARDING_RULES = 33
-    GLOBAL_INTERNAL_ADDRESSES = 34
-    GPUS_ALL_REGIONS = 35
-    HEALTH_CHECKS = 36
-    IMAGES = 37
-    INSTANCES = 38
-    INSTANCE_GROUPS = 39
-    INSTANCE_GROUP_MANAGERS = 40
-    INSTANCE_TEMPLATES = 41
-    INTERCONNECTS = 42
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 43
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 44
-    INTERCONNECT_TOTAL_GBPS = 45
-    INTERNAL_ADDRESSES = 46
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 47
-    IN_PLACE_SNAPSHOTS = 48
-    IN_USE_ADDRESSES = 49
-    IN_USE_BACKUP_SCHEDULES = 50
-    IN_USE_SNAPSHOT_SCHEDULES = 51
-    LOCAL_SSD_TOTAL_GB = 52
-    M1_CPUS = 53
-    M2_CPUS = 54
-    MACHINE_IMAGES = 55
-    N2A_CPUS = 56
-    N2D_CPUS = 57
-    N2_CPUS = 58
-    NETWORKS = 59
-    NETWORK_ENDPOINT_GROUPS = 60
-    NETWORK_FIREWALL_POLICIES = 61
-    NODE_GROUPS = 62
-    NODE_TEMPLATES = 63
-    NVIDIA_A100_GPUS = 64
-    NVIDIA_K80_GPUS = 65
-    NVIDIA_P100_GPUS = 66
-    NVIDIA_P100_VWS_GPUS = 67
-    NVIDIA_P4_GPUS = 68
-    NVIDIA_P4_VWS_GPUS = 69
-    NVIDIA_T4_GPUS = 70
-    NVIDIA_T4_VWS_GPUS = 71
-    NVIDIA_V100_GPUS = 72
-    PACKET_MIRRORINGS = 73
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 74
-    PREEMPTIBLE_CPUS = 75
-    PREEMPTIBLE_LOCAL_SSD_GB = 76
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 77
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 78
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 79
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 80
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 81
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 82
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 83
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 84
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 85
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 86
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 87
-    PUBLIC_ADVERTISED_PREFIXES = 88
-    PUBLIC_DELEGATED_PREFIXES = 89
-    REGIONAL_AUTOSCALERS = 90
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 91
-    RESERVATIONS = 92
-    RESOURCE_POLICIES = 93
-    ROUTERS = 94
-    ROUTES = 95
-    SECURITY_POLICIES = 96
-    SECURITY_POLICIES_PER_REGION = 97
-    SECURITY_POLICY_CEVAL_RULES = 98
-    SECURITY_POLICY_RULES = 99
-    SECURITY_POLICY_RULES_PER_REGION = 100
-    SNAPSHOTS = 101
-    SSD_TOTAL_GB = 102
-    SSL_CERTIFICATES = 103
-    STATIC_ADDRESSES = 104
-    STATIC_BYOIP_ADDRESSES = 105
-    SUBNETWORKS = 106
-    TARGET_HTTPS_PROXIES = 107
-    TARGET_HTTP_PROXIES = 108
-    TARGET_INSTANCES = 109
-    TARGET_POOLS = 110
-    TARGET_SSL_PROXIES = 111
-    TARGET_TCP_PROXIES = 112
-    TARGET_VPN_GATEWAYS = 113
-    URL_MAPS = 114
-    VPN_GATEWAYS = 115
-    VPN_TUNNELS = 116
-    XPN_SERVICE_PROJECTS = 117
+    COMMITTED_P2D_CPUS = 25
+    CPUS = 26
+    CPUS_ALL_REGIONS = 27
+    DISKS_TOTAL_GB = 28
+    E2_CPUS = 29
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 30
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 31
+    EXTERNAL_VPN_GATEWAYS = 32
+    FIREWALLS = 33
+    FORWARDING_RULES = 34
+    GLOBAL_INTERNAL_ADDRESSES = 35
+    GPUS_ALL_REGIONS = 36
+    HEALTH_CHECKS = 37
+    IMAGES = 38
+    INSTANCES = 39
+    INSTANCE_GROUPS = 40
+    INSTANCE_GROUP_MANAGERS = 41
+    INSTANCE_TEMPLATES = 42
+    INTERCONNECTS = 43
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 44
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 45
+    INTERCONNECT_TOTAL_GBPS = 46
+    INTERNAL_ADDRESSES = 47
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 48
+    IN_PLACE_SNAPSHOTS = 49
+    IN_USE_ADDRESSES = 50
+    IN_USE_BACKUP_SCHEDULES = 51
+    IN_USE_SNAPSHOT_SCHEDULES = 52
+    LOCAL_SSD_TOTAL_GB = 53
+    M1_CPUS = 54
+    M2_CPUS = 55
+    MACHINE_IMAGES = 56
+    N2A_CPUS = 57
+    N2D_CPUS = 58
+    N2_CPUS = 59
+    NETWORKS = 60
+    NETWORK_ENDPOINT_GROUPS = 61
+    NETWORK_FIREWALL_POLICIES = 62
+    NODE_GROUPS = 63
+    NODE_TEMPLATES = 64
+    NVIDIA_A100_GPUS = 65
+    NVIDIA_K80_GPUS = 66
+    NVIDIA_P100_GPUS = 67
+    NVIDIA_P100_VWS_GPUS = 68
+    NVIDIA_P4_GPUS = 69
+    NVIDIA_P4_VWS_GPUS = 70
+    NVIDIA_T4_GPUS = 71
+    NVIDIA_T4_VWS_GPUS = 72
+    NVIDIA_V100_GPUS = 73
+    P2D_CPUS = 74
+    PACKET_MIRRORINGS = 75
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 76
+    PREEMPTIBLE_CPUS = 77
+    PREEMPTIBLE_LOCAL_SSD_GB = 78
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 79
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 80
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 81
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 82
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 83
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 84
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 85
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 86
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 87
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 88
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 89
+    PUBLIC_ADVERTISED_PREFIXES = 90
+    PUBLIC_DELEGATED_PREFIXES = 91
+    REGIONAL_AUTOSCALERS = 92
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 93
+    RESERVATIONS = 94
+    RESOURCE_POLICIES = 95
+    ROUTERS = 96
+    ROUTES = 97
+    SECURITY_POLICIES = 98
+    SECURITY_POLICIES_PER_REGION = 99
+    SECURITY_POLICY_CEVAL_RULES = 100
+    SECURITY_POLICY_RULES = 101
+    SECURITY_POLICY_RULES_PER_REGION = 102
+    SNAPSHOTS = 103
+    SSD_TOTAL_GB = 104
+    SSL_CERTIFICATES = 105
+    STATIC_ADDRESSES = 106
+    STATIC_BYOIP_ADDRESSES = 107
+    SUBNETWORKS = 108
+    TARGET_HTTPS_PROXIES = 109
+    TARGET_HTTP_PROXIES = 110
+    TARGET_INSTANCES = 111
+    TARGET_POOLS = 112
+    TARGET_SSL_PROXIES = 113
+    TARGET_TCP_PROXIES = 114
+    TARGET_VPN_GATEWAYS = 115
+    URL_MAPS = 116
+    VPN_GATEWAYS = 117
+    VPN_TUNNELS = 118
+    XPN_SERVICE_PROJECTS = 119
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -45545,7 +45613,10 @@ class ReservationAffinity(_messages.Message):
     key: Corresponds to the label key of a reservation resource. To target a
       SPECIFIC_RESERVATION by name, specify googleapis.com/reservation-name as
       the key and specify the name of your reservation as its value.
-    values: Corresponds to the label values of a reservation resource.
+    values: Corresponds to the label values of a reservation resource. This
+      can be either a name to a reservation in the same project or
+      "projects/different-project/reservations/some-reservation-name" to
+      target a shared reservation in the same zone but in a different project.
   """
 
   class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
@@ -47370,13 +47441,13 @@ class RouterBgp(_messages.Message):
       resource. All VPN tunnels that link to this router will have the same
       local ASN.
     keepaliveInterval: The interval in seconds between BGP keepalive messages
-      that are sent to the peer. Not currently available publicly. Hold time
-      is three times the interval at which keepalive messages are sent, and
-      the hold time is the maximum number of seconds allowed to elapse between
-      successive keepalive messages that BGP receives from a peer. BGP will
-      use the smaller of either the local hold time value or the peer's hold
-      time value as the hold time for the BGP connection between the two
-      peers. If set, this value must be between 20 and 60. The default is 20.
+      that are sent to the peer. Hold time is three times the interval at
+      which keepalive messages are sent, and the hold time is the maximum
+      number of seconds allowed to elapse between successive keepalive
+      messages that BGP receives from a peer. BGP will use the smaller of
+      either the local hold time value or the peer's hold time value as the
+      hold time for the BGP connection between the two peers. If set, this
+      value must be between 20 and 60. The default is 20.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -47412,11 +47483,10 @@ class RouterBgpPeer(_messages.Message):
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
-    EnableValueValuesEnum: The status of the BGP peer connection. Not
-      currently available publicly. If set to FALSE, any active session with
-      the peer is terminated and all associated routing information is
-      removed. If set to TRUE, the peer connection can be established with
-      routing information. The default is TRUE.
+    EnableValueValuesEnum: The status of the BGP peer connection. If set to
+      FALSE, any active session with the peer is terminated and all associated
+      routing information is removed. If set to TRUE, the peer connection can
+      be established with routing information. The default is TRUE.
     ManagementTypeValueValuesEnum: [Output Only] The resource that configures
       and manages this BGP peer.  - MANAGED_BY_USER is the default value and
       can be managed by you or other users  - MANAGED_BY_ATTACHMENT is a BGP
@@ -47447,11 +47517,10 @@ class RouterBgpPeer(_messages.Message):
       routes with the lowest priority value win.
     bfd: BFD configuration for the BGP peering. Not currently available
       publicly.
-    enable: The status of the BGP peer connection. Not currently available
-      publicly. If set to FALSE, any active session with the peer is
-      terminated and all associated routing information is removed. If set to
-      TRUE, the peer connection can be established with routing information.
-      The default is TRUE.
+    enable: The status of the BGP peer connection. If set to FALSE, any active
+      session with the peer is terminated and all associated routing
+      information is removed. If set to TRUE, the peer connection can be
+      established with routing information. The default is TRUE.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
@@ -47498,11 +47567,10 @@ class RouterBgpPeer(_messages.Message):
     ALL_SUBNETS = 0
 
   class EnableValueValuesEnum(_messages.Enum):
-    r"""The status of the BGP peer connection. Not currently available
-    publicly. If set to FALSE, any active session with the peer is terminated
-    and all associated routing information is removed. If set to TRUE, the
-    peer connection can be established with routing information. The default
-    is TRUE.
+    r"""The status of the BGP peer connection. If set to FALSE, any active
+    session with the peer is terminated and all associated routing information
+    is removed. If set to TRUE, the peer connection can be established with
+    routing information. The default is TRUE.
 
     Values:
       FALSE: <no description>
@@ -48556,6 +48624,10 @@ class Scheduling(_messages.Message):
       instances. Preemptible instances cannot be automatically restarted.  By
       default, this is set to true so an instance is automatically restarted
       if it is terminated by Compute Engine.
+    hostErrorTimeoutSeconds: Specify the time in seconds for host error
+      detection, the value must be within the range of [90, 330] with the
+      increment of 30, if unset, the default behavior of host error recovery
+      will be used.
     locationHint: An opaque location hint used to place the instance close to
       other resources. This field is for use by internal tools that use the
       public API.
@@ -48601,13 +48673,14 @@ class Scheduling(_messages.Message):
     TERMINATE = 1
 
   automaticRestart = _messages.BooleanField(1)
-  locationHint = _messages.StringField(2)
-  maintenanceFreezeDurationHours = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 4)
-  minNodeCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 6, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 7)
-  preemptible = _messages.BooleanField(8)
+  hostErrorTimeoutSeconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  locationHint = _messages.StringField(3)
+  maintenanceFreezeDurationHours = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 5)
+  minNodeCpus = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 7, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 8)
+  preemptible = _messages.BooleanField(9)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -48695,6 +48768,7 @@ class SecurityPolicy(_messages.Message):
   Fields:
     adaptiveProtectionConfig: A SecurityPolicyAdaptiveProtectionConfig
       attribute.
+    advancedOptionsConfig: A SecurityPolicyAdvancedOptionsConfig attribute.
     associations: A list of associations that belong to this policy.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -48760,10 +48834,12 @@ class SecurityPolicy(_messages.Message):
 
     Values:
       CLOUD_ARMOR: <no description>
+      CLOUD_ARMOR_EDGE: <no description>
       FIREWALL: <no description>
     """
     CLOUD_ARMOR = 0
-    FIREWALL = 1
+    CLOUD_ARMOR_EDGE = 1
+    FIREWALL = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -48792,22 +48868,23 @@ class SecurityPolicy(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   adaptiveProtectionConfig = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfig', 1)
-  associations = _messages.MessageField('SecurityPolicyAssociation', 2, repeated=True)
-  creationTimestamp = _messages.StringField(3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  fingerprint = _messages.BytesField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default='compute#securityPolicy')
-  labelFingerprint = _messages.BytesField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  parent = _messages.StringField(12)
-  ruleTupleCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  rules = _messages.MessageField('SecurityPolicyRule', 14, repeated=True)
-  selfLink = _messages.StringField(15)
-  selfLinkWithId = _messages.StringField(16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  advancedOptionsConfig = _messages.MessageField('SecurityPolicyAdvancedOptionsConfig', 2)
+  associations = _messages.MessageField('SecurityPolicyAssociation', 3, repeated=True)
+  creationTimestamp = _messages.StringField(4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  fingerprint = _messages.BytesField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default='compute#securityPolicy')
+  labelFingerprint = _messages.BytesField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  parent = _messages.StringField(13)
+  ruleTupleCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('SecurityPolicyRule', 15, repeated=True)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
 
 
 class SecurityPolicyAdaptiveProtectionConfig(_messages.Message):
@@ -48848,6 +48925,42 @@ class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(_messages.Me
 
   enable = _messages.BooleanField(1)
   ruleVisibility = _messages.EnumField('RuleVisibilityValueValuesEnum', 2)
+
+
+class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
+  r"""A SecurityPolicyAdvancedOptionsConfig object.
+
+  Enums:
+    JsonParsingValueValuesEnum:
+    LogLevelValueValuesEnum:
+
+  Fields:
+    jsonParsing: A JsonParsingValueValuesEnum attribute.
+    logLevel: A LogLevelValueValuesEnum attribute.
+  """
+
+  class JsonParsingValueValuesEnum(_messages.Enum):
+    r"""JsonParsingValueValuesEnum enum type.
+
+    Values:
+      DISABLED: <no description>
+      STANDARD: <no description>
+    """
+    DISABLED = 0
+    STANDARD = 1
+
+  class LogLevelValueValuesEnum(_messages.Enum):
+    r"""LogLevelValueValuesEnum enum type.
+
+    Values:
+      NORMAL: <no description>
+      VERBOSE: <no description>
+    """
+    NORMAL = 0
+    VERBOSE = 1
+
+  jsonParsing = _messages.EnumField('JsonParsingValueValuesEnum', 1)
+  logLevel = _messages.EnumField('LogLevelValueValuesEnum', 2)
 
 
 class SecurityPolicyAssociation(_messages.Message):
@@ -52280,8 +52393,8 @@ class SubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
 
 class Subsetting(_messages.Message):
   r"""Subsetting configuration for this BackendService. Currently this is
-  applicable only for Internal TCP/UDP load balancing and Internal HTTP(S)
-  load balancing.
+  applicable only for Internal TCP/UDP load balancing, Internal HTTP(S) load
+  balancing and Traffic Director.
 
   Enums:
     PolicyValueValuesEnum:
@@ -56456,7 +56569,9 @@ class UsableSubnetworksAggregatedList(_messages.Message):
       results for list requests. If the number of results is larger than
       maxResults, use the nextPageToken as a value for the query parameter
       pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
+      their own nextPageToken to continue paging through the results. In
+      special cases listUsable may return 0 subnetworks and nextPageToken
+      which still should be used to get the next page of results.
     selfLink: [Output Only] Server-defined URL for this resource.
     warning: [Output Only] Informational warning message.
   """

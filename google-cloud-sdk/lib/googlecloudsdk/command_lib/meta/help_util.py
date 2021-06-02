@@ -333,7 +333,7 @@ class HelpUpdater(object):
         if changes:
           if changes >= TEST_CHANGES_DISPLAY_MAX:
             log.status.Print('...')
-          log.status.Print('{0} help test {1} changed'.format(
+          log.status.Print('{0} help text {1} changed'.format(
               changes, text.Pluralize(changes, 'file')))
         return changes
 

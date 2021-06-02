@@ -581,7 +581,7 @@ class CloudidentityGroupsLookupRequest(_messages.Message):
       Google user or a Google Group. If specified, the `EntityKey` represents
       an external-identity-mapped group. The namespace must correspond to an
       identity source created in Admin Console and must be in the form of
-      `identitysources/{identity_source_id}.
+      `identitysources/{identity_source_id}`.
   """
 
   groupKey_id = _messages.StringField(1)
@@ -726,7 +726,7 @@ class CloudidentityGroupsMembershipsLookupRequest(_messages.Message):
       Google user or a Google Group. If specified, the `EntityKey` represents
       an external-identity-mapped group. The namespace must correspond to an
       identity source created in Admin Console and must be in the form of
-      `identitysources/{identity_source_id}.
+      `identitysources/{identity_source_id}`.
     parent: Required. The parent `Group` resource under which to lookup the
       `Membership` name. Must be of the form `groups/{group_id}`.
   """
@@ -807,7 +807,8 @@ class CloudidentityGroupsPatchRequest(_messages.Message):
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Group`. Shall be of the form `groups/{group_id}`.
     updateMask: Required. The fully-qualified names of fields to update. May
-      only contain the following fields: `display_name`, `description`.
+      only contain the following fields: `display_name`, `description`,
+      `labels`.
   """
 
   group = _messages.MessageField('Group', 1)
@@ -952,7 +953,7 @@ class EntityKey(_messages.Message):
       a Google Group. If specified, the `EntityKey` represents an external-
       identity-mapped group. The namespace must correspond to an identity
       source created in Admin Console and must be in the form of
-      `identitysources/{identity_source_id}.
+      `identitysources/{identity_source_id}`.
   """
 
   id = _messages.StringField(1)

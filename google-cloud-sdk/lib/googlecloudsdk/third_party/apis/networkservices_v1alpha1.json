@@ -602,7 +602,7 @@
     },
     "EdgeCacheKeyset": {
       "id": "EdgeCacheKeyset",
-      "description": "EdgeCacheKeyset represents a collection of public keys used for validating signed requests. Next ID: 8",
+      "description": "EdgeCacheKeyset represents a collection of public keys used for validating signed requests.",
       "type": "object",
       "properties": {
         "name": {
@@ -676,7 +676,7 @@
     },
     "EdgeCacheOrigin": {
       "id": "EdgeCacheOrigin",
-      "description": "EdgeCacheOrigin represents a HTTP-reachable backend for an EdgeCacheService. Next ID: 14",
+      "description": "EdgeCacheOrigin represents a HTTP-reachable backend for an EdgeCacheService.",
       "type": "object",
       "properties": {
         "name": {
@@ -732,7 +732,7 @@
           "format": "int32"
         },
         "maxAttempts": {
-          "description": "Optional. The maximum number of attempts to cache fill from this origin. Another attempt is made when a cache fill fails with one of the retry_conditions. Once max_attempts to this origin have failed the failover_origin will be used, if one is specified. That failover_origin may specify its own max_attempts, retry_conditions and failover_origin to control its own cache fill failures. The total number of allowed attempts to cache fill across this and failover origins is limited to four. The total time allowed for cache fill attempts across this and failover origins can be controlled with max_attempts_timeout. The last valid response from an origin will be returned to the client. If no origin returns a valid response, an HTTP 502 will be returned to the client. Defaults to 1. Must be a value greater than 0 and less than 4.",
+          "description": "Optional. The maximum number of attempts to cache fill from this origin. Another attempt is made when a cache fill fails with one of the retry_conditions. Once max_attempts to this origin have failed the failover_origin will be used, if one is specified. That failover_origin may specify its own max_attempts, retry_conditions and failover_origin to control its own cache fill failures. The total number of allowed attempts to cache fill across this and failover origins is limited to four. The total time allowed for cache fill attempts across this and failover origins can be controlled with max_attempts_timeout. The last valid, non-retried response from all origins will be returned to the client. If no origin returns a valid response, an HTTP 502 will be returned to the client. Defaults to 1. Must be a value greater than 0 and less than 4.",
           "type": "integer",
           "format": "int32"
         },
@@ -801,7 +801,7 @@
     },
     "EdgeCacheService": {
       "id": "EdgeCacheService",
-      "description": "EdgeCacheService defines the IP addresses, protocols, security policies, cache policies and routing configuration. Next ID: 17",
+      "description": "EdgeCacheService defines the IP addresses, protocols, security policies, cache policies and routing configuration.",
       "type": "object",
       "properties": {
         "name": {
@@ -1281,6 +1281,10 @@
         },
         "includeQueryString": {
           "description": "Optional. If true, include query string parameters in the cache key according to includeQueryParameters and excludeQueryParameters. If neither is set, the entire query string will be included. If false, the query string will be excluded from the cache key entirely.",
+          "type": "boolean"
+        },
+        "excludeQueryString": {
+          "description": "Optional. If true, exclude query string parameters from the cache key. If false (the default), include the query string parameters in the cache key according to includeQueryParameters and excludeQueryParameters. If neither includeQueryParameters nor excludeQueryParameters is set, the entire query string will be included.",
           "type": "boolean"
         },
         "excludeHost": {
@@ -1934,6 +1938,50 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     }

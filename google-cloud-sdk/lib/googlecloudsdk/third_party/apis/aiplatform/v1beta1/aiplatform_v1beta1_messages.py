@@ -815,9 +815,8 @@ class AiplatformProjectsLocationsDatasetsPatchRequest(_messages.Message):
       resource to be passed as the request body.
     name: Output only. The resource name of the Dataset.
     updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see
-      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
-      Updatable fields: * `display_name` * `description` * `labels`
+      `FieldMask` definition, see google.protobuf.FieldMask. Updatable fields:
+      * `display_name` * `description` * `labels`
   """
 
   googleCloudAiplatformV1beta1Dataset = _messages.MessageField('GoogleCloudAiplatformV1beta1Dataset', 1)
@@ -1059,7 +1058,7 @@ class AiplatformProjectsLocationsEndpointsPatchRequest(_messages.Message):
       request body.
     name: Output only. The resource name of the Endpoint.
     updateMask: Required. The update mask applies to the resource. See
-      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
+      google.protobuf.FieldMask.
   """
 
   googleCloudAiplatformV1beta1Endpoint = _messages.MessageField('GoogleCloudAiplatformV1beta1Endpoint', 1)
@@ -1647,19 +1646,18 @@ class AiplatformProjectsLocationsFeaturestoresListRequest(_messages.Message):
 
   Fields:
     filter: Lists the featurestores that match the filter expression. The
-      following fields are supported: * `display_name`: Supports =, !=
-      comparisons. * `create_time`: Supports =, !=, <, >, <=, and >=
-      comparisons. Values must be in RFC 3339 format. * `update_time`:
-      Supports =, !=, <, >, <=, and >= comparisons. Values must be in RFC 3339
-      format. * `online_serving_config.fixed_node_count`: Supports =, !=, <,
-      >, <=, and >= comparisons. * `labels`: Supports key-value equality and
-      key presence. Examples: * `create_time > "2020-01-01" OR update_time >
-      "2020-01-01"` Featurestores created or updated after 2020-01-01. *
-      `labels.env = "prod"` Featurestores with label "env" set to "prod".
+      following fields are supported: * `create_time`: Supports =, !=, <, >,
+      <=, and >= comparisons. Values must be in RFC 3339 format. *
+      `update_time`: Supports =, !=, <, >, <=, and >= comparisons. Values must
+      be in RFC 3339 format. * `online_serving_config.fixed_node_count`:
+      Supports =, !=, <, >, <=, and >= comparisons. * `labels`: Supports key-
+      value equality and key presence. Examples: * `create_time > "2020-01-01"
+      OR update_time > "2020-01-01"` Featurestores created or updated after
+      2020-01-01. * `labels.env = "prod"` Featurestores with label "env" set
+      to "prod".
     orderBy: A comma-separated list of fields to order by, sorted in ascending
       order. Use "desc" after a field name for descending. Supported Fields: *
-      `display_name` * `create_time` * `update_time` *
-      `online_serving_config.fixed_node_count`
+      `create_time` * `update_time` * `online_serving_config.fixed_node_count`
     pageSize: The maximum number of Featurestores to return. The service may
       return fewer than this value. If unspecified, at most 100 Featurestores
       will be returned. The maximum value is 100; any value greater than 100
@@ -1760,9 +1758,7 @@ class AiplatformProjectsLocationsFeaturestoresPatchRequest(_messages.Message):
       will be overwritten if it is in the mask. If the user does not provide a
       mask then only the non-empty fields present in the request will be
       overwritten. Set the update_mask to `*` to override all fields.
-      Updatable fields: * `display_name` * `labels` *
-      `online_serving_config.fixed_node_count` *
-      `retention_policy.online_storage_ttl_days`
+      Updatable fields: * `labels` * `online_serving_config.fixed_node_count`
   """
 
   googleCloudAiplatformV1beta1Featurestore = _messages.MessageField('GoogleCloudAiplatformV1beta1Featurestore', 1)
@@ -2154,7 +2150,7 @@ class AiplatformProjectsLocationsIndexEndpointsPatchRequest(_messages.Message):
       request body.
     name: Output only. The resource name of the IndexEndpoint.
     updateMask: Required. The update mask applies to the resource. See
-      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
+      google.protobuf.FieldMask.
   """
 
   googleCloudAiplatformV1beta1IndexEndpoint = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexEndpoint', 1)
@@ -2304,8 +2300,7 @@ class AiplatformProjectsLocationsIndexesPatchRequest(_messages.Message):
       resource to be passed as the request body.
     name: Output only. The resource name of the Index.
     updateMask: The update mask applies to the resource. For the `FieldMask`
-      definition, see
-      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
+      definition, see google.protobuf.FieldMask.
   """
 
   googleCloudAiplatformV1beta1Index = _messages.MessageField('GoogleCloudAiplatformV1beta1Index', 1)
@@ -3458,8 +3453,7 @@ class AiplatformProjectsLocationsModelsPatchRequest(_messages.Message):
       resource to be passed as the request body.
     name: The resource name of the Model.
     updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see
-      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
+      `FieldMask` definition, see google.protobuf.FieldMask.
   """
 
   googleCloudAiplatformV1beta1Model = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 1)
@@ -5663,7 +5657,8 @@ class GoogleCloudAiplatformInternalExplanationMetadata(_messages.Message):
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
       Storage describing the format of the feature attributions. The schema is
       defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML tabular
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML tabular
       Models always have this field populated by Vertex AI. Note: The URI
       given on output may be different, including the URI scheme, than the one
       given on input. The output URI will point to a location where the user
@@ -6796,13 +6791,14 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
     acceleratorCount: The number of accelerators to attach to the machine.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. For the machine types
-      supported for prediction, see https://tinyurl.com/aip-
-      docs/predictions/machine-types. For machine types supported for creating
-      a custom training job, see https://tinyurl.com/aip-
-      docs/training/configure-compute. For DeployedModel this field is
-      optional, and the default value is `n1-standard-2`. For
-      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
+    machineType: Immutable. The type of the machine. See the [list of machine
+      types supported for prediction](https://cloud.google.com/vertex-
+      ai/docs/predictions/configure-compute#machine-types) See the [list of
+      machine types supported for custom
+      training](https://cloud.google.com/vertex-ai/docs/training/configure-
+      compute#machine-types). For DeployedModel this field is optional, and
+      the default value is `n1-standard-2`. For BatchPredictionJob or as part
+      of WorkerPoolSpec this field is required.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -6953,11 +6949,12 @@ class GoogleCloudAiplatformInternalSmoothGradConfig(_messages.Message):
     noiseSigma: This is a single float value and will be used to add noise to
       all the features. Use this field when all features are normalized to
       have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
-      where features are normalized to have 0-mean and 1-variance. For more
-      details about normalization: https://tinyurl.com/dgc-normalization. For
-      best results the recommended value is about 10% - 20% of the standard
-      deviation of the input feature. Refer to section 3.2 of the SmoothGrad
-      paper: https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      where features are normalized to have 0-mean and 1-variance. Learn more
+      about [normalization](https://developers.google.com/machine-
+      learning/data-prep/transform/normalization). For best results the
+      recommended value is about 10% - 20% of the standard deviation of the
+      input feature. Refer to section 3.2 of the SmoothGrad paper:
+      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
       distribution is different per feature, set feature_noise_sigma instead
       for each feature.
     noisySampleCount: The number of gradient samples to use for approximation.
@@ -7703,7 +7700,8 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
       Storage describing the format of the feature attributions. The schema is
       defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML tabular
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML tabular
       Models always have this field populated by Vertex AI. Note: The URI
       given on output may be different, including the URI scheme, than the one
       given on input. The output URI will point to a location where the user
@@ -8702,13 +8700,14 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
     acceleratorCount: The number of accelerators to attach to the machine.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. For the machine types
-      supported for prediction, see https://tinyurl.com/aip-
-      docs/predictions/machine-types. For machine types supported for creating
-      a custom training job, see https://tinyurl.com/aip-
-      docs/training/configure-compute. For DeployedModel this field is
-      optional, and the default value is `n1-standard-2`. For
-      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
+    machineType: Immutable. The type of the machine. See the [list of machine
+      types supported for prediction](https://cloud.google.com/vertex-
+      ai/docs/predictions/configure-compute#machine-types) See the [list of
+      machine types supported for custom
+      training](https://cloud.google.com/vertex-ai/docs/training/configure-
+      compute#machine-types). For DeployedModel this field is optional, and
+      the default value is `n1-standard-2`. For BatchPredictionJob or as part
+      of WorkerPoolSpec this field is required.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -9713,11 +9712,12 @@ class GoogleCloudAiplatformUiSmoothGradConfig(_messages.Message):
     noiseSigma: This is a single float value and will be used to add noise to
       all the features. Use this field when all features are normalized to
       have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
-      where features are normalized to have 0-mean and 1-variance. For more
-      details about normalization: https://tinyurl.com/dgc-normalization. For
-      best results the recommended value is about 10% - 20% of the standard
-      deviation of the input feature. Refer to section 3.2 of the SmoothGrad
-      paper: https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      where features are normalized to have 0-mean and 1-variance. Learn more
+      about [normalization](https://developers.google.com/machine-
+      learning/data-prep/transform/normalization). For best results the
+      recommended value is about 10% - 20% of the standard deviation of the
+      input feature. Refer to section 3.2 of the SmoothGrad paper:
+      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
       distribution is different per feature, set feature_noise_sigma instead
       for each feature.
     noisySampleCount: The number of gradient samples to use for approximation.
@@ -10563,13 +10563,14 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     acceleratorCount: The number of accelerators to attach to the machine.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. For the machine types
-      supported for prediction, see https://tinyurl.com/aip-
-      docs/predictions/machine-types. For machine types supported for creating
-      a custom training job, see https://tinyurl.com/aip-
-      docs/training/configure-compute. For DeployedModel this field is
-      optional, and the default value is `n1-standard-2`. For
-      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
+    machineType: Immutable. The type of the machine. See the [list of machine
+      types supported for prediction](https://cloud.google.com/vertex-
+      ai/docs/predictions/configure-compute#machine-types) See the [list of
+      machine types supported for custom
+      training](https://cloud.google.com/vertex-ai/docs/training/configure-
+      compute#machine-types). For DeployedModel this field is optional, and
+      the default value is `n1-standard-2`. For BatchPredictionJob or as part
+      of WorkerPoolSpec this field is required.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -11009,7 +11010,7 @@ class GoogleCloudAiplatformV1SchemaPredictInstanceImageClassificationPredictionI
   r"""Prediction input format for Image Classification.
 
   Fields:
-    content: The image bytes or GCS URI to make the prediction on.
+    content: The image bytes or Cloud Storage URI to make the prediction on.
     mimeType: The MIME type of the content of the image. Only the images in
       below listed MIME types are supported. - image/jpeg - image/gif -
       image/png - image/webp - image/bmp - image/tiff -
@@ -11024,7 +11025,7 @@ class GoogleCloudAiplatformV1SchemaPredictInstanceImageObjectDetectionPrediction
   r"""Prediction input format for Image Object Detection.
 
   Fields:
-    content: The image bytes or GCS URI to make the prediction on.
+    content: The image bytes or Cloud Storage URI to make the prediction on.
     mimeType: The MIME type of the content of the image. Only the images in
       below listed MIME types are supported. - image/jpeg - image/gif -
       image/png - image/webp - image/bmp - image/tiff -
@@ -11978,6 +11979,8 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
   object.
 
   Fields:
+    additionalExperiments: Additional experiment flags for the time series
+      forcasting training.
     availableAtForecastColumns: Names of columns that are available and
       provided when a forecast is requested. These columns contain information
       for the given entity (identified by the time_series_identifier_column
@@ -12047,22 +12050,23 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       field is not set, then all rows are assumed to have equal weight of 1.
   """
 
-  availableAtForecastColumns = _messages.StringField(1, repeated=True)
-  contextWindow = _messages.IntegerField(2)
-  dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 3)
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 4)
-  forecastHorizon = _messages.IntegerField(5)
-  optimizationObjective = _messages.StringField(6)
-  quantiles = _messages.FloatField(7, repeated=True)
-  targetColumn = _messages.StringField(8)
-  timeColumn = _messages.StringField(9)
-  timeSeriesAttributeColumns = _messages.StringField(10, repeated=True)
-  timeSeriesIdentifierColumn = _messages.StringField(11)
-  trainBudgetMilliNodeHours = _messages.IntegerField(12)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 13, repeated=True)
-  unavailableAtForecastColumns = _messages.StringField(14, repeated=True)
-  validationOptions = _messages.StringField(15)
-  weightColumn = _messages.StringField(16)
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  availableAtForecastColumns = _messages.StringField(2, repeated=True)
+  contextWindow = _messages.IntegerField(3)
+  dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 4)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
+  forecastHorizon = _messages.IntegerField(6)
+  optimizationObjective = _messages.StringField(7)
+  quantiles = _messages.FloatField(8, repeated=True)
+  targetColumn = _messages.StringField(9)
+  timeColumn = _messages.StringField(10)
+  timeSeriesAttributeColumns = _messages.StringField(11, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(12)
+  trainBudgetMilliNodeHours = _messages.IntegerField(13)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 14, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(15, repeated=True)
+  validationOptions = _messages.StringField(16)
+  weightColumn = _messages.StringField(17)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
@@ -12549,6 +12553,8 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputs(_mess
   object.
 
   Fields:
+    additionalExperiments: Additional experiment flags for the Tables training
+      pipeline.
     disableEarlyStopping: Use the entire training budget. This disables the
       early stopping feature. By default, the early stopping feature is
       enabled, which means that AutoML Tables might stop training before the
@@ -12604,16 +12610,17 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputs(_mess
       field is not set, then all rows are assumed to have equal weight of 1.
   """
 
-  disableEarlyStopping = _messages.BooleanField(1)
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 2)
-  optimizationObjective = _messages.StringField(3)
-  optimizationObjectivePrecisionValue = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  optimizationObjectiveRecallValue = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  predictionType = _messages.StringField(6)
-  targetColumn = _messages.StringField(7)
-  trainBudgetMilliNodeHours = _messages.IntegerField(8)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation', 9, repeated=True)
-  weightColumnName = _messages.StringField(10)
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  disableEarlyStopping = _messages.BooleanField(2)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 3)
+  optimizationObjective = _messages.StringField(4)
+  optimizationObjectivePrecisionValue = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  optimizationObjectiveRecallValue = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  predictionType = _messages.StringField(7)
+  targetColumn = _messages.StringField(8)
+  trainBudgetMilliNodeHours = _messages.IntegerField(9)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation', 10, repeated=True)
+  weightColumnName = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation(_messages.Message):
@@ -13949,7 +13956,8 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
       Storage describing the format of the feature attributions. The schema is
       defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML tabular
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML tabular
       Models always have this field populated by Vertex AI. Note: The URI
       given on output may be different, including the URI scheme, than the one
       given on input. The output URI will point to a location where the user
@@ -14305,13 +14313,14 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
     acceleratorCount: The number of accelerators to attach to the machine.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. For the machine types
-      supported for prediction, see https://tinyurl.com/aip-
-      docs/predictions/machine-types. For machine types supported for creating
-      a custom training job, see https://tinyurl.com/aip-
-      docs/training/configure-compute. For DeployedModel this field is
-      optional, and the default value is `n1-standard-2`. For
-      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
+    machineType: Immutable. The type of the machine. See the [list of machine
+      types supported for prediction](https://cloud.google.com/vertex-
+      ai/docs/predictions/configure-compute#machine-types) See the [list of
+      machine types supported for custom
+      training](https://cloud.google.com/vertex-ai/docs/training/configure-
+      compute#machine-types). For DeployedModel this field is optional, and
+      the default value is `n1-standard-2`. For BatchPredictionJob or as part
+      of WorkerPoolSpec this field is required.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -15593,8 +15602,9 @@ class GoogleCloudAiplatformV1beta1Annotation(_messages.Message):
       payload_schema.
     payloadSchemaUri: Required. Google Cloud Storage URI points to a YAML file
       describing payload. The schema is defined as an [OpenAPI 3.0.2 Schema
-      Object](https://tinyurl.com/y538mdwt). The schema files that can be used
-      here are found in gs://google-cloud-
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). The schema
+      files that can be used here are found in gs://google-cloud-
       aiplatform/schema/dataset/annotation/, note that the chosen schema must
       be consistent with the parent Dataset's metadata.
     updateTime: Output only. Timestamp when this Annotation was last updated.
@@ -15725,8 +15735,8 @@ class GoogleCloudAiplatformV1beta1Artifact(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: Unspecified state for the Artifact.
-      PENDING: A state used by systems like AI Platform Pipelines to indicate
-        that the underlying data item represented by this Artifact is being
+      PENDING: A state used by systems like Vertex Pipelines to indicate that
+        the underlying data item represented by this Artifact is being
         created.
       LIVE: A state indicating that the Artifact should exist, unless
         something external to the system deletes it.
@@ -16273,12 +16283,16 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJobOutputInfo(_messages.Message
     bigqueryOutputDataset: Output only. The path of the BigQuery dataset
       created, in `bq://projectId.bqDatasetId` format, into which the
       prediction output is written.
+    bigqueryOutputTable: Output only. The name of the BigQuery table created,
+      in `predictions_` format, into which the prediction output is written.
+      Can be used by UI to generate the BigQuery output path, for example.
     gcsOutputDirectory: Output only. The full path of the Cloud Storage
       directory created, into which the prediction output is written.
   """
 
   bigqueryOutputDataset = _messages.StringField(1)
-  gcsOutputDirectory = _messages.StringField(2)
+  bigqueryOutputTable = _messages.StringField(2)
+  gcsOutputDirectory = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesOperationMetadata(_messages.Message):
@@ -18208,7 +18222,8 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
       Storage describing the format of the feature attributions. The schema is
       defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML tabular
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML tabular
       Models always have this field populated by Vertex AI. Note: The URI
       given on output may be different, including the URI scheme, than the one
       given on input. The output URI will point to a location where the user
@@ -19158,7 +19173,7 @@ class GoogleCloudAiplatformV1beta1FeatureValue(_messages.Message):
     doubleValue: Double type feature value.
     int64ArrayValue: A list of int64 type feature value.
     int64Value: Int64 feature value.
-    metadata: Output only. Metadata of feature value.
+    metadata: Metadata of feature value.
     stringArrayValue: A list of string type feature value.
     stringValue: String feature value.
   """
@@ -19642,7 +19657,8 @@ class GoogleCloudAiplatformV1beta1ImportDataConfig(_messages.Message):
     importSchemaUri: Required. Points to a YAML file stored on Google Cloud
       Storage describing the import format. Validation will be done against
       the schema. The schema is defined as an [OpenAPI 3.0.2 Schema
-      Object](https://tinyurl.com/y538mdwt).
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -19838,9 +19854,10 @@ class GoogleCloudAiplatformV1beta1Index(_messages.Message):
       Storage describing additional information about the Index, that is
       specific to it. Unset if the Index does not have any additional
       information. The schema is defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). Note: The URI given
-      on output will be immutable and probably different, including the URI
-      scheme, than the one given on input. The output URI will point to a
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). Note: The URI
+      given on output will be immutable and probably different, including the
+      URI scheme, than the one given on input. The output URI will point to a
       location where the user only has a read access.
     name: Output only. The resource name of the Index.
     updateTime: Output only. Timestamp when this Index was most recently
@@ -19992,16 +20009,17 @@ class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
     annotationSchemaUri: Applicable only to custom training with Datasets that
       have DataItems and Annotations. Cloud Storage URI that points to a YAML
       file describing the annotation schema. The schema is defined as an
-      OpenAPI 3.0.2 [Schema Object](https://tinyurl.com/y538mdwt#schema-
-      object). The schema files that can be used here are found in
-      gs://google-cloud-aiplatform/schema/dataset/annotation/ , note that the
-      chosen schema must be consistent with metadata of the Dataset specified
-      by dataset_id. Only Annotations that both match this schema and belong
-      to DataItems not ignored by the split method are used in respectively
-      training, validation or test role, depending on the role of the DataItem
-      they are on. When used in conjunction with annotations_filter, the
-      Annotations used for training are filtered by both annotations_filter
-      and annotation_schema_uri.
+      OpenAPI 3.0.2 [Schema Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). The schema
+      files that can be used here are found in gs://google-cloud-
+      aiplatform/schema/dataset/annotation/ , note that the chosen schema must
+      be consistent with metadata of the Dataset specified by dataset_id. Only
+      Annotations that both match this schema and belong to DataItems not
+      ignored by the split method are used in respectively training,
+      validation or test role, depending on the role of the DataItem they are
+      on. When used in conjunction with annotations_filter, the Annotations
+      used for training are filtered by both annotations_filter and
+      annotation_schema_uri.
     annotationsFilter: Applicable only to Datasets that have DataItems and
       Annotations. A filter on Annotations of the Dataset. Only Annotations
       that both match this filter and belong to DataItems not ignored by the
@@ -20561,13 +20579,14 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     acceleratorCount: The number of accelerators to attach to the machine.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. For the machine types
-      supported for prediction, see https://tinyurl.com/aip-
-      docs/predictions/machine-types. For machine types supported for creating
-      a custom training job, see https://tinyurl.com/aip-
-      docs/training/configure-compute. For DeployedModel this field is
-      optional, and the default value is `n1-standard-2`. For
-      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
+    machineType: Immutable. The type of the machine. See the [list of machine
+      types supported for prediction](https://cloud.google.com/vertex-
+      ai/docs/predictions/configure-compute#machine-types) See the [list of
+      machine types supported for custom
+      training](https://cloud.google.com/vertex-ai/docs/training/configure-
+      compute#machine-types). For DeployedModel this field is optional, and
+      the default value is `n1-standard-2`. For BatchPredictionJob or as part
+      of WorkerPoolSpec this field is required.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -21004,7 +21023,8 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
       Storage describing additional information about the Model, that is
       specific to it. Unset if the Model does not have any additional
       information. The schema is defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML Models
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
       always have this field populated by Vertex AI, if no additional metadata
       is needed, this field is set to an empty string. Note: The URI given on
       output will be immutable and probably different, including the URI
@@ -21132,8 +21152,9 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
   r"""Specification of a container for serving predictions. Some fields in
-  this message correspond to fields in the Kubernetes Container v1 core
-  [specification](https://tinyurl.com/k8s-io-api/v1.18/#container-v1-core).
+  this message correspond to fields in the [Kubernetes Container v1 core speci
+  fication](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernet
+  es-api/v1.18/#container-v1-core).
 
   Fields:
     args: Immutable. Specifies arguments for the command that runs when the
@@ -21142,26 +21163,29 @@ class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
       this field as an array of executable and arguments, similar to a Docker
       `CMD`'s "default parameters" form. If you don't specify this field but
       do specify the command field, then the command from the `command` field
-      runs without any additional arguments. See the [Kubernetes
-      documentation](https://tinyurl.com/y8bvllf4) about how the `command` and
-      `args` fields interact with a container's `ENTRYPOINT` and `CMD`. If you
-      don't specify this field and don't specify the `command` field, then the
+      runs without any additional arguments. See the [Kubernetes documentation
+      about how the `command` and `args` fields interact with a container's
+      `ENTRYPOINT` and `CMD`](https://kubernetes.io/docs/tasks/inject-data-
+      application/define-command-argument-container/#notes). If you don't
+      specify this field and don't specify the `command` field, then the
       container's
       [`ENTRYPOINT`](https://docs.docker.com/engine/reference/builder/#cmd)
       and `CMD` determine what runs based on their default behavior. See the
-      Docker documentation about how `CMD` and `ENTRYPOINT`
-      [interact](https://tinyurl.com/h3kdcgs). In this field, you can
-      reference environment variables [set by Vertex
-      AI](https://tinyurl.com/cust-cont-reqs#aip-variables) and environment
-      variables set in the env field. You cannot reference environment
-      variables set in the Docker image. In order for environment variables to
-      be expanded, reference them by using the following syntax:
-      $(VARIABLE_NAME) Note that this differs from Bash variable expansion,
-      which does not use parentheses. If a variable cannot be resolved, the
-      reference in the input string is used unchanged. To avoid variable
-      expansion, you can escape this syntax with `$$`; for example:
-      $$(VARIABLE_NAME) This field corresponds to the `args` field of the
-      Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
+      Docker documentation about [how `CMD` and `ENTRYPOINT`
+      interact](https://docs.docker.com/engine/reference/builder/#understand-
+      how-cmd-and-entrypoint-interact). In this field, you can reference
+      [environment variables set by Vertex
+      AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables) and environment variables set in
+      the env field. You cannot reference environment variables set in the
+      Docker image. In order for environment variables to be expanded,
+      reference them by using the following syntax: $( VARIABLE_NAME) Note
+      that this differs from Bash variable expansion, which does not use
+      parentheses. If a variable cannot be resolved, the reference in the
+      input string is used unchanged. To avoid variable expansion, you can
+      escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+      corresponds to the `args` field of the Kubernetes Containers [v1 core AP
+      I](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-
       api/v1.18/#container-v1-core).
     command: Immutable. Specifies the command that runs when the container
       starts. This overrides the container's [ENTRYPOINT](https://docs.docker.
@@ -21172,25 +21196,29 @@ class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
       field or the container's
       [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd), if
       either exists. If this field is not specified and the container does not
-      have an `ENTRYPOINT`, then refer to the Docker documentation about how
-      `CMD` and `ENTRYPOINT` [interact](https://tinyurl.com/h3kdcgs). If you
-      specify this field, then you can also specify the `args` field to
-      provide additional arguments for this command. However, if you specify
-      this field, then the container's `CMD` is ignored. See the [Kubernetes
-      documentation](https://tinyurl.com/y8bvllf4) about how the `command` and
-      `args` fields interact with a container's `ENTRYPOINT` and `CMD`. In
-      this field, you can reference environment variables [set by Vertex
-      AI](https://tinyurl.com/cust-cont-reqs#aip-variables) and environment
-      variables set in the env field. You cannot reference environment
-      variables set in the Docker image. In order for environment variables to
-      be expanded, reference them by using the following syntax:
-      $(VARIABLE_NAME) Note that this differs from Bash variable expansion,
-      which does not use parentheses. If a variable cannot be resolved, the
-      reference in the input string is used unchanged. To avoid variable
-      expansion, you can escape this syntax with `$$`; for example:
-      $$(VARIABLE_NAME) This field corresponds to the `command` field of the
-      Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
-      api/v1.18/#container-v1-core).
+      have an `ENTRYPOINT`, then refer to the Docker documentation about [how
+      `CMD` and `ENTRYPOINT`
+      interact](https://docs.docker.com/engine/reference/builder/#understand-
+      how-cmd-and-entrypoint-interact). If you specify this field, then you
+      can also specify the `args` field to provide additional arguments for
+      this command. However, if you specify this field, then the container's
+      `CMD` is ignored. See the [Kubernetes documentation about how the
+      `command` and `args` fields interact with a container's `ENTRYPOINT` and
+      `CMD`](https://kubernetes.io/docs/tasks/inject-data-application/define-
+      command-argument-container/#notes). In this field, you can reference
+      [environment variables set by Vertex
+      AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables) and environment variables set in
+      the env field. You cannot reference environment variables set in the
+      Docker image. In order for environment variables to be expanded,
+      reference them by using the following syntax: $( VARIABLE_NAME) Note
+      that this differs from Bash variable expansion, which does not use
+      parentheses. If a variable cannot be resolved, the reference in the
+      input string is used unchanged. To avoid variable expansion, you can
+      escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+      corresponds to the `command` field of the Kubernetes Containers [v1 core
+      API](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernete
+      s-api/v1.18/#container-v1-core).
     env: Immutable. List of environment variables to set in the container.
       After the container starts running, code running in the container can
       read these environment variables. Additionally, the command and args
@@ -21200,49 +21228,53 @@ class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
       "VAR_1", "value": "foo" }, { "name": "VAR_2", "value": "$(VAR_1) bar" }
       ] ``` If you switch the order of the variables in the example, then the
       expansion does not occur. This field corresponds to the `env` field of
-      the Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
-      api/v1.18/#container-v1-core).
+      the Kubernetes Containers [v1 core API](https://v1-18.docs.kubernetes.io
+      /docs/reference/generated/kubernetes-api/v1.18/#container-v1-core).
     healthRoute: Immutable. HTTP path on the container to send health checks
       to. Vertex AI intermittently sends GET requests to this path on the
       container's IP address and port to check that the container is healthy.
-      Read more about [health checks](https://tinyurl.com/cust-cont-
-      reqs#checks). For example, if you set this field to `/bar`, then Vertex
-      AI intermittently sends a GET request to the `/bar` path on the port of
-      your container specified by the first value of this
-      `ModelContainerSpec`'s ports field. If you don't specify this field, it
-      defaults to the following value when you deploy this Model to an
-      Endpoint: /v1/endpoints/ENDPOINT/deployedModels/DEPLOYED_MODEL :predict
-      The placeholders in this value are replaced as follows: * ENDPOINT: The
-      last segment (following `endpoints/`)of the Endpoint.name][] field of
-      the Endpoint where this Model has been deployed. (Vertex AI makes this
-      value available to your container code as the
-      [`AIP_ENDPOINT_ID`](https://tinyurl.com/cust-cont-reqs#aip-variables)
-      environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the
-      `DeployedModel`. (Vertex AI makes this value available to your container
-      code as the [`AIP_DEPLOYED_MODEL_ID`](https://tinyurl.com/cust-cont-
-      reqs#aip-variables) environment variable.)
+      Read more about [health checks](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#health). For example,
+      if you set this field to `/bar`, then Vertex AI intermittently sends a
+      GET request to the `/bar` path on the port of your container specified
+      by the first value of this `ModelContainerSpec`'s ports field. If you
+      don't specify this field, it defaults to the following value when you
+      deploy this Model to an Endpoint: /v1/endpoints/ENDPOINT/deployedModels/
+      DEPLOYED_MODEL:predict The placeholders in this value are replaced as
+      follows: * ENDPOINT: The last segment (following `endpoints/`)of the
+      Endpoint.name][] field of the Endpoint where this Model has been
+      deployed. (Vertex AI makes this value available to your container code
+      as the [`AIP_ENDPOINT_ID` environment
+      variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables).) * DEPLOYED_MODEL:
+      DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value
+      available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
+      environment variable](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#aip-variables).)
     imageUri: Required. Immutable. URI of the Docker image to be used as the
       custom container for serving predictions. This URI must identify an
       image in Artifact Registry or Container Registry. Learn more about the
-      container publishing requirements, including permissions requirements
-      for the AI Platform Service Agent, [here](https://tinyurl.com/cust-cont-
-      reqs#publishing). The container image is ingested upon
-      ModelService.UploadModel, stored internally, and this original path is
-      afterwards not used. To learn about the requirements for the Docker
-      image itself, see [Custom container
-      requirements](https://tinyurl.com/cust-cont-reqs). You can use the URI
+      [container publishing requirements](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#publishing), including
+      permissions requirements for the AI Platform Service Agent. The
+      container image is ingested upon ModelService.UploadModel, stored
+      internally, and this original path is afterwards not used. To learn
+      about the requirements for the Docker image itself, see [Custom
+      container requirements](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#). You can use the URI
       to one of Vertex AI's [pre-built container images for
       prediction](https://cloud.google.com/vertex-ai/docs/predictions/pre-
       built-containers) in this field.
     ports: Immutable. List of ports to expose from the container. Vertex AI
       sends any prediction requests that it receives to the first port on this
       list. AI Platform also sends [liveness and health
-      checks](https://tinyurl.com/cust-cont-reqs#health) to this port. If you
-      do not specify this field, it defaults to following value: ```json [ {
-      "containerPort": 8080 } ] ``` Vertex AI does not use ports other than
-      the first one listed. This field corresponds to the `ports` field of the
-      Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
-      api/v1.18/#container-v1-core).
+      checks](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#liveness) to this port. If you do not specify
+      this field, it defaults to following value: ```json [ { "containerPort":
+      8080 } ] ``` Vertex AI does not use ports other than the first one
+      listed. This field corresponds to the `ports` field of the Kubernetes
+      Containers [v1 core API](https://v1-18.docs.kubernetes.io/docs/reference
+      /generated/kubernetes-api/v1.18/#container-v1-core).
     predictRoute: Immutable. HTTP path on the container to send prediction
       requests to. Vertex AI forwards requests sent using
       projects.locations.endpoints.predict to this path on the container's IP
@@ -21257,12 +21289,13 @@ class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
       placeholders in this value are replaced as follows: * ENDPOINT: The last
       segment (following `endpoints/`)of the Endpoint.name][] field of the
       Endpoint where this Model has been deployed. (Vertex AI makes this value
-      available to your container code as the
-      [`AIP_ENDPOINT_ID`](https://tinyurl.com/cust-cont-reqs#aip-variables)
-      environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the
-      `DeployedModel`. (Vertex AI makes this value available to your container
-      code as the [`AIP_DEPLOYED_MODEL_ID` environment
-      variable](https://tinyurl.com/cust-cont-reqs#aip-variables).)
+      available to your container code as the [`AIP_ENDPOINT_ID` environment
+      variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables).) * DEPLOYED_MODEL:
+      DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value
+      available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
+      environment variable](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#aip-variables).)
   """
 
   args = _messages.StringField(1, repeated=True)
@@ -21537,7 +21570,8 @@ class GoogleCloudAiplatformV1beta1ModelEvaluation(_messages.Message):
     metricsSchemaUri: Output only. Points to a YAML file stored on Google
       Cloud Storage describing the metrics of this ModelEvaluation. The schema
       is defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object).
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject).
     modelExplanation: Output only. Aggregated explanation metrics for the
       Model's prediction output over the data this ModelEvaluation uses. This
       field is populated only if the Model is evaluated with explanations, and
@@ -21585,7 +21619,8 @@ class GoogleCloudAiplatformV1beta1ModelEvaluationSlice(_messages.Message):
     metricsSchemaUri: Output only. Points to a YAML file stored on Google
       Cloud Storage describing the metrics of this ModelEvaluationSlice. The
       schema is defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object).
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject).
     name: Output only. The resource name of the ModelEvaluationSlice.
     slice: Output only. The slice of the test data that is used to evaluate
       the Model.
@@ -22442,27 +22477,30 @@ class GoogleCloudAiplatformV1beta1PredictSchemata(_messages.Message):
       Storage describing the format of a single instance, which are used in
       PredictRequest.instances, ExplainRequest.instances and
       BatchPredictionJob.input_config. The schema is defined as an OpenAPI
-      3.0.2 [Schema Object](https://tinyurl.com/y538mdwt#schema-object).
-      AutoML Models always have this field populated by Vertex AI. Note: The
-      URI given on output will be immutable and probably different, including
-      the URI scheme, than the one given on input. The output URI will point
-      to a location where the user only has a read access.
+      3.0.2 [Schema Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
+      always have this field populated by Vertex AI. Note: The URI given on
+      output will be immutable and probably different, including the URI
+      scheme, than the one given on input. The output URI will point to a
+      location where the user only has a read access.
     parametersSchemaUri: Immutable. Points to a YAML file stored on Google
       Cloud Storage describing the parameters of prediction and explanation
       via PredictRequest.parameters, ExplainRequest.parameters and
       BatchPredictionJob.model_parameters. The schema is defined as an OpenAPI
-      3.0.2 [Schema Object](https://tinyurl.com/y538mdwt#schema-object).
-      AutoML Models always have this field populated by Vertex AI, if no
-      parameters are supported, then it is set to an empty string. Note: The
-      URI given on output will be immutable and probably different, including
-      the URI scheme, than the one given on input. The output URI will point
-      to a location where the user only has a read access.
+      3.0.2 [Schema Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
+      always have this field populated by Vertex AI, if no parameters are
+      supported, then it is set to an empty string. Note: The URI given on
+      output will be immutable and probably different, including the URI
+      scheme, than the one given on input. The output URI will point to a
+      location where the user only has a read access.
     predictionSchemaUri: Immutable. Points to a YAML file stored on Google
       Cloud Storage describing the format of a single prediction produced by
       this Model, which are returned via PredictResponse.predictions,
       ExplainResponse.explanations, and BatchPredictionJob.output_config. The
       schema is defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML Models
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
       always have this field populated by Vertex AI. Note: The URI given on
       output will be immutable and probably different, including the URI
       scheme, than the one given on input. The output URI will point to a
@@ -22885,7 +22923,7 @@ class GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageClassificationPredic
   r"""Prediction input format for Image Classification.
 
   Fields:
-    content: The image bytes or GCS URI to make the prediction on.
+    content: The image bytes or Cloud Storage URI to make the prediction on.
     mimeType: The MIME type of the content of the image. Only the images in
       below listed MIME types are supported. - image/jpeg - image/gif -
       image/png - image/webp - image/bmp - image/tiff -
@@ -22900,7 +22938,7 @@ class GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageObjectDetectionPredi
   r"""Prediction input format for Image Object Detection.
 
   Fields:
-    content: The image bytes or GCS URI to make the prediction on.
+    content: The image bytes or Cloud Storage URI to make the prediction on.
     mimeType: The MIME type of the content of the image. Only the images in
       below listed MIME types are supported. - image/jpeg - image/gif -
       image/png - image/webp - image/bmp - image/tiff -
@@ -23857,6 +23895,8 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   ngInputs object.
 
   Fields:
+    additionalExperiments: Additional experiment flags for the time series
+      forcasting training.
     availableAtForecastColumns: Names of columns that are available and
       provided when a forecast is requested. These columns contain information
       for the given entity (identified by the time_series_identifier_column
@@ -23926,22 +23966,23 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       field is not set, then all rows are assumed to have equal weight of 1.
   """
 
-  availableAtForecastColumns = _messages.StringField(1, repeated=True)
-  contextWindow = _messages.IntegerField(2)
-  dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 3)
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 4)
-  forecastHorizon = _messages.IntegerField(5)
-  optimizationObjective = _messages.StringField(6)
-  quantiles = _messages.FloatField(7, repeated=True)
-  targetColumn = _messages.StringField(8)
-  timeColumn = _messages.StringField(9)
-  timeSeriesAttributeColumns = _messages.StringField(10, repeated=True)
-  timeSeriesIdentifierColumn = _messages.StringField(11)
-  trainBudgetMilliNodeHours = _messages.IntegerField(12)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 13, repeated=True)
-  unavailableAtForecastColumns = _messages.StringField(14, repeated=True)
-  validationOptions = _messages.StringField(15)
-  weightColumn = _messages.StringField(16)
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  availableAtForecastColumns = _messages.StringField(2, repeated=True)
+  contextWindow = _messages.IntegerField(3)
+  dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 4)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
+  forecastHorizon = _messages.IntegerField(6)
+  optimizationObjective = _messages.StringField(7)
+  quantiles = _messages.FloatField(8, repeated=True)
+  targetColumn = _messages.StringField(9)
+  timeColumn = _messages.StringField(10)
+  timeSeriesAttributeColumns = _messages.StringField(11, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(12)
+  trainBudgetMilliNodeHours = _messages.IntegerField(13)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 14, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(15, repeated=True)
+  validationOptions = _messages.StringField(16)
+  weightColumn = _messages.StringField(17)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
@@ -24118,11 +24159,6 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
       early stopping feature. When false the early stopping feature is
       enabled, which means that AutoML Image Classification might stop
       training before the entire training budget has been used.
-    evaluationExplanationSpec: Specification for explaining the evaluation
-      results. If specified, the ModelEvaluation of the trained Model will
-      include explanations for predictions on the test data. Each prediction
-      will be explained twice, using integrated gradients and XRAI attribution
-      methods respectively.
     modelType: A ModelTypeValueValuesEnum attribute.
     multiLabel: If false, a single-label (multi-class) Model will be trained
       (i.e. assuming that for each image just up to one annotation may be
@@ -24162,9 +24198,8 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
   baseModelId = _messages.StringField(1)
   budgetMilliNodeHours = _messages.IntegerField(2)
   disableEarlyStopping = _messages.BooleanField(3)
-  evaluationExplanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpecGroup', 4)
-  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 5)
-  multiLabel = _messages.BooleanField(6)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 4)
+  multiLabel = _messages.BooleanField(5)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata(_messages.Message):
@@ -24199,38 +24234,6 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
 
   costMilliNodeHours = _messages.IntegerField(1)
   successfulStopReason = _messages.EnumField('SuccessfulStopReasonValueValuesEnum', 2)
-
-
-class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec(_messages.Message):
-  r"""Specification of a specified explanation attribution method.
-
-  Fields:
-    stepCount: The number of steps for approximating the path integral. A good
-      value to start is 50 and gradually increase until the sum to diff
-      property is within the desired error range. Valid range of its value is
-      [1, 100], inclusively.
-    visualization: Visualization configurations for image explanation.
-  """
-
-  stepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  visualization = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataVisualization', 2)
-
-
-class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpecGroup(_messages.Message):
-  r"""Specification for explaining the evaluation results.
-
-  Fields:
-    integratedGradients: Specification for explaining the evaluation results
-      using integrated gradients attribution method. The full ExplanationSpec
-      used for explaining the evaluation can be found in the
-      ModelEvaluation.explanationSpecs object.
-    xrai: Specification for explaining the evaluation results using XRAI
-      attribution method. The full ExplanationSpec used for explaining the
-      evaluation can be found in the ModelEvaluation.explanationSpecs object.
-  """
-
-  integratedGradients = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec', 1)
-  xrai = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec', 2)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetection(_messages.Message):
@@ -24467,6 +24470,8 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputs(
   object.
 
   Fields:
+    additionalExperiments: Additional experiment flags for the Tables training
+      pipeline.
     disableEarlyStopping: Use the entire training budget. This disables the
       early stopping feature. By default, the early stopping feature is
       enabled, which means that AutoML Tables might stop training before the
@@ -24522,16 +24527,17 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputs(
       field is not set, then all rows are assumed to have equal weight of 1.
   """
 
-  disableEarlyStopping = _messages.BooleanField(1)
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 2)
-  optimizationObjective = _messages.StringField(3)
-  optimizationObjectivePrecisionValue = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  optimizationObjectiveRecallValue = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  predictionType = _messages.StringField(6)
-  targetColumn = _messages.StringField(7)
-  trainBudgetMilliNodeHours = _messages.IntegerField(8)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation', 9, repeated=True)
-  weightColumnName = _messages.StringField(10)
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  disableEarlyStopping = _messages.BooleanField(2)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 3)
+  optimizationObjective = _messages.StringField(4)
+  optimizationObjectivePrecisionValue = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  optimizationObjectiveRecallValue = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  predictionType = _messages.StringField(7)
+  targetColumn = _messages.StringField(8)
+  trainBudgetMilliNodeHours = _messages.IntegerField(9)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation', 10, repeated=True)
+  weightColumnName = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation(_messages.Message):
@@ -25307,11 +25313,12 @@ class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):
     noiseSigma: This is a single float value and will be used to add noise to
       all the features. Use this field when all features are normalized to
       have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
-      where features are normalized to have 0-mean and 1-variance. For more
-      details about normalization: https://tinyurl.com/dgc-normalization. For
-      best results the recommended value is about 10% - 20% of the standard
-      deviation of the input feature. Refer to section 3.2 of the SmoothGrad
-      paper: https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      where features are normalized to have 0-mean and 1-variance. Learn more
+      about [normalization](https://developers.google.com/machine-
+      learning/data-prep/transform/normalization). For best results the
+      recommended value is about 10% - 20% of the standard deviation of the
+      input feature. Refer to section 3.2 of the SmoothGrad paper:
+      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
       distribution is different per feature, set feature_noise_sigma instead
       for each feature.
     noisySampleCount: The number of gradient samples to use for approximation.

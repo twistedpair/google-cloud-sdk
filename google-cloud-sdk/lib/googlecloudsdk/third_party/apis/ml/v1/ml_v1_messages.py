@@ -2168,6 +2168,9 @@ class GoogleCloudMlV1Scheduling(_messages.Message):
       platform/training/docs/training-
       jobs#formatting_your_configuration_parameters). For example: ```yaml
       trainingInput: scheduling: maxWaitTime: 3600s ```
+    priority: Optional. Job scheduling will be based on this priority. A 32
+      bit integer [-2,147,483,648 , 2,147,483,647], the bigger the number, the
+      higher the priority. Default to 0 if not set.
     resilientToWorkerRestart: Optional. If true, reschedules an entire job if
       a worker gets restarted. This feature can be used by distributed
       training jobs that are not resilient to workers leaving and joining a
@@ -2189,8 +2192,9 @@ class GoogleCloudMlV1Scheduling(_messages.Message):
 
   maxRunningTime = _messages.StringField(1)
   maxWaitTime = _messages.StringField(2)
-  resilientToWorkerRestart = _messages.BooleanField(3)
-  strategy = _messages.EnumField('StrategyValueValuesEnum', 4)
+  priority = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  resilientToWorkerRestart = _messages.BooleanField(4)
+  strategy = _messages.EnumField('StrategyValueValuesEnum', 5)
 
 
 class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):

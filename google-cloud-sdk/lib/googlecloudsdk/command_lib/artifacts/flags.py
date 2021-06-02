@@ -182,7 +182,7 @@ def GetDeleteTagsFlag():
 
 def GetJsonKeyFlag(tool):
   """Gets Json Key Flag text based on specified tool."""
-  if tool == 'pypi':
+  if tool == 'pypi' or tool == 'python':
     return base.Argument(
         '--json-key',
         help=('Path to service account JSON key. If not specified, '

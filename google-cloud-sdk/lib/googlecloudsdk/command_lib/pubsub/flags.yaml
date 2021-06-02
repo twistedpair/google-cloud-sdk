@@ -90,3 +90,19 @@ starting-offset:
     The offset at which a newly created subscription will start receiving messages. A subscription
     can be initialized at the offset of the oldest retained message (`beginning`), or at the current
     HEAD offset (`end`).
+
+partition:
+  api_field: commitCursorRequest.partition
+  arg_name: partition
+  required: true
+  help_text: |
+    The topic partition. Partitions are zero indexed, so the partition must be in the range
+    [0, topic.num_partitions). If you do not know your topic.num_partitions, run `gcloud pubsub
+    lite-topic describe TOPIC --zone=ZONE`.
+
+offset:
+  api_field: commitCursorRequest.cursor.offset
+  arg_name: offset
+  required: true
+  help_text: |
+    The offset of a message within a topic partition. Must be greater than or equal to 0.

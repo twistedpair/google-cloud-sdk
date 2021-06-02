@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://aiplatform.googleapis.com/v1alpha1/'
-DOCS_URL = 'https://cloud.google.com/ai-platform-unified/docs'
+DOCS_URL = 'https://cloud.google.com/vertex-ai/'
 
 
 class Collections(enum.Enum):
@@ -349,6 +349,50 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_METADATASTORES = (
+      'projects.locations.metadataStores',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/metadataStores/'
+              '{metadataStoresId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_METADATASTORES_ARTIFACTS = (
+      'projects.locations.metadataStores.artifacts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/metadataStores/'
+              '{metadataStoresId}/artifacts/{artifactsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_METADATASTORES_CONTEXTS = (
+      'projects.locations.metadataStores.contexts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/metadataStores/'
+              '{metadataStoresId}/contexts/{contextsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_METADATASTORES_EXECUTIONS = (
+      'projects.locations.metadataStores.executions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/metadataStores/'
+              '{metadataStoresId}/executions/{executionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MIGRATABLERESOURCES = (
       'projects.locations.migratableResources',
       'projects/{projectsId}/locations/{locationsId}/migratableResources/'
@@ -462,10 +506,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_PIPELINEJOBS = (
       'projects.locations.pipelineJobs',
-      'projects/{projectsId}/locations/{locationsId}/pipelineJobs/'
-      '{pipelineJobsId}',
-      {},
-      ['projectsId', 'locationsId', 'pipelineJobsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/pipelineJobs/'
+              '{pipelineJobsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_PIPELINEJOBS_OPERATIONS = (

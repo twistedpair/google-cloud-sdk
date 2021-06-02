@@ -469,6 +469,8 @@ class Deployment(_messages.Message):
   r"""A Deployment object.
 
   Enums:
+    ErrorCodeValueValuesEnum: Output only. Code describing any errors that may
+      have occurred.
     StateValueValuesEnum: Output only. Current state of the deployment.
 
   Messages:
@@ -478,6 +480,7 @@ class Deployment(_messages.Message):
     blueprint: Required. Blueprint to deploy.
     createTime: Output only. Time the deployment was created.
     deleteResults: Output only. Locations of outputs from delete operation.
+    errorCode: Output only. Code describing any errors that may have occurred.
     labels: User-defined metadata for the deployment.
     latestRevision: Output only. Revision that was most recently applied.
       Format:
@@ -486,10 +489,35 @@ class Deployment(_messages.Message):
     name: Resource name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
     state: Output only. Current state of the deployment.
-    stateDetail: Output only. Customer-readable message about the current
-      status.
+    stateDetail: Output only. Additional information regarding the current
+      state.
     updateTime: Output only. Time the deployment was last modified.
   """
+
+  class ErrorCodeValueValuesEnum(_messages.Enum):
+    r"""Output only. Code describing any errors that may have occurred.
+
+    Values:
+      ERROR_CODE_UNSPECIFIED: No error code was specified.
+      REVISION_FAILED: The revision failed (check its error code).
+      CLUSTER_CREATION_PERMISSION_DENIED: Cluster creation failed due to a
+        permissions issue.
+      CLOUD_BUILD_PERMISSION_DENIED: Cloud Build failed due to a permissions
+        issue.
+      CLUSTER_CREATION_FAILED: Cluster creation failed for a non-permissions-
+        related issue.
+      DELETE_BUILD_API_FAILED: The deletion Cloud Build failed before logs
+        could be generated.
+      DELETE_BUILD_RUN_FAILED: The deletion Cloud Build failed after logs
+        could be generated.
+    """
+    ERROR_CODE_UNSPECIFIED = 0
+    REVISION_FAILED = 1
+    CLUSTER_CREATION_PERMISSION_DENIED = 2
+    CLOUD_BUILD_PERMISSION_DENIED = 3
+    CLUSTER_CREATION_FAILED = 4
+    DELETE_BUILD_API_FAILED = 5
+    DELETE_BUILD_RUN_FAILED = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the deployment.
@@ -540,12 +568,13 @@ class Deployment(_messages.Message):
   blueprint = _messages.MessageField('Blueprint', 1)
   createTime = _messages.StringField(2)
   deleteResults = _messages.MessageField('ApplyResults', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  latestRevision = _messages.StringField(5)
-  name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  stateDetail = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  latestRevision = _messages.StringField(6)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  stateDetail = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class Empty(_messages.Message):
@@ -1025,6 +1054,8 @@ class Revision(_messages.Message):
   Enums:
     ActionValueValuesEnum: Output only. The type of action that this revision
       represents.
+    ErrorCodeValueValuesEnum: Output only. Code describing any errors that may
+      have occurred.
     StateValueValuesEnum: Output only. Current state of the revision.
 
   Fields:
@@ -1032,14 +1063,15 @@ class Revision(_messages.Message):
     applyResults: Output only. Locations of outputs from config application.
     blueprint: Output only. Blueprint that was deployed.
     createTime: Output only. Time the revision was created.
+    errorCode: Output only. Code describing any errors that may have occurred.
     name: Resource name of the revision. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}/
       revisions/{revision}`
     pipelineResults: Output only. Locations of outputs from kpt pipeline
       execution.
     state: Output only. Current state of the revision.
-    stateDetail: Output only. Customer-readable message about the current
-      status.
+    stateDetail: Output only. Additional information regarding the current
+      state.
     updateTime: Output only. Time the revision was last modified.
   """
 
@@ -1057,6 +1089,35 @@ class Revision(_messages.Message):
     CREATE = 1
     UPDATE = 2
     DELETE = 3
+
+  class ErrorCodeValueValuesEnum(_messages.Enum):
+    r"""Output only. Code describing any errors that may have occurred.
+
+    Values:
+      ERROR_CODE_UNSPECIFIED: No error code was specified.
+      BUCKET_CREATION_PERMISSION_DENIED: A Cloud Storage bucket failed due to
+        a permissions issue.
+      BUCKET_CREATION_FAILED: A Cloud Storage bucket failed for a non-
+        permissions-related issue.
+      CLOUD_BUILD_PERMISSION_DENIED: Cloud Build failed due to a permissions
+        issue.
+      PIPELINE_BUILD_API_FAILED: The pipeline Cloud Build failed before logs
+        could be generated.
+      PIPELINE_BUILD_RUN_FAILED: The pipeline Cloud Build failed after logs
+        could be generated.
+      APPLY_BUILD_API_FAILED: The apply Cloud Build failed before logs could
+        be generated.
+      APPLY_BUILD_RUN_FAILED: The apply Cloud Build failed after logs could be
+        generated.
+    """
+    ERROR_CODE_UNSPECIFIED = 0
+    BUCKET_CREATION_PERMISSION_DENIED = 1
+    BUCKET_CREATION_FAILED = 2
+    CLOUD_BUILD_PERMISSION_DENIED = 3
+    PIPELINE_BUILD_API_FAILED = 4
+    PIPELINE_BUILD_RUN_FAILED = 5
+    APPLY_BUILD_API_FAILED = 6
+    APPLY_BUILD_RUN_FAILED = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the revision.
@@ -1077,11 +1138,12 @@ class Revision(_messages.Message):
   applyResults = _messages.MessageField('ApplyResults', 2)
   blueprint = _messages.MessageField('Blueprint', 3)
   createTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  pipelineResults = _messages.MessageField('PipelineResults', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  stateDetail = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  pipelineResults = _messages.MessageField('PipelineResults', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  stateDetail = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class SetIamPolicyRequest(_messages.Message):

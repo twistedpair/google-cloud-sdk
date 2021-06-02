@@ -323,6 +323,10 @@
             "SUSPENDED",
             "READ_ONLY"
           ]
+        },
+        "managementConfig": {
+          "description": "Configuration of the cluster management",
+          "$ref": "ManagementConfig"
         }
       }
     },
@@ -376,6 +380,35 @@
           "description": "Whether the Config Controller bundle is enabled on the KrmApiHost.",
           "type": "boolean"
         }
+      }
+    },
+    "ManagementConfig": {
+      "id": "ManagementConfig",
+      "description": "Configuration of the cluster management",
+      "type": "object",
+      "properties": {
+        "standardManagementConfig": {
+          "description": "Configuration of the standard (GKE) cluster management",
+          "$ref": "StandardManagementConfig"
+        },
+        "fullManagementConfig": {
+          "description": "Configuration of the full (Autopilot) cluster management",
+          "$ref": "FullManagementConfig"
+        }
+      }
+    },
+    "StandardManagementConfig": {
+      "id": "StandardManagementConfig",
+      "description": "Configuration of the standard (GKE) cluster management",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "FullManagementConfig": {
+      "id": "FullManagementConfig",
+      "description": "Configuration of the full (Autopilot) cluster management",
+      "type": "object",
+      "properties": {
       }
     },
     "ListLocationsResponse": {

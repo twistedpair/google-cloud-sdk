@@ -292,9 +292,32 @@
           "$ref": "ApplyResults"
         },
         "stateDetail": {
-          "description": "Output only. Customer-readable message about the current status.",
+          "description": "Output only. Additional information regarding the current state.",
           "readOnly": true,
           "type": "string"
+        },
+        "errorCode": {
+          "description": "Output only. Code describing any errors that may have occurred.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No error code was specified.",
+            "The revision failed (check its error code).",
+            "Cluster creation failed due to a permissions issue.",
+            "Cloud Build failed due to a permissions issue.",
+            "Cluster creation failed for a non-permissions-related issue.",
+            "The deletion Cloud Build failed before logs could be generated.",
+            "The deletion Cloud Build failed after logs could be generated."
+          ],
+          "enum": [
+            "ERROR_CODE_UNSPECIFIED",
+            "REVISION_FAILED",
+            "CLUSTER_CREATION_PERMISSION_DENIED",
+            "CLOUD_BUILD_PERMISSION_DENIED",
+            "CLUSTER_CREATION_FAILED",
+            "DELETE_BUILD_API_FAILED",
+            "DELETE_BUILD_RUN_FAILED"
+          ]
         }
       }
     },
@@ -484,9 +507,34 @@
           "$ref": "ApplyResults"
         },
         "stateDetail": {
-          "description": "Output only. Customer-readable message about the current status.",
+          "description": "Output only. Additional information regarding the current state.",
           "readOnly": true,
           "type": "string"
+        },
+        "errorCode": {
+          "description": "Output only. Code describing any errors that may have occurred.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No error code was specified.",
+            "A Cloud Storage bucket failed due to a permissions issue.",
+            "A Cloud Storage bucket failed for a non-permissions-related issue.",
+            "Cloud Build failed due to a permissions issue.",
+            "The pipeline Cloud Build failed before logs could be generated.",
+            "The pipeline Cloud Build failed after logs could be generated.",
+            "The apply Cloud Build failed before logs could be generated.",
+            "The apply Cloud Build failed after logs could be generated."
+          ],
+          "enum": [
+            "ERROR_CODE_UNSPECIFIED",
+            "BUCKET_CREATION_PERMISSION_DENIED",
+            "BUCKET_CREATION_FAILED",
+            "CLOUD_BUILD_PERMISSION_DENIED",
+            "PIPELINE_BUILD_API_FAILED",
+            "PIPELINE_BUILD_RUN_FAILED",
+            "APPLY_BUILD_API_FAILED",
+            "APPLY_BUILD_RUN_FAILED"
+          ]
         }
       }
     },

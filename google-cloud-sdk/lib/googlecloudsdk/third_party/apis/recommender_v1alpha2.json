@@ -531,7 +531,7 @@
       "type": "object",
       "properties": {
         "action": {
-          "description": "Type of this operation. Contains one of 'and', 'remove', 'replace', 'move', 'copy', 'test' and 'custom' operations. This field is case-insensitive and always populated.",
+          "description": "Type of this operation. Contains one of 'add', 'remove', 'replace', 'move', 'copy', 'test' and 'custom' operations. This field is case-insensitive and always populated.",
           "type": "string"
         },
         "customAction": {
@@ -807,7 +807,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type."
+                      "description": "Lists insights for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified insight type."
                     },
                     "get": {
                       "id": "recommender.projects.locations.insightTypes.insights.get",
@@ -993,7 +993,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender."
+                      "description": "Lists recommendations for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified recommender."
                     },
                     "get": {
                       "id": "recommender.projects.locations.recommenders.recommendations.get",
@@ -1247,7 +1247,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type."
+                      "description": "Lists insights for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified insight type."
                     },
                     "get": {
                       "id": "recommender.billingAccounts.locations.insightTypes.insights.get",
@@ -1405,7 +1405,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender."
+                      "description": "Lists recommendations for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified recommender."
                     },
                     "get": {
                       "id": "recommender.billingAccounts.locations.recommenders.recommendations.get",
@@ -1627,7 +1627,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type."
+                      "description": "Lists insights for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified insight type."
                     },
                     "get": {
                       "id": "recommender.folders.locations.insightTypes.insights.get",
@@ -1785,7 +1785,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender."
+                      "description": "Lists recommendations for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified recommender."
                     },
                     "get": {
                       "id": "recommender.folders.locations.recommenders.recommendations.get",
@@ -2007,7 +2007,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type."
+                      "description": "Lists insights for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified insight type."
                     },
                     "get": {
                       "id": "recommender.organizations.locations.insightTypes.insights.get",
@@ -2165,7 +2165,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender."
+                      "description": "Lists recommendations for the specified Cloud Resource. Requires the recommender.*.list IAM permission for the specified recommender."
                     },
                     "get": {
                       "id": "recommender.organizations.locations.recommenders.recommendations.get",

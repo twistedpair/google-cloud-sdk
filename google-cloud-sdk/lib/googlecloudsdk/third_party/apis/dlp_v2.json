@@ -3132,7 +3132,7 @@
           "description": "The type of job.",
           "type": "string",
           "enumDescriptions": [
-            "Unused",
+            "Defaults to INSPECT_JOB.",
             "The job inspected Google Cloud for sensitive data.",
             "The job executed a Risk Analysis computation."
           ],
@@ -4960,6 +4960,21 @@
                       "location": "query",
                       "type": "string"
                     },
+                    "type": {
+                      "description": "The type of jobs. Will use `DlpJobType.INSPECT` if not set.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "Defaults to INSPECT_JOB.",
+                        "The job inspected Google Cloud for sensitive data.",
+                        "The job executed a Risk Analysis computation."
+                      ],
+                      "enum": [
+                        "DLP_JOB_TYPE_UNSPECIFIED",
+                        "INSPECT_JOB",
+                        "RISK_ANALYSIS_JOB"
+                      ]
+                    },
                     "locationId": {
                       "description": "Deprecated. This field has no effect.",
                       "location": "query",
@@ -5096,7 +5111,7 @@
                       "location": "query",
                       "type": "string",
                       "enumDescriptions": [
-                        "Unused",
+                        "Defaults to INSPECT_JOB.",
                         "The job inspected Google Cloud for sensitive data.",
                         "The job executed a Risk Analysis computation."
                       ],
@@ -5883,6 +5898,21 @@
                   "location": "query",
                   "type": "string"
                 },
+                "type": {
+                  "description": "The type of jobs. Will use `DlpJobType.INSPECT` if not set.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "Defaults to INSPECT_JOB.",
+                    "The job inspected Google Cloud for sensitive data.",
+                    "The job executed a Risk Analysis computation."
+                  ],
+                  "enum": [
+                    "DLP_JOB_TYPE_UNSPECIFIED",
+                    "INSPECT_JOB",
+                    "RISK_ANALYSIS_JOB"
+                  ]
+                },
                 "locationId": {
                   "description": "Deprecated. This field has no effect.",
                   "location": "query",
@@ -6019,7 +6049,7 @@
                   "location": "query",
                   "type": "string",
                   "enumDescriptions": [
-                    "Unused",
+                    "Defaults to INSPECT_JOB.",
                     "The job inspected Google Cloud for sensitive data.",
                     "The job executed a Risk Analysis computation."
                   ],
@@ -6967,6 +6997,21 @@
                       "location": "query",
                       "type": "string"
                     },
+                    "type": {
+                      "description": "The type of jobs. Will use `DlpJobType.INSPECT` if not set.",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "Defaults to INSPECT_JOB.",
+                        "The job inspected Google Cloud for sensitive data.",
+                        "The job executed a Risk Analysis computation."
+                      ],
+                      "enum": [
+                        "DLP_JOB_TYPE_UNSPECIFIED",
+                        "INSPECT_JOB",
+                        "RISK_ANALYSIS_JOB"
+                      ]
+                    },
                     "locationId": {
                       "description": "Deprecated. This field has no effect.",
                       "location": "query",
@@ -7047,7 +7092,7 @@
                       "location": "query",
                       "type": "string",
                       "enumDescriptions": [
-                        "Unused",
+                        "Defaults to INSPECT_JOB.",
                         "The job inspected Google Cloud for sensitive data.",
                         "The job executed a Risk Analysis computation."
                       ],

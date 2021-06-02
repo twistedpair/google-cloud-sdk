@@ -34,6 +34,10 @@ class NoUpdateException(exceptions.Error):
   """Error thrown when an update command is run resulting in no updates."""
 
 
+class UserAbortException(exceptions.Error):
+  """Error thrown when an a user aborts the command."""
+
+
 class InsufficientPermissionException(exceptions.Error):
   """Indicates that a user is missing required permissions for an operation."""
 

@@ -580,7 +580,7 @@ class CloudkmsV1(base_api.BaseApiClient):
     )
 
     def UpdatePrimaryVersion(self, request, global_params=None):
-      r"""Update the version of a CryptoKey that will be used in Encrypt. Returns an error if called on an asymmetric key.
+      r"""Update the version of a CryptoKey that will be used in Encrypt. Returns an error if called on a key whose purpose is not ENCRYPT_DECRYPT.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersionRequest) input message

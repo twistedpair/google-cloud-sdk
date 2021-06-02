@@ -1514,6 +1514,10 @@ class Release(_messages.Message):
       URI.
     skaffoldConfigUri: GCS URI of tar.gz archive containing Skaffold
       configuration.
+    skaffoldVersion: The Skaffold version to use when operating on this
+      release, such as "1.20.0". Not all versions are valid; Cloud Deploy
+      supports a specific set of versions. If unset, the most recent supported
+      Skaffold version will be used.
     targetSnapshots: Output only. Snapshot of the parent pipeline's targets
       taken at release creation time.
     uid: Output only. Unique identifier of the `Release`.
@@ -1631,8 +1635,9 @@ class Release(_messages.Message):
   renderedManifests = _messages.MessageField('RenderedManifestsValue', 14)
   skaffoldConfigPath = _messages.StringField(15)
   skaffoldConfigUri = _messages.StringField(16)
-  targetSnapshots = _messages.MessageField('Target', 17, repeated=True)
-  uid = _messages.StringField(18)
+  skaffoldVersion = _messages.StringField(17)
+  targetSnapshots = _messages.MessageField('Target', 18, repeated=True)
+  uid = _messages.StringField(19)
 
 
 class Rollout(_messages.Message):

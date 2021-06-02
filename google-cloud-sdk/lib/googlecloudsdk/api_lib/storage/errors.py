@@ -33,11 +33,23 @@ class GcsApiError(CloudApiError, api_exceptions.HttpException):
 class NotFoundError(CloudApiError):
   """Error raised when the requested resource does not exist.
 
-  Both GCS and S3 APIs should raise this same error if a resource
+  Both GCS and S3 APIs should raise this error if a resource
   does not exist so that the caller can handle the error in an API agnostic
   manner.
   """
   pass
+
+
+class GcsNotFoundError(GcsApiError, NotFoundError):
+  """Error raised when the requested GCS resource does not exist.
+
+  Implements custom formatting to avoid messy default.
+  """
+
+  def __init__(self, error, *args, **kwargs):
+    del args, kwargs  # Unused.
+    super().__init__(
+        error, error_format='{instance_name} not found: {status_code}.')
 
 
 class S3ErrorPayload(api_exceptions.FormattableErrorPayload):
@@ -96,18 +108,39 @@ class S3ApiError(CloudApiError, api_exceptions.HttpException):
         error, error_format=error_format, payload_class=S3ErrorPayload)
 
 
-def catch_error_raise_cloud_api_error(untranslated_error_class,
-                                      cloud_api_error_class,
-                                      format_str=None):
+def translate_error(error, translation_list, format_str=None):
+  """Translates error or returns original error if no matches.
+
+  Note, an error will be translated if it is a child class of a value in
+  translation_list. Also, translations earlier in the list take priority.
+
+  Args:
+    error (Exception): Error to translate.
+    translation_list (list): List of (Exception, Exception) tuples. Translates
+      errors that are instances of first error type to second. If there is a
+      hierarchy, error types earlier in list are translated first.
+    format_str (str|None): An api_lib.util.exceptions.FormattableErrorPayload
+      format string. Note that any properties that are accessed here are on the
+      FormattableErrorPayload object, not the object returned from the server.
+
+  Returns:
+    Error (Exception). Translated if match. Else, original error.
+  """
+  for untranslated_error, translated_error in translation_list:
+    if isinstance(error, untranslated_error):
+      return translated_error(error, format_str)
+  return error
+
+
+def catch_error_raise_cloud_api_error(translation_list, format_str=None):
   """Decorator catches an error and raises CloudApiError with a custom message.
 
   Args:
-    untranslated_error_class (Exception): An error class that needs to be
-      translated to a CloudApiError.
-    cloud_api_error_class (CloudApiError): A subclass of CloudApiError to be
-      raised instead of untranslated_error_class.
-    format_str (str): An api_lib.util.exceptions.FormattableErrorPayload format
-      string. Note that any properties that are accessed here are on the
+    translation_list (list): List of (Exception, Exception) tuples.
+      Translates errors that are instances of first error type to second. If
+      there is a hierarchy, error types earlier in list are translated first.
+    format_str (str|None): An api_lib.util.exceptions.FormattableErrorPayload
+      format string. Note that any properties that are accessed here are on the
       FormattableErrorPayload object, not the object returned from the server.
 
   Returns:
@@ -115,20 +148,22 @@ def catch_error_raise_cloud_api_error(untranslated_error_class,
       customizable error message.
 
   Example:
-    @catch_error_raise_cloud_api_error(apitools_exceptions.HttpError,
-        GcsApiError, 'Error [{status_code}]')
+    @catch_error_raise_cloud_api_error(
+        [(apitools_exceptions.HttpError, GcsApiError)],
+        'Error [{status_code}]')
     def some_func_that_might_throw_an_error():
   """
-
   def translate_api_error_decorator(function):
     # Need to define a secondary wrapper to get an argument to the outer
     # decorator.
     def wrapper(*args, **kwargs):
       try:
         return function(*args, **kwargs)
-      except untranslated_error_class as error:
-        cloud_api_error = cloud_api_error_class(error, format_str)
-        core_exceptions.reraise(cloud_api_error)
+      # pylint:disable=broad-except
+      except Exception as e:
+        # pylint:enable=broad-except
+        core_exceptions.reraise(
+            translate_error(e, translation_list, format_str))
 
     return wrapper
 

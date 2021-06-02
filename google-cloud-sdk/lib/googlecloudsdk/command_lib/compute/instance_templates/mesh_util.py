@@ -25,7 +25,10 @@ from googlecloudsdk.api_lib.container import util as c_util
 from googlecloudsdk.command_lib.container.hub import kube_util as hub_kube_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
+
+EXPANSION_GATEWAY_NAME = 'istio-eastwestgateway'
 
 
 def ParseWorkload(workload):
@@ -59,6 +62,37 @@ def VerifyClusterSetup(kube_client):
   if not kube_client.IdentityProviderCRExists():
     raise ClusterError('GCE identity provider is not found in the cluster. '
                        'Please install Anthos Service Mesh with VM support.')
+  VerifyExpansionGateway(kube_client)
+
+
+def VerifyWorkloadSetup(kube_client, workload_manifest):
+  """Verify VM workload setup in the cluster."""
+  if not workload_manifest:
+    raise WorkloadError('Cannot verify an empty workload from the cluster')
+
+  try:
+    workload_data = yaml.load(workload_manifest)
+  except yaml.Error as e:
+    raise exceptions.Error(
+        'Invalid workload from the cluster {}'.format(workload_data), e)
+
+  identity_provider_value = GetNestedKeyFromManifest(
+      workload_data, 'spec', 'metadata', 'annotations',
+      'security.cloud.google.com/IdentityProvider')
+  if identity_provider_value != 'google':
+    raise WorkloadError('Unable to find the GCE IdentityProvider in the '
+                        'specified WorkloadGroup. Please make sure the '
+                        'GCE IdentityProvider is specified in the '
+                        'WorkloadGroup.')
+
+
+def VerifyExpansionGateway(kube_client):
+  """Verify the ASM expansion gateway installation in the cluster."""
+  if not kube_client.ExpansionGatewayServiceExists(
+  ) or not kube_client.ExpansionGatewayDeploymentExists():
+    raise ClusterError('The gateway {} is not found in the cluster. Please '
+                       'install Anthos Service Mesh with VM support.'.format(
+                           EXPANSION_GATEWAY_NAME))
 
 
 class KubernetesClient(object):
@@ -111,6 +145,29 @@ class KubernetesClient(object):
             'Missing permissions to read resources in {} namespace'.format(ns))
     return True
 
+  def NamespacesExist(self, *namespaces):
+    """Check to see if the namespaces exist in the cluster.
+
+    Args:
+      *namespaces: The namespaces to check.
+
+    Returns:
+      true, if namespaces exist.
+
+    Raises:
+      Error: if failing to verify the namespaces.
+      Error: if at least one of the namespaces do not exist.
+    """
+    for ns in namespaces:
+      _, err = self._RunKubectl(['get', 'namespace', ns], None)
+      if err:
+        if 'NotFound' in err:
+          raise exceptions.Error('Namespace {} does not exist: {}'.format(
+              ns, err))
+        raise exceptions.Error(
+            'Failed to check if namespace {} exists: {}'.format(ns, err))
+    return True
+
   def MembershipCRExists(self):
     """Verifies if GKE Hub membership CR exists."""
     if not self._MembershipCRDExists():
@@ -131,7 +188,7 @@ class KubernetesClient(object):
     """Verifies if GKE Hub membership CRD exists."""
     _, err = self._RunKubectl(
         ['get',
-         'customresourcedefinitions.v1beta1.apiextensions.k8s.io',
+         'customresourcedefinitions.v1.apiextensions.k8s.io',
          'memberships.hub.gke.io'], None)
     if err:
       if 'NotFound' in err:
@@ -160,13 +217,68 @@ class KubernetesClient(object):
     """Verifies if Identity Provider CRD exists."""
     _, err = self._RunKubectl(
         ['get',
-         'customresourcedefinitions.v1beta1.apiextensions.k8s.io',
+         'customresourcedefinitions.v1.apiextensions.k8s.io',
          'identityproviders.security.cloud.google.com'], None)
     if err:
       if 'NotFound' in err:
         return False
       raise exceptions.Error(
           'Error retrieving the Identity Provider CRD: {}'.format(err))
+    return True
+
+  def GetWorkloadGroupCR(self, workload_namespace, workload_name):
+    """Get the YAML output of the specified WorkloadGroup CR."""
+    if not self._WorkloadGroupCRDExists():
+      return None
+
+    out, err = self._RunKubectl([
+        'get', 'workloadgroups.networking.istio.io', workload_name, '-n',
+        workload_namespace, '-o', 'yaml'
+    ], None)
+    if err:
+      if 'NotFound' in err:
+        raise WorkloadError(
+            'WorkloadGroup {} in namespace {} is not found in the '
+            'cluster. Please create the WorkloadGroup and retry.'.format(
+                workload_name, workload_namespace))
+      raise exceptions.Error(
+          'Error retrieving WorkloadGroup {} in namespace {}: {}'.format(
+              err, workload_name, workload_namespace))
+    return out
+
+  def _WorkloadGroupCRDExists(self):
+    """Verifies if WorkloadGroup CRD exists."""
+    _, err = self._RunKubectl(
+        ['get',
+         'customresourcedefinitions.v1.apiextensions.k8s.io',
+         'workloadgroups.networking.istio.io'], None)
+    if err:
+      if 'NotFound' in err:
+        return False
+      raise exceptions.Error(
+          'Error retrieving the WorkloadGroup CRD: {}'.format(err))
+    return True
+
+  def ExpansionGatewayDeploymentExists(self):
+    """Verifies if the ASM Expansion Gateway deployment exists."""
+    _, err = self._RunKubectl(
+        ['get', 'deploy', EXPANSION_GATEWAY_NAME, '-n', 'istio-system'], None)
+    if err:
+      if 'NotFound' in err:
+        return False
+      raise exceptions.Error(
+          'Error retrieving the expansion gateway deployment: {}'.format(err))
+    return True
+
+  def ExpansionGatewayServiceExists(self):
+    """Verifies if the ASM Expansion Gateway service exists."""
+    _, err = self._RunKubectl(
+        ['get', 'service', EXPANSION_GATEWAY_NAME, '-n', 'istio-system'], None)
+    if err:
+      if 'NotFound' in err:
+        return False
+      raise exceptions.Error(
+          'Error retrieving the expansion gateway service: {}'.format(err))
     return True
 
   def _RunKubectl(self, args, stdin=None):
@@ -202,9 +314,34 @@ class KubernetesClient(object):
     ) if returncode != 0 else None
 
 
+def GetNestedKeyFromManifest(manifest, *keys):
+  """Get the value of a key path from a dict.
+
+  Args:
+    manifest: the dict representation of a manifest
+    *keys: an ordered list of items in the nested key
+
+  Returns:
+    The value of the nested key in the manifest. None, if the nested key does
+    not exist.
+  """
+  for key in keys:
+    if not isinstance(manifest, dict):
+      return None
+    try:
+      manifest = manifest[key]
+    except KeyError:
+      return None
+  return manifest
+
+
 class PermissionsError(exceptions.Error):
   """Class for errors raised when verifying permissions."""
 
 
 class ClusterError(exceptions.Error):
   """Class for errors raised when verifying cluster setup."""
+
+
+class WorkloadError(exceptions.Error):
+  """Class for errors raised when verifying workload setup."""

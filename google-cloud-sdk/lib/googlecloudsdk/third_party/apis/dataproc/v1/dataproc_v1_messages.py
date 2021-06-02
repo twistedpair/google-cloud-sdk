@@ -2808,12 +2808,15 @@ class InstanceReference(_messages.Message):
   Fields:
     instanceId: The unique identifier of the Compute Engine instance.
     instanceName: The user-friendly name of the Compute Engine instance.
-    publicKey: The public key used for sharing data with this instance.
+    publicEciesKey: The public ECIES key used for sharing data with this
+      instance.
+    publicKey: The public RSA key used for sharing data with this instance.
   """
 
   instanceId = _messages.StringField(1)
   instanceName = _messages.StringField(2)
-  publicKey = _messages.StringField(3)
+  publicEciesKey = _messages.StringField(3)
+  publicKey = _messages.StringField(4)
 
 
 class InstantiateWorkflowTemplateRequest(_messages.Message):

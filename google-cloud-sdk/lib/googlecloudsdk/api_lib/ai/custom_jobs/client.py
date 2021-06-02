@@ -42,7 +42,34 @@ class CustomJobsClient(object):
         '{prefix}{name}'.format(prefix=self._message_prefix,
                                 name=message_name), None)
 
-  def Create(self, parent, job_spec, display_name=None, kms_key_name=None):
+  def CreateV1(self, parent, job_spec, display_name=None, kms_key_name=None):
+    """Constructs a request and sends it to the endpoint to create a custom job instance.
+
+    Args:
+      parent: str, The project resource path of the custom job to create.
+      job_spec: The CustomJobSpec message instance for the job creation request.
+      display_name: str, The display name of the custom job to create.
+      kms_key_name: A customer-managed encryption key to use for the custom job.
+
+    Returns:
+      (GoogleCloudAiplatformV1alpha1CustomJob) The created custom job.
+    """
+    custom_job = self.messages.GoogleCloudAiplatformV1CustomJob(
+        displayName=display_name, jobSpec=job_spec)
+
+    if kms_key_name is not None:
+      custom_job.encryptionSpec = self.messages.GoogleCloudAiplatformV1EncryptionSpec(
+          kmsKeyName=kms_key_name)
+
+    return self._service.Create(
+        self.messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
+            parent=parent, googleCloudAiplatformV1CustomJob=custom_job))
+
+  def CreateV1beta1(self,
+                    parent,
+                    job_spec,
+                    display_name=None,
+                    kms_key_name=None):
     """Constructs a request and sends it to the endpoint to create a custom job instance.
 
     Args:

@@ -1069,7 +1069,11 @@
           "type": "string"
         },
         "publicKey": {
-          "description": "The public key used for sharing data with this instance.",
+          "description": "The public RSA key used for sharing data with this instance.",
+          "type": "string"
+        },
+        "publicEciesKey": {
+          "description": "The public ECIES key used for sharing data with this instance.",
           "type": "string"
         }
       }

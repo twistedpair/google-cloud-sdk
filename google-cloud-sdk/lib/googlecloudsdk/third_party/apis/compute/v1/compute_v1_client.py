@@ -1905,7 +1905,7 @@ Example request body:
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the policies that have been configured for the specified project.
+      r"""Lists all the policies that have been configured for the specified folder or organization.
 
       Args:
         request: (ComputeFirewallPoliciesListRequest) input message

@@ -362,7 +362,7 @@ class CloudidentityGroupsLookupRequest(_messages.Message):
       Google user or a Google Group. If specified, the `EntityKey` represents
       an external-identity-mapped group. The namespace must correspond to an
       identity source created in Admin Console and must be in the form of
-      `identitysources/{identity_source_id}.
+      `identitysources/{identity_source_id}`.
   """
 
   groupKey_id = _messages.StringField(1)
@@ -505,7 +505,7 @@ class CloudidentityGroupsMembershipsLookupRequest(_messages.Message):
       Google user or a Google Group. If specified, the `EntityKey` represents
       an external-identity-mapped group. The namespace must correspond to an
       identity source created in Admin Console and must be in the form of
-      `identitysources/{identity_source_id}.
+      `identitysources/{identity_source_id}`.
     parent: Required. The parent `Group` resource under which to lookup the
       `Membership` name. Must be of the form `groups/{group_id}`.
   """
@@ -1017,7 +1017,7 @@ class EntityKey(_messages.Message):
       a Google Group. If specified, the `EntityKey` represents an external-
       identity-mapped group. The namespace must correspond to an identity
       source created in Admin Console and must be in the form of
-      `identitysources/{identity_source_id}.
+      `identitysources/{identity_source_id}`.
   """
 
   id = _messages.StringField(1)
@@ -1979,8 +1979,7 @@ class MembershipRole(_messages.Message):
     expiryDetail: The expiry details of the `MembershipRole`. Expiry details
       are only supported for `MEMBER` `MembershipRoles`. May be set if `name`
       is `MEMBER`. Must not be set if `name` is any other value.
-    name: Required. Immutable. The name of the `MembershipRole`. Must be one
-      of `OWNER`, `MANAGER`, `MEMBER`.
+    name: A string attribute.
   """
 
   expiryDetail = _messages.MessageField('MembershipRoleExpiryDetail', 1)

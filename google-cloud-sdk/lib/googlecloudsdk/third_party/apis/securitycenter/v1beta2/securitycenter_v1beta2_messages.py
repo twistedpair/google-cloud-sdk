@@ -179,11 +179,13 @@ class Details(_messages.Message):
       STANDARD: The standard subscription.
       TRIAL: The trial subscription.
       ALPHA: The alpha subscription.
+      DEMO: The demo subscription for channel partners.
     """
     TYPE_UNSPECIFIED = 0
     STANDARD = 1
     TRIAL = 2
     ALPHA = 3
+    DEMO = 4
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)

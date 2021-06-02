@@ -2122,6 +2122,10 @@
           "description": "This field is set to: - `false` if the matched intent has required parameters and not all of the required parameter values have been collected. - `true` if all required parameter values have been collected, or if the matched intent doesn't contain any required parameters.",
           "type": "boolean"
         },
+        "cancelsSlotFilling": {
+          "description": "Indicates whether the conversational query triggers a cancellation for slot filling.",
+          "type": "boolean"
+        },
         "fulfillmentText": {
           "description": "The text to be pronounced to the user or shown on the screen. Note: This is a legacy field, `fulfillment_messages` should be preferred.",
           "type": "string"
@@ -2342,7 +2346,7 @@
       "type": "object",
       "properties": {
         "detectIntentResponse": {
-          "description": "Response of the Dialogflow Sessions.DetectIntent call.",
+          "description": "Required. Response of the Dialogflow Sessions.DetectIntent call.",
           "$ref": "GoogleCloudDialogflowV2DetectIntentResponse"
         }
       }
@@ -5248,6 +5252,68 @@
         }
       }
     },
+    "GoogleCloudDialogflowCxV3RunContinuousTestMetadata": {
+      "id": "GoogleCloudDialogflowCxV3RunContinuousTestMetadata",
+      "description": "Metadata returned for the Environments.RunContinuousTest long running operation.",
+      "type": "object",
+      "properties": {
+        "errors": {
+          "description": "The test errors.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowCxV3TestError"
+          }
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3RunContinuousTestResponse": {
+      "id": "GoogleCloudDialogflowCxV3RunContinuousTestResponse",
+      "description": "The response message for Environments.RunContinuousTest.",
+      "type": "object",
+      "properties": {
+        "continuousTestResult": {
+          "description": "The result for a continuous test run.",
+          "$ref": "GoogleCloudDialogflowCxV3ContinuousTestResult"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3ContinuousTestResult": {
+      "id": "GoogleCloudDialogflowCxV3ContinuousTestResult",
+      "description": "Represents a result from running a test case in an agent environment.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name for the continuous test result. Format: `projects\/\/locations\/\/agents\/\/environments\/\/continuousTestResults\/`.",
+          "type": "string"
+        },
+        "result": {
+          "description": "The result of this continuous test run, i.e. whether all the tests in this continuous test run pass or not.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified. Should never be used.",
+            "All the tests passed.",
+            "At least one test did not pass."
+          ],
+          "enum": [
+            "AGGREGATED_TEST_RESULT_UNSPECIFIED",
+            "PASSED",
+            "FAILED"
+          ]
+        },
+        "testCaseResults": {
+          "description": "A list of individual test case results names in this continuous test run.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "runTime": {
+          "description": "Time when the continuous testing run starts.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata": {
       "id": "GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata",
       "description": "Metadata associated with the long running operation for Versions.CreateVersion.",
@@ -6749,6 +6815,68 @@
         "genericMetadata": {
           "description": "The generic information of the operation.",
           "$ref": "GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1RunContinuousTestMetadata": {
+      "id": "GoogleCloudDialogflowCxV3beta1RunContinuousTestMetadata",
+      "description": "Metadata returned for the Environments.RunContinuousTest long running operation.",
+      "type": "object",
+      "properties": {
+        "errors": {
+          "description": "The test errors.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowCxV3beta1TestError"
+          }
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1RunContinuousTestResponse": {
+      "id": "GoogleCloudDialogflowCxV3beta1RunContinuousTestResponse",
+      "description": "The response message for Environments.RunContinuousTest.",
+      "type": "object",
+      "properties": {
+        "continuousTestResult": {
+          "description": "The result for a continuous test run.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1ContinuousTestResult"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1ContinuousTestResult": {
+      "id": "GoogleCloudDialogflowCxV3beta1ContinuousTestResult",
+      "description": "Represents a result from running a test case in an agent environment.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name for the continuous test result. Format: `projects\/\/locations\/\/agents\/\/environments\/\/continuousTestResults\/`.",
+          "type": "string"
+        },
+        "result": {
+          "description": "The result of this continuous test run, i.e. whether all the tests in this continuous test run pass or not.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified. Should never be used.",
+            "All the tests passed.",
+            "At least one test did not pass."
+          ],
+          "enum": [
+            "AGGREGATED_TEST_RESULT_UNSPECIFIED",
+            "PASSED",
+            "FAILED"
+          ]
+        },
+        "testCaseResults": {
+          "description": "A list of individual test case results names in this continuous test run.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "runTime": {
+          "description": "Time when the continuous testing run starts.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -8813,6 +8941,10 @@
           "description": "This field is set to: - `false` if the matched intent has required parameters and not all of the required parameter values have been collected. - `true` if all required parameter values have been collected, or if the matched intent doesn't contain any required parameters.",
           "type": "boolean"
         },
+        "cancelsSlotFilling": {
+          "description": "Indicates whether the conversational query triggers a cancellation for slot filling.",
+          "type": "boolean"
+        },
         "fulfillmentText": {
           "description": "The text to be pronounced to the user or shown on the screen. Note: This is a legacy field, `fulfillment_messages` should be preferred.",
           "type": "string"
@@ -10145,7 +10277,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The agent to list all intents from. Format: `projects\/\/agent`.",
+                          "description": "Required. The agent to list all intents from. Format: `projects\/\/agent` or `projects\/\/locations\/\/agent`. Alternatively, you can specify the environment to list intents for. Format: `projects\/\/agent\/environments\/` or `projects\/\/locations\/\/agent\/environments\/`. Note: training phrases of the intents will not be returned for non-draft environment.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/agent$",
                           "location": "path",
                           "required": true,
@@ -11334,6 +11466,65 @@
                               }
                             }
                           }
+                        }
+                      }
+                    },
+                    "intents": {
+                      "methods": {
+                        "list": {
+                          "id": "dialogflow.projects.locations.agent.environments.intents.list",
+                          "path": "v2/{+parent}/intents",
+                          "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/agent/environments/{environmentsId}/intents",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The agent to list all intents from. Format: `projects\/\/agent` or `projects\/\/locations\/\/agent`. Alternatively, you can specify the environment to list intents for. Format: `projects\/\/agent\/environments\/` or `projects\/\/locations\/\/agent\/environments\/`. Note: training phrases of the intents will not be returned for non-draft environment.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/agent\/environments\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "languageCode": {
+                              "description": "Optional. The language used to access language-specific data. If not specified, the agent's default language is used. For more information, see [Multilingual intent and entity data](https:\/\/cloud.google.com\/dialogflow\/docs\/agents-multilingual#intent-entity).",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "intentView": {
+                              "description": "Optional. The resource view to apply to the returned intent.",
+                              "location": "query",
+                              "type": "string",
+                              "enumDescriptions": [
+                                "Training phrases field is not populated in the response.",
+                                "All fields are populated."
+                              ],
+                              "enum": [
+                                "INTENT_VIEW_UNSPECIFIED",
+                                "INTENT_VIEW_FULL"
+                              ]
+                            },
+                            "pageSize": {
+                              "description": "Optional. The maximum number of items to return in a single page. By default 100 and at most 1000.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Optional. The next_page_token value returned from a previous list request.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "GoogleCloudDialogflowV2ListIntentsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/dialogflow"
+                          ],
+                          "description": "Returns the list of all intents in the specified agent."
                         }
                       }
                     }
@@ -13133,7 +13324,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The agent to list all intents from. Format: `projects\/\/agent`.",
+                      "description": "Required. The agent to list all intents from. Format: `projects\/\/agent` or `projects\/\/locations\/\/agent`. Alternatively, you can specify the environment to list intents for. Format: `projects\/\/agent\/environments\/` or `projects\/\/locations\/\/agent\/environments\/`. Note: training phrases of the intents will not be returned for non-draft environment.",
                       "pattern": "^projects\/[^\/]+\/agent$",
                       "location": "path",
                       "required": true,
@@ -14334,7 +14525,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The agent to list all intents from. Format: `projects\/\/agent`.",
+                          "description": "Required. The agent to list all intents from. Format: `projects\/\/agent` or `projects\/\/locations\/\/agent`. Alternatively, you can specify the environment to list intents for. Format: `projects\/\/agent\/environments\/` or `projects\/\/locations\/\/agent\/environments\/`. Note: training phrases of the intents will not be returned for non-draft environment.",
                           "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+$",
                           "location": "path",
                           "required": true,

@@ -52,6 +52,8 @@ ServiceFns = {
     'tagBindings': tags.TagBindingsService
 }
 
+MAX_TAG_KEYS = 300
+
 
 def GetTagKeyFromNamespacedName(namespaced_name):
   """Gets the tag key from the namespaced name.
@@ -73,7 +75,7 @@ def GetTagKeyFromNamespacedName(namespaced_name):
         'TagKey namespaced name [{}] invalid'.format(namespaced_name))
 
   name = '/'.join(['organizations', parts[0]])
-  req = ListResourceFns['tagKeys'](parent=name)
+  req = ListResourceFns['tagKeys'](parent=name, pageSize=MAX_TAG_KEYS)
 
   try:
     response = service.List(req)

@@ -157,14 +157,18 @@
             "A boolean setting.",
             "A string setting.",
             "A string set setting.",
-            "A Enum setting"
+            "A Enum setting",
+            "A Duration setting",
+            "A string->string map setting"
           ],
           "enum": [
             "DATA_TYPE_UNSPECIFIED",
             "BOOLEAN",
             "STRING",
             "STRING_SET",
-            "ENUM_VALUE"
+            "ENUM_VALUE",
+            "DURATION_VALUE",
+            "STRING_MAP"
           ]
         },
         "defaultValue": {
@@ -193,6 +197,15 @@
         "enumValue": {
           "description": "Defines this value as being a Enum.",
           "$ref": "GoogleCloudResourcesettingsV1alpha1ValueEnumValue"
+        },
+        "durationValue": {
+          "description": "Defines this value as being a Duration.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "stringMapValue": {
+          "description": "Defines this value as being a StringMap.",
+          "$ref": "GoogleCloudResourcesettingsV1alpha1ValueStringMap"
         }
       }
     },
@@ -218,6 +231,20 @@
         "value": {
           "description": "The value of this enum",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudResourcesettingsV1alpha1ValueStringMap": {
+      "id": "GoogleCloudResourcesettingsV1alpha1ValueStringMap",
+      "description": "A string->string map value that can hold a map of string keys to string values. The maximum length of each string is 200 characters and there can be a maximum of 50 key-value pairs in the map.",
+      "type": "object",
+      "properties": {
+        "mappings": {
+          "description": "The key-value pairs in the map",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

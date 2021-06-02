@@ -5537,17 +5537,17 @@ class GoogleCloudApigeeV1GetSyncAuthorizationRequest(_messages.Message):
 
 
 class GoogleCloudApigeeV1GraphQLOperation(_messages.Message):
-  r"""GraphQLOperation represents the pairing of graphQL operation types and
-  the graphQL operation name.
+  r"""Represents the pairing of GraphQL operation types and the GraphQL
+  operation name.
 
   Fields:
-    operation: GraphQL operation name, along with operation type which will be
-      used to associate quotas with. If no name is specified, the quota will
-      be applied to all graphQL operations irrespective of their operation
-      names in the payload.
-    operationTypes: Required. `query`, `mutation` and `subscription` are the
-      three operation types offered by graphQL. Currently we support only
-      `query` and `mutation`.
+    operation: GraphQL operation name. The name and operation type will be
+      used to apply quotas. If no name is specified, the quota will be applied
+      to all GraphQL operations irrespective of their operation names in the
+      payload.
+    operationTypes: Required. GraphQL operation types. Valid values include
+      `query` or `mutation`. **Note**: Apigee does not currently support
+      `subscription` types.
   """
 
   operation = _messages.StringField(1)
@@ -5555,23 +5555,22 @@ class GoogleCloudApigeeV1GraphQLOperation(_messages.Message):
 
 
 class GoogleCloudApigeeV1GraphQLOperationConfig(_messages.Message):
-  r"""GraphQLOperationConfig binds the resources in a proxy or remote service
-  with the graphQL operation and its associated quota enforcement.
+  r"""Binds the resources in a proxy or remote service with the GraphQL
+  operation and its associated quota enforcement.
 
   Fields:
-    apiSource: Required. API proxy endpoint or remote service name with which
-      the graphQL operation, and quota are associated.
+    apiSource: Required. Name of the API proxy endpoint or remote service with
+      which the GraphQL operation and quota are associated.
     attributes: Custom attributes associated with the operation.
-    operations: Required. List of graphQL name/Operation type pairs for the
-      proxy/remote service, upon which quota will applied. If GraphQLOperation
-      operation has only the operation type(s), that would imply that quota
-      will be applied on all graphQL requests irrespective of the graphQL
-      name. **Note**: Currently, we can specify only a single
-      GraphQLOperation. Specifying more than one will result in failure of the
-      operation.
-    quota: Quota parameters to be enforced for the resources, methods,
-      api_source combination. If none are specified, quota enforcement will
-      not be done.
+    operations: Required. List of GraphQL name/operation type pairs for the
+      proxy or remote service to which quota will be applied. If only
+      operation types are specified, the quota will be applied to all GraphQL
+      requests irrespective of the GraphQL name. **Note**: Currently, you can
+      specify only a single GraphQLOperation. Specifying more than one will
+      cause the operation to fail.
+    quota: Quota parameters to be enforced for the resources, methods, and API
+      source combination. If none are specified, quota enforcement will not be
+      done.
   """
 
   apiSource = _messages.StringField(1)
@@ -5586,8 +5585,8 @@ class GoogleCloudApigeeV1GraphQLOperationGroup(_messages.Message):
   as Istio-Envoy.
 
   Fields:
-    operationConfigType: Flag that specifes whether the configuration is for
-      Apigee API proxy or a remote service. Valid values are `proxy` or
+    operationConfigType: Flag that specifies whether the configuration is for
+      Apigee API proxy or a remote service. Valid values include `proxy` or
       `remoteservice`. Defaults to `proxy`. Set to `proxy` when Apigee API
       proxies are associated with the API product. Set to `remoteservice` when
       non-Apigee proxies like Istio-Envoy are associated with the API product.
@@ -6328,15 +6327,15 @@ class GoogleCloudApigeeV1NodeConfig(_messages.Message):
 
 
 class GoogleCloudApigeeV1Operation(_messages.Message):
-  r"""Operation represents the pairing of REST resource path and the actions
-  (verbs) allowed on the resource path.
+  r"""Represents the pairing of REST resource path and the actions (verbs)
+  allowed on the resource path.
 
   Fields:
     methods: methods refers to the REST verbs as in
       https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html. When none
       specified, all verb types are allowed.
-    resource: Required. resource represents REST resource path associated with
-      the proxy/remote service.
+    resource: Required. REST resource path associated with the API proxy or
+      remote service.
   """
 
   methods = _messages.StringField(1, repeated=True)
@@ -6344,20 +6343,20 @@ class GoogleCloudApigeeV1Operation(_messages.Message):
 
 
 class GoogleCloudApigeeV1OperationConfig(_messages.Message):
-  r"""OperationConfig binds the resources in a proxy or remote service with
-  the allowed REST methods and its associated quota enforcement.
+  r"""Binds the resources in an API proxy or remote service with the allowed
+  REST methods and associated quota enforcement.
 
   Fields:
-    apiSource: Required. API proxy or remote service name with which the
-      resources, methods, and quota are associated.
+    apiSource: Required. Name of the API proxy or remote service with which
+      the resources, methods, and quota are associated.
     attributes: Custom attributes associated with the operation.
-    operations: List of resource/method pairs for the proxy/remote service,
-      upon which quota will applied. **Note**: Currently, you can specify only
-      a single resource/method pair. The call will fail if more than one
-      resource/method pair is provided.
-    quota: Quota parameters to be enforced for the resources, methods,
-      api_source combination. If none are specified, quota enforcement will
-      not be done.
+    operations: List of resource/method pairs for the API proxy or remote
+      service to which quota will applied. **Note**: Currently, you can
+      specify only a single resource/method pair. The call will fail if more
+      than one resource/method pair is provided.
+    quota: Quota parameters to be enforced for the resources, methods, and API
+      source combination. If none are specified, quota enforcement will not be
+      done.
   """
 
   apiSource = _messages.StringField(1)
@@ -6373,7 +6372,7 @@ class GoogleCloudApigeeV1OperationGroup(_messages.Message):
 
   Fields:
     operationConfigType: Flag that specifes whether the configuration is for
-      Apigee API proxy or a remote service. Valid values are `proxy` or
+      Apigee API proxy or a remote service. Valid values include `proxy` or
       `remoteservice`. Defaults to `proxy`. Set to `proxy` when Apigee API
       proxies are associated with the API product. Set to `remoteservice` when
       non-Apigee proxies like Istio-Envoy are associated with the API product.
@@ -6941,10 +6940,10 @@ class GoogleCloudApigeeV1QueryMetric(_messages.Message):
 
 
 class GoogleCloudApigeeV1Quota(_messages.Message):
-  r"""Quota contains the essential parameters needed that can be applied on a
-  proxy/remote service, resources and methods combination associated with this
-  API product. While setting of Quota is optional, setting it prevents
-  requests from exceeding the provisioned parameters.
+  r"""Quota contains the essential parameters needed that can be applied on
+  the resources, methods, API source combination associated with this API
+  product. While Quota is optional, setting it prevents requests from
+  exceeding the provisioned parameters.
 
   Fields:
     interval: Required. Time interval over which the number of request
@@ -7422,12 +7421,20 @@ class GoogleCloudApigeeV1RuntimeConfig(_messages.Message):
       records.
     name: Name of the resource in the following format:
       `organizations/{org}/runtimeConfig`.
+    tenantProjectId: Output only. Tenant project ID associated with the Apigee
+      organization. The tenant project is used to host Google-managed
+      resources that are dedicated to this Apigee organization. Clients have
+      limited access to resources within the tenant project used to support
+      Apigee runtime instances. Access to the tenant project is managed using
+      SetSyncAuthorization. It can be empty if the tenant project hasn't been
+      created yet.
     traceBucket: Cloud Storage bucket used for uploading Trace records.
   """
 
   analyticsBucket = _messages.StringField(1)
   name = _messages.StringField(2)
-  traceBucket = _messages.StringField(3)
+  tenantProjectId = _messages.StringField(3)
+  traceBucket = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1RuntimeTraceConfig(_messages.Message):

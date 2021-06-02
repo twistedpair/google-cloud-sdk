@@ -763,8 +763,6 @@ class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
       AWS resources.
     databaseEncryption: The ARN of the AWS KMS key used to encrypt cluster
       secrets.
-    ec2KeyPair: The name of the EC2 key pair used to login into control plane
-      nodes.
     iamInstanceProfile: The name of the AWS IAM role assigned to control plane
       replicas.
     instanceType: The AWS instance type.
@@ -816,16 +814,15 @@ class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
 
   awsServicesAuthentication = _messages.MessageField('GoogleCloudGkemulticloudV1AwsServicesAuthentication', 1)
   databaseEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AwsDatabaseEncryption', 2)
-  ec2KeyPair = _messages.StringField(3)
-  iamInstanceProfile = _messages.StringField(4)
-  instanceType = _messages.StringField(5)
-  mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 6)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 7)
-  securityGroupIds = _messages.StringField(8, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 9)
-  subnetIds = _messages.StringField(10, repeated=True)
-  tags = _messages.MessageField('TagsValue', 11)
-  version = _messages.StringField(12)
+  iamInstanceProfile = _messages.StringField(3)
+  instanceType = _messages.StringField(4)
+  mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 5)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 6)
+  securityGroupIds = _messages.StringField(7, repeated=True)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 8)
+  subnetIds = _messages.StringField(9, repeated=True)
+  tags = _messages.MessageField('TagsValue', 10)
+  version = _messages.StringField(11)
 
 
 class GoogleCloudGkemulticloudV1AwsDatabaseEncryption(_messages.Message):
@@ -891,8 +888,6 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
       alphanumerics between.
     autoscaling: Autoscaler configuration for this NodePool.
     createTime: Output only. The time at which this node pool was created.
-    ec2KeyPair: The name of the EC2 key pair used to login into instances
-      created using this node pool.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding. Allows clients to
@@ -1040,24 +1035,23 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   autoscaling = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling', 2)
   createTime = _messages.StringField(3)
-  ec2KeyPair = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  iamInstanceProfile = _messages.StringField(6)
-  instanceType = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  maxPodsPerNode = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  name = _messages.StringField(10)
-  reconciling = _messages.BooleanField(11)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 12)
-  securityGroupIds = _messages.StringField(13, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  subnetId = _messages.StringField(16)
-  tags = _messages.MessageField('TagsValue', 17)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodeTaint', 18, repeated=True)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  version = _messages.StringField(21)
+  etag = _messages.StringField(4)
+  iamInstanceProfile = _messages.StringField(5)
+  instanceType = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  maxPodsPerNode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  name = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 11)
+  securityGroupIds = _messages.StringField(12, repeated=True)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  subnetId = _messages.StringField(15)
+  tags = _messages.MessageField('TagsValue', 16)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodeTaint', 17, repeated=True)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  version = _messages.StringField(20)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling(_messages.Message):
@@ -1142,11 +1136,13 @@ class GoogleCloudGkemulticloudV1AwsServerConfig(_messages.Message):
 
   Fields:
     name: The resource name of the config.
+    supportedAwsRegions: The list of supported AWS regions.
     validVersions: List of valid Kubernetes versions.
   """
 
   name = _messages.StringField(1)
-  validVersions = _messages.MessageField('GoogleCloudGkemulticloudV1AwsK8sVersionInfo', 2, repeated=True)
+  supportedAwsRegions = _messages.StringField(2, repeated=True)
+  validVersions = _messages.MessageField('GoogleCloudGkemulticloudV1AwsK8sVersionInfo', 3, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AwsServicesAuthentication(_messages.Message):
@@ -1412,7 +1408,6 @@ class GoogleCloudGkemulticloudV1AzureControlPlane(_messages.Message):
     rootVolume: Template for the volume provisioned for control plane VM
       storage.
     sshConfig: The SSH configuration.
-    sshPublicKey: The SSH public key data for the control plane VM.
     subnetId: The ARM ID of the subnet where the control plane VMs are
       deployed. Example: "/subscriptions/d00494d6-6f3c-4280-bbb2-899e163d1d30/
       resourceGroups/anthos_cluster_gkeust4/providers/Microsoft.Network/virtua
@@ -1453,11 +1448,10 @@ class GoogleCloudGkemulticloudV1AzureControlPlane(_messages.Message):
   mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 3)
   rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 4)
   sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 5)
-  sshPublicKey = _messages.BytesField(6)
-  subnetId = _messages.StringField(7)
-  tags = _messages.MessageField('TagsValue', 8)
-  version = _messages.StringField(9)
-  vmSize = _messages.StringField(10)
+  subnetId = _messages.StringField(6)
+  tags = _messages.MessageField('TagsValue', 7)
+  version = _messages.StringField(8)
+  vmSize = _messages.StringField(9)
 
 
 class GoogleCloudGkemulticloudV1AzureDatabaseEncryption(_messages.Message):
@@ -1543,7 +1537,6 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
       the node pool.
     rootVolume: Template for the volume provisioned for nodepool VMSS storage.
     sshConfig: The SSH configuration.
-    sshPublicKey: The SSH public key data for the node pool VM.
     state: Output only. The current state of the node pool.
     subnetId: The ARM ID of the subnet where the node pool VMs run. Make sure
       it's a subnet under the virtual network in the cluster configuration.
@@ -1645,14 +1638,13 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
   reconciling = _messages.BooleanField(6)
   rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 7)
   sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 8)
-  sshPublicKey = _messages.BytesField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  subnetId = _messages.StringField(11)
-  tags = _messages.MessageField('TagsValue', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  version = _messages.StringField(15)
-  vmSize = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  subnetId = _messages.StringField(10)
+  tags = _messages.MessageField('TagsValue', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  version = _messages.StringField(14)
+  vmSize = _messages.StringField(15)
 
 
 class GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling(_messages.Message):
@@ -1699,11 +1691,13 @@ class GoogleCloudGkemulticloudV1AzureServerConfig(_messages.Message):
 
   Fields:
     name: The resource name of the config.
+    supportedAzureRegions: The list of supported Azure regions.
     validVersions: List of valid Kubernetes versions.
   """
 
   name = _messages.StringField(1)
-  validVersions = _messages.MessageField('GoogleCloudGkemulticloudV1AzureK8sVersionInfo', 2, repeated=True)
+  supportedAzureRegions = _messages.StringField(2, repeated=True)
+  validVersions = _messages.MessageField('GoogleCloudGkemulticloudV1AzureK8sVersionInfo', 3, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AzureServicesAuthentication(_messages.Message):
@@ -1740,7 +1734,8 @@ class GoogleCloudGkemulticloudV1GetAwsClusterAdminKubeconfigResponse(_messages.M
   r"""Response message for `AwsClusters.GetAwsClusterAdminKubeconfig` method.
 
   Fields:
-    kubeconfig: The admin kubeconfig.
+    kubeconfig: The admin kubeconfig. The generated client credentials expire
+      after 20 hours.
   """
 
   kubeconfig = _messages.StringField(1)
@@ -1750,7 +1745,8 @@ class GoogleCloudGkemulticloudV1GetAzureClusterAdminKubeconfigResponse(_messages
   r"""Response message for `Clusters.GetAzureClusterAdminKubeconfig` method.
 
   Fields:
-    kubeconfig: The admin kubeconfig.
+    kubeconfig: The admin kubeconfig. The generated client credentials expire
+      after 20 hours.
   """
 
   kubeconfig = _messages.StringField(1)
@@ -1854,12 +1850,12 @@ class GoogleCloudGkemulticloudV1WorkloadIdentityConfig(_messages.Message):
     identityProvider: The ID of the OIDC Identity Provider (IdP) associated to
       the Workload Identity Pool.
     issuerUri: The OIDC issuer URL for this cluster.
-    worloadPool: The Workload Identity Pool associated to the cluster.
+    workloadPool: The Workload Identity Pool associated to the cluster.
   """
 
   identityProvider = _messages.StringField(1)
   issuerUri = _messages.StringField(2)
-  worloadPool = _messages.StringField(3)
+  workloadPool = _messages.StringField(3)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):

@@ -36,12 +36,14 @@ from apitools.base.py import transfer as apitools_transfer
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
+from googlecloudsdk.api_lib.storage import gcs_upload
 # pylint: disable=unused-import
 # Applies pickling patches:
 from googlecloudsdk.api_lib.storage import patch_gcs_messages
 # pylint: enable=unused-import
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions as calliope_errors
+from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.resources import resource_reference
@@ -66,6 +68,10 @@ MINIMUM_PROGRESS_CALLBACK_THRESHOLD = 512 * KB
 # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
 MAX_OBJECTS_PER_COMPOSE_CALL = 32
 
+_ERROR_TRANSLATION = [(apitools_exceptions.HttpNotFoundError,
+                       cloud_errors.GcsNotFoundError),
+                      (apitools_exceptions.HttpError, cloud_errors.GcsApiError)]
+
 
 def _catch_http_error_raise_gcs_api_error(format_str=None):
   """Decorator catches HttpError and returns GcsApiError with custom message.
@@ -80,9 +86,7 @@ def _catch_http_error_raise_gcs_api_error(format_str=None):
       customizable error message.
   """
   return cloud_errors.catch_error_raise_cloud_api_error(
-      apitools_exceptions.HttpError,
-      cloud_errors.GcsApiError,
-      format_str=format_str)
+      _ERROR_TRANSLATION, format_str=format_str)
 
 
 def _no_op_callback(unused_response, unused_object):
@@ -408,8 +412,9 @@ class GcsApi(cloud_api.CloudApi):
     try:
       for bucket in bucket_iter:
         yield gcs_metadata_util.get_bucket_resource_from_metadata(bucket)
-    except apitools_exceptions.HttpError as error:
-      core_exceptions.reraise(cloud_errors.GcsApiError(error))
+    except apitools_exceptions.HttpError as e:
+      core_exceptions.reraise(
+          cloud_errors.translate_error(e, _ERROR_TRANSLATION))
 
   def list_objects(self,
                    bucket_name,
@@ -440,8 +445,9 @@ class GcsApi(cloud_api.CloudApi):
       try:
         object_list = self.client.objects.List(
             apitools_request, global_params=global_params)
-      except apitools_exceptions.HttpError as error:
-        core_exceptions.reraise(cloud_errors.GcsApiError(error))
+      except apitools_exceptions.HttpError as e:
+        core_exceptions.reraise(
+            cloud_errors.translate_error(e, _ERROR_TRANSLATION))
 
       # Yield objects.
       # TODO(b/160238394) Decrypt metadata fields if necessary.
@@ -501,19 +507,12 @@ class GcsApi(cloud_api.CloudApi):
                                       self.messages.StorageObjectsGetRequest)
 
     # TODO(b/160238394) Decrypt metadata fields if necessary.
-    try:
-      object_metadata = self.client.objects.Get(
-          self.messages.StorageObjectsGetRequest(
-              bucket=bucket_name,
-              object=object_name,
-              generation=generation,
-              projection=projection))
-    except apitools_exceptions.HttpNotFoundError:
-      raise cloud_errors.NotFoundError(
-          'Object not found: {}'.format(storage_url.CloudUrl(
-              storage_url.ProviderPrefix.GCS, bucket_name, object_name,
-              generation).url_string)
-      )
+    object_metadata = self.client.objects.Get(
+        self.messages.StorageObjectsGetRequest(
+            bucket=bucket_name,
+            object=object_name,
+            generation=generation,
+            projection=projection))
     return gcs_metadata_util.get_object_resource_from_metadata(object_metadata)
 
   @_catch_http_error_raise_gcs_api_error()
@@ -646,7 +645,6 @@ class GcsApi(cloud_api.CloudApi):
     return gcs_metadata_util.get_object_resource_from_metadata(
         rewrite_response.resource)
 
-  # pylint: disable=unused-argument
   def _download_object(self,
                        cloud_resource,
                        download_stream,
@@ -844,129 +842,40 @@ class GcsApi(cloud_api.CloudApi):
           start_byte=start_byte,
           end_byte=end_byte)
 
-  # pylint: disable=unused-argument
-  def _upload_object(self,
-                     source_stream,
-                     object_metadata,
-                     request_config,
-                     apitools_strategy=apitools_transfer.SIMPLE_UPLOAD,
-                     progress_callback=None,
-                     serialization_data=None,
-                     tracker_callback=None):
-    # pylint: disable=g-doc-args
-    """GCS-specific upload implementation. Adds args to Cloud API interface.
-
-    Additional args:
-      object_metadata (messages.Object): Apitools metadata for object to
-          upload.
-      apitools_strategy (str): SIMPLE_UPLOAD or RESUMABLE_UPLOAD constant in
-          apitools.base.py.transfer.
-      serialization_data (str): Implementation-specific JSON string of a dict
-          containing serialization information for the download.
-      tracker_callback (function): Callback that keeps track of upload progress.
-
-    Returns:
-      Uploaded object metadata in an ObjectResource.
-
-    Raises:
-      ValueError if an object can't be uploaded with the provided metadata.
-    """
-    predefined_acl = None
-    if request_config.predefined_acl_string:
-      predefined_acl = getattr(self.messages.StorageObjectsInsertRequest.
-                               PredefinedAclValueValuesEnum,
-                               request_config.predefined_acl_string)
-
-    # TODO(b/160998052): Use encryption_wrapper to generate encryption headers.
-
-    # Fresh upload. Prepare arguments.
-    if not serialization_data:
-      content_type = object_metadata.contentType
-
-      if not content_type:
-        content_type = DEFAULT_CONTENT_TYPE
-
-      request = self.messages.StorageObjectsInsertRequest(
-          bucket=object_metadata.bucket,
-          object=object_metadata,
-          ifGenerationMatch=request_config.precondition_generation_match,
-          ifMetagenerationMatch=(
-              request_config.precondition_metageneration_match),
-          predefinedAcl=predefined_acl)
-
-    if apitools_strategy == apitools_transfer.SIMPLE_UPLOAD:
-      apitools_upload = apitools_transfer.Upload(
-          source_stream,
-          content_type,
-          auto_transfer=True,
-          chunksize=scaled_integer.ParseInteger(
-              properties.VALUES.storage.upload_chunk_size.Get()),
-          gzip_encoded=request_config.gzip_encoded,
-          num_retries=properties.VALUES.storage.max_retries.GetInt(),
-          progress_callback=progress_callback,
-          total_size=request_config.size)
-
-      if self._upload_http_client is None:
-        self._upload_http_client = transports.GetApitoolsTransport()
-      apitools_upload.bytes_http = self._upload_http_client
-
-      result_object_metadata = self.client.objects.Insert(
-          request, upload=apitools_upload)
-
-      return gcs_metadata_util.get_object_resource_from_metadata(
-          result_object_metadata)
-    else:
-      # TODO(b/160998556): Implement resumable upload.
-      pass
-
   @_catch_http_error_raise_gcs_api_error()
   def upload_object(self,
                     source_stream,
                     destination_resource,
                     progress_callback=None,
-                    request_config=None):
+                    request_config=None,
+                    serialization_data=None,
+                    tracker_callback=None,
+                    upload_strategy=cloud_api.UploadStrategy.SIMPLE):
     """See CloudApi class for function doc strings."""
-    if progress_callback:
-      # Apitools uploads pass response objects to callbacks. Parse these
-      # because our callbacks only expect an int "processed_bytes".
-      def wrapped_progress_callback(response, message_string):
-        del message_string  # Unused.
-        # Range field format: "bytes=0-138989".
-        _, range_values_string = response.info['range'].split('=')
-        start_byte, end_byte = [int(x) for x in range_values_string.split('-')]
-        processed_bytes = end_byte - start_byte
-        progress_callback(processed_bytes)
-    else:
-      wrapped_progress_callback = None
-
-    if request_config.size is None:
-      # Size is required so that apitools_transfer can pick the
-      # optimal upload strategy.
-      raise cloud_errors.GcsApiError(
-          'Upload failed due to missing size. Destination: {}'.format(
-              destination_resource.storage_url.url_string))
+    del progress_callback  # Unused.
+    if self._upload_http_client is None:
+      self._upload_http_client = transports.GetApitoolsTransport()
 
     validated_request_config = cloud_api.get_provider_request_config(
         request_config, GcsRequestConfig)
 
-    object_metadata = self.messages.Object(
-        name=destination_resource.storage_url.object_name,
-        bucket=destination_resource.storage_url.bucket_name,
-        md5Hash=validated_request_config.md5_hash)
+    if upload_strategy == cloud_api.UploadStrategy.SIMPLE:
+      upload = gcs_upload.SimpleUpload(self, self._upload_http_client,
+                                       source_stream, DEFAULT_CONTENT_TYPE,
+                                       destination_resource,
+                                       validated_request_config)
+    elif upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
+      upload = gcs_upload.ResumableUpload(self, self._upload_http_client,
+                                          source_stream, DEFAULT_CONTENT_TYPE,
+                                          destination_resource,
+                                          validated_request_config,
+                                          serialization_data,
+                                          tracker_callback)
+    else:
+      raise command_errors.Error(
+          'Invalid upload strategy: {}.'.format(upload_strategy.value))
 
-    upload_result = self._upload_object(
-        source_stream,
-        object_metadata,
-        apitools_strategy=apitools_transfer.SIMPLE_UPLOAD,
-        progress_callback=wrapped_progress_callback,
-        request_config=validated_request_config,
-        serialization_data=None)
-
-    if progress_callback:
-      # Apitools does not always run the callback at the end of an upload.
-      progress_callback(request_config.size)
-
-    return upload_result
+    return gcs_metadata_util.get_object_resource_from_metadata(upload.run())
 
   @_catch_http_error_raise_gcs_api_error()
   def compose_objects(self,

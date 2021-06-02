@@ -3608,7 +3608,8 @@ class StatusCondition(_messages.Message):
       SET_BY_OPERATOR: Cluster state was manually changed by an SRE due to a
         system logic error.
       CLOUD_KMS_KEY_ERROR: Unable to perform an encrypt operation against the
-        CloudKMS key used for etcd level encryption. More codes TBA
+        CloudKMS key used for etcd level encryption.
+      CA_EXPIRING: Cluster CA is expiring soon.
     """
     UNKNOWN = 0
     GCE_STOCKOUT = 1
@@ -3616,6 +3617,7 @@ class StatusCondition(_messages.Message):
     GCE_QUOTA_EXCEEDED = 3
     SET_BY_OPERATOR = 4
     CLOUD_KMS_KEY_ERROR = 5
+    CA_EXPIRING = 6
 
   canonicalCode = _messages.EnumField('CanonicalCodeValueValuesEnum', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)

@@ -1078,6 +1078,8 @@ class OSPolicyResourceConfigStep(_messages.Message):
     TypeValueValuesEnum: Configuration step type.
 
   Fields:
+    errorMessage: An error message recorded during the execution of this step.
+      Only populated when outcome is FAILED.
     outcome: Outcome of the configuration step.
     type: Configuration step type.
   """
@@ -1117,8 +1119,9 @@ class OSPolicyResourceConfigStep(_messages.Message):
     DESIRED_STATE_ENFORCEMENT = 3
     DESIRED_STATE_CHECK_POST_ENFORCEMENT = 4
 
-  outcome = _messages.EnumField('OutcomeValueValuesEnum', 1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  errorMessage = _messages.StringField(1)
+  outcome = _messages.EnumField('OutcomeValueValuesEnum', 2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class OSPolicyResourceExecResource(_messages.Message):

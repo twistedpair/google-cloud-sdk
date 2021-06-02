@@ -294,7 +294,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsPatchRequest(_mes
 
   Fields:
     name: The name of the tag, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/tags/tag1".
+      central1/repositories/repo1/packages/pkg1/tags/tag1". If the package or
+      tag ID parts contain slashes, the slashes are escaped.
     tag: A Tag resource to be passed as the request body.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -564,7 +565,8 @@ class File(_messages.Message):
     createTime: The time when the File was created.
     hashes: The hashes of the file content.
     name: The name of the file, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/files/a/b/c.txt".
+      central1/repositories/repo1/files/a%2Fb%2Fc.txt". If the file ID part
+      contains slashes, they are escaped.
     owner: The name of the Package or Version that owns this file, if any.
     sizeBytes: The size of the File in bytes.
     updateTime: The time when the File was last updated.
@@ -889,7 +891,8 @@ class Package(_messages.Message):
     createTime: The time when the package was created.
     displayName: The display name of the package.
     name: The name of the package, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1".
+      central1/repositories/repo1/packages/pkg1". If the package ID part
+      contains slashes, the slashes are escaped.
     updateTime: The time when the package was last updated. This includes
       publishing a new version of the package.
   """
@@ -1046,6 +1049,8 @@ class Repository(_messages.Message):
       PYPI: PyPI package format.
       APT: APT package format.
       YUM: YUM package format.
+      GOOGET: GooGet package format.
+      PYTHON: Python package format.
     """
     FORMAT_UNSPECIFIED = 0
     DOCKER = 1
@@ -1054,6 +1059,8 @@ class Repository(_messages.Message):
     PYPI = 4
     APT = 5
     YUM = 6
+    GOOGET = 7
+    PYTHON = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1224,10 +1231,13 @@ class Tag(_messages.Message):
 
   Fields:
     name: The name of the tag, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/tags/tag1".
+      central1/repositories/repo1/packages/pkg1/tags/tag1". If the package or
+      tag ID parts contain slashes, the slashes are escaped.
     version: The name of the version the tag refers to, for example:
       "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/versions/sha256:5243811"
+      central1/repositories/repo1/packages/pkg1/versions/sha256:5243811" If
+      the package or version ID parts contain slashes, the slashes are
+      escaped.
   """
 
   name = _messages.StringField(1)
@@ -1277,7 +1287,8 @@ class Version(_messages.Message):
       version. The fields returned are defined by the underlying repository-
       specific resource. Currently, the only resource in use is DockerImage
     name: The name of the version, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/versions/art1".
+      central1/repositories/repo1/packages/pkg1/versions/art1". If the package
+      or version ID parts contain slashes, the slashes are escaped.
     relatedTags: Output only. A list of related tags. Will contain up to 100
       tags that reference this version.
     updateTime: The time when the version was last updated.

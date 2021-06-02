@@ -341,13 +341,15 @@
             "Default value. This value is unused.",
             "The standard subscription.",
             "The trial subscription.",
-            "The alpha subscription."
+            "The alpha subscription.",
+            "The demo subscription for channel partners."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "STANDARD",
             "TRIAL",
-            "ALPHA"
+            "ALPHA",
+            "DEMO"
           ]
         }
       }

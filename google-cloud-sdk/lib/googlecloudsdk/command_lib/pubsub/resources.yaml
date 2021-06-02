@@ -65,3 +65,13 @@ lite_subscription:
     attribute_name: subscription
     help: |
       The subscription name.
+
+lite_cursor_subscription:
+  name: subscription
+  collection: pubsublite.cursor.projects.locations.subscriptions
+  attributes:
+  - *location
+  - parameter_name: subscriptionsId
+    attribute_name: subscription
+    help: |
+      The subscription name.

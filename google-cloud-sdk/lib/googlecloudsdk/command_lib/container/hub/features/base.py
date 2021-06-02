@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.container.hub.features import info
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -34,54 +35,60 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import retry
 
 
-class EnableCommand(base.CreateCommand):
+class FeatureCommand(object):
+  """FeatureCommand is a mixin adding common utils to the Feature commands."""
+  feature_name = ''  # Derived commands should set this to their Feature.
+
+  @property
+  def feature(self):
+    """The Feature info entry for this command's Feature."""
+    return info.Get(self.feature_name)
+
+
+class EnableCommand(FeatureCommand, base.CreateCommand):
   """Base class for the command that enables a Feature."""
 
   def RunCommand(self, args, **kwargs):
+    project = properties.VALUES.core.project.GetOrFail()
+    enable_api.EnableServiceIfDisabled(project, self.feature.api)
     try:
-      project = properties.VALUES.core.project.GetOrFail()
-      if not enable_api.IsServiceEnabled(project, self.FEATURE_API):
-        enable_api.EnableService(project, self.FEATURE_API)
-        # GKE Hub CreateFeature API uses Chemist to validate the service
-        # enablement status. But there is a delay in api enabled changes to
-        # propograte from TentantManager to Chemist
-        # go/service-activation#distribute-change.
-        # Therefore, we need to retry calling CreateFeature for ~15 seconds till
-        # the api changes propograte. More info: b/28800908.
-        retryer = retry.Retryer(
-            max_retrials=4, exponential_sleep_multiplier=1.75)
-        return retryer.RetryOnException(
-            CreateFeature,
-            args=(project, self.FEATURE_NAME, self.FEATURE_DISPLAY_NAME),
-            kwargs=kwargs,
-            should_retry_if=_ShouldCreateFeatureRetryIf,
-            sleep_ms=1000)
-      else:
-        return CreateFeature(project, self.FEATURE_NAME,
-                             self.FEATURE_DISPLAY_NAME, **kwargs)
-
-    except apitools_exceptions.HttpUnauthorizedError as e:
+      # Retry if we still get "API not activated"; it can take a few minutes
+      # for Chemist to catch up. See b/28800908.
+      # TODO(b/177098463): Add a spinner here?
+      retryer = retry.Retryer(max_retrials=4, exponential_sleep_multiplier=1.75)
+      return retryer.RetryOnException(
+          CreateFeature,
+          args=(project, self.feature_name, self.feature.display_name),
+          kwargs=kwargs,
+          should_retry_if=self._FeatureAPINotEnabled,
+          sleep_ms=1000)
+    except retry.MaxRetrialsException:
       raise exceptions.Error(
-          'You are not authorized to enable {} Feature from project [{}]. '
-          'Underlying error: {}'.format(self.FEATURE_DISPLAY_NAME, project, e))
-    except properties.RequiredPropertyError as e:
-      raise exceptions.Error('Failed to retrieve the project ID.')
+          'Retry limit exceeded waiting for {} to enable'.format(
+              self.feature.api))
     except apitools_exceptions.HttpConflictError as e:
       # If the error is not due to the object already existing, re-raise.
       error = core_api_exceptions.HttpErrorPayload(e)
       if error.status_description != 'ALREADY_EXISTS':
         raise
-      else:
-        log.status.Print(
-            '{} Feature for project [{}] is already enabled'.format(
-                self.FEATURE_DISPLAY_NAME, project))
-    except Exception as e:
-      raise exceptions.Error('Error enabling {} Feature for project [{}]. '
-                             'Underlying error: {}'.format(
-                                 self.FEATURE_DISPLAY_NAME, project, e))
+      log.status.Print('{} Feature for project [{}] is already enabled'.format(
+          self.feature.display_name, project))
+
+  def _FeatureAPINotEnabled(self, exc_type, exc_value, traceback, state):
+    del traceback, state  # Unused
+    if exc_type != apitools_exceptions.HttpBadRequestError:
+      return False
+    error = core_api_exceptions.HttpErrorPayload(exc_value)
+    # TODO(b/188807249): Add a reference to this error in the error package.
+    if not (error.status_description == 'FAILED_PRECONDITION' and
+            self.feature.api in error.message and
+            'is not enabled' in error.message):
+      return False
+    log.status.Print('Waiting for service API enablement to finish...')
+    return True
 
 
-class DisableCommand(base.DeleteCommand):
+class DisableCommand(FeatureCommand, base.DeleteCommand):
   """Base class for the command that disables a Feature."""
 
   @classmethod
@@ -95,33 +102,27 @@ class DisableCommand(base.DeleteCommand):
   def Run(self, args):
     project = properties.VALUES.core.project.GetOrFail()
     name = 'projects/{0}/locations/global/features/{1}'.format(
-        project, self.FEATURE_NAME)
+        project, self.feature_name)
     # TODO(b/177098463): Treat 404 as OK?
-    DeleteFeature(name, self.FEATURE_DISPLAY_NAME, force=args.force)
+    DeleteFeature(name, self.feature.display_name, force=args.force)
 
 
-class DescribeCommand(base.DescribeCommand):
+class DescribeCommand(FeatureCommand, base.DescribeCommand):
   """Base class for the command that describes the status of a Feature."""
 
-  def RunCommand(self, args):
-    try:
-      project_id = properties.VALUES.core.project.GetOrFail()
-      name = 'projects/{0}/locations/global/features/{1}'.format(
-          project_id, self.FEATURE_NAME)
-      return GetFeature(name)
-    except apitools_exceptions.HttpUnauthorizedError as e:
-      raise exceptions.Error(
-          'You are not authorized to see the status of {} '
-          'Feature from project [{}]. Underlying error: {}'.format(
-              self.FEATURE_DISPLAY_NAME, project_id, e))
+  def Run(self, args):
+    project_id = properties.VALUES.core.project.GetOrFail()
+    name = 'projects/{0}/locations/global/features/{1}'.format(
+        project_id, self.feature_name)
+    return GetFeature(name)
 
 
-class UpdateCommand(base.UpdateCommand):
+class UpdateCommand(FeatureCommand, base.UpdateCommand):
   """Base class for the command that updates a Feature."""
 
   def RunCommand(self, mask, **kwargs):
     project = properties.VALUES.core.project.GetOrFail()
-    return UpdateFeature(project, self.FEATURE_NAME, self.FEATURE_DISPLAY_NAME,
+    return UpdateFeature(project, self.feature_name, self.feature.display_name,
                          mask, **kwargs)
 
 
@@ -198,13 +199,26 @@ def CreateAppDevExperienceFeatureSpec():
   return messages.AppDevExperienceFeatureSpec()
 
 
+def CreateCloudBuildFeatureSpec():
+  """Creates an empty Hub Feature Spec for the Cloud Build Service.
+
+  Returns:
+    The empty Cloud Build Hub Feature Spec.
+  """
+  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
+  messages = client.MESSAGES_MODULE
+  empty_config_map = messages.CloudBuildFeatureSpec.MembershipConfigsValue(
+      additionalProperties=[])
+  return messages.CloudBuildFeatureSpec(membershipConfigs=empty_config_map)
+
+
 def CreateFeature(project, feature_id, feature_display_name, **kwargs):
   """Creates a Feature resource in Hub.
 
   Args:
     project: the project in which to create the Feature
     feature_id: the value to use for the feature_id
-    feature_display_name: the FEATURE_DISPLAY_NAME of this Feature
+    feature_display_name: the display name of this Feature
     **kwargs: arguments for Feature object. For eg, multiclusterFeatureSpec
 
   Returns:
@@ -268,7 +282,7 @@ def DeleteFeature(name, feature_display_name, force=False):
   Args:
     name: the full resource name of the Feature to delete, e.g.,
       projects/foo/locations/global/features/name.
-    feature_display_name: the FEATURE_DISPLAY_NAME of this Feature
+    feature_display_name: the display name of this Feature
     force: flag to trigger force deletion of the Feature.
 
   Raises:
@@ -293,7 +307,7 @@ def UpdateFeature(project, feature_id, feature_display_name, mask, **kwargs):
   Args:
     project: the project in which to update the Feature
     feature_id: the value to use for the feature_id
-    feature_display_name: the FEATURE_DISPLAY_NAME of this Feature
+    feature_display_name: the display name of this Feature
     mask: resource fields to be updated. For eg. multiclusterFeatureSpec
     **kwargs: arguments for Feature object. For eg, multiclusterFeatureSpec
 
@@ -356,12 +370,24 @@ def ListMemberships(project):
   ]
 
 
-def _ShouldCreateFeatureRetryIf(exc_type, exc_value, unused_traceback,
-                                unused_state):
-  if exc_type == apitools_exceptions.HttpBadRequestError:
-    error = core_api_exceptions.HttpErrorPayload(exc_value)
-    if error.status_description == 'FAILED_PRECONDITION' and \
-       'is not enabled' in error.message:
-      log.status.Print('Waiting for service api enablement to finish...')
-      return True
-  return False
+def GetMembership(project, membership):
+  """Gets Membership ID from the Hub.
+
+  Args:
+    project: the project to search for the Membership ID
+    membership: the Membership ID to retrieve
+
+  Returns:
+    the corresponding Membership ID if it exists
+
+  Raises:
+    apitools.base.py.HttpError: if the request returns an HTTP error
+  """
+  name = 'projects/{}/locations/global/memberships/{}'.format(
+      project, membership)
+  client = core_apis.GetClientInstance('gkehub', 'v1beta1')
+  response = client.projects_locations_memberships.Get(
+      client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsGetRequest(
+          name=name))
+
+  return response.name

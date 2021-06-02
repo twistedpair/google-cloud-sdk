@@ -273,4 +273,4 @@ def _HandleErrorResponse(response_body):
       error_subtype == oauth2client_client.REAUTH_NEEDED_ERROR_INVALID_RAPT or
       error_subtype == oauth2client_client.REAUTH_NEEDED_ERROR_RAPT_REQUIRED):
     raise ReauthRequiredError('The reauth is required.')
-  google_auth_client._handle_error_response(response_body)  # pylint: disable=protected-access
+  google_auth_client._handle_error_response(error_data)  # pylint: disable=protected-access
