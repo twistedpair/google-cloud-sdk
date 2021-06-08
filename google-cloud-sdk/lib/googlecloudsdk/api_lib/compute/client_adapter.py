@@ -84,6 +84,7 @@ class ClientAdapter(object):
                    no_followup=False,
                    always_return_operation=False,
                    followup_overrides=None,
+                   log_warnings=True,
                    log_result=True,
                    timeout=None):
     """Sends given request in batch mode."""
@@ -98,6 +99,7 @@ class ClientAdapter(object):
             no_followup=no_followup,
             always_return_operation=always_return_operation,
             followup_overrides=followup_overrides,
+            log_warnings=log_warnings,
             log_result=log_result,
             timeout=timeout))
     if errors_to_collect is None and errors:

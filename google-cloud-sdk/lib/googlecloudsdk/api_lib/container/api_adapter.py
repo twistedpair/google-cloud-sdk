@@ -2271,6 +2271,12 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredAutopilot=self.messages.Autopilot(enabled=False))
 
+    if options.security_group is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAuthenticatorGroupsConfig=self.messages.
+          AuthenticatorGroupsConfig(enabled=True,
+                                    securityGroup=options.security_group))
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):

@@ -43,7 +43,9 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
     self.projects_locations_repositories_aptArtifacts = self.ProjectsLocationsRepositoriesAptArtifactsService(self)
     self.projects_locations_repositories_aptartifacts = self.ProjectsLocationsRepositoriesAptartifactsService(self)
     self.projects_locations_repositories_gooGetArtifacts = self.ProjectsLocationsRepositoriesGooGetArtifactsService(self)
+    self.projects_locations_repositories_googetartifacts = self.ProjectsLocationsRepositoriesGoogetartifactsService(self)
     self.projects_locations_repositories_yumArtifacts = self.ProjectsLocationsRepositoriesYumArtifactsService(self)
+    self.projects_locations_repositories_yumartifacts = self.ProjectsLocationsRepositoriesYumartifactsService(self)
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -235,6 +237,55 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsRepositoriesGoogetartifactsService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_googetartifacts resource."""
+
+    _NAME = 'projects_locations_repositories_googetartifacts'
+
+    def __init__(self, client):
+      super(ArtifactregistryV1alpha1.ProjectsLocationsRepositoriesGoogetartifactsService, self).__init__(client)
+      self._upload_configs = {
+          'Upload': base_api.ApiUploadInfo(
+              accept=['*/*'],
+              max_size=None,
+              resumable_multipart=None,
+              resumable_path=None,
+              simple_multipart=True,
+              simple_path='/upload/v1alpha1/{+parent}/googetArtifacts:create',
+          ),
+          }
+
+    def Upload(self, request, global_params=None, upload=None):
+      r"""Directly uploads a GooGet artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesGoogetartifactsUploadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+        upload: (Upload, default: None) If present, upload
+            this stream with the request.
+      Returns:
+        (GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse) The response message.
+      """
+      config = self.GetMethodConfig('Upload')
+      upload_config = self.GetUploadConfig('Upload')
+      return self._RunMethod(
+          config, request, global_params=global_params,
+          upload=upload, upload_config=upload_config)
+
+    Upload.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/googetArtifacts:create',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.googetartifacts.upload',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/googetArtifacts:create',
+        request_field='googleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesGoogetartifactsUploadRequest',
+        response_type_name='GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsRepositoriesYumArtifactsService(base_api.BaseApiService):
     """Service class for the projects_locations_repositories_yumArtifacts resource."""
 
@@ -269,6 +320,55 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
         request_field='googleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesYumartifactsService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_yumartifacts resource."""
+
+    _NAME = 'projects_locations_repositories_yumartifacts'
+
+    def __init__(self, client):
+      super(ArtifactregistryV1alpha1.ProjectsLocationsRepositoriesYumartifactsService, self).__init__(client)
+      self._upload_configs = {
+          'Upload': base_api.ApiUploadInfo(
+              accept=['*/*'],
+              max_size=None,
+              resumable_multipart=None,
+              resumable_path=None,
+              simple_multipart=True,
+              simple_path='/upload/v1alpha1/{+parent}/yumArtifacts:create',
+          ),
+          }
+
+    def Upload(self, request, global_params=None, upload=None):
+      r"""Directly uploads a Yum artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+        upload: (Upload, default: None) If present, upload
+            this stream with the request.
+      Returns:
+        (GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse) The response message.
+      """
+      config = self.GetMethodConfig('Upload')
+      upload_config = self.GetUploadConfig('Upload')
+      return self._RunMethod(
+          config, request, global_params=global_params,
+          upload=upload, upload_config=upload_config)
+
+    Upload.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:create',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.yumartifacts.upload',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/yumArtifacts:create',
+        request_field='googleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest',
+        response_type_name='GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse',
         supports_download=False,
     )
 

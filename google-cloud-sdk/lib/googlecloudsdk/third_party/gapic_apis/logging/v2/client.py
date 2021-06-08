@@ -35,10 +35,23 @@ class LoggingClient(object):
   """Logging client."""
   types = logging_v2.types
 
-  def __init__(self):
+  def __init__(self, credentials, **kwargs):
+    """
+    Instantiates the LoggingClient.
+
+    Args:
+      credentials: google.auth.credentials.Credentials, the credentials to use.
+      **kwargs: Additional kwargs to pass to gapic.MakeClient.
+
+    Returns:
+        LoggingClient
+    """
     self.config = gapic_util.MakeClient(
-        logging_v2.services.config_service_v2.client.ConfigServiceV2Client)
+        logging_v2.services.config_service_v2.client.ConfigServiceV2Client,
+        credentials, **kwargs)
     self.logging = gapic_util.MakeClient(
-        logging_v2.services.logging_service_v2.client.LoggingServiceV2Client)
+        logging_v2.services.logging_service_v2.client.LoggingServiceV2Client,
+        credentials, **kwargs)
     self.metrics = gapic_util.MakeClient(
-        logging_v2.services.metrics_service_v2.client.MetricsServiceV2Client)
+        logging_v2.services.metrics_service_v2.client.MetricsServiceV2Client,
+        credentials, **kwargs)

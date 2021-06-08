@@ -77,6 +77,10 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
         assessment is suspected of being fraudulent based on the payment
         method, billing details, shipping address or other transaction
         information.
+      INITIATED_TWO_FACTOR: Indicates that the user was served a 2FA
+        challenge. Sufficiently old assessments with this reason that have not
+        been overwritten with PASSED_TWO_FACTOR will be treated as an
+        abandoned 2FA flow, equivalent to FAILED_TWO_FACTOR.
       PASSED_TWO_FACTOR: Indicates that the user passed a 2FA challenge.
       FAILED_TWO_FACTOR: Indicates that the user failed a 2FA challenge.
       CORRECT_PASSWORD: Indicates the user provided the correct password.
@@ -85,10 +89,11 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
     REASON_UNSPECIFIED = 0
     CHARGEBACK = 1
     PAYMENT_HEURISTICS = 2
-    PASSED_TWO_FACTOR = 3
-    FAILED_TWO_FACTOR = 4
-    CORRECT_PASSWORD = 5
-    INCORRECT_PASSWORD = 6
+    INITIATED_TWO_FACTOR = 3
+    PASSED_TWO_FACTOR = 4
+    FAILED_TWO_FACTOR = 5
+    CORRECT_PASSWORD = 6
+    INCORRECT_PASSWORD = 7
 
   annotation = _messages.EnumField('AnnotationValueValuesEnum', 1)
   reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 2, repeated=True)

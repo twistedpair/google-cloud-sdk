@@ -18,10 +18,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 from googlecloudsdk.api_lib.ondemandscanning import util as ods_util
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import files
+
+# Name of the RPM Parser binary.
+rpm_parser_binary_name = 'rpm_parser'
 
 
 class UnsupportedOS(core_exceptions.Error):
@@ -58,3 +65,10 @@ def WaitForOperation(operation, version):
       collection='ondemandscanning.projects.locations.operations')
   poller = waiter.CloudOperationPollerNoResources(op_service)
   return waiter.PollUntilDone(poller, op_resource)
+
+
+def RpmParserPath():
+  ret = files.FindExecutableOnPath(rpm_parser_binary_name)
+  if ret is None:
+    ret = os.path.join(config.Paths().sdk_bin_path, rpm_parser_binary_name)
+  return ret

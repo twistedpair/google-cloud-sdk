@@ -58,15 +58,16 @@ properties:
     description: |-
       Specifies the default TTL for cached content served by this origin for
       responses that do not have an existing valid TTL (max-age or s-max-age).
-      Defaults to 3600s (1 hour). - The TTL must be >= 0 and <= 2592000s (1
-      month) - Setting a TTL of "0" means "always revalidate" (equivalent to
-      must-revalidate) - The value of defaultTTL cannot be set to a value
-      greater than that of maxTTL. - Fractions of a second are not allowed. -
-      When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL will
-      overwrite the TTL set in all responses. Note that infrequently accessed
-      objects may be evicted from the cache before the defined TTL. Objects that
-      expire will be revalidated with the origin. When the cache mode is set to
-      "USE_ORIGIN_HEADERS" or "BYPASS_CACHE", you must omit this field.
+      Defaults to 3600s (1 hour). - The TTL must be >= 0 and <= 31,536,000
+      seconds (1 year) - Setting a TTL of "0" means "always revalidate"
+      (equivalent to must-revalidate) - The value of defaultTTL cannot be set to
+      a value greater than that of maxTTL. - Fractions of a second are not
+      allowed. - When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL
+      will overwrite the TTL set in all responses. Note that infrequently
+      accessed objects may be evicted from the cache before the defined TTL.
+      Objects that expire will be revalidated with the origin. When the cache
+      mode is set to "USE_ORIGIN_HEADERS" or "BYPASS_CACHE", you must omit this
+      field.
     type: string
   maxTtl:
     description: |-
@@ -75,8 +76,8 @@ properties:
       max-age or s-maxage higher than this, or an Expires header more than
       maxTtl seconds in the future will be capped at the value of maxTTL, as if
       it were the value of an s-maxage Cache-Control directive. - The TTL must
-      be >= 0 and <= 2592000s (1 month) - Setting a TTL of "0" means "always
-      revalidate" - The value of maxTtl must be equal to or greater than
+      be >= 0 and <= 31,536,000 seconds (1 year) - Setting a TTL of "0" means
+      "always revalidate" - The value of maxTtl must be equal to or greater than
       defaultTtl. - Fractions of a second are not allowed. When the cache mode
       is set to "USE_ORIGIN_HEADERS", "FORCE_CACHE_ALL", or "BYPASS_CACHE", you
       must omit this field.

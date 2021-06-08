@@ -150,6 +150,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'alloydb': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.alloydb.v1alpha1',
+                client_classpath='alloydb_v1alpha1_client.AlloydbV1alpha1',
+                messages_modulepath='alloydb_v1alpha1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'alloydbadmin': {
         'v1alpha1':
             APIDef(
@@ -1436,6 +1446,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'ids': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.ids.v1',
+                client_classpath='ids_v1_client.IdsV1',
+                messages_modulepath='ids_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'krmapihosting': {
         'v1alpha1':
             APIDef(
@@ -1659,12 +1679,20 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'networkservices': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.networkservices.v1',
+                client_classpath='networkservices_v1_client.NetworkservicesV1',
+                messages_modulepath='networkservices_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.networkservices.v1alpha1',
                 client_classpath='networkservices_v1alpha1_client.NetworkservicesV1alpha1',
                 messages_modulepath='networkservices_v1alpha1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

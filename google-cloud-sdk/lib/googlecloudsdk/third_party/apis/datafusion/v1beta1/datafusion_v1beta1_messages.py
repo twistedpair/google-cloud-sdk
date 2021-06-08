@@ -167,6 +167,19 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CryptoKeyConfig(_messages.Message):
+  r"""The crypto key configuration. This field is used by the Customer-managed
+  encryption keys (CMEK) feature.
+
+  Fields:
+    keyReference: The name of the key which is used to encrypt/decrypt
+      customer data. For key in Cloud KMS, the key should be in the format of
+      `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+  """
+
+  keyReference = _messages.StringField(1)
+
+
 class DatafusionProjectsLocationsGetRequest(_messages.Message):
   r"""A DatafusionProjectsLocationsGetRequest object.
 
@@ -283,16 +296,43 @@ class DatafusionProjectsLocationsInstancesNamespacesGetIamPolicyRequest(_message
 class DatafusionProjectsLocationsInstancesNamespacesListRequest(_messages.Message):
   r"""A DatafusionProjectsLocationsInstancesNamespacesListRequest object.
 
+  Enums:
+    ViewValueValuesEnum: By default, only basic information about a namespace
+      is returned (e.g. name). When `NAMESPACE_VIEW_FULL` is specified,
+      additional information associated with a namespace gets returned (e.g.
+      IAM policy set on the namespace)
+
   Fields:
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
     parent: Required. The instance to list its namespaces.
+    view: By default, only basic information about a namespace is returned
+      (e.g. name). When `NAMESPACE_VIEW_FULL` is specified, additional
+      information associated with a namespace gets returned (e.g. IAM policy
+      set on the namespace)
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""By default, only basic information about a namespace is returned (e.g.
+    name). When `NAMESPACE_VIEW_FULL` is specified, additional information
+    associated with a namespace gets returned (e.g. IAM policy set on the
+    namespace)
+
+    Values:
+      NAMESPACE_VIEW_UNSPECIFIED: Default/unset value, which will use BASIC
+        view.
+      NAMESPACE_VIEW_BASIC: Show the most basic metadata of a namespace
+      NAMESPACE_VIEW_FULL: Returns all metadata of a namespace
+    """
+    NAMESPACE_VIEW_UNSPECIFIED = 0
+    NAMESPACE_VIEW_BASIC = 1
+    NAMESPACE_VIEW_FULL = 2
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class DatafusionProjectsLocationsInstancesNamespacesSetIamPolicyRequest(_messages.Message):
@@ -560,6 +600,20 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class IAMPolicy(_messages.Message):
+  r"""IAMPolicy encapsulates the IAM policy name, definition and status of
+  policy fetching.
+
+  Fields:
+    policy: Policy definition if IAM policy fetching is successful, otherwise
+      empty.
+    status: Status of iam policy fetching.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  status = _messages.MessageField('Status', 2)
+
+
 class Instance(_messages.Message):
   r"""Represents a Data Fusion instance.
 
@@ -581,6 +635,8 @@ class Instance(_messages.Message):
     availableVersion: Available versions that the instance can be upgraded to
       using UpdateInstanceRequest.
     createTime: Output only. The time the instance was created.
+    cryptoKeyConfig: The crypto key configuration. This field is used by the
+      Customer-Managed Encryption Keys (CMEK) feature.
     dataprocServiceAccount: User-managed service account to set on Dataproc
       when Cloud Data Fusion creates Dataproc to run data processing
       pipelines. This allows users to have fine-grained access control on
@@ -724,28 +780,29 @@ class Instance(_messages.Message):
   apiEndpoint = _messages.StringField(2)
   availableVersion = _messages.MessageField('Version', 3, repeated=True)
   createTime = _messages.StringField(4)
-  dataprocServiceAccount = _messages.StringField(5)
-  description = _messages.StringField(6)
-  displayName = _messages.StringField(7)
-  enableRbac = _messages.BooleanField(8)
-  enableStackdriverLogging = _messages.BooleanField(9)
-  enableStackdriverMonitoring = _messages.BooleanField(10)
-  gcsBucket = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  name = _messages.StringField(13)
-  networkConfig = _messages.MessageField('NetworkConfig', 14)
-  options = _messages.MessageField('OptionsValue', 15)
-  p4ServiceAccount = _messages.StringField(16)
-  privateInstance = _messages.BooleanField(17)
-  serviceAccount = _messages.StringField(18)
-  serviceEndpoint = _messages.StringField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  stateMessage = _messages.StringField(21)
-  tenantProjectId = _messages.StringField(22)
-  type = _messages.EnumField('TypeValueValuesEnum', 23)
-  updateTime = _messages.StringField(24)
-  version = _messages.StringField(25)
-  zone = _messages.StringField(26)
+  cryptoKeyConfig = _messages.MessageField('CryptoKeyConfig', 5)
+  dataprocServiceAccount = _messages.StringField(6)
+  description = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  enableRbac = _messages.BooleanField(9)
+  enableStackdriverLogging = _messages.BooleanField(10)
+  enableStackdriverMonitoring = _messages.BooleanField(11)
+  gcsBucket = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  networkConfig = _messages.MessageField('NetworkConfig', 15)
+  options = _messages.MessageField('OptionsValue', 16)
+  p4ServiceAccount = _messages.StringField(17)
+  privateInstance = _messages.BooleanField(18)
+  serviceAccount = _messages.StringField(19)
+  serviceEndpoint = _messages.StringField(20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  stateMessage = _messages.StringField(22)
+  tenantProjectId = _messages.StringField(23)
+  type = _messages.EnumField('TypeValueValuesEnum', 24)
+  updateTime = _messages.StringField(25)
+  version = _messages.StringField(26)
+  zone = _messages.StringField(27)
 
 
 class ListAvailableVersionsResponse(_messages.Message):
@@ -899,10 +956,12 @@ class Namespace(_messages.Message):
   r"""Represents the information of a namespace
 
   Fields:
+    iamPolicy: IAM policy associated with this namespace.
     name: Name of the given namespace.
   """
 
-  name = _messages.StringField(1)
+  iamPolicy = _messages.MessageField('IAMPolicy', 1)
+  name = _messages.StringField(2)
 
 
 class NetworkConfig(_messages.Message):

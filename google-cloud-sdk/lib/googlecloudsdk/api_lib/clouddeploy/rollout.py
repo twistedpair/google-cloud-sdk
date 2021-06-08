@@ -109,7 +109,9 @@ class RolloutClient(object):
       ApproveRolloutResponse message.
     """
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveRequest(
-        name=name, approved=approved)
+        name=name,
+        approveRolloutRequest=self.messages.ApproveRolloutRequest(
+            approved=approved))
     return self._service.Approve(request)
 
   def Get(self, name):

@@ -3171,7 +3171,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.environments.apis.revisions.deploy',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['override', 'sequencedRollout'],
+        query_params=['override', 'sequencedRollout', 'serviceAccount'],
         relative_path='v1/{+name}/deployments',
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest',
@@ -4445,7 +4445,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.environments.sharedflows.revisions.deploy',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['override'],
+        query_params=['override', 'serviceAccount'],
         relative_path='v1/{+name}/deployments',
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsSharedflowsRevisionsDeployRequest',
@@ -6961,7 +6961,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def GenerateInfraMigrationPlan(self, request, global_params=None):
-      r"""Generates an Apigee X infrastructure representation from the existing Apigee Edge organization's resources.
+      r"""Generates an Apigee X infrastructure representation from the existing Apigee Edge organization's resources. Users can modify this plan based on their needs and requirements before initating MigrateInfrastructure.
 
       Args:
         request: (ApigeeProjectsGenerateInfraMigrationPlanRequest) input message
@@ -7037,6 +7037,33 @@ class ApigeeV1(base_api.BaseApiClient):
         relative_path='v1/{+project}:migrateDeveloperPortals',
         request_field='googleCloudApigeeV1MigrateDeveloperPortalsRequest',
         request_type_name='ApigeeProjectsMigrateDeveloperPortalsRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def MigrateInfrastructure(self, request, global_params=None):
+      r"""Migrates infrastructure from an Apigee Edge organization into Apigee X using InfraMigrationPlan that can be generated from GenerateInfraMigrationPlan.
+
+      Args:
+        request: (ApigeeProjectsMigrateInfrastructureRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('MigrateInfrastructure')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MigrateInfrastructure.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}:migrateInfrastructure',
+        http_method='POST',
+        method_id='apigee.projects.migrateInfrastructure',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=[],
+        relative_path='v1/{+project}:migrateInfrastructure',
+        request_field='googleCloudApigeeV1MigrateInfrastructureRequest',
+        request_type_name='ApigeeProjectsMigrateInfrastructureRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

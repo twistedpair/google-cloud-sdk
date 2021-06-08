@@ -302,6 +302,8 @@ class _Sections(object):
       SDK.
     diagnostics: Section, The section containing diagnostics properties for the
       Cloud SDK.
+    edge_container: Section, The section containing edgecontainer properties for
+      the Cloud SDK.
     emulator: Section, The section containing emulator properties for the Cloud
       SDK.
     eventarc: Section, The section containing eventarc properties for the Cloud
@@ -401,6 +403,7 @@ class _Sections(object):
     self.deployment_manager = _SectionDeploymentManager()
     self.devshell = _SectionDevshell()
     self.diagnostics = _SectionDiagnostics()
+    self.edge_container = _SectionEdgeContainer()
     self.emulator = _SectionEmulator()
     self.eventarc = _SectionEventarc()
     self.experimental = _SectionExperimental()
@@ -466,6 +469,7 @@ class _Sections(object):
         self.deployment_manager,
         self.devshell,
         self.diagnostics,
+        self.edge_container,
         self.emulator,
         self.eventarc,
         self.experimental,
@@ -2110,6 +2114,18 @@ class _SectionDiagnostics(_Section):
                    'allowed by the hidden properties diagnostic.'))
 
 
+class _SectionEdgeContainer(_Section):
+  """Contains the properties for the 'edge_container' section."""
+
+  def __init__(self):
+    super(_SectionEdgeContainer, self).__init__('edge_container', hidden=True)
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Private CA '
+        'resources. When a `--location` flag is required but not provided, the '
+        'command will fall back to this value, if set.')
+
+
 class _SectionApiEndpointOverrides(_Section):
   """Contains the properties for the 'api-endpoint-overrides' section.
 
@@ -2150,6 +2166,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudresourcesearch = self._Add('cloudresourcesearch')
     self.cloudscheduler = self._Add('cloudscheduler')
     self.cloudtasks = self._Add('cloudtasks')
+    self.cloudtrace = self._Add('cloudtrace')
     self.composer = self._Add('composer')
     self.compute = self._Add('compute')
     self.container = self._Add('container')
@@ -2166,9 +2183,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.discovery = self._Add('discovery')
     self.dns = self._Add('dns')
     self.domains = self._Add('domains')
+    self.edgecontainer = self._Add('edgecontainer')
     self.eventarc = self._Add('eventarc')
     self.events = self._Add('events')
-    self.kubernetesedge = self._Add('kubernetesedge')
     self.file = self._Add('file')
     self.firestore = self._Add('firestore')
     self.gameservices = self._Add('gameservices')
@@ -2234,6 +2251,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.workflowexecutions = self._Add('workflowexecutions')
     self.workflows = self._Add('workflows')
     self.sddc = self._Add('sddc')
+    self.vmwareengine = self._Add('vmwareengine')
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""

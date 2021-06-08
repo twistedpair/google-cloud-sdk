@@ -47,3 +47,9 @@ class NodeTypesClient(util.VmwareClientBase):
         batch_size_attribute='pageSize',
         batch_size=page_size,
         field='nodeTypes')
+
+  def Get(self, resource):
+    request = self.messages.VmwareengineProjectsLocationsNodeTypesGetRequest(
+        name=resource.RelativeName())
+    return self.service.Get(request)
+

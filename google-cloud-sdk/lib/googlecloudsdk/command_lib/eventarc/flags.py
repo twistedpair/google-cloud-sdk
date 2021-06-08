@@ -138,12 +138,27 @@ def GetEventFiltersArg(args, release_track):
     return args.matching_criteria
 
 
+def AddDestinationArgs(parser):
+  """Adds arguments related to trigger's destination."""
+  dest_group = parser.add_mutually_exclusive_group(required=True)
+
+  def _AddCloudRunDestinationArgs():
+    """Adds arguments related to trigger's Cloud Run fully-managed service destination."""
+    run_group = dest_group.add_group(
+        help='Flags for Cloud Run fully-managed service destination.')
+    AddDestinationRunServiceArg(run_group, required=True)
+    AddDestinationRunPathArg(run_group)
+    AddDestinationRunRegionArg(run_group)
+
+  _AddCloudRunDestinationArgs()
+
+
 def AddDestinationRunServiceArg(parser, required=False):
   """Adds an argument for the trigger's destination Cloud Run service."""
   parser.add_argument(
       '--destination-run-service',
       required=required,
-      help='The name of the Cloud Run fully-managed service that receives the '
+      help='Name of the Cloud Run fully-managed service that receives the '
       'events for the trigger. The service must be in the same project as the '
       'trigger.')
 
@@ -153,7 +168,7 @@ def AddDestinationRunPathArg(parser, required=False):
   parser.add_argument(
       '--destination-run-path',
       required=required,
-      help="The relative path on the destination Cloud Run service to which "
+      help='Relative path on the destination Cloud Run service to which '
       "the events for the trigger should be sent. Examples: ``/route'', "
       "``route'', ``route/subroute''.")
 
@@ -163,7 +178,7 @@ def AddDestinationRunRegionArg(parser, required=False):
   parser.add_argument(
       '--destination-run-region',
       required=required,
-      help='The region in which the destination Cloud Run service can be '
+      help='Region in which the destination Cloud Run service can be '
       'found. If not specified, it is assumed that the service is in the same '
       'region as the trigger.')
 

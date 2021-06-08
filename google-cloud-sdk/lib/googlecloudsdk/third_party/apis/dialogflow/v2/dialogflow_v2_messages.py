@@ -3706,6 +3706,7 @@ class GoogleCloudDialogflowCxV3ConversationTurnUserInput(_messages.Message):
       conversation during intent detection.
 
   Fields:
+    enableSentimentAnalysis: Whether sentiment analysis is enabled.
     injectedParameters: Parameters that need to be injected into the
       conversation during intent detection.
     input: Supports text input, event input, dtmf input in the test case.
@@ -3740,9 +3741,10 @@ class GoogleCloudDialogflowCxV3ConversationTurnUserInput(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  injectedParameters = _messages.MessageField('InjectedParametersValue', 1)
-  input = _messages.MessageField('GoogleCloudDialogflowCxV3QueryInput', 2)
-  isWebhookEnabled = _messages.BooleanField(3)
+  enableSentimentAnalysis = _messages.BooleanField(1)
+  injectedParameters = _messages.MessageField('InjectedParametersValue', 2)
+  input = _messages.MessageField('GoogleCloudDialogflowCxV3QueryInput', 3)
+  isWebhookEnabled = _messages.BooleanField(4)
 
 
 class GoogleCloudDialogflowCxV3ConversationTurnVirtualAgentOutput(_messages.Message):
@@ -5575,6 +5577,7 @@ class GoogleCloudDialogflowCxV3beta1ConversationTurnUserInput(_messages.Message)
       conversation during intent detection.
 
   Fields:
+    enableSentimentAnalysis: Whether sentiment analysis is enabled.
     injectedParameters: Parameters that need to be injected into the
       conversation during intent detection.
     input: Supports text input, event input, dtmf input in the test case.
@@ -5609,9 +5612,10 @@ class GoogleCloudDialogflowCxV3beta1ConversationTurnUserInput(_messages.Message)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  injectedParameters = _messages.MessageField('InjectedParametersValue', 1)
-  input = _messages.MessageField('GoogleCloudDialogflowCxV3beta1QueryInput', 2)
-  isWebhookEnabled = _messages.BooleanField(3)
+  enableSentimentAnalysis = _messages.BooleanField(1)
+  injectedParameters = _messages.MessageField('InjectedParametersValue', 2)
+  input = _messages.MessageField('GoogleCloudDialogflowCxV3beta1QueryInput', 3)
+  isWebhookEnabled = _messages.BooleanField(4)
 
 
 class GoogleCloudDialogflowCxV3beta1ConversationTurnVirtualAgentOutput(_messages.Message):
@@ -7792,8 +7796,8 @@ class GoogleCloudDialogflowV2AutomatedAgentReply(_messages.Message):
   r"""Represents a response from an automated agent.
 
   Fields:
-    detectIntentResponse: Required. Response of the Dialogflow
-      Sessions.DetectIntent call.
+    detectIntentResponse: Response of the Dialogflow Sessions.DetectIntent
+      call.
   """
 
   detectIntentResponse = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentResponse', 1)

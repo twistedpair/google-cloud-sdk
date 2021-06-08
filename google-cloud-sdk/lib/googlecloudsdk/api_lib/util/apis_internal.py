@@ -30,6 +30,7 @@ from googlecloudsdk.core import transport
 from googlecloudsdk.third_party.apis import apis_map
 
 import six
+from six.moves.urllib.parse import urlparse
 
 
 def _GetApiNameAndAlias(api_name):
@@ -181,6 +182,63 @@ def _GetClientInstance(api_name,
   return client_instance
 
 
+def _GetGapicClientClass(api_name, api_version):
+  """Returns the GAPIC client class for the API def specified by the args.
+
+  Args:
+    api_name: str, The API name (or the command surface name, if different).
+    api_version: str, The version of the API.
+
+  Currently, we only support the logging v2 client.
+  """
+  del api_name, api_version  # unused
+
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.third_party.gapic_apis.logging.v2 import client
+
+  return client.LoggingClient
+
+
+def _GetGapicClientInstance(api_name, api_version, credentials,
+                            address_override_func=None):
+  """Returns an instance of the GAPIC API client specified in the args.
+
+  For apitools API clients, the API endpoint override is something like
+  http://compute.googleapis.com/v1/. For GAPIC API clients, the DEFAULT_ENDPOINT
+  is something like compute.googleapis.com. To use the same endpoint override
+  property for both, we use the netloc of the API endpoint override.
+
+  Args:
+    api_name: str, The API name (or the command surface name, if different).
+    api_version: str, The version of the API.
+    credentials: google.auth.credentials.Credentials, the credentials to use.
+    address_override_func: function, function to call to override the client
+        host. It takes a single argument which is the original host.
+
+  Returns:
+    An instance of the specified GAPIC API client.
+  """
+  api_def = _GetApiDef(api_name, api_version)
+  mtls_enabled = (
+      api_def.enable_mtls and
+      properties.VALUES.context_aware.use_client_certificate.GetBool())
+
+  def AddressOverride(address):
+    endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
+    endpoint_override = endpoint_overrides.get(api_name)
+    if endpoint_override:
+      address = urlparse(endpoint_override).netloc
+
+    if not address_override_func:
+      return address
+    return address_override_func(address)
+
+  client_class = _GetGapicClientClass(api_name, api_version)
+
+  return client_class(credentials, address_override_func=AddressOverride,
+                      mtls_enabled=mtls_enabled)
+
+
 def _GetMtlsEndpointIfEnabled(api_name, api_version, client_class=None):
   """Returns mtls endpoint if mtls is enabled for the API."""
   client_class = client_class or _GetClientClass(api_name, api_version)
@@ -195,7 +253,7 @@ def _GetMtlsEndpointIfEnabled(api_name, api_version, client_class=None):
 def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   """Returns effective endpoint for given api."""
   endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
-  endpoint_override = endpoint_overrides.get(api_name, '')
+  endpoint_override = endpoint_overrides.get(api_name)
   if endpoint_override:
     return endpoint_override
   client_class = client_class or _GetClientClass(api_name, api_version)

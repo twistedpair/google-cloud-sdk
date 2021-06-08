@@ -502,6 +502,29 @@ def AddLoadBalancingScheme(parser,
       "This defines the forwarding rule's load balancing scheme.")
 
 
+def SourceIpRangesParser(string_value):
+  type_parse = arg_parsers.ArgList(min_length=1)
+  return type_parse(string_value)
+
+
+def AddSourceIpRanges(parser):
+  """Adds source-ip-ranges flag to the argparse.
+
+  Args:
+    parser: The parser that parses args from user input.
+  """
+  parser.add_argument(
+      '--source-ip-ranges',
+      metavar='SOURCE_IP_RANGE,[...]',
+      type=SourceIpRangesParser,
+      default=None,
+      help="""\
+      List of comma-separated IP addresses or IP ranges. If not empty, this
+      Forwarding Rule will only forward the traffic when the source IP address
+      falls into one of the IP ranges set here.
+      """)
+
+
 def AddAllowGlobalAccess(parser):
   """Adds allow global access flag to the argparse."""
   parser.add_argument(

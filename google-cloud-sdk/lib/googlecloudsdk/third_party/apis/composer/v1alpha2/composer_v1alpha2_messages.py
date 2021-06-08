@@ -1029,6 +1029,16 @@ class PrivateEnvironmentConfig(_messages.Message):
   Composer environment.
 
   Fields:
+    cloudComposerNetworkIpv4CidrBlock: Optional. The CIDR block from which IP
+      range for Cloud Composer Network in tenant project will be reserved.
+      Needs to be disjoint from private_cluster_config.master_ipv4_cidr_block
+      and cloud_sql_ipv4_cidr_block. This field is supported for Cloud
+      Composer environments in versions composer-2.*.*-airflow-*.*.* and
+      newer.
+    cloudComposerNetworkIpv4ReservedRange: Output only. The IP range reserved
+      for the tenant project's Cloud Composer network. This field is supported
+      for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.*
+      and newer.
     cloudSqlIpv4CidrBlock: Optional. The CIDR block from which IP range in
       tenant project will be reserved for Cloud SQL. Needs to be disjoint from
       `web_server_ipv4_cidr_block`.
@@ -1052,12 +1062,14 @@ class PrivateEnvironmentConfig(_messages.Message):
       Composer environments in versions composer-1.*.*-airflow-*.*.*.
   """
 
-  cloudSqlIpv4CidrBlock = _messages.StringField(1)
-  enablePrivateEnvironment = _messages.BooleanField(2)
-  enablePrivatelyUsedPublicIps = _messages.BooleanField(3)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 4)
-  webServerIpv4CidrBlock = _messages.StringField(5)
-  webServerIpv4ReservedRange = _messages.StringField(6)
+  cloudComposerNetworkIpv4CidrBlock = _messages.StringField(1)
+  cloudComposerNetworkIpv4ReservedRange = _messages.StringField(2)
+  cloudSqlIpv4CidrBlock = _messages.StringField(3)
+  enablePrivateEnvironment = _messages.BooleanField(4)
+  enablePrivatelyUsedPublicIps = _messages.BooleanField(5)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 6)
+  webServerIpv4CidrBlock = _messages.StringField(7)
+  webServerIpv4ReservedRange = _messages.StringField(8)
 
 
 class RestartWebServerRequest(_messages.Message):

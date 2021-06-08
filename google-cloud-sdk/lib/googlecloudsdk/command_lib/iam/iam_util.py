@@ -62,6 +62,14 @@ encoding.AddCustomJsonFieldMapping(
     msgs.IamProjectsServiceAccountsGetIamPolicyRequest,
     'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 
+privateca_message = core_apis.GetMessagesModule('privateca', 'v1')
+encoding.AddCustomJsonFieldMapping(
+    privateca_message.PrivatecaProjectsLocationsCaPoolsGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    privateca_message
+    .PrivatecaProjectsLocationsCertificateTemplatesGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 
 MANAGED_BY = (msgs.IamProjectsServiceAccountsKeysListRequest
               .KeyTypesValueValuesEnum)
@@ -123,24 +131,24 @@ class IamPolicyBindingIncompleteError(IamPolicyBindingInvalidError):
   """Raised when the specified IAM policy binding is incomplete."""
 
 
-def _AddMemberFlag(parser, verb, required=True):
+def _AddMemberFlag(parser, verb, hide_special_member_types, required=True):
   """Create --member flag and add to parser."""
-  help_str = (
-      """\
+  help_str = ("""\
 The member {verb}. Should be of the form `user|group|serviceAccount:email` or
 `domain:domain`.
 
 Examples: `user:test-user@gmail.com`, `group:admins@example.com`,
 `serviceAccount:test123@example.domain.com`, or
 `domain:example.domain.com`.
-
+      """).format(verb=verb)
+  if not hide_special_member_types:
+    help_str += ("""
 Some resources also accept the following special values:
 * `allUsers` - Special identifier that represents anyone who is on the internet,
    with or without a Google account.
 * `allAuthenticatedUsers` - Special identifier that represents anyone who is
    authenticated with a Google account or a service account.
-      """
-  ).format(verb=verb)
+      """)
   parser.add_argument('--member', required=required, help=help_str)
 
 
@@ -300,7 +308,8 @@ def AddArgForPolicyFile(parser):
 
 def AddArgsForAddIamPolicyBinding(parser,
                                   role_completer=None,
-                                  add_condition=False):
+                                  add_condition=False,
+                                  hide_special_member_types=False):
   """Adds the IAM policy binding arguments for role and members.
 
   Args:
@@ -308,6 +317,8 @@ def AddArgsForAddIamPolicyBinding(parser,
     role_completer: A command_lib.iam.completers.IamRolesCompleter class to
       complete the `--role` flag value.
     add_condition: boolean, If true, add the flags for condition.
+    hide_special_member_types: boolean. If true, help text for member does not
+      include special values `allUsers` and `allAuthenticatedUsers`.
 
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
@@ -324,7 +335,7 @@ def AddArgsForAddIamPolicyBinding(parser,
       required=True,
       completer=role_completer,
       help=help_text)
-  _AddMemberFlag(parser, 'to add the binding for')
+  _AddMemberFlag(parser, 'to add the binding for', hide_special_member_types)
   if add_condition:
     _AddConditionFlagsForAddBindingToIamPolicy(parser)
 
@@ -333,7 +344,8 @@ def AddArgsForAddIamPolicyBinding(parser,
 def AddArgsForRemoveIamPolicyBinding(parser,
                                      role_completer=None,
                                      add_condition=False,
-                                     condition_completer=None):
+                                     condition_completer=None,
+                                     hide_special_member_types=False):
   """Adds the IAM policy binding arguments for role and members.
 
   Args:
@@ -342,6 +354,8 @@ def AddArgsForRemoveIamPolicyBinding(parser,
       complete the --role flag value.
     add_condition: boolean, If true, add the flags for condition.
     condition_completer: A completer to complete the condition flag value.
+    hide_special_member_types: boolean. If true, help text for member does not
+      include special values `allUsers` and `allAuthenticatedUsers`.
 
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
@@ -351,7 +365,7 @@ def AddArgsForRemoveIamPolicyBinding(parser,
       required=True,
       completer=role_completer,
       help='The role to remove the member from.')
-  _AddMemberFlag(parser, 'to remove the binding for')
+  _AddMemberFlag(parser, 'to remove the binding for', hide_special_member_types)
   if add_condition:
     _AddConditionFlagsForRemoveBindingFromIamPolicy(
         parser, condition_completer=condition_completer)

@@ -5,6 +5,48 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 344.0.0 (2021-06-08)
+
+### Breaking Changes
+
+*   **(AI)** Renamed `--drift-thresholds` flag in `gcloud beta ai model-monitoring-jobs create` and `gcloud beta ai model-monitoring-jobs update` to `--feature-thresholds`.
+
+
+### App Engine
+
+* Updated the Python SDK to version 1.9.93.
+
+### Cloud Asset Inventory
+
+* Added new content type `org-policy`, `access-policy`, `os-inventory` to `gcloud beta asset list`.
+
+### Cloud Pub/Sub
+
+* Added `gcloud beta pubsub lite-subscriptions subscribe` which allows the user to receive messages on a Pub/Sub Lite subscription.
+
+### Compute Engine
+
+* Added `--json-parsing` and `--log-level` flags to `gcloud compute security-policies update`.
+* Promoted `--json-parsing` and `--log-level` flags to GA for `gcloud compute security-policies update`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.51.2.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### GKE Hub
+
+* Promoted `gcloud container hub memberships get-credentials` to GA.
+
+### Managed Active Directory
+
+* Adding support for `gcloud active-directory peerings` for Multi Project
+  Support release.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 343.0.0 (2021-06-02)
 
 ### Breaking Changes

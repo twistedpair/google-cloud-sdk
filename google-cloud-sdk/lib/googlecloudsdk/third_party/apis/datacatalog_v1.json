@@ -732,7 +732,7 @@
       "type": "object",
       "properties": {
         "text": {
-          "description": "Required. JSON source of the Avro schema.",
+          "description": "JSON source of the Avro schema.",
           "type": "string"
         }
       }
@@ -743,7 +743,7 @@
       "type": "object",
       "properties": {
         "text": {
-          "description": "Required. Thrift IDL source of the schema.",
+          "description": "Thrift IDL source of the schema.",
           "type": "string"
         }
       }
@@ -754,7 +754,7 @@
       "type": "object",
       "properties": {
         "text": {
-          "description": "Required. Protocol buffer source of the schema.",
+          "description": "Protocol buffer source of the schema.",
           "type": "string"
         }
       }

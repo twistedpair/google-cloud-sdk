@@ -49,8 +49,8 @@ def SecurityPolicyArgumentForTargetResource(resource, required=False):
       plural=False,
       required=required,
       global_collection='compute.securityPolicies',
-      short_help=('The security policy that will be set for this {0}.'
-                  .format(resource)))
+      short_help=('The security policy that will be set for this {0}.'.format(
+          resource)))
 
 
 def EdgeSecurityPolicyArgumentForTargetResource(resource, required=False):
@@ -74,3 +74,40 @@ def SecurityPolicyArgumentForRules(required=False):
       required=required,
       global_collection='compute.securityPolicies',
       short_help='The security policy that this rule belongs to.')
+
+
+def AddCloudArmorAdaptiveProtection(parser, required=False):
+  """Adds the cloud armor adaptive protection arguments to the argparse."""
+  parser.add_argument(
+      '--enable-layer7-ddos-defense',
+      action='store_true',
+      default=None,
+      required=required,
+      help=('Whether to enable Cloud Armor Layer 7 DDoS Defense Adaptive '
+            'Protection.'))
+  parser.add_argument(
+      '--layer7-ddos-defense-rule-visibility',
+      choices=['STANDARD', 'PREMIUM'],
+      type=lambda x: x.upper(),
+      required=required,
+      metavar='VISIBILITY_TYPE',
+      help=('The visibility type indicates whether the rules are opaque or '
+            'transparent.'))
+
+
+def AddAdvancedOptions(parser, required=False):
+  """Adds the cloud armor advanced options arguments to the argparse."""
+  parser.add_argument(
+      '--json-parsing',
+      choices=['DISABLED', 'STANDARD'],
+      type=lambda x: x.upper(),
+      required=required,
+      help=('The JSON parsing behavior for this rule. '
+            'Must be one of the following values: [DISABLED, STANDARD].'))
+  parser.add_argument(
+      '--log-level',
+      choices=['NORMAL', 'VERBOSE'],
+      type=lambda x: x.upper(),
+      required=required,
+      help=('The level of detail to display for WAF logging. '
+            'Must be one of the following values: [NORMAL, VERBOSE].'))

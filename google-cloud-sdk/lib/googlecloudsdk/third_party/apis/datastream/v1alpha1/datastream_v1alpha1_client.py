@@ -43,7 +43,6 @@ class DatastreamV1alpha1(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_privateConnections_routes = self.ProjectsLocationsPrivateConnectionsRoutesService(self)
     self.projects_locations_privateConnections = self.ProjectsLocationsPrivateConnectionsService(self)
-    self.projects_locations_streams_objects = self.ProjectsLocationsStreamsObjectsService(self)
     self.projects_locations_streams = self.ProjectsLocationsStreamsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -574,97 +573,6 @@ class DatastreamV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsStreamsObjectsService(base_api.BaseApiService):
-    """Service class for the projects_locations_streams_objects resource."""
-
-    _NAME = 'projects_locations_streams_objects'
-
-    def __init__(self, client):
-      super(DatastreamV1alpha1.ProjectsLocationsStreamsObjectsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Use this method to get details about a stream object.
-
-      Args:
-        request: (DatastreamProjectsLocationsStreamsObjectsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (StreamObject) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}/objects/{objectsId}',
-        http_method='GET',
-        method_id='datastream.projects.locations.streams.objects.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='DatastreamProjectsLocationsStreamsObjectsGetRequest',
-        response_type_name='StreamObject',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Use this method to list the objects of a specific stream.
-
-      Args:
-        request: (DatastreamProjectsLocationsStreamsObjectsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListStreamObjectsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}/objects',
-        http_method='GET',
-        method_id='datastream.projects.locations.streams.objects.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/objects',
-        request_field='',
-        request_type_name='DatastreamProjectsLocationsStreamsObjectsListRequest',
-        response_type_name='ListStreamObjectsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Use this method to update a specific stream object.
-
-      Args:
-        request: (DatastreamProjectsLocationsStreamsObjectsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/streams/{streamsId}/objects/{objectsId}',
-        http_method='PATCH',
-        method_id='datastream.projects.locations.streams.objects.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='streamObject',
-        request_type_name='DatastreamProjectsLocationsStreamsObjectsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsStreamsService(base_api.BaseApiService):
     """Service class for the projects_locations_streams resource."""
 
@@ -920,7 +828,7 @@ class DatastreamV1alpha1(base_api.BaseApiClient):
         method_id='datastream.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha1/{+name}/locations',
         request_field='',
         request_type_name='DatastreamProjectsLocationsListRequest',

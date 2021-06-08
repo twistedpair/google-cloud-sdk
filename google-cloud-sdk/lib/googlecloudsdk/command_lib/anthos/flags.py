@@ -22,7 +22,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core.util import files
 
-
 _MERGE_STRATEGIES = {
     'resource-merge': ('perform a structural comparison of the '
                        'original/updated Resources, and merge the changes '
@@ -30,9 +29,9 @@ _MERGE_STRATEGIES = {
     'fast-forward': ('fail without updating if the local package was modified'
                      ' since it was fetched.'),
     'alpha-git-patch': ("use 'git format-patch' and 'git am' to apply a patch "
-                        "of the changes between the source version and "
-                        "destination version. Requires the local package to "
-                        "have been committed to a local git repo."),
+                        'of the changes between the source version and '
+                        'destination version. Requires the local package to '
+                        'have been committed to a local git repo.'),
     'force-delete-replace': ('This will wipe all local changes to the package. '
                              'Deletes the contents of local package from '
                              'PACKAGE_DIR and replace them with the remote '),
@@ -52,8 +51,10 @@ def GetFlagOrPositional(name, positional=False, **kwargs):
   return base.Argument(flag, **kwargs)
 
 
-def GetRepoURIFlag(positional=True, required=True,
-                   help_override=None, metavar=None):
+def GetRepoURIFlag(positional=True,
+                   required=True,
+                   help_override=None,
+                   metavar=None):
   """Get REPO_URI flag."""
   help_txt = help_override or """\
       Git repository URI containing 1 or more packages as where:
@@ -97,8 +98,10 @@ def GetPackagePathFlag(metavar=None):
       metavar=metavar)
 
 
-def GetLocalDirFlag(positional=True, required=True,
-                    help_override=None, metavar=None):
+def GetLocalDirFlag(positional=True,
+                    required=True,
+                    help_override=None,
+                    metavar=None):
   """Get Local Package directory flag."""
   help_txt = help_override or """\
       The local directory to fetch the package to.
@@ -146,24 +149,16 @@ def GetDryRunFlag(help_override=None):
                                'underlying command that was executed and '
                                'its exit status.')
   return base.Argument(
-      '--dry-run',
-      action='store_true',
-      required=False,
-      help=help_txt)
+      '--dry-run', action='store_true', required=False, help=help_txt)
 
 
 def GetDescriptionFlag():
   return base.Argument(
-      '--description',
-      required=False,
-      help='Description of the Package.')
+      '--description', required=False, help='Description of the Package.')
 
 
 def GetNameFlag():
-  return base.Argument(
-      '--name',
-      required=False,
-      help='Name of the package.')
+  return base.Argument('--name', required=False, help='Name of the package.')
 
 
 def GetTagsFlag():
@@ -187,6 +182,7 @@ def ExpandLocalDirAndVersion(directory):
 
   Args:
       directory: str, directory path in the format PATH[/][@git_ref].
+
   Returns:
       str, expanded full directory path with git_ref (if provided)
   """
@@ -199,8 +195,10 @@ def ExpandLocalDirAndVersion(directory):
 
 
 # Anthos Auth
-def GetClusterFlag(positional=False, required=False,
-                   help_override=None, metavar=None):
+def GetClusterFlag(positional=False,
+                   required=False,
+                   help_override=None,
+                   metavar=None):
   """Anthos operation cluster name flag."""
   help_txt = help_override or ('Cluster to authenticate against. If no cluster '
                                'is specified, the command will print a list '
@@ -218,7 +216,7 @@ def GetLoginConfigFlag():
       '--login-config',
       required=False,
       help='Specifies the configuration yaml '
-           'file for login. Can be a file path or a URL.')
+      'file for login. Can be a file path or a URL.')
 
 
 def GetLoginConfigCertFlag():
@@ -227,7 +225,7 @@ def GetLoginConfigCertFlag():
       required=False,
       type=ExpandLocalDirAndVersion,
       help='Specifies the CA certificate file to be added to trusted pool '
-           'for making HTTPS connections to a `--login-config` URL.')
+      'for making HTTPS connections to a `--login-config` URL.')
 
 
 def GetUserFlag():
@@ -235,7 +233,7 @@ def GetUserFlag():
       '--user',
       required=False,
       help='If configuring multiple user accounts in the same kubecconfig '
-           'file, you can specify a user to differentiate between them.')
+      'file, you can specify a user to differentiate between them.')
 
 
 def GetSetPreferredAuthenticationFlag():
@@ -244,11 +242,14 @@ def GetSetPreferredAuthenticationFlag():
       required=False,
       action='store_true',
       help='If set, forces update of preferred '
-           'authentication for given cluster')
+      'authentication for given cluster')
 
 
-def GetOutputDirFlag(positional=False, required=False,
-                     help_override=None, metavar='OUTPUT-DIR', default=None):
+def GetOutputDirFlag(positional=False,
+                     required=False,
+                     help_override=None,
+                     metavar='OUTPUT-DIR',
+                     default=None):
   """Anthos operation local output directory flag."""
   help_txt = help_override or ('The output directory of the cluster resources.'
                                ' If empty will export files to ./CLUSTER_NAME')
@@ -268,7 +269,7 @@ def GetLocationFlag():
       '--location',
       required=False,
       help='Specifies the Google Cloud location to use. If not'
-           'specified will use the current compute/zone property.')
+      'specified will use the current compute/zone property.')
 
 
 def GetMergeFromFlag():
@@ -277,7 +278,7 @@ def GetMergeFromFlag():
       '--merge-from',
       required=False,
       help='Specifies the file path of an existing login '
-           'configuration file to merge with.')
+      'configuration file to merge with.')
 
 
 def GetConfigOutputFileFlag():
@@ -287,4 +288,28 @@ def GetConfigOutputFileFlag():
       required=False,
       type=ExpandLocalDirAndVersion,
       help='Destination to write login configuration file. '
-           'Defaults to "kubectl-anthos-config.yaml".')
+      'Defaults to "kubectl-anthos-config.yaml".')
+
+
+# Anthos auth token flags.
+def GetTypeFlag():
+  """Anthos auth token type flag, specifies the type of token to be created."""
+  return base.ChoiceArgument(
+      '--type',
+      required=True,
+      choices=['aws', 'oidc'],
+      help_str='Type of token to be created.')
+
+
+def GetAwsStsRegionFlag():
+  """Anthos auth token aws-sts-region flag, specifies the region for AWS STS endpoint for creating AWS token."""
+  return base.Argument(
+      '--aws-sts-region', required=False, help='Region for AWS STS endpoint.')
+
+
+def GetTokenClusterFlag():
+  """Anthos auth token cluster flag, specifies cluster name for creating AWS token."""
+  return base.Argument(
+      '--cluster',
+      required=False,
+      help='Name of the cluster for which token is created.')

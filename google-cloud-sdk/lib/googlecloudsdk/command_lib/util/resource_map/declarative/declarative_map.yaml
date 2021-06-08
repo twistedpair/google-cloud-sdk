@@ -6,9 +6,24 @@ accessapproval:
   Projects: {}
   ProjectsApprovalrequests: {}
 accesscontextmanager:
-  Accesspolicies: {}
-  AccesspoliciesAccesslevels: {}
-  AccesspoliciesServiceperimeters: {}
+  Accesspolicies:
+    asset_inventory_type: accesscontextmanager.googleapis.com/Accesspolicy
+    krm_group: accesscontextmanager
+    krm_kind: AccessContextManagerAccessPolicy
+    support_bulk_export: true
+    support_single_export: false
+  AccesspoliciesAccesslevels:
+    asset_inventory_type: accesscontextmanager.googleapis.com/Accesslevel
+    krm_group: accesscontextmanager
+    krm_kind: AccessContextManagerAccessLevel
+    support_bulk_export: true
+    support_single_export: false
+  AccesspoliciesServiceperimeters:
+    asset_inventory_type: accesscontextmanager.googleapis.com/Serviceperimeter
+    krm_group: accesscontextmanager
+    krm_kind: AccessContextManagerServicePerimeter
+    support_bulk_export: true
+    support_single_export: false
   Operations: {}
   Organizations: {}
   OrganizationsGcpuseraccessbindings: {}
@@ -191,7 +206,12 @@ artifactregistry:
   Projects: {}
   ProjectsLocations: {}
   ProjectsLocationsOperations: {}
-  ProjectsLocationsRepositories: {}
+  ProjectsLocationsRepositories:
+    asset_inventory_type: artifactregistry.googleapis.com/Repository
+    krm_group: artifactregistry
+    krm_kind: ArtifactRegistryRepository
+    support_bulk_export: true
+    support_single_export: true
   ProjectsLocationsRepositoriesFiles: {}
   ProjectsLocationsRepositoriesPackages: {}
   ProjectsLocationsRepositoriesPackagesTags: {}
@@ -203,14 +223,23 @@ assuredworkloads:
   OrganizationsLocationsWorkloads: {}
 bigquery:
   Datasets:
+    asset_inventory_type: bigquery.googleapis.com/Dataset
+    krm_group: bigquery
+    krm_kind: BigQueryDataset
     support_bulk_export: true
     support_single_export: true
   Jobs:
+    asset_inventory_type: bigquery.googleapis.com/Job
+    krm_group: bigquery
+    krm_kind: BigQueryJob
     support_bulk_export: true
     support_single_export: true
   Projects: {}
   Tabledata: {}
   Tables:
+    asset_inventory_type: bigquery.googleapis.com/Table
+    krm_group: bigquery
+    krm_kind: BigQueryTable
     support_bulk_export: true
     support_single_export: true
 bigquerydatatransfer:
@@ -225,11 +254,26 @@ bigquerydatatransfer:
 bigtableadmin:
   Operations: {}
   Projects: {}
-  ProjectsInstances: {}
-  ProjectsInstancesAppprofiles: {}
+  ProjectsInstances:
+    asset_inventory_type: bigtableadmin.googleapis.com/Instance
+    krm_group: bigtable
+    krm_kind: BigtableInstance
+    support_bulk_export: true
+    support_single_export: true
+  ProjectsInstancesAppprofiles:
+    asset_inventory_type: bigtableadmin.googleapis.com/Appprofile
+    krm_group: bigtable
+    krm_kind: BigtableAppProfile
+    support_bulk_export: true
+    support_single_export: true
   ProjectsInstancesClusters: {}
   ProjectsInstancesClustersBackups: {}
-  ProjectsInstancesTables: {}
+  ProjectsInstancesTables:
+    asset_inventory_type: bigtableadmin.googleapis.com/Table
+    krm_group: bigtable
+    krm_kind: BigtableTable
+    support_bulk_export: true
+    support_single_export: true
   ProjectsLocations: {}
 billingbudgets:
   Billingaccounts: {}
@@ -266,7 +310,12 @@ cloudbuild:
   ProjectsLocationsGithubenterpriseconfigs: {}
   ProjectsLocationsOperations: {}
   ProjectsLocationsWorkerpools: {}
-  ProjectsTriggers: {}
+  ProjectsTriggers:
+    asset_inventory_type: cloudbuild.googleapis.com/Trigger
+    krm_group: cloudbuild
+    krm_kind: CloudBuildTrigger
+    support_bulk_export: true
+    support_single_export: false
   ProjectsWorkerpools: {}
 cloudcommerceconsumerprocurement:
   Billingaccounts: {}
@@ -324,13 +373,28 @@ cloudiot:
 cloudkms:
   Projects: {}
   ProjectsLocations: {}
-  ProjectsLocationsKeyrings: {}
-  ProjectsLocationsKeyringsCryptokeys: {}
+  ProjectsLocationsKeyrings:
+    asset_inventory_type: cloudkms.googleapis.com/Keyring
+    krm_group: kms
+    krm_kind: KMSKeyRing
+    support_bulk_export: true
+    support_single_export: true
+  ProjectsLocationsKeyringsCryptokeys:
+    asset_inventory_type: cloudkms.googleapis.com/Cryptokey
+    krm_group: kms
+    krm_kind: KMSCryptoKey
+    support_bulk_export: true
+    support_single_export: false
   ProjectsLocationsKeyringsCryptokeysCryptokeyversions: {}
   ProjectsLocationsKeyringsImportjobs: {}
 cloudresourcemanager:
   Folders: {}
-  Liens: {}
+  Liens:
+    asset_inventory_type: cloudresourcemanager.googleapis.com/Lien
+    krm_group: resourcemanager
+    krm_kind: ResourceManagerLien
+    support_bulk_export: true
+    support_single_export: false
   Operations: {}
   Organizations: {}
   Projects: {}
@@ -365,26 +429,49 @@ composerflex:
   ProjectsLocationsWorkflowsRuns: {}
 compute:
   Acceleratortypes: {}
-  Addresses: {}
+  Addresses:
+    asset_inventory_type: compute.googleapis.com/Address
+    krm_group: compute
+    krm_kind: ComputeAddress
+    support_bulk_export: true
+    support_single_export: true
   Autoscalers: {}
   Backendbuckets:
+    asset_inventory_type: compute.googleapis.com/Backendbucket
+    krm_group: compute
+    krm_kind: ComputeBackendBucket
     support_bulk_export: true
     support_single_export: true
   Backendservices:
+    asset_inventory_type: compute.googleapis.com/Backendservice
+    krm_group: compute
+    krm_kind: ComputeBackendService
     support_bulk_export: true
     support_single_export: true
   Disks:
+    asset_inventory_type: compute.googleapis.com/Disk
+    krm_group: compute
+    krm_kind: ComputeDisk
     support_bulk_export: true
     support_single_export: true
   Disktypes: {}
   Externalvpngateways:
+    asset_inventory_type: compute.googleapis.com/Externalvpngateway
+    krm_group: compute
+    krm_kind: ComputeExternalVPNGateway
     support_bulk_export: true
     support_single_export: true
   Firewallpolicies: {}
   Firewalls:
+    asset_inventory_type: compute.googleapis.com/Firewall
+    krm_group: compute
+    krm_kind: ComputeFirewall
     support_bulk_export: true
     support_single_export: true
   Forwardingrules:
+    asset_inventory_type: compute.googleapis.com/Forwardingrule
+    krm_group: compute
+    krm_kind: ComputeForwardingRule
     support_bulk_export: true
     support_single_export: true
   Globaladdresses: {}
@@ -394,29 +481,53 @@ compute:
   Globalorganizationoperations: {}
   Globalpublicdelegatedprefixes: {}
   Healthchecks:
+    asset_inventory_type: compute.googleapis.com/Healthcheck
+    krm_group: compute
+    krm_kind: ComputeHealthCheck
     support_bulk_export: true
     support_single_export: true
   Httphealthchecks:
+    asset_inventory_type: compute.googleapis.com/Httphealthcheck
+    krm_group: compute
+    krm_kind: ComputeHTTPHealthCheck
     support_bulk_export: true
     support_single_export: true
   Httpshealthchecks:
+    asset_inventory_type: compute.googleapis.com/Httpshealthcheck
+    krm_group: compute
+    krm_kind: ComputeHTTPSHealthCheck
     support_bulk_export: true
     support_single_export: true
   Imagefamilyviews: {}
   Images:
+    asset_inventory_type: compute.googleapis.com/Image
+    krm_group: compute
+    krm_kind: ComputeImage
     support_bulk_export: true
     support_single_export: true
   Instancegroupmanagers: {}
   Instancegroups:
+    asset_inventory_type: compute.googleapis.com/Instancegroup
+    krm_group: compute
+    krm_kind: ComputeInstanceGroup
     support_bulk_export: true
     support_single_export: true
   Instances:
+    asset_inventory_type: compute.googleapis.com/Instance
+    krm_group: compute
+    krm_kind: ComputeInstance
     support_bulk_export: true
     support_single_export: true
   Instancetemplates:
+    asset_inventory_type: compute.googleapis.com/Instancetemplate
+    krm_group: compute
+    krm_kind: ComputeInstanceTemplate
     support_bulk_export: true
     support_single_export: true
   Interconnectattachments:
+    asset_inventory_type: compute.googleapis.com/Interconnectattachment
+    krm_group: compute
+    krm_kind: ComputeInterconnectAttachment
     support_bulk_export: true
     support_single_export: true
   Interconnectlocations: {}
@@ -426,21 +537,38 @@ compute:
   Machineimages: {}
   Machinetypes: {}
   Networkendpointgroups:
+    asset_inventory_type: compute.googleapis.com/Networkendpointgroup
+    krm_group: compute
+    krm_kind: ComputeNetworkEndpointGroup
     support_bulk_export: true
     support_single_export: true
   Networkfirewallpolicies: {}
   Networks:
+    asset_inventory_type: compute.googleapis.com/Network
+    krm_group: compute
+    krm_kind: ComputeNetwork
     support_bulk_export: true
     support_single_export: true
   Nexthopgateways: {}
   Nodegroups:
+    asset_inventory_type: compute.googleapis.com/Nodegroup
+    krm_group: compute
+    krm_kind: ComputeNodeGroup
     support_bulk_export: true
     support_single_export: true
   Nodetemplates:
+    asset_inventory_type: compute.googleapis.com/Nodetemplate
+    krm_group: compute
+    krm_kind: ComputeNodeTemplate
     support_bulk_export: true
     support_single_export: true
   Nodetypes: {}
-  Organizationsecuritypolicies: {}
+  Organizationsecuritypolicies:
+    asset_inventory_type: compute.googleapis.com/Securitypolicy
+    krm_group: compute
+    krm_kind: ComputeSecurityPolicy
+    support_bulk_export: true
+    support_single_export: true
   Packetmirrorings: {}
   Projects: {}
   Publicadvertisedprefixes: {}
@@ -468,49 +596,120 @@ compute:
   Regiontargethttpsproxies: {}
   Regionurlmaps: {}
   Reservations:
+    asset_inventory_type: compute.googleapis.com/Reservation
+    krm_group: compute
+    krm_kind: ComputeReservation
     support_bulk_export: true
     support_single_export: true
-  Resourcepolicies: {}
+  Resourcepolicies:
+    asset_inventory_type: compute.googleapis.com/Resourcepolicy
+    krm_group: compute
+    krm_kind: ComputeResourcePolicy
+    support_bulk_export: true
+    support_single_export: true
   Routers:
+    asset_inventory_type: compute.googleapis.com/Router
+    krm_group: compute
+    krm_kind: ComputeRouter
     support_bulk_export: true
     support_single_export: true
   Routes:
+    asset_inventory_type: compute.googleapis.com/Route
+    krm_group: compute
+    krm_kind: ComputeRoute
     support_bulk_export: true
     support_single_export: true
   Securitypolicies: {}
   Securitypolicyrules: {}
   Serviceattachments: {}
   Snapshots:
+    asset_inventory_type: compute.googleapis.com/Snapshot
+    krm_group: compute
+    krm_kind: ComputeSnapshot
     support_bulk_export: true
     support_single_export: true
   Sslcertificates:
+    asset_inventory_type: compute.googleapis.com/Sslcertificate
+    krm_group: compute
+    krm_kind: ComputeSSLCertificate
     support_bulk_export: true
     support_single_export: true
-  Sslpolicies: {}
+  Sslpolicies:
+    asset_inventory_type: compute.googleapis.com/Sslpolicy
+    krm_group: compute
+    krm_kind: ComputeSSLPolicy
+    support_bulk_export: true
+    support_single_export: true
   Subnetworks:
+    asset_inventory_type: compute.googleapis.com/Subnetwork
+    krm_group: compute
+    krm_kind: ComputeSubnetwork
     support_bulk_export: true
     support_single_export: true
-  Targetgrpcproxies: {}
-  Targethttpproxies: {}
-  Targethttpsproxies: {}
+  Targetgrpcproxies:
+    asset_inventory_type: compute.googleapis.com/Targetgrpcproxy
+    krm_group: compute
+    krm_kind: ComputeTargetGRPCProxy
+    support_bulk_export: true
+    support_single_export: true
+  Targethttpproxies:
+    asset_inventory_type: compute.googleapis.com/Targethttpproxy
+    krm_group: compute
+    krm_kind: ComputeTargetHTTPProxy
+    support_bulk_export: true
+    support_single_export: true
+  Targethttpsproxies:
+    asset_inventory_type: compute.googleapis.com/Targethttpsproxy
+    krm_group: compute
+    krm_kind: ComputeTargetHTTPSProxy
+    support_bulk_export: true
+    support_single_export: true
   Targetinstances:
+    asset_inventory_type: compute.googleapis.com/Targetinstance
+    krm_group: compute
+    krm_kind: ComputeTargetInstance
     support_bulk_export: true
     support_single_export: true
   Targetpools:
+    asset_inventory_type: compute.googleapis.com/Targetpool
+    krm_group: compute
+    krm_kind: ComputeTargetPool
     support_bulk_export: true
     support_single_export: true
-  Targetsslproxies: {}
-  Targettcpproxies: {}
+  Targetsslproxies:
+    asset_inventory_type: compute.googleapis.com/Targetsslproxy
+    krm_group: compute
+    krm_kind: ComputeTargetSSLProxy
+    support_bulk_export: true
+    support_single_export: true
+  Targettcpproxies:
+    asset_inventory_type: compute.googleapis.com/Targettcpproxy
+    krm_group: compute
+    krm_kind: ComputeTargetTCPProxy
+    support_bulk_export: true
+    support_single_export: true
   Targetvpngateways:
+    asset_inventory_type: compute.googleapis.com/Targetvpngateway
+    krm_group: compute
+    krm_kind: ComputeTargetVPNGateway
     support_bulk_export: true
     support_single_export: true
   Urlmaps:
+    asset_inventory_type: compute.googleapis.com/Urlmap
+    krm_group: compute
+    krm_kind: ComputeURLMap
     support_bulk_export: true
     support_single_export: true
   Vpngateways:
+    asset_inventory_type: compute.googleapis.com/Vpngateway
+    krm_group: compute
+    krm_kind: ComputeVPNGateway
     support_bulk_export: true
     support_single_export: true
   Vpntunnels:
+    asset_inventory_type: compute.googleapis.com/Vpntunnel
+    krm_group: compute
+    krm_kind: ComputeVPNTunnel
     support_bulk_export: true
     support_single_export: true
   Zoneinplacesnapshots: {}
@@ -520,8 +719,18 @@ compute:
 container:
   Projects: {}
   ProjectsLocations: {}
-  ProjectsLocationsClusters: {}
-  ProjectsLocationsClustersNodepools: {}
+  ProjectsLocationsClusters:
+    asset_inventory_type: container.googleapis.com/Cluster
+    krm_group: container
+    krm_kind: ContainerCluster
+    support_bulk_export: true
+    support_single_export: true
+  ProjectsLocationsClustersNodepools:
+    asset_inventory_type: container.googleapis.com/Nodepool
+    krm_group: container
+    krm_kind: ContainerNodePool
+    support_bulk_export: true
+    support_single_export: false
   ProjectsLocationsOperations: {}
   ProjectsZones: {}
   ProjectsZonesClusters: {}
@@ -555,13 +764,23 @@ datacatalog:
 dataflow:
   Projects: {}
   ProjectsCatalogtemplates: {}
-  ProjectsJobs: {}
+  ProjectsJobs:
+    asset_inventory_type: dataflow.googleapis.com/Job
+    krm_group: dataflow
+    krm_kind: DataflowJob
+    support_bulk_export: false
+    support_single_export: false
   ProjectsLocations: {}
   ProjectsLocationsJobs: {}
   ProjectsLocationsSnapshots: {}
   ProjectsLocationsTemplates: {}
   ProjectsSnapshots: {}
-  ProjectsTemplates: {}
+  ProjectsTemplates:
+    asset_inventory_type: dataflow.googleapis.com/Flextemplatejob
+    krm_group: dataflow
+    krm_kind: DataflowFlexTemplateJob
+    support_bulk_export: false
+    support_single_export: false
 datafusion:
   Projects: {}
   ProjectsLocations: {}
@@ -668,12 +887,25 @@ dns:
   Dnskeys: {}
   Managedzoneoperations: {}
   Managedzones:
+    asset_inventory_type: dns.googleapis.com/Managedzone
+    krm_group: dns
+    krm_kind: DNSManagedZone
     support_bulk_export: true
     support_single_export: true
-  Policies: {}
+  Policies:
+    asset_inventory_type: dns.googleapis.com/Policy
+    krm_group: dns
+    krm_kind: DNSPolicy
+    support_bulk_export: true
+    support_single_export: true
   Projects: {}
   ProjectsManagedzonesRrsets: {}
-  Resourcerecordsets: {}
+  Resourcerecordsets:
+    asset_inventory_type: dns.googleapis.com/Recordset
+    krm_group: dns
+    krm_kind: DNSRecordSet
+    support_bulk_export: true
+    support_single_export: false
   Responsepolicies: {}
   Responsepolicyrules: {}
 domains:
@@ -718,7 +950,12 @@ firestore:
   ProjectsDatabasesCollectiongroupsFields: {}
   ProjectsDatabasesCollectiongroupsIndexes: {}
   ProjectsDatabasesDocuments: {}
-  ProjectsDatabasesIndexes: {}
+  ProjectsDatabasesIndexes:
+    asset_inventory_type: firestore.googleapis.com/Index
+    krm_group: firestore
+    krm_kind: FirestoreIndex
+    support_bulk_export: true
+    support_single_export: false
   ProjectsDatabasesOperations: {}
   ProjectsLocations: {}
 gameservices:
@@ -773,10 +1010,25 @@ iam:
   ProjectsLocationsWorkloadidentitypoolsProviders: {}
   ProjectsLocationsWorkloadidentitypoolsProvidersOperations: {}
   ProjectsRoles: {}
-  ProjectsServiceaccounts: {}
+  ProjectsServiceaccounts:
+    asset_inventory_type: iam.googleapis.com/Serviceaccount
+    krm_group: iam
+    krm_kind: IAMServiceAccount
+    support_bulk_export: true
+    support_single_export: false
   ProjectsServiceaccountsIdentitybindings: {}
-  ProjectsServiceaccountsKeys: {}
-  Roles: {}
+  ProjectsServiceaccountsKeys:
+    asset_inventory_type: iam.googleapis.com/Serviceaccountkey
+    krm_group: iam
+    krm_kind: IAMServiceAccountKey
+    support_bulk_export: false
+    support_single_export: false
+  Roles:
+    asset_inventory_type: iam.googleapis.com/Customrole
+    krm_group: iam
+    krm_kind: IAMCustomRole
+    support_bulk_export: true
+    support_single_export: false
 iamassist:
   Operations: {}
   Replays: {}
@@ -847,7 +1099,12 @@ logging:
   ProjectsLocationsBucketsViews: {}
   ProjectsMetrics: {}
   ProjectsSinks: {}
-  Sinks: {}
+  Sinks:
+    asset_inventory_type: logging.googleapis.com/Logsink
+    krm_group: logging
+    krm_kind: LoggingLogSink
+    support_bulk_export: true
+    support_single_export: false
 luxadmin:
   Projects: {}
   ProjectsLocations: {}
@@ -875,7 +1132,12 @@ mediaasset:
 memcache:
   Projects: {}
   ProjectsLocations: {}
-  ProjectsLocationsInstances: {}
+  ProjectsLocationsInstances:
+    asset_inventory_type: memcache.googleapis.com/Instance
+    krm_group: memcache
+    krm_kind: MemcacheInstance
+    support_bulk_export: true
+    support_single_export: true
   ProjectsLocationsOperations: {}
 metastore:
   Projects: {}
@@ -895,14 +1157,24 @@ ml:
   ProjectsOperations: {}
 monitoring:
   Projects: {}
-  ProjectsAlertpolicies: {}
+  ProjectsAlertpolicies:
+    asset_inventory_type: monitoring.googleapis.com/Alertpolicy
+    krm_group: monitoring
+    krm_kind: MonitoringAlertPolicy
+    support_bulk_export: true
+    support_single_export: false
   ProjectsAlertpoliciesConditions: {}
   ProjectsDashboards: {}
   ProjectsGroups: {}
   ProjectsMetricdescriptors: {}
   ProjectsMonitoredresourcedescriptors: {}
   ProjectsNotificationchanneldescriptors: {}
-  ProjectsNotificationchannels: {}
+  ProjectsNotificationchannels:
+    asset_inventory_type: monitoring.googleapis.com/Notificationchannel
+    krm_group: monitoring
+    krm_kind: MonitoringNotificationChannel
+    support_bulk_export: true
+    support_single_export: false
   ProjectsUptimecheckconfigs: {}
 networkconnectivity:
   Projects: {}
@@ -1002,8 +1274,18 @@ pubsub:
   Projects: {}
   ProjectsSchemas: {}
   ProjectsSnapshots: {}
-  ProjectsSubscriptions: {}
-  ProjectsTopics: {}
+  ProjectsSubscriptions:
+    asset_inventory_type: pubsub.googleapis.com/Subscription
+    krm_group: pubsub
+    krm_kind: PubSubSubscription
+    support_bulk_export: true
+    support_single_export: true
+  ProjectsTopics:
+    asset_inventory_type: pubsub.googleapis.com/Topic
+    krm_group: pubsub
+    krm_kind: PubSubTopic
+    support_bulk_export: true
+    support_single_export: true
 pubsublite:
   AdminProjects: {}
   AdminProjectsLocations: {}
@@ -1042,7 +1324,12 @@ recommender:
 redis:
   Projects: {}
   ProjectsLocations: {}
-  ProjectsLocationsInstances: {}
+  ProjectsLocationsInstances:
+    asset_inventory_type: redis.googleapis.com/Instance
+    krm_group: redis
+    krm_kind: RedisInstance
+    support_bulk_export: true
+    support_single_export: true
   ProjectsLocationsOperations: {}
 remotebuildexecution:
   Projects: {}
@@ -1108,8 +1395,18 @@ sddc:
 secretmanager:
   Projects: {}
   ProjectsLocations: {}
-  ProjectsSecrets: {}
-  ProjectsSecretsVersions: {}
+  ProjectsSecrets:
+    asset_inventory_type: secretmanager.googleapis.com/Secret
+    krm_group: secretmanager
+    krm_kind: SecretManagerSecret
+    support_bulk_export: true
+    support_single_export: true
+  ProjectsSecretsVersions:
+    asset_inventory_type: secretmanager.googleapis.com/Secretversion
+    krm_group: secretmanager
+    krm_kind: SecretManagerSecretVersion
+    support_bulk_export: true
+    support_single_export: false
 securitycenter:
   Organizations: {}
   OrganizationsAssets: {}
@@ -1142,7 +1439,12 @@ servicenetworking:
   ServicesProjectsGlobalNetworks: {}
 serviceusage:
   Operations: {}
-  Services: {}
+  Services:
+    asset_inventory_type: serviceusage.googleapis.com/
+    krm_group: serviceusage
+    krm_kind: Service
+    support_bulk_export: true
+    support_single_export: true
   ServicesConsumerquotametrics: {}
   ServicesConsumerquotametricsLimits: {}
 source:
@@ -1158,14 +1460,29 @@ source:
   ProjectsReposWorkspacesSnapshotsFiles: {}
 sourcerepo:
   Projects: {}
-  ProjectsRepos: {}
+  ProjectsRepos:
+    asset_inventory_type: sourcerepo.googleapis.com/Repository
+    krm_group: sourcerepo
+    krm_kind: SourceRepoRepository
+    support_bulk_export: true
+    support_single_export: true
 spanner:
   Projects: {}
   ProjectsInstanceconfigs: {}
-  ProjectsInstances: {}
+  ProjectsInstances:
+    asset_inventory_type: spanner.googleapis.com/Instance
+    krm_group: spanner
+    krm_kind: SpannerInstance
+    support_bulk_export: true
+    support_single_export: true
   ProjectsInstancesBackups: {}
   ProjectsInstancesBackupsOperations: {}
-  ProjectsInstancesDatabases: {}
+  ProjectsInstancesDatabases:
+    asset_inventory_type: spanner.googleapis.com/Database
+    krm_group: spanner
+    krm_kind: SpannerDatabase
+    support_bulk_export: true
+    support_single_export: true
   ProjectsInstancesDatabasesOperations: {}
   ProjectsInstancesDatabasesSessions: {}
   ProjectsInstancesOperations: {}
@@ -1178,22 +1495,49 @@ speech:
   Speech: {}
 sqladmin:
   Backupruns: {}
-  Databases: {}
-  Instances: {}
+  Databases:
+    asset_inventory_type: sqladmin.googleapis.com/Database
+    krm_group: sql
+    krm_kind: SQLDatabase
+    support_bulk_export: true
+    support_single_export: true
+  Instances:
+    asset_inventory_type: sqladmin.googleapis.com/Instance
+    krm_group: sql
+    krm_kind: SQLInstance
+    support_bulk_export: true
+    support_single_export: true
   Operations: {}
   Projects: {}
-  Sslcerts: {}
+  Sslcerts:
+    asset_inventory_type: sqladmin.googleapis.com/Sslcert
+    krm_group: sql
+    krm_kind: SQLSSLCert
+    support_bulk_export: false
+    support_single_export: false
 storage:
   Bucketaccesscontrols:
+    asset_inventory_type: storage.googleapis.com/Bucketaccesscontrol
+    krm_group: storage
+    krm_kind: StorageBucketAccessControl
     support_bulk_export: true
     support_single_export: false
   Buckets:
+    asset_inventory_type: storage.googleapis.com/Bucket
+    krm_group: storage
+    krm_kind: StorageBucket
     support_bulk_export: true
     support_single_export: false
   Defaultobjectaccesscontrols:
+    asset_inventory_type: storage.googleapis.com/Defaultobjectaccesscontrol
+    krm_group: storage
+    krm_kind: StorageDefaultObjectAccessControl
     support_bulk_export: true
     support_single_export: false
   Notifications:
+    asset_inventory_type: storage.googleapis.com/Notification
+    krm_group: storage
+    krm_kind: StorageNotification
     support_bulk_export: true
     support_single_export: false
   Objectaccesscontrols: {}
@@ -1203,7 +1547,12 @@ storage:
   ProjectsServiceaccount: {}
 storagetransfer:
   Googleserviceaccounts: {}
-  Transferjobs: {}
+  Transferjobs:
+    asset_inventory_type: storagetransfer.googleapis.com/Job
+    krm_group: storagetransfer
+    krm_kind: StorageTransferJob
+    support_bulk_export: true
+    support_single_export: false
   Transferoperations: {}
 testing:
   Projects: {}

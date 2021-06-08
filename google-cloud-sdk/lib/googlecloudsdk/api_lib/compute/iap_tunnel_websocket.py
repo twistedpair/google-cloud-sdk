@@ -203,15 +203,20 @@ class IapTunnelWebSocket(object):
     Raises:
       ConnectionReconnectTimeout: If something is preventing data from being
         sent.
+      ConnectionCreationError: If the connection was closed and no more
+        reconnect retries will be performed.
     """
     end_time = time.time() + MAX_RECONNECT_WAIT_TIME_MS / 1000.0
-    while time.time() < end_time:
+    while time.time() < end_time and not self._stopping:
       if len(self._unsent_data) < MAX_UNSENT_QUEUE_LENGTH:
         self._unsent_data.append(bytes_to_send)
         log.debug('ENQUEUED data_len [%d] bytes_to_send[:20] [%r]',
                   len(bytes_to_send), bytes_to_send[:20])
         return
       time.sleep(0.01)
+    if self._stopping:
+      raise ConnectionCreationError('Unexpected error while reconnecting.'
+                                    ' Check logs for more details.')
     raise ConnectionReconnectTimeout()
 
   def _HasConnected(self):

@@ -22,6 +22,7 @@ import collections
 import os
 import time
 
+from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -466,14 +467,29 @@ class RPCDurationReporterInterceptor(grpc.UnaryUnaryClientInterceptor):
     return response
 
 
-def GetSSLCredentials():
+def GetSSLCredentials(mtls_enabled):
   """Returns SSL credentials."""
-  ssl_credentials = None
   ca_certs_file = properties.VALUES.core.custom_ca_certs_file.Get()
-  if ca_certs_file:
-    ssl_credentials = grpc.ssl_channel_credentials(
-        root_certificates=files.ReadBinaryFileContents(ca_certs_file))
-  return ssl_credentials
+  certificate_chain = None
+  private_key = None
+
+  ca_config = context_aware.Config()
+  if mtls_enabled and ca_config:
+    log.debug('Using client certificate...')
+    certificate_chain, private_key = (ca_config.client_cert_bytes,
+                                      ca_config.client_key_bytes)
+
+  if ca_certs_file or certificate_chain or private_key:
+    if ca_certs_file:
+      ca_certs = files.ReadBinaryFileContents(ca_certs_file)
+    else:
+      ca_certs = None
+
+    return grpc.ssl_channel_credentials(
+        root_certificates=ca_certs,
+        certificate_chain=certificate_chain,
+        private_key=private_key)
+  return None
 
 
 def MakeProxyFromProperties():
@@ -540,12 +556,12 @@ def MakeChannelOptions():
   return options.items()
 
 
-def MakeTransport(transport_class, address, credentials):
+def MakeTransport(transport_class, address, credentials, mtls_enabled=False):
   """Instantiates a grpc transport."""
   channel = transport_class.create_channel(
       host=address,
       credentials=credentials,
-      ssl_credentials=GetSSLCredentials(),
+      ssl_credentials=GetSSLCredentials(mtls_enabled),
       options=MakeChannelOptions())
 
   interceptors = []

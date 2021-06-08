@@ -57,13 +57,11 @@ _GA_ERROR_CATEGORY = 'Error'
 _GA_EXECUTIONS_CATEGORY = 'Executions'
 _GA_TEST_EXECUTIONS_CATEGORY = 'TestExecutions'
 
-_CSI_ENDPOINT = 'https://csi.gstatic.com/csi'
-_CSI_ID = 'cloud_sdk'
-_CSI_LOAD_EVENT = 'load'
-_CSI_RUN_EVENT = 'run'
-_CSI_TOTAL_EVENT = 'total'
-_CSI_REMOTE_EVENT = 'remote'
-_CSI_LOCAL_EVENT = 'local'
+_LOAD_EVENT = 'load'
+_RUN_EVENT = 'run'
+_TOTAL_EVENT = 'total'
+_REMOTE_EVENT = 'remote'
+_LOCAL_EVENT = 'local'
 _START_EVENT = 'start'
 
 _CLEARCUT_ENDPOINT = 'https://play.googleapis.com/log'
@@ -71,14 +69,36 @@ _CLEARCUT_EVENT_METADATA_KEY = 'event_metadata'
 _CLEARCUT_ERROR_TYPE_KEY = 'error_type'
 
 
-class _GAEvent(object):
+class _Event(object):
 
-  def __init__(self, category, action, label, value, **kwargs):
+  def __init__(self, category, action, label, value):
     self.category = category
     self.action = action
     self.label = label
     self.value = value
-    self.custom_dimensions = kwargs
+
+
+class CommonParams(object):
+  """Parameters common to all metrics reporters."""
+
+  def __init__(self):
+    hostname = socket.gethostname()
+    install_type = 'Google' if hostname.endswith('.google.com') else 'External'
+
+    current_platform = platforms.Platform.Current()
+
+    self.client_id = GetCID()
+    self.current_platform = current_platform
+    self.user_agent = GetUserAgent(current_platform)
+    self.release_channel = config.INSTALLATION_CONFIG.release_channel
+    self.install_type = install_type
+    self.metrics_environment = properties.GetMetricsEnvironment()
+    self.is_interactive = console_io.IsInteractive(error=True, heuristic=True)
+    self.python_version = platform.python_version()
+    self.metrics_environment_version = (properties.VALUES
+                                        .metrics.environment_version.Get())
+    self.is_run_from_shell_script = console_io.IsRunFromShellScript()
+    self.term_identifier = console_attr.GetConsoleAttr().GetTermIdentifier()
 
 
 def GetTimeMillis(time_secs=None):
@@ -151,8 +171,8 @@ class _CommandTimer(object):
     self.__label = label
     self.__flag_names = flag_names
 
-  def GetAction(self):
-    return self.__action
+  def GetContext(self):
+    return self.__category, self.__action, self.__label, self.__flag_names
 
   def Event(self, name, event_time=None):
     time_millis = GetTimeMillis(event_time)
@@ -163,80 +183,249 @@ class _CommandTimer(object):
 
     self.__events.append(_TimedEvent(name, time_millis))
 
-    if name is _CSI_TOTAL_EVENT:
+    if name is _TOTAL_EVENT:
       self.__total_local_duration = time_millis - self.__start
       self.__total_local_duration -= self.__total_rpc_duration
 
   def AddRPCDuration(self, duration_in_ms):
     self.__total_rpc_duration += duration_in_ms
 
-  def _GetCSIAction(self):
-    csi_action = '{0},{1}'.format(self.__category, self.__action)
-    if self.__label:
-      csi_action = '{0},{1}'.format(csi_action, self.__label)
-    csi_action = csi_action.replace('.', ',').replace('-', '_')
-    return csi_action
-
-  def GetCSIParams(self):
-    """Gets the fields to send in the CSI beacon."""
-    params = [('action', self._GetCSIAction())]
-
-    if self.__flag_names is not None:
-      params.append(('flag_names', self.__flag_names))
-
-    response_times = [
-        '{0}.{1}'.format(event.name, event.time_millis - self.__start)
-        for event in self.__events]
-    params.append(('rt', ','.join(response_times)))
-
-    interval_times = [
-        '{0}.{1}'.format(_CSI_REMOTE_EVENT, self.__total_rpc_duration),
-        '{0}.{1}'.format(_CSI_LOCAL_EVENT, self.__total_local_duration),
-    ]
-    params.append(('it', ','.join(interval_times)))
-
-    return params
-
-  def GetGATimingsParams(self):
-    """Gets the GA timings params corresponding to all the timed events."""
-    ga_timings_params = []
-
-    event_params = [('utc', self.__category), ('utl', self.__action)]
-    if self.__flag_names is not None:
-      event_params.append(('cd6', self.__flag_names))
-
+  def GetTimings(self):
+    """Returns the timings for the recorded events."""
+    timings = []
     for event in self.__events:
-      timing_params = [('utv', event.name),
-                       ('utt', event.time_millis - self.__start)]
-      timing_params.extend(event_params)
-      ga_timings_params.append(timing_params)
+      timings.append((event.name, event.time_millis - self.__start))
 
-    ga_timings_params.append(
-        [('utv', _CSI_REMOTE_EVENT),
-         ('utt', self.__total_rpc_duration)] + event_params)
+    timings.extend([
+        (_LOCAL_EVENT, self.__total_local_duration),
+        (_REMOTE_EVENT, self.__total_rpc_duration),
+    ])
+    return timings
 
-    ga_timings_params.append(
-        [('utv', _CSI_LOCAL_EVENT),
-         ('utt', self.__total_local_duration)] + event_params)
 
-    return ga_timings_params
+class _GoogleAnalyticsMetricsReporter(object):
+  """A class for handling reporting metrics to Google Analytics (GA).
 
-  def GetClearcutParams(self):
-    """Gets the clearcut params corresponding to all the timed events."""
-    event_latency_ms = self.__total_local_duration + self.__total_rpc_duration
+  See https://developers.google.com/analytics/devguides/collection/protocol/v1
+      /parameters
+  for more information.
+  """
 
-    sub_event_latency_ms = [
-        {'key': event.name, 'latency_ms': event.time_millis - self.__start}
-        for event in self.__events
+  def __init__(self, common_params, ga_tid=_GA_TID):
+    self._user_agent = common_params.user_agent
+
+    base_event = [
+        ('cd1', common_params.release_channel),
+        ('cd2', common_params.install_type),
+        ('cd3', common_params.metrics_environment),
+        ('cd4', common_params.is_interactive),
+        ('cd5', common_params.python_version),
+        # cd6 passed as argument to Record - cd6 = Flag Names
+        ('cd7', common_params.metrics_environment_version),
+        # cd8 passed as argument to Record - cd8 = Error
+        # cd9 passed as argument to Record - cd9 = Error Extra Info
+        ('cd12', common_params.is_run_from_shell_script),
+        ('cd13', common_params.term_identifier),
+        ('v', '1'),
+        ('tid', ga_tid),
+        ('cid', common_params.client_id),
     ]
-    sub_event_latency_ms.append({
-        'key': _CSI_LOCAL_EVENT, 'latency_ms': self.__total_local_duration
-    })
-    sub_event_latency_ms.append({
-        'key': _CSI_REMOTE_EVENT, 'latency_ms': self.__total_rpc_duration
-    })
 
-    return event_latency_ms, sub_event_latency_ms
+    self._ga_event_params = [
+        ('t', 'event')]
+    self._ga_event_params.extend(base_event)
+
+    self._ga_timing_params = [
+        ('t', 'timing')]
+    self._ga_timing_params.extend(base_event)
+
+    self._ga_events = []
+
+  def Record(self,
+             event,
+             flag_names=None,
+             error=None,
+             error_extra_info_json=None):
+    """Records the given event.
+
+    Args:
+      event: _Event, The event to process.
+      flag_names: str, Comma separated list of flag names used with the action.
+      error: class, The class (not the instance) of the Exception if a user
+        tried to run a command that produced an error.
+      error_extra_info_json: {str: json-serializable}, A json serializable dict
+        of extra info that we want to log with the error. This enables us to
+        write queries that can understand the keys and values in this dict.
+    """
+    params = [
+        ('ec', event.category),
+        ('ea', event.action),
+        ('el', event.label),
+        ('ev', event.value),
+    ]
+    if flag_names is not None:
+      params.append(('cd6', flag_names))
+    if error is not None:
+      params.append(('cd8', error))
+    if error_extra_info_json is not None:
+      params.append(('cd9', error_extra_info_json))
+    params.extend(self._ga_event_params)
+    data = six.moves.urllib.parse.urlencode(params)
+    self._ga_events.append(data)
+
+  def Timings(self, timer):
+    """Extracts Google Analytics timing events from timer."""
+    category, action, _, flag_names = timer.GetContext()
+    event_params = [('utc', category), ('utl', action)]
+    if flag_names is not None:
+      event_params.append(('cd6', flag_names))
+
+    ga_timing_events = []
+    timings = timer.GetTimings()
+    for timing in timings:
+      timing_event = [
+          ('utv', timing[0]),
+          ('utt', timing[1])
+      ]
+      timing_event.extend(event_params)
+      timing_event.extend(self._ga_timing_params)
+      ga_timing_events.append(six.moves.urllib.parse.urlencode(timing_event))
+    return ga_timing_events
+
+  def ToHTTPBeacon(self, timer):
+    data = '\n'.join(self._ga_events + self.Timings(timer))
+    headers = {'user-agent': self._user_agent}
+    return (_GA_ENDPOINT, 'POST', data, headers)
+
+
+class _ClearcutMetricsReporter(object):
+  """A class for handling reporting metrics to Clearcut."""
+
+  def __init__(self, common_params):
+    self._user_agent = common_params.user_agent
+    self._clearcut_request_params = {
+        'client_info': {
+            'client_type': 'DESKTOP',
+            'desktop_client_info': {
+                'os': common_params.current_platform.operating_system.id
+            }
+        },
+        'log_source_name': 'CONCORD',
+        'zwieback_cookie': common_params.client_id,
+    }
+
+    self._clearcut_concord_event_metadata = [
+        ('release_channel', common_params.release_channel),
+        ('install_type', common_params.install_type),
+        ('environment', common_params.metrics_environment),
+        ('interactive', common_params.is_interactive),
+        ('python_version', common_params.python_version),
+        ('environment_version', common_params.metrics_environment_version),
+        ('from_script', common_params.is_run_from_shell_script),
+        ('term', common_params.term_identifier),
+    ]
+
+    cloud_sdk_version = config.CLOUD_SDK_VERSION
+    self._clearcut_concord_event_params = {
+        'release_version': cloud_sdk_version,
+        'console_type': 'CloudSDK',
+        'client_install_id': common_params.client_id,
+    }
+
+    self._clearcut_concord_timed_events = []
+
+  def Record(self,
+             event,
+             flag_names=None,
+             error=None,
+             error_extra_info_json=None):
+    """Records the given event.
+
+    Args:
+      event: _Event, The event to process.
+      flag_names: str, Comma separated list of flag names used with the action.
+      error: class, The class (not the instance) of the Exception if a user
+        tried to run a command that produced an error.
+      error_extra_info_json: {str: json-serializable}, A json serializable dict
+        of extra info that we want to log with the error. This enables us to
+        write queries that can understand the keys and values in this dict.
+    """
+    concord_event = dict(self._clearcut_concord_event_params)
+    concord_event['event_type'] = event.category
+    concord_event['event_name'] = event.action
+
+    concord_event[_CLEARCUT_EVENT_METADATA_KEY] = list(
+        self._clearcut_concord_event_metadata)
+
+    event_metadata = []
+
+    if flag_names is not None:
+      event_metadata.append({
+          'key': 'flag_names',
+          'value': six.text_type(flag_names)
+      })
+    if error is not None:
+      event_metadata.append({'key': _CLEARCUT_ERROR_TYPE_KEY, 'value': error})
+    if error_extra_info_json is not None:
+      event_metadata.append({'key': 'extra_error_info',
+                             'value': error_extra_info_json})
+
+    if event.category is _GA_EXECUTIONS_CATEGORY:
+      event_metadata.append({'key': 'binary_version', 'value': event.label})
+    elif event.category is _GA_HELP_CATEGORY:
+      event_metadata.append({'key': 'help_mode', 'value': event.label})
+    elif event.category is _GA_ERROR_CATEGORY:
+      event_metadata.append(
+          {'key': _CLEARCUT_ERROR_TYPE_KEY, 'value': event.label})
+    elif event.category is _GA_INSTALLS_CATEGORY:
+      event_metadata.append({'key': 'component_version', 'value': event.label})
+
+    concord_event[_CLEARCUT_EVENT_METADATA_KEY].extend(event_metadata)
+    self._clearcut_concord_timed_events.append((concord_event,
+                                                GetTimeMillis()))
+
+  def Timings(self, timer):
+    """Extracts relevant data from timer."""
+    total_latency = None
+    timings = timer.GetTimings()
+
+    sub_event_latencies = []
+    for timing in timings:
+      if not total_latency and timing[0] == _TOTAL_EVENT:
+        total_latency = timing[1]
+
+      sub_event_latencies.append({
+          'key': timing[0],
+          'latency_ms': timing[1]
+      })
+
+    return total_latency, sub_event_latencies
+
+  def ToHTTPBeacon(self, timer):
+    """Collect the required clearcut HTTP beacon."""
+    clearcut_request = dict(self._clearcut_request_params)
+    clearcut_request['request_time_ms'] = GetTimeMillis()
+
+    event_latency, sub_event_latencies = self.Timings(timer)
+    command_latency_set = False
+    for concord_event, _ in self._clearcut_concord_timed_events:
+      if (concord_event['event_type'] is _GA_COMMANDS_CATEGORY and
+          command_latency_set):
+        continue
+      concord_event['latency_ms'] = event_latency
+      concord_event['sub_event_latency_ms'] = sub_event_latencies
+      command_latency_set = concord_event['event_type'] is _GA_COMMANDS_CATEGORY
+
+    clearcut_request['log_event'] = []
+    for concord_event, event_time_ms in self._clearcut_concord_timed_events:
+      clearcut_request['log_event'].append({
+          'source_extension_json': json.dumps(concord_event, sort_keys=True),
+          'event_time_ms': event_time_ms
+      })
+
+    data = json.dumps(clearcut_request, sort_keys=True)
+    headers = {'user-agent': self._user_agent}
+    return (_CLEARCUT_ENDPOINT, 'POST', data, headers)
 
 
 class _MetricsCollector(object):
@@ -308,85 +497,22 @@ class _MetricsCollector(object):
       ga_tid: The Google Analytics tracking ID to use for metrics collection.
               Defaults to _GA_TID.
     """
-    current_platform = platforms.Platform.Current()
-    self._user_agent = GetUserAgent(current_platform)
-    self._async_popen_args = current_platform.AsyncPopenArgs()
-    self._project_ids = {}
+    common_params = CommonParams()
 
-    hostname = socket.gethostname()
-    install_type = 'Google' if hostname.endswith('.google.com') else 'External'
-    cid = GetCID()
-
-    # Table of common params to send to both GA and CSI.
-    # First column is GA name, second column is CSI name, third is the value.
-    common_params = [
-        ('cd1', 'release_channel', config.INSTALLATION_CONFIG.release_channel),
-        ('cd2', 'install_type', install_type),
-        ('cd3', 'environment', properties.GetMetricsEnvironment()),
-        ('cd4', 'interactive', console_io.IsInteractive(error=True,
-                                                        heuristic=True)),
-        ('cd5', 'python_version', platform.python_version()),
-        # cd6 passed as argument to _GAEvent - cd6 = Flag Names
-        ('cd7', 'environment_version',
-         properties.VALUES.metrics.environment_version.Get()),
-        # cd8 passed as argument to _GAEvent - cd8 = Error
-        # cd9 passed as argument to _GAEvent - cd9 = Error Extra Info
-        ('cd12', 'from_script', console_io.IsRunFromShellScript()),
-        ('cd13', 'term',
-         console_attr.GetConsoleAttr().GetTermIdentifier()),
+    self._metrics_reporters = [
+        _GoogleAnalyticsMetricsReporter(common_params, ga_tid),
+        _ClearcutMetricsReporter(common_params)
     ]
 
-    self._ga_event_params = [
-        ('v', '1'),
-        ('tid', ga_tid),
-        ('cid', cid),
-        ('t', 'event')]
-    self._ga_event_params.extend(
-        [(param[0], param[2]) for param in common_params])
-    self._ga_events = []
-
-    self._ga_timing_params = [
-        ('v', '1'),
-        ('tid', ga_tid),
-        ('cid', cid),
-        ('t', 'timing')]
-    self._ga_timing_params.extend(
-        [(param[0], param[2]) for param in common_params])
-
-    cloud_sdk_version = config.CLOUD_SDK_VERSION
-    self._csi_params = [('s', _CSI_ID),
-                        ('v', '2'),
-                        ('rls', cloud_sdk_version),
-                        ('c', cid)]
-    self._csi_params.extend([(param[1], param[2]) for param in common_params])
     self._timer = _CommandTimer()
-
-    self._clearcut_request_params = {
-        'client_info': {
-            'client_type': 'DESKTOP',
-            'desktop_client_info': {
-                'os': current_platform.operating_system.id
-            }
-        },
-        'log_source_name': 'CONCORD',
-        'zwieback_cookie': cid,
-    }
-    self._clearcut_concord_event_params = {
-        'release_version': cloud_sdk_version,
-        'console_type': 'CloudSDK',
-        'client_install_id': cid,
-    }
-    self._clearcut_concord_event_metadata = [{
-        'key': param[1], 'value': six.text_type(param[2])
-    } for param in common_params]
-    self._clearcut_concord_timed_events = []
-
     self._metrics = []
 
     # Tracking the level so we can only report metrics for the top level action
     # (and not other actions executed within an action). Zero is the top level.
     self._action_level = 0
 
+    current_platform = platforms.Platform.Current()
+    self._async_popen_args = current_platform.AsyncPopenArgs()
     log.debug('Metrics collector initialized...')
 
   def IncrementActionLevel(self):
@@ -430,86 +556,37 @@ class _MetricsCollector(object):
 
     # We want to report error times against the top level action
     if category is _GA_ERROR_CATEGORY and self._action_level != 0:
-      action = self._timer.GetAction()
+      _, action, _, _ = self._timer.GetContext()
 
     self._timer.SetContext(category, action, label, flag_names)
 
-  def CollectCSIMetric(self):
-    """Adds metric with latencies for the given command to the metrics queue."""
-    params = self._timer.GetCSIParams()
-    params.extend(self._csi_params)
-    data = six.moves.urllib.parse.urlencode(params)
-
-    headers = {'user-agent': self._user_agent}
-    self.CollectHTTPBeacon('{0}?{1}'.format(_CSI_ENDPOINT, data),
-                           'GET', None, headers)
-
-  def RecordGAEvent(self, event):
-    """Adds the given GA event to the metrics queue.
+  def Record(self,
+             event,
+             flag_names=None,
+             error=None,
+             error_extra_info_json=None):
+    """Records the given event.
 
     Args:
       event: _Event, The event to process.
+      flag_names: str, Comma separated list of flag names used with the action.
+      error: class, The class (not the instance) of the Exception if a user
+        tried to run a command that produced an error.
+      error_extra_info_json: {str: json-serializable}, A json serializable dict
+        of extra info that we want to log with the error. This enables us to
+        write queries that can understand the keys and values in this dict.
     """
-    params = [
-        ('ec', event.category),
-        ('ea', event.action),
-        ('el', event.label),
-        ('ev', event.value),
-    ]
-    custom_dimensions = [
-        (k, v) for k, v in six.iteritems(event.custom_dimensions)
-        if v is not None]
-    params.extend(sorted(custom_dimensions))
-    params.extend(self._ga_event_params)
-    data = six.moves.urllib.parse.urlencode(params)
-    self._ga_events.append(data)
+    for metrics_reporter in self._metrics_reporters:
+      metrics_reporter.Record(
+          event,
+          flag_names=flag_names,
+          error=error,
+          error_extra_info_json=error_extra_info_json)
 
-  def CollectGAMetric(self):
-    ga_timings = []
-    for timing_params in self._timer.GetGATimingsParams():
-      timing_params.extend(self._ga_timing_params)
-      timing_data = six.moves.urllib.parse.urlencode(timing_params)
-      ga_timings.append(timing_data)
-
-    data = '\n'.join(self._ga_events + ga_timings)
-    headers = {'user-agent': self._user_agent}
-    self.CollectHTTPBeacon(_GA_ENDPOINT, 'POST', data, headers)
-
-  def RecordClearcutEvent(self, event_type, event_name, event_metadata):
-    concord_event = dict(self._clearcut_concord_event_params)
-    concord_event['event_type'] = event_type
-    concord_event['event_name'] = event_name
-    concord_event[_CLEARCUT_EVENT_METADATA_KEY] = list(
-        self._clearcut_concord_event_metadata)
-    concord_event[_CLEARCUT_EVENT_METADATA_KEY].extend(event_metadata)
-    self._clearcut_concord_timed_events.append((concord_event,
-                                                GetTimeMillis()))
-
-  def CollectClearcutMetric(self):
-    """Collect the required clearcut HTTP beacon."""
-    clearcut_request = dict(self._clearcut_request_params)
-    clearcut_request['request_time_ms'] = GetTimeMillis()
-
-    event_latency, sub_event_latencies = self._timer.GetClearcutParams()
-    command_latency_set = False
-    for concord_event, _ in self._clearcut_concord_timed_events:
-      if (concord_event['event_type'] is _GA_COMMANDS_CATEGORY and
-          command_latency_set):
-        continue
-      concord_event['latency_ms'] = event_latency
-      concord_event['sub_event_latency_ms'] = sub_event_latencies
-      command_latency_set = concord_event['event_type'] is _GA_COMMANDS_CATEGORY
-
-    clearcut_request['log_event'] = []
-    for concord_event, event_time_ms in self._clearcut_concord_timed_events:
-      clearcut_request['log_event'].append({
-          'source_extension_json': json.dumps(concord_event, sort_keys=True),
-          'event_time_ms': event_time_ms
-      })
-
-    data = json.dumps(clearcut_request, sort_keys=True)
-    headers = {'user-agent': self._user_agent}
-    self.CollectHTTPBeacon(_CLEARCUT_ENDPOINT, 'POST', data, headers)
+  def CollectMetrics(self):
+    for metrics_reporter in self._metrics_reporters:
+      http_beacon = metrics_reporter.ToHTTPBeacon(self._timer)
+      self.CollectHTTPBeacon(*http_beacon)
 
   def CollectHTTPBeacon(self, url, method, body, headers):
     """Record a custom event to an arbitrary endpoint.
@@ -564,52 +641,29 @@ class _MetricsCollector(object):
 def _RecordEventAndSetTimerContext(
     category, action, label, value=0, flag_names=None,
     error=None, error_extra_info_json=None):
-  """Common code for processing a GA event."""
+  """Common code for processing an event."""
   collector = _MetricsCollector.GetCollector()
+  if not collector:
+    return
 
-  if collector:
-    # Override label for tests. This way we can filter by test group.
-    if _MetricsCollector.test_group and category is not _GA_ERROR_CATEGORY:
-      label = _MetricsCollector.test_group
+  # Override label for tests. This way we can filter by test group.
+  if _MetricsCollector.test_group and category is not _GA_ERROR_CATEGORY:
+    label = _MetricsCollector.test_group
 
-    cds = {}
-    event_metadata = []
-    if flag_names is not None:
-      cds['cd6'] = flag_names
-      event_metadata.append({
-          'key': 'flag_names',
-          'value': six.text_type(flag_names)
-      })
-    if error is not None:
-      cds['cd8'] = error
-      event_metadata.append({'key': _CLEARCUT_ERROR_TYPE_KEY, 'value': error})
-    if error_extra_info_json is not None:
-      cds['cd9'] = error_extra_info_json
-      event_metadata.append({'key': 'extra_error_info',
-                             'value': error_extra_info_json})
+  event = _Event(category=category, action=action, label=label, value=value)
 
-    collector.RecordGAEvent(
-        _GAEvent(category=category, action=action, label=label, value=value,
-                 **cds))
+  collector.Record(
+      event,
+      flag_names=flag_names,
+      error=error,
+      error_extra_info_json=error_extra_info_json)
 
-    if category is _GA_EXECUTIONS_CATEGORY:
-      event_metadata.append({'key': 'binary_version', 'value': label})
-    elif category is _GA_HELP_CATEGORY:
-      event_metadata.append({'key': 'help_mode', 'value': label})
-    elif category is _GA_ERROR_CATEGORY:
-      event_metadata.append({'key': _CLEARCUT_ERROR_TYPE_KEY, 'value': label})
-    elif category is _GA_INSTALLS_CATEGORY:
-      event_metadata.append({'key': 'component_version', 'value': label})
-    collector.RecordClearcutEvent(
-        event_type=category, event_name=action, event_metadata=event_metadata)
-
-    # Don't include version. We already send it as the rls CSI parameter.
-    if category in [_GA_COMMANDS_CATEGORY, _GA_EXECUTIONS_CATEGORY]:
-      collector.SetTimerContext(category, action, flag_names=flag_names)
-    elif category in [_GA_ERROR_CATEGORY, _GA_HELP_CATEGORY,
-                      _GA_TEST_EXECUTIONS_CATEGORY]:
-      collector.SetTimerContext(category, action, label, flag_names=flag_names)
-    # Ignoring installs for now since there could be multiple per cmd execution.
+  if category in [_GA_COMMANDS_CATEGORY, _GA_EXECUTIONS_CATEGORY]:
+    collector.SetTimerContext(category, action, flag_names=flag_names)
+  elif category in [_GA_ERROR_CATEGORY, _GA_HELP_CATEGORY,
+                    _GA_TEST_EXECUTIONS_CATEGORY]:
+    collector.SetTimerContext(category, action, label, flag_names=flag_names)
+  # Ignoring installs for now since there could be multiple per cmd execution.
 
 
 def _GetFlagNameString(flag_names):
@@ -686,10 +740,8 @@ def Shutdown():
   """Reports the metrics that were collected."""
   collector = _MetricsCollector.GetCollectorIfExists()
   if collector:
-    collector.RecordTimedEvent(_CSI_TOTAL_EVENT)
-    collector.CollectCSIMetric()
-    collector.CollectGAMetric()
-    collector.CollectClearcutMetric()
+    collector.RecordTimedEvent(_TOTAL_EVENT)
+    collector.CollectMetrics()
     collector.ReportMetrics()
 
 
@@ -824,7 +876,7 @@ def Loaded():
   """Record the time when command loading was completed."""
   collector = _MetricsCollector.GetCollector()
   if collector:
-    collector.RecordTimedEvent(name=_CSI_LOAD_EVENT,
+    collector.RecordTimedEvent(name=_LOAD_EVENT,
                                record_only_on_top_level=True)
     collector.IncrementActionLevel()
 
@@ -835,7 +887,7 @@ def Ran():
   collector = _MetricsCollector.GetCollector()
   if collector:
     collector.DecrementActionLevel()
-    collector.RecordTimedEvent(name=_CSI_RUN_EVENT,
+    collector.RecordTimedEvent(name=_RUN_EVENT,
                                record_only_on_top_level=True)
 
 

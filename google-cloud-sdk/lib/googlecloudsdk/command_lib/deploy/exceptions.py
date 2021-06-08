@@ -54,3 +54,7 @@ class NoSnappedTargets(exceptions.Error):
   def __init__(self, release_name):
     super(NoSnappedTargets, self).__init__(
         'No snapped targets in the release {}.'.format(release_name))
+
+
+class CloudDeployConfigError(exceptions.Error):
+  """Error raised for errors in the cloud deploy yaml config."""

@@ -4269,8 +4269,7 @@ class Binding(_messages.Message):
 
 class BulkInsertInstanceResource(_messages.Message):
   r"""A transient resource used in compute.instances.bulkInsert and
-  compute.regionInstances.bulkInsert and
-  compute.regionInstances.recommendLocations. This resource is not persisted
+  compute.regionInstances.bulkInsert . This resource is not persisted
   anywhere, it is used only for processing the requests.
 
   Messages:
@@ -23364,8 +23363,8 @@ class DisksAddResourcePoliciesRequest(_messages.Message):
   r"""A DisksAddResourcePoliciesRequest object.
 
   Fields:
-    resourcePolicies: Resource policies to be added to this disk. Currently
-      you can only specify one policy here.
+    resourcePolicies: Full or relative path to the resource policy to be added
+      to this disk. You can only specify one resource policy.
   """
 
   resourcePolicies = _messages.StringField(1, repeated=True)
@@ -25753,8 +25752,8 @@ class GuestAttributes(_messages.Message):
   Fields:
     kind: [Output Only] Type of the resource. Always compute#guestAttributes
       for guest attributes entry.
-    queryPath: The path to be queried. This can be the default namespace ('/')
-      or a nested namespace ('/\/') or a specified key ('/\/\')
+    queryPath: The path to be queried. This can be the default namespace ('')
+      or a nested namespace ('\/') or a specified key ('\/\').
     queryValue: [Output Only] The value of the requested queried path.
     selfLink: [Output Only] Server-defined URL for this resource.
     variableKey: The key to search for.
@@ -28977,16 +28976,7 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  r"""Whether the instance is a standby. Properties of a standby instance
-  comparing to the regular instance:
-  ========================================================================= |
-  regular | standby
-  =========================================================================
-  managed by IGM? | yes | yes added to the IG? | yes | yes counts towards
-  IGM's target size? | yes | no taken into account by Autoscaler? | yes | no
-  receives traffic from LB? | yes | no
-  =========================================================================
-  Represents a Managed Instance Group resource.  An instance group is a
+  r"""Represents a Managed Instance Group resource.  An instance group is a
   collection of VM instances that you can manage as a single entity. For more
   information, read Instance groups.  For zonal Managed Instance Group, use
   the instanceGroupManagers resource.  For regional Managed Instance Group,

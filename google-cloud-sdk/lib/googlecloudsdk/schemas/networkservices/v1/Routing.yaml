@@ -1,0 +1,46 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1 Routing export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- hostRules
+- pathMatchers
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  hostRules:
+    description: |-
+      The list of hostRules to match against. These rules define which hostnames
+      the EdgeCacheService will match against, and which route configurations
+      apply. You may specify up to 5 host rules.
+    type: array
+    items:
+      $ref: HostRule.yaml
+  pathMatchers:
+    description: |-
+      The list of pathMatchers referenced via name by hostRules. PathMatcher
+      is used to match the path portion of the URL when a HostRule matches
+      the URL's host portion. You may specify up to 10 path matchers.
+    type: array
+    items:
+      $ref: PathMatcher.yaml

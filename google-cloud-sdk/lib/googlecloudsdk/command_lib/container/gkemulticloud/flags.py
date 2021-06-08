@@ -213,7 +213,6 @@ def GetSubnetID(args):
 def AddVMSize(parser):
   parser.add_argument(
       '--vm-size',
-      required=True,
       help='Azure Virtual Machine Size (e.g. Standard_DS1_v).')
 
 
@@ -232,10 +231,9 @@ def GetSSHPublicKey(args):
   return args.ssh_public_key
 
 
-def AddRootVolumeSize(parser, required=True):
+def AddRootVolumeSize(parser):
   parser.add_argument(
       '--root-volume-size',
-      required=required,
       type=arg_parsers.BinarySize(
           suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB'],
           default_unit='Gi'),
@@ -255,10 +253,9 @@ def GetRootVolumeSize(args):
   return int(size) >> 30
 
 
-def AddMainVolumeSize(parser, required=True):
+def AddMainVolumeSize(parser):
   parser.add_argument(
       '--main-volume-size',
-      required=required,
       type=arg_parsers.BinarySize(
           suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB'],
           default_unit='Gi'),

@@ -1,7 +1,6 @@
-# Proto defined at //cloud/hosted/kubernetesedge/api/v1alpha1/v1alpha1.proto.
 project:
   name: project
-  collection: kubernetesedge.projects
+  collection: edgecontainer.projects
   attributes:
   - &project
     parameter_name: projectsId
@@ -11,18 +10,30 @@ project:
 
 location:
   name: location
-  collection: kubernetesedge.projects.locations
+  collection: edgecontainer.projects.locations
   attributes:
   - *project
   - &location
     parameter_name: locationsId
     attribute_name: location
     help: The global location name.
+    property: edge_container/location
+  disable_auto_completers: false
+
+zone:
+  name: zone
+  collection: edgecontainer.projects.locations
+  attributes:
+  - *project
+  - &zone
+    parameter_name: locationsId
+    attribute_name: zone
+    help: The name of the Edge Container zone.
   disable_auto_completers: false
 
 cluster:
   name: cluster
-  collection: kubernetesedge.projects.locations.clusters
+  collection: edgecontainer.projects.locations.clusters
   request_id_field: clusterId
   attributes:
   - *project
@@ -35,7 +46,7 @@ cluster:
 
 nodePool:
   name: node pool
-  collection: kubernetesedge.projects.locations.clusters.nodePools
+  collection: edgecontainer.projects.locations.clusters.nodePools
   request_id_field: nodePoolId
   attributes:
   - *project
@@ -49,7 +60,7 @@ nodePool:
 
 machine:
   name: machine
-  collection: kubernetesedge.projects.locations.machines
+  collection: edgecontainer.projects.locations.machines
   request_id_field: machineId
   attributes:
   - *project
@@ -57,12 +68,12 @@ machine:
   - &machine
     parameter_name: machinesId
     attribute_name: machine
-    help: Machines represent compute entities which can assume the role of a node in a cluster. Machines may be physical or virtual, and they may be created statically or dynamically.
+    help: Machines represent compute entities which can assume the role of a node in a cluster.
   disable_auto_completers: false
 
 operation:
   name: operation
-  collection: kubernetesedge.projects.locations.operations
+  collection: edgecontainer.projects.locations.operations
   attributes:
   - *project
   - *location

@@ -217,7 +217,15 @@ class Expr(_messages.Message):
 
 
 class FullManagementConfig(_messages.Message):
-  r"""Configuration of the full (Autopilot) cluster management"""
+  r"""Configuration of the full (Autopilot) cluster management
+
+  Fields:
+    masterIpv4CidrBlock: The /28 network that the masters will use.
+    network: Existing VPC Network to put the GKE cluster and nodes in.
+  """
+
+  masterIpv4CidrBlock = _messages.StringField(1)
+  network = _messages.StringField(2)
 
 
 class KrmApiHost(_messages.Message):
@@ -258,9 +266,11 @@ class KrmApiHost(_messages.Message):
       this block.
     managementConfig: Configuration of the cluster management
     masterIpv4CidrBlock: The /28 network that the masters will use.
+      Deprecated. Please use management_config instead.
     name: Output only. The name of this KrmApiHost resource in the format: 'pr
       ojects/{project_id}/locations/{location}/krmApiHosts/{krm_api_host_id}'.
     network: Existing VPC Network to put the GKE cluster and nodes in.
+      Deprecated. Please use management_config instead.
     servicesCidrBlock: The IP address range for the cluster service IPs. Set
       to blank to have a range chosen with the default size. Set to /netmask
       (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
@@ -938,7 +948,15 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class StandardManagementConfig(_messages.Message):
-  r"""Configuration of the standard (GKE) cluster management"""
+  r"""Configuration of the standard (GKE) cluster management
+
+  Fields:
+    masterIpv4CidrBlock: The /28 network that the masters will use.
+    network: Existing VPC Network to put the GKE cluster and nodes in.
+  """
+
+  masterIpv4CidrBlock = _messages.StringField(1)
+  network = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

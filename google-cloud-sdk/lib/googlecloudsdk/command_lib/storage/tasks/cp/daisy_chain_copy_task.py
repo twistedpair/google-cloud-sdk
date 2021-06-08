@@ -35,12 +35,14 @@ from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
+from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
 
 
-MAX_ALLOWED_READ_SIZE = 100 * 1024 * 1024  # 100 MiB
-MAX_BUFFER_QUEUE_SIZE = 100
+_MAX_ALLOWED_READ_SIZE = 100 * 1024 * 1024  # 100 MiB
+_MAX_BUFFER_QUEUE_SIZE = 100
 # TODO(b/174075495) Determine the max size based on the destination scheme.
-QUEUE_ITEM_MAX_SIZE = 8 * 1024  # 8 KiB
+_QUEUE_ITEM_MAX_SIZE = 8 * 1024  # 8 KiB
+_PROGRESS_CALLBACK_THRESHOLD = 16 * 1024 * 1024  # 16 MiB.
 
 
 class _AbruptShutdownError(errors.Error):
@@ -81,10 +83,10 @@ class _WritableStream:
       _AbruptShutdownError: If self._shudown_event was set.
     """
     start = 0
-    end = min(start + QUEUE_ITEM_MAX_SIZE, len(data))
+    end = min(start + _QUEUE_ITEM_MAX_SIZE, len(data))
     while start < len(data):
       with self._buffer_condition:
-        while (len(self._buffer_queue) >= MAX_BUFFER_QUEUE_SIZE and
+        while (len(self._buffer_queue) >= _MAX_BUFFER_QUEUE_SIZE and
                not self._shutdown_event.is_set()):
           self._buffer_condition.wait()
 
@@ -93,7 +95,7 @@ class _WritableStream:
 
         self._buffer_queue.append(data[start:end])
         start = end
-        end = min(start + QUEUE_ITEM_MAX_SIZE, len(data))
+        end = min(start + _QUEUE_ITEM_MAX_SIZE, len(data))
         self._buffer_condition.notify_all()
 
 
@@ -101,7 +103,7 @@ class _ReadableStream:
   """A read-only stream that reads from the buffer queue."""
 
   def __init__(self, buffer_queue, buffer_condition, shutdown_event,
-               end_position):
+               end_position, progress_callback=None):
     """Initializes ReadableStream.
 
     Args:
@@ -113,6 +115,8 @@ class _ReadableStream:
         terminate.
       end_position (int): Position at which the stream reading stops. This is
         usually the total size of the data that gets read.
+      progress_callback (progress_callbacks.FilesAndBytesProgressCallback):
+        Accepts processed bytes and submits progress info for aggregation.
     """
     self._buffer_queue = buffer_queue
     self._buffer_condition = buffer_condition
@@ -120,6 +124,8 @@ class _ReadableStream:
     self._shutdown_event = shutdown_event
     self._position = 0
     self._unused_data_from_previous_read = b''
+    self._progress_callback = progress_callback
+    self._bytes_read_since_last_progress_callback = 0
 
   def read(self, size=-1):
     """Reads size bytes from the buffer queue and returns it.
@@ -143,19 +149,19 @@ class _ReadableStream:
     if size == 0:
       return b''
 
-    if size > MAX_ALLOWED_READ_SIZE:
+    if size > _MAX_ALLOWED_READ_SIZE:
       raise errors.Error(
           'Invalid HTTP read size {} during daisy chain operation, expected'
-          ' -1 <= size <= {} bytes.'.format(size, MAX_ALLOWED_READ_SIZE))
+          ' -1 <= size <= {} bytes.'.format(size, _MAX_ALLOWED_READ_SIZE))
 
     if size == -1:
       # This indicates that we have to read the entire object at once.
-      if self._end_position <= MAX_ALLOWED_READ_SIZE:
+      if self._end_position <= _MAX_ALLOWED_READ_SIZE:
         chunk_size = self._end_position
       else:
         raise errors.Error('Read with size=-1 is not allowed for object'
                            ' size > {} bytes to prevent reading large objects'
-                           ' in-memory.'.format(MAX_ALLOWED_READ_SIZE))
+                           ' in-memory.'.format(_MAX_ALLOWED_READ_SIZE))
     else:
       chunk_size = size
 
@@ -191,7 +197,15 @@ class _ReadableStream:
       bytes_read += len(data_to_return)
       self._position += len(data_to_return)
 
-    return result.getvalue()
+    result_data = result.getvalue()
+    if result_data and self._progress_callback:
+      self._bytes_read_since_last_progress_callback += len(result_data)
+      if (self._bytes_read_since_last_progress_callback >=
+          _PROGRESS_CALLBACK_THRESHOLD):
+        self._bytes_read_since_last_progress_callback = 0
+        self._progress_callback(self._position)
+
+    return result_data
 
   def seek(self, offset, whence=os.SEEK_SET):
     """Checks if seek was requested for the last position.
@@ -254,6 +268,12 @@ class _ReadableStream:
     """Returns the current position."""
     return self._position
 
+  def close(self):
+    if (self._progress_callback and
+        self._bytes_read_since_last_progress_callback):
+      self._bytes_read_since_last_progress_callback = 0
+      self._progress_callback(self._position)
+
 
 class QueuingStream:
   """Interface to a bidirectional buffer to read and write simultaneously.
@@ -275,11 +295,13 @@ class QueuingStream:
       termination of the operation.
   """
 
-  def __init__(self, object_size=None):
+  def __init__(self, object_size=None, progress_callback=None):
     """Intializes QueuingStream.
 
     Args:
       object_size (int): The size of the source object.
+      progress_callback (progress_callbacks.FilesAndBytesProgressCallback):
+        Accepts processed bytes and submits progress info for aggregation.
     """
     self.buffer_queue = collections.deque()
     self.buffer_condition = threading.Condition()
@@ -292,6 +314,7 @@ class QueuingStream:
         self.buffer_condition,
         self.shutdown_event,
         object_size,
+        progress_callback=progress_callback,
     )
     self.exception_raised = None
 
@@ -357,17 +380,6 @@ class DaisyChainCopyTask(task.Task):
     """Copies file by downloading and uploading in parallel."""
     # TODO (b/168712813): Add option to use the Data Transfer component.
 
-    daisy_chain_stream = QueuingStream(self._source_resource.size)
-
-    # Perform download in a separate thread so that upload can be performed
-    # simultaneously.
-    download_thread = threading.Thread(
-        target=self._run_download, args=(daisy_chain_stream,))
-    download_thread.start()
-
-    destination_client = api_factory.get_api(
-        self._destination_resource.storage_url.scheme)
-    request_config = cloud_api.RequestConfig(size=self._source_resource.size)
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
         offset=0,
@@ -378,13 +390,28 @@ class DaisyChainCopyTask(task.Task):
         process_id=os.getpid(),
         thread_id=threading.get_ident(),
     )
+    daisy_chain_stream = QueuingStream(self._source_resource.size,
+                                       progress_callback)
+
+    # Perform download in a separate thread so that upload can be performed
+    # simultaneously.
+    download_thread = threading.Thread(
+        target=self._run_download, args=(daisy_chain_stream,))
+    download_thread.start()
+
+    destination_client = api_factory.get_api(
+        self._destination_resource.storage_url.scheme)
+    request_config = cloud_api.RequestConfig(size=self._source_resource.size)
 
     try:
+      upload_strategy = upload_util.get_upload_strategy(
+          api=destination_client,
+          object_length=self._source_resource.size)
       destination_client.upload_object(
           daisy_chain_stream.readable_stream,
           self._destination_resource,
           request_config=request_config,
-          progress_callback=progress_callback)
+          upload_strategy=upload_strategy)
     except _AbruptShutdownError:
       # Not raising daisy_chain_stream.exception_raised here because we want
       # to wait for the download thread to finish.
@@ -396,5 +423,6 @@ class DaisyChainCopyTask(task.Task):
       daisy_chain_stream.shutdown(e)
 
     download_thread.join()
+    daisy_chain_stream.readable_stream.close()
     if daisy_chain_stream.exception_raised:
       raise daisy_chain_stream.exception_raised

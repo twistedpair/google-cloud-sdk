@@ -505,6 +505,15 @@
           "readOnly": true,
           "type": "string"
         },
+        "cloudComposerNetworkIpv4CidrBlock": {
+          "description": "Optional. The CIDR block from which IP range for Cloud Composer Network in tenant project will be reserved. Needs to be disjoint from private_cluster_config.master_ipv4_cidr_block and cloud_sql_ipv4_cidr_block. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
+          "type": "string"
+        },
+        "cloudComposerNetworkIpv4ReservedRange": {
+          "description": "Output only. The IP range reserved for the tenant project's Cloud Composer network. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
+          "readOnly": true,
+          "type": "string"
+        },
         "enablePrivatelyUsedPublicIps": {
           "description": "Optional. When enabled, IPs from public (non-RFC1918) ranges can be used for `IPAllocationPolicy.cluster_ipv4_cidr_block` and `IPAllocationPolicy.service_ipv4_cidr_block`.",
           "type": "boolean"

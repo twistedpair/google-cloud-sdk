@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from google.auth import credentials
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import requests
 from googlecloudsdk.core import transport
@@ -57,33 +56,31 @@ def GetGapicCredentials(enable_resource_quota=True,
     MissingStoredCredentialsError: If a google-auth credential cannot be loaded.
   """
 
-  stored_credentials = store.LoadIfEnabled(
+  credentials = store.LoadIfEnabled(
       allow_account_impersonation=allow_account_impersonation,
       use_google_auth=True)
-  if not creds.IsGoogleAuthCredentials(stored_credentials):
+  if not creds.IsGoogleAuthCredentials(credentials):
     raise MissingStoredCredentialsError('Unable to load credentials')
 
   if enable_resource_quota:
     # pylint: disable=protected-access
-    stored_credentials._quota_project_id = creds.GetQuotaProject(credentials)
+    credentials._quota_project_id = creds.GetQuotaProject(credentials)
 
   # In order to ensure that credentials.Credentials:refresh is called with a
   # google.auth.transport.Request that uses our transport, we ignore the request
   # argument that is passed in and plug in our own.
-  original_refresh = stored_credentials.refresh
+  original_refresh = credentials.refresh
   def WrappedRefresh(request):
     del request  # unused
     return original_refresh(requests.GoogleAuthRequest())
-  stored_credentials.refresh = WrappedRefresh
+  credentials.refresh = WrappedRefresh
 
-  return stored_credentials
+  return credentials
 
 
-def MakeClient(client_class, address=None,
-               enable_resource_quota=True,
-               allow_account_impersonation=True):
+def MakeClient(client_class, credentials, address_override_func=None,
+               mtls_enabled=False):
   """Instantiates a gapic API client with gcloud defaults and configuration.
-
 
   grpc cannot be packaged like our other Python dependencies, due to platform
   differences and must be installed by the user. googlecloudsdk.core.gapic
@@ -92,32 +89,30 @@ def MakeClient(client_class, address=None,
 
   Args:
     client_class: a gapic client class.
-    address: str, API endpoint override.
-    enable_resource_quota: bool, By default, we are going to tell APIs to use
-        the quota of the project being operated on. For some APIs we want to use
-        gcloud's quota, so you can explicitly disable that behavior by passing
-        False here.
-    allow_account_impersonation: bool, True to allow use of impersonated service
-        account credentials for calls made with this client. If False, the
-        active user credentials will always be used.
+    credentials: google.auth.credentials.Credentials, the credentials to use.
+    address_override_func: function, function to call to override the client
+        host. It takes a single argument which is the original host.
+    mtls_enabled: bool, True if mTLS is enabled for this client.
 
   Returns:
-    requests.Response object
+    A gapic API client.
   """
   # pylint: disable=g-import-not-at-top
   from googlecloudsdk.core import gapic_util_internal
   import google.api_core.gapic_v1.client_info
   # pylint: enable=g-import-not-at-top
 
-  if not address:
-    address = client_class.DEFAULT_ENDPOINT
+  address = client_class.DEFAULT_ENDPOINT
+  if mtls_enabled:
+    # pylint: disable=protected-access
+    address = client_class._get_default_mtls_endpoint(address)
+  elif address_override_func:
+    address = address_override_func(address)
 
-  gapic_credentials = GetGapicCredentials(
-      enable_resource_quota=enable_resource_quota,
-      allow_account_impersonation=allow_account_impersonation)
   return client_class(
       transport=gapic_util_internal.MakeTransport(
-          client_class.get_transport_class(), address, gapic_credentials),
+          client_class.get_transport_class(), address, credentials,
+          mtls_enabled),
       client_info=google.api_core.gapic_v1.client_info.ClientInfo(
           user_agent=transport.MakeUserAgentString())
       )

@@ -499,6 +499,10 @@
           "items": {
             "$ref": "Volume"
           }
+        },
+        "reservation": {
+          "description": "If specified, the VM will only be allocated inside the matching reservation. It will fail if the VM parameters don't match the reservation.",
+          "type": "string"
         }
       }
     },

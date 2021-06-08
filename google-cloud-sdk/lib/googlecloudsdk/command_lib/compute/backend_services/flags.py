@@ -753,8 +753,8 @@ def AddEnableLogging(parser):
       action=arg_parsers.StoreTrueFalseAction,
       help="""\
       The logging options for the load balancer traffic served by this backend
-      service. If logging is enabled, logs will be exported to Stackdriver.
-      Enabled by default.
+      service. If logging is enabled, logs will be exported to Cloud Logging.
+      Disabled by default.
       """)
 
 

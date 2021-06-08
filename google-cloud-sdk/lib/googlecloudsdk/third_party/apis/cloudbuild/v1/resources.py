@@ -110,6 +110,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_TRIGGERS = (
+      'projects.locations.triggers',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/triggers/'
+              '{triggersId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_TRIGGERS = (
       'projects.triggers',
       'projects/{projectId}/triggers/{triggerId}',

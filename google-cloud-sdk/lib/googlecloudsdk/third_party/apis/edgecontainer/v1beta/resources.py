@@ -85,24 +85,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_SITES = (
-      'projects.locations.sites',
-      'projects/{projectsId}/locations/{locationsId}/sites/{sitesId}',
-      {},
-      ['projectsId', 'locationsId', 'sitesId'],
-      True
-  )
-  PROJECTS_LOCATIONS_SITES_MACHINES = (
-      'projects.locations.sites.machines',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/sites/{sitesId}/'
-              'machines/{machinesId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_VPNCONNECTIONS = (
       'projects.locations.vpnConnections',
       '{+name}',

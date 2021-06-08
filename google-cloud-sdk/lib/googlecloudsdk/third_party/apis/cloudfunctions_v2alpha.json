@@ -283,6 +283,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "dockerRepository": {
+          "description": "Optional. User managed repository created in Artifact Registry optionally with a customer managed encryption key. This is the repository to which the function docker image will be pushed after it is built by Cloud Build. If unspecified, GCF will create and use a repository named 'gcf-artifacts' for every deployed region. It must match the pattern `projects\/{project}\/locations\/{location}\/repositories\/{repository}`. Cross-project repositories are not supported. Cross-location repositories are not supported. Repository format must be 'DOCKER'.",
+          "type": "string"
         }
       }
     },
@@ -449,7 +453,7 @@
           "type": "string"
         },
         "triggerRegion": {
-          "description": "The region that the trigger will be in. The trigger will only receive events originating in this region. It can be the same region as the function, a multi-region, or the global region. Cross-regional triggers are not permitted, i.e. triggers that are in a single-region location that is different than the function's region. If not provided, defaults to the same region as the function.",
+          "description": "The region that the trigger will be in. The trigger will only receive events originating in this region. It can be the same region as the function, a different region or multi-region, or the global region. If not provided, defaults to the same region as the function.",
           "type": "string"
         },
         "eventType": {
@@ -944,7 +948,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The list of fields to be updated. If no field mask is provided, all provided fields in the request will be updated. To update all fields, provide a field mask of \"*\".",
+                      "description": "The list of fields to be updated. If no field mask is provided, all provided fields in the request will be updated.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

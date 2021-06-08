@@ -1409,6 +1409,9 @@ class VirtualMachine(_messages.Message):
       must be one of the drivers hosted in the `nvidia-drivers-us-public`
       bucket on Google Cloud Storage.
     preemptible: If true, allocate a preemptible VM.
+    reservation: If specified, the VM will only be allocated inside the
+      matching reservation. It will fail if the VM parameters don't match the
+      reservation.
     serviceAccount: The service account to install on the VM. This account
       does not need any permissions other than those required by the pipeline.
     volumes: The list of disks and other storage to create or attach to the
@@ -1458,8 +1461,9 @@ class VirtualMachine(_messages.Message):
   network = _messages.MessageField('Network', 10)
   nvidiaDriverVersion = _messages.StringField(11)
   preemptible = _messages.BooleanField(12)
-  serviceAccount = _messages.MessageField('ServiceAccount', 13)
-  volumes = _messages.MessageField('Volume', 14, repeated=True)
+  reservation = _messages.StringField(13)
+  serviceAccount = _messages.MessageField('ServiceAccount', 14)
+  volumes = _messages.MessageField('Volume', 15, repeated=True)
 
 
 class Volume(_messages.Message):

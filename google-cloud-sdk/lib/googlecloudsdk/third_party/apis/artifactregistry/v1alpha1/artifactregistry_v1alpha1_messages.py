@@ -120,6 +120,23 @@ class ArtifactregistryProjectsLocationsRepositoriesGooGetArtifactsImportRequest(
   parent = _messages.StringField(2, required=True)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesGoogetartifactsUploadRequest(_messages.Message):
+  r"""A
+  ArtifactregistryProjectsLocationsRepositoriesGoogetartifactsUploadRequest
+  object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest: A
+      GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest
+      resource to be passed as the request body.
+    parent: The name of the parent resource where the artifacts will be
+      uploaded.
+  """
+
+  googleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesImportRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesImportRequest object.
 
@@ -148,6 +165,22 @@ class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest(_me
   """
 
   googleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest
+  object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest: A
+      GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest resource
+      to be passed as the request body.
+    parent: The name of the parent resource where the artifacts will be
+      uploaded.
+  """
+
+  googleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest', 1)
   parent = _messages.StringField(2, required=True)
 
 
@@ -625,6 +658,10 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse(_m
   operation = _messages.MessageField('Operation', 1)
 
 
+class GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest(_messages.Message):
+  r"""The request to upload an artifact."""
+
+
 class GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactResponse(_messages.Message):
   r"""The response of the completed artifact upload operation. This response
   is contained in the Operation and available to users.
@@ -644,6 +681,10 @@ class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse(_mess
   """
 
   operation = _messages.MessageField('Operation', 1)
+
+
+class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest(_messages.Message):
+  r"""The request to upload an artifact."""
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactResponse(_messages.Message):

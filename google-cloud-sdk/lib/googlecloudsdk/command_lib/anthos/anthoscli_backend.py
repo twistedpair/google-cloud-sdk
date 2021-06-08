@@ -37,7 +37,6 @@ import requests
 import six
 from six.moves import urllib
 
-
 DEFAULT_ENV_ARGS = {'COBRA_SILENCE_USAGE': 'true'}
 
 DEFAULT_LOGIN_CONFIG_PATH = {
@@ -45,8 +44,9 @@ DEFAULT_LOGIN_CONFIG_PATH = {
         '~/.config/google/anthos/kubectl-anthos-config.yaml',
     platforms.OperatingSystem.MACOSX.id:
         '~/Library/Preferences/google/anthos/kubectl-anthos-config.yaml',
-    platforms.OperatingSystem.WINDOWS.id: os.path.join(
-        '%APPDATA%', 'google', 'anthos', 'kubectl-anthos-config.yaml')
+    platforms.OperatingSystem.WINDOWS.id:
+        os.path.join('%APPDATA%', 'google', 'anthos',
+                     'kubectl-anthos-config.yaml')
 }
 
 
@@ -59,7 +59,7 @@ def GetEnvArgsForCommand(extra_vars=None, exclude_vars=None):
   if exclude_vars:
     for k in exclude_vars:
       env.pop(k)
-  return  env
+  return env
 
 
 class AnthosAuthException(c_except.Error):
@@ -71,7 +71,7 @@ def RelativePkgPathFromFullPath(path):
   normpath = os.path.normpath(path)
   rel_path = os.path.basename(normpath)
   parent_dir = os.path.dirname(normpath) or rel_path
-  return  rel_path, parent_dir
+  return rel_path, parent_dir
 
 
 class AnthosCliWrapper(binary_operations.StreamingBinaryBackedOperation):
@@ -81,9 +81,8 @@ class AnthosCliWrapper(binary_operations.StreamingBinaryBackedOperation):
     custom_errors = {
         'MISSING_EXEC': messages.MISSING_BINARY.format(binary='anthoscli')
     }
-    super(AnthosCliWrapper, self).__init__(binary='anthoscli',
-                                           custom_errors=custom_errors,
-                                           **kwargs)
+    super(AnthosCliWrapper, self).__init__(
+        binary='anthoscli', custom_errors=custom_errors, **kwargs)
 
   def _ParseGetArgs(self, repo_uri, local_dest, file_pattern=None, **kwargs):
     del kwargs  # Not Used Here
@@ -94,8 +93,13 @@ class AnthosCliWrapper(binary_operations.StreamingBinaryBackedOperation):
 
     return exec_args
 
-  def _ParseUpdateArgs(self, local_dir, repo_uri=None, strategy=None,
-                       dry_run=False, verbose=False, **kwargs):
+  def _ParseUpdateArgs(self,
+                       local_dir,
+                       repo_uri=None,
+                       strategy=None,
+                       dry_run=False,
+                       verbose=False,
+                       **kwargs):
     del kwargs  # Not Used here
 
     exec_args = ['update', local_dir]
@@ -111,17 +115,22 @@ class AnthosCliWrapper(binary_operations.StreamingBinaryBackedOperation):
     if verbose:
       exec_args.append('--verbose')
 
-    return  exec_args
+    return exec_args
 
   def _ParseDescribeArgs(self, local_dir, **kwargs):
     del kwargs  # Not Used here
-    return  ['desc', local_dir]
+    return ['desc', local_dir]
 
   def _ParseTags(self, tags):
     return ','.join(['{}={}'.format(x, y) for x, y in six.iteritems(tags)])
 
-  def _ParseInitArgs(self, local_dir, description=None, name=None,
-                     tags=None, info_url=None, **kwargs):
+  def _ParseInitArgs(self,
+                     local_dir,
+                     description=None,
+                     name=None,
+                     tags=None,
+                     info_url=None,
+                     **kwargs):
     del kwargs  # Not Used here
     package_path = local_dir
 
@@ -139,7 +148,7 @@ class AnthosCliWrapper(binary_operations.StreamingBinaryBackedOperation):
     if info_url:
       exec_args.extend(['--url', info_url])
 
-    return  exec_args
+    return exec_args
 
   def _ParseApplyArgs(self, apply_dir, project, **kwargs):
     del kwargs  # Not Used Here
@@ -197,12 +206,11 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
 
   def __init__(self, **kwargs):
     custom_errors = {
-        'MISSING_EXEC': messages.MISSING_AUTH_BINARY.format(
-            binary='kubectl-anthos')
+        'MISSING_EXEC':
+            messages.MISSING_AUTH_BINARY.format(binary='kubectl-anthos')
     }
-    super(AnthosAuthWrapper, self).__init__(binary='kubectl-anthos',
-                                            custom_errors=custom_errors,
-                                            **kwargs)
+    super(AnthosAuthWrapper, self).__init__(
+        binary='kubectl-anthos', custom_errors=custom_errors, **kwargs)
 
   @property
   def default_config_path(self):
@@ -235,15 +243,18 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
     if dry_run:
       exec_args.extend(['--dry-run'])
     if ldap_pass and ldap_user:
-      exec_args.extend(['--ldap-username', ldap_user,
-                        '--ldap-password', ldap_pass])
+      exec_args.extend(
+          ['--ldap-username', ldap_user, '--ldap-password', ldap_pass])
     if preferred_auth:
       exec_args.extend(['--preferred-auth', preferred_auth])
 
     return exec_args
 
-  def _ParseCreateLoginConfigArgs(self, kube_config, output_file=None,
-                                  merge_from=None, **kwargs):
+  def _ParseCreateLoginConfigArgs(self,
+                                  kube_config,
+                                  output_file=None,
+                                  merge_from=None,
+                                  **kwargs):
     del kwargs  # Not Used Here
     exec_args = ['create-login-config']
     exec_args.extend(['--kubeconfig', kube_config])
@@ -253,6 +264,18 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.extend(['--merge-from', merge_from])
     return exec_args
 
+  def _ParseTokenArgs(self, token_type, cluster, aws_sts_region, **kwargs):
+    del kwargs  # Not Used Here
+    exec_args = ['token']
+    if token_type:
+      exec_args.extend(['--type', token_type])
+    if cluster:
+      exec_args.extend(['--cluster', cluster])
+    if aws_sts_region:
+      exec_args.extend(['--aws-sts-region', aws_sts_region])
+
+    return exec_args
+
   def _ParseArgsForCommand(self, command, **kwargs):
     if command == 'login':
       return self._ParseLoginArgs(**kwargs)
@@ -260,6 +283,8 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
       return self._ParseCreateLoginConfigArgs(**kwargs)
     elif command == 'version':
       return ['version']
+    elif command == 'token':
+      return self._ParseTokenArgs(**kwargs)
     else:
       raise binary_operations.InvalidOperationForBinary(
           'Invalid Operation [{}] for kubectl-anthos'.format(command))
@@ -310,8 +335,8 @@ def GetFileOrURL(cluster_config, certificate_file=True):
 
   Args:
     cluster_config: str, A file path or URL for the login-config.
-    certificate_file: str, Optional file path to the CA certificate to use
-      with the GET request to the URL.
+    certificate_file: str, Optional file path to the CA certificate to use with
+      the GET request to the URL.
 
   Raises:
     AnthosAuthException: If the data could not be pulled from the URL.
@@ -334,8 +359,8 @@ def GetFileOrURL(cluster_config, certificate_file=True):
     response = requests.get(cluster_config, verify=certificate_file or True)
     if response.status_code != requests.codes.ok:
       raise AnthosAuthException('Request to login-config URL failed with'
-                                'response code [{}] and text [{}]: '
-                                .format(response.status_code, response.text))
+                                'response code [{}] and text [{}]: '.format(
+                                    response.status_code, response.text))
     return cluster_config, response.text, is_url
 
   # Handle if input is file.
@@ -344,12 +369,11 @@ def GetFileOrURL(cluster_config, certificate_file=True):
   return expanded_config_path, contents, is_url
 
 
-def GetPreferredAuthForCluster(
-    cluster,
-    login_config,
-    config_contents=None,
-    force_update=False,
-    is_url=False):
+def GetPreferredAuthForCluster(cluster,
+                               login_config,
+                               config_contents=None,
+                               force_update=False,
+                               is_url=False):
   """Get preferredAuthentication value for cluster."""
   if not (cluster and login_config):
     return None, None, None
@@ -359,11 +383,9 @@ def GetPreferredAuthForCluster(
   if is_url:
     if not config_contents:
       raise AnthosAuthException(
-          'Config contents were not passed with URL [{}]'
-          .format(login_config))
+          'Config contents were not passed with URL [{}]'.format(login_config))
     configs = file_parsers.YamlConfigFile(
-        file_contents=config_contents,
-        item_type=file_parsers.LoginConfigObject)
+        file_contents=config_contents, item_type=file_parsers.LoginConfigObject)
   # If file, pass contents and location for updating.
   else:
     configs = file_parsers.YamlConfigFile(
@@ -396,9 +418,8 @@ def GetPreferredAuthForCluster(
       # Only print override warning in certain cases.
       if auth_method and force_update and not is_url:
         prompt_message = prompt_message + override_warning.format(auth_method)
-      index = console_io.PromptChoice(providers,
-                                      message=prompt_message,
-                                      cancel_option=True)
+      index = console_io.PromptChoice(
+          providers, message=prompt_message, cancel_option=True)
       auth_method = providers[index]
 
     log.status.Print(
@@ -408,8 +429,7 @@ def GetPreferredAuthForCluster(
     if login_config and not is_url:
       configs.WriteToDisk()
 
-  ldap_user, ldap_pass = _GetLdapUserAndPass(cluster_config,
-                                             auth_method,
+  ldap_user, ldap_pass = _GetLdapUserAndPass(cluster_config, auth_method,
                                              cluster)
   return auth_method, ldap_user, ldap_pass
 

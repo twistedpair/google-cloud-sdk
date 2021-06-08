@@ -65,6 +65,7 @@ def GetResourceNameMismatchErrorMessage(request_resource_name,
       .format(response_resource_name) + _ERROR_MESSAGE_SUFFIX)
 
 
+# LINT.IfChange(invalid_checksum_err)
 def ProcessHttpBadRequestError(error):
   """Intercept INVALID_ARGUMENT errors related to checksum verification.
 
@@ -87,3 +88,5 @@ def ProcessHttpBadRequestError(error):
         GetRequestToServerCorruptedErrorMessage())
   else:
     raise exc
+# Code paths are prohibited from being included in this file.
+# LINT.ThenChange()

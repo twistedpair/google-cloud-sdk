@@ -48,36 +48,40 @@ def _should_decompress_gzip(source_resource, destination_resource):
     return False
 
 
-def _ungzip_file(file_path):
+def _ungzip_file(gzipped_path, destination_path):
   """Unzips gzip file."""
-  temporary_file_path = file_path + '.tmp'
-  with gzip.open(file_path, 'rb') as gzipped_file:
+  with gzip.open(gzipped_path, 'rb') as gzipped_file:
     with files.BinaryFileWriter(
-        temporary_file_path, create_path=True) as ungzipped_file:
+        destination_path, create_path=True) as ungzipped_file:
       shutil.copyfileobj(gzipped_file, ungzipped_file)
-  shutil.move(temporary_file_path, file_path)
+  os.remove(gzipped_path)
 
 
 class FinalizeSlicedDownloadTask(task.Task):
   """Performs final steps of sliced download."""
 
-  def __init__(self, source_resource, destination_resource):
+  def __init__(self, source_resource, temporary_destination_resource,
+               final_destination_resource):
     """Initializes task.
 
     Args:
       source_resource (resource_reference.ObjectResource): Should contain
         object's metadata for checking content encoding.
-      destination_resource (resource_reference.FileObjectResource): Must contain
-        local filesystem path to downloaded object.
+      temporary_destination_resource (resource_reference.FileObjectResource):
+        Must contain a local path to the temporary file written to during
+        transfers.
+      final_destination_resource (resource_reference.FileObjectResource): Must
+        contain local filesystem path to the final download destination.
     """
     super(FinalizeSlicedDownloadTask, self).__init__()
     self._source_resource = source_resource
-    self._destination_resource = destination_resource
+    self._temporary_destination_resource = temporary_destination_resource
+    self._final_destination_resource = final_destination_resource
 
   def _clean_up_tracker_files(self):
     """Clean up master and component tracker files."""
     tracker_file_util.delete_download_tracker_files(
-        self._destination_resource.storage_url,
+        self._temporary_destination_resource.storage_url,
         tracker_file_util.TrackerFileType.SLICED_DOWNLOAD)
 
   def execute(self, task_status_queue=None):
@@ -112,18 +116,27 @@ class FinalizeSlicedDownloadTask(task.Task):
 
         try:
           hash_util.validate_object_hashes_match(
-              self._destination_resource.storage_url,
+              self._temporary_destination_resource.storage_url,
               self._source_resource.crc32c_hash, downloaded_file_hash_digest)
         except errors.HashMismatchError:
           if task.Topic.ERROR not in [
               message.topic for message in self.received_messages
           ]:
-            os.remove(self._destination_resource.storage_url.object_name)
+            os.remove(
+                self._temporary_destination_resource.storage_url.object_name)
             self._clean_up_tracker_files()
           raise
 
+    temporary_url = self._temporary_destination_resource.storage_url
     if _should_decompress_gzip(self._source_resource,
-                               self._destination_resource):
-      _ungzip_file(self._destination_resource.storage_url.object_name)
+                               self._temporary_destination_resource):
+      _ungzip_file(
+          temporary_url.object_name,
+          self._final_destination_resource.storage_url.object_name)
+    elif os.path.exists(temporary_url.object_name):
+      os.rename(
+          temporary_url.object_name,
+          self._final_destination_resource.storage_url.object_name)
 
     self._clean_up_tracker_files()
+

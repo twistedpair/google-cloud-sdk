@@ -166,7 +166,8 @@ def CreateDiskMessages(args,
         csek_keys=csek_keys,
         kms_args=args,
         snapshot_uri=boot_snapshot_uri,
-        disk_provisioned_iops=args.boot_disk_provisioned_iops)
+        disk_provisioned_iops=args.boot_disk_provisioned_iops,
+        use_disk_type_uri=use_disk_type_uri)
     persistent_disks = [boot_disk] + persistent_disks
 
   return persistent_disks + persistent_create_disks + local_nvdimms + local_ssds
@@ -430,12 +431,13 @@ def CreateDefaultBootAttachedDiskMessage(compute_client,
   messages = compute_client.messages
   compute = compute_client.apitools_client
 
-  if disk_type and use_disk_type_uri:
-    disk_type_ref = instance_utils.ParseDiskType(resources, disk_type, project,
-                                                 location, scope)
-    disk_type_uri = disk_type_ref.SelfLink()
+  if disk_type:
+    if use_disk_type_uri:
+      disk_type_ref = instance_utils.ParseDiskType(resources, disk_type,
+                                                   project, location, scope)
+      disk_type = disk_type_ref.SelfLink()
   else:
-    disk_type_uri = None
+    disk_type = None
 
   if csek_keys:
     # If we're going to encrypt the boot disk make sure that we select
@@ -490,7 +492,7 @@ def CreateDefaultBootAttachedDiskMessage(compute_client,
   initialize_params = messages.AttachedDiskInitializeParams(
       sourceImage=image_uri,
       diskSizeGb=disk_size_gb,
-      diskType=disk_type_uri,
+      diskType=disk_type,
       **kwargs_init_parms)
 
   if disk_provisioned_iops is not None:

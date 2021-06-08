@@ -96,17 +96,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_STREAMS_OBJECTS = (
-      'projects.locations.streams.objects',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/streams/'
-              '{streamsId}/objects/{objectsId}',
-      },
-      ['name'],
-      True
-  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

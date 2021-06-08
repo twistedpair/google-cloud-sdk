@@ -130,6 +130,10 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
             progress_callback=progress_callback,
             start_byte=start_byte,
             end_byte=end_byte)
+      else:
+        # Trying to download a zero-sized file. Call progress_callback to
+        # ensure that the file count gets updated.
+        progress_callback(0)
 
     # CRC32C validated in FinalizeSlicedDownloadTask.
     if hash_util.HashAlgorithm.MD5 in self._digesters:

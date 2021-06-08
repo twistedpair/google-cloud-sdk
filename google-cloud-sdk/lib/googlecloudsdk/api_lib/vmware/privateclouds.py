@@ -54,7 +54,7 @@ class PrivateCloudsClient(util.VmwareClientBase):
         network=network,
     )
     if not network.startswith('project'):
-      if bool(network_project is None or '' is network_project):
+      if not bool(network_project):
         network_project = resource.Parent().Parent().Name()
       network_config.network = 'projects/{}/global/networks/{}'.format(
           network_project, network)
@@ -137,4 +137,3 @@ class PrivateCloudsClient(util.VmwareClientBase):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsResetVcenterCredentialsRequest(
         privateCloud=resource.RelativeName())
     return self.service.ResetVcenterCredentials(request)
-

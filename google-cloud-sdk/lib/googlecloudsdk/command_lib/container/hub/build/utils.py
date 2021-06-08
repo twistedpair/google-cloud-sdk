@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import os
 import re
 from apitools.base.py import exceptions as apitools_exceptions
@@ -110,11 +111,10 @@ def GetFeatureSpecMemberships(feature, messages):
   else:
     feature_spec_membership_details = feature.cloudbuildFeatureSpec.membershipConfigs.additionalProperties
 
-  return {
-      membership_detail.key: membership_detail.value
+  return collections.OrderedDict(
+      (membership_detail.key, membership_detail.value)
       for membership_detail in feature_spec_membership_details
-      if membership_detail.value != messages.CloudBuildMembershipConfig()
-  }
+      if membership_detail.value != messages.CloudBuildMembershipConfig())
 
 
 def GetFeatureStateMemberships(feature):

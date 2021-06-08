@@ -4,8 +4,14 @@ definitions:
     type: object
     properties:
       support_single_export:
-        type: string
+        type: boolean
       support_bulk_export:
+        type: boolean
+      krm_kind:
+        type: string
+      krm_group:
+        type: string
+      asset_inventory_type:
         type: string
     additionalProperties: false
 
@@ -13,8 +19,14 @@ definitions:
     type: object
     properties:
       support_single_export:
-        type: string
+        type: boolean
       support_bulk_export:
+        type: boolean
+      krm_kind:
+        type: string
+      krm_group:
+        type: string
+      asset_inventory_type:
         type: string
       GA:
         type: {$ref: "#/definitions/release_track"}

@@ -35,5 +35,5 @@ properties:
     description: |-
       Prior to forwarding the request to the selected origin, the matching
       portion of the request's path is replaced by pathPrefixRewrite. The path
-      value must be between 1 and 1024 characters.
+      value must be between 1 and 1024 characters, and must start with a '/'.
     type: string

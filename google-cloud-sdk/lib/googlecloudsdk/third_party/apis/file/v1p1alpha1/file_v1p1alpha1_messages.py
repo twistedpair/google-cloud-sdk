@@ -1099,9 +1099,6 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   the instance.
 
   Fields:
-    eligibility: Optional. Global per-instance SLI eligibility which applies
-      to all defined SLIs. Exactly one of 'eligibility' and
-      'per_sli_eligibility' fields must be used.
     exclusions: List of SLO exclusion windows. When multiple entries in the
       list match (matching the exclusion time-window against current time
       point) the exclusion reason used in the first matching entry will be
@@ -1118,18 +1115,16 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
       per-node SLO meta data, which will be consumed by SSA Eligibility
       Exporter and published in the form of per node metric to Monarch.
     perSliEligibility: Optional. Multiple per-instance SLI eligibilities which
-      apply for individual SLIs. Exactly one of 'eligibility' and
-      'per_sli_eligibility' fields must be used.
+      apply for individual SLIs.
     tier: Name of the SLO tier the Instance belongs to. This name will be
       expected to match the tiers specified in the service SLO configuration.
       Field is mandatory and must not be empty.
   """
 
-  eligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility', 1)
-  exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 2, repeated=True)
-  nodes = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata', 3, repeated=True)
-  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 4)
-  tier = _messages.StringField(5)
+  exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 1, repeated=True)
+  nodes = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata', 2, repeated=True)
+  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 3)
+  tier = _messages.StringField(4)
 
 
 class Instance(_messages.Message):

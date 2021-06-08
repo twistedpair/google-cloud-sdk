@@ -215,6 +215,11 @@ class Settings(DataObject):
     for var in container.env:
       replacements.setdefault('env_vars', {})[var.name] = var.value
 
+    service_account_name = knative_service.spec.template.spec.serviceAccountName
+    if service_account_name:
+      replacements['credential'] = ServiceAccountSetting(
+          name=service_account_name)
+
     return self.replace(**replacements)
 
   def WithArgs(self, args):
@@ -280,7 +285,10 @@ def _ChooseExistingServiceYaml(arg):
       return arg
     raise ValueError("file '{}' not found".format(arg))
   for pattern in [
-      '*service.dev.yaml', '*service.dev.yml', '*service.yaml', '*service.yml',
+      '*service.dev.yaml',
+      '*service.dev.yml',
+      '*service.yaml',
+      '*service.yml',
   ]:
     matches = glob.glob(pattern)
     if matches:

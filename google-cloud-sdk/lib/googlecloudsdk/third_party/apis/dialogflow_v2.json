@@ -2346,7 +2346,7 @@
       "type": "object",
       "properties": {
         "detectIntentResponse": {
-          "description": "Required. Response of the Dialogflow Sessions.DetectIntent call.",
+          "description": "Response of the Dialogflow Sessions.DetectIntent call.",
           "$ref": "GoogleCloudDialogflowV2DetectIntentResponse"
         }
       }
@@ -4383,6 +4383,10 @@
         "isWebhookEnabled": {
           "description": "If webhooks should be allowed to trigger in response to the user utterance. Often if parameters are injected, webhooks should not be enabled.",
           "type": "boolean"
+        },
+        "enableSentimentAnalysis": {
+          "description": "Whether sentiment analysis is enabled.",
+          "type": "boolean"
         }
       }
     },
@@ -5948,6 +5952,10 @@
         },
         "isWebhookEnabled": {
           "description": "If webhooks should be allowed to trigger in response to the user utterance. Often if parameters are injected, webhooks should not be enabled.",
+          "type": "boolean"
+        },
+        "enableSentimentAnalysis": {
+          "description": "Whether sentiment analysis is enabled.",
           "type": "boolean"
         }
       }

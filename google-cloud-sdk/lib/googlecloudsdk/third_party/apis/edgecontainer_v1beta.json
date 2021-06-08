@@ -362,7 +362,7 @@
           }
         },
         "site": {
-          "description": "Canonical resource name of the site responsible for provisioning machines to assume the role of nodes in this node pool e.g. projects\/{project}\/locations\/{location}\/sites\/{site_id}. When a node pool is created, the site will be notified, and the site is thereafter responsible for ensuring that machines exist to assume the role of the node (or reporting that provisioning is not possible).",
+          "description": "Name of the Google Edge Cloud zone where this node pool will be created.",
           "type": "string"
         },
         "nodeCount": {
@@ -602,6 +602,55 @@
         "apiVersion": {
           "description": "API version used to start the operation.",
           "type": "string"
+        }
+      }
+    },
+    "LocationMetadata": {
+      "id": "LocationMetadata",
+      "description": "Metadata for a given google.cloud.location.Location.",
+      "type": "object",
+      "properties": {
+        "availableZones": {
+          "description": "The set of available Google Edge Cloud zones in the location. The map is keyed by the lowercase ID of each zone.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ZoneMetadata"
+          }
+        }
+      }
+    },
+    "ZoneMetadata": {
+      "id": "ZoneMetadata",
+      "description": "A Google Edge Cloud zone where edge machines are located.",
+      "type": "object",
+      "properties": {
+        "quota": {
+          "description": "Quota for resources in this zone.",
+          "type": "array",
+          "items": {
+            "$ref": "Quota"
+          }
+        }
+      }
+    },
+    "Quota": {
+      "id": "Quota",
+      "description": "Represents quota for Edge Container resources.",
+      "type": "object",
+      "properties": {
+        "metric": {
+          "description": "Name of the quota metric.",
+          "type": "string"
+        },
+        "limit": {
+          "description": "Quota limit for this metric.",
+          "type": "number",
+          "format": "double"
+        },
+        "usage": {
+          "description": "Current usage of this metric.",
+          "type": "number",
+          "format": "double"
         }
       }
     }
@@ -1242,39 +1291,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Gets details of a single Machine."
-                }
-              }
-            },
-            "sites": {
-              "resources": {
-                "machines": {
-                  "methods": {
-                    "get": {
-                      "id": "edgecontainer.projects.locations.sites.machines.get",
-                      "path": "v1beta/{+name}",
-                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/sites/{sitesId}/machines/{machinesId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The resource name of the machine.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/sites\/[^\/]+\/machines\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Machine"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets details of a single Machine."
-                    }
-                  }
                 }
               }
             },

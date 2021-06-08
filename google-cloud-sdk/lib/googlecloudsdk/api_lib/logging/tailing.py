@@ -35,20 +35,11 @@ import google.iam.v1.logging.audit_data_pb2
 import google.type.money_pb2
 # pylint: enable=unused-import
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import log
-from googlecloudsdk.third_party.gapic_apis.logging.v2 import client
 
 import grpc
 
-_SUPPRESSION_INFO = (
-    client.LoggingClient.types.TailLogEntriesResponse.SuppressionInfo)
-
-_SUPPRESSION_REASON_STRINGS = {
-    _SUPPRESSION_INFO.Reason.RATE_LIMIT:
-        'Logging API backend rate limit',
-    _SUPPRESSION_INFO.Reason.NOT_CONSUMED:
-        'client not consuming messages quickly enough',
-}
 
 _SUPPRESSION_INFO_FLUSH_PERIOD_SECONDS = 2
 
@@ -83,8 +74,18 @@ def _HandleGrpcRendezvous(rendezvous, output_debug, output_warning):
 
 
 def _HandleSuppressionCounts(counts_by_reason, handler):
+  """Handles supression counts."""
+  client_class = apis.GetGapicClientClass('logging', 'v2')
+  suppression_info = (client_class.types.TailLogEntriesResponse.SuppressionInfo)
+
+  suppression_reason_strings = {
+      suppression_info.Reason.RATE_LIMIT:
+          'Logging API backend rate limit',
+      suppression_info.Reason.NOT_CONSUMED:
+          'client not consuming messages quickly enough',
+  }
   for reason, count in counts_by_reason.items():
-    reason_string = _SUPPRESSION_REASON_STRINGS.get(
+    reason_string = suppression_reason_strings.get(
         reason, 'UNKNOWN REASON: {}'.format(reason))
     handler(reason_string, count)
 
@@ -183,7 +184,7 @@ class LogTailer(object):
   """Streams logs using gRPC."""
 
   def __init__(self):
-    self.client = client.LoggingClient()
+    self.client = apis.GetGapicClientInstance('logging', 'v2')
     self.tail_stub = bidi.BidiRpc(
         self.client.logging.transport.tail_log_entries)
 
@@ -212,7 +213,7 @@ class LogTailer(object):
     Yields:
       Entries for the tail session.
     """
-    request = client.LoggingClient.types.TailLogEntriesRequest()
+    request = self.client.types.TailLogEntriesRequest()
     request.resource_names.extend(resource_names)
     request.filter = logs_filter
     if buffer_window_seconds:

@@ -280,10 +280,15 @@ def AddListContentTypeArgs(parser):
   help_text = (
       'Asset content type. If not specified, no content but the asset name and'
       ' type will be returned in the feed. For more information, see '
-      'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
+      'https://cloud.google.com/asset-inventory/docs/reference/rest/v1/feeds#ContentType'
   )
   parser.add_argument(
-      '--content-type', choices=['resource', 'iam-policy'], help=help_text)
+      '--content-type',
+      choices=[
+          'resource', 'iam-policy', 'org-policy', 'access-policy',
+          'os-inventory'
+      ],
+      help=help_text)
 
 
 def AddFeedIdArgs(parser, help_text):

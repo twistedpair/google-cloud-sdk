@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
+from googlecloudsdk.core import gapic_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.apis import apis_map
@@ -312,6 +313,39 @@ def GetClientInstance(api_name,
   # pylint:disable=protected-access
   return apis_internal._GetClientInstance(api_name, api_version, no_http, None,
                                           CheckResponseForApiEnablement())
+
+
+def GetGapicClientClass(api_name, api_version):
+  """Returns the GAPIC client class for the API specified in the args.
+
+  Args:
+    api_name: str, The API name (or the command surface name, if different).
+    api_version: str, The version of the API.
+
+  Returns:
+    The specified GAPIC API Client class.
+  """
+  # pylint:disable=protected-access
+  return apis_internal._GetGapicClientClass(api_name, api_version)
+
+
+def GetGapicClientInstance(api_name, api_version, address_override_func=None):
+  """Returns an instance of the GAPIC API client specified in the args.
+
+  Args:
+    api_name: str, The API name (or the command surface name, if different).
+    api_version: str, The version of the API.
+    address_override_func: function, function to call to override the client
+        host. It takes a single argument which is the original host.
+
+  Returns:
+    An instance of the specified GAPIC API client.
+  """
+  credentials = gapic_util.GetGapicCredentials()
+  # pylint:disable=protected-access
+  return apis_internal._GetGapicClientInstance(
+      api_name, api_version, credentials,
+      address_override_func=address_override_func)
 
 
 def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

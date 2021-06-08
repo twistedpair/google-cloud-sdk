@@ -1034,7 +1034,7 @@ def GetSamplingPredictRequestArg(required=False):
       [PredictRequest.instances][], this can be set as a replacement of predict-instance-schema.
       If not set, we will generate predict schema from collected predict requests.
 
-       An example of a JSON request:
+      An example of a JSON request:
 
           {"x": [1, 2], "y": [3, 4]}
 
@@ -1052,30 +1052,14 @@ def GetMonitoringLogTtlArg(required=False):
       required=required)
 
 
-def AddObjectiveConfigGroup(parser, required=False):
-  """Add model monitoring objective config related flags to the parser."""
-  objective_config_group = parser.add_mutually_exclusive_group(
-      required=required)
-  objective_config_group.add_argument(
-      '--drift-thresholds',
-      metavar='KEY=VALUE',
-      type=arg_parsers.ArgDict(allow_key_only=True),
-      action=arg_parsers.UpdateAction,
-      help=("""
-List of feature-threshold value pairs(For drift detection purpose only,
-if you want to do skew detection, please use flag --monitoring-config-from-file).
-If only feature name is set, the default threshold value would be 0.3.
-
-Note: Only one of --drift-thresholds and --monitoring-config-from-file needs to be set.
-
-For example: `--drift-thresholds=feat1=0.1,feat2,feat3=0.2`"""))
-  objective_config_group.add_argument(
+def GetMonitoringConfigFromFile():
+  return base.Argument(
       '--monitoring-config-from-file',
       help=("""
 Path to the model monitoring objective config file. This file shoule be a YAML document containing a ModelDeploymentMonitoringJob,
 but only the ModelDeploymentMonitoringObjectiveConfig needs to be configured.
 
-Note: Only one of --drift-thresholds and --monitoring-config-from-file needs to be set.
+Note: Only one of --feature-thresholds and --monitoring-config-from-file needs to be set.
 
 Example(YAML):
 
@@ -1103,6 +1087,77 @@ Example(YAML):
           feat2:
             value: 0.4
 """))
+
+
+def AddObjectiveConfigGroupForUpdate(parser, required=False):
+  """Add model monitoring objective config related flags to the parser for Update API."""
+  objective_config_group = parser.add_mutually_exclusive_group(
+      required=required)
+  objective_config_group.add_argument(
+      '--feature-thresholds',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(allow_key_only=True),
+      action=arg_parsers.UpdateAction,
+      help=("""
+List of feature-threshold value pairs(It will update the skew/drift thresholds for all the deployed models under the job).
+If only feature name is set, the default threshold value would be 0.3.
+
+Note: Only one of --feature-thresholds and --monitoring-config-from-file needs to be set.
+
+For example: `--feature-thresholds=feat1=0.1,feat2,feat3=0.2`"""))
+  GetMonitoringConfigFromFile().AddToParser(objective_config_group)
+
+
+def AddObjectiveConfigGroupForCreate(parser, required=False):
+  """Add model monitoring objective config related flags to the parser for Create API.."""
+  objective_config_group = parser.add_mutually_exclusive_group(
+      required=required)
+  thresholds_group = objective_config_group.add_group(mutex=False)
+  thresholds_group.add_argument(
+      '--feature-thresholds',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(allow_key_only=True),
+      action=arg_parsers.UpdateAction,
+      help=("""
+List of feature-threshold value pairs(Apply for all the deployed models under
+the endpoint, if you want to specify different thresholds for different deployed
+model, please use flag --monitoring-config-from-file or call API directly).
+If only feature name is set, the default threshold value would be 0.3.
+
+For example: `--feature-thresholds=feat1=0.1,feat2,feat3=0.2`"""))
+
+  thresholds_group.add_argument(
+      '--training-sampling-rate',
+      type=float,
+      default=1.0,
+      help='Training Dataset sampling rate.')
+  thresholds_group.add_argument(
+      '--target-field',
+      help="""
+The target field name the model is to predict. Must be provided if you'd like to do training-prediction skew detection.
+""")
+  training_data_group = thresholds_group.add_group(mutex=True)
+  training_data_group.add_argument(
+      '--dataset',
+      help='Id of Vertex AI Dataset used to train this Model.')
+  training_data_group.add_argument(
+      '--bigquery-uri',
+      help="""
+The BigQuery table of the unmanaged Dataset used to train this Model.""")
+  gcs_data_source_group = training_data_group.add_group(mutex=False)
+  gcs_data_source_group.add_argument(
+      '--data-format',
+      help="""
+Data format of the dataset, must be provided if the input is from Google Cloud Storage.
+The possible formats are: tf-record, csv""")
+  gcs_data_source_group.add_argument(
+      '--gcs-uris',
+      metavar='GCS_URIS',
+      type=arg_parsers.ArgList(),
+      help="""
+Comma-separated Google Cloud Storage uris of the unmanaged Datasets used to train this Model."""
+  )
+  GetMonitoringConfigFromFile().AddToParser(objective_config_group)
 
 
 def GetMonitoringJobResourceSpec(resource_name='monitoring_job'):

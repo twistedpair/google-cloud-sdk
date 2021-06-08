@@ -19,16 +19,18 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import atexit
-import io
-import json
 import os
 
+from google.auth import exceptions as google_auth_exceptions
+from google.auth.transport import _mtls_helper
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+
+import six
+
 
 DEFAULT_AUTO_DISCOVERY_FILE_PATH = os.path.join(
     files.GetHomeDir(), '.secureConnect', 'context_aware_metadata.json')
@@ -43,76 +45,12 @@ def _AutoDiscoveryFilePath():
   return DEFAULT_AUTO_DISCOVERY_FILE_PATH
 
 
-def _SplitPemIntoSections(contents):
-  """Returns dict with {name: section} by parsing contents in PEM format.
-
-  A simple parser for PEM file. Please see RFC 7468 for the format of PEM
-  file.
-  Note: this parser requires the post-encapsulation label of a section to
-  match its pre-encapsulation label, and ignores the section without a
-  matching label.
-
-  Args:
-    contents: contents of a PEM file.
-
-  Returns:
-    A diction of sections in a PEM file.
-  """
-  def IsMarker(l):
-    """Returns (begin:bool, end:bool, name:str)."""
-    if l.startswith('-----BEGIN ') and l.endswith('-----'):
-      return (True, False, l[11:-5])
-    elif l.startswith('-----END ') and l.endswith('-----'):
-      return (False, True, l[9:-5])
-    else:
-      return False, False, ''
-
-  result = {}
-  pem_lines = []
-  pem_section_name = None
-
-  for line in contents.splitlines():
-    line = line.strip()
-    if not line:
-      continue
-
-    (begin, end, name) = IsMarker(line)
-    if begin:
-      if pem_section_name:
-        log.warning('section %s misses end line, thus is ignored' %
-                    pem_section_name)
-      if name in result.keys():
-        log.warning('section %s already exists, and the older section will '
-                    'be ignored' % name)
-      pem_section_name = name
-      pem_lines = []
-    elif end:
-      if not pem_section_name:
-        log.warning('section %s misses a beginning line, thus is ignored' %
-                    name)
-      elif pem_section_name != name:
-        log.warning('section %s misses a matching end line, found %s' %
-                    (pem_section_name, name))
-        pem_section_name = None
-
-    if pem_section_name:
-      pem_lines.append(line)
-      if end:
-        result[name] = '\n'.join(pem_lines) + '\n'
-        pem_section_name = None
-
-  if pem_section_name:
-    log.warning('section %s misses an end line' % pem_section_name)
-
-  return result
-
-
 class ConfigException(exceptions.Error):
-  pass
 
-
-class CertProviderUnexpectedExit(exceptions.Error):
-  pass
+  def __init__(self):
+    super(ConfigException, self).__init__(
+        'Use of client certificate requires endpoint verification agent. '
+        'Run `gcloud topic client-certificate` for installation guide.')
 
 
 class CertProvisionException(exceptions.Error):
@@ -120,124 +58,130 @@ class CertProvisionException(exceptions.Error):
   pass
 
 
+def SSLCredentials(config_path):
+  """Generates the client SSL credentials.
+
+  Args:
+    config_path: path to the context aware configuration file.
+
+  Raises:
+    CertProvisionException: if the cert could not be provisioned.
+    ConfigException: if there is an issue in the context aware config.
+
+  Returns:
+    Tuple[bytes, bytes]: client certificate and private key bytes in PEM format.
+  """
+  try:
+    (
+        has_cert,
+        cert_bytes,
+        key_bytes,
+        _
+    ) = _mtls_helper.get_client_ssl_credentials(
+        generate_encrypted_key=False,
+        context_aware_metadata_path=config_path)
+    if has_cert:
+      return cert_bytes, key_bytes
+  except google_auth_exceptions.ClientCertError as caught_exc:
+    new_exc = CertProvisionException(caught_exc)
+    six.raise_from(new_exc, caught_exc)
+  raise ConfigException()
+
+
+def EncryptedSSLCredentials(config_path):
+  """Generates the encrypted client SSL credentials.
+
+  The encrypted client SSL credentials are stored in a file which is returned
+  along with the password.
+
+  Args:
+    config_path: path to the context aware configuration file.
+
+  Raises:
+    CertProvisionException: if the cert could not be provisioned.
+    ConfigException: if there is an issue in the context aware config.
+
+  Returns:
+    Tuple[str, bytes]: cert and key file path and passphrase bytes.
+  """
+  try:
+    (
+        has_cert,
+        cert_bytes,
+        key_bytes,
+        passphrase_bytes
+    ) = _mtls_helper.get_client_ssl_credentials(
+        generate_encrypted_key=True,
+        context_aware_metadata_path=config_path)
+    if has_cert:
+      cert_path = os.path.join(
+          config.Paths().global_config_dir, 'caa_cert.pem')
+      with files.BinaryFileWriter(cert_path) as f:
+        f.write(cert_bytes)
+        f.write(key_bytes)
+      return cert_path, passphrase_bytes
+  except google_auth_exceptions.ClientCertError as caught_exc:
+    new_exc = CertProvisionException(caught_exc)
+    six.raise_from(new_exc, caught_exc)
+  except files.Error as e:
+    log.debug('context aware settings discovery file %s - %s', config_path, e)
+
+  raise ConfigException()
+
+
 class _ConfigImpl(object):
   """Represents the configurations associated with context aware access.
+
+  Both the encrypted and unencrypted certs need to be generated to support HTTP
+  API clients and gRPC API clients, respectively.
 
   Only one instance of Config can be created for the program.
   """
 
-  def __init__(self):
-    self.use_client_certificate = (
-        properties.VALUES.context_aware.use_client_certificate.GetBool())
-    self._cert_and_key_path = None
-    self.client_cert_path = None
-    self.client_cert_password = None
-    self.cert_provider_command = ''
-    atexit.register(self.Cleanup)
-    if self.use_client_certificate:
-      # Search for configuration produced by endpoint verification
-      cfg_file = _AutoDiscoveryFilePath()
-      # Autodiscover context aware settings from configuration file created by
-      # end point verification agent
-      try:
-        contents = files.ReadFileContents(cfg_file)
-        log.debug('context aware settings detected at %s', cfg_file)
-        json_out = json.loads(contents)
-        if 'cert_provider_command' in json_out:
-          # Execute the cert provider to provision client certificates for
-          # context aware access
-          self.cert_provider_command = json_out['cert_provider_command']
-          # Remember the certificate path when auto provisioning
-          # to cleanup after use
-          self._cert_and_key_path = os.path.join(
-              config.Paths().global_config_dir, 'caa_cert.pem')
-          # Certs provisioned using endpoint verification are stored as a
-          # single file holding both the public certificate
-          # and the private key
-          self._ProvisionClientCert(self.cert_provider_command,
-                                    self._cert_and_key_path)
-          self.client_cert_path = self._cert_and_key_path
-        else:
-          raise CertProvisionException('no cert provider detected')
-      except files.Error as e:
-        log.debug('context aware settings discovery file %s - %s', cfg_file, e)
-      except CertProvisionException as e:
-        log.error('failed to provision client certificate - %s', e)
-      if self.client_cert_path is None:
-        raise ConfigException(
-            'Use of client certificate requires endpoint verification agent. '
-            'Run `gcloud topic client-certificate` for installation guide.')
+  @classmethod
+  def Load(cls):
+    """Loads the context aware config."""
+    if not properties.VALUES.context_aware.use_client_certificate.GetBool():
+      return None
 
-  def Cleanup(self):
+    config_path = _AutoDiscoveryFilePath()
+    # Raw cert and key
+    cert_bytes, key_bytes = SSLCredentials(config_path)
+
+    # Encrypted cert stored in a file
+    encrypted_cert_path, password = EncryptedSSLCredentials(config_path)
+    return _ConfigImpl(config_path,
+                       cert_bytes, key_bytes,
+                       encrypted_cert_path, password)
+
+  def __init__(self, config_path, client_cert_bytes, client_key_bytes,
+               encrypted_client_cert_path, encrypted_client_cert_password):
+    self.config_path = config_path
+    self.client_cert_bytes = client_cert_bytes
+    self.client_key_bytes = client_key_bytes
+    self.encrypted_client_cert_path = encrypted_client_cert_path
+    self.encrypted_client_cert_password = encrypted_client_cert_password
+    atexit.register(self.CleanUp)
+
+  def CleanUp(self):
     """Cleanup any files or resource provisioned during config init."""
-    self._UnprovisionClientCert()
-
-  def _ProvisionClientCert(self, cmd, cert_path):
-    """Executes certificate provider to obtain client certificate and keys."""
-    try:
-      # monkey-patch command line args to get password protected cert
-      pass_arg = '--with_passphrase'
-      if '--print_certificate' in cmd and pass_arg not in cmd:
-        cmd.append(pass_arg)
-
-      cert_pem_io = io.StringIO()
-      ret_val = execution_utils.Exec(
-          cmd, no_exit=True, out_func=cert_pem_io.write,
-          err_func=log.file_only_logger.debug)
-      if ret_val:
-        raise CertProviderUnexpectedExit(
-            'certificate provider exited with error')
-
-      sections = _SplitPemIntoSections(cert_pem_io.getvalue())
-      with files.FileWriter(cert_path) as f:
-        f.write(sections['CERTIFICATE'])
-        f.write(sections['ENCRYPTED PRIVATE KEY'])
-      self.client_cert_password = sections['PASSPHRASE'].splitlines()[1]
-    except (files.Error,
-            execution_utils.PermissionError,
-            execution_utils.InvalidCommandError,
-            CertProviderUnexpectedExit) as e:
-      raise CertProvisionException(e)
-    except KeyError as e:
-      raise CertProvisionException(
-          'Invalid output format from certificate provider, no %s' % e)
-
-  def _UnprovisionClientCert(self):
-    if (self._cert_and_key_path is not None and
-        os.path.exists(self._cert_and_key_path)):
+    if (self.encrypted_client_cert_path is not None and
+        os.path.exists(self.encrypted_client_cert_path)):
       try:
-        os.remove(self._cert_and_key_path)
-        log.debug('unprovisioned client cert - %s', self._cert_and_key_path)
-      except (files.Error) as e:
+        os.remove(self.encrypted_client_cert_path)
+        log.debug('unprovisioned client cert - %s',
+                  self.encrypted_client_cert_path)
+      except files.Error as e:
         log.error('failed to remove client certificate - %s', e)
-
-
-class _NoCertConfig(object):
-  """Config with client certificate disabled."""
-
-  def __init__(self):
-    self.use_client_certificate = False
-    self.client_cert_path = None
-    self.client_cert_password = None
 
 
 singleton_config = None
 
 
-class Config(object):
+def Config():
   """Represents the configurations associated with context aware access."""
-
-  def __init__(self):
-    global singleton_config
-    if not singleton_config:
-      singleton_config = _ConfigImpl()
-    self.use_client_certificate = singleton_config.use_client_certificate
-    self.cert_provider_command = singleton_config.cert_provider_command
-    self.client_cert_path = singleton_config.client_cert_path
-    self.client_cert_password = singleton_config.client_cert_password
-
-
-def DisableCerts():
-  """Disables cert provisioning and mtls support."""
   global singleton_config
-  singleton_config = _NoCertConfig()
+  if not singleton_config:
+    singleton_config = _ConfigImpl.Load()
+
+  return singleton_config

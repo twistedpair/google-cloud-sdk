@@ -220,6 +220,7 @@ def MakeRequests(requests,
                  always_return_operation=False,
                  followup_overrides=None,
                  log_result=True,
+                 log_warnings=True,
                  timeout=None):
   """Makes one or more requests to the API.
 
@@ -256,6 +257,7 @@ def MakeRequests(requests,
       finishes. Generally used in renaming calls.
     log_result: Whether the Operation Waiter should print the result in past
       tense of each request.
+    log_warnings: Whether warnings for completed operation should be printed.
     timeout: The maximum amount of time, in seconds, to wait for the
       operations to reach the DONE state.
 
@@ -333,6 +335,6 @@ def MakeRequests(requests,
         timeout=timeout):
       yield response
 
-    if warnings:
+    if warnings and log_warnings:
       log.warning(
           utils.ConstructList('Some requests generated warnings:', warnings))

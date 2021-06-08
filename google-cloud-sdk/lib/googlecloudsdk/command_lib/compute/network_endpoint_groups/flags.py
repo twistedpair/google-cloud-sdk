@@ -95,7 +95,7 @@ def _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
       Determines the spec of endpoints attached to this group.
 
       *gce-vm-ip-port*:::
-      Endpoint IP address must belong to a VM in Google Compute Engine
+      Endpoint IP address must belong to a VM in Compute Engine
       (either the primary IP or as part of an aliased IP range).
       The `--default-port` must be specified or every network endpoint
       in the network endpoint group must have a port specified.
@@ -104,25 +104,29 @@ def _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
     help_text += """\
 
       *internet-ip-port*:::
-      Endpoint IP address must be publicly routable address. The default
-      port will be used if specified. If the default port is not
-      specified, the well known port for your backend protocol will be
-      used as the default port (80 for http, 443 for https).
+      Endpoint IP address must be a publicly routable address. If specified, the
+      default port is used. If unspecified, the well-known port for your backend
+      protocol is used as the default port (80 for HTTP, 443 for HTTPS).
 
       *internet-fqdn-port*:::
       Endpoint FQDN must be resolvable to a public IP address via public
-      DNS. The default port will be used if specified. If the default
-      port is not specified, the well known port for your backend
-      protocol will be used as the default port (80 for http, 443 for
-      https).
+      DNS. The default port is used, if specified. If the default
+      port is not specified, the well-known port for your backend
+      protocol is used as the default port (80 for HTTP, 443 for
+      HTTPS).
+
+      After creating a NEG of this type, you can use the `gcloud compute
+      network-endpoint-groups update` command with
+      the `--add-endpoint` flag. Example:
+      `--add-endpoint="fqdn=backend.example.com,port=443"`
     """
   if support_hybrid_neg:
     help_text += """\
 
       *non-gcp-private-ip-port*:::
-      Endpoint IP address must belong to a VM not in Google Compute
-      Engine and must be routable using a cloud router over VPN or an
-      Interconnect. In this case the NEG must be zonal. The
+      Endpoint IP address must belong to a VM not in Compute
+      Engine and must be routable using a Cloud Router over VPN or an
+      Interconnect connection. In this case, the NEG must be zonal. The
       `--default-port` must be specified or every network endpoint in
       the network endpoint group must have a port specified.
     """
@@ -131,7 +135,7 @@ def _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
 
       *gce-vm-primary-ip*:::
       Endpoint IP address must be the primary IP of a VM's primary
-      network interface in Google Compute Engine.
+      network interface in Compute Engine.
     """
   if support_regional_scope:
     help_text += """\
@@ -147,9 +151,9 @@ def _AddNetworkEndpointType(parser, support_global_scope, support_hybrid_neg,
 
       *gce-vm-ip*:::
       Endpoint must be the IP address of a VM's network interface in
-      Google Compute Engine. Instance reference is required. IP is
-      optional, primary NIC address will be used if no IP specified.
-      Port must not be specified.
+      Compute Engine. Instance reference is required. The IP address is
+      optional. If unspecified, the primary NIC address is used.
+      A port must not be specified.
     """
   if support_l7psc_neg:
     help_text += """\
@@ -237,8 +241,8 @@ def _AddDefaultPort(parser, support_global_scope, support_hybrid_neg,
     if support_global_scope:
       help_text += """\
       For a NEG with endpoint type `internet-ip-port` and `internet-fqdn-port`.
-      If the default port is not specified the well known port for your backend
-      protocol will be used (80 for http,  443 for https).
+      If the default port is not specified, the well-known port for your backend
+      protocol is used (80 for HTTP,  443 for HTTPS).
       """
     if support_regional_scope:
       help_text += """\
@@ -299,7 +303,7 @@ def _AddServerlessRoutingInfo(parser, support_serverless_deployment=False):
   app_engine_group.add_argument(
       '--app-engine-app',
       action=arg_parsers.StoreTrueFalseAction,
-      help='If set, the default routing will be used.')
+      help='If set, the default routing is used.')
   app_engine_group.add_argument(
       '--app-engine-service',
       help='Optional serving service to add to the Serverless NEG.')
@@ -470,7 +474,7 @@ def _AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
 
             Optional port for the network endpoint. If not specified and the
             networkEndpointType is `gce-vm-ip-port`, the defaultPort for the
-            network endpoint group will be used.
+            network endpoint group is used.
   """
   if any([
       support_global_scope, support_hybrid_neg, support_l4ilb_neg,
@@ -494,7 +498,7 @@ def _AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
               must belong to a VM in compute engine (either the primary IP or
               as part of an aliased IP range). If the IP address is not
               specified, then the primary IP address for the VM instance in
-              the network that the network endpoint group belongs to will be
+              the network that the network endpoint group belongs to is
               used.
 
               *port* - Required endpoint port unless NEG default port is set.
@@ -507,10 +511,10 @@ def _AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
               *ip* - Required IP address of the endpoint to attach. Must be
               publicly routable.
 
-              *port* - Optional port of the endpoint to attach. If unspecified
-              then NEG default port is set. If no default port is set, the
-              well known port for the backend protocol will be used instead
-              (80 for http, 443 for https).
+              *port* - Optional port of the endpoint to attach. If unspecified,
+              the NEG default port is set. If no default port is set, the
+              well-known port for the backend protocol is used instead
+              (80 for HTTP, 443 for HTTPS).
 
           `internet-fqdn-port`
 
@@ -518,10 +522,12 @@ def _AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
               external endpoint. Must be resolvable to a public IP address via
               public DNS.
 
-              *port* - Optional port of the endpoint to attach. If unspecified
-              then NEG default port is set. If no default port is set, the
-              well known port for the backend protocol will be used instead
-              (80 for http, 443 for https or http2).
+              *port* - Optional port of the endpoint to attach. If unspecified,
+              the NEG default port is set. If no default port is set, the
+              well-known port for the backend protocol is used instead
+              (80 for HTTP, 443 for HTTPS or HTTP2).
+
+              Example: `--add-endpoint="fqdn=backend.example.com,port=443"`
       """
     if support_hybrid_neg:
       help_text += """\
@@ -529,10 +535,10 @@ def _AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
           `non-gcp-private-ip-port`
 
               *ip* - Required IP address of the network endpoint to attach. The
-              IP address must belong to a VM not in Google Compute Engine and
-              must be routable using a cloud router over VPN or an Interconnect.
+              IP address must belong to a VM not in Compute Engine and
+              must be routable using a Cloud Router over VPN or an Interconnect connection.
 
-              *port* - Required port of the network endpoint to attach unless
+              *port* - Required port of the network endpoint to attach unless the
               NEG default port is set.
       """
     if support_l4ilb_neg:
@@ -565,8 +571,8 @@ def _AddAddEndpoint(endpoint_group, endpoint_spec, support_global_scope,
               to it is updated.
 
               *ip* - Optional IP address of the network endpoint to attach. The
-              IP address must be the IP of a VM's network interface. If not
-              specified, primary NIC address will be used.
+              IP address must be the VM's network interface address. If not
+              specified, the primary NIC address is used.
       """
 
   endpoint_group.add_argument(
@@ -606,8 +612,8 @@ def _AddRemoveEndpoint(endpoint_group, endpoint_spec, support_global_scope,
           `gce-vm-ip-port`
 
               *instance* - Required name of instance whose endpoint(s) to
-              detach. If IP address is unset then all endpoints for the
-              instance in the NEG will be detached.
+              detach. If the IP address is unset, all endpoints for the
+              instance in the NEG are detached.
 
               *ip* - Optional IP address of the network endpoint to detach.
               If specified port must be provided as well.
@@ -647,25 +653,25 @@ def _AddRemoveEndpoint(endpoint_group, endpoint_spec, support_global_scope,
 
           `gce-vm-primary-ip`
 
-              *instance* - Required name of instance whose endpoint(s) to
-              detach. If IP address is unset then all endpoints for the
-              instance in the NEG will be detached.
+              *instance* - Required name of the instance with endpoints to
+              detach. If the IP address is unset, all endpoints for the
+              instance in the NEG are detached.
 
               *ip* - Required IP address of the network endpoint to attach. The
-              IP address must be the primary IP of a VM's network interface.
+              IP address must be the VM network interface's primary IP address.
       """
     if support_vm_ip_neg:
       help_text += """\
 
           `gce-vm-ip`
 
-              *instance* - Required name of instance whose endpoint(s) to
-              detach. If IP address is unset then all endpoints for the
-              instance in the NEG will be detached.
+              *instance* - Required name of instance with endpoints to
+              detach. If the IP address is unset, all endpoints for the
+              instance in the NEG are detached.
 
               *ip* - Optional IP address of the network endpoint to attach. The
-              IP address must be the IP of a VM's network interface. If not
-              specified, primary NIC address will be used.
+              IP address must be the VM's network interface's primary IP
+              address. If not specified, the primary NIC address is used.
       """
 
   endpoint_group.add_argument(

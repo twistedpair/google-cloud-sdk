@@ -725,6 +725,9 @@ properties:
       # The indicator for IAM condition. If True, the command can accept condition
       # as part of a IAM policy binding. Default is False.
       enable_condition: {type: boolean}
+      # Whether to hide special member types `allUsers` and `allAuthenticatedUsers` as potential
+      # values for the `member` flag. Default is False.
+      hide_special_member_types: {type: boolean}
       # Override policy version. Default is None.
       policy_version: {type: number}
       # Path to the policy_version field for APIs that use non-standard mapping.

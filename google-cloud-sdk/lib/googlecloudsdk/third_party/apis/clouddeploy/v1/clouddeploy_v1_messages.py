@@ -13,8 +13,18 @@ from apitools.base.py import extra_types
 package = 'clouddeploy'
 
 
+class ApproveRolloutRequest(_messages.Message):
+  r"""The request object used by `ApproveRollout`.
+
+  Fields:
+    approved: Required. True = approve; false = reject
+  """
+
+  approved = _messages.BooleanField(1)
+
+
 class ApproveRolloutResponse(_messages.Message):
-  r"""A ApproveRolloutResponse object."""
+  r"""The response object from `ApproveRollout`."""
 
 
 class AuditConfig(_messages.Message):
@@ -133,11 +143,13 @@ class Binding(_messages.Message):
 
 
 class BuildArtifact(_messages.Message):
-  r"""An artifact created from a render operation.
+  r"""Description of an a image to use during Skaffold rendering.
 
   Fields:
-    imageName: Name of an image. Format is {hostname}/{projectID}/{imageName}
-    tag: Tag of the image.
+    imageName: Image name in Skaffold configuration.
+    tag: Image tag to use. This will generally be the full path to an image,
+      such as "gcr.io/my-project/busybox:1.2.3" or "gcr.io/my-
+      project/busybox@sha256:abc123".
   """
 
   imageName = _messages.StringField(1)
@@ -154,11 +166,11 @@ class ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest(_messages.Messa
   Fields:
     deliveryPipeline: A DeliveryPipeline resource to be passed as the request
       body.
-    deliveryPipelineId: ID of the `DeliveryPipeline`.
+    deliveryPipelineId: Required. ID of the `DeliveryPipeline`.
     parent: Required. The parent collection in which the `DeliveryPipeline`
       should be created. Format should be
-      projects/{projectID}/locations/{locationName}.
-    requestId: An optional request ID to identify requests. Specify a unique
+      projects/{project_id}/locations/{location_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
@@ -169,8 +181,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest(_messages.Messa
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    validateOnly: If set to true, the request is validated and the user is
-      provided with an expected result, but no actual change is made.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
   """
 
   deliveryPipeline = _messages.MessageField('DeliveryPipeline', 1)
@@ -184,18 +196,18 @@ class ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(_messages.Messa
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest object.
 
   Fields:
-    allowMissing: If set to true, then deleting an already deleted or non-
-      existing `DeliveryPipeline` will succeed.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
-    force: If set to true, all child resources under this pipeline will also
-      be deleted. Otherwise, the request will only work if the pipeline has no
-      child resources.
+    allowMissing: Optional. If set to true, then deleting an already deleted
+      or non-existing `DeliveryPipeline` will succeed.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    force: Optional. If set to true, all child resources under this pipeline
+      will also be deleted. Otherwise, the request will only work if the
+      pipeline has no child resources.
     name: Required. The name of the `DeliveryPipeline` to delete. Format
-      should be projects/{projectID}/locations/{locationName}/deliveryPipeline
-      s/{pipelineName}.
-    requestId: An optional request ID to identify requests. Specify a unique
+      should be projects/{project_id}/locations/{location_name}/deliveryPipeli
+      nes/{pipeline_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
@@ -206,8 +218,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(_messages.Messa
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually post it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually post it.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -245,7 +257,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesGetRequest(_messages.Message)
 
   Fields:
     name: Required. Name of the `DeliveryPipeline`. Format must be projects/{p
-      rojectID}/locations/{locationName}/deliveryPipelines/{pipelineName}.
+      roject_id}/locations/{location_name}/deliveryPipelines/{pipeline_name}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -267,7 +279,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesListRequest(_messages.Message
       call. Provide this to retrieve the subsequent page. When paginating, all
       other provided parameters match the call that provided the page token.
     parent: Required. The parent, which owns this collection of pipelines.
-      Format must be projects/{projectID}/locations/{locationName}.
+      Format must be projects/{project_id}/locations/{location_name}.
   """
 
   filter = _messages.StringField(1)
@@ -281,16 +293,16 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest object.
 
   Fields:
-    allowMissing: If set to true, updating a `DeliveryPipeline` that does not
-      exist will result in the creation of a new `DeliveryPipeline`.
+    allowMissing: Optional. If set to true, updating a `DeliveryPipeline` that
+      does not exist will result in the creation of a new `DeliveryPipeline`.
     deliveryPipeline: A DeliveryPipeline resource to be passed as the request
       body.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
-    name: Required. Name of the `DeliveryPipeline`. Format is
+    name: Optional. Name of the `DeliveryPipeline`. Format is
       projects/{project}/ locations/{location}/deliveryPipelines/a-z{0,62}.
-    requestId: An optional request ID to identify requests. Specify a unique
+    requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
@@ -301,13 +313,13 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the `DeliveryPipeline` resource by the update. The fields specified in
-      the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
-    validateOnly: If set to true, the request is validated and the user is
-      provided with an expected result, but no actual change is made.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `DeliveryPipeline` resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -325,11 +337,11 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messag
 
   Fields:
     parent: Required. The parent collection in which the `Release` should be
-      created. Format should be projects/{projectID}/locations/{locationName}/
-      deliveryPipelines/{pipelineName}.
+      created. Format should be projects/{project_id}/locations/{location_name
+      }/deliveryPipelines/{pipeline_name}.
     release: A Release resource to be passed as the request body.
-    releaseId: ID of the `Release`.
-    requestId: An optional request ID to identify requests. Specify a unique
+    releaseId: Required. ID of the `Release`.
+    requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
@@ -340,8 +352,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messag
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    validateOnly: If set to true, the request is validated and the user is
-      provided with an expected result, but no actual change is made.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -356,15 +368,15 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest(_messag
   object.
 
   Fields:
-    allowMissing: If set to true, then deleting an already deleted or non-
-      existing `DeliveryPipeline` will succeed.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
+    allowMissing: Optional. If set to true, then deleting an already deleted
+      or non-existing `DeliveryPipeline` will succeed.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
     name: Required. The name of the `Release` to delete. Format is projects/{p
-      rojectID}/locations/{locationName}/deliveryPipelines/{pipelineName}/rele
-      ase/{releaseName}.
-    requestId: An optional request ID to identify requests. Specify a unique
+      roject_id}/locations/{location_name}/deliveryPipelines/{pipeline_name}/r
+      elease/{release_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
@@ -375,8 +387,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest(_messag
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually post it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually post it.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -391,9 +403,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetRequest(_messages.
   object.
 
   Fields:
-    name: Required. Name of the `Release`. Format must be projects/{projectID}
-      /locations/{locationName}/deliveryPipelines/{pipelineName}/releases/{rel
-      easeName}.
+    name: Required. Name of the `Release`. Format must be projects/{project_id
+      }/locations/{location_name}/deliveryPipelines/{pipeline_name}/releases/{
+      release_name}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -404,17 +416,17 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesListRequest(_messages
   object.
 
   Fields:
-    filter: Filter builds to be returned. See https://google.aip.dev/160 for
-      more details.
-    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
-      more details.
-    pageSize: The maximum number of `Release` objects to return. The service
-      may return fewer than this value. If unspecified, at most 50 `Release`
-      objects will be returned. The maximum value is 1000; values above 1000
-      will be set to 1000.
-    pageToken: A page token, received from a previous `ListReleases` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      provided parameters match the call that provided the page token.
+    filter: Optional. Filter builds to be returned. See
+      https://google.aip.dev/160 for more details.
+    orderBy: Optional. Field to sort by. See
+      https://google.aip.dev/132#ordering for more details.
+    pageSize: Optional. The maximum number of `Release` objects to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      `Release` objects will be returned. The maximum value is 1000; values
+      above 1000 will be set to 1000.
+    pageToken: Optional. A page token, received from a previous `ListReleases`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other provided parameters match the call that provided the page token.
     parent: Required. The `DeliveryPipeline` which owns this collection of
       `Release` objects.
   """
@@ -431,17 +443,15 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesPromoteRequest(_messa
   object.
 
   Fields:
-    name: Required. The `Release` being promoted. Format is projects/{projectI
-      D}/locations/{locationName}/deliveryPipelines/{pipelineName}/release/{re
-      leaseName}.
-    rolloutId: [Optional] The ID to assign to the generated `Rollout`.
-    toTarget: [Optional] The name of the `Target` to which we are promoting
-      the Release.
+    name: Required. The `Release` being promoted. Format is projects/{project_
+      id}/locations/{location_name}/deliveryPipelines/{pipeline_name}/release/
+      {release_name}.
+    promoteReleaseRequest: A PromoteReleaseRequest resource to be passed as
+      the request body.
   """
 
   name = _messages.StringField(1, required=True)
-  rolloutId = _messages.StringField(2)
-  toTarget = _messages.StringField(3)
+  promoteReleaseRequest = _messages.MessageField('PromoteReleaseRequest', 2)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveRequest(_messages.Message):
@@ -450,13 +460,14 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveReques
   object.
 
   Fields:
-    approved: True = approve; false = reject
+    approveRolloutRequest: A ApproveRolloutRequest resource to be passed as
+      the request body.
     name: Required. Name of the Rollout. Format is projects/{project}/location
       s/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/{release}/rollouts/{rollout}.
   """
 
-  approved = _messages.BooleanField(1)
+  approveRolloutRequest = _messages.MessageField('ApproveRolloutRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -467,9 +478,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
 
   Fields:
     parent: Required. The parent collection in which the `Rollout` should be
-      created. Format should be projects/{projectID}/locations/{locationName}/
-      deliveryPipelines/{pipelineName}/releases/{releaseName}.
-    requestId: An optional request ID to identify requests. Specify a unique
+      created. Format should be projects/{project_id}/locations/{location_name
+      }/deliveryPipelines/{pipeline_name}/releases/{release_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
@@ -481,9 +492,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     rollout: A Rollout resource to be passed as the request body.
-    rolloutId: ID of the `Rollout`.
-    validateOnly: If set to true, the request is validated and the user is
-      provided with an expected result, but no actual change is made.
+    rolloutId: Required. ID of the `Rollout`.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -499,9 +510,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetRequest(_m
   object.
 
   Fields:
-    name: Required. Name of the `Rollout`. Format must be projects/{projectID}
-      /locations/{locationName}/deliveryPipelines/{pipelineName}/releases/{rel
-      easeName}/rollouts/{rolloutName}.
+    name: Required. Name of the `Rollout`. Format must be projects/{project_id
+      }/locations/{location_name}/deliveryPipelines/{pipeline_name}/releases/{
+      release_name}/rollouts/{rollout_name}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -513,17 +524,17 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest(_
   object.
 
   Fields:
-    filter: Filter builds to be returned. See https://google.aip.dev/160 for
-      more details.
-    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
-      more details.
-    pageSize: The maximum number of `Rollout` objects to return. The service
-      may return fewer than this value. If unspecified, at most 50 `Rollout`
-      objects will be returned. The maximum value is 1000; values above 1000
-      will be set to 1000.
-    pageToken: A page token, received from a previous `ListRollouts` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      provided parameters match the call that provided the page token.
+    filter: Optional. Filter builds to be returned. See
+      https://google.aip.dev/160 for more details.
+    orderBy: Optional. Field to sort by. See
+      https://google.aip.dev/132#ordering for more details.
+    pageSize: Optional. The maximum number of `Rollout` objects to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      `Rollout` objects will be returned. The maximum value is 1000; values
+      above 1000 will be set to 1000.
+    pageToken: Optional. A page token, received from a previous `ListRollouts`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other provided parameters match the call that provided the page token.
     parent: Required. The `Release` which owns this collection of `Rollout`
       objects.
   """
@@ -589,9 +600,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsCreateRequest(_message
 
   Fields:
     parent: Required. The parent collection in which the `Target` should be
-      created. Format should be projects/{projectID}/locations/{locationName}/
-      deliveryPipelines/{pipelineName}.
-    requestId: An optional request ID to identify requests. Specify a unique
+      created. Format should be projects/{project_id}/locations/{location_name
+      }/deliveryPipelines/{pipeline_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
@@ -603,9 +614,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsCreateRequest(_message
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     target: A Target resource to be passed as the request body.
-    targetId: ID of the `Target`.
-    validateOnly: If set to true, the request is validated and the user is
-      provided with an expected result, but no actual change is made.
+    targetId: Required. ID of the `Target`.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -620,15 +631,15 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsDeleteRequest(_message
   object.
 
   Fields:
-    allowMissing: If set to true, then deleting an already deleted or non-
-      existing DeliveryPipeline will succeed.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
+    allowMissing: Optional. If set to true, then deleting an already deleted
+      or non-existing DeliveryPipeline will succeed.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
     name: Required. The name of the `Target` to delete. Format should be proje
-      cts/{projectID}/locations/{locationName}/deliveryPipelines/{pipelineName
-      }/targets/{targetName}.
-    requestId: An optional request ID to identify requests. Specify a unique
+      cts/{project_id}/locations/{location_name}/deliveryPipelines/{pipeline_n
+      ame}/targets/{target_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes after the first request. For
@@ -639,8 +650,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsDeleteRequest(_message
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    validateOnly: If set, validate the request and preview the review, but do
-      not actually post it.
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually post it.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -654,9 +665,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetRequest(_messages.M
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetRequest object.
 
   Fields:
-    name: Required. Name of the `Target`. Format must be projects/{projectID}/
-      locations/{locationName}/deliveryPipelines/{pipelineName}/targets/{targe
-      tName}.
+    name: Required. Name of the `Target`. Format must be projects/{project_id}
+      /locations/{location_name}/deliveryPipelines/{pipeline_name}/targets/{ta
+      rget_name}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -667,17 +678,17 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsListRequest(_messages.
   object.
 
   Fields:
-    filter: Filter builds to be returned. See https://google.aip.dev/160 for
-      more details.
-    orderBy: Field to sort by. See https://google.aip.dev/132#ordering for
-      more details.
-    pageSize: The maximum number of `Target` objects to return. The service
-      may return fewer than this value. If unspecified, at most 50 `Target`
-      objects will be returned. The maximum value is 1000; values above 1000
-      will be set to 1000.
-    pageToken: A page token, received from a previous `ListTargets` call.
-      Provide this to retrieve the subsequent page. When paginating, all other
-      provided parameters match the call that provided the page token.
+    filter: Optional. Filter builds to be returned. See
+      https://google.aip.dev/160 for more details.
+    orderBy: Optional. Field to sort by. See
+      https://google.aip.dev/132#ordering for more details.
+    pageSize: Optional. The maximum number of `Target` objects to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      `Target` objects will be returned. The maximum value is 1000; values
+      above 1000 will be set to 1000.
+    pageToken: Optional. A page token, received from a previous `ListTargets`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other provided parameters match the call that provided the page token.
     parent: Required. The `DeliveryPipeline` which owns this collection of
       `Target` objects.
   """
@@ -694,15 +705,15 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(_messages
   object.
 
   Fields:
-    allowMissing: If set to true, updating a `Target` that does not exist will
-      result in the creation of a new `Target`.
+    allowMissing: Optional. If set to true, updating a `Target` that does not
+      exist will result in the creation of a new `Target`.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
-    name: Required. Name of the `Target`. Format is
+    name: Optional. Name of the `Target`. Format is
       projects/{project}/locations/{location}/
       deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
-    requestId: An optional request ID to identify requests. Specify a unique
+    requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
@@ -714,13 +725,13 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(_messages
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     target: A Target resource to be passed as the request body.
-    updateMask: Field mask is used to specify the fields to be overwritten in
-      the Target resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      will be overwritten if it is in the mask. If the user does not provide a
-      mask then all fields will be overwritten.
-    validateOnly: If set to true, the request is validated and the user is
-      provided with an expected result, but no actual change is made.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Target resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -762,6 +773,16 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTestIamPermissionsRequest(_me
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class ClouddeployProjectsLocationsGetConfigRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsGetConfigRequest object.
+
+  Fields:
+    name: Required. Name of requested configuration.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class ClouddeployProjectsLocationsGetRequest(_messages.Message):
@@ -843,6 +864,192 @@ class ClouddeployProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ClouddeployProjectsLocationsTargetsCreateRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsTargetsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent collection in which the `Target` should be
+      created. Format should be projects/{project_id}/locations/{location_name
+      }/deliveryPipelines/{pipeline_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    target: A Target resource to be passed as the request body.
+    targetId: Required. ID of the `Target`.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  target = _messages.MessageField('Target', 3)
+  targetId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class ClouddeployProjectsLocationsTargetsDeleteRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsTargetsDeleteRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, then deleting an already deleted
+      or non-existing DeliveryPipeline will succeed.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
+    name: Required. The name of the `Target` to delete. Format should be proje
+      cts/{project_id}/locations/{location_name}/deliveryPipelines/{pipeline_n
+      ame}/targets/{target_name}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validate the request and preview the
+      review, but do not actually post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
+
+
+class ClouddeployProjectsLocationsTargetsGetRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsTargetsGetRequest object.
+
+  Fields:
+    name: Required. Name of the `Target`. Format must be projects/{project_id}
+      /locations/{location_name}/deliveryPipelines/{pipeline_name}/targets/{ta
+      rget_name}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ClouddeployProjectsLocationsTargetsListRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsTargetsListRequest object.
+
+  Fields:
+    filter: Optional. Filter builds to be returned. See
+      https://google.aip.dev/160 for more details.
+    orderBy: Optional. Field to sort by. See
+      https://google.aip.dev/132#ordering for more details.
+    pageSize: Optional. The maximum number of `Target` objects to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      `Target` objects will be returned. The maximum value is 1000; values
+      above 1000 will be set to 1000.
+    pageToken: Optional. A page token, received from a previous `ListTargets`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other provided parameters match the call that provided the page token.
+    parent: Required. The `DeliveryPipeline` which owns this collection of
+      `Target` objects.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsTargetsPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, updating a `Target` that does not
+      exist will result in the creation of a new `Target`.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding.
+    name: Optional. Name of the `Target`. Format is
+      projects/{project}/locations/{location}/
+      deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    target: A Target resource to be passed as the request body.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Target resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+    validateOnly: Optional. If set to true, the request is validated and the
+      user is provided with an expected result, but no actual change is made.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  target = _messages.MessageField('Target', 5)
+  updateMask = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
+
+
+class Config(_messages.Message):
+  r"""Service-wide configuration.
+
+  Fields:
+    defaultSkaffoldVersion: Output only. Default Skaffold version that is
+      assigned when a Release is created without specifying a Skaffold
+      version.
+    name: Name of the configuration.
+    supportedVersions: Output only. All supported versions of Skaffold.
+  """
+
+  defaultSkaffoldVersion = _messages.StringField(1)
+  name = _messages.StringField(2)
+  supportedVersions = _messages.MessageField('SkaffoldVersion', 3, repeated=True)
+
+
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day value, with a zero year, such as an
+  anniversary * A year on its own, with zero month and day values * A year and
+  month value, with a zero day, such as a credit card expiration date Related
+  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class DeliveryPipeline(_messages.Message):
   r"""A `DeliveryPipeline` resource in the Cloud Deploy API. A
   `DeliveryPipeline` defines a pipeline through which a Skaffold configuration
@@ -877,11 +1084,12 @@ class DeliveryPipeline(_messages.Message):
       resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
-    name: Required. Name of the `DeliveryPipeline`. Format is
+    name: Optional. Name of the `DeliveryPipeline`. Format is
       projects/{project}/ locations/{location}/deliveryPipelines/a-z{0,62}.
-    renderServiceAccount: Service account used to render a `Release`. If
+    renderServiceAccount: Service account email used to render a `Release`. If
       unset, the compute service account will be used.
-    serialPipeline: A SerialPipeline attribute.
+    serialPipeline: SerialPipeline defines a sequential set of stages for a
+      `DeliveryPipeline`.
     uid: Output only. Unique identifier of the `DeliveryPipeline`.
     updateTime: Output only. Most recent time at which the pipeline was
       updated.
@@ -1188,8 +1396,8 @@ class MissingTargetsCondition(_messages.Message):
   Fields:
     changeTime: Last time the condition was updated.
     missingTargets: The list of Target names that are missing. For example, pr
-      ojects/{projectName}/locations/{locationName}/deliveryPipelines/{pipelin
-      eName}/targets/{targetName}.
+      ojects/{project_id}/locations/{location_name}/deliveryPipelines/{pipelin
+      e_name}/targets/{target_name}.
     ready: True if there aren't any missing Targets.
   """
 
@@ -1352,7 +1560,10 @@ class PipelineReadyCondition(_messages.Message):
 
   Fields:
     changeTime: Last time the condition was updated.
-    ready: True if the Pipeline is in a valid state.
+    ready: True if the Pipeline is in a valid state. Otherwise at least one
+      condition in `PipelineCondition` is in an invalid state. Iterate over
+      those conditions and see which condition(s) has ready = false to find
+      out what is wrong with the Pipeline.
   """
 
   changeTime = _messages.StringField(1)
@@ -1431,6 +1642,19 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class PromoteReleaseRequest(_messages.Message):
+  r"""The request object used by `PromoteRelease`.
+
+  Fields:
+    rolloutId: Optional. The ID to assign to the generated `Rollout`.
+    toTarget: Optional. The name of the `Target` to which we are promoting the
+      Release.
+  """
+
+  rolloutId = _messages.StringField(1)
+  toTarget = _messages.StringField(2)
+
+
 class PromoteReleaseResponse(_messages.Message):
   r"""The response object from `PromoteRelease`.
 
@@ -1463,7 +1687,8 @@ class Release(_messages.Message):
   specific Skaffold configuration instance that can be deployed.
 
   Enums:
-    RenderStateValueValuesEnum: Current state of the render operation.
+    RenderStateValueValuesEnum: Output only. Current state of the render
+      operation.
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
@@ -1475,8 +1700,11 @@ class Release(_messages.Message):
       Each resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
-    RenderedManifestsValue: Output only. Map from target ID to GCS path of the
-      rendered manifest for that target.
+    RenderedManifestsValue: Output only. Map from target ID to Cloud Storage
+      path of the rendered manifest for that target. One example key-value
+      pair would be ("staging": "gs://my-bucket/staging-manifest").
+    TargetArtifactsValue: Output only. Map from target ID to the target
+      artifacts created during the render operation.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
@@ -1496,38 +1724,40 @@ class Release(_messages.Message):
       resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
-    manifestBucket: GCS bucket to store the rendered manifests. If empty, a
-      bucket will be provided.
-    name: Required. Name of the `Release`. Format is projects/{project}/
+    manifestBucket: Cloud Storage bucket to store the rendered manifests. For
+      example, "gs://my-bucket". If empty, a bucket will be provided.
+    name: Optional. Name of the `Release`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/a-z{0,62}.
     renderBuild: Output only. The resource name of the Cloud Build `Build`
       object that is used to render the manifests. Format is
-      `projects/{project}/builds/{build}` or
-      `projects/{project}/locations/{location}/builds/{build}`
+      `projects/{project}/locations/{location}/builds/{build}`.
     renderEndTime: Output only. Time at which the render completed.
     renderStartTime: Output only. Time at which the render began.
-    renderState: Current state of the render operation.
-    renderedManifests: Output only. Map from target ID to GCS path of the
-      rendered manifest for that target.
+    renderState: Output only. Current state of the render operation.
+    renderedManifests: Output only. Map from target ID to Cloud Storage path
+      of the rendered manifest for that target. One example key-value pair
+      would be ("staging": "gs://my-bucket/staging-manifest").
     skaffoldConfigPath: Filepath of the Skaffold config inside of the config
       URI.
-    skaffoldConfigUri: GCS URI of tar.gz archive containing Skaffold
+    skaffoldConfigUri: Cloud Storage URI of tar.gz archive containing Skaffold
       configuration.
     skaffoldVersion: The Skaffold version to use when operating on this
       release, such as "1.20.0". Not all versions are valid; Cloud Deploy
       supports a specific set of versions. If unset, the most recent supported
       Skaffold version will be used.
+    targetArtifacts: Output only. Map from target ID to the target artifacts
+      created during the render operation.
     targetSnapshots: Output only. Snapshot of the parent pipeline's targets
       taken at release creation time.
     uid: Output only. Unique identifier of the `Release`.
   """
 
   class RenderStateValueValuesEnum(_messages.Enum):
-    r"""Current state of the render operation.
+    r"""Output only. Current state of the render operation.
 
     Values:
-      RENDER_STATE_UNSPECIFIED: <no description>
+      RENDER_STATE_UNSPECIFIED: The render state is unspecified.
       SUCCESS: The render operation has completed successfully.
       FAILURE: The render operation has failed.
       IN_PROGRESS: The render operation is in progress.
@@ -1594,8 +1824,9 @@ class Release(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RenderedManifestsValue(_messages.Message):
-    r"""Output only. Map from target ID to GCS path of the rendered manifest
-    for that target.
+    r"""Output only. Map from target ID to Cloud Storage path of the rendered
+    manifest for that target. One example key-value pair would be ("staging":
+    "gs://my-bucket/staging-manifest").
 
     Messages:
       AdditionalProperty: An additional property for a RenderedManifestsValue
@@ -1619,6 +1850,32 @@ class Release(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TargetArtifactsValue(_messages.Message):
+    r"""Output only. Map from target ID to the target artifacts created during
+    the render operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a TargetArtifactsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type TargetArtifactsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TargetArtifactsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A TargetArtifact attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('TargetArtifact', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   buildArtifacts = _messages.MessageField('BuildArtifact', 2, repeated=True)
   createTime = _messages.StringField(3)
@@ -1636,8 +1893,9 @@ class Release(_messages.Message):
   skaffoldConfigPath = _messages.StringField(15)
   skaffoldConfigUri = _messages.StringField(16)
   skaffoldVersion = _messages.StringField(17)
-  targetSnapshots = _messages.MessageField('Target', 18, repeated=True)
-  uid = _messages.StringField(19)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 18)
+  targetSnapshots = _messages.MessageField('Target', 19, repeated=True)
+  uid = _messages.StringField(20)
 
 
 class Rollout(_messages.Message):
@@ -1645,7 +1903,8 @@ class Rollout(_messages.Message):
   information around a specific deployment to a `Target`.
 
   Enums:
-    ApprovalStateValueValuesEnum: Approval state of the `Rollout`.
+    ApprovalStateValueValuesEnum: Output only. Approval state of the
+      `Rollout`.
     StateValueValuesEnum: Output only. Current state of the `Rollout`.
 
   Messages:
@@ -1664,13 +1923,12 @@ class Rollout(_messages.Message):
       by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
-    approvalState: Approval state of the `Rollout`.
+    approvalState: Output only. Approval state of the `Rollout`.
     approveTime: Output only. Time at which the `Rollout` was approved.
     createTime: Output only. Time at which the `Rollout` was created.
     deployBuild: Output only. The resource name of the Cloud Build `Build`
       object that is used to deploy the Rollout. Format is
-      `projects/{project}/builds/{build}` or
-      `projects/{project}/locations/{location}/builds/{build}`
+      `projects/{project}/locations/{location}/builds/{build}`.
     deployEndTime: Output only. Time at which the `Rollout` finished
       deploying.
     deployStartTime: Output only. Time at which the `Rollout` started
@@ -1688,7 +1946,7 @@ class Rollout(_messages.Message):
       resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
-    name: Required. Name of the `Rollout`. Format is projects/{project}/
+    name: Optional. Name of the `Rollout`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/{release}/rollouts/a-z{0,62}.
     state: Output only. Current state of the `Rollout`.
@@ -1697,10 +1955,11 @@ class Rollout(_messages.Message):
   """
 
   class ApprovalStateValueValuesEnum(_messages.Enum):
-    r"""Approval state of the `Rollout`.
+    r"""Output only. Approval state of the `Rollout`.
 
     Values:
-      APPROVAL_STATE_UNSPECIFIED: <no description>
+      APPROVAL_STATE_UNSPECIFIED: The `Rollout` has an unspecified approval
+        state.
       NEEDS_APPROVAL: The `Rollout` requires approval.
       DOES_NOT_NEED_APPROVAL: The `Rollout` does not require approval.
       APPROVED: The `Rollout` has been approved.
@@ -1716,7 +1975,7 @@ class Rollout(_messages.Message):
     r"""Output only. Current state of the `Rollout`.
 
     Values:
-      STATE_UNSPECIFIED: <no description>
+      STATE_UNSPECIFIED: The `Rollout` has an unspecified state.
       SUCCESS: The `Rollout` has completed successfully.
       FAILURE: The `Rollout` has failed.
       IN_PROGRESS: The `Rollout` is being deployed.
@@ -1838,15 +2097,31 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
+class SkaffoldVersion(_messages.Message):
+  r"""Details of a supported Skaffold version.
+
+  Fields:
+    supportEndDate: Date when this version is expected to no longer be
+      supported.
+    version: Release version number. For example, "1.20.3".
+  """
+
+  supportEndDate = _messages.MessageField('Date', 1)
+  version = _messages.StringField(2)
+
+
 class Stage(_messages.Message):
   r"""Stage specifies a location to which to deploy.
 
   Fields:
-    profiles: Profiles to use when rendering the manifest for this stage's
-      `Target`.
-    targetId: The target_id to which this stage points. Format is
-      "targetName". The parent of the `Target` is the `DeliveryPipeline` in
-      which this stage lives.
+    profiles: Skaffold profiles to use when rendering the manifest for this
+      stage's `Target`.
+    targetId: The target_id to which this stage points. This field refers
+      exclusively to the last segment of a target name. For example, this
+      field would just be `my-target` (rather than
+      `projects/project/deliveryPipelines/pipeline/targets/my-target`). The
+      parent `DeliveryPipeline` of the `Target` is inferred to be the parent
+      `DeliveryPipeline` of the `Release` in which this `Stage` lives.
   """
 
   profiles = _messages.StringField(1, repeated=True)
@@ -1989,19 +2264,19 @@ class Target(_messages.Message):
       and size limitations.
     approvalRequired: Whether or not the `Target` requires approval.
     createTime: Output only. Time at which the `Target` was created.
-    deployServiceAccount: Service account used to deploy a `Rollout`. If
+    deployServiceAccount: Service account email used to deploy a `Rollout`. If
       unset, the compute service account will be used.
     description: Description of the `Target`. Max length is 255 characters.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
-    gkeCluster: A GKECluster attribute.
+    gkeCluster: Information specifying a GKE Cluster.
     labels: Labels are attributes that can be set and used by both the user
       and by Cloud Deploy. Labels must meet the following constraints: Each
       resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
-    name: Required. Name of the `Target`. Format is
+    name: Optional. Name of the `Target`. Format is
       projects/{project}/locations/{location}/
       deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
     targetId: Output only. Resource id of the `Target`.
@@ -2077,6 +2352,24 @@ class Target(_messages.Message):
   targetId = _messages.StringField(10)
   uid = _messages.StringField(11)
   updateTime = _messages.StringField(12)
+
+
+class TargetArtifact(_messages.Message):
+  r"""The artifacts produced by a target render operation.
+
+  Fields:
+    archiveUri: URI of the tar.gz archive containing the artifacts. This
+      archive contains deployment configuration used by Skaffold during a
+      rollout.
+    manifestPath: File path of the rendered manifest inside of the archive
+      URI.
+    skaffoldConfigPath: File path of the resolved Skaffold configuration
+      inside of the archive URI.
+  """
+
+  archiveUri = _messages.StringField(1)
+  manifestPath = _messages.StringField(2)
+  skaffoldConfigPath = _messages.StringField(3)
 
 
 class TestIamPermissionsRequest(_messages.Message):

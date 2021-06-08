@@ -61,12 +61,12 @@ def _SetSource(release_config,
     raise c_exceptions.InvalidArgumentException('--gcs-source-staging-dir',
                                                 'must be a GCS bucket')
 
-  if gcs_render_dir is None:
-    gcs_render_dir = _MANIFEST_BUCKET.format(default_bucket_name)
-  if not gcs_render_dir.startswith('gs://'):
-    raise c_exceptions.InvalidArgumentException('--gcs-render-dir',
-                                                'must be a GCS bucket')
-  release_config.manifestBucket = gcs_render_dir
+  if gcs_render_dir:
+    if not gcs_render_dir.startswith('gs://'):
+      raise c_exceptions.InvalidArgumentException('--gcs-render-dir',
+                                                  'must be a GCS bucket')
+    # Leave this field unset as default. The server will create a new bucket.
+    release_config.manifestBucket = gcs_render_dir
 
   gcs_client = storage_api.StorageClient()
   suffix = '.tgz'
@@ -166,9 +166,10 @@ class ReleaseClient(object):
     self._service = self.client.projects_locations_deliveryPipelines_releases
 
   def CreateReleaseConfig(self, source, gcs_source_staging_dir, ignore_file,
-                          gcs_render_dir, images, build_artifacts):
+                          gcs_render_dir, images, build_artifacts, description):
     """Returns a build config."""
     release_config = self.messages.Release()
+    release_config.description = description
     release_config = _SetSource(release_config, source, gcs_source_staging_dir,
                                 gcs_render_dir, ignore_file)
     release_config = _SetImages(self.messages, release_config, images,
@@ -212,9 +213,9 @@ class ReleaseClient(object):
     return self._service.Promote(
         self.messages
         .ClouddeployProjectsLocationsDeliveryPipelinesReleasesPromoteRequest(
-            toTarget=to_target,
             name=release_ref.RelativeName(),
-            rolloutId=rollout_id))
+            promoteReleaseRequest=self.messages.PromoteReleaseRequest(
+                toTarget=to_target, rolloutId=rollout_id)))
 
   def Get(self, name):
     """Gets a release resource.

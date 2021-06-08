@@ -699,12 +699,6 @@ class ExecuteSqlRequest(_messages.Message):
       statement with unbound parameters.
 
   Fields:
-    autocommit: If set to true, commits the enclosing read-write transaction
-      after executing the SQL statement `sql`. The requirements of using
-      `autocommit` are: (a) `sql` is a DML statement; (b) `transaction`
-      includes the id of a ReadWrite transaction. After successfully executing
-      a DML statement with autocommit set to true, a separate commit is not
-      needed.
     paramTypes: It is not always possible for Cloud Spanner to infer the right
       SQL type from a JSON value. For example, values of type `BYTES` and
       values of type `STRING` both appear in params as JSON strings. In these
@@ -830,17 +824,16 @@ class ExecuteSqlRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  autocommit = _messages.BooleanField(1)
-  paramTypes = _messages.MessageField('ParamTypesValue', 2)
-  params = _messages.MessageField('ParamsValue', 3)
-  partitionToken = _messages.BytesField(4)
-  queryMode = _messages.EnumField('QueryModeValueValuesEnum', 5)
-  queryOptions = _messages.MessageField('QueryOptions', 6)
-  requestOptions = _messages.MessageField('RequestOptions', 7)
-  resumeToken = _messages.BytesField(8)
-  seqno = _messages.IntegerField(9)
-  sql = _messages.StringField(10)
-  transaction = _messages.MessageField('TransactionSelector', 11)
+  paramTypes = _messages.MessageField('ParamTypesValue', 1)
+  params = _messages.MessageField('ParamsValue', 2)
+  partitionToken = _messages.BytesField(3)
+  queryMode = _messages.EnumField('QueryModeValueValuesEnum', 4)
+  queryOptions = _messages.MessageField('QueryOptions', 5)
+  requestOptions = _messages.MessageField('RequestOptions', 6)
+  resumeToken = _messages.BytesField(7)
+  seqno = _messages.IntegerField(8)
+  sql = _messages.StringField(9)
+  transaction = _messages.MessageField('TransactionSelector', 10)
 
 
 class Expr(_messages.Message):
@@ -1815,9 +1808,6 @@ class PartialResultSet(_messages.Message):
     chunkedValue: If true, then the final value in values is chunked, and must
       be combined with more values from subsequent `PartialResultSet`s to
       obtain a complete field value.
-    commitResponse: When ExecuteStreamingSql is called with
-      ExecuteSqlRequest.autocommit set to true, the last PartialResultSet
-      message in the streaming response will contain a CommitResponse.
     metadata: Metadata about the result set, such as row type information.
       Only present in the first response.
     resumeToken: Streaming calls might be interrupted for a variety of
@@ -1868,11 +1858,10 @@ class PartialResultSet(_messages.Message):
   """
 
   chunkedValue = _messages.BooleanField(1)
-  commitResponse = _messages.MessageField('CommitResponse', 2)
-  metadata = _messages.MessageField('ResultSetMetadata', 3)
-  resumeToken = _messages.BytesField(4)
-  stats = _messages.MessageField('ResultSetStats', 5)
-  values = _messages.MessageField('extra_types.JsonValue', 6, repeated=True)
+  metadata = _messages.MessageField('ResultSetMetadata', 2)
+  resumeToken = _messages.BytesField(3)
+  stats = _messages.MessageField('ResultSetStats', 4)
+  values = _messages.MessageField('extra_types.JsonValue', 5, repeated=True)
 
 
 class Partition(_messages.Message):
@@ -2669,9 +2658,6 @@ class ResultSet(_messages.Message):
     RowsValueListEntry: Single entry in a RowsValue.
 
   Fields:
-    commitResponse: When ExecuteSql is called with
-      ExecuteSqlRequest.autocommit set to true, the returned ResultSet will
-      include a CommitResponse.
     metadata: Metadata about the result set, such as row type information.
     rows: Each element in `rows` is a row whose format is defined by
       metadata.row_type. The ith element in each row matches the ith field in
@@ -2694,10 +2680,9 @@ class ResultSet(_messages.Message):
 
     entry = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
 
-  commitResponse = _messages.MessageField('CommitResponse', 1)
-  metadata = _messages.MessageField('ResultSetMetadata', 2)
-  rows = _messages.MessageField('RowsValueListEntry', 3, repeated=True)
-  stats = _messages.MessageField('ResultSetStats', 4)
+  metadata = _messages.MessageField('ResultSetMetadata', 1)
+  rows = _messages.MessageField('RowsValueListEntry', 2, repeated=True)
+  stats = _messages.MessageField('ResultSetStats', 3)
 
 
 class ResultSetMetadata(_messages.Message):

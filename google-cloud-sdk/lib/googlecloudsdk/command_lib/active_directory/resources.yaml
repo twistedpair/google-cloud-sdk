@@ -43,3 +43,14 @@ operation:
     attribute_name: operation
     help: The operation of the Managed Identities operation.
   disable_auto_completers: true
+
+peering:
+  name: peering
+  collection: managedidentities.projects.locations.global.peerings
+  request_id_field: peeringId
+  attributes:
+  - *project
+  - &peering
+    parameter_name: peeringsId
+    attribute_name: peering
+    help: The name of the Microsoft Active Directory domain peering.

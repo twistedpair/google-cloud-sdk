@@ -361,16 +361,6 @@ class EdgecontainerProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class EdgecontainerProjectsLocationsSitesMachinesGetRequest(_messages.Message):
-  r"""A EdgecontainerProjectsLocationsSitesMachinesGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the machine.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class EdgecontainerProjectsLocationsVpnConnectionsCreateRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsVpnConnectionsCreateRequest object.
 
@@ -617,6 +607,47 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LocationMetadata(_messages.Message):
+  r"""Metadata for a given google.cloud.location.Location.
+
+  Messages:
+    AvailableZonesValue: The set of available Google Edge Cloud zones in the
+      location. The map is keyed by the lowercase ID of each zone.
+
+  Fields:
+    availableZones: The set of available Google Edge Cloud zones in the
+      location. The map is keyed by the lowercase ID of each zone.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AvailableZonesValue(_messages.Message):
+    r"""The set of available Google Edge Cloud zones in the location. The map
+    is keyed by the lowercase ID of each zone.
+
+    Messages:
+      AdditionalProperty: An additional property for a AvailableZonesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AvailableZonesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AvailableZonesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ZoneMetadata attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ZoneMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  availableZones = _messages.MessageField('AvailableZonesValue', 1)
+
+
 class Machine(_messages.Message):
   r"""A Google Edge Cloud machine capable of acting as a Kubernetes node.
 
@@ -679,12 +710,8 @@ class NodePool(_messages.Message):
     labels: Labels associated with this resource.
     name: Required. The resource name of the node pool.
     nodeCount: Required. The number of nodes in the pool.
-    site: Canonical resource name of the site responsible for provisioning
-      machines to assume the role of nodes in this node pool e.g.
-      projects/{project}/locations/{location}/sites/{site_id}. When a node
-      pool is created, the site will be notified, and the site is thereafter
-      responsible for ensuring that machines exist to assume the role of the
-      node (or reporting that provisioning is not possible).
+    site: Name of the Google Edge Cloud zone where this node pool will be
+      created.
     updateTime: Output only. The time when the node pool was last updated.
   """
 
@@ -851,6 +878,20 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class Quota(_messages.Message):
+  r"""Represents quota for Edge Container resources.
+
+  Fields:
+    limit: Quota limit for this metric.
+    metric: Name of the quota metric.
+    usage: Current usage of this metric.
+  """
+
+  limit = _messages.FloatField(1)
+  metric = _messages.StringField(2)
+  usage = _messages.FloatField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1039,6 +1080,16 @@ class VpnConnection(_messages.Message):
   natGatewayIp = _messages.StringField(6)
   updateTime = _messages.StringField(7)
   vpc = _messages.StringField(8)
+
+
+class ZoneMetadata(_messages.Message):
+  r"""A Google Edge Cloud zone where edge machines are located.
+
+  Fields:
+    quota: Quota for resources in this zone.
+  """
+
+  quota = _messages.MessageField('Quota', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

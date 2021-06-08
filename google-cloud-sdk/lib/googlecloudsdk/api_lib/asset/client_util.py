@@ -615,7 +615,7 @@ class AssetSearchClient(object):
 class AssetListClient(object):
   """Client for list assets."""
 
-  def __init__(self, parent, api_version=V1P5BETA1_API_VERSION):
+  def __init__(self, parent, api_version=DEFAULT_API_VERSION):
     self.parent = parent
     self.message_module = GetMessages(api_version)
     self.service = GetClient(api_version).assets

@@ -46,6 +46,18 @@ def _ParseEndpoint(endpoint_id, region_ref):
       collection='aiplatform.projects.locations.endpoints')
 
 
+def _ParseDataset(dataset_id, region_ref):
+  """Parses a dataset ID into a dataset resource object."""
+  region = region_ref.AsDict()['locationsId']
+  return resources.REGISTRY.Parse(
+      dataset_id,
+      params={
+          'locationsId': region,
+          'projectsId': properties.VALUES.core.project.GetOrFail
+      },
+      collection='aiplatform.projects.locations.datasets')
+
+
 class ModelMonitoringJobsClient(object):
   """High-level client for the AI Platform model deployment monitoring jobs surface."""
 
@@ -56,36 +68,149 @@ class ModelMonitoringJobsClient(object):
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_modelDeploymentMonitoringJobs
 
-  def _ConstructObjectiveConfig(self, endpoint_name, drift_thresholds):
+  def _ConstructDriftThresholds(self, feature_thresholds):
+    """Construct drift thresholds from user input.
+
+    Args:
+      feature_thresholds: Dict or None, key: feature_name, value: thresholds.
+
+    Returns:
+      PredictionDriftDetectionConfig
+    """
+    prediction_drift_detection = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig(
+    )
+    additional_properties = []
+    for key, value in feature_thresholds.items():
+      threshold = 0.3 if not value else float(value)
+      additional_properties.append(
+          prediction_drift_detection.DriftThresholdsValue().AdditionalProperty(
+              key=key,
+              value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
+                  value=threshold)))
+    prediction_drift_detection.driftThresholds = prediction_drift_detection.DriftThresholdsValue(
+        additionalProperties=additional_properties)
+    return prediction_drift_detection
+
+  def _ConstructSkewThresholds(self, feature_thresholds):
+    """Construct skew thresholds from user input.
+
+    Args:
+      feature_thresholds: Dict or None, key: feature_name, value: thresholds.
+
+    Returns:
+      TrainingPredictionSkewDetectionConfig
+    """
+    training_prediction_skew_detection = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig(
+    )
+    additional_properties = []
+    for key, value in feature_thresholds.items():
+      threshold = 0.3 if not value else float(value)
+      additional_properties.append(
+          training_prediction_skew_detection.SkewThresholdsValue(
+          ).AdditionalProperty(
+              key=key,
+              value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
+                  value=threshold)))
+    training_prediction_skew_detection.skewThresholds = training_prediction_skew_detection.SkewThresholdsValue(
+        additionalProperties=additional_properties)
+    return training_prediction_skew_detection
+
+  def _ConstructObjectiveConfigForUpdate(self, existing_monitoring_job,
+                                         feature_thresholds):
     """Construct monitoring objective config.
 
-    It only contains PredictionDriftDetectionConfig and is applied to all
-    the deployed models.
+    Update the feature thresholds for skew/drift detection to all the existing
+    deployed models under the job.
     Args:
+      existing_monitoring_job: Existing monitoring job.
+      feature_thresholds: Dict or None, key: feature_name, value: thresholds.
+
+    Returns:
+      A list of model monitoring objective config.
+    """
+    prediction_drift_detection = self._ConstructDriftThresholds(
+        feature_thresholds)
+    training_prediction_skew_detection = self._ConstructSkewThresholds(
+        feature_thresholds)
+
+    objective_configs = []
+    for objective_config in existing_monitoring_job.modelDeploymentMonitoringObjectiveConfigs:
+      if objective_config.objectiveConfig.trainingPredictionSkewDetectionConfig:
+        objective_config.objectiveConfig.trainingPredictionSkewDetectionConfig = training_prediction_skew_detection
+      if objective_config.objectiveConfig.predictionDriftDetectionConfig:
+        objective_config.objectiveConfig.predictionDriftDetectionConfig = prediction_drift_detection
+      objective_configs.append(objective_config)
+    return objective_configs
+
+  def _ConstructObjectiveConfigForCreate(self, location_ref, endpoint_name,
+                                         feature_thresholds, dataset,
+                                         bigquery_uri, data_format, gcs_uris,
+                                         target_field, training_sampling_rate):
+    """Construct monitoring objective config.
+
+    Apply the feature thresholds for skew or drift detection to all the deployed
+    models under the endpoint.
+    Args:
+      location_ref: Location reference.
       endpoint_name: Endpoint resource name.
-      drift_thresholds: Dict or None, key: feature_name, value: thresholds.
+      feature_thresholds: Dict or None, key: feature_name, value: thresholds.
+      dataset: Vertex AI Dataset Id.
+      bigquery_uri: The BigQuery table of the unmanaged Dataset used to train
+        this Model.
+      data_format: Google Cloud Storage format, supported format: csv,
+        tf-record.
+      gcs_uris: The Google Cloud Storage uri of the unmanaged Dataset used to
+        train this Model.
+      target_field: The target field name the model is to predict.
+      training_sampling_rate: Training Dataset sampling rate.
 
     Returns:
       A list of model monitoring objective config.
     """
     objective_config_template = self.messages.GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringObjectiveConfig(
     )
-    if drift_thresholds is not None:
-      prediction_drift_detection = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig(
-      )
-      additional_properties = []
-      for key, value in drift_thresholds.items():
-        threshold = 0.3 if not value else float(value)
-        additional_properties.append(
-            prediction_drift_detection.DriftThresholdsValue(
-            ).AdditionalProperty(
-                key=key,
-                value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
-                    value=threshold)))
-      prediction_drift_detection.driftThresholds = prediction_drift_detection.DriftThresholdsValue(
-          additionalProperties=additional_properties)
-      objective_config_template.objectiveConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(
-          predictionDriftDetectionConfig=prediction_drift_detection)
+    if feature_thresholds:
+      if dataset or bigquery_uri or gcs_uris or data_format:
+        training_dataset = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset(
+        )
+        if target_field is None:
+          raise errors.ArgumentError(
+              "Target field must be provided if you'd like to do training-prediction skew detection."
+          )
+        training_dataset.targetField = target_field
+        training_dataset.loggingSamplingStrategy = self.messages.GoogleCloudAiplatformV1beta1SamplingStrategy(
+            randomSampleConfig=self.messages
+            .GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig(
+                sampleRate=training_sampling_rate))
+        if dataset:
+          training_dataset.dataset = _ParseDataset(dataset,
+                                                   location_ref).RelativeName()
+        elif bigquery_uri:
+          training_dataset.bigquerySource = self.messages.GoogleCloudAiplatformV1beta1BigQuerySource(
+              inputUri=bigquery_uri)
+        elif gcs_uris or data_format:
+          if gcs_uris is None:
+            raise errors.ArgumentError(
+                'Data format is defined but no Google Cloud Storage uris are provided. Please use --gcs-uris to provide training datasets.'
+            )
+          if data_format is None:
+            raise errors.ArgumentError(
+                'No Data format is defined for Google Cloud Storage training dataset. Please use --data-format to define the Data format.'
+            )
+          training_dataset.dataFormat = data_format
+          training_dataset.gcsSource = self.messages.GoogleCloudAiplatformV1beta1GcsSource(
+              uris=gcs_uris)
+        training_prediction_skew_detection = self._ConstructSkewThresholds(
+            feature_thresholds)
+        objective_config_template.objectiveConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(
+            trainingDataset=training_dataset,
+            trainingPredictionSkewDetectionConfig=training_prediction_skew_detection
+        )
+      else:
+        prediction_drift_detection = self._ConstructDriftThresholds(
+            feature_thresholds)
+        objective_config_template.objectiveConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(
+            predictionDriftDetectionConfig=prediction_drift_detection)
 
     get_endpoint_req = self.messages.AiplatformProjectsLocationsEndpointsGetRequest(
         name=endpoint_name)
@@ -109,9 +234,10 @@ class ModelMonitoringJobsClient(object):
             data, self.messages
             .GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob)
     else:
-      job_spec.modelDeploymentMonitoringObjectiveConfigs = self._ConstructObjectiveConfig(
-          endpoint_ref.RelativeName(), args.drift_thresholds)
-
+      job_spec.modelDeploymentMonitoringObjectiveConfigs = self._ConstructObjectiveConfigForCreate(
+          location_ref, endpoint_ref.RelativeName(), args.feature_thresholds,
+          args.dataset, args.bigquery_uri, args.data_format, args.gcs_uris,
+          args.target_field, args.training_sampling_rate)
     job_spec.endpoint = endpoint_ref.RelativeName()
     job_spec.displayName = args.display_name
 
@@ -129,16 +255,16 @@ class ModelMonitoringJobsClient(object):
         monitorInterval='{}s'.format(
             six.text_type(3600 * int(args.monitoring_frequency))))
 
-    if args.predict_instance_schema is not None:
+    if args.predict_instance_schema:
       job_spec.predictInstanceSchemaUri = args.predict_instance_schema
 
-    if args.analysis_instance_schema is not None:
+    if args.analysis_instance_schema:
       job_spec.analysisInstanceSchemaUri = args.analysis_instance_schema
 
-    if args.log_ttl is not None:
+    if args.log_ttl:
       job_spec.logTtl = '{}s'.format(six.text_type(86400 * int(args.log_ttl)))
 
-    if args.sample_predict_request is not None:
+    if args.sample_predict_request:
       instance_json = model_monitoring_jobs_util.ReadInstanceFromArgs(
           args.sample_predict_request)
       job_spec.samplePredictInstance = encoding.PyValueToMessage(
@@ -167,19 +293,19 @@ class ModelMonitoringJobsClient(object):
         model_monitoring_job_to_update.modelDeploymentMonitoringObjectiveConfigs = job_spec.modelDeploymentMonitoringObjectiveConfigs
         update_mask.append('model_deployment_monitoring_objective_configs')
 
-    if args.drift_thresholds is not None:
+    if args.feature_thresholds:
       get_monitoring_job_req = self.messages.AiplatformProjectsLocationsModelDeploymentMonitoringJobsGetRequest(
           name=model_monitoring_job_ref.RelativeName())
       model_monitoring_job = self._service.Get(get_monitoring_job_req)
-      model_monitoring_job_to_update.modelDeploymentMonitoringObjectiveConfigs = self._ConstructObjectiveConfig(
-          model_monitoring_job.endpoint, args.drift_thresholds)
+      model_monitoring_job_to_update.modelDeploymentMonitoringObjectiveConfigs = self._ConstructObjectiveConfigForUpdate(
+          model_monitoring_job, args.feature_thresholds)
       update_mask.append('model_deployment_monitoring_objective_configs')
 
-    if args.display_name is not None:
+    if args.display_name:
       model_monitoring_job_to_update.displayName = args.display_name
       update_mask.append('display_name')
 
-    if args.emails is not None:
+    if args.emails:
       model_monitoring_job_to_update.modelMonitoringAlertConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(
           emailAlertConfig=self.messages.
           GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig(
@@ -187,7 +313,7 @@ class ModelMonitoringJobsClient(object):
       update_mask.append('model_monitoring_alert_config')
 
     # sampling rate
-    if args.prediction_sampling_rate is not None:
+    if args.prediction_sampling_rate:
       model_monitoring_job_to_update.loggingSamplingStrategy = self.messages.GoogleCloudAiplatformV1beta1SamplingStrategy(
           randomSampleConfig=self.messages
           .GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig(
@@ -195,17 +321,17 @@ class ModelMonitoringJobsClient(object):
       update_mask.append('logging_sampling_strategy')
 
     # schedule
-    if args.monitoring_frequency is not None:
+    if args.monitoring_frequency:
       model_monitoring_job_to_update.modelDeploymentMonitoringScheduleConfig = self.messages.GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringScheduleConfig(
           monitorInterval='{}s'.format(
               six.text_type(3600 * int(args.monitoring_frequency))))
       update_mask.append('model_deployment_monitoring_schedule_config')
 
-    if args.analysis_instance_schema is not None:
+    if args.analysis_instance_schema:
       model_monitoring_job_to_update.analysisInstanceSchemaUri = args.analysis_instance_schema
       update_mask.append('analysis_instance_schema_uri')
 
-    if args.log_ttl is not None:
+    if args.log_ttl:
       model_monitoring_job_to_update.logTtl = '{}s'.format(
           six.text_type(86400 * int(args.log_ttl)))
       update_mask.append('log_ttl')

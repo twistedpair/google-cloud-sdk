@@ -379,6 +379,42 @@
         }
       }
     },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse": {
+      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
     "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse": {
       "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse",
       "description": "The response message from importing artifacts.",
@@ -669,17 +705,6 @@
         }
       }
     },
-    "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse",
-      "description": "The response to upload an artifact.",
-      "type": "object",
-      "properties": {
-        "operation": {
-          "description": "Operation to be returned to the user.",
-          "$ref": "Operation"
-        }
-      }
-    },
     "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactResponse": {
       "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactResponse",
       "description": "The response of the completed artifact upload operation. This response is contained in the Operation and available to users.",
@@ -691,17 +716,6 @@
           "items": {
             "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact"
           }
-        }
-      }
-    },
-    "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse",
-      "description": "The response to upload an artifact.",
-      "type": "object",
-      "properties": {
-        "operation": {
-          "description": "Operation to be returned to the user.",
-          "$ref": "Operation"
         }
       }
     },
@@ -1176,6 +1190,94 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Directly uploads an Apt artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "yumartifacts": {
+                  "methods": {
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.yumartifacts.upload",
+                      "path": "v1alpha1/{+parent}/yumArtifacts:create",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1alpha1/{+parent}/yumArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadYumArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads a Yum artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "googetartifacts": {
+                  "methods": {
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.googetartifacts.upload",
+                      "path": "v1alpha1/{+parent}/googetArtifacts:create",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/googetArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1alpha1/{+parent}/googetArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleDevtoolsArtifactregistryV1alpha1UploadGooGetArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads a GooGet artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
                     }
                   }
                 }

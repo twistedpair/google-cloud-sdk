@@ -27,17 +27,20 @@ from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 class FinalizeCompositeUploadTask(task.Task):
   """Composes and deletes object resources received as messages."""
 
-  def __init__(self, expected_component_count, destination_resource):
+  def __init__(self, expected_component_count, destination_resource,
+               random_prefix=''):
     """Initializes task.
 
     Args:
       expected_component_count (int): Number of temporary components expected.
       destination_resource (resource_reference.UnknownResource): Metadata for
           the final composite object.
+      random_prefix (str): Random id added to component names.
     """
     super().__init__()
     self._expected_component_count = expected_component_count
     self._destination_resource = destination_resource
+    self._random_prefix = random_prefix
 
   def execute(self, task_status_queue=None):
     uploaded_components = [
@@ -73,5 +76,6 @@ class FinalizeCompositeUploadTask(task.Task):
     return (
         self._expected_component_count == other._expected_component_count
         and self._destination_resource == other._destination_resource
+        and self._random_prefix == other._random_prefix
     )
 

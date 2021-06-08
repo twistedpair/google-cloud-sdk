@@ -1548,10 +1548,6 @@
         "requestOptions": {
           "description": "Common options for this request.",
           "$ref": "RequestOptions"
-        },
-        "autocommit": {
-          "description": "If set to true, commits the enclosing read-write transaction after executing the SQL statement `sql`. The requirements of using `autocommit` are: (a) `sql` is a DML statement; (b) `transaction` includes the id of a ReadWrite transaction. After successfully executing a DML statement with autocommit set to true, a separate commit is not needed.",
-          "type": "boolean"
         }
       }
     },
@@ -1785,10 +1781,6 @@
         "stats": {
           "description": "Query plan and execution statistics for the SQL statement that produced this result set. These can be requested by setting ExecuteSqlRequest.query_mode. DML statements always produce stats containing the number of rows modified, unless executed using the ExecuteSqlRequest.QueryMode.PLAN ExecuteSqlRequest.query_mode. Other fields may or may not be populated, based on the ExecuteSqlRequest.query_mode.",
           "$ref": "ResultSetStats"
-        },
-        "commitResponse": {
-          "description": "When ExecuteSql is called with ExecuteSqlRequest.autocommit set to true, the returned ResultSet will include a CommitResponse.",
-          "$ref": "CommitResponse"
         }
       }
     },
@@ -1963,34 +1955,6 @@
         }
       }
     },
-    "CommitResponse": {
-      "id": "CommitResponse",
-      "description": "The response for Commit.",
-      "type": "object",
-      "properties": {
-        "commitTimestamp": {
-          "description": "The Cloud Spanner timestamp at which the transaction committed.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "commitStats": {
-          "description": "The statistics about this Commit. Not returned by default. For more information, see CommitRequest.return_commit_stats.",
-          "$ref": "CommitStats"
-        }
-      }
-    },
-    "CommitStats": {
-      "id": "CommitStats",
-      "description": "Additional statistics about a commit.",
-      "type": "object",
-      "properties": {
-        "mutationCount": {
-          "description": "The total number of mutations for the transaction. Knowing the `mutation_count` value can help you maximize the number of mutations in a transaction and minimize the number of API round trips. You can also monitor this value to prevent transactions from exceeding the system [limit](https:\/\/cloud.google.com\/spanner\/quotas#limits_for_creating_reading_updating_and_deleting_data). If the number of mutations exceeds the limit, the server returns [INVALID_ARGUMENT](https:\/\/cloud.google.com\/spanner\/docs\/reference\/rest\/v1\/Code#ENUM_VALUES.INVALID_ARGUMENT).",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "PartialResultSet": {
       "id": "PartialResultSet",
       "description": "Partial results from a streaming read or SQL query. Streaming reads and SQL queries better tolerate large result sets, large rows, and large values, but are a little trickier to consume.",
@@ -2019,10 +1983,6 @@
         "stats": {
           "description": "Query plan and execution statistics for the statement that produced this streaming result set. These can be requested by setting ExecuteSqlRequest.query_mode and are sent only once with the last response in the stream. This field will also be present in the last response for DML statements.",
           "$ref": "ResultSetStats"
-        },
-        "commitResponse": {
-          "description": "When ExecuteStreamingSql is called with ExecuteSqlRequest.autocommit set to true, the last PartialResultSet message in the streaming response will contain a CommitResponse.",
-          "$ref": "CommitResponse"
         }
       }
     },
@@ -2322,6 +2282,34 @@
         "keySet": {
           "description": "Required. The primary keys of the rows within table to delete. The primary keys must be specified in the order in which they appear in the `PRIMARY KEY()` clause of the table's equivalent DDL statement (the DDL statement used to create the table). Delete is idempotent. The transaction will succeed even if some or all rows do not exist.",
           "$ref": "KeySet"
+        }
+      }
+    },
+    "CommitResponse": {
+      "id": "CommitResponse",
+      "description": "The response for Commit.",
+      "type": "object",
+      "properties": {
+        "commitTimestamp": {
+          "description": "The Cloud Spanner timestamp at which the transaction committed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "commitStats": {
+          "description": "The statistics about this Commit. Not returned by default. For more information, see CommitRequest.return_commit_stats.",
+          "$ref": "CommitStats"
+        }
+      }
+    },
+    "CommitStats": {
+      "id": "CommitStats",
+      "description": "Additional statistics about a commit.",
+      "type": "object",
+      "properties": {
+        "mutationCount": {
+          "description": "The total number of mutations for the transaction. Knowing the `mutation_count` value can help you maximize the number of mutations in a transaction and minimize the number of API round trips. You can also monitor this value to prevent transactions from exceeding the system [limit](https:\/\/cloud.google.com\/spanner\/quotas#limits_for_creating_reading_updating_and_deleting_data). If the number of mutations exceeds the limit, the server returns [INVALID_ARGUMENT](https:\/\/cloud.google.com\/spanner\/docs\/reference\/rest\/v1\/Code#ENUM_VALUES.INVALID_ARGUMENT).",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

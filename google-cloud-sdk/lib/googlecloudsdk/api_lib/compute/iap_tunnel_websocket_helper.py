@@ -67,11 +67,11 @@ class IapTunnelWebSocketHelper(object):
       self._sslopt['check_hostname'] = False
 
     caa_config = context_aware.Config()
-    if caa_config.use_client_certificate:
-      cert_path = caa_config.client_cert_path
+    if caa_config:
+      cert_path = caa_config.encrypted_client_cert_path
       log.debug('Using client certificate %s', cert_path)
       self._sslopt['certfile'] = cert_path
-      self._sslopt['password'] = caa_config.client_cert_password
+      self._sslopt['password'] = caa_config.encrypted_client_cert_password
 
     # Disable most of random logging in websocket library itself except in DEBUG
     if log.GetVerbosity() != logging.DEBUG:

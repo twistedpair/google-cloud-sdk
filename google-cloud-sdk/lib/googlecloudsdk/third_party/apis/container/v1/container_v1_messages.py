@@ -602,6 +602,8 @@ class ClusterUpdate(_messages.Message):
       "desired_node_pool" field as well.
     desiredIntraNodeVisibilityConfig: The desired config of Intra-node
       visibility.
+    desiredL4ilbSubsettingConfig: The desired L4 Internal Load Balancer
+      Subsetting configuration.
     desiredLocations: The desired list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
       the cluster's nodes should be located. This list must always include the
@@ -706,22 +708,23 @@ class ClusterUpdate(_messages.Message):
   desiredImageProject = _messages.StringField(10)
   desiredImageType = _messages.StringField(11)
   desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 12)
-  desiredLocations = _messages.StringField(13, repeated=True)
-  desiredLoggingService = _messages.StringField(14)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 15)
-  desiredMasterVersion = _messages.StringField(16)
-  desiredMonitoringService = _messages.StringField(17)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 18)
-  desiredNodePoolId = _messages.StringField(19)
-  desiredNodeVersion = _messages.StringField(20)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 21)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 22)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 23)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 24)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 25)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 26)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 27)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 28)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 13)
+  desiredLocations = _messages.StringField(14, repeated=True)
+  desiredLoggingService = _messages.StringField(15)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 16)
+  desiredMasterVersion = _messages.StringField(17)
+  desiredMonitoringService = _messages.StringField(18)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 19)
+  desiredNodePoolId = _messages.StringField(20)
+  desiredNodeVersion = _messages.StringField(21)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 22)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 23)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 24)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 25)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 26)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 27)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 28)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 29)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1495,6 +1498,17 @@ class HttpLoadBalancing(_messages.Message):
   disabled = _messages.BooleanField(1)
 
 
+class ILBSubsettingConfig(_messages.Message):
+  r"""ILBSubsettingConfig contains the desired config of L4 Internal
+  LoadBalancer subsetting on this cluster.
+
+  Fields:
+    enabled: Enables l4 ILB subsetting for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class IPAllocationPolicy(_messages.Message):
   r"""Configuration for controlling how IPs are allocated in the cluster.
 
@@ -1917,6 +1931,8 @@ class NetworkConfig(_messages.Message):
     enableIntraNodeVisibility: Whether Intra-node visibility is enabled for
       this cluster. This makes same node pod to pod traffic visible for VPC
       network.
+    enableL4ilbSubsetting: Whether L4ILB Subsetting is enabled for this
+      cluster.
     network: Output only. The relative name of the Google Compute Engine
       network(https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the cluster is connected. Example:
@@ -1968,9 +1984,10 @@ class NetworkConfig(_messages.Message):
   datapathProvider = _messages.EnumField('DatapathProviderValueValuesEnum', 1)
   defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 2)
   enableIntraNodeVisibility = _messages.BooleanField(3)
-  network = _messages.StringField(4)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 5)
-  subnetwork = _messages.StringField(6)
+  enableL4ilbSubsetting = _messages.BooleanField(4)
+  network = _messages.StringField(5)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 6)
+  subnetwork = _messages.StringField(7)
 
 
 class NetworkPolicy(_messages.Message):

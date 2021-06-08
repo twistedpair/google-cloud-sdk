@@ -128,6 +128,14 @@ def AddUsePresetProfilesFlag(parser):
       required=False).AddToParser(parser)
 
 
+def AddAutoEnableFlag(parser):
+  base.Argument(
+      '--auto-enable',
+      help='If this flag is set, the Certificate Authority will be automatically enabled upon creation.',
+      action='store_true',
+      required=False).AddToParser(parser)
+
+
 def _AddSubjectAlternativeNameFlags(parser):
   """Adds the Subject Alternative Name (san) flags.
 

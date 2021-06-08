@@ -255,7 +255,7 @@
           "type": "string"
         },
         "network": {
-          "description": "Existing VPC Network to put the GKE cluster and nodes in.",
+          "description": "Existing VPC Network to put the GKE cluster and nodes in. Deprecated. Please use management_config instead.",
           "type": "string"
         },
         "usePrivateEndpoint": {
@@ -263,7 +263,7 @@
           "type": "boolean"
         },
         "masterIpv4CidrBlock": {
-          "description": "The \/28 network that the masters will use.",
+          "description": "The \/28 network that the masters will use. Deprecated. Please use management_config instead.",
           "type": "string"
         },
         "gitEndpoint": {
@@ -402,6 +402,14 @@
       "description": "Configuration of the standard (GKE) cluster management",
       "type": "object",
       "properties": {
+        "network": {
+          "description": "Existing VPC Network to put the GKE cluster and nodes in.",
+          "type": "string"
+        },
+        "masterIpv4CidrBlock": {
+          "description": "The \/28 network that the masters will use.",
+          "type": "string"
+        }
       }
     },
     "FullManagementConfig": {
@@ -409,6 +417,14 @@
       "description": "Configuration of the full (Autopilot) cluster management",
       "type": "object",
       "properties": {
+        "network": {
+          "description": "Existing VPC Network to put the GKE cluster and nodes in.",
+          "type": "string"
+        },
+        "masterIpv4CidrBlock": {
+          "description": "The \/28 network that the masters will use.",
+          "type": "string"
+        }
       }
     },
     "ListLocationsResponse": {

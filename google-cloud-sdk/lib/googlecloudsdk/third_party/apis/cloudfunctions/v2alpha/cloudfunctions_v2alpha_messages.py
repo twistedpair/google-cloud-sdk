@@ -25,6 +25,15 @@ class BuildConfig(_messages.Message):
   Fields:
     build: Output only. The Cloud Build name of the latest successful
       deployment of the function.
+    dockerRepository: Optional. User managed repository created in Artifact
+      Registry optionally with a customer managed encryption key. This is the
+      repository to which the function docker image will be pushed after it is
+      built by Cloud Build. If unspecified, GCF will create and use a
+      repository named 'gcf-artifacts' for every deployed region. It must
+      match the pattern
+      `projects/{project}/locations/{location}/repositories/{repository}`.
+      Cross-project repositories are not supported. Cross-location
+      repositories are not supported. Repository format must be 'DOCKER'.
     entryPoint: The name of the function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For
       backward compatibility, if function with given name is not found, then
@@ -78,11 +87,12 @@ class BuildConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   build = _messages.StringField(1)
-  entryPoint = _messages.StringField(2)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
-  runtime = _messages.StringField(4)
-  source = _messages.MessageField('Source', 5)
-  workerPool = _messages.StringField(6)
+  dockerRepository = _messages.StringField(2)
+  entryPoint = _messages.StringField(3)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 4)
+  runtime = _messages.StringField(5)
+  source = _messages.MessageField('Source', 6)
+  workerPool = _messages.StringField(7)
 
 
 class CloudfunctionsProjectsLocationsFunctionsCreateRequest(_messages.Message):
@@ -189,8 +199,7 @@ class CloudfunctionsProjectsLocationsFunctionsPatchRequest(_messages.Message):
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
     updateMask: The list of fields to be updated. If no field mask is
-      provided, all provided fields in the request will be updated. To update
-      all fields, provide a field mask of "*".
+      provided, all provided fields in the request will be updated.
   """
 
   function = _messages.MessageField('Function', 1)
@@ -287,10 +296,9 @@ class EventTrigger(_messages.Message):
       `projects/{project}/locations/{region}/triggers/{trigger}`.
     triggerRegion: The region that the trigger will be in. The trigger will
       only receive events originating in this region. It can be the same
-      region as the function, a multi-region, or the global region. Cross-
-      regional triggers are not permitted, i.e. triggers that are in a single-
-      region location that is different than the function's region. If not
-      provided, defaults to the same region as the function.
+      region as the function, a different region or multi-region, or the
+      global region. If not provided, defaults to the same region as the
+      function.
   """
 
   eventFilters = _messages.MessageField('EventFilter', 1, repeated=True)

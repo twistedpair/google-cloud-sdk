@@ -581,6 +581,19 @@ def CreateMachineTypeUri(args, compute_client, resource_parser, project,
                          location, scope, confidential_vm=False):
   """Create a machine type URI for given args and instance reference."""
 
+  machine_type_name = CreateMachineTypeName(args, confidential_vm)
+
+  # Check to see if the custom machine type ratio is supported
+  CheckCustomCpuRamRatio(compute_client, project, location, machine_type_name)
+
+  machine_type_uri = ParseMachineType(resource_parser, machine_type_name,
+                                      project, location, scope)
+  return machine_type_uri
+
+
+def CreateMachineTypeName(args, confidential_vm=False):
+  """Create a machine type name for given args and instance reference."""
+
   machine_type = args.machine_type
   custom_cpu = args.custom_cpu
   custom_memory = args.custom_memory
@@ -596,12 +609,7 @@ def CreateMachineTypeUri(args, compute_client, resource_parser, project,
       vm_type=vm_type,
       confidential_vm=confidential_vm)
 
-  # Check to see if the custom machine type ratio is supported
-  CheckCustomCpuRamRatio(compute_client, project, location, machine_type_name)
-
-  machine_type_uri = ParseMachineType(resource_parser, machine_type_name,
-                                      project, location, scope)
-  return machine_type_uri
+  return machine_type_name
 
 
 def ParseMachineType(resource_parser, machine_type_name, project, location,

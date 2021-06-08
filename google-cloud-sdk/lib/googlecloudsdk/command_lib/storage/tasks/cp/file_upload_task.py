@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 
 import math
 import os
+import random
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -49,6 +50,11 @@ def _get_component_count(file_size, api_max_component_count):
   if component_count > api_max_component_count:
     return api_max_component_count
   return component_count
+
+
+def _get_random_prefix():
+  """Returns an ID distinguishing upload components from different machines."""
+  return str(random.randint(1, 10**10))
 
 
 class FileUploadTask(task.Task):
@@ -94,16 +100,23 @@ class FileUploadTask(task.Task):
           offset=0,
           length=size).execute(task_status_queue)
     else:
-      component_offsets_and_lengths = copy_component_util.get_component_offsets_and_lengths(
-          size,
-          properties.VALUES.storage.parallel_composite_upload_component_size
-          .Get(), gcs_api.MAX_OBJECTS_PER_COMPOSE_CALL)
+      component_size_property = (
+          properties.VALUES.storage.parallel_composite_upload_component_size)
+      component_offsets_and_lengths = (
+          copy_component_util.get_component_offsets_and_lengths(
+              size,
+              component_size_property.Get(),
+              gcs_api.MAX_OBJECTS_PER_COMPOSE_CALL))
+
+      random_prefix = _get_random_prefix()
 
       file_part_upload_tasks = []
       for i, (offset, length) in enumerate(component_offsets_and_lengths):
 
-        temporary_component_resource = copy_component_util.get_temporary_component_resource(
-            self._source_resource, self._destination_resource, i)
+        temporary_component_resource = (
+            copy_component_util.get_temporary_component_resource(
+                self._source_resource, self._destination_resource,
+                random_prefix, i))
 
         upload_task = file_part_upload_task.FilePartUploadTask(
             self._source_resource,
@@ -118,7 +131,8 @@ class FileUploadTask(task.Task):
       finalize_upload_task = (
           finalize_composite_upload_task.FinalizeCompositeUploadTask(
               expected_component_count=len(file_part_upload_tasks),
-              destination_resource=self._destination_resource))
+              destination_resource=self._destination_resource,
+              random_prefix=random_prefix))
 
       return task.Output(
           additional_task_iterators=[

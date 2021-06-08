@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20210521",
+ "revision": "20210527",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3618,7 +3618,7 @@
   "BulkInsertInstanceResource": {
    "id": "BulkInsertInstanceResource",
    "type": "object",
-   "description": "A transient resource used in compute.instances.bulkInsert and compute.regionInstances.bulkInsert and compute.regionInstances.recommendLocations. This resource is not persisted anywhere, it is used only for processing the requests.",
+   "description": "A transient resource used in compute.instances.bulkInsert and compute.regionInstances.bulkInsert . This resource is not persisted anywhere, it is used only for processing the requests.",
    "properties": {
     "count": {
      "type": "string",
@@ -5436,7 +5436,7 @@
    "properties": {
     "resourcePolicies": {
      "type": "array",
-     "description": "Resource policies to be added to this disk. Currently you can only specify one policy here.",
+     "description": "Full or relative path to the resource policy to be added to this disk. You can only specify one resource policy.",
      "items": {
       "type": "string"
      }
@@ -7408,7 +7408,7 @@
     },
     "queryPath": {
      "type": "string",
-     "description": "The path to be queried. This can be the default namespace ('/') or a nested namespace ('/\\/') or a specified key ('/\\/\\')"
+     "description": "The path to be queried. This can be the default namespace ('') or a nested namespace ('\\/') or a specified key ('\\/\\')."
     },
     "queryValue": {
      "$ref": "GuestAttributesValue",
@@ -10255,7 +10255,7 @@
   "InstanceGroupManager": {
    "id": "InstanceGroupManager",
    "type": "object",
-   "description": "Whether the instance is a standby. Properties of a standby instance comparing to the regular instance: ========================================================================= | regular | standby ========================================================================= managed by IGM? | yes | yes added to the IG? | yes | yes counts towards IGM's target size? | yes | no taken into account by Autoscaler? | yes | no receives traffic from LB? | yes | no =========================================================================\n\nRepresents a Managed Instance Group resource.\n\nAn instance group is a collection of VM instances that you can manage as a single entity. For more information, read Instance groups.\n\nFor zonal Managed Instance Group, use the instanceGroupManagers resource.\n\nFor regional Managed Instance Group, use the regionInstanceGroupManagers resource. (== resource_for {$api_version}.instanceGroupManagers ==) (== resource_for {$api_version}.regionInstanceGroupManagers ==)",
+   "description": "Represents a Managed Instance Group resource.\n\nAn instance group is a collection of VM instances that you can manage as a single entity. For more information, read Instance groups.\n\nFor zonal Managed Instance Group, use the instanceGroupManagers resource.\n\nFor regional Managed Instance Group, use the regionInstanceGroupManagers resource. (== resource_for {$api_version}.instanceGroupManagers ==) (== resource_for {$api_version}.regionInstanceGroupManagers ==)",
    "properties": {
     "autoHealingPolicies": {
      "type": "array",
@@ -24087,7 +24087,7 @@
     },
     "subnetwork": {
      "type": "string",
-     "description": "The URL of the subnetwork resource that this interface belongs to, which must be in the same region as the Cloud Router. When you establish a BGP session to a VM instance using this interface, the VM instance must belong to the same subnetwork as the subnetwork specified here."
+     "description": "The URI of the subnetwork resource that this interface belongs to, which must be in the same region as the Cloud Router. When you establish a BGP session to a VM instance using this interface, the VM instance must belong to the same subnetwork as the subnetwork specified here."
     }
    }
   },
@@ -27576,9 +27576,11 @@
       "INTERNAL_HTTPS_LOAD_BALANCER",
       "PRIVATE",
       "PRIVATE_RFC_1918",
-      "PRIVATE_SERVICE_CONNECT"
+      "PRIVATE_SERVICE_CONNECT",
+      "REGIONAL_MANAGED_PROXY"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -34978,6 +34980,46 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.backendServices.getIamPolicy",
+     "path": "projects/{project}/global/backendServices/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.backendServices.insert",
      "path": "projects/{project}/global/backendServices",
@@ -35140,6 +35182,42 @@
      },
      "response": {
       "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "setIamPolicy": {
+     "id": "compute.backendServices.setIamPolicy",
+     "path": "projects/{project}/global/backendServices/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "GlobalSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -50919,6 +50997,54 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.regionBackendServices.getIamPolicy",
+     "path": "projects/{project}/regions/{region}/backendServices/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "optionsRequestedPolicyVersion": {
+       "type": "integer",
+       "description": "Requested IAM Policy version.",
+       "format": "int32",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.regionBackendServices.insert",
      "path": "projects/{project}/regions/{region}/backendServices",
@@ -51071,6 +51197,50 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "setIamPolicy": {
+     "id": "compute.regionBackendServices.setIamPolicy",
+     "path": "projects/{project}/regions/{region}/backendServices/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "RegionSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "testIamPermissions": {
      "id": "compute.regionBackendServices.testIamPermissions",
      "path": "projects/{project}/regions/{region}/backendServices/{resource}/testIamPermissions",
@@ -51173,7 +51343,7 @@
      "id": "compute.regionCommitments.aggregatedList",
      "path": "projects/{project}/aggregated/commitments",
      "httpMethod": "GET",
-     "description": "Retrieves an aggregated list of commitments.",
+     "description": "Retrieves an aggregated list of commitments by region.",
      "parameters": {
       "filter": {
        "type": "string",

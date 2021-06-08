@@ -235,7 +235,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the `DeliveryPipeline`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/a-z{0,62}.",
+          "description": "Optional. Name of the `DeliveryPipeline`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/a-z{0,62}.",
           "type": "string"
         },
         "uid": {
@@ -274,10 +274,11 @@
           "format": "google-datetime"
         },
         "serialPipeline": {
+          "description": "SerialPipeline defines a sequential set of stages for a `DeliveryPipeline`.",
           "$ref": "SerialPipeline"
         },
         "renderServiceAccount": {
-          "description": "Service account used to render a `Release`. If unset, the compute service account will be used.",
+          "description": "Service account email used to render a `Release`. If unset, the compute service account will be used.",
           "type": "string"
         },
         "condition": {
@@ -311,11 +312,11 @@
       "type": "object",
       "properties": {
         "targetId": {
-          "description": "The target_id to which this stage points. Format is \"targetName\". The parent of the `Target` is the `DeliveryPipeline` in which this stage lives.",
+          "description": "The target_id to which this stage points. This field refers exclusively to the last segment of a target name. For example, this field would just be `my-target` (rather than `projects\/project\/deliveryPipelines\/pipeline\/targets\/my-target`). The parent `DeliveryPipeline` of the `Target` is inferred to be the parent `DeliveryPipeline` of the `Release` in which this `Stage` lives.",
           "type": "string"
         },
         "profiles": {
-          "description": "Profiles to use when rendering the manifest for this stage's `Target`.",
+          "description": "Skaffold profiles to use when rendering the manifest for this stage's `Target`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -344,7 +345,7 @@
       "type": "object",
       "properties": {
         "ready": {
-          "description": "True if the Pipeline is in a valid state.",
+          "description": "True if the Pipeline is in a valid state. Otherwise at least one condition in `PipelineCondition` is in an invalid state. Iterate over those conditions and see which condition(s) has ready = false to find out what is wrong with the Pipeline.",
           "type": "boolean"
         },
         "changeTime": {
@@ -364,7 +365,7 @@
           "type": "boolean"
         },
         "missingTargets": {
-          "description": "The list of Target names that are missing. For example, projects\/{projectName}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/targets\/{targetName}.",
+          "description": "The list of Target names that are missing. For example, projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/targets\/{target_name}.",
           "type": "array",
           "items": {
             "type": "string"
@@ -408,7 +409,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the `Target`. Format is projects\/{project}\/locations\/{location}\/ deliveryPipelines\/{deliveryPipeline}\/targets\/a-z{0,62}.",
+          "description": "Optional. Name of the `Target`. Format is projects\/{project}\/locations\/{location}\/ deliveryPipelines\/{deliveryPipeline}\/targets\/a-z{0,62}.",
           "type": "string"
         },
         "targetId": {
@@ -456,10 +457,11 @@
           "format": "google-datetime"
         },
         "deployServiceAccount": {
-          "description": "Service account used to deploy a `Rollout`. If unset, the compute service account will be used.",
+          "description": "Service account email used to deploy a `Rollout`. If unset, the compute service account will be used.",
           "type": "string"
         },
         "gkeCluster": {
+          "description": "Information specifying a GKE Cluster.",
           "$ref": "GKECluster"
         },
         "etag": {
@@ -518,7 +520,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the `Release`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/a-z{0,62}.",
+          "description": "Optional. Name of the `Release`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/a-z{0,62}.",
           "type": "string"
         },
         "uid": {
@@ -563,7 +565,7 @@
           "format": "google-datetime"
         },
         "skaffoldConfigUri": {
-          "description": "GCS URI of tar.gz archive containing Skaffold configuration.",
+          "description": "Cloud Storage URI of tar.gz archive containing Skaffold configuration.",
           "type": "string"
         },
         "skaffoldConfigPath": {
@@ -591,10 +593,11 @@
           }
         },
         "renderState": {
-          "description": "Current state of the render operation.",
+          "description": "Output only. Current state of the render operation.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "",
+            "The render state is unspecified.",
             "The render operation has completed successfully.",
             "The render operation has failed.",
             "The render operation is in progress."
@@ -607,11 +610,11 @@
           ]
         },
         "manifestBucket": {
-          "description": "GCS bucket to store the rendered manifests. If empty, a bucket will be provided.",
+          "description": "Cloud Storage bucket to store the rendered manifests. For example, \"gs:\/\/my-bucket\". If empty, a bucket will be provided.",
           "type": "string"
         },
         "renderedManifests": {
-          "description": "Output only. Map from target ID to GCS path of the rendered manifest for that target.",
+          "description": "Output only. Map from target ID to Cloud Storage path of the rendered manifest for that target. One example key-value pair would be (\"staging\": \"gs:\/\/my-bucket\/staging-manifest\").",
           "readOnly": true,
           "type": "object",
           "additionalProperties": {
@@ -619,7 +622,7 @@
           }
         },
         "renderBuild": {
-          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to render the manifests. Format is `projects\/{project}\/builds\/{build}` or `projects\/{project}\/locations\/{location}\/builds\/{build}`",
+          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to render the manifests. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
           "readOnly": true,
           "type": "string"
         },
@@ -630,20 +633,62 @@
         "skaffoldVersion": {
           "description": "The Skaffold version to use when operating on this release, such as \"1.20.0\". Not all versions are valid; Cloud Deploy supports a specific set of versions. If unset, the most recent supported Skaffold version will be used.",
           "type": "string"
+        },
+        "targetArtifacts": {
+          "description": "Output only. Map from target ID to the target artifacts created during the render operation.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "TargetArtifact"
+          }
         }
       }
     },
     "BuildArtifact": {
       "id": "BuildArtifact",
-      "description": "An artifact created from a render operation.",
+      "description": "Description of an a image to use during Skaffold rendering.",
       "type": "object",
       "properties": {
         "imageName": {
-          "description": "Name of an image. Format is {hostname}\/{projectID}\/{imageName}",
+          "description": "Image name in Skaffold configuration.",
           "type": "string"
         },
         "tag": {
-          "description": "Tag of the image.",
+          "description": "Image tag to use. This will generally be the full path to an image, such as \"gcr.io\/my-project\/busybox:1.2.3\" or \"gcr.io\/my-project\/busybox@sha256:abc123\".",
+          "type": "string"
+        }
+      }
+    },
+    "TargetArtifact": {
+      "id": "TargetArtifact",
+      "description": "The artifacts produced by a target render operation.",
+      "type": "object",
+      "properties": {
+        "archiveUri": {
+          "description": "URI of the tar.gz archive containing the artifacts. This archive contains deployment configuration used by Skaffold during a rollout.",
+          "type": "string"
+        },
+        "skaffoldConfigPath": {
+          "description": "File path of the resolved Skaffold configuration inside of the archive URI.",
+          "type": "string"
+        },
+        "manifestPath": {
+          "description": "File path of the rendered manifest inside of the archive URI.",
+          "type": "string"
+        }
+      }
+    },
+    "PromoteReleaseRequest": {
+      "id": "PromoteReleaseRequest",
+      "description": "The request object used by `PromoteRelease`.",
+      "type": "object",
+      "properties": {
+        "toTarget": {
+          "description": "Optional. The name of the `Target` to which we are promoting the Release.",
+          "type": "string"
+        },
+        "rolloutId": {
+          "description": "Optional. The ID to assign to the generated `Rollout`.",
           "type": "string"
         }
       }
@@ -682,8 +727,20 @@
         }
       }
     },
+    "ApproveRolloutRequest": {
+      "id": "ApproveRolloutRequest",
+      "description": "The request object used by `ApproveRollout`.",
+      "type": "object",
+      "properties": {
+        "approved": {
+          "description": "Required. True = approve; false = reject",
+          "type": "boolean"
+        }
+      }
+    },
     "ApproveRolloutResponse": {
       "id": "ApproveRolloutResponse",
+      "description": "The response object from `ApproveRollout`.",
       "type": "object",
       "properties": {
       }
@@ -719,7 +776,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Name of the `Rollout`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/a-z{0,62}.",
+          "description": "Optional. Name of the `Rollout`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/{deliveryPipeline}\/ releases\/{release}\/rollouts\/a-z{0,62}.",
           "type": "string"
         },
         "uid": {
@@ -780,10 +837,11 @@
           "type": "string"
         },
         "approvalState": {
-          "description": "Approval state of the `Rollout`.",
+          "description": "Output only. Approval state of the `Rollout`.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "",
+            "The `Rollout` has an unspecified approval state.",
             "The `Rollout` requires approval.",
             "The `Rollout` does not require approval.",
             "The `Rollout` has been approved.",
@@ -802,7 +860,7 @@
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
-            "",
+            "The `Rollout` has an unspecified state.",
             "The `Rollout` has completed successfully.",
             "The `Rollout` has failed.",
             "The `Rollout` is being deployed.",
@@ -828,13 +886,74 @@
           "type": "string"
         },
         "deployBuild": {
-          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to deploy the Rollout. Format is `projects\/{project}\/builds\/{build}` or `projects\/{project}\/locations\/{location}\/builds\/{build}`",
+          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to deploy the Rollout. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
           "readOnly": true,
           "type": "string"
         },
         "etag": {
           "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
+        }
+      }
+    },
+    "Config": {
+      "id": "Config",
+      "description": "Service-wide configuration.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the configuration.",
+          "type": "string"
+        },
+        "supportedVersions": {
+          "description": "Output only. All supported versions of Skaffold.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "SkaffoldVersion"
+          }
+        },
+        "defaultSkaffoldVersion": {
+          "description": "Output only. Default Skaffold version that is assigned when a Release is created without specifying a Skaffold version.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "SkaffoldVersion": {
+      "id": "SkaffoldVersion",
+      "description": "Details of a supported Skaffold version.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Release version number. For example, \"1.20.3\".",
+          "type": "string"
+        },
+        "supportEndDate": {
+          "description": "Date when this version is expected to no longer be supported.",
+          "$ref": "Date"
+        }
+      }
+    },
+    "Date": {
+      "id": "Date",
+      "description": "Represents a whole or partial calendar date, such as a birthday. The time of day and time zone are either specified elsewhere or are insignificant. The date is relative to the Gregorian Calendar. This can represent one of the following: * A full date, with non-zero year, month, and day values * A month and day value, with a zero year, such as an anniversary * A year on its own, with zero month and day values * A year and month value, with a zero day, such as a credit card expiration date Related types are google.type.TimeOfDay and `google.protobuf.Timestamp`.",
+      "type": "object",
+      "properties": {
+        "year": {
+          "description": "Year of the date. Must be from 1 to 9999, or 0 to specify a date without a year.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "month": {
+          "description": "Month of a year. Must be from 1 to 12, or 0 to specify a year without a month and day.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "day": {
+          "description": "Day of a month. Must be from 1 to 31 and valid for the year and month, or 0 to specify a year by itself or a year and month where the day isn't significant.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1065,32 +1184,39 @@
       "properties": {
         "createTime": {
           "description": "Output only. The time the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
           "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "verb": {
           "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "statusMessage": {
           "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
           "type": "string"
         },
         "requestedCancellation": {
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -1101,6 +1227,31 @@
       "resources": {
         "locations": {
           "methods": {
+            "getConfig": {
+              "id": "clouddeploy.projects.locations.getConfig",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/config",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. Name of requested configuration.",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/config$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Config"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the configuration for a location."
+            },
             "list": {
               "id": "clouddeploy.projects.locations.list",
               "path": "v1/{+name}/locations",
@@ -1302,7 +1453,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of pipelines. Format must be projects\/{projectID}\/locations\/{locationName}.",
+                      "description": "Required. The parent, which owns this collection of pipelines. Format must be projects\/{project_id}\/locations\/{location_name}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1348,7 +1499,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the `DeliveryPipeline`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}.",
+                      "description": "Required. Name of the `DeliveryPipeline`. Format must be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1373,24 +1524,24 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent collection in which the `DeliveryPipeline` should be created. Format should be projects\/{projectID}\/locations\/{locationName}.",
+                      "description": "Required. The parent collection in which the `DeliveryPipeline` should be created. Format should be projects\/{project_id}\/locations\/{location_name}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "deliveryPipelineId": {
-                      "description": "ID of the `DeliveryPipeline`.",
+                      "description": "Required. ID of the `DeliveryPipeline`.",
                       "location": "query",
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                       "location": "query",
                       "type": "string"
                     },
                     "validateOnly": {
-                      "description": "If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
+                      "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1416,30 +1567,30 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the `DeliveryPipeline`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/a-z{0,62}.",
+                      "description": "Optional. Name of the `DeliveryPipeline`. Format is projects\/{project}\/ locations\/{location}\/deliveryPipelines\/a-z{0,62}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Field mask is used to specify the fields to be overwritten in the `DeliveryPipeline` resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the `DeliveryPipeline` resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                       "location": "query",
                       "type": "string"
                     },
                     "allowMissing": {
-                      "description": "If set to true, updating a `DeliveryPipeline` that does not exist will result in the creation of a new `DeliveryPipeline`.",
+                      "description": "Optional. If set to true, updating a `DeliveryPipeline` that does not exist will result in the creation of a new `DeliveryPipeline`.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "validateOnly": {
-                      "description": "If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
+                      "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -1470,34 +1621,34 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the `DeliveryPipeline` to delete. Format should be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}.",
+                      "description": "Required. The name of the `DeliveryPipeline` to delete. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                       "location": "query",
                       "type": "string"
                     },
                     "allowMissing": {
-                      "description": "If set to true, then deleting an already deleted or non-existing `DeliveryPipeline` will succeed.",
+                      "description": "Optional. If set to true, then deleting an already deleted or non-existing `DeliveryPipeline` will succeed.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "validateOnly": {
-                      "description": "If set, validate the request and preview the review, but do not actually post it.",
+                      "description": "Optional. If set, validate the request and preview the review, but do not actually post it.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "force": {
-                      "description": "If set to true, all child resources under this pipeline will also be deleted. Otherwise, the request will only work if the pipeline has no child resources.",
+                      "description": "Optional. If set to true, all child resources under this pipeline will also be deleted. Otherwise, the request will only work if the pipeline has no child resources.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "etag": {
-                      "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                      "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1619,23 +1770,23 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of `Target` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Target` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
+                          "description": "Optional. The maximum number of `Target` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Target` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous `ListTargets` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
+                          "description": "Optional. A page token, received from a previous `ListTargets` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
                           "location": "query",
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
+                          "description": "Optional. Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
-                          "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
+                          "description": "Optional. Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1658,7 +1809,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. Name of the `Target`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/targets\/{targetName}.",
+                          "description": "Required. Name of the `Target`. Format must be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/targets\/{target_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1683,24 +1834,24 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent collection in which the `Target` should be created. Format should be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}.",
+                          "description": "Required. The parent collection in which the `Target` should be created. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "targetId": {
-                          "description": "ID of the `Target`.",
+                          "description": "Required. ID of the `Target`.",
                           "location": "query",
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
                         },
                         "validateOnly": {
-                          "description": "If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
+                          "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -1726,30 +1877,30 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. Name of the `Target`. Format is projects\/{project}\/locations\/{location}\/ deliveryPipelines\/{deliveryPipeline}\/targets\/a-z{0,62}.",
+                          "description": "Optional. Name of the `Target`. Format is projects\/{project}\/locations\/{location}\/ deliveryPipelines\/{deliveryPipeline}\/targets\/a-z{0,62}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Field mask is used to specify the fields to be overwritten in the Target resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the Target resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
                         },
                         "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
                         },
                         "allowMissing": {
-                          "description": "If set to true, updating a `Target` that does not exist will result in the creation of a new `Target`.",
+                          "description": "Optional. If set to true, updating a `Target` that does not exist will result in the creation of a new `Target`.",
                           "location": "query",
                           "type": "boolean"
                         },
                         "validateOnly": {
-                          "description": "If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
+                          "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                           "location": "query",
                           "type": "boolean"
                         },
@@ -1780,29 +1931,29 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the `Target` to delete. Format should be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/targets\/{targetName}.",
+                          "description": "Required. The name of the `Target` to delete. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/targets\/{target_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
                         },
                         "allowMissing": {
-                          "description": "If set to true, then deleting an already deleted or non-existing DeliveryPipeline will succeed.",
+                          "description": "Optional. If set to true, then deleting an already deleted or non-existing DeliveryPipeline will succeed.",
                           "location": "query",
                           "type": "boolean"
                         },
                         "validateOnly": {
-                          "description": "If set, validate the request and preview the review, but do not actually post it.",
+                          "description": "Optional. If set, validate the request and preview the review, but do not actually post it.",
                           "location": "query",
                           "type": "boolean"
                         },
                         "etag": {
-                          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                          "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1864,23 +2015,23 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of `Release` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Release` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
+                          "description": "Optional. The maximum number of `Release` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Release` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous `ListReleases` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
+                          "description": "Optional. A page token, received from a previous `ListReleases` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
                           "location": "query",
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
+                          "description": "Optional. Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
-                          "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
+                          "description": "Optional. Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
                           "location": "query",
                           "type": "string"
                         }
@@ -1903,7 +2054,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. Name of the `Release`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/releases\/{releaseName}.",
+                          "description": "Required. Name of the `Release`. Format must be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/releases\/{release_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1928,24 +2079,24 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent collection in which the `Release` should be created. Format should be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}.",
+                          "description": "Required. The parent collection in which the `Release` should be created. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "releaseId": {
-                          "description": "ID of the `Release`.",
+                          "description": "Required. ID of the `Release`.",
                           "location": "query",
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
                         },
                         "validateOnly": {
-                          "description": "If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
+                          "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -1971,29 +2122,29 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the `Release` to delete. Format is projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/release\/{releaseName}.",
+                          "description": "Required. The name of the `Release` to delete. Format is projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/release\/{release_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
                         },
                         "allowMissing": {
-                          "description": "If set to true, then deleting an already deleted or non-existing `DeliveryPipeline` will succeed.",
+                          "description": "Optional. If set to true, then deleting an already deleted or non-existing `DeliveryPipeline` will succeed.",
                           "location": "query",
                           "type": "boolean"
                         },
                         "validateOnly": {
-                          "description": "If set, validate the request and preview the review, but do not actually post it.",
+                          "description": "Optional. If set, validate the request and preview the review, but do not actually post it.",
                           "location": "query",
                           "type": "boolean"
                         },
                         "etag": {
-                          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                          "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
                           "location": "query",
                           "type": "string"
                         }
@@ -2016,26 +2167,19 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required. The `Release` being promoted. Format is projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/release\/{releaseName}.",
+                          "description": "Required. The `Release` being promoted. Format is projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/release\/{release_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                           "location": "path",
                           "required": true,
-                          "type": "string"
-                        },
-                        "toTarget": {
-                          "description": "[Optional] The name of the `Target` to which we are promoting the Release.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "rolloutId": {
-                          "description": "[Optional] The ID to assign to the generated `Rollout`.",
-                          "location": "query",
                           "type": "string"
                         }
                       },
                       "parameterOrder": [
                         "name"
                       ],
+                      "request": {
+                        "$ref": "PromoteReleaseRequest"
+                      },
                       "response": {
                         "$ref": "PromoteReleaseResponse"
                       },
@@ -2089,23 +2233,21 @@
                               "location": "path",
                               "required": true,
                               "type": "string"
-                            },
-                            "approved": {
-                              "description": "True = approve; false = reject",
-                              "location": "query",
-                              "type": "boolean"
                             }
                           },
                           "parameterOrder": [
                             "name"
                           ],
+                          "request": {
+                            "$ref": "ApproveRolloutRequest"
+                          },
                           "response": {
                             "$ref": "ApproveRolloutResponse"
                           },
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Promotes a Release in the Delivery Pipeline."
+                          "description": "Approves a Rollout."
                         },
                         "list": {
                           "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.list",
@@ -2121,23 +2263,23 @@
                               "type": "string"
                             },
                             "pageSize": {
-                              "description": "The maximum number of `Rollout` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Rollout` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
+                              "description": "Optional. The maximum number of `Rollout` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Rollout` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
                             },
                             "pageToken": {
-                              "description": "A page token, received from a previous `ListRollouts` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
+                              "description": "Optional. A page token, received from a previous `ListRollouts` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
                               "location": "query",
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
+                              "description": "Optional. Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
                               "location": "query",
                               "type": "string"
                             },
                             "orderBy": {
-                              "description": "Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
+                              "description": "Optional. Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
                               "location": "query",
                               "type": "string"
                             }
@@ -2160,7 +2302,7 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "name": {
-                              "description": "Required. Name of the `Rollout`. Format must be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/releases\/{releaseName}\/rollouts\/{rolloutName}.",
+                              "description": "Required. Name of the `Rollout`. Format must be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/releases\/{release_name}\/rollouts\/{rollout_name}.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -2185,24 +2327,24 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "parent": {
-                              "description": "Required. The parent collection in which the `Rollout` should be created. Format should be projects\/{projectID}\/locations\/{locationName}\/deliveryPipelines\/{pipelineName}\/releases\/{releaseName}.",
+                              "description": "Required. The parent collection in which the `Rollout` should be created. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/releases\/{release_name}.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
                               "location": "path",
                               "required": true,
                               "type": "string"
                             },
                             "rolloutId": {
-                              "description": "ID of the `Rollout`.",
+                              "description": "Required. ID of the `Rollout`.",
                               "location": "query",
                               "type": "string"
                             },
                             "requestId": {
-                              "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                              "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                               "location": "query",
                               "type": "string"
                             },
                             "validateOnly": {
-                              "description": "If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
+                              "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                               "location": "query",
                               "type": "boolean"
                             }
@@ -2252,6 +2394,223 @@
                       }
                     }
                   }
+                }
+              }
+            },
+            "targets": {
+              "methods": {
+                "list": {
+                  "id": "clouddeploy.projects.locations.targets.list",
+                  "path": "v1/{+parent}/targets",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/targets",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The `DeliveryPipeline` which owns this collection of `Target` objects.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of `Target` objects to return. The service may return fewer than this value. If unspecified, at most 50 `Target` objects will be returned. The maximum value is 1000; values above 1000 will be set to 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A page token, received from a previous `ListTargets` call. Provide this to retrieve the subsequent page. When paginating, all other provided parameters match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. Filter builds to be returned. See https:\/\/google.aip.dev\/160 for more details.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Optional. Field to sort by. See https:\/\/google.aip.dev\/132#ordering for more details.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListTargetsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists Targets in a given project and location."
+                },
+                "get": {
+                  "id": "clouddeploy.projects.locations.targets.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/targets/{targetsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the `Target`. Format must be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/targets\/{target_name}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/targets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Target"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single shared Target."
+                },
+                "create": {
+                  "id": "clouddeploy.projects.locations.targets.create",
+                  "path": "v1/{+parent}/targets",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/targets",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent collection in which the `Target` should be created. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "targetId": {
+                      "description": "Required. ID of the `Target`.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Target"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Target in a given project and location."
+                },
+                "patch": {
+                  "id": "clouddeploy.projects.locations.targets.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/targets/{targetsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Optional. Name of the `Target`. Format is projects\/{project}\/locations\/{location}\/ deliveryPipelines\/{deliveryPipeline}\/targets\/a-z{0,62}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/targets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Target resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "allowMissing": {
+                      "description": "Optional. If set to true, updating a `Target` that does not exist will result in the creation of a new `Target`.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "etag": {
+                      "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Target"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a shared single Target."
+                },
+                "delete": {
+                  "id": "clouddeploy.projects.locations.targets.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/targets/{targetsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the `Target` to delete. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/targets\/{target_name}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/targets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "allowMissing": {
+                      "description": "Optional. If set to true, then deleting an already deleted or non-existing DeliveryPipeline will succeed.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "validateOnly": {
+                      "description": "Optional. If set, validate the request and preview the review, but do not actually post it.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "etag": {
+                      "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single shared Target."
                 }
               }
             }

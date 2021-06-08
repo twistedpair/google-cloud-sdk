@@ -91,16 +91,24 @@ def AddLocationArgToParser(parser, positional=False):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddNodeTypeArgToParser(parser):
+def AddNodeTypeArgToParser(parser, positional=False):
   """Parses node type flag."""
+
+  if positional:
+    name = 'nodetype'
+    flag_name_overrides = None
+  else:
+    name = '--node-type'
+    flag_name_overrides = {'location': ''}
+
   location_data = yaml_data.ResourceYAMLData.FromPath('vmware.nodetype')
   resource_spec = concepts.ResourceSpec.FromYaml(location_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
-      name='--node-type',
+      name=name,
       concept_spec=resource_spec,
       required=True,
       group_help='nodetype.',
-      flag_name_overrides={'location': ''})
+      flag_name_overrides=flag_name_overrides)
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 

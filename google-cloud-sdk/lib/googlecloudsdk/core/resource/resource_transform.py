@@ -876,6 +876,20 @@ def TransformList(r, show='', undefined='', separator=','):
   return r or undefined
 
 
+def TransformLower(r):
+  """Returns r in lowercase.
+
+  Args:
+    r: A resource key value.
+
+  Returns:
+    r in lowercase
+  """
+  if r and isinstance(r, six.string_types):
+    return r.lower()
+  return r
+
+
 def TransformMap(r, depth=1):
   """Applies the next transform in the sequence to each resource list item.
 
@@ -1310,6 +1324,20 @@ def TransformSynthesize(r, *args):
   return r
 
 
+def TransformUpper(r):
+  """Returns r in uppercase.
+
+  Args:
+    r: A resource key value.
+
+  Returns:
+    r in uppercase
+  """
+  if r and isinstance(r, six.string_types):
+    return r.upper()
+  return r
+
+
 def TransformUri(r, undefined='.'):
   """Gets the resource URI.
 
@@ -1413,6 +1441,7 @@ _BUILTIN_TRANSFORMS = {
     'iso': TransformIso,
     'join': TransformJoin,
     'len': TransformLen,
+    'lower': TransformLower,
     'list': TransformList,
     'map': TransformMap,
     'notnull': TransformNotNull,
@@ -1426,6 +1455,7 @@ _BUILTIN_TRANSFORMS = {
     'split': TransformSplit,
     'sub': TransformSub,
     'synthesize': TransformSynthesize,
+    'upper': TransformUpper,
     'uri': TransformUri,
     'yesno': TransformYesNo,
 }

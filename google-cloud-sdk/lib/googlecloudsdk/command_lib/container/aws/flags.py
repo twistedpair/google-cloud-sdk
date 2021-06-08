@@ -50,14 +50,12 @@ def AddIamInstanceProfile(parser):
 
 
 def AddInstanceType(parser):
-  parser.add_argument(
-      "--instance-type", required=True, help="AWS EC2 instance type.")
+  parser.add_argument("--instance-type", help="AWS EC2 instance type.")
 
 
 def AddKeyPairName(parser):
   parser.add_argument(
       "--key-pair-name",
-      required=True,
       help="Name of the EC2 key pair to login into control plane nodes.")
 
 
@@ -80,5 +78,4 @@ def AddRoleArn(parser):
 def AddRoleSessionName(parser):
   parser.add_argument(
       "--role-session-name",
-      required=True,
       help="Identifier for the assumed role session.")

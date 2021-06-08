@@ -43,8 +43,6 @@ class EdgecontainerV1beta(base_api.BaseApiClient):
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_machines = self.ProjectsLocationsMachinesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
-    self.projects_locations_sites_machines = self.ProjectsLocationsSitesMachinesService(self)
-    self.projects_locations_sites = self.ProjectsLocationsSitesService(self)
     self.projects_locations_vpnConnections = self.ProjectsLocationsVpnConnectionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -520,53 +518,6 @@ class EdgecontainerV1beta(base_api.BaseApiClient):
         response_type_name='ListOperationsResponse',
         supports_download=False,
     )
-
-  class ProjectsLocationsSitesMachinesService(base_api.BaseApiService):
-    """Service class for the projects_locations_sites_machines resource."""
-
-    _NAME = 'projects_locations_sites_machines'
-
-    def __init__(self, client):
-      super(EdgecontainerV1beta.ProjectsLocationsSitesMachinesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Machine.
-
-      Args:
-        request: (EdgecontainerProjectsLocationsSitesMachinesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Machine) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/sites/{sitesId}/machines/{machinesId}',
-        http_method='GET',
-        method_id='edgecontainer.projects.locations.sites.machines.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta/{+name}',
-        request_field='',
-        request_type_name='EdgecontainerProjectsLocationsSitesMachinesGetRequest',
-        response_type_name='Machine',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsSitesService(base_api.BaseApiService):
-    """Service class for the projects_locations_sites resource."""
-
-    _NAME = 'projects_locations_sites'
-
-    def __init__(self, client):
-      super(EdgecontainerV1beta.ProjectsLocationsSitesService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class ProjectsLocationsVpnConnectionsService(base_api.BaseApiService):
     """Service class for the projects_locations_vpnConnections resource."""

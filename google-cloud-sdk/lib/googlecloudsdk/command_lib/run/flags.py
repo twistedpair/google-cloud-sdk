@@ -887,16 +887,8 @@ def AddWaitForCompletionFlag(parser):
       'If not set, polling completes when the job has started.')
 
 
-def AddJobAndTaskTimeoutFlags(parser):
+def AddTaskTimeoutFlags(parser):
   """Add job flags for job and task deadline."""
-  parser.add_argument(
-      '--job-timeout',
-      type=arg_parsers.Duration(lower_bound='1s'),
-      help='Set the maximum time (deadline) the job can run for. If the job '
-      'does not complete within this time, it will be killed. It is specified '
-      'as a duration; for example, "10m5s" is ten minutes, and five seconds. '
-      'If you don\'t specify a unit, seconds is assumed. For example, "10" is '
-      '10 seconds.')
   parser.add_argument(
       '--task-timeout',
       type=arg_parsers.Duration(lower_bound='1s'),
@@ -1346,9 +1338,6 @@ def GetJobConfigurationChanges(args):
     changes.append(config_changes.SpecChange('completions', args.tasks))
   if FlagIsExplicitlySet(args, 'max_retries'):
     changes.append(config_changes.JobMaxRetriesChange(args.max_retries))
-  if FlagIsExplicitlySet(args, 'job_timeout'):
-    changes.append(
-        config_changes.SpecChange('activeDeadlineSeconds', args.job_timeout))
   if FlagIsExplicitlySet(args, 'task_timeout'):
     changes.append(config_changes.JobInstanceDeadlineChange(args.task_timeout))
 

@@ -54,8 +54,12 @@ class CloudbuildV1(base_api.BaseApiClient):
     self.projects_installations = self.ProjectsInstallationsService(self)
     self.projects_locations_bitbucketServerConfigs = self.ProjectsLocationsBitbucketServerConfigsService(self)
     self.projects_locations_builds = self.ProjectsLocationsBuildsService(self)
+    self.projects_locations_github_installations = self.ProjectsLocationsGithubInstallationsService(self)
+    self.projects_locations_github = self.ProjectsLocationsGithubService(self)
     self.projects_locations_githubEnterpriseConfigs = self.ProjectsLocationsGithubEnterpriseConfigsService(self)
+    self.projects_locations_installations = self.ProjectsLocationsInstallationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_triggers = self.ProjectsLocationsTriggersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_triggers = self.ProjectsTriggersService(self)
     self.projects = self.ProjectsService(self)
@@ -520,7 +524,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.github.installations.create',
         ordered_params=['projectId'],
         path_params=['projectId'],
-        query_params=['projectId1', 'userOauthCode'],
+        query_params=['parent', 'projectId1', 'userOauthCode'],
         relative_path='v1/projects/{projectId}/github/installations',
         request_field='installation',
         request_type_name='CloudbuildProjectsGithubInstallationsCreateRequest',
@@ -546,7 +550,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.github.installations.delete',
         ordered_params=['projectId', 'installationId'],
         path_params=['installationId', 'projectId'],
-        query_params=[],
+        query_params=['name'],
         relative_path='v1/projects/{projectId}/github/installations/{installationId}',
         request_field='',
         request_type_name='CloudbuildProjectsGithubInstallationsDeleteRequest',
@@ -572,7 +576,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.github.installations.list',
         ordered_params=['projectId'],
         path_params=['projectId'],
-        query_params=[],
+        query_params=['parent'],
         relative_path='v1/projects/{projectId}/github/installations',
         request_field='',
         request_type_name='CloudbuildProjectsGithubInstallationsListRequest',
@@ -598,7 +602,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.github.installations.patch',
         ordered_params=['projectId', 'id'],
         path_params=['id', 'projectId'],
-        query_params=['installationId', 'projectId1', 'updateMask'],
+        query_params=['installationId', 'name', 'projectId1', 'updateMask'],
         relative_path='v1/projects/{projectId}/github/installations/{id}',
         request_field='installation',
         request_type_name='CloudbuildProjectsGithubInstallationsPatchRequest',
@@ -816,7 +820,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.installations.create',
         ordered_params=['projectId'],
         path_params=['projectId'],
-        query_params=['userOauthCode'],
+        query_params=['parent', 'userOauthCode'],
         relative_path='v1/projects/{projectId}/installations',
         request_field='installation',
         request_type_name='CloudbuildProjectsInstallationsCreateRequest',
@@ -842,7 +846,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.installations.delete',
         ordered_params=['projectId', 'installationId'],
         path_params=['installationId', 'projectId'],
-        query_params=[],
+        query_params=['name'],
         relative_path='v1/projects/{projectId}/installations/{installationId}',
         request_field='',
         request_type_name='CloudbuildProjectsInstallationsDeleteRequest',
@@ -868,7 +872,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.installations.list',
         ordered_params=['projectId'],
         path_params=['projectId'],
-        query_params=[],
+        query_params=['parent'],
         relative_path='v1/projects/{projectId}/installations',
         request_field='',
         request_type_name='CloudbuildProjectsInstallationsListRequest',
@@ -894,7 +898,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.installations.patch',
         ordered_params=['projectNum', 'id'],
         path_params=['id', 'projectNum'],
-        query_params=['installationId', 'projectId', 'updateMask'],
+        query_params=['installationId', 'name', 'projectId', 'updateMask'],
         relative_path='v1/projects/{projectNum}/installations/{id}',
         request_field='installation',
         request_type_name='CloudbuildProjectsInstallationsPatchRequest',
@@ -958,7 +962,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.locations.bitbucketServerConfigs.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['bitbucketServerConfigId'],
         relative_path='v1/{+parent}/bitbucketServerConfigs',
         request_field='bitbucketServerConfig',
         request_type_name='CloudbuildProjectsLocationsBitbucketServerConfigsCreateRequest',
@@ -1111,6 +1115,33 @@ class CloudbuildV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Approve(self, request, global_params=None):
+      r"""Approves or rejects a pending build. If approved, the returned LRO will be analogous to the LRO returned from a CreateBuild call. If rejected, the returned LRO will be immediately done.
+
+      Args:
+        request: (CloudbuildProjectsLocationsBuildsApproveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Approve')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Approve.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/builds/{buildsId}:approve',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.builds.approve',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:approve',
+        request_field='approveBuildRequest',
+        request_type_name='CloudbuildProjectsLocationsBuildsApproveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Cancel(self, request, global_params=None):
       r"""Cancels a build in progress.
 
@@ -1245,6 +1276,134 @@ class CloudbuildV1(base_api.BaseApiClient):
         response_type_name='Operation',
         supports_download=False,
     )
+
+  class ProjectsLocationsGithubInstallationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_github_installations resource."""
+
+    _NAME = 'projects_locations_github_installations'
+
+    def __init__(self, client):
+      super(CloudbuildV1.ProjectsLocationsGithubInstallationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create an association between a GCP project and a GitHub installation. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsGithubInstallationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/github/installations',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.github.installations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['projectId', 'userOauthCode'],
+        relative_path='v1/{+parent}/github/installations',
+        request_field='installation',
+        request_type_name='CloudbuildProjectsLocationsGithubInstallationsCreateRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete an association between a GCP project and a GitHub installation. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsGithubInstallationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/github/installations/{installationsId}',
+        http_method='DELETE',
+        method_id='cloudbuild.projects.locations.github.installations.delete',
+        ordered_params=['name', 'installationsId'],
+        path_params=['installationsId', 'name'],
+        query_params=['installationId', 'projectId'],
+        relative_path='v1/{+name}/github/installations/{installationsId}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsGithubInstallationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all Installations for a given project id. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsGithubInstallationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGitHubInstallationsForProjectResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/github/installations',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.github.installations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['projectId'],
+        relative_path='v1/{+parent}/github/installations',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsGithubInstallationsListRequest',
+        response_type_name='ListGitHubInstallationsForProjectResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update settings for a GCP project to GitHub installation mapping. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsGithubInstallationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/github/installations/{installationsId}',
+        http_method='PATCH',
+        method_id='cloudbuild.projects.locations.github.installations.patch',
+        ordered_params=['name', 'installationsId'],
+        path_params=['installationsId', 'name'],
+        query_params=['installationId', 'projectId', 'updateMask'],
+        relative_path='v1/{+name}/github/installations/{installationsId}',
+        request_field='installation',
+        request_type_name='CloudbuildProjectsLocationsGithubInstallationsPatchRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGithubService(base_api.BaseApiService):
+    """Service class for the projects_locations_github resource."""
+
+    _NAME = 'projects_locations_github'
+
+    def __init__(self, client):
+      super(CloudbuildV1.ProjectsLocationsGithubService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsGithubEnterpriseConfigsService(base_api.BaseApiService):
     """Service class for the projects_locations_githubEnterpriseConfigs resource."""
@@ -1418,6 +1577,97 @@ class CloudbuildV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsInstallationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_installations resource."""
+
+    _NAME = 'projects_locations_installations'
+
+    def __init__(self, client):
+      super(CloudbuildV1.ProjectsLocationsInstallationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Delete an association between a GCP project and a GitHub installation. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsInstallationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/installations/{installationsId}',
+        http_method='DELETE',
+        method_id='cloudbuild.projects.locations.installations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['installationId', 'projectId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsInstallationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all Installations for a given project id. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsInstallationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGitHubInstallationsForProjectResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/installations',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.installations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['projectId'],
+        relative_path='v1/{+parent}/installations',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsInstallationsListRequest',
+        response_type_name='ListGitHubInstallationsForProjectResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update settings for a GCP project to GitHub installation mapping. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsInstallationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/installations/{installationsId}',
+        http_method='PATCH',
+        method_id='cloudbuild.projects.locations.installations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['installationId', 'projectId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='installation',
+        request_type_name='CloudbuildProjectsLocationsInstallationsPatchRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -1482,6 +1732,205 @@ class CloudbuildV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsTriggersService(base_api.BaseApiService):
+    """Service class for the projects_locations_triggers resource."""
+
+    _NAME = 'projects_locations_triggers'
+
+    def __init__(self, client):
+      super(CloudbuildV1.ProjectsLocationsTriggersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new `BuildTrigger`. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsTriggersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BuildTrigger) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/triggers',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.triggers.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['projectId'],
+        relative_path='v1/{+parent}/triggers',
+        request_field='buildTrigger',
+        request_type_name='CloudbuildProjectsLocationsTriggersCreateRequest',
+        response_type_name='BuildTrigger',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a `BuildTrigger` by its project ID and trigger ID. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsTriggersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}',
+        http_method='DELETE',
+        method_id='cloudbuild.projects.locations.triggers.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['projectId', 'triggerId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsTriggersDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns information about a `BuildTrigger`. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsTriggersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BuildTrigger) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.triggers.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['projectId', 'triggerId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsTriggersGetRequest',
+        response_type_name='BuildTrigger',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists existing `BuildTrigger`s. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsTriggersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBuildTriggersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/triggers',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.triggers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'projectId'],
+        relative_path='v1/{+parent}/triggers',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsTriggersListRequest',
+        response_type_name='ListBuildTriggersResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a `BuildTrigger` by its project ID and trigger ID. This API is experimental.
+
+      Args:
+        request: (CloudbuildProjectsLocationsTriggersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BuildTrigger) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}',
+        http_method='PATCH',
+        method_id='cloudbuild.projects.locations.triggers.patch',
+        ordered_params=['resourceName'],
+        path_params=['resourceName'],
+        query_params=['projectId', 'triggerId'],
+        relative_path='v1/{+resourceName}',
+        request_field='buildTrigger',
+        request_type_name='CloudbuildProjectsLocationsTriggersPatchRequest',
+        response_type_name='BuildTrigger',
+        supports_download=False,
+    )
+
+    def Run(self, request, global_params=None):
+      r"""Runs a `BuildTrigger` at a particular source revision.
+
+      Args:
+        request: (CloudbuildProjectsLocationsTriggersRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}:run',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.triggers.run',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:run',
+        request_field='runBuildTriggerRequest',
+        request_type_name='CloudbuildProjectsLocationsTriggersRunRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Webhook(self, request, global_params=None):
+      r"""ReceiveTriggerWebhook [Experimental] is called when the API receives a webhook request targeted at a specific trigger.
+
+      Args:
+        request: (CloudbuildProjectsLocationsTriggersWebhookRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReceiveTriggerWebhookResponse) The response message.
+      """
+      config = self.GetMethodConfig('Webhook')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Webhook.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}:webhook',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.triggers.webhook',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['projectId', 'secret', 'trigger'],
+        relative_path='v1/{+name}:webhook',
+        request_field='httpBody',
+        request_type_name='CloudbuildProjectsLocationsTriggersWebhookRequest',
+        response_type_name='ReceiveTriggerWebhookResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -1520,7 +1969,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.triggers.create',
         ordered_params=['projectId'],
         path_params=['projectId'],
-        query_params=[],
+        query_params=['parent'],
         relative_path='v1/projects/{projectId}/triggers',
         request_field='buildTrigger',
         request_type_name='CloudbuildProjectsTriggersCreateRequest',
@@ -1546,7 +1995,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.triggers.delete',
         ordered_params=['projectId', 'triggerId'],
         path_params=['projectId', 'triggerId'],
-        query_params=[],
+        query_params=['name'],
         relative_path='v1/projects/{projectId}/triggers/{triggerId}',
         request_field='',
         request_type_name='CloudbuildProjectsTriggersDeleteRequest',
@@ -1572,7 +2021,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.triggers.get',
         ordered_params=['projectId', 'triggerId'],
         path_params=['projectId', 'triggerId'],
-        query_params=[],
+        query_params=['name'],
         relative_path='v1/projects/{projectId}/triggers/{triggerId}',
         request_field='',
         request_type_name='CloudbuildProjectsTriggersGetRequest',
@@ -1598,7 +2047,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.triggers.list',
         ordered_params=['projectId'],
         path_params=['projectId'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken', 'parent'],
         relative_path='v1/projects/{projectId}/triggers',
         request_field='',
         request_type_name='CloudbuildProjectsTriggersListRequest',
@@ -1650,7 +2099,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.triggers.run',
         ordered_params=['projectId', 'triggerId'],
         path_params=['projectId', 'triggerId'],
-        query_params=[],
+        query_params=['name'],
         relative_path='v1/projects/{projectId}/triggers/{triggerId}:run',
         request_field='repoSource',
         request_type_name='CloudbuildProjectsTriggersRunRequest',
@@ -1676,7 +2125,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         method_id='cloudbuild.projects.triggers.webhook',
         ordered_params=['projectId', 'trigger'],
         path_params=['projectId', 'trigger'],
-        query_params=['secret'],
+        query_params=['name', 'secret'],
         relative_path='v1/projects/{projectId}/triggers/{trigger}:webhook',
         request_field='httpBody',
         request_type_name='CloudbuildProjectsTriggersWebhookRequest',

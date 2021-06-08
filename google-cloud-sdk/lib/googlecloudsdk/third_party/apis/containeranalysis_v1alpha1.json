@@ -143,7 +143,8 @@
             "The note and occurrence track deployment events.",
             "The note and occurrence track the initial discovery status of a resource.",
             "This represents a logical \"role\" that can attest to artifacts.",
-            "This represents an available software upgrade."
+            "This represents an available software upgrade.",
+            "This represents a compliance check that can be applied to a resource."
           ],
           "enum": [
             "KIND_UNSPECIFIED",
@@ -154,7 +155,8 @@
             "DEPLOYABLE",
             "DISCOVERY",
             "ATTESTATION_AUTHORITY",
-            "UPGRADE"
+            "UPGRADE",
+            "COMPLIANCE"
           ]
         },
         "vulnerabilityDetails": {
@@ -188,6 +190,10 @@
         "upgrade": {
           "description": "Describes an upgrade.",
           "$ref": "UpgradeOccurrence"
+        },
+        "compliance": {
+          "description": "Describes whether or not a resource passes compliance checks.",
+          "$ref": "ComplianceOccurrence"
         },
         "remediation": {
           "description": "A description of actions that can be taken to remedy the `Note`",
@@ -1166,6 +1172,43 @@
         }
       }
     },
+    "ComplianceOccurrence": {
+      "id": "ComplianceOccurrence",
+      "description": "An indication that the compliance checks in the associated ComplianceNote were not satisfied for particular resources or a specified reason.",
+      "type": "object",
+      "properties": {
+        "nonCompliantFiles": {
+          "description": "A list of files which are violating compliance checks.",
+          "type": "array",
+          "items": {
+            "$ref": "NonCompliantFile"
+          }
+        },
+        "nonComplianceReason": {
+          "description": "The reason for non compliance of these files.",
+          "type": "string"
+        }
+      }
+    },
+    "NonCompliantFile": {
+      "id": "NonCompliantFile",
+      "description": "Details about files that caused a compliance check to fail.",
+      "type": "object",
+      "properties": {
+        "path": {
+          "description": "display_command is a single command that can be used to display a list of non compliant files. When there is no such command, we can also iterate a list of non compliant file using 'path'. Empty if `display_command` is set.",
+          "type": "string"
+        },
+        "displayCommand": {
+          "description": "Command to display the non-compliant files.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "Explains why a file is non compliant for a CIS check.",
+          "type": "string"
+        }
+      }
+    },
     "ListOccurrencesResponse": {
       "id": "ListOccurrencesResponse",
       "description": "Response including listed active occurrences.",
@@ -1220,7 +1263,8 @@
             "The note and occurrence track deployment events.",
             "The note and occurrence track the initial discovery status of a resource.",
             "This represents a logical \"role\" that can attest to artifacts.",
-            "This represents an available software upgrade."
+            "This represents an available software upgrade.",
+            "This represents a compliance check that can be applied to a resource."
           ],
           "enum": [
             "KIND_UNSPECIFIED",
@@ -1231,7 +1275,8 @@
             "DEPLOYABLE",
             "DISCOVERY",
             "ATTESTATION_AUTHORITY",
-            "UPGRADE"
+            "UPGRADE",
+            "COMPLIANCE"
           ]
         },
         "vulnerabilityType": {
@@ -1265,6 +1310,10 @@
         "upgrade": {
           "description": "A note describing an upgrade.",
           "$ref": "UpgradeNote"
+        },
+        "compliance": {
+          "description": "A note describing a compliance check.",
+          "$ref": "ComplianceNote"
         },
         "relatedUrl": {
           "description": "URLs associated with this note",
@@ -1533,7 +1582,8 @@
             "The note and occurrence track deployment events.",
             "The note and occurrence track the initial discovery status of a resource.",
             "This represents a logical \"role\" that can attest to artifacts.",
-            "This represents an available software upgrade."
+            "This represents an available software upgrade.",
+            "This represents a compliance check that can be applied to a resource."
           ],
           "enum": [
             "KIND_UNSPECIFIED",
@@ -1544,7 +1594,8 @@
             "DEPLOYABLE",
             "DISCOVERY",
             "ATTESTATION_AUTHORITY",
-            "UPGRADE"
+            "UPGRADE",
+            "COMPLIANCE"
           ]
         }
       }
@@ -1589,6 +1640,92 @@
           "items": {
             "$ref": "UpgradeDistribution"
           }
+        }
+      }
+    },
+    "ComplianceNote": {
+      "id": "ComplianceNote",
+      "description": "ComplianceNote encapsulates all information about a specific compliance check.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "description": "The title that identifies this compliance check.",
+          "type": "string"
+        },
+        "description": {
+          "description": "A description about this compliance check.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The OS and config versions the benchmark applies to.",
+          "type": "array",
+          "items": {
+            "$ref": "ComplianceVersion"
+          }
+        },
+        "rationale": {
+          "description": "A rationale for the existence of this compliance check.",
+          "type": "string"
+        },
+        "remediation": {
+          "description": "A description of remediation steps if the compliance check fails.",
+          "type": "string"
+        },
+        "cisBenchmark": {
+          "description": "Right now we only have one compliance type, but we may add additional types in the future.",
+          "$ref": "CisBenchmark"
+        },
+        "scanInstructions": {
+          "description": "Serialized scan instructions with a predefined format.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "ComplianceVersion": {
+      "id": "ComplianceVersion",
+      "description": "Describes the CIS benchmark version that is applicable to a given OS and os version.",
+      "type": "object",
+      "properties": {
+        "cpeUri": {
+          "description": "The CPE URI (https:\/\/cpe.mitre.org\/specification\/) this benchmark is applicable to.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version of the benchmark. This is set to the version of the OS-specific CIS document the benchmark is defined in.",
+          "type": "string"
+        }
+      }
+    },
+    "CisBenchmark": {
+      "id": "CisBenchmark",
+      "description": "A compliance check that is a CIS benchmark.",
+      "type": "object",
+      "properties": {
+        "profileLevel": {
+          "description": "The profile level of this CIS benchmark check.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "severity": {
+          "description": "The severity level of this CIS benchmark check.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown Impact",
+            "Minimal Impact",
+            "Low Impact",
+            "Medium Impact",
+            "High Impact",
+            "Critical Impact"
+          ],
+          "enum": [
+            "SEVERITY_UNSPECIFIED",
+            "MINIMAL",
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
         }
       }
     },
@@ -1993,7 +2130,8 @@
                     "The note and occurrence track deployment events.",
                     "The note and occurrence track the initial discovery status of a resource.",
                     "This represents a logical \"role\" that can attest to artifacts.",
-                    "This represents an available software upgrade."
+                    "This represents an available software upgrade.",
+                    "This represents a compliance check that can be applied to a resource."
                   ],
                   "enum": [
                     "KIND_UNSPECIFIED",
@@ -2004,7 +2142,8 @@
                     "DEPLOYABLE",
                     "DISCOVERY",
                     "ATTESTATION_AUTHORITY",
-                    "UPGRADE"
+                    "UPGRADE",
+                    "COMPLIANCE"
                   ]
                 }
               },

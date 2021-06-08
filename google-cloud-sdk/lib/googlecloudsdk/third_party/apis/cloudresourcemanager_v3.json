@@ -744,7 +744,7 @@
       "type": "object",
       "properties": {
         "tagBindings": {
-          "description": "A possibly paginated list of TagBindings for the specified TagValue or resource.",
+          "description": "A possibly paginated list of TagBindings for the specified resource.",
           "type": "array",
           "items": {
             "$ref": "TagBinding"

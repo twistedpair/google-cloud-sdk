@@ -47,6 +47,11 @@ class TrackerFileType(enum.Enum):
   REWRITE = 'rewrite'
 
 
+CompositeUploadTrackerData = collections.namedtuple(
+    'CompositeUploadTrackerData',
+    ['encryption_key_sha256', 'random_prefix'])
+
+
 ResumableUploadTrackerData = collections.namedtuple(
     'ResumableUploadTrackerData',
     ['complete', 'encryption_key_sha256', 'serialization_data'])
@@ -108,7 +113,7 @@ def _get_hashed_file_name(file_name):
 
 
 def _get_hashed_path(tracker_file_name, tracker_file_type,
-                     resumable_tracker_directory):
+                     resumable_tracker_directory, component_number):
   """Hashes and returns a tracker file path.
 
   Args:
@@ -116,6 +121,8 @@ def _get_hashed_path(tracker_file_name, tracker_file_type,
     tracker_file_type (TrackerFileType): The TrackerFileType of
       res_tracker_file_name.
     resumable_tracker_directory (str): Path to directory of tracker files.
+    component_number (int|None): The number of the component is being tracked
+      for a sliced download or composite upload.
 
   Returns:
     Final (hashed) tracker file path.
@@ -126,6 +133,9 @@ def _get_hashed_path(tracker_file_name, tracker_file_type,
   hashed_tracker_file_name = _get_hashed_file_name(tracker_file_name)
   tracker_file_name_with_type = '{}_{}'.format(tracker_file_type.value.lower(),
                                                hashed_tracker_file_name)
+  if component_number is not None:
+    tracker_file_name_with_type += '_{}'.format(component_number)
+
   if len(tracker_file_name_with_type) > _MAX_TRACKER_FILE_NAME_LENGTH:
     raise errors.Error(
         'Tracker file name hash is over max character limit of {}: {}'.format(
@@ -147,7 +157,7 @@ def get_tracker_file_path(destination_url,
     tracker_file_type (TrackerFileType): Type of tracker file to retrieve.
     source_url (storage_url.StorageUrl): Describes the source file.
     component_number (int): The number of the component is being tracked for a
-      sliced download.
+      sliced download or composite upload.
 
   Returns:
     String file path to tracker file.
@@ -189,7 +199,7 @@ def get_tracker_file_path(destination_url,
                                     raw_result_tracker_file_name)
   resumable_tracker_directory = _create_tracker_directory_if_needed()
   return _get_hashed_path(result_tracker_file_name, tracker_file_type,
-                          resumable_tracker_directory)
+                          resumable_tracker_directory, component_number)
 
 
 def _get_sliced_download_tracker_file_paths(destination_url):
@@ -329,6 +339,27 @@ def _write_json_to_tracker_file(tracker_file_path, data):
   _write_tracker_file(tracker_file_path, json_string)
 
 
+def write_composite_upload_tracker_file(tracker_file_path,
+                                        random_prefix,
+                                        encryption_key_sha256=None):
+  """Updates or creates a tracker file for a composite upload.
+
+  Args:
+    tracker_file_path (str): The path to the tracker file.
+    random_prefix (str): A prefix used to ensure temporary component names are
+        unique across multiple running instances of the CLI.
+    encryption_key_sha256 (str|None): The encryption key used for the
+        upload.
+
+  Returns:
+    None, but writes data passed as arguments at tracker_file_path.
+  """
+  data = CompositeUploadTrackerData(
+      encryption_key_sha256=encryption_key_sha256,
+      random_prefix=random_prefix)
+  _write_json_to_tracker_file(tracker_file_path, data._asdict())
+
+
 def write_resumable_upload_tracker_file(tracker_file_path, complete,
                                         encryption_key_sha256,
                                         serialization_data):
@@ -349,23 +380,6 @@ def write_resumable_upload_tracker_file(tracker_file_path, complete,
       encryption_key_sha256=encryption_key_sha256,
       serialization_data=serialization_data)
   _write_json_to_tracker_file(tracker_file_path, data._asdict())
-
-
-def read_resumable_upload_tracker_file(tracker_file_path):
-  """Reads a resumable upload tracker file.
-
-  Args:
-    tracker_file_path (str): The path to the tracker file.
-
-  Returns:
-    A ResumableUploadTrackerData instance with data at tracker_file_path, or
-    None if no file exists at tracker_file_path.
-  """
-  if not os.path.exists(tracker_file_path):
-    return None
-  with files.FileReader(tracker_file_path) as tracker_file:
-    tracker_dict = json.load(tracker_file)
-    return ResumableUploadTrackerData(**tracker_dict)
 
 
 def write_tracker_file_with_component_data(tracker_file_path,
@@ -413,6 +427,43 @@ def write_rewrite_tracker_file(tracker_file_name, rewrite_parameters_hash,
   """
   _write_tracker_file(tracker_file_name,
                       '{}\n{}'.format(rewrite_parameters_hash, rewrite_token))
+
+
+def _read_namedtuple_from_json_file(named_tuple_class, tracker_file_path):
+  """Returns an instance of named_tuple_class with data at tracker_file_path."""
+  if not os.path.exists(tracker_file_path):
+    return None
+  with files.FileReader(tracker_file_path) as tracker_file:
+    tracker_dict = json.load(tracker_file)
+    return named_tuple_class(**tracker_dict)
+
+
+def read_composite_upload_tracker_file(tracker_file_path):
+  """Reads a composite upload tracker file.
+
+  Args:
+    tracker_file_path (str): The path to the tracker file.
+
+  Returns:
+    A CompositeUploadTrackerData instance with data at tracker_file_path, or
+    None if no file exists at tracker_file_path.
+  """
+  return _read_namedtuple_from_json_file(
+      CompositeUploadTrackerData, tracker_file_path)
+
+
+def read_resumable_upload_tracker_file(tracker_file_path):
+  """Reads a resumable upload tracker file.
+
+  Args:
+    tracker_file_path (str): The path to the tracker file.
+
+  Returns:
+    A ResumableUploadTrackerData instance with data at tracker_file_path, or
+    None if no file exists at tracker_file_path.
+  """
+  return _read_namedtuple_from_json_file(
+      ResumableUploadTrackerData, tracker_file_path)
 
 
 def read_or_create_download_tracker_file(source_object_resource,

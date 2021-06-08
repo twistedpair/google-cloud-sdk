@@ -102,7 +102,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
         method_id='datafusion.projects.locations.instances.namespaces.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['pageSize', 'pageToken', 'view'],
         relative_path='v1beta1/{+parent}/namespaces',
         request_field='',
         request_type_name='DatafusionProjectsLocationsInstancesNamespacesListRequest',

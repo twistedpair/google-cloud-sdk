@@ -4779,8 +4779,7 @@ class Binding(_messages.Message):
 
 class BulkInsertInstanceResource(_messages.Message):
   r"""A transient resource used in compute.instances.bulkInsert and
-  compute.regionInstances.bulkInsert and
-  compute.regionInstances.recommendLocations. This resource is not persisted
+  compute.regionInstances.bulkInsert . This resource is not persisted
   anywhere, it is used only for processing the requests.
 
   Messages:
@@ -6539,6 +6538,20 @@ class ComputeBackendServicesGetHealthRequest(_messages.Message):
   resourceGroupReference = _messages.MessageField('ResourceGroupReference', 3)
 
 
+class ComputeBackendServicesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeBackendServicesGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeBackendServicesGetRequest(_messages.Message):
   r"""A ComputeBackendServicesGetRequest object.
 
@@ -6676,6 +6689,21 @@ class ComputeBackendServicesSetEdgeSecurityPolicyRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 4)
+
+
+class ComputeBackendServicesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeBackendServicesSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeBackendServicesSetSecurityPolicyRequest(_messages.Message):
@@ -16403,6 +16431,22 @@ class ComputeRegionBackendServicesGetHealthRequest(_messages.Message):
   resourceGroupReference = _messages.MessageField('ResourceGroupReference', 4)
 
 
+class ComputeRegionBackendServicesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionBackendServicesGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  resource = _messages.StringField(4, required=True)
+
+
 class ComputeRegionBackendServicesGetRequest(_messages.Message):
   r"""A ComputeRegionBackendServicesGetRequest object.
 
@@ -16521,6 +16565,23 @@ class ComputeRegionBackendServicesPatchRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
+
+
+class ComputeRegionBackendServicesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionBackendServicesSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeRegionBackendServicesTestIamPermissionsRequest(_messages.Message):
@@ -26051,8 +26112,8 @@ class DisksAddResourcePoliciesRequest(_messages.Message):
   r"""A DisksAddResourcePoliciesRequest object.
 
   Fields:
-    resourcePolicies: Resource policies to be added to this disk. Currently
-      you can only specify one policy here.
+    resourcePolicies: Full or relative path to the resource policy to be added
+      to this disk. You can only specify one resource policy.
   """
 
   resourcePolicies = _messages.StringField(1, repeated=True)
@@ -28465,8 +28526,8 @@ class GuestAttributes(_messages.Message):
   Fields:
     kind: [Output Only] Type of the resource. Always compute#guestAttributes
       for guest attributes entry.
-    queryPath: The path to be queried. This can be the default namespace ('/')
-      or a nested namespace ('/\/') or a specified key ('/\/\')
+    queryPath: The path to be queried. This can be the default namespace ('')
+      or a nested namespace ('\/') or a specified key ('\/\').
     queryValue: [Output Only] The value of the requested queried path.
     selfLink: [Output Only] Server-defined URL for this resource.
     variableKey: The key to search for.
@@ -31802,16 +31863,7 @@ class InstanceGroupList(_messages.Message):
 
 
 class InstanceGroupManager(_messages.Message):
-  r"""Whether the instance is a standby. Properties of a standby instance
-  comparing to the regular instance:
-  ========================================================================= |
-  regular | standby
-  =========================================================================
-  managed by IGM? | yes | yes added to the IG? | yes | yes counts towards
-  IGM's target size? | yes | no taken into account by Autoscaler? | yes | no
-  receives traffic from LB? | yes | no
-  =========================================================================
-  Represents a Managed Instance Group resource.  An instance group is a
+  r"""Represents a Managed Instance Group resource.  An instance group is a
   collection of VM instances that you can manage as a single entity. For more
   information, read Instance groups.  For zonal Managed Instance Group, use
   the instanceGroupManagers resource.  For regional Managed Instance Group,
@@ -47722,7 +47774,7 @@ class RouterInterface(_messages.Message):
       `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
       lowercase letter, and all following characters must be a dash, lowercase
       letter, or digit, except the last character, which cannot be a dash.
-    subnetwork: The URL of the subnetwork resource that this interface belongs
+    subnetwork: The URI of the subnetwork resource that this interface belongs
       to, which must be in the same region as the Cloud Router. When you
       establish a BGP session to a VM instance using this interface, the VM
       instance must belong to the same subnetwork as the subnetwork specified
@@ -51786,11 +51838,13 @@ class Subnetwork(_messages.Message):
       PRIVATE: <no description>
       PRIVATE_RFC_1918: <no description>
       PRIVATE_SERVICE_CONNECT: <no description>
+      REGIONAL_MANAGED_PROXY: <no description>
     """
     INTERNAL_HTTPS_LOAD_BALANCER = 0
     PRIVATE = 1
     PRIVATE_RFC_1918 = 2
     PRIVATE_SERVICE_CONNECT = 3
+    REGIONAL_MANAGED_PROXY = 4
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when

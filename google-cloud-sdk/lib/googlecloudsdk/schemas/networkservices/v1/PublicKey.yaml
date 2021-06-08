@@ -1,0 +1,44 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1 PublicKey export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- id
+- value
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  id:
+    description: |-
+      The ID of the public key. The ID must be 1-64 characters long, and match
+      the regular expression a-zA-Z* which means the first character must be a
+      letter, and all following characters must be a dash, underscore, letter or
+      digit.
+    type: string
+  value:
+    description: |-
+      The base64-encoded value of the Ed25519 public key. The base64 encoding
+      can be padded (44 bytes) or unpadded (43 bytes). Representations or
+      encodings of the public key other than this will be rejected with an
+      error.
+    type: string

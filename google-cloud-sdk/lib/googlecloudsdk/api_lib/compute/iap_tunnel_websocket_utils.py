@@ -145,7 +145,7 @@ def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes):
 def _CreateWebSocketUrl(endpoint, url_query_pieces, url_override):
   """Create URL for WebSocket connection."""
   scheme = URL_SCHEME
-  use_mtls = context_aware.Config().use_client_certificate
+  use_mtls = bool(context_aware.Config())
   hostname = MTLS_URL_HOST if use_mtls else URL_HOST
   path_root = URL_PATH_ROOT
   if url_override:

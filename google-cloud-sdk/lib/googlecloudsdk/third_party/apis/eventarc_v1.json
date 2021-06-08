@@ -275,6 +275,10 @@
         "value": {
           "description": "Required. The value for the attribute.",
           "type": "string"
+        },
+        "operator": {
+          "description": "Optional. The operator used for matching the events with the value of the filter. If not specified, only events that have an exact key-value pair specified in the filter will be matched. The only allowed value is `match-path-pattern`.",
+          "type": "string"
         }
       }
     },
@@ -286,6 +290,14 @@
         "cloudRun": {
           "description": "Cloud Run fully-managed service that receives the events. The service should be running in the same project of the trigger.",
           "$ref": "CloudRun"
+        },
+        "cloudFunction": {
+          "description": "The Cloud Function resource name. Only Cloud Functions V2 is supported. Format: projects\/{project}\/locations\/{location}\/functions\/{function}",
+          "type": "string"
+        },
+        "gke": {
+          "description": "A GKE service capable of receiving events. The service should be running in the same project of the trigger.",
+          "$ref": "GKE"
         }
       }
     },
@@ -304,6 +316,33 @@
         },
         "region": {
           "description": "Required. The region the Cloud Run service is deployed in.",
+          "type": "string"
+        }
+      }
+    },
+    "GKE": {
+      "id": "GKE",
+      "description": "Represents a GKE destination.",
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "description": "Required. The name of the cluster the GKE service is running in. The cluster must be running in the same project as the trigger being created.",
+          "type": "string"
+        },
+        "location": {
+          "description": "Required. The name of the Google Compute Engine in which the cluster resides, which can either be compute zone (e.g. us-central1-a) for the zonal clusters or region (e.g. us-central1) for regional clusters.",
+          "type": "string"
+        },
+        "namespace": {
+          "description": "Required. The namespace the GKE service is running in.",
+          "type": "string"
+        },
+        "service": {
+          "description": "Required. Name of the GKE service.",
+          "type": "string"
+        },
+        "path": {
+          "description": "Optional. The relative path on the GKE service the events should be sent to. The value must conform to the definition of URI path segment (section 3.3 of RFC2396). Examples: \"\/route\", \"route\", \"route\/subroute\".",
           "type": "string"
         }
       }
@@ -349,6 +388,68 @@
         },
         "nextPageToken": {
           "description": "A page token that can be sent to ListTriggers to request the next page. If this is empty, then there are no more pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Unreachable resources, if any.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Ingress": {
+      "id": "Ingress",
+      "description": "A representation of the Ingress resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the ingress. Must be unique within the location on the project and must be in `projects\/{project}\/locations\/{location}\/ingresses\/{ingress}` format.",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. Server assigned unique identifier for the ingress. The value is a UUID4 string and guaranteed to remain unchanged until the resource is deleted.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last-modified time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "provider": {
+          "description": "Required. The name of the event provider associated with the ingress. The name identifies the Eventarc SaaS partner, who will be granted permissions to to publish events to the ingress.",
+          "type": "string"
+        },
+        "pubsubTopic": {
+          "description": "Output only. The name of the Pub\/Sub topic created and managed by Eventarc system as a transport for the event delivery. Format: `projects\/{PROJECT_ID}\/topics\/{TOPIC_NAME}`.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListIngressesResponse": {
+      "id": "ListIngressesResponse",
+      "description": "The response message for the ListIngresses method.",
+      "type": "object",
+      "properties": {
+        "ingresses": {
+          "description": "The requested ingresses, up to the number specified in `page_size`.",
+          "type": "array",
+          "items": {
+            "$ref": "Ingress"
+          }
+        },
+        "nextPageToken": {
+          "description": "A page token that can be sent to ListIngresses to request the next page. If this is empty, then there are no more pages.",
           "type": "string"
         },
         "unreachable": {
@@ -1098,6 +1199,183 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "ingresses": {
+              "methods": {
+                "get": {
+                  "id": "eventarc.projects.locations.ingresses.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ingresses/{ingressesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the ingress to get.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ingresses\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Ingress"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get a single Ingress."
+                },
+                "list": {
+                  "id": "eventarc.projects.locations.ingresses.list",
+                  "path": "v1/{+parent}/ingresses",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ingresses",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent collection to list ingresses on.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of ingresses to return on each page. Note: The service may send fewer.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The page token; provide the value from the `next_page_token` field in a previous `ListIngresses` call to retrieve the subsequent page. When paginating, all other parameters provided to `ListIngresses` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "The sorting order of the resources returned. Value should be a comma separated list of fields. The default sorting oder is ascending. To specify descending order for a field, append a ` desc` suffix; for example: `name desc, ingress_id`.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListIngressesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List ingresses."
+                },
+                "create": {
+                  "id": "eventarc.projects.locations.ingresses.create",
+                  "path": "v1/{+parent}/ingresses",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ingresses",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent collection in which to add this ingress.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "ingressId": {
+                      "description": "Required. The user-provided ID to be assigned to the ingress.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Required. If set, validate the request and preview the review, but do not actually post it.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Ingress"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create a new ingress in a particular project and location."
+                },
+                "patch": {
+                  "id": "eventarc.projects.locations.ingresses.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ingresses/{ingressesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the ingress. Must be unique within the location on the project and must be in `projects\/{project}\/locations\/{location}\/ingresses\/{ingress}` format.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ingresses\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The fields to be updated; only fields explicitly provided will be updated. If no field mask is provided, all provided fields in the request will be updated. To update all fields, provide a field mask of \"*\".",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "validateOnly": {
+                      "description": "Required. If set, validate the request and preview the review, but do not actually post it.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Ingress"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update a single ingress."
+                },
+                "delete": {
+                  "id": "eventarc.projects.locations.ingresses.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/ingresses/{ingressesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the ingress to be deleted.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/ingresses\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "validateOnly": {
+                      "description": "Required. If set, validate the request and preview the review, but do not actually post it.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete a single ingress."
                 }
               }
             }

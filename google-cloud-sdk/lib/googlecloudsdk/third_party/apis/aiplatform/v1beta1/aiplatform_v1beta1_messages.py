@@ -16248,8 +16248,8 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJobOutputConfig(_messages.Messa
       concatenation of the Model's instance and prediction schemata. The
       `errors` table contains rows for which the prediction has failed, it has
       instance columns, as per the instance schema, followed by a single
-      "errors" column, which as values has [`google.rpc.Status`](Status)
-      represented as a STRUCT, and containing only `code` and `message`.
+      "errors" column, which as values has google.rpc.Status represented as a
+      STRUCT, and containing only `code` and `message`.
     gcsDestination: The Cloud Storage location of the directory where the
       output is to be written to. In the given directory a new directory is
       created. Its name is `prediction--`, where timestamp is in YYYY-MM-
@@ -16264,8 +16264,7 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJobOutputConfig(_messages.Messa
       `errors_N.` files are created (N depends on total number of failed
       predictions). These files contain the failed instances, as per their
       schema, followed by an additional `error` field which as value has
-      [`google.rpc.Status`](Status) containing only `code` and `message`
-      fields.
+      google.rpc.Status containing only `code` and `message` fields.
     predictionsFormat: Required. The format in which Vertex AI gives the
       predictions, must be one of the Model's
       supported_output_storage_formats.
@@ -16368,7 +16367,7 @@ class GoogleCloudAiplatformV1beta1BigQueryDestination(_messages.Message):
       characters long. When only the project is specified, the Dataset and
       Table is created. When the full table reference is specified, the
       Dataset must exist and table must not exist. Accepted forms: * BigQuery
-      path. For example: `bq://projectId` or
+      path. For example: `bq://projectId` or `bq://projectId.bqDatasetId` or
       `bq://projectId.bqDatasetId.bqTableId`.
   """
 
@@ -25373,7 +25372,7 @@ class GoogleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest(_messages.Me
       example, for a machine learning model predicting user clicks on a
       website, an entity ID could be "user_123".
     featureSelector: Required. Selector choosing Features of the target
-      EntityType.
+      EntityType. Feature IDs will be deduplicated.
   """
 
   entityIds = _messages.StringField(1, repeated=True)

@@ -123,7 +123,6 @@ def AddKeepaliveIntervalArg(parser):
       '--keepalive-interval',
       type=arg_parsers.Duration(
           default_unit='s', lower_bound='20s', upper_bound='60s'),
-      hidden=True,
       help='The interval between BGP keepalive messages that are sent to the '
       'peer. If set, this value must be between 20 and 60 seconds. The default '
       'is 20 seconds. See $ gcloud topic datetimes for information on duration '
@@ -290,7 +289,6 @@ def AddBgpPeerArgs(parser,
       enabled_display_help += ' Enabled by default.'
     parser.add_argument(
         '--enabled',
-        hidden=True,
         action=arg_parsers.StoreTrueFalseAction,
         help=enabled_display_help)
   if support_enable_ipv6:

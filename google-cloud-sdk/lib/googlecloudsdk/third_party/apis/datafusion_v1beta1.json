@@ -438,6 +438,10 @@
         "enableRbac": {
           "description": "Option to enable granular role-based access control.",
           "type": "boolean"
+        },
+        "cryptoKeyConfig": {
+          "description": "The crypto key configuration. This field is used by the Customer-Managed Encryption Keys (CMEK) feature.",
+          "$ref": "CryptoKeyConfig"
         }
       }
     },
@@ -474,6 +478,17 @@
             "CDC",
             "HEALTHCARE"
           ]
+        }
+      }
+    },
+    "CryptoKeyConfig": {
+      "id": "CryptoKeyConfig",
+      "description": "The crypto key configuration. This field is used by the Customer-managed encryption keys (CMEK) feature.",
+      "type": "object",
+      "properties": {
+        "keyReference": {
+          "description": "The name of the key which is used to encrypt\/decrypt customer data. For key in Cloud KMS, the key should be in the format of `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
+          "type": "string"
         }
       }
     },
@@ -531,74 +546,25 @@
         "name": {
           "description": "Name of the given namespace.",
           "type": "string"
+        },
+        "iamPolicy": {
+          "description": "IAM policy associated with this namespace.",
+          "$ref": "IAMPolicy"
         }
       }
     },
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "The response message for Locations.ListLocations.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A list of locations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "A resource that represents Google Cloud Platform location.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
-          "type": "string"
-        },
-        "locationId": {
-          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
-          "type": "string"
-        },
-        "labels": {
-          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given location.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "SetIamPolicyRequest": {
-      "id": "SetIamPolicyRequest",
-      "description": "Request message for `SetIamPolicy` method.",
+    "IAMPolicy": {
+      "id": "IAMPolicy",
+      "description": "IAMPolicy encapsulates the IAM policy name, definition and status of policy fetching.",
       "type": "object",
       "properties": {
         "policy": {
-          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
+          "description": "Policy definition if IAM policy fetching is successful, otherwise empty.",
           "$ref": "Policy"
         },
-        "updateMask": {
-          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only the fields in the mask will be modified. If no mask is provided, the following default mask is used: `paths: \"bindings, etag\"`",
-          "type": "string",
-          "format": "google-fieldmask"
+        "status": {
+          "description": "Status of iam policy fetching.",
+          "$ref": "Status"
         }
       }
     },
@@ -723,6 +689,74 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "ListLocationsResponse": {
+      "id": "ListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Location"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "Location": {
+      "id": "Location",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "SetIamPolicyRequest": {
+      "id": "SetIamPolicyRequest",
+      "description": "Request message for `SetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
+          "$ref": "Policy"
+        },
+        "updateMask": {
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only the fields in the mask will be modified. If no mask is provided, the following default mask is used: `paths: \"bindings, etag\"`",
+          "type": "string",
+          "format": "google-fieldmask"
         }
       }
     },
@@ -1403,6 +1437,21 @@
                           "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
                           "location": "query",
                           "type": "string"
+                        },
+                        "view": {
+                          "description": "By default, only basic information about a namespace is returned (e.g. name). When `NAMESPACE_VIEW_FULL` is specified, additional information associated with a namespace gets returned (e.g. IAM policy set on the namespace)",
+                          "location": "query",
+                          "type": "string",
+                          "enumDescriptions": [
+                            "Default\/unset value, which will use BASIC view.",
+                            "Show the most basic metadata of a namespace",
+                            "Returns all metadata of a namespace"
+                          ],
+                          "enum": [
+                            "NAMESPACE_VIEW_UNSPECIFIED",
+                            "NAMESPACE_VIEW_BASIC",
+                            "NAMESPACE_VIEW_FULL"
+                          ]
                         }
                       },
                       "parameterOrder": [

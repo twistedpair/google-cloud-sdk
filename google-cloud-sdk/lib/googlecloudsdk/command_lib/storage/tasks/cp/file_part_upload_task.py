@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 
 import collections
 import contextlib
+import functools
 import os
 import threading
 
@@ -35,13 +36,14 @@ from googlecloudsdk.command_lib.storage import file_part
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
+from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
-from googlecloudsdk.core.util import scaled_integer
 
 
 UploadedComponent = collections.namedtuple(
@@ -69,14 +71,6 @@ class FilePartUploadTask(file_part_task.FilePartTask):
     _total_components (int?): If a multipart operation, indicates the total
       number of components.
   """
-
-  def _should_do_resumable_upload(self, api):
-    resumable_threshold = scaled_integer.ParseInteger(
-        properties.VALUES.storage.resumable_threshold.Get())
-    return (
-        self._length >= resumable_threshold and
-        cloud_api.Capability.RESUMABLE_UPLOAD in api.capabilities
-    )
 
   def _get_progress_callback(self, task_status_queue):
     if task_status_queue:
@@ -145,21 +139,56 @@ class FilePartUploadTask(file_part_task.FilePartTask):
 
     with self._progress_reporting_stream(digesters,
                                          task_status_queue) as upload_stream:
-      if self._should_do_resumable_upload(api):
+      upload_strategy = upload_util.get_upload_strategy(api, self._length)
+      if upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
+        tracker_file_path = tracker_file_util.get_tracker_file_path(
+            self._destination_resource.storage_url,
+            tracker_file_util.TrackerFileType.UPLOAD,
+            component_number=self._component_number)
+
+        # TODO(b/160998052): Validate and use keys from tracker files.
+        encryption_key_sha256 = None
+
+        complete = False
+        tracker_callback = functools.partial(
+            tracker_file_util.write_resumable_upload_tracker_file,
+            tracker_file_path, complete, encryption_key_sha256)
+
+        tracker_data = tracker_file_util.read_resumable_upload_tracker_file(
+            tracker_file_path)
+        if tracker_data is None:
+          serialization_data = None
+        else:
+          serialization_data = tracker_data.serialization_data
+
         destination_resource = api.upload_object(
             upload_stream,
             self._destination_resource,
             request_config=request_config,
-            upload_strategy=cloud_api.UploadStrategy.RESUMABLE)
+            serialization_data=serialization_data,
+            tracker_callback=tracker_callback,
+            upload_strategy=upload_strategy)
+
+        tracker_data = tracker_file_util.read_resumable_upload_tracker_file(
+            tracker_file_path)
+        if tracker_data is not None:
+          if self._component_number is not None:
+            tracker_file_util.write_resumable_upload_tracker_file(
+                tracker_file_path,
+                complete=True,
+                encryption_key_sha256=tracker_data.encryption_key_sha256,
+                serialization_data=tracker_data.serialization_data)
+          else:
+            tracker_file_util.delete_tracker_file(tracker_file_path)
       else:
         destination_resource = api.upload_object(
             upload_stream,
             self._destination_resource,
             request_config=request_config,
-            upload_strategy=cloud_api.UploadStrategy.SIMPLE)
+            upload_strategy=upload_strategy)
 
-      self._validate_uploaded_object(
-          digesters, destination_resource, task_status_queue)
+      upload_util.validate_uploaded_object(digesters, destination_resource,
+                                           task_status_queue)
 
     if self._component_number is not None:
       return task.Output(

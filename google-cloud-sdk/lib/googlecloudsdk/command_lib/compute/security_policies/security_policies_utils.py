@@ -73,6 +73,15 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
                 .RuleVisibilityValueValuesEnum(
                     parsed_security_policy['adaptiveProtectionConfig']
                     ['layer7DdosDefenseConfig']['ruleVisibility']))))
+  if 'advancedOptionsConfig' in parsed_security_policy:
+    security_policy.advancedOptionsConfig = (
+        messages.SecurityPolicyAdvancedOptionsConfig(
+            jsonParsing=messages.SecurityPolicyAdvancedOptionsConfig
+            .JsonParsingValueValuesEnum(
+                parsed_security_policy['advancedOptionsConfig']['jsonParsing']),
+            logLevel=messages.SecurityPolicyAdvancedOptionsConfig
+            .LogLevelValueValuesEnum(
+                parsed_security_policy['advancedOptionsConfig']['logLevel'])))
 
   rules = []
   for rule in parsed_security_policy['rules']:
@@ -168,9 +177,8 @@ def CreateAdaptiveProtectionConfig(client, args,
 
   messages = client.messages
   adaptive_protection_config = (
-      existing_adaptive_protection_config
-      if existing_adaptive_protection_config is not None else
-      messages.SecurityPolicyAdaptiveProtectionConfig())
+      existing_adaptive_protection_config if existing_adaptive_protection_config
+      is not None else messages.SecurityPolicyAdaptiveProtectionConfig())
 
   if (args.IsSpecified('enable_layer7_ddos_defense') or
       args.IsSpecified('layer7_ddos_defense_rule_visibility')):
@@ -190,6 +198,27 @@ def CreateAdaptiveProtectionConfig(client, args,
         layer7_ddos_defense_config)
 
   return adaptive_protection_config
+
+
+def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config):
+  """Returns a SecurityPolicyAdvancedOptionsConfig message."""
+
+  messages = client.messages
+  advanced_options_config = (
+      existing_advanced_options_config if existing_advanced_options_config
+      is not None else messages.SecurityPolicyAdvancedOptionsConfig())
+
+  if args.IsSpecified('json_parsing'):
+    advanced_options_config.jsonParsing = (
+        messages.SecurityPolicyAdvancedOptionsConfig.JsonParsingValueValuesEnum(
+            args.json_parsing))
+
+  if args.IsSpecified('log_level'):
+    advanced_options_config.logLevel = (
+        messages.SecurityPolicyAdvancedOptionsConfig.LogLevelValueValuesEnum(
+            args.log_level))
+
+  return advanced_options_config
 
 
 def CreateRateLimitOptions(client, args):

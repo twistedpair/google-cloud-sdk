@@ -313,6 +313,39 @@ class BuildType(_messages.Message):
   signature = _messages.MessageField('BuildSignature', 2)
 
 
+class CisBenchmark(_messages.Message):
+  r"""A compliance check that is a CIS benchmark.
+
+  Enums:
+    SeverityValueValuesEnum: The severity level of this CIS benchmark check.
+
+  Fields:
+    profileLevel: The profile level of this CIS benchmark check.
+    severity: The severity level of this CIS benchmark check.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity level of this CIS benchmark check.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unknown Impact
+      MINIMAL: Minimal Impact
+      LOW: Low Impact
+      MEDIUM: Medium Impact
+      HIGH: High Impact
+      CRITICAL: Critical Impact
+    """
+    SEVERITY_UNSPECIFIED = 0
+    MINIMAL = 1
+    LOW = 2
+    MEDIUM = 3
+    HIGH = 4
+    CRITICAL = 5
+
+  profileLevel = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 2)
+
+
 class Command(_messages.Message):
   r"""Command describes a step performed as part of the build pipeline.
 
@@ -335,6 +368,60 @@ class Command(_messages.Message):
   id = _messages.StringField(4)
   name = _messages.StringField(5)
   waitFor = _messages.StringField(6, repeated=True)
+
+
+class ComplianceNote(_messages.Message):
+  r"""ComplianceNote encapsulates all information about a specific compliance
+  check.
+
+  Fields:
+    cisBenchmark: Right now we only have one compliance type, but we may add
+      additional types in the future.
+    description: A description about this compliance check.
+    rationale: A rationale for the existence of this compliance check.
+    remediation: A description of remediation steps if the compliance check
+      fails.
+    scanInstructions: Serialized scan instructions with a predefined format.
+    title: The title that identifies this compliance check.
+    version: The OS and config versions the benchmark applies to.
+  """
+
+  cisBenchmark = _messages.MessageField('CisBenchmark', 1)
+  description = _messages.StringField(2)
+  rationale = _messages.StringField(3)
+  remediation = _messages.StringField(4)
+  scanInstructions = _messages.BytesField(5)
+  title = _messages.StringField(6)
+  version = _messages.MessageField('ComplianceVersion', 7, repeated=True)
+
+
+class ComplianceOccurrence(_messages.Message):
+  r"""An indication that the compliance checks in the associated
+  ComplianceNote were not satisfied for particular resources or a specified
+  reason.
+
+  Fields:
+    nonComplianceReason: The reason for non compliance of these files.
+    nonCompliantFiles: A list of files which are violating compliance checks.
+  """
+
+  nonComplianceReason = _messages.StringField(1)
+  nonCompliantFiles = _messages.MessageField('NonCompliantFile', 2, repeated=True)
+
+
+class ComplianceVersion(_messages.Message):
+  r"""Describes the CIS benchmark version that is applicable to a given OS and
+  os version.
+
+  Fields:
+    cpeUri: The CPE URI (https://cpe.mitre.org/specification/) this benchmark
+      is applicable to.
+    version: The version of the benchmark. This is set to the version of the
+      OS-specific CIS document the benchmark is defined in.
+  """
+
+  cpeUri = _messages.StringField(1)
+  version = _messages.StringField(2)
 
 
 class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):
@@ -584,6 +671,8 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
       ATTESTATION_AUTHORITY: This represents a logical "role" that can attest
         to artifacts.
       UPGRADE: This represents an available software upgrade.
+      COMPLIANCE: This represents a compliance check that can be applied to a
+        resource.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -594,6 +683,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
     DISCOVERY = 6
     ATTESTATION_AUTHORITY = 7
     UPGRADE = 8
+    COMPLIANCE = 9
 
   filter = _messages.StringField(1)
   kind = _messages.EnumField('KindValueValuesEnum', 2)
@@ -1068,6 +1158,8 @@ class Discovery(_messages.Message):
       ATTESTATION_AUTHORITY: This represents a logical "role" that can attest
         to artifacts.
       UPGRADE: This represents an available software upgrade.
+      COMPLIANCE: This represents a compliance check that can be applied to a
+        resource.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1078,6 +1170,7 @@ class Discovery(_messages.Message):
     DISCOVERY = 6
     ATTESTATION_AUTHORITY = 7
     UPGRADE = 8
+    COMPLIANCE = 9
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -1566,6 +1659,23 @@ class Location(_messages.Message):
   version = _messages.MessageField('Version', 3)
 
 
+class NonCompliantFile(_messages.Message):
+  r"""Details about files that caused a compliance check to fail.
+
+  Fields:
+    displayCommand: Command to display the non-compliant files.
+    path: display_command is a single command that can be used to display a
+      list of non compliant files. When there is no such command, we can also
+      iterate a list of non compliant file using 'path'. Empty if
+      `display_command` is set.
+    reason: Explains why a file is non compliant for a CIS check.
+  """
+
+  displayCommand = _messages.StringField(1)
+  path = _messages.StringField(2)
+  reason = _messages.StringField(3)
+
+
 class Note(_messages.Message):
   r"""Provides a detailed description of a `Note`.
 
@@ -1577,6 +1687,7 @@ class Note(_messages.Message):
     attestationAuthority: A note describing an attestation role.
     baseImage: A note describing a base image.
     buildType: Build provenance type for a verifiable build.
+    compliance: A note describing a compliance check.
     createTime: Output only. The time this note was created. This field can be
       used as a filter in list requests.
     deployable: A note describing something that can be deployed.
@@ -1615,6 +1726,8 @@ class Note(_messages.Message):
       ATTESTATION_AUTHORITY: This represents a logical "role" that can attest
         to artifacts.
       UPGRADE: This represents an available software upgrade.
+      COMPLIANCE: This represents a compliance check that can be applied to a
+        resource.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1625,23 +1738,25 @@ class Note(_messages.Message):
     DISCOVERY = 6
     ATTESTATION_AUTHORITY = 7
     UPGRADE = 8
+    COMPLIANCE = 9
 
   attestationAuthority = _messages.MessageField('AttestationAuthority', 1)
   baseImage = _messages.MessageField('Basis', 2)
   buildType = _messages.MessageField('BuildType', 3)
-  createTime = _messages.StringField(4)
-  deployable = _messages.MessageField('Deployable', 5)
-  discovery = _messages.MessageField('Discovery', 6)
-  expirationTime = _messages.StringField(7)
-  kind = _messages.EnumField('KindValueValuesEnum', 8)
-  longDescription = _messages.StringField(9)
-  name = _messages.StringField(10)
-  package = _messages.MessageField('Package', 11)
-  relatedUrl = _messages.MessageField('RelatedUrl', 12, repeated=True)
-  shortDescription = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  upgrade = _messages.MessageField('UpgradeNote', 15)
-  vulnerabilityType = _messages.MessageField('VulnerabilityType', 16)
+  compliance = _messages.MessageField('ComplianceNote', 4)
+  createTime = _messages.StringField(5)
+  deployable = _messages.MessageField('Deployable', 6)
+  discovery = _messages.MessageField('Discovery', 7)
+  expirationTime = _messages.StringField(8)
+  kind = _messages.EnumField('KindValueValuesEnum', 9)
+  longDescription = _messages.StringField(10)
+  name = _messages.StringField(11)
+  package = _messages.MessageField('Package', 12)
+  relatedUrl = _messages.MessageField('RelatedUrl', 13, repeated=True)
+  shortDescription = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  upgrade = _messages.MessageField('UpgradeNote', 16)
+  vulnerabilityType = _messages.MessageField('VulnerabilityType', 17)
 
 
 class Occurrence(_messages.Message):
@@ -1656,6 +1771,7 @@ class Occurrence(_messages.Message):
   Fields:
     attestation: Describes an attestation of an artifact.
     buildDetails: Build details for a verifiable build.
+    compliance: Describes whether or not a resource passes compliance checks.
     createTime: Output only. The time this `Occurrence` was created.
     deployment: Describes the deployment of an artifact on a runtime.
     derivedImage: Describes how this resource derives from the basis in the
@@ -1701,6 +1817,8 @@ class Occurrence(_messages.Message):
       ATTESTATION_AUTHORITY: This represents a logical "role" that can attest
         to artifacts.
       UPGRADE: This represents an available software upgrade.
+      COMPLIANCE: This represents a compliance check that can be applied to a
+        resource.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1711,23 +1829,25 @@ class Occurrence(_messages.Message):
     DISCOVERY = 6
     ATTESTATION_AUTHORITY = 7
     UPGRADE = 8
+    COMPLIANCE = 9
 
   attestation = _messages.MessageField('Attestation', 1)
   buildDetails = _messages.MessageField('BuildDetails', 2)
-  createTime = _messages.StringField(3)
-  deployment = _messages.MessageField('Deployment', 4)
-  derivedImage = _messages.MessageField('Derived', 5)
-  discovered = _messages.MessageField('Discovered', 6)
-  installation = _messages.MessageField('Installation', 7)
-  kind = _messages.EnumField('KindValueValuesEnum', 8)
-  name = _messages.StringField(9)
-  noteName = _messages.StringField(10)
-  remediation = _messages.StringField(11)
-  resource = _messages.MessageField('Resource', 12)
-  resourceUrl = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  upgrade = _messages.MessageField('UpgradeOccurrence', 15)
-  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 16)
+  compliance = _messages.MessageField('ComplianceOccurrence', 3)
+  createTime = _messages.StringField(4)
+  deployment = _messages.MessageField('Deployment', 5)
+  derivedImage = _messages.MessageField('Derived', 6)
+  discovered = _messages.MessageField('Discovered', 7)
+  installation = _messages.MessageField('Installation', 8)
+  kind = _messages.EnumField('KindValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  noteName = _messages.StringField(11)
+  remediation = _messages.StringField(12)
+  resource = _messages.MessageField('Resource', 13)
+  resourceUrl = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  upgrade = _messages.MessageField('UpgradeOccurrence', 16)
+  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 17)
 
 
 class Operation(_messages.Message):

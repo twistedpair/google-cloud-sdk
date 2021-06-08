@@ -1667,7 +1667,7 @@ class GoogleCloudDatacatalogV1PhysicalSchemaAvroSchema(_messages.Message):
   r"""Schema in Avro JSON format.
 
   Fields:
-    text: Required. JSON source of the Avro schema.
+    text: JSON source of the Avro schema.
   """
 
   text = _messages.StringField(1)
@@ -1689,7 +1689,7 @@ class GoogleCloudDatacatalogV1PhysicalSchemaProtobufSchema(_messages.Message):
   r"""Schema in protocol buffer format.
 
   Fields:
-    text: Required. Protocol buffer source of the schema.
+    text: Protocol buffer source of the schema.
   """
 
   text = _messages.StringField(1)
@@ -1699,7 +1699,7 @@ class GoogleCloudDatacatalogV1PhysicalSchemaThriftSchema(_messages.Message):
   r"""Schema in Thrift format.
 
   Fields:
-    text: Required. Thrift IDL source of the schema.
+    text: Thrift IDL source of the schema.
   """
 
   text = _messages.StringField(1)

@@ -30,45 +30,6 @@ class BackfillAllStrategy(_messages.Message):
   oracleExcludedObjects = _messages.MessageField('OracleRdbms', 2)
 
 
-class BackfillJob(_messages.Message):
-  r"""Represents a backfill job on a specific stream object.
-
-  Enums:
-    StateValueValuesEnum: Backfill Job state.
-
-  Fields:
-    error: Output only. Error which caused the backfill job to fail.
-    lastEndTime: Output only. Backfill job's end time.
-    lastStartTime: Output only. Backfill job's start time.
-    state: Backfill Job state.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Backfill Job state.
-
-    Values:
-      STATE_UNSPECIFIED: Default value.
-      NOT_SCHEDULED: Backfill job was never scheduled for the stream object.
-      QUEUED: Backfill job created and queued but not yet running.
-      ACTIVE: Backfill job is running.
-      STOPPED: Backfill job stopped (next job run will start from beginning).
-      FAILED: Backfill job failed (due to an error).
-      COMPLETED: Backfill completed successfully.
-    """
-    STATE_UNSPECIFIED = 0
-    NOT_SCHEDULED = 1
-    QUEUED = 2
-    ACTIVE = 3
-    STOPPED = 4
-    FAILED = 5
-    COMPLETED = 6
-
-  error = _messages.MessageField('Error', 1)
-  lastEndTime = _messages.StringField(2)
-  lastStartTime = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-
-
 class BackfillNoneStrategy(_messages.Message):
   r"""Backfill strategy to disable automatic backfill for the Stream's
   objects.
@@ -301,8 +262,6 @@ class DatastreamProjectsLocationsListRequest(_messages.Message):
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like "displayName=tokyo", and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
-    includeUnrevealedLocations: If true, the returned list will include
-      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
       selects a default.
@@ -311,10 +270,9 @@ class DatastreamProjectsLocationsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class DatastreamProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -635,68 +593,6 @@ class DatastreamProjectsLocationsStreamsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class DatastreamProjectsLocationsStreamsObjectsGetRequest(_messages.Message):
-  r"""A DatastreamProjectsLocationsStreamsObjectsGetRequest object.
-
-  Fields:
-    name: Required. The name of the stream object resource to get.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class DatastreamProjectsLocationsStreamsObjectsListRequest(_messages.Message):
-  r"""A DatastreamProjectsLocationsStreamsObjectsListRequest object.
-
-  Fields:
-    filter: Filter request.
-    orderBy: Order by fields for the result.
-    pageSize: Maximum number of objects to return. Default is 50. The maximum
-      value is 1000; values above 1000 will be coerced to 1000.
-    pageToken: Page token received from a previous `ListStreamObjectsRequest`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListStreamObjectsRequest` must match the
-      call that provided the page token.
-    parent: Required. The parent stream that owns the collection of objects.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class DatastreamProjectsLocationsStreamsObjectsPatchRequest(_messages.Message):
-  r"""A DatastreamProjectsLocationsStreamsObjectsPatchRequest object.
-
-  Fields:
-    name: Output only. The object's name.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    streamObject: A StreamObject resource to be passed as the request body.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the stream resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  streamObject = _messages.MessageField('StreamObject', 3)
-  updateMask = _messages.StringField(4)
 
 
 class DatastreamProjectsLocationsStreamsPatchRequest(_messages.Message):
@@ -1042,21 +938,6 @@ class ListRoutesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   routes = _messages.MessageField('Route', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListStreamObjectsResponse(_messages.Message):
-  r"""Response containing the objects for a stream.
-
-  Fields:
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page.
-    streamObjects: List of stream objects.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  streamObjects = _messages.MessageField('StreamObject', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -1886,56 +1767,6 @@ class Stream(_messages.Message):
   sourceConfig = _messages.MessageField('SourceConfig', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
   updateTime = _messages.StringField(11)
-
-
-class StreamObject(_messages.Message):
-  r"""A specific stream object (e.g a specific DB table).
-
-  Messages:
-    LabelsValue: Labels.
-
-  Fields:
-    backfillJob: The latest backfill job that was initiated for the stream
-      object.
-    createTime: Output only. The creation time of the object.
-    displayName: Required. Display name.
-    errors: Output only. Active errors on the object.
-    labels: Labels.
-    name: Output only. The object's name.
-    updateTime: Output only. The last update time of the object.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  backfillJob = _messages.MessageField('BackfillJob', 1)
-  createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  errors = _messages.MessageField('Error', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
 
 
 class Validation(_messages.Message):

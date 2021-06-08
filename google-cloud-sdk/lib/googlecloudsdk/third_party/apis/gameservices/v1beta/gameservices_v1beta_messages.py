@@ -1612,11 +1612,11 @@ class KubernetesClusterState(_messages.Message):
         of Kubernetes is not recommended or supported by the version of
         Agones.
       AGONES_VERSION_UNRECOGNIZED: The installed version of Agones is not
-        recognized, where the Agones controller's image name does not have
-        version string as {major}.{minor}(.{patch}).
+        recognized because the Agones controller's image name does not have a
+        version string reported as {major}.{minor}(.{patch}).
       KUBERNETES_VERSION_UNRECOGNIZED: The server version of Kubernetes
-        cluster is not recognized, where the API server didn't return parsable
-        version info on path/version.
+        cluster is not recognized because the API server didn't return
+        parsable version info on path/version.
       VERSION_VERIFICATION_FAILED: Failed to read or verify the version of
         Agones or Kubernetes. See version_installed_error_message for details.
       AGONES_NOT_INSTALLED: Agones is not installed.

@@ -41,15 +41,16 @@ _PARALLEL_UPLOAD_TEMPORARY_NAMESPACE = (
     'see_gcloud_storage_cp_help_for_details/')
 
 
-def _get_temporary_component_name(source_resource, component_id):
+def _get_temporary_component_name(source_resource, random_prefix, component_id):
   """Gets a temporary object name for a component of source_resource."""
   source_name = source_resource.storage_url.object_name
   salted_name = _PARALLEL_UPLOAD_STATIC_SALT + source_name
 
   sha1_hash = hashlib.sha1(salted_name.encode('utf-8'))
 
-  return '{}{}_{}'.format(_PARALLEL_UPLOAD_TEMPORARY_NAMESPACE,
-                          sha1_hash.hexdigest(), str(component_id))
+  return '{}{}_{}_{}'.format(_PARALLEL_UPLOAD_TEMPORARY_NAMESPACE,
+                             random_prefix, sha1_hash.hexdigest(),
+                             str(component_id))
 
 
 def create_file_if_needed(source_resource, destination_resource):
@@ -72,13 +73,15 @@ def create_file_if_needed(source_resource, destination_resource):
 
 
 def get_temporary_component_resource(source_resource, destination_resource,
-                                     component_id):
+                                     random_prefix, component_id):
   """Gets a temporary component destination resource for a composite upload.
 
   Args:
     source_resource (resource_reference.FileObjectResource): The upload source.
     destination_resource (resource_reference.ObjectResource|UnknownResource):
       The upload destination.
+    random_prefix (str): Added to temporary component names to avoid collisions
+      between different instances of the CLI uploading to the same destination.
     component_id (int): An id that's not shared by any other component in this
       transfer.
 
@@ -87,6 +90,7 @@ def get_temporary_component_resource(source_resource, destination_resource,
     destination.
   """
   component_object_name = _get_temporary_component_name(source_resource,
+                                                        random_prefix,
                                                         component_id)
 
   destination_url = destination_resource.storage_url

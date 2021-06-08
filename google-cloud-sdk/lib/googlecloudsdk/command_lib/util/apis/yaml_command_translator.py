@@ -374,6 +374,10 @@ class CommandBuilder(object):
   def _add_condition(self):
     return self.spec.iam and self.spec.iam.enable_condition
 
+  @property
+  def _hide_special_member_types(self):
+    return self.spec.iam and self.spec.iam.hide_special_member_types
+
   def _GenerateGetIamPolicyCommand(self):
     """Generates a get-iam-policy command.
 
@@ -514,7 +518,8 @@ class CommandBuilder(object):
         iam_util.AddArgsForAddIamPolicyBinding(
             parser,
             role_completer=self._GenerateDeclarativeIamRolesCompleter(),
-            add_condition=self._add_condition)
+            add_condition=self._add_condition,
+            hide_special_member_types=self._hide_special_member_types)
         self._CommonArgs(parser)
         base.URI_FLAG.RemoveFromParser(parser)
 
@@ -576,7 +581,8 @@ class CommandBuilder(object):
         iam_util.AddArgsForRemoveIamPolicyBinding(
             parser,
             role_completer=self._GenerateDeclarativeIamRolesCompleter(),
-            add_condition=self._add_condition)
+            add_condition=self._add_condition,
+            hide_special_member_types=self._hide_special_member_types)
         self._CommonArgs(parser)
         base.URI_FLAG.RemoveFromParser(parser)
 

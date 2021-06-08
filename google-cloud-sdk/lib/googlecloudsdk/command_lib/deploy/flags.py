@@ -34,8 +34,8 @@ def AddGcsSourceStagingDirFlag(parser, hidden=False):
       hidden=hidden,
       help='A directory in Google Cloud Storage to copy the source used for '
       'staging the build. If the specified bucket does not exist, Cloud '
-      'Build will create one. If you don\'t set this field, '
-      '```gs://[PROJECT_ID]_cloudbuild/source``` is used.')
+      'Deploy will create one. If you don\'t set this field, '
+      '```gs://[PROJECT_ID]_clouddeploy/source``` is used.')
 
 
 def AddIgnoreFileFlag(parser, hidden=False):
@@ -102,7 +102,7 @@ def AddConfigFile(parser, hidden=False):
       '--file',
       hidden=hidden,
       required=True,
-      help='Path to yaml file containing Deliver Pipeline(s), Target(s) declarative definitions.',
+      help='Path to yaml file containing Delivery Pipeline(s), Target(s) declarative definitions.',
   )
 
 
@@ -131,5 +131,13 @@ def AddForce(parser, help_text, hidden=False):
       '--force',
       hidden=hidden,
       action='store_true',
+      help=help_text,
+  )
+
+
+def AddDescription(parser, help_text, name='--description'):
+  """Adds description related flag."""
+  parser.add_argument(
+      name,
       help=help_text,
   )

@@ -1179,6 +1179,25 @@ class ExternalDataConfiguration(_messages.Message):
     connectionId: [Optional, Trusted Tester] Connection for external data
       source.
     csvOptions: Additional properties to set if sourceFormat is set to CSV.
+    decimalTargetTypes: [Optional] Defines the list of possible SQL data types
+      to which the source decimal values are converted. This list and the
+      precision and the scale parameters of the decimal field determine the
+      target type. In the order of NUMERIC, BIGNUMERIC, and STRING, a type is
+      picked if it is in the specified list and if it supports the precision
+      and the scale. STRING supports all precision and scale values. If none
+      of the listed types supports the precision and the scale, the type
+      supporting the widest range in the specified list is picked, and if a
+      value exceeds the supported range when reading the data, an error will
+      be thrown. Example: Suppose the value of this field is ["NUMERIC",
+      "BIGNUMERIC"]. If (precision,scale) is: (38,9) -> NUMERIC; (39,9) ->
+      BIGNUMERIC (NUMERIC cannot hold 30 integer digits); (38,10) ->
+      BIGNUMERIC (NUMERIC cannot hold 10 fractional digits); (76,38) ->
+      BIGNUMERIC; (77,38) -> BIGNUMERIC (error if value exeeds supported
+      range). This field cannot contain duplicate types. The order of the
+      types in this field is ignored. For example, ["BIGNUMERIC", "NUMERIC"]
+      is the same as ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes
+      precedence over BIGNUMERIC. Defaults to ["NUMERIC", "STRING"] for ORC
+      and ["NUMERIC"] for the other file formats.
     googleSheetsOptions: [Optional] Additional options if sourceFormat is set
       to GOOGLE_SHEETS.
     hivePartitioningOptions: [Optional] Options to configure hive partitioning
@@ -1223,14 +1242,15 @@ class ExternalDataConfiguration(_messages.Message):
   compression = _messages.StringField(3)
   connectionId = _messages.StringField(4)
   csvOptions = _messages.MessageField('CsvOptions', 5)
-  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 6)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 7)
-  ignoreUnknownValues = _messages.BooleanField(8)
-  maxBadRecords = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  parquetOptions = _messages.MessageField('ParquetOptions', 10)
-  schema = _messages.MessageField('TableSchema', 11)
-  sourceFormat = _messages.StringField(12)
-  sourceUris = _messages.StringField(13, repeated=True)
+  decimalTargetTypes = _messages.StringField(6, repeated=True)
+  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 7)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 8)
+  ignoreUnknownValues = _messages.BooleanField(9)
+  maxBadRecords = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  parquetOptions = _messages.MessageField('ParquetOptions', 11)
+  schema = _messages.MessageField('TableSchema', 12)
+  sourceFormat = _messages.StringField(13)
+  sourceUris = _messages.StringField(14, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):
@@ -1533,26 +1553,25 @@ class JobConfigurationLoad(_messages.Message):
       returned in the job result. The default value is CREATE_IF_NEEDED.
       Creation, truncation and append actions occur as one atomic update upon
       job completion.
-    decimalTargetTypes: Defines the list of possible SQL data types to which
-      the source decimal values are converted. This list and the precision and
-      the scale parameters of the decimal field determine the target type. In
-      the order of NUMERIC, BIGNUMERIC ([Preview](/products/#product-launch-
-      stages)), and STRING, a type is picked if it is in the specified list
-      and if it supports the precision and the scale. STRING supports all
-      precision and scale values. If none of the listed types supports the
-      precision and the scale, the type supporting the widest range in the
-      specified list is picked, and if a value exceeds the supported range
-      when reading the data, an error will be thrown. Example: Suppose the
-      value of this field is ["NUMERIC", "BIGNUMERIC"]. If (precision,scale)
-      is: * (38,9) -> NUMERIC; * (39,9) -> BIGNUMERIC (NUMERIC cannot hold 30
-      integer digits); * (38,10) -> BIGNUMERIC (NUMERIC cannot hold 10
-      fractional digits); * (76,38) -> BIGNUMERIC; * (77,38) -> BIGNUMERIC
-      (error if value exeeds supported range). This field cannot contain
-      duplicate types. The order of the types in this field is ignored. For
-      example, ["BIGNUMERIC", "NUMERIC"] is the same as ["NUMERIC",
-      "BIGNUMERIC"] and NUMERIC always takes precedence over BIGNUMERIC.
-      Defaults to ["NUMERIC", "STRING"] for ORC and ["NUMERIC"] for the other
-      file formats.
+    decimalTargetTypes: [Optional] Defines the list of possible SQL data types
+      to which the source decimal values are converted. This list and the
+      precision and the scale parameters of the decimal field determine the
+      target type. In the order of NUMERIC, BIGNUMERIC, and STRING, a type is
+      picked if it is in the specified list and if it supports the precision
+      and the scale. STRING supports all precision and scale values. If none
+      of the listed types supports the precision and the scale, the type
+      supporting the widest range in the specified list is picked, and if a
+      value exceeds the supported range when reading the data, an error will
+      be thrown. Example: Suppose the value of this field is ["NUMERIC",
+      "BIGNUMERIC"]. If (precision,scale) is: (38,9) -> NUMERIC; (39,9) ->
+      BIGNUMERIC (NUMERIC cannot hold 30 integer digits); (38,10) ->
+      BIGNUMERIC (NUMERIC cannot hold 10 fractional digits); (76,38) ->
+      BIGNUMERIC; (77,38) -> BIGNUMERIC (error if value exeeds supported
+      range). This field cannot contain duplicate types. The order of the
+      types in this field is ignored. For example, ["BIGNUMERIC", "NUMERIC"]
+      is the same as ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes
+      precedence over BIGNUMERIC. Defaults to ["NUMERIC", "STRING"] for ORC
+      and ["NUMERIC"] for the other file formats.
     destinationEncryptionConfiguration: Custom encryption configuration (e.g.,
       Cloud KMS keys).
     destinationTable: [Required] The destination table to load the data into.
@@ -1998,8 +2017,8 @@ class JobStatistics(_messages.Message):
     totalBytesProcessed: [Output-only] [Deprecated] Use the bytes processed in
       the query statistics instead.
     totalSlotMs: [Output-only] Slot-milliseconds for the job.
-    transactionInfoTemplate: [Output-only] [Alpha] Information of the multi-
-      statement transaction if this job is part of one.
+    transactionInfo: [Output-only] [Alpha] Information of the multi-statement
+      transaction if this job is part of one.
   """
 
   class ReservationUsageValueListEntry(_messages.Message):
@@ -2032,7 +2051,7 @@ class JobStatistics(_messages.Message):
   startTime = _messages.IntegerField(15)
   totalBytesProcessed = _messages.IntegerField(16)
   totalSlotMs = _messages.IntegerField(17)
-  transactionInfoTemplate = _messages.MessageField('TransactionInfo', 18)
+  transactionInfo = _messages.MessageField('TransactionInfo', 18)
 
 
 class JobStatistics2(_messages.Message):

@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
@@ -400,10 +401,127 @@ def MakeRequestsAndGetStatusPerInstance(client, requests,
   return status_per_instance
 
 
-def SendInstancesRequestsAndPostProcessOutputs(api_holder, method_name,
-                                               request_template,
-                                               instances_holder_field, igm_ref,
-                                               instances):
+def ExtractSkippedInstancesAndCollectOtherWarnings(operation,
+                                                   warnings_to_collect):
+  """Extract from operation instances skipped due to graceful validation.
+
+  Args:
+    operation: Operation containing warnings.
+    warnings_to_collect: A list to collect warnings unrelated to graceful
+      validation.
+
+  Returns:
+    Dict from resource path of a skipped instance to validation error.
+  """
+  skipped_instances = dict()
+  for warning in operation.warnings or []:
+    # Check code. If not related to graceful validation, collect warning to
+    # print later.
+    if warning.code != warning.CodeValueValuesEnum.NOT_CRITICAL_ERROR:
+      warnings_to_collect.append(warning.message)
+      continue
+    skipped_instance_path = None
+    is_graceful_validation_warning = False
+    # Use metadata to determine if warning is related to validation error and to
+    # collect skipped instance's path.
+    for warning_metadata in warning.data or []:
+      if warning_metadata.key == 'instance':
+        skipped_instance_path = warning_metadata.value
+      if ((warning_metadata.key == 'validation_error') or
+          (warning_metadata.key == 'validation_outcome')):
+        is_graceful_validation_warning = True
+    if is_graceful_validation_warning and skipped_instance_path:
+      skipped_instances[skipped_instance_path] = warning.message
+    else:
+      # Not a graceful validation warning. Collect to print later.
+      warnings_to_collect.append(warning.message)
+  return skipped_instances
+
+
+def MakeRequestsAndGetStatusPerInstanceFromOperation(client, requests,
+                                                     instances_holder_field,
+                                                     warnings_to_collect,
+                                                     errors_to_collect):
+  """Make *-instances requests with feedback per instance.
+
+  Specialized version of MakeRequestsAndGetStatusPerInstance. Checks operations
+  for warnings presence to evaluate statuses per instance. Gracefully validated
+  requests may produce warnings on operations, indicating instances skipped.
+  It would be merged with MakeRequestsAndGetStatusPerInstance after we see
+  there's no issues with this implementation.
+
+  Args:
+    client: Compute client.
+    requests: [(service, method, request)].
+    instances_holder_field: name of field inside request holding list of
+      instances.
+    warnings_to_collect: A list for capturing warnings. If any completed
+      operation will contain skipped instances, function will append warning
+      suggesting how to find additional details on the operation, warnings
+      unrelated to graceful validation will be collected as is.
+    errors_to_collect: A list for capturing errors. If any response contains an
+      error, it is added to this list.
+
+  Returns:
+    See MakeRequestsAndGetStatusPerInstance.
+  """
+
+  # Make requests and collect errors for each.
+  request_results = []
+
+  for service, method, request in requests:
+    errors = []
+    operations = client.MakeRequests([(service, method, request)],
+                                     errors,
+                                     log_warnings=False,
+                                     no_followup=True)
+    # There should be only one operation in the list.
+    [operation] = operations
+    request_results.append((request, operation, errors))
+    errors_to_collect.extend(errors)
+
+  # Determine status of instances.
+  status_per_instance = []
+  for request, operation, errors in request_results:
+    # If there's any errors, we assume that operation failed for all instances.
+    if errors:
+      for instance in getattr(request, instances_holder_field).instances:
+        status_per_instance.append({
+            'selfLink': instance,
+            'instanceName': path_simplifier.Name(instance),
+            'status': 'FAIL'
+        })
+    else:
+      skipped_instances = ExtractSkippedInstancesAndCollectOtherWarnings(
+          operation, warnings_to_collect)
+
+      for instance in getattr(request, instances_holder_field).instances:
+        # Extract public path of an instance from URI. Public path is a part of
+        # instance URI, which starts with 'projects/'
+        instance_path = instance[instance.find('/projects/') + 1:]
+        validation_error = None
+        if instance_path in skipped_instances:
+          instance_status = 'SKIPPED'
+          validation_error = skipped_instances[instance_path]
+        else:
+          instance_status = 'SUCCESS'
+        status_per_instance.append({
+            'selfLink': instance,
+            'instanceName': path_simplifier.Name(instance),
+            'status': instance_status,
+            'validationError': validation_error
+        })
+  return status_per_instance
+
+
+def SendInstancesRequestsAndPostProcessOutputs(
+    api_holder,
+    method_name,
+    request_template,
+    instances_holder_field,
+    igm_ref,
+    instances,
+    per_instance_status_enabled=False):
   """Make *-instances requests and format output.
 
   Method resolves instance references, splits them to make batch of requests,
@@ -419,14 +537,19 @@ def SendInstancesRequestsAndPostProcessOutputs(api_holder, method_name,
       field.
     igm_ref: URL to the target IGM.
     instances: A list of names of the instances to apply method to.
+    per_instance_status_enabled: Enable functionality parsing resulting
+      operation for graceful validation related warnings to allow per-instance
+      status output. The plan is to gradually enable this for all per-instance
+      commands in GA (even where graceful validation is not available / not
+      used).
 
   Yields:
     A list of request statuses per instance. Requests status is a dictionary
     object with link to an instance keyed with 'selfLink', instance name keyed
     with 'instanceName', and status indicating if operation succeeded for
-    instance keyed with 'status'. Status might be 'FAIL', 'SUCCESS' or
-    'MEMBER_NOT_FOUND' (in case of regional MIGs, when instance name cannot be
-    resolved).
+    instance keyed with 'status'. Status might be 'FAIL', 'SUCCESS', 'SKIPPED'
+    in case of graceful validation, or 'MEMBER_NOT_FOUND' (in case of regional
+    MIGs, when instance name cannot be resolved).
   """
   client = api_holder.client
   if igm_ref.Collection() == 'compute.instanceGroupManagers':
@@ -450,8 +573,19 @@ def SendInstancesRequestsAndPostProcessOutputs(api_holder, method_name,
   request_tuples = GenerateRequestTuples(service, method_name, requests)
 
   errors_to_collect = []
-  request_status_per_instance = MakeRequestsAndGetStatusPerInstance(
-      client, request_tuples, instances_holder_field, errors_to_collect)
+  warnings_to_collect = []
+
+  request_status_per_instance = []
+  if per_instance_status_enabled:
+    request_status_per_instance.extend(
+        MakeRequestsAndGetStatusPerInstanceFromOperation(
+            client, request_tuples, instances_holder_field, warnings_to_collect,
+            errors_to_collect))
+  else:
+    request_status_per_instance.extend(
+        MakeRequestsAndGetStatusPerInstance(client, request_tuples,
+                                            instances_holder_field,
+                                            errors_to_collect))
 
   unresolved_instance_names = [
       instance.instance_name
@@ -466,6 +600,10 @@ def SendInstancesRequestsAndPostProcessOutputs(api_holder, method_name,
   for status in request_status_per_instance:
     yield status
 
+  if warnings_to_collect:
+    log.warning(
+        utils.ConstructList('Some requests generated warnings:',
+                            warnings_to_collect))
   if errors_to_collect:
     raise utils.RaiseToolException(errors_to_collect)
 

@@ -786,6 +786,10 @@
           "items": {
             "$ref": "GoogleCloudApigeeV1InstanceDeploymentStatus"
           }
+        },
+        "serviceAccount": {
+          "description": "The full resource name of Cloud IAM Service Account that this deployment is using, eg, `projects\/-\/serviceAccounts\/{email}`.",
+          "type": "string"
         }
       }
     },
@@ -2738,6 +2742,17 @@
       "description": "Request for MigrateDeveloperPortals.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudApigeeV1MigrateInfrastructureRequest": {
+      "id": "GoogleCloudApigeeV1MigrateInfrastructureRequest",
+      "description": "Request for MigrateInfrastructure.",
+      "type": "object",
+      "properties": {
+        "plan": {
+          "description": "Required. Migration plan used to populate all infrastructure-related resources in Apigee X.",
+          "$ref": "GoogleCloudApigeeV1InfraMigrationPlan"
+        }
       }
     },
     "GoogleCloudApigeeV1Reference": {
@@ -7516,6 +7531,11 @@
                           "description": "Flag that specifies whether to enable sequenced rollout. If set to `true`, a best-effort attempt will be made to roll out the routing rules corresponding to this deployment and the environment changes to add this deployment in a safe order. This reduces the risk of downtime that could be caused by changing the environment group's routing before the new destination for the affected traffic is ready to receive it. This should only be necessary if the new deployment will be capturing traffic from another environment under a shared environment group or if traffic will be rerouted to a different environment due to a base path removal. The [GenerateDeployChangeReport API](GenerateDeployChangeReport) may be used to examine routing changes before issuing the deployment request, and its response will indicate if a sequenced rollout is recommended for the deployment.",
                           "location": "query",
                           "type": "boolean"
+                        },
+                        "serviceAccount": {
+                          "description": "Google Cloud IAM service account. The service account represents the identity of the deployed proxy, and determines what permissions it has. The format must be `{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com`.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -7856,6 +7876,11 @@
                           "description": "Flag that specifies whether the new deployment replaces other deployed revisions of the shared flow in the environment. Set `override` to `true` to replace other deployed revisions. By default, `override` is `false` and the deployment is rejected if other revisions of the shared flow are deployed in the environment.",
                           "location": "query",
                           "type": "boolean"
+                        },
+                        "serviceAccount": {
+                          "description": "Google Cloud IAM service account. The service account represents the identity of the deployed proxy, and determines what permissions it has. The format must be `{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com`.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -12995,7 +13020,7 @@
           "httpMethod": "GET",
           "parameters": {
             "project": {
-              "description": "Required. Name of the GCP project in which to migrate the organization's infrastructure `projects\/{project}`.",
+              "description": "Required. Name of the GCP project in which to migrate the organization's infrastructure `projects\/{project-id\/project-number}`.",
               "pattern": "^projects\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -13016,7 +13041,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Generates an Apigee X infrastructure representation from the existing Apigee Edge organization's resources."
+          "description": "Generates an Apigee X infrastructure representation from the existing Apigee Edge organization's resources. Users can modify this plan based on their needs and requirements before initating MigrateInfrastructure."
         },
         "migrateConfigData": {
           "id": "apigee.projects.migrateConfigData",
@@ -13073,6 +13098,34 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Migrates all developer portals from an Apigee edge organization into ApigeeX\/Hybrid."
+        },
+        "migrateInfrastructure": {
+          "id": "apigee.projects.migrateInfrastructure",
+          "path": "v1/{+project}:migrateInfrastructure",
+          "flatPath": "v1/projects/{projectsId}:migrateInfrastructure",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Required. Name of the GCP project in which to migrate the organization's developer portals `projects\/{project-id\/project-number}`.",
+              "pattern": "^projects\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project"
+          ],
+          "request": {
+            "$ref": "GoogleCloudApigeeV1MigrateInfrastructureRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Migrates infrastructure from an Apigee Edge organization into Apigee X using InfraMigrationPlan that can be generated from GenerateInfraMigrationPlan."
         },
         "provisionOrganization": {
           "id": "apigee.projects.provisionOrganization",

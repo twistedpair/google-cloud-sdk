@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20210521",
+ "revision": "20210527",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3210,7 +3210,7 @@
   "BulkInsertInstanceResource": {
    "id": "BulkInsertInstanceResource",
    "type": "object",
-   "description": "A transient resource used in compute.instances.bulkInsert and compute.regionInstances.bulkInsert and compute.regionInstances.recommendLocations. This resource is not persisted anywhere, it is used only for processing the requests.",
+   "description": "A transient resource used in compute.instances.bulkInsert and compute.regionInstances.bulkInsert . This resource is not persisted anywhere, it is used only for processing the requests.",
    "properties": {
     "count": {
      "type": "string",
@@ -4948,7 +4948,7 @@
    "properties": {
     "resourcePolicies": {
      "type": "array",
-     "description": "Resource policies to be added to this disk. Currently you can only specify one policy here.",
+     "description": "Full or relative path to the resource policy to be added to this disk. You can only specify one resource policy.",
      "items": {
       "type": "string"
      }
@@ -6896,7 +6896,7 @@
     },
     "queryPath": {
      "type": "string",
-     "description": "The path to be queried. This can be the default namespace ('/') or a nested namespace ('/\\/') or a specified key ('/\\/\\')"
+     "description": "The path to be queried. This can be the default namespace ('') or a nested namespace ('\\/') or a specified key ('\\/\\')."
     },
     "queryValue": {
      "$ref": "GuestAttributesValue",
@@ -9651,7 +9651,7 @@
   "InstanceGroupManager": {
    "id": "InstanceGroupManager",
    "type": "object",
-   "description": "Whether the instance is a standby. Properties of a standby instance comparing to the regular instance: ========================================================================= | regular | standby ========================================================================= managed by IGM? | yes | yes added to the IG? | yes | yes counts towards IGM's target size? | yes | no taken into account by Autoscaler? | yes | no receives traffic from LB? | yes | no =========================================================================\n\nRepresents a Managed Instance Group resource.\n\nAn instance group is a collection of VM instances that you can manage as a single entity. For more information, read Instance groups.\n\nFor zonal Managed Instance Group, use the instanceGroupManagers resource.\n\nFor regional Managed Instance Group, use the regionInstanceGroupManagers resource. (== resource_for {$api_version}.instanceGroupManagers ==) (== resource_for {$api_version}.regionInstanceGroupManagers ==)",
+   "description": "Represents a Managed Instance Group resource.\n\nAn instance group is a collection of VM instances that you can manage as a single entity. For more information, read Instance groups.\n\nFor zonal Managed Instance Group, use the instanceGroupManagers resource.\n\nFor regional Managed Instance Group, use the regionInstanceGroupManagers resource. (== resource_for {$api_version}.instanceGroupManagers ==) (== resource_for {$api_version}.regionInstanceGroupManagers ==)",
    "properties": {
     "autoHealingPolicies": {
      "type": "array",
@@ -46414,7 +46414,7 @@
      "id": "compute.regionCommitments.aggregatedList",
      "path": "projects/{project}/aggregated/commitments",
      "httpMethod": "GET",
-     "description": "Retrieves an aggregated list of commitments.",
+     "description": "Retrieves an aggregated list of commitments by region.",
      "parameters": {
       "filter": {
        "type": "string",

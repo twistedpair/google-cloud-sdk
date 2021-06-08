@@ -1340,7 +1340,7 @@ class ListTagBindingsResponse(_messages.Message):
       returned is the last page in the result set. Pagination tokens have a
       limited lifetime.
     tagBindings: A possibly paginated list of TagBindings for the specified
-      TagValue or resource.
+      resource.
   """
 
   nextPageToken = _messages.StringField(1)

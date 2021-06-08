@@ -169,6 +169,36 @@ def AddUpdateInstancesArgs(parser):
   AddMostDisruptiveActionArg(parser, True, 'replace')
 
 
+def AddGracefulValidationArg(parser):
+  help_text = """Specifies whether the request should proceed even if the
+    request includes instances that are not members of the group or that are
+    already being deleted or abandoned. By default, if you omit this flag and
+    such an instance is specified in the request, the operation fails. The
+    operation always fails if the request contains a badly formatted instance
+    name or a reference to an instance that exists in a zone or region other
+    than the group's zone or region."""
+  parser.add_argument(
+      '--skip-instances-on-validation-error',
+      action='store_true',
+      help=help_text)
+
+
+def GetCommonPerInstanceCommandOutputFormat(with_validation_error=False):
+  if with_validation_error:
+    return """
+        table(project(),
+              zone(),
+              instanceName:label=INSTANCE,
+              status,
+              validationError:label=VALIDATION_ERROR)"""
+  else:
+    return """
+        table(project(),
+              zone(),
+              instanceName:label=INSTANCE,
+              status)"""
+
+
 INSTANCE_REDISTRIBUTION_TYPES = ['NONE', 'PROACTIVE']
 
 

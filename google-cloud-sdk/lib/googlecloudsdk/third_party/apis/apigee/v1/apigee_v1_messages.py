@@ -1462,11 +1462,16 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest(_messages.Messag
       API](GenerateDeployChangeReport) may be used to examine routing changes
       before issuing the deployment request, and its response will indicate if
       a sequenced rollout is recommended for the deployment.
+    serviceAccount: Google Cloud IAM service account. The service account
+      represents the identity of the deployed proxy, and determines what
+      permissions it has. The format must be
+      `{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com`.
   """
 
   name = _messages.StringField(1, required=True)
   override = _messages.BooleanField(2)
   sequencedRollout = _messages.BooleanField(3)
+  serviceAccount = _messages.StringField(4)
 
 
 class ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChangeReportRequest(_messages.Message):
@@ -2277,10 +2282,15 @@ class ApigeeOrganizationsEnvironmentsSharedflowsRevisionsDeployRequest(_messages
       to `true` to replace other deployed revisions. By default, `override` is
       `false` and the deployment is rejected if other revisions of the shared
       flow are deployed in the environment.
+    serviceAccount: Google Cloud IAM service account. The service account
+      represents the identity of the deployed proxy, and determines what
+      permissions it has. The format must be
+      `{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com`.
   """
 
   name = _messages.StringField(1, required=True)
   override = _messages.BooleanField(2)
+  serviceAccount = _messages.StringField(3)
 
 
 class ApigeeOrganizationsEnvironmentsSharedflowsRevisionsGetDeploymentsRequest(_messages.Message):
@@ -3391,7 +3401,7 @@ class ApigeeProjectsGenerateInfraMigrationPlanRequest(_messages.Message):
     organizationId: Required. The ID of the Apigee Organization associated
       with the project.
     project: Required. Name of the GCP project in which to migrate the
-      organization's infrastructure `projects/{project}`.
+      organization's infrastructure `projects/{project-id/project-number}`.
   """
 
   organizationId = _messages.StringField(1)
@@ -3426,6 +3436,21 @@ class ApigeeProjectsMigrateDeveloperPortalsRequest(_messages.Message):
   """
 
   googleCloudApigeeV1MigrateDeveloperPortalsRequest = _messages.MessageField('GoogleCloudApigeeV1MigrateDeveloperPortalsRequest', 1)
+  project = _messages.StringField(2, required=True)
+
+
+class ApigeeProjectsMigrateInfrastructureRequest(_messages.Message):
+  r"""A ApigeeProjectsMigrateInfrastructureRequest object.
+
+  Fields:
+    googleCloudApigeeV1MigrateInfrastructureRequest: A
+      GoogleCloudApigeeV1MigrateInfrastructureRequest resource to be passed as
+      the request body.
+    project: Required. Name of the GCP project in which to migrate the
+      organization's developer portals `projects/{project-id/project-number}`.
+  """
+
+  googleCloudApigeeV1MigrateInfrastructureRequest = _messages.MessageField('GoogleCloudApigeeV1MigrateInfrastructureRequest', 1)
   project = _messages.StringField(2, required=True)
 
 
@@ -4692,6 +4717,8 @@ class GoogleCloudApigeeV1Deployment(_messages.Message):
       environment. If the conflicts change, the state will transition to
       `PROGRESSING` until the latest configuration is rolled out to all
       instances. This field is not populated in List APIs.
+    serviceAccount: The full resource name of Cloud IAM Service Account that
+      this deployment is using, eg, `projects/-/serviceAccounts/{email}`.
     state: Current state of the deployment. This field is not populated in
       List APIs.
   """
@@ -4720,7 +4747,8 @@ class GoogleCloudApigeeV1Deployment(_messages.Message):
   pods = _messages.MessageField('GoogleCloudApigeeV1PodStatus', 6, repeated=True)
   revision = _messages.StringField(7)
   routeConflicts = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict', 8, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  serviceAccount = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class GoogleCloudApigeeV1DeploymentChangeReport(_messages.Message):
@@ -6259,6 +6287,17 @@ class GoogleCloudApigeeV1MigrateConfigDataRequest(_messages.Message):
 
 class GoogleCloudApigeeV1MigrateDeveloperPortalsRequest(_messages.Message):
   r"""Request for MigrateDeveloperPortals."""
+
+
+class GoogleCloudApigeeV1MigrateInfrastructureRequest(_messages.Message):
+  r"""Request for MigrateInfrastructure.
+
+  Fields:
+    plan: Required. Migration plan used to populate all infrastructure-related
+      resources in Apigee X.
+  """
+
+  plan = _messages.MessageField('GoogleCloudApigeeV1InfraMigrationPlan', 1)
 
 
 class GoogleCloudApigeeV1MonetizationConfig(_messages.Message):

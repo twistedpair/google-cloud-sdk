@@ -89,6 +89,10 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/operations/{operationsId}
         projects.locations.endpoints.operations:
           path: projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/operations/{operationsId}
+  alloydb:
+    v1alpha1:
+      discovery_doc: alloydb_v1alpha1.json
+      default: true
   alloydbadmin:
     v1alpha1:
       discovery_doc: alloydbadmin_v1alpha1.json
@@ -733,6 +737,16 @@ apis:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}
         projects.iap_web.services.versions:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
+  ids:
+    v1:
+      discovery_doc: ids_v1.json
+      resources:
+          projects:
+            path: projects/{projectId}
+          projects.locations:
+            path: projects/{projectId}/locations/{locationId}
+          projects.locations.endpoints:
+            path: projects/{projectId}/locations/{locationId}/endpoints/{endpointId}
   krmapihosting:
     v1alpha1:
       discovery_doc: krmapihosting_v1alpha1.json
@@ -815,6 +829,9 @@ apis:
   networkservices:
     v1alpha1:
       discovery_doc: networkservices_v1alpha1.json
+    v1:
+      discovery_doc: networkservices_v1.json
+      default: true
   networksecurity:
     v1beta1:
       discovery_doc: networksecurity_v1beta1.json

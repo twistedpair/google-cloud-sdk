@@ -619,8 +619,7 @@ def FinalizeUpgradeRedirection(unused_ref, args):
 
   update = console_io.PromptContinue(
       "This action permanently redirects gcr.io traffic to Artifact Registry "
-      "for project {}. Image data from Container Registry will be deleted "
-      "30 days after redirection is finalized.".format(
+      "for project {}.".format(
           con.Emphasize(project, bold=True)),
       default=False)
   if not update:
