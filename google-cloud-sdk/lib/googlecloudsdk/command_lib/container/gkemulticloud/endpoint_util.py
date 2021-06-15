@@ -23,8 +23,28 @@ import contextlib
 from googlecloudsdk.api_lib.container.azure import util as azure_api_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
 from six.moves.urllib import parse
+
+
+_VALID_REGIONS = frozenset([
+    'europe-west1',
+    'us-east4',
+    'us-west1',
+])
+
+
+def _ValidateRegion(region):
+  if region not in _VALID_REGIONS:
+    regions = list(_VALID_REGIONS)
+    regions.sort()
+    raise exceptions.InvalidArgumentException(
+        '--region',
+        '{bad_region} is not a valid region. Allowed values: [{region_list}].'
+        .format(
+            bad_region=region,
+            region_list=', '.join('\'{}\''.format(r) for r in regions)))
 
 
 def _AppendRegion(endpoint, region):
@@ -44,13 +64,14 @@ def GkemulticloudEndpointOverride(region, track=base.ReleaseTrack.GA):
   Yields:
     None.
   """
-  if not region:
-    raise ValueError('A region must be specified.')
 
   original_ep = properties.VALUES.api_endpoint_overrides.gkemulticloud.Get()
-  regional_ep = _GetEffectiveEndpoint(region, track=track)
   try:
     if not original_ep:
+      if not region:
+        raise ValueError('A region must be specified.')
+      _ValidateRegion(region)
+      regional_ep = _GetEffectiveEndpoint(region, track=track)
       properties.VALUES.api_endpoint_overrides.gkemulticloud.Set(regional_ep)
     yield
   finally:

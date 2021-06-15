@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import json
 
+from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
@@ -43,6 +44,14 @@ GOOGLE_REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke'
 
 class ReauthRequiredError(google_auth_exceptions.RefreshError):
   """Exceptions when reauth is required."""
+
+
+class ContextAwareAccessDeniedError(google_auth_exceptions.RefreshError):
+  """Exceptions when access is denied."""
+
+  def __init__(self):
+    super(ContextAwareAccessDeniedError, self).__init__(
+        context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG)
 
 
 class TokenRevokeError(google_auth_exceptions.GoogleAuthError):
@@ -206,8 +215,8 @@ def _RefreshGrant(request,
 def _ShouldRetryServerInternalError(exc_type, exc_value, exc_traceback, state):
   """Whether to retry the request when receive errors.
 
-  Only retry when the error is not a reauth-related error. Retrying won't help
-  if we are asked to reauth.
+  Do not retry reauth-related errors or context aware access errors.
+  Retrying won't help in those situations.
 
   Args:
     exc_type: type of the raised exception.
@@ -217,10 +226,12 @@ def _ShouldRetryServerInternalError(exc_type, exc_value, exc_traceback, state):
     state: RetryerState, state of the retryer.
 
   Returns:
-    True if the exception is google.auth.exceptions.RefreshError
+    True if exception and is not due to reauth-related errors or context-aware
+    access restriction.
   """
   del exc_value, exc_traceback, state
-  return exc_type == google_auth_exceptions.RefreshError
+  return (exc_type != ReauthRequiredError and
+          exc_type != ContextAwareAccessDeniedError)
 
 
 @retry.RetryOnException(
@@ -263,6 +274,8 @@ def _HandleErrorResponse(response_body):
   Raises:
       google.auth.exceptions.RefreshError: If the token endpoint returned
           an server internal error.
+      ContextAwareAccessDeniedError: if the error was due to a context aware
+          access restriction.
       ReauthRequiredError: If reauth is required.
   """
   error_data = json.loads(response_body)
@@ -272,5 +285,10 @@ def _HandleErrorResponse(response_body):
   if error_code == oauth2client_client.REAUTH_NEEDED_ERROR and (
       error_subtype == oauth2client_client.REAUTH_NEEDED_ERROR_INVALID_RAPT or
       error_subtype == oauth2client_client.REAUTH_NEEDED_ERROR_RAPT_REQUIRED):
-    raise ReauthRequiredError('The reauth is required.')
-  google_auth_client._handle_error_response(error_data)  # pylint: disable=protected-access
+    raise ReauthRequiredError('reauth is required.')
+  try:
+    google_auth_client._handle_error_response(error_data)  # pylint: disable=protected-access
+  except google_auth_exceptions.RefreshError as e:
+    if context_aware.IsContextAwareAccessDeniedError(e):
+      raise ContextAwareAccessDeniedError()
+    raise

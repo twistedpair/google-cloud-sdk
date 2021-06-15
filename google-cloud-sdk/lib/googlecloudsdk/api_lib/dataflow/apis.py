@@ -534,15 +534,14 @@ class Templates(object):
     env['FLEX_TEMPLATE_JAVA_CLASSPATH'] = '/template/*'
     envs = ['ENV {}={}'.format(k, v) for k, v in sorted(env.items())]
     env_list = '\n'.join(envs)
-    copy_commands = '\n'.join([
-        'COPY {} /template/'.format(path) for path in pipeline_paths
-    ])
+    paths = ' '.join(pipeline_paths)
+    copy_command = 'COPY {} /template/'.format(paths)
 
     dockerfile_contents = textwrap.dedent(dockerfile_template).format(
         base_image=Templates._GetFlexTemplateBaseImage(
             flex_template_base_image),
         env=env_list,
-        copy=copy_commands,
+        copy=copy_command,
         commands='\n'.join(commands))
     return dockerfile_contents
 
@@ -586,16 +585,14 @@ class Templates(object):
 
     envs = ['ENV {}={}'.format(k, v) for k, v in sorted(env.items())]
     env_list = '\n'.join(envs)
-    copy_commands = '\n'.join([
-        'COPY {path} /template/{path}'.format(path=path)
-        for path in pipeline_paths
-    ])
+    paths = ' '.join(pipeline_paths)
+    copy_command = 'COPY {} /template/'.format(paths)
 
     dockerfile_contents = textwrap.dedent(dockerfile_template).format(
         base_image=Templates._GetFlexTemplateBaseImage(
             flex_template_base_image),
         env=env_list,
-        copy=copy_commands,
+        copy=copy_command,
         commands='RUN ' + ' && '.join(commands))
     return dockerfile_contents
 

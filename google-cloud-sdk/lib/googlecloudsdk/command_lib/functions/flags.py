@@ -498,11 +498,14 @@ def AddTriggerEventFiltersFlag(parser):
   """Add flag for specifying trigger event filters to the parser."""
   parser.add_argument(
       '--trigger-event-filters',
-      type=arg_parsers.ArgList(),
+      type=arg_parsers.ArgDict(),
+      action=arg_parsers.UpdateAction,
       metavar='FILTERS',
       hidden=True,
-      help=('The comma-separated Eventarc matching criteria for the trigger. '
-            'This is only relevant when `--v2` is provided.'),
+      help=(
+          'The Eventarc matching criteria for the trigger. The criteria can '
+          'be specified either as a single comma-separated argument or as '
+          'multiple arguments. This is only relevant when `--v2` is provided.'),
   )
 
 

@@ -28,7 +28,6 @@ SERVICE_LABEL = 'serving.knative.dev/service'
 NONCE_LABEL = 'client.knative.dev/nonce'
 MIN_SCALE_ANNOTATION = 'autoscaling.knative.dev/minScale'
 MAX_SCALE_ANNOTATION = 'autoscaling.knative.dev/maxScale'
-SECRETS_ANNOTATION = 'run.googleapis.com/secrets'
 
 
 class Revision(container_resource.ContainerResource):

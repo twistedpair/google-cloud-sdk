@@ -629,8 +629,8 @@ class FirestoreProjectsDatabasesCollectionGroupsFieldsListRequest(_messages.Mess
     filter: The filter to apply to list results. Currently,
       FirestoreAdmin.ListFields only supports listing fields that have been
       explicitly overridden. To issue this query, call
-      FirestoreAdmin.ListFields with the filter set to
-      `indexConfig.usesAncestorConfig:false`.
+      FirestoreAdmin.ListFields with a filter that includes
+      `indexConfig.usesAncestorConfig:false` .
     pageSize: The number of results to return.
     pageToken: A page token, returned from a previous call to
       FirestoreAdmin.ListFields, that may be used to get the next page of

@@ -1083,7 +1083,7 @@ class Instance(_messages.Message):
       node_count) for more information about nodes.
     processingUnits: The number of processing units allocated to this
       instance. At most one of processing_units or node_count should be
-      present in the message. This may be zeo in API responses for instances
+      present in the message. This may be zero in API responses for instances
       that are not yet in state `READY`.
     state: Output only. The current instance state. For CreateInstance, the
       state must be either omitted or set to `CREATING`. For UpdateInstance,
@@ -4487,6 +4487,12 @@ class Type(_messages.Message):
         `[+-]Digits[.[Digits]][ExponentIndicator[+-]Digits]` or
         `+-.Digits[ExponentIndicator[+-]Digits]` (ExponentIndicator is `"e"`
         or `"E"`)
+      JSON: Encoded as a JSON-formatted 'string' as described in RFC 7159. The
+        following rules will be applied when parsing JSON input: - Whitespace
+        will be stripped from the document. - If a JSON object has duplicate
+        keys, only the first key will be preserved. - Members of a JSON object
+        are not guaranteed to have their order preserved. JSON array elements
+        will have their order preserved.
     """
     TYPE_CODE_UNSPECIFIED = 0
     BOOL = 1
@@ -4499,6 +4505,7 @@ class Type(_messages.Message):
     ARRAY = 8
     STRUCT = 9
     NUMERIC = 10
+    JSON = 11
 
   arrayElementType = _messages.MessageField('Type', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)

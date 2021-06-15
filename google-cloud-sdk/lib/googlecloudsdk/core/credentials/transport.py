@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import abc
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -188,6 +189,6 @@ def _HandleAuthError(e):
   msg = six.text_type(e)
   log.debug('Exception caught during HTTP request: %s', msg,
             exc_info=True)
-  if store.IsContextAwareAccessDeniedError(e):
+  if context_aware.IsContextAwareAccessDeniedError(e):
     raise store.TokenRefreshDeniedByCAAError(msg)
   raise store.TokenRefreshError(msg)

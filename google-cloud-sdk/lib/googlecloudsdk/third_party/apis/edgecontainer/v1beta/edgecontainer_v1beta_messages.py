@@ -1024,6 +1024,9 @@ class VpnConnection(_messages.Message):
     cluster: The canonical Cluster name to connect to. It is in the form of
       projects/{project}/locations/{location}/clusters/{cluster}.
     createTime: Output only. The time when the VPN connection was created.
+    enableHighAvailability: Whether this VPN connection has HA enabled on
+      cluster side. If enabled, when creating VPN connection we will attempt
+      to use 2 ANG floating IPs.
     labels: Labels associated with this resource.
     name: Required. The resource name of VPN connection
     natGatewayIp: NAT gateway IP, or WAN IP address. If a customer has
@@ -1033,7 +1036,7 @@ class VpnConnection(_messages.Message):
     updateTime: Output only. The time when the VPN connection was last
       updated.
     vpc: The canonical VPC name to connect to. It is in the form of
-      projects/{project}/global/networks/{network}.
+      projects/{project}/locations/{location}/vpcs/{vpc}.
   """
 
   class BgpRoutingModeValueValuesEnum(_messages.Enum):
@@ -1075,11 +1078,12 @@ class VpnConnection(_messages.Message):
   bgpRoutingMode = _messages.EnumField('BgpRoutingModeValueValuesEnum', 1)
   cluster = _messages.StringField(2)
   createTime = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  natGatewayIp = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
-  vpc = _messages.StringField(8)
+  enableHighAvailability = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  natGatewayIp = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  vpc = _messages.StringField(9)
 
 
 class ZoneMetadata(_messages.Message):

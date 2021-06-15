@@ -71,6 +71,19 @@ machine:
     help: Machines represent compute entities which can assume the role of a node in a cluster.
   disable_auto_completers: false
 
+vpnConnection:
+  name: vpn connection
+  collection: edgecontainer.projects.locations.vpnConnections
+  request_id_field: vpnConnectionId
+  attributes:
+  - *project
+  - *location
+  - &vpnConnection
+    parameter_name: vpnConnectionsId
+    attribute_name: vpn_connection
+    help: VPN connection between cluster and GCP VPC.
+  disable_auto_completers: false
+
 operation:
   name: operation
   collection: edgecontainer.projects.locations.operations

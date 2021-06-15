@@ -1668,6 +1668,13 @@ class Subscription(_messages.Message):
       receiving messages. Format is `projects/{project}/topics/{topic}`. The
       value of this field will be `_deleted-topic_` if the topic has been
       deleted.
+    topicMessageRetentionDuration: Output only. Indicates the minimum duration
+      for which a message is retained after it is published to the
+      subscription's topic. If this field is set, messages published to the
+      subscription's topic in the last `topic_message_retention_duration` are
+      always available to subscribers. See the `message_retention_duration`
+      field in `Topic`. This field is set only in responses from the server;
+      it is ignored if it is set in any requests.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1708,6 +1715,7 @@ class Subscription(_messages.Message):
   retainAckedMessages = _messages.BooleanField(12)
   retryPolicy = _messages.MessageField('RetryPolicy', 13)
   topic = _messages.StringField(14)
+  topicMessageRetentionDuration = _messages.StringField(15)
 
 
 class TestIamPermissionsRequest(_messages.Message):

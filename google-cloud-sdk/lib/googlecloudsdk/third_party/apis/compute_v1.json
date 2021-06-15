@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20210527",
+ "revision": "20210604",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1260,7 +1260,7 @@
     },
     "diskType": {
      "type": "string",
-     "description": "Specifies the disk type to use to create the instance. If not specified, the default is pd-standard, specified using the full URL. For example:\nhttps://www.googleapis.com/compute/v1/projects/project/zones/zone/diskTypes/pd-standard\n\n\nOther values include pd-ssd and local-ssd. If you define this field, you can provide either the full or partial URL. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType \n- projects/project/zones/zone/diskTypes/diskType \n- zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is the name of the disk type, not URL."
+     "description": "Specifies the disk type to use to create the instance. If not specified, the default is pd-standard, specified using the full URL. For example:\nhttps://www.googleapis.com/compute/v1/projects/project/zones/zone/diskTypes/pd-standard\n\n\nFor a full list of acceptable values, see Persistent disk types. If you define this field, you can provide either the full or partial URL. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/diskTypes/diskType \n- projects/project/zones/zone/diskTypes/diskType \n- zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is the name of the disk type, not URL."
     },
     "labels": {
      "type": "object",
@@ -1285,7 +1285,7 @@
     },
     "provisionedIops": {
      "type": "string",
-     "description": "Indicates how many IOPS must be provisioned for the disk.",
+     "description": "Indicates how many IOPS to provision for the disk. This sets the number of I/O operations per second that the disk can handle. Values must be between 10,000 and 120,000. For more details, see the Extreme persistent disk documentation.",
      "format": "int64"
     },
     "resourcePolicies": {
@@ -2090,7 +2090,7 @@
     },
     "capacityScaler": {
      "type": "number",
-     "description": "A multiplier applied to the backend's target capacity of its balancing mode. The default value is 1, which means the group serves up to 100% of its configured capacity (depending on balancingMode). A setting of 0 means the group is completely drained, offering 0% of its available capacity. The valid ranges are 0.0 and [0.1,1.0]. You cannot configure a setting larger than 0 and smaller than 0.1. You cannot configure a setting of 0 when there is only one backend attached to the backend service.\n\nNot supported by:\n\n- Internal TCP/UDP Load Balancing - Network Load Balancing",
+     "description": "A multiplier applied to the backend's target capacity of its balancing mode. The default value is 1, which means the group serves up to 100% of its configured capacity (depending on balancingMode). A setting of 0 means the group is completely drained, offering 0% of its available capacity. The valid ranges are 0.0 and [0.1,1.0]. You cannot configure a setting larger than 0 and smaller than 0.1. You cannot configure a setting of 0 when there is only one backend attached to the backend service.",
      "format": "float"
     },
     "description": {
@@ -2103,21 +2103,21 @@
     },
     "group": {
      "type": "string",
-     "description": "The fully-qualified URL of an instance group or network endpoint group (NEG) resource. The type of backend that a backend service supports depends on the backend service's loadBalancingScheme.\n\n \n- When the loadBalancingScheme for the backend service is EXTERNAL (except Network Load Balancing),  INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED , the backend can be either an instance group or a NEG. The backends on the backend service must be either all instance groups or all NEGs. You cannot mix instance group and NEG backends on the same backend service. \n\n\n- When the loadBalancingScheme for the backend service is EXTERNAL for Network Load Balancing or INTERNAL for Internal TCP/UDP Load Balancing, the backend must be an instance group. NEGs are not supported.  \n\nFor regional services, the backend must be in the same region as the backend service.\n\nYou must use the fully-qualified URL (starting with https://www.googleapis.com/) to specify the instance group or NEG. Partial URLs are not supported."
+     "description": "The fully-qualified URL of an instance group or network endpoint group (NEG) resource. To determine what types of backends a load balancer supports, see the [Backend services overview](https://cloud.google.com/load-balancing/docs/backend-service#backends).\n\nYou must use the fully-qualified URL (starting with https://www.googleapis.com/) to specify the instance group or NEG. Partial URLs are not supported."
     },
     "maxConnections": {
      "type": "integer",
-     "description": "Defines a target maximum number of simultaneous connections. For usage guidelines, see Connection balancing mode and Utilization balancing mode. Not available if the backend's balancingMode is RATE. Not supported by:\n\n- Internal TCP/UDP Load Balancing - Network Load Balancing",
+     "description": "Defines a target maximum number of simultaneous connections. For usage guidelines, see Connection balancing mode and Utilization balancing mode. Not available if the backend's balancingMode is RATE.",
      "format": "int32"
     },
     "maxConnectionsPerEndpoint": {
      "type": "integer",
-     "description": "Defines a target maximum number of simultaneous connections. For usage guidelines, see Connection balancing mode and Utilization balancing mode.\n\nNot available if the backend's balancingMode is RATE. Not supported by:\n\n- Internal TCP/UDP Load Balancing - Network Load Balancing.",
+     "description": "Defines a target maximum number of simultaneous connections. For usage guidelines, see Connection balancing mode and Utilization balancing mode.\n\nNot available if the backend's balancingMode is RATE.",
      "format": "int32"
     },
     "maxConnectionsPerInstance": {
      "type": "integer",
-     "description": "Defines a target maximum number of simultaneous connections. For usage guidelines, see Connection balancing mode and Utilization balancing mode.\n\nNot available if the backend's balancingMode is RATE. Not supported by:\n\n- Internal TCP/UDP Load Balancing - Network Load Balancing.",
+     "description": "Defines a target maximum number of simultaneous connections. For usage guidelines, see Connection balancing mode and Utilization balancing mode.\n\nNot available if the backend's balancingMode is RATE.",
      "format": "int32"
     },
     "maxRate": {
@@ -2418,11 +2418,11 @@
   "BackendService": {
    "id": "BackendService",
    "type": "object",
-   "description": "Represents a Backend Service resource.\n\nA backend service defines how Google Cloud load balancers distribute traffic. The backend service configuration contains a set of values, such as the protocol used to connect to backends, various distribution and session settings, health checks, and timeouts. These settings provide fine-grained control over how your load balancer behaves. Most of the settings have default values that allow for easy configuration if you need to get started quickly.\n\nBackend services in Google Compute Engine can be either regionally or globally scoped.\n\n* [Global](/compute/docs/reference/rest/{$api_version}/backendServices) * [Regional](/compute/docs/reference/rest/{$api_version}/regionBackendServices)\n\nFor more information, see Backend Services.\n\n(== resource_for {$api_version}.backendService ==)",
+   "description": "Represents a Backend Service resource.\n\nA backend service defines how Google Cloud load balancers distribute traffic. The backend service configuration contains a set of values, such as the protocol used to connect to backends, various distribution and session settings, health checks, and timeouts. These settings provide fine-grained control over how your load balancer behaves. Most of the settings have default values that allow for easy configuration if you need to get started quickly.\n\nBackend services in Google Compute Engine can be either regionally or globally scoped.\n\n* [Global](https://cloud.google.com/compute/docs/reference/rest/{$api_version}/backendServices) * [Regional](https://cloud.google.com/compute/docs/reference/rest/{$api_version}/regionBackendServices)\n\nFor more information, see Backend Services.\n\n(== resource_for {$api_version}.backendService ==)",
    "properties": {
     "affinityCookieTtlSec": {
      "type": "integer",
-     "description": "Lifetime of cookies in seconds. Only applicable if the loadBalancingScheme is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, the protocol is HTTP or HTTPS, and the sessionAffinity is GENERATED_COOKIE, or HTTP_COOKIE.\n\nIf set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value is one day (86,400).\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+     "description": "Lifetime of cookies in seconds. This setting is applicable to external and internal HTTP(S) load balancers and Traffic Director and requires GENERATED_COOKIE or HTTP_COOKIE session affinity.\n\nIf set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value is one day (86,400).\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "format": "int32"
     },
     "backends": {
@@ -2434,7 +2434,7 @@
     },
     "cdnPolicy": {
      "$ref": "BackendServiceCdnPolicy",
-     "description": "Cloud CDN configuration for this BackendService. Only available for  external HTTP(S) Load Balancing."
+     "description": "Cloud CDN configuration for this BackendService. Only available for  specified load balancer types."
     },
     "circuitBreakers": {
      "$ref": "CircuitBreakers"
@@ -2452,14 +2452,14 @@
     },
     "customRequestHeaders": {
      "type": "array",
-     "description": "Headers that the HTTP/S load balancer should add to proxied requests.",
+     "description": "Headers that the load balancer adds to proxied requests. See [Creating custom headers](https://cloud.google.com/load-balancing/docs/custom-headers).",
      "items": {
       "type": "string"
      }
     },
     "customResponseHeaders": {
      "type": "array",
-     "description": "Headers that the HTTP/S load balancer should add to proxied responses.",
+     "description": "Headers that the load balancer adds to proxied responses. See [Creating custom headers](https://cloud.google.com/load-balancing/docs/custom-headers).",
      "items": {
       "type": "string"
      }
@@ -2470,11 +2470,11 @@
     },
     "enableCDN": {
      "type": "boolean",
-     "description": "If true, enables Cloud CDN for the backend service. Only applicable if the loadBalancingScheme is EXTERNAL and the protocol is HTTP or HTTPS."
+     "description": "If true, enables Cloud CDN for the backend service of an external HTTP(S) load balancer."
     },
     "failoverPolicy": {
      "$ref": "BackendServiceFailoverPolicy",
-     "description": "Applicable only to Failover for Internal TCP/UDP Load Balancing and Network Load Balancing. Requires at least one backend instance group to be defined as a backup (failover) backend."
+     "description": "Requires at least one backend instance group to be defined as a backup (failover) backend. For load balancers that have configurable failover: [Internal TCP/UDP Load Balancing](https://cloud.google.com/load-balancing/docs/internal/failover-overview) and [external TCP/UDP Load Balancing](/network/networklb-failover-overview)."
     },
     "fingerprint": {
      "type": "string",
@@ -2504,7 +2504,7 @@
     },
     "loadBalancingScheme": {
      "type": "string",
-     "description": "Specifies the load balancer type. Choose EXTERNAL for external HTTP(S), SSL Proxy, TCP Proxy and Network Load Balancing. Choose  INTERNAL for Internal TCP/UDP Load Balancing. Choose  INTERNAL_MANAGED for Internal HTTP(S) Load Balancing.  INTERNAL_SELF_MANAGED for Traffic Director. A backend service created for one type of load balancer cannot be used with another. For more information, refer to Choosing a load balancer.",
+     "description": "Specifies the load balancer type. A backend service created for one type of load balancer cannot be used with another. For more information, refer to Choosing a load balancer.",
      "enum": [
       "EXTERNAL",
       "INTERNAL",
@@ -2565,16 +2565,16 @@
     },
     "port": {
      "type": "integer",
-     "description": "Deprecated in favor of portName. The TCP port to connect on the backend. The default value is 80.\n\nBackend services for Internal TCP/UDP Load Balancing and Network Load Balancing require you omit port.",
+     "description": "Deprecated in favor of portName. The TCP port to connect on the backend. The default value is 80. For Internal TCP/UDP Load Balancing and Network Load Balancing, omit port.",
      "format": "int32"
     },
     "portName": {
      "type": "string",
-     "description": "A named port on a backend instance group representing the port for communication to the backend VMs in that group. Required when the loadBalancingScheme is EXTERNAL (except Network Load Balancing), INTERNAL_MANAGED, or  INTERNAL_SELF_MANAGED and the backends are instance groups. The named port must be defined on each backend instance group. This parameter has no meaning if the backends are NEGs.\n\n\n\nBackend services for Internal TCP/UDP Load Balancing and Network Load Balancing require you omit port_name."
+     "description": "A named port on a backend instance group representing the port for communication to the backend VMs in that group. The named port must be [defined on each backend instance group](https://cloud.google.com/load-balancing/docs/backend-service#named_ports). This parameter has no meaning if the backends are NEGs. For Internal TCP/UDP Load Balancing and Network Load Balancing, omit port_name."
     },
     "protocol": {
      "type": "string",
-     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or GRPC. depending on the chosen load balancer or Traffic Director configuration. Refer to the documentation for the load balancer or for Traffic Director for more information.\n\nMust be set to GRPC when the backend service is referenced by a URL map that is bound to target gRPC proxy.",
+     "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or GRPC. depending on the chosen load balancer or Traffic Director configuration. Refer to the documentation for the load balancers or for Traffic Director for more information.\n\nMust be set to GRPC when the backend service is referenced by a URL map that is bound to target gRPC proxy.",
      "enum": [
       "GRPC",
       "HTTP",
@@ -2612,7 +2612,7 @@
     },
     "sessionAffinity": {
      "type": "string",
-     "description": "Type of session affinity to use. The default is NONE.\n\nWhen the loadBalancingScheme is EXTERNAL:\n\n* For Network Load Balancing, the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or  CLIENT_IP_PORT_PROTO. * For all other load balancers that use loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is HTTP, HTTP2, or HTTPS.\n\nWhen the loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.\n\nWhen the loadBalancingScheme is INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+     "description": "Type of session affinity to use. The default is NONE. For a detailed description of session affinity options, see: [Session affinity](https://cloud.google.com/load-balancing/docs/backend-service#session_affinity).\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "enum": [
       "CLIENT_IP",
       "CLIENT_IP_NO_DESTINATION",
@@ -2877,7 +2877,7 @@
   "BackendServiceFailoverPolicy": {
    "id": "BackendServiceFailoverPolicy",
    "type": "object",
-   "description": "Applicable only to Failover for Internal TCP/UDP Load Balancing and Network Load Balancing. On failover or failback, this field indicates whether connection draining will be honored. GCP has a fixed connection draining timeout of 10 minutes. A setting of true terminates existing TCP connections to the active pool during failover and failback, immediately draining traffic. A setting of false allows existing TCP connections to persist, even on VMs no longer in the active pool, for up to the duration of the connection draining timeout (10 minutes).",
+   "description": "For load balancers that have configurable failover: [Internal TCP/UDP Load Balancing](https://cloud.google.com/load-balancing/docs/internal/failover-overview) and [external TCP/UDP Load Balancing](/network/networklb-failover-overview). On failover or failback, this field indicates whether connection draining will be honored. Google Cloud has a fixed connection draining timeout of 10 minutes. A setting of true terminates existing TCP connections to the active pool during failover and failback, immediately draining traffic. A setting of false allows existing TCP connections to persist, even on VMs no longer in the active pool, for up to the duration of the connection draining timeout (10 minutes).",
    "properties": {
     "disableConnectionDrainOnFailover": {
      "type": "boolean",
@@ -2885,11 +2885,11 @@
     },
     "dropTrafficIfUnhealthy": {
      "type": "boolean",
-     "description": "Applicable only to Failover for Internal TCP/UDP Load Balancing and Network Load Balancing, If set to true, connections to the load balancer are dropped when all primary and all backup backend VMs are unhealthy.If set to false, connections are distributed among all primary VMs when all primary and all backup backend VMs are unhealthy. The default is false."
+     "description": "If set to true, connections to the load balancer are dropped when all primary and all backup backend VMs are unhealthy.If set to false, connections are distributed among all primary VMs when all primary and all backup backend VMs are unhealthy. For load balancers that have configurable failover: [Internal TCP/UDP Load Balancing](https://cloud.google.com/load-balancing/docs/internal/failover-overview) and [external TCP/UDP Load Balancing](/network/networklb-failover-overview). The default is false."
     },
     "failoverRatio": {
      "type": "number",
-     "description": "Applicable only to Failover for Internal TCP/UDP Load Balancing and Network Load Balancing. The value of the field must be in the range [0, 1]. If the value is 0, the load balancer performs a failover when the number of healthy primary VMs equals zero. For all other values, the load balancer performs a failover when the total number of healthy primary VMs is less than this ratio.",
+     "description": "The value of the field must be in the range [0, 1]. If the value is 0, the load balancer performs a failover when the number of healthy primary VMs equals zero. For all other values, the load balancer performs a failover when the total number of healthy primary VMs is less than this ratio. For load balancers that have configurable failover: [Internal TCP/UDP Load Balancing](https://cloud.google.com/load-balancing/docs/internal/failover-overview) and [external TCP/UDP Load Balancing](/network/networklb-failover-overview).",
      "format": "float"
     }
    }
@@ -4151,7 +4151,7 @@
     },
     "provisionedIops": {
      "type": "string",
-     "description": "Indicates how many IOPS must be provisioned for the disk.",
+     "description": "Indicates how many IOPS to provision for the disk. This sets the number of I/O operations per second that the disk can handle. Values must be between 10,000 and 120,000. For more details, see the Extreme persistent disk documentation.",
      "format": "int64"
     },
     "region": {
@@ -4241,7 +4241,7 @@
     },
     "type": {
      "type": "string",
-     "description": "URL of the disk type resource describing which disk type to use to create the disk. Provide this when creating the disk. For example: projects/project/zones/zone/diskTypes/pd-standard  or pd-ssd"
+     "description": "URL of the disk type resource describing which disk type to use to create the disk. Provide this when creating the disk. For example: projects/project/zones/zone/diskTypes/pd-ssd . See Persistent disk types."
     },
     "users": {
      "type": "array",
@@ -23667,6 +23667,9 @@
    "type": "object",
    "description": "Represents a Google Cloud Armor security policy resource.\n\nOnly external backend services that use load balancers can reference a security policy. For more information, see  Google Cloud Armor security policy overview. (== resource_for {$api_version}.securityPolicies ==)",
    "properties": {
+    "adaptiveProtectionConfig": {
+     "$ref": "SecurityPolicyAdaptiveProtectionConfig"
+    },
     "advancedOptionsConfig": {
      "$ref": "SecurityPolicyAdvancedOptionsConfig"
     },
@@ -23708,6 +23711,40 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
+    }
+   }
+  },
+  "SecurityPolicyAdaptiveProtectionConfig": {
+   "id": "SecurityPolicyAdaptiveProtectionConfig",
+   "type": "object",
+   "description": "Configuration options for Cloud Armor Adaptive Protection (CAAP).",
+   "properties": {
+    "layer7DdosDefenseConfig": {
+     "$ref": "SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig",
+     "description": "If set to true, enables Cloud Armor Machine Learning."
+    }
+   }
+  },
+  "SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig": {
+   "id": "SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig",
+   "type": "object",
+   "description": "Configuration options for L7 DDoS detection.",
+   "properties": {
+    "enable": {
+     "type": "boolean",
+     "description": "If set to true, enables CAAP for L7 DDoS detection."
+    },
+    "ruleVisibility": {
+     "type": "string",
+     "description": "Rule visibility can be one of the following: STANDARD - opaque rules. (default) PREMIUM - transparent rules.",
+     "enum": [
+      "PREMIUM",
+      "STANDARD"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     }
    }
   },

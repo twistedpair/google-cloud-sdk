@@ -163,10 +163,18 @@ def get_tracker_file_path(destination_url,
     String file path to tracker file.
   """
   if tracker_file_type == TrackerFileType.UPLOAD:
+    # TODO(b/190093425): Remove the branches below in favor of using final
+    # destination resources in tracker paths for components.
+    if component_number is not None:
+      # Strip component numbers from destination urls so they all share the
+      # same prefix when hashed. This is required for cleaning up components.
+      object_name, _, _ = destination_url.object_name.rpartition('_')
+    else:
+      object_name = destination_url.object_name
+
     # Encode the destination bucket and object name into the tracker file name.
     raw_result_tracker_file_name = 'resumable_upload__{}__{}__{}.url'.format(
-        destination_url.bucket_name, destination_url.object_name,
-        destination_url.scheme.value)
+        destination_url.bucket_name, object_name, destination_url.scheme.value)
   elif tracker_file_type == TrackerFileType.DOWNLOAD:
     # Encode the fully-qualified destination file into the tracker file name.
     raw_result_tracker_file_name = 'resumable_download__{}__{}.etag'.format(

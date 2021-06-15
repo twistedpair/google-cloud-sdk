@@ -30,6 +30,7 @@ import random
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import gcs_api
+from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_executor
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
@@ -108,7 +109,20 @@ class FileUploadTask(task.Task):
               component_size_property.Get(),
               gcs_api.MAX_OBJECTS_PER_COMPOSE_CALL))
 
-      random_prefix = _get_random_prefix()
+      tracker_file_path = tracker_file_util.get_tracker_file_path(
+          self._destination_resource.storage_url,
+          tracker_file_util.TrackerFileType.PARALLEL_UPLOAD,
+          source_url=self._source_resource.storage_url)
+      tracker_data = tracker_file_util.read_composite_upload_tracker_file(
+          tracker_file_path)
+
+      if tracker_data:
+        random_prefix = tracker_data.random_prefix
+      else:
+        random_prefix = _get_random_prefix()
+
+      tracker_file_util.write_composite_upload_tracker_file(
+          tracker_file_path, random_prefix)
 
       file_part_upload_tasks = []
       for i, (offset, length) in enumerate(component_offsets_and_lengths):
@@ -131,6 +145,7 @@ class FileUploadTask(task.Task):
       finalize_upload_task = (
           finalize_composite_upload_task.FinalizeCompositeUploadTask(
               expected_component_count=len(file_part_upload_tasks),
+              source_resource=self._source_resource,
               destination_resource=self._destination_resource,
               random_prefix=random_prefix))
 

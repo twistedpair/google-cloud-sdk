@@ -4838,7 +4838,7 @@ class GoogleCloudApigeeV1DeploymentChangeReportRoutingDeployment(_messages.Messa
 
 
 class GoogleCloudApigeeV1DeploymentConfig(_messages.Message):
-  r"""A GoogleCloudApigeeV1DeploymentConfig object.
+  r"""NEXT ID: 9
 
   Messages:
     AttributesValue: Additional key-value metadata for the deployment.
@@ -4851,6 +4851,9 @@ class GoogleCloudApigeeV1DeploymentConfig(_messages.Message):
       following format: `organizations/{org}/apis/{api}/revisions/{rev}` or
       `organizations/{org}/sharedflows/{sharedflow}/revisions/{rev}`
     proxyUid: Unique ID of the API proxy revision.
+    serviceAccount: The service account identity associated with this
+      deployment. If non-empty, will be in the following format:
+      `projects/-/serviceAccounts/{account_email}`
     uid: Unique ID. The ID will only change if the deployment is deleted and
       recreated.
   """
@@ -4884,7 +4887,8 @@ class GoogleCloudApigeeV1DeploymentConfig(_messages.Message):
   location = _messages.StringField(3)
   name = _messages.StringField(4)
   proxyUid = _messages.StringField(5)
-  uid = _messages.StringField(6)
+  serviceAccount = _messages.StringField(6)
+  uid = _messages.StringField(7)
 
 
 class GoogleCloudApigeeV1Developer(_messages.Message):

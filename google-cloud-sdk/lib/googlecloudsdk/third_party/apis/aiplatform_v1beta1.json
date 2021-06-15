@@ -4710,14 +4710,18 @@
             "The Execution is new",
             "The Execution is running",
             "The Execution has finished running",
-            "The Execution has failed"
+            "The Execution has failed",
+            "The Execution completed through Cache hit.",
+            "The Execution was cancelled."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "NEW",
             "RUNNING",
             "COMPLETE",
-            "FAILED"
+            "FAILED",
+            "CACHED",
+            "CANCELLED"
           ]
         },
         "etag": {
@@ -9447,6 +9451,14 @@
         "genericMetadata": {
           "description": "Operation metadata for Featurestore batch read Features values.",
           "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        },
+        "instanceUri": {
+          "description": "The Cloud Storage\/BigQuery URI of the read_instance source as specified in the request.",
+          "type": "string"
+        },
+        "destinationUri": {
+          "description": "The Cloud Storage\/BigQuery URI of the destination as specified in the request.",
+          "type": "string"
         }
       }
     },
@@ -9694,10 +9706,6 @@
             "Used for Feature that is a list of boolean.",
             "Used for Feature that is double.",
             "Used for Feature that is a list of double.",
-            "Deprecated. Used for Feature that is float.",
-            "Deprecated. Used for Feature that is a list of float.",
-            "Deprecated. Used for Feature that is INT32.",
-            "Deprecated. Used for Feature that is a list of INT32.",
             "Used for Feature that is INT64.",
             "Used for Feature that is a list of INT64.",
             "Used for Feature that is string.",
@@ -9710,10 +9718,6 @@
             "BOOL_ARRAY",
             "DOUBLE",
             "DOUBLE_ARRAY",
-            "FLOAT",
-            "FLOAT_ARRAY",
-            "INT32",
-            "INT32_ARRAY",
             "INT64",
             "INT64_ARRAY",
             "STRING",
@@ -25936,6 +25940,11 @@
                           "description": "If set to true, any child resources of this Context will be deleted. (Otherwise, the request will fail with a FAILED_PRECONDITION error if the Context has any child resources, such as another Context, Artifact, or Execution).",
                           "location": "query",
                           "type": "boolean"
+                        },
+                        "etag": {
+                          "description": "Optional. The etag of the Context to delete. If this is provided, it must match the server's etag. Otherwise, the request will fail with a FAILED_PRECONDITION.",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [

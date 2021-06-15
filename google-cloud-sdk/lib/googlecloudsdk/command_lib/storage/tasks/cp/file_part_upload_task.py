@@ -24,14 +24,14 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import contextlib
 import functools
 import os
 import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
-from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.api_lib.storage import errors as api_errors
+from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import file_part
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
@@ -41,9 +41,9 @@ from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
-from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import retry
 
 
 UploadedComponent = collections.namedtuple(
@@ -72,9 +72,9 @@ class FilePartUploadTask(file_part_task.FilePartTask):
       number of components.
   """
 
-  def _get_progress_callback(self, task_status_queue):
+  def _get_wrapped_stream(self, digesters, task_status_queue):
     if task_status_queue:
-      return progress_callbacks.FilesAndBytesProgressCallback(
+      progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
           status_queue=task_status_queue,
           offset=self._offset,
           length=self._length,
@@ -86,20 +86,26 @@ class FilePartUploadTask(file_part_task.FilePartTask):
           process_id=os.getpid(),
           thread_id=threading.get_ident(),
       )
+    else:
+      progress_callback = None
 
-  @contextlib.contextmanager
-  def _progress_reporting_stream(self, digesters, task_status_queue):
-    progress_callback = self._get_progress_callback(task_status_queue)
     source_stream = files.BinaryFileReader(
         self._source_resource.storage_url.object_name)
-    wrapped_stream = file_part.FilePart(
+    return file_part.FilePart(
         source_stream, self._offset, self._length, digesters=digesters,
         progress_callback=progress_callback)
 
-    try:
-      yield wrapped_stream
-    finally:
-      wrapped_stream.close()
+  def _get_output(self, destination_resource):
+    if self._component_number is not None:
+      return task.Output(
+          additional_task_iterators=None,
+          messages=[
+              task.Message(
+                  topic=task.Topic.UPLOADED_COMPONENT,
+                  payload=UploadedComponent(
+                      component_number=self._component_number,
+                      object_resource=destination_resource)),
+          ])
 
   def _get_digesters(self):
     provider = self._destination_resource.storage_url.scheme
@@ -113,32 +119,30 @@ class FilePartUploadTask(file_part_task.FilePartTask):
       return {}
     return {hash_util.HashAlgorithm.MD5: hash_util.get_md5()}
 
-  def _validate_uploaded_object(self, digesters, destination_resource,
-                                task_status_queue):
-    if not digesters:
-      return
-    calculated_digest = hash_util.get_base64_hash_digest_string(
-        digesters[hash_util.HashAlgorithm.MD5])
+  def _existing_destination_is_valid(self, destination_resource):
+    """Returns True if a completed temporary component can be reused."""
+    digesters = self._get_digesters()
+    with self._get_wrapped_stream(digesters, task_status_queue=None) as stream:
+      stream.seek(0, whence=os.SEEK_END)  # Populates digesters.
+
     try:
-      hash_util.validate_object_hashes_match(
-          self._source_resource.storage_url, calculated_digest,
-          destination_resource.md5_hash)
-    except errors.HashMismatchError:
-      delete_object_task.DeleteObjectTask(
-          destination_resource.storage_url).execute(
-              task_status_queue=task_status_queue)
-      raise
+      upload_util.validate_uploaded_object(
+          digesters, destination_resource, task_status_queue=None)
+      return True
+    except command_errors.HashMismatchError:
+      return False
 
   def execute(self, task_status_queue=None):
     """Performs upload."""
     digesters = self._get_digesters()
-    provider = self._destination_resource.storage_url.scheme
+    destination_url = self._destination_resource.storage_url
+    provider = destination_url.scheme
     api = api_factory.get_api(provider)
     request_config = cloud_api.RequestConfig(
         md5_hash=self._source_resource.md5_hash, size=self._length)
 
-    with self._progress_reporting_stream(digesters,
-                                         task_status_queue) as upload_stream:
+    with self._get_wrapped_stream(digesters,
+                                  task_status_queue) as upload_stream:
       upload_strategy = upload_util.get_upload_strategy(api, self._length)
       if upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
         tracker_file_path = tracker_file_util.get_tracker_file_path(
@@ -161,13 +165,62 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         else:
           serialization_data = tracker_data.serialization_data
 
-        destination_resource = api.upload_object(
+        if tracker_data and tracker_data.complete:
+          try:
+            destination_resource = api.get_object_metadata(
+                destination_url.bucket_name, destination_url.object_name)
+          except api_errors.CloudApiError:
+            # Any problem fetching existing object metadata can be ignored,
+            # since we'll just reupload the object.
+            pass
+          else:
+            if self._existing_destination_is_valid(destination_resource):
+              return self._get_output(destination_resource)
+
+        attempt_upload = functools.partial(
+            api.upload_object,
             upload_stream,
             self._destination_resource,
             request_config=request_config,
             serialization_data=serialization_data,
             tracker_callback=tracker_callback,
             upload_strategy=upload_strategy)
+
+        def _handle_resumable_upload_error(exc_type, exc_value, exc_traceback,
+                                           state):
+          """Returns true if resumable upload should retry on error argument."""
+          del exc_traceback  # Unused.
+          if not (exc_type is api_errors.NotFoundError or
+                  getattr(exc_value, 'status_code', None) == 410):
+            return False
+
+          tracker_file_util.delete_tracker_file(tracker_file_path)
+
+          if state.retrial == 0:
+            # Ping bucket to see if it exists.
+            try:
+              api.get_bucket(self._destination_resource.storage_url.bucket_name)
+            except api_errors.CloudApiError as e:
+              # The user may not have permission to view the bucket metadata,
+              # so the ping may still be valid for access denied errors.
+              status = getattr(e, 'status_code', None)
+              if status not in (401, 403):
+                raise
+
+          return True
+
+        # Convert seconds to miliseconds by multiplying by 1000.
+        destination_resource = retry.Retryer(
+            max_retrials=properties.VALUES.storage.max_retries.GetInt(),
+            max_wait_ms=properties.VALUES.storage.max_retry_delay.GetInt() *
+            1000,
+            exponential_sleep_multiplier=(
+                properties.VALUES.storage.exponential_sleep_multiplier.GetInt()
+            )).RetryOnException(
+                attempt_upload,
+                sleep_ms=properties.VALUES.storage.base_retry_delay.GetInt() *
+                1000,
+                should_retry_if=_handle_resumable_upload_error)
 
         tracker_data = tracker_file_util.read_resumable_upload_tracker_file(
             tracker_file_path)
@@ -190,13 +243,4 @@ class FilePartUploadTask(file_part_task.FilePartTask):
       upload_util.validate_uploaded_object(digesters, destination_resource,
                                            task_status_queue)
 
-    if self._component_number is not None:
-      return task.Output(
-          additional_task_iterators=None,
-          messages=[
-              task.Message(
-                  topic=task.Topic.UPLOADED_COMPONENT,
-                  payload=UploadedComponent(
-                      component_number=self._component_number,
-                      object_resource=destination_resource)),
-          ])
+    return self._get_output(destination_resource)

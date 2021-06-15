@@ -182,7 +182,7 @@ class Certificate(_messages.Message):
     labels: Set of labels associated with a Certificate.
     name: A user-defined name of the certificate. Certificate names must be
       unique globally and match pattern
-      `projects/*/locations/*/certificates/*`
+      `projects/*/locations/*/certificates/*`.
     selfManagedCertData: If set, defines data of a self-managed certificate.
     subjectAlternativeNames: Output only. The list of Subject Alternative
       Names defined in the certificate.
@@ -239,7 +239,7 @@ class CertificateMap(_messages.Message):
     labels: Set of labels associated with a Certificate Map.
     name: A user-defined name of the Certificate Map. Certificate Map names
       must be unique globally and match pattern
-      `projects/*/locations/*/certificateMaps/*`
+      `projects/*/locations/*/certificateMaps/*`.
     updateTime: Output only. The update timestamp of a Certificate Map.
   """
 
@@ -304,7 +304,7 @@ class CertificateMapEntry(_messages.Message):
       selection.
     name: A user-defined name of the Certificate Map Entry. Certificate Map
       Entry names must be unique globally and match pattern
-      `projects/*/locations/*/certificateMaps/*/certificateMapEntries/*`
+      `projects/*/locations/*/certificateMaps/*/certificateMapEntries/*`.
     state: Output only. A serving state of this Certificate Map Entry.
     updateTime: Output only. The update timestamp of a Certificate Map Entry.
   """
@@ -429,7 +429,7 @@ class CertificatemanagerProjectsLocationsCertificateMapsCertificateMapEntriesLis
       system should return the next page of data.
     parent: Required. The project, location and certificate map from which the
       certificate map entries should be listed, specified in the format
-      `projects/*/locations/*/certificateMaps/*`
+      `projects/*/locations/*/certificateMaps/*`.
   """
 
   filter = _messages.StringField(1)
@@ -448,10 +448,10 @@ class CertificatemanagerProjectsLocationsCertificateMapsCertificateMapEntriesPat
       request body.
     name: A user-defined name of the Certificate Map Entry. Certificate Map
       Entry names must be unique globally and match pattern
-      `projects/*/locations/*/certificateMaps/*/certificateMapEntries/*`
+      `projects/*/locations/*/certificateMaps/*/certificateMapEntries/*`.
     updateMask: Required. The update mask applies to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+      buffers/docs/reference/google.protobuf#fieldmask.
   """
 
   certificateMapEntry = _messages.MessageField('CertificateMapEntry', 1)
@@ -509,10 +509,10 @@ class CertificatemanagerProjectsLocationsCertificateMapsListRequest(_messages.Me
       specify descending order for a field, add a suffix " desc".
     pageSize: Maximum number of certificate maps to return per call.
     pageToken: The value returned by the last `ListCertificateMapsResponse`.
-      Indicates that this is a continuation of a prior `ListCertificates`
+      Indicates that this is a continuation of a prior `ListCertificateMaps`
       call, and that the system should return the next page of data.
     parent: Required. The project and location from which the certificate maps
-      should be listed, specified in the format `projects/*/locations/*`
+      should be listed, specified in the format `projects/*/locations/*`.
   """
 
   filter = _messages.StringField(1)
@@ -530,10 +530,10 @@ class CertificatemanagerProjectsLocationsCertificateMapsPatchRequest(_messages.M
       body.
     name: A user-defined name of the Certificate Map. Certificate Map names
       must be unique globally and match pattern
-      `projects/*/locations/*/certificateMaps/*`
+      `projects/*/locations/*/certificateMaps/*`.
     updateMask: Required. The update mask applies to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+      buffers/docs/reference/google.protobuf#fieldmask.
   """
 
   certificateMap = _messages.MessageField('CertificateMap', 1)
@@ -613,7 +613,7 @@ class CertificatemanagerProjectsLocationsCertificatesListRequest(_messages.Messa
       Indicates that this is a continuation of a prior `ListCertificates`
       call, and that the system should return the next page of data.
     parent: Required. The project and location from which the certificate
-      should be listed, specified in the format `projects/*/locations/*`
+      should be listed, specified in the format `projects/*/locations/*`.
   """
 
   filter = _messages.StringField(1)
@@ -630,10 +630,10 @@ class CertificatemanagerProjectsLocationsCertificatesPatchRequest(_messages.Mess
     certificate: A Certificate resource to be passed as the request body.
     name: A user-defined name of the certificate. Certificate names must be
       unique globally and match pattern
-      `projects/*/locations/*/certificates/*`
+      `projects/*/locations/*/certificates/*`.
     updateMask: Required. The update mask applies to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask
+      buffers/docs/reference/google.protobuf#fieldmask.
   """
 
   certificate = _messages.MessageField('Certificate', 1)

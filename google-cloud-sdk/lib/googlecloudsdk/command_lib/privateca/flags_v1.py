@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import ipaddress
 import re
 
@@ -313,13 +314,13 @@ def GetKnownExtensionMapping():
   enum_type = privateca_base.GetMessagesModule(
       'v1'
   ).CertificateExtensionConstraints.KnownExtensionsValueListEntryValuesEnum
-  return {
-      'base-key-usage': enum_type.BASE_KEY_USAGE,
-      'extended-key-usage': enum_type.EXTENDED_KEY_USAGE,
-      'ca-options': enum_type.CA_OPTIONS,
-      'policy-ids': enum_type.POLICY_IDS,
-      'aia-ocsp-servers': enum_type.AIA_OCSP_SERVERS,
-  }
+  return collections.OrderedDict((
+      ('base-key-usage', enum_type.BASE_KEY_USAGE),
+      ('extended-key-usage', enum_type.EXTENDED_KEY_USAGE),
+      ('ca-options', enum_type.CA_OPTIONS),
+      ('policy-ids', enum_type.POLICY_IDS),
+      ('aia-ocsp-servers', enum_type.AIA_OCSP_SERVERS),
+  ))
 
 
 def _StrToObjectId(val):

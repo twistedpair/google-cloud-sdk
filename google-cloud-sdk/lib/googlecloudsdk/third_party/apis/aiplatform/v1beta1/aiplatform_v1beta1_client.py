@@ -4510,7 +4510,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.contexts.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['force'],
+        query_params=['etag', 'force'],
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='AiplatformProjectsLocationsMetadataStoresContextsDeleteRequest',

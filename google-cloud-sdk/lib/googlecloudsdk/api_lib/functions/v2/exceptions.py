@@ -30,6 +30,12 @@ class RequiredArgumentException(exceptions.Error):
   """
 
   def __init__(self, parameter_name, message):
-    super(RequiredArgumentException, self).__init__(
-        'Missing required argument [{0}]: {1}'.format(parameter_name, message))
+    super(RequiredArgumentException,
+          self).__init__("Missing required argument [{0}]: {1}".format(
+              parameter_name, message))
     self.parameter_name = parameter_name
+
+
+def StatusToFunctionsError(status):
+  """Convert a google.rpc.Status (used for LRO errors) into a FunctionsError."""
+  return FunctionsError(status.message)

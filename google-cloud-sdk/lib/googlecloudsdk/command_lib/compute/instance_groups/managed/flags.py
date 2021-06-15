@@ -159,12 +159,18 @@ def AddMostDisruptiveActionArg(parser, choices_with_none=True, default=None):
 
 def AddUpdateInstancesArgs(parser):
   """Add args for the update-instances command."""
-  parser.add_argument(
+  instance_selector_group = parser.add_group(required=True, mutex=True)
+  instance_selector_group.add_argument(
       '--instances',
       type=arg_parsers.ArgList(min_length=1),
       metavar='INSTANCE',
-      required=True,
+      required=False,
       help='Names of instances to update.')
+  instance_selector_group.add_argument(
+      '--all-instances',
+      required=False,
+      action='store_true',
+      help='Update all instances in the group.')
   AddMinimalActionArg(parser, True, 'none')
   AddMostDisruptiveActionArg(parser, True, 'replace')
 

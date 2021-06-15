@@ -3038,9 +3038,8 @@ def AddStackTypeArgs(parser):
               'The network interface can have both IPv4 and IPv6 addresses'
       },
       type=arg_utils.ChoiceToEnumName,
-      help=('The stack type for this network interface to identify whether the '
-            'IPv6 feature is enabled or not, only supports default NIC for '
-            'now. If not specified, IPV4_ONLY will be used.'))
+      help=('Specifies whether IPv6 is enabled on the default network '
+            'interface. If not specified, IPV4_ONLY will be used.'))
 
 
 def AddIpv6NetworkTierArgs(parser):
@@ -3048,15 +3047,11 @@ def AddIpv6NetworkTierArgs(parser):
   parser.add_argument(
       '--ipv6-network-tier',
       choices={
-          'PREMIUM': ('High quality, Google-grade network tier, support for '
-                      'all networking products.'),
-          'STANDARD': ('Public Internet quality, only limited support for '
-                       'other networking products.')
+          'PREMIUM': ('High quality, Google-grade network tier.'),
       },
       type=arg_utils.ChoiceToEnumName,
       help=('Specifies the IPv6 network tier that will be used to configure '
-            'the instance network interface IPv6 access config. Only `PREMIUM` '
-            'is supported for now.'))
+            'the instance network interface IPv6 access config.'))
 
 
 def AddNetworkPerformanceConfigsArgs(parser):

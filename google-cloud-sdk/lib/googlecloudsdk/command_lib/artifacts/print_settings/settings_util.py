@@ -25,11 +25,13 @@ from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.auth import service_account
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.artifacts import util as ar_util
+from googlecloudsdk.command_lib.artifacts.print_settings import apt
 from googlecloudsdk.command_lib.artifacts.print_settings import gradle
 from googlecloudsdk.command_lib.artifacts.print_settings import mvn
 from googlecloudsdk.command_lib.artifacts.print_settings import npm
 from googlecloudsdk.command_lib.artifacts.print_settings import pypi
 from googlecloudsdk.command_lib.artifacts.print_settings import python
+from googlecloudsdk.command_lib.artifacts.print_settings import yum
 from googlecloudsdk.core import config
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -152,6 +154,58 @@ def _IsServiceAccountCredentials(cred):
   else:
     return creds.CredentialTypeGoogleAuth.FromCredentials(
         cred) == creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT
+
+
+def GetAptSettingsSnippet(args):
+  """Forms an apt settings snippet to add to the sources.list.d directory.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Returns:
+    An apt settings snippet.
+  """
+  messages = ar_requests.GetMessages()
+  location, repo_path = _GetLocationAndRepoPath(
+      args, messages.Repository.FormatValueValuesEnum.APT)
+  repo = _GetRequiredRepoValue(args)
+  project = _GetRequiredProjectValue(args)
+
+  data = {
+      "location": location,
+      "project": project,
+      "repo": repo,
+      "repo_path": repo_path
+  }
+
+  apt_setting_template = apt.DEFAULT_TEMPLATE
+  return apt_setting_template.format(**data)
+
+
+def GetYumSettingsSnippet(args):
+  """Forms a Yum settings snippet to add to the yum.repos.d directory.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+
+  Returns:
+    A yum settings snippet.
+  """
+  messages = ar_requests.GetMessages()
+  location, repo_path = _GetLocationAndRepoPath(
+      args, messages.Repository.FormatValueValuesEnum.YUM)
+  repo = _GetRequiredRepoValue(args)
+
+  data = {
+      "location": location,
+      "repo": repo,
+      "repo_path": repo_path
+  }
+
+  yum_setting_template = yum.DEFAULT_TEMPLATE
+  return yum_setting_template.format(**data)
 
 
 def GetNpmSettingsSnippet(args):

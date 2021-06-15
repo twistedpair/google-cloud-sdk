@@ -78,13 +78,14 @@ class UserCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
-def AddInstance(parser):
+def AddInstance(parser, support_wildcard_instances=False):
   parser.add_argument(
       '--instance',
       '-i',
       required=True,
       completer=InstanceCompleter,
-      help='Cloud SQL instance ID.')
+      help='Cloud SQL instance ID.' if not support_wildcard_instances else
+      'Cloud SQL instance ID or "-" for all instances.')
 
 
 def AddInstanceArgument(parser):
@@ -626,7 +627,7 @@ def AddStorageSize(parser):
       '--storage-size',
       type=arg_parsers.BinarySize(
           lower_bound='10GB',
-          upper_bound='30720GB',
+          upper_bound='65536GB',
           suggested_binary_size_scales=['GB']),
       help=('Amount of storage allocated to the instance. Must be an integer '
             'number of GB. The default is 10GB. Information on storage '

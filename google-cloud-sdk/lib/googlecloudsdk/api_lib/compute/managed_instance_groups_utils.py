@@ -1457,11 +1457,35 @@ def CreateInstanceReferences(holder, igm_ref, instance_names):
 
 def GetDeviceNamesFromStatefulPolicy(stateful_policy):
   """Returns a list of device names from given StatefulPolicy message."""
-  if not stateful_policy or not stateful_policy.preservedState \
-      or not stateful_policy.preservedState.disks:
+  if (not stateful_policy or not stateful_policy.preservedState
+      or not stateful_policy.preservedState.disks):
     return []
   return [disk.key
           for disk in stateful_policy.preservedState.disks.additionalProperties]
+
+
+def GetInterfaceNamesFromStatefulPolicyForInternalIPs(stateful_policy):
+  """Returns a list of stateful internal IPs interface names."""
+  return _GetInterfaceNamesFromStatefulPolicyForIPs(
+      stateful_policy,
+      lambda stateful_policy: stateful_policy.preservedState.internalIPs)
+
+
+def GetInterfaceNamesFromStatefulPolicyForExternalIPs(stateful_policy):
+  """Returns a list of stateful external IPs interface names."""
+  return _GetInterfaceNamesFromStatefulPolicyForIPs(
+      stateful_policy,
+      lambda stateful_policy: stateful_policy.preservedState.externalIPs)
+
+
+def _GetInterfaceNamesFromStatefulPolicyForIPs(stateful_policy,
+                                               ips_field_lambda):
+  if not stateful_policy or not stateful_policy.preservedState:
+    return []
+  ips = ips_field_lambda(stateful_policy)
+  if not ips:
+    return []
+  return [ip.key for ip in ips.additionalProperties]
 
 
 def IsAutoscalerNew(autoscaler):

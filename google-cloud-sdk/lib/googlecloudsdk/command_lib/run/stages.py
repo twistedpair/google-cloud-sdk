@@ -27,10 +27,16 @@ SERVICE_ROUTES_READY = 'RoutesReady'
 SERVICE_CONFIGURATIONS_READY = 'ConfigurationsReady'
 BUILD_READY = 'BuildReady'
 UPLOAD_SOURCE = 'UploadSource'
+CREATE_REPO = 'CreateRepo'
 
 _RESOURCES_AVAILABLE = 'ResourcesAvailable'
 _STARTED = 'Started'
 _COMPLETED = 'Completed'
+
+
+def _CreateRepoStage():
+  return progress_tracker.Stage('Creating Container Repository...',
+                                key=CREATE_REPO)
 
 
 def _UploadSourceStage():
@@ -57,9 +63,12 @@ def UpdateTrafficStages():
 # expect cloud run resources to complete deployment.
 def ServiceStages(include_iam_policy_set=False,
                   include_route=True,
-                  include_build=False):
+                  include_build=False,
+                  include_create_repo=False):
   """Return the progress tracker Stages for conditions of a Service."""
   stages = []
+  if include_create_repo:
+    stages.append(_CreateRepoStage())
   if include_build:
     stages.append(_UploadSourceStage())
     stages.append(_BuildContainerStage())

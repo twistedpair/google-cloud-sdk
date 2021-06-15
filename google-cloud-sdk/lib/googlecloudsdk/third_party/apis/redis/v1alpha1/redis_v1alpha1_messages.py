@@ -1382,8 +1382,8 @@ class WeeklyMaintenanceWindow(_messages.Message):
   Fields:
     day: Required. Allows to define schedule that runs specified day of the
       week.
-    duration: Output only. Duration of the time window. Fixed to be 3 hours
-      for now.
+    duration: Output only. Duration of the maintenance window. The current
+      window is fixed at 1 hour.
     startTime: Required. Start time of the window in UTC.
   """
 

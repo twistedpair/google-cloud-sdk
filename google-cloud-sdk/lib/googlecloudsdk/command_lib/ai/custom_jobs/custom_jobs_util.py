@@ -18,11 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.util import messages
 from googlecloudsdk.command_lib.ai import constants
-from googlecloudsdk.core import log
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import resources
-from googlecloudsdk.core import yaml
 
 
 def ParseJobName(name):
@@ -54,17 +52,16 @@ def _ConstructSingleWorkerPoolSpec(aiplatform_client,
 
   machine_spec_msg = aiplatform_client.GetMessage('MachineSpec')
   machine_spec = machine_spec_msg(machineType=spec.get('machine-type'))
+  accelerator_type = spec.get('accelerator-type')
+  if accelerator_type:
+    machine_spec.acceleratorType = arg_utils.ChoiceToEnum(
+        accelerator_type, machine_spec_msg.AcceleratorTypeValueValuesEnum)
+    machine_spec.acceleratorCount = int(spec.get('accelerator-count', 1))
   worker_pool_spec.machineSpec = machine_spec
-
   worker_pool_spec.replicaCount = int(spec.get('replica-count', 1))
 
   container_image_uri = spec.get('container-image-uri')
-  executor_image_uri = spec.get('executor-image-uri') or spec.get(
-      'python-image-uri')
-  if 'python-image-uri' in spec:
-    log.warning('Field `python-image-uri` in flag `--worker-pool-spec` '
-                'will be deprecated. Please use `executor-image-uri` instead.')
-
+  executor_image_uri = spec.get('executor-image-uri')
   python_module = spec.get('python-module')
 
   if container_image_uri:
@@ -115,40 +112,38 @@ def _ConstructWorkerPoolSpecs(aiplatform_client, specs, **kwargs):
 
 
 def ConstructCustomJobSpec(aiplatform_client,
-                           config_path=None,
+                           base_config=None,
                            network=None,
                            service_account=None,
-                           specs=None,
+                           worker_pool_specs=None,
                            **kwargs):
-  """Constructs the spec of a custom job to be used in job creation request.
+  """Construct the spec of a custom job to be used in job creation request.
 
   Args:
     aiplatform_client: The AI Platform API client used.
-    config_path: str, Local path of a YAML file which contains the worker pool
-    network: user network to which the job should be peered with (overrides YAML
+    base_config: A base CustomJobSpec message instance, e.g. imported from a
+      Yaml config file, as a template to be overridden.
+    network: user network to which the job should be peered with (overrides yaml
       file)
     service_account: A service account (email address string) to use for the
       job.
-    specs: A dictionary of worker pool specifications, supposedly derived from
-      the gcloud command flags.
-    **kwargs: The keyword args to pass to construct the worker pool specs.
+    worker_pool_specs: A dict of worker pool specification, usually derived from
+      the gcloud command argument values.
+     **kwargs: The keyword args to pass to construct the worker pool specs.
 
   Returns:
     A CustomJobSpec message instance for creating a custom job.
   """
-  job_spec_msg = aiplatform_client.GetMessage('CustomJobSpec')
-  job_spec = job_spec_msg()
 
-  if config_path:
-    data = yaml.load_path(config_path)
-    if data:
-      job_spec = messages.DictToMessageWithErrorCheck(data, job_spec_msg)
+  job_spec = base_config
 
-  job_spec.network = network
-  job_spec.serviceAccount = service_account
+  if network is not None:
+    job_spec.network = network
+  if service_account is not None:
+    job_spec.serviceAccount = service_account
 
-  if specs:
+  if worker_pool_specs:
     job_spec.workerPoolSpecs = _ConstructWorkerPoolSpecs(
-        aiplatform_client, specs, **kwargs)
+        aiplatform_client, worker_pool_specs, **kwargs)
 
   return job_spec

@@ -313,3 +313,87 @@ def GetTokenClusterFlag():
       '--cluster',
       required=False,
       help='Name of the cluster for which token is created.')
+
+
+def GetIdTokenFlag():
+  """Anthos auth token id-token flag, specifies the ID Token received from identity provider after authorization flow."""
+  return base.Argument(
+      '--id-token',
+      required=False,
+      help='ID Token received from identity provider after authorization flow.')
+
+
+def GetAccessTokenFlag():
+  """Anthos auth token access-token flag, specifies the Access Token received from identity provider after authorization flow."""
+  return base.Argument(
+      '--access-token',
+      required=False,
+      help='Access Token received from identity provider after authorization flow.'
+  )
+
+
+def GetAccessTokenExpiryFlag():
+  """Anthos auth token access-token-expiry flag, specifies the Expiration time of access token received from identity provider after authorization flow."""
+  return base.Argument(
+      '--access-token-expiry',
+      required=False,
+      help='Expiration time of access token received from identity provider after authorization flow. The expected format is the number of seconds elapsed since January 1, 1970 UTC.'
+  )
+
+
+def GetRefreshTokenFlag():
+  """Anthos auth token refresh-token flag, specifies the Refresh Token received from identity provider after authorization flow."""
+  return base.Argument(
+      '--refresh-token',
+      required=False,
+      help='Refresh Token received from identity provider after authorization flow.'
+  )
+
+
+def GetClientIdFlag():
+  """Anthos auth token client-id flag, specifies the ClientID is the id for OIDC client application."""
+  return base.Argument(
+      '--client-id',
+      required=False,
+      help='ClientID is the id for OIDC client application.')
+
+
+def GetClientSecretFlag():
+  """Anthos auth token client-secret flag, specifies the Client Secret is the shared secret between OIDC client application and OIDC provider."""
+  return base.Argument(
+      '--client-secret',
+      required=False,
+      help='Client Secret is the shared secret between OIDC client application and OIDC provider.'
+  )
+
+
+def GetIdpCertificateAuthorityDataFlag():
+  """Anthos auth token idp-certificate-authority-data flag, specifies the PEM-encoded certificate authority certificate for OIDC provider."""
+  return base.Argument(
+      '--idp-certificate-authority-data',
+      required=False,
+      help='PEM-encoded certificate authority certificate for OIDC provider.')
+
+
+def GetIdpIssuerUrlFlag():
+  """Anthos auth token idp-issuer-url flag, specifies the URI for the OIDC provider."""
+  return base.Argument(
+      '--idp-issuer-url',
+      required=False,
+      help='URI for the OIDC provider. This URI should point to the level below .well-known/openid-configuration.'
+  )
+
+
+def GetKubeconfigPathFlag():
+  """Anthos auth token kubeconfig-path flag, specifies the Path to the kubeconfig path that would be updated with ID and access token on expiry."""
+  return base.Argument(
+      '--kubeconfig-path',
+      required=False,
+      help='Path to the kubeconfig path that would be updated with ID and access token on expiry.'
+  )
+
+
+def GetTokenUserFlag():
+  """Anthos auth token user flag, specifies the User used in kubeconfig."""
+  return base.Argument(
+      '--user', required=False, help='User used in kubeconfig.')

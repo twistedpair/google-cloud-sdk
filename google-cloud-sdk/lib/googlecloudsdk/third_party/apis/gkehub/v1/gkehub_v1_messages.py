@@ -1709,10 +1709,17 @@ class HelloWorldFooBar(_messages.Message):
 
 
 class HelloWorldMembershipSpec(_messages.Message):
-  r"""**Hello World**: An empty spec left as an example membership-specific
-  Feature Spec.
+  r"""**Hello World**: The membership-specific input for HelloWorld feature.
+
+  Fields:
+    customConfig: Custom config for individual memberships. This should be a
+      textpb string.
+    featureTest: Message to hold fields to use in feature e2e create/mutate
+      testing.
   """
 
+  customConfig = _messages.StringField(1)
+  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
 
 
 class HelloWorldMembershipState(_messages.Message):

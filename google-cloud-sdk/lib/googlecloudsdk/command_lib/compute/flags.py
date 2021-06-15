@@ -495,7 +495,8 @@ class ResourceResolver(object):
                        api_resource_registry,
                        default_scope=None,
                        scope_lister=None,
-                       with_project=True):
+                       with_project=True,
+                       source_project=None):
     """Resolve this resource against the arguments.
 
     Args:
@@ -521,6 +522,9 @@ class ResourceResolver(object):
         list of items (with 'name' attribute) for given scope.
       with_project: indicates whether or not project is associated. It should be
         False for flexible resource APIs.
+      source_project: indicates whether or not a project is specified. It could
+          be other projects. If it is None, then it will use the current project
+          if with_project is true
     Returns:
       Resource reference or list of references if plural.
     Raises:
@@ -535,10 +539,16 @@ class ResourceResolver(object):
       resource_scope = self.scopes[resource_scope]
     if default_scope is not None:
       default_scope = self.scopes[default_scope]
-    project = properties.VALUES.core.project.GetOrFail
+
+    if source_project is not None:
+      source_project_ref = api_resource_registry.Parse(
+          source_project, collection='compute.projects')
+      source_project = source_project_ref.Name()
+
+    project = source_project or properties.VALUES.core.project.GetOrFail()
     if with_project:
       params = {
-          'project': project(),
+          'project': project,
       }
     else:
       params = {}
@@ -833,7 +843,8 @@ class ResourceArgument(object):
                         api_resource_registry,
                         default_scope=None,
                         scope_lister=None,
-                        with_project=True):
+                        with_project=True,
+                        source_project=None):
     """Resolve this resource against the arguments.
 
     Args:
@@ -847,6 +858,9 @@ class ResourceArgument(object):
         list of items (with 'name' attribute) for given scope.
       with_project: indicates whether or not project is associated. It should be
         False for flexible resource APIs.
+      source_project: indicates whether or not a project is specified. It could
+        be other projects. If it is None, then it will use the current project
+        if with_project is true
     Returns:
       Resource reference or list of references if plural.
     """
@@ -871,7 +885,8 @@ class ResourceArgument(object):
         api_resource_registry,
         default_scope,
         scope_lister,
-        with_project=with_project)
+        with_project=with_project,
+        source_project=source_project)
     if self.plural:
       return refs
     if refs:

@@ -595,7 +595,6 @@ Minimum number of gigabytes of memory to which the cluster can scale.""",
   from_flags_group.add_argument(
       '--autoprovisioning-image-type',
       help='Node Autoprovisioning will create new nodes with the specified image type',
-      hidden=True,
       type=str)
   accelerator_group = from_flags_group.add_argument_group(
       'Arguments to set limits on accelerators:')
@@ -3718,7 +3717,7 @@ Enables use of services with externalIPs field.
       action='store_true',
       default=None,
       help=help_text,
-      hidden=True)
+      hidden=False)
 
 
 def AddNodePoolEnablePrivateNodes(parser, for_update=False, hidden=True):  # pylint: disable=unused-argument
@@ -3761,5 +3760,3 @@ def VerifyGetCredentialsFlags(args):
       args.IsSpecified('cross_connect_subnetwork') +
       args.IsSpecified('private_endpoint_fqdn')) > 1:
     raise util.Error(constants.CONFLICTING_GET_CREDS_FLAGS_ERROR_MSG)
-
-

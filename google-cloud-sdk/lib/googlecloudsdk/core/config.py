@@ -444,6 +444,11 @@ class Paths(object):
   def container_config_path(self):
     return os.path.join(self.global_config_dir, 'kubernetes')
 
+  @property
+  def virtualenv_dir(self):
+    """Absolute path of the virtual env dir."""
+    return os.path.join(self.global_config_dir, 'virtenv')
+
   def LegacyCredentialsDir(self, account):
     """Gets the path to store legacy credentials in.
 

@@ -5,6 +5,95 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 345.0.0 (2021-06-15)
+
+### AI
+
+* Updated `--worker-pool-spec` flag of `gcloud beta ai custom-jobs create` to support configuring GPUs.
+
+### Certificate Authority Service
+
+* Added `gcloud privateca` which enables creating and managing private
+  CA pools, certificate authorities, certificates and certificate templates
+  through the v1 API.
+
+### Cloud Composer
+
+* Fixed exception on executing `gcloud composer environments run env-name delete_dag` command without Airflow command arguments.
+
+### Cloud Dataflow
+
+* Updated build command to fuse multiple dependencies COPY docker commands into a single COPY command.
+
+### Cloud Datastream
+
+* Added `gcloud beta connection-profiles discover` which
+  performs discovery on a datastream connection profile.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.12.0
+  * Support partially clearing data via API.
+
+### Cloud Run
+
+* Modified `gcloud beta run deploy --source` to use Artifact Registry for build
+  artifacts. Users will be prompted prior to automatic creation of an Artifact
+  Registry repository named "cloud-run-source-deploy".
+* Promoted `--use-http2` flag to GA for Cloud Run (fully managed).
+
+### Cloud SQL
+
+*   Added support for `-` as a wildcard in place of an instance name for `gcloud sql backups list`.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.63.
+
+### Compute Engine
+
+* Promoted `--byol` flag of:
+  * `gcloud compute images import` to GA
+  * `gcloud compute instances import` to GA
+* Promoted following flags in `gcloud compute instances create` and `gcloud compute instances update-access-config` to GA:
+  * `--ipv6-public-ptr-domain`
+  * `--no-ipv6-public-ptr`
+* Added `--all-instances` flag on `compute managed update-instances` to reflect the instances selection options available in the REST API.
+* Add `--source-disk-project` flag to image creation. It is used to specify source disk project when creating image from disk.
+* Promoted support for `stack-type` and `ipv6-access-type` for `gcloud compute networks subnets create` to GA.
+* Promoted `--enable` flag to GA for the following commands:
+  * `gcloud compute routers add-bgp-peer`
+  * `gcloud compute routers update-bgp-peer`
+* Promoted `--keepalive-interval` flag to GA for the following commands:
+  * `gcloud compute routers create`
+  * `gcloud compute routers update`
+* Promoted support for `stack-type` and `ipv6-network-tier` for `gcloud compute instances <create|create-with-container>` to GA.
+* Promoted support for `stack-type` and `ipv6-network-tier` for `gcloud compute instance-templates <create|create-with-container>` to GA.
+* Promoted support for `stack-type` and `ipv6-access-type` for `gcloud compute networks subnets update` to GA.
+
+### Kubernetes Engine
+
+* Added `--enable-service-externalips` flag to `gcloud` alpha and beta to allow
+or deny services to set the ExternalIPs field.
+* Added `--autoprovisioning-image-type` flag to `gcloud container clusters create`
+  and `gcloud container clusters update` to specify the image type
+  for node autoprovisioning.
+
+### Network Services
+
+* Promoted `gcloud network-services endpoint-policies` to beta.
+
+### VPC Access
+
+* Promoted following flags in `gcloud compute networks vpc-access connectors create` to GA:
+  * `--min-instances`
+  * `--max-instances`
+  * `--machine-type`
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 344.0.0 (2021-06-08)
 
 ### Breaking Changes

@@ -511,8 +511,12 @@
           "type": "string"
         },
         "vpc": {
-          "description": "The canonical VPC name to connect to. It is in the form of projects\/{project}\/global\/networks\/{network}.",
+          "description": "The canonical VPC name to connect to. It is in the form of projects\/{project}\/locations\/{location}\/vpcs\/{vpc}.",
           "type": "string"
+        },
+        "enableHighAvailability": {
+          "description": "Whether this VPN connection has HA enabled on cluster side. If enabled, when creating VPN connection we will attempt to use 2 ANG floating IPs.",
+          "type": "boolean"
         }
       }
     },

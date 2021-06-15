@@ -333,9 +333,9 @@
           "description": "Details around the Pipeline's overall status.",
           "$ref": "PipelineReadyCondition"
         },
-        "missingTargetsCondition": {
-          "description": "Details around missing targets.",
-          "$ref": "MissingTargetsCondition"
+        "targetsPresentCondition": {
+          "description": "Detalis around targets enumerated in the pipeline.",
+          "$ref": "TargetsPresentCondition"
         }
       }
     },
@@ -344,23 +344,23 @@
       "description": "PipelineReadyCondition contains information around the status of the Pipeline.",
       "type": "object",
       "properties": {
-        "ready": {
-          "description": "True if the Pipeline is in a valid state. Otherwise at least one condition in `PipelineCondition` is in an invalid state. Iterate over those conditions and see which condition(s) has ready = false to find out what is wrong with the Pipeline.",
+        "status": {
+          "description": "True if the Pipeline is in a valid state. Otherwise at least one condition in `PipelineCondition` is in an invalid state. Iterate over those conditions and see which condition(s) has status = false to find out what is wrong with the Pipeline.",
           "type": "boolean"
         },
-        "changeTime": {
+        "updateTime": {
           "description": "Last time the condition was updated.",
           "type": "string",
           "format": "google-datetime"
         }
       }
     },
-    "MissingTargetsCondition": {
-      "id": "MissingTargetsCondition",
-      "description": "MissingTargetCondition contains information on any Targets defined in the Delivery Pipeline that do not actually exist.",
+    "TargetsPresentCondition": {
+      "id": "TargetsPresentCondition",
+      "description": "TargetsPresentCondition contains information on any Targets defined in the Delivery Pipeline that do not actually exist.",
       "type": "object",
       "properties": {
-        "ready": {
+        "status": {
           "description": "True if there aren't any missing Targets.",
           "type": "boolean"
         },
@@ -371,7 +371,7 @@
             "type": "string"
           }
         },
-        "changeTime": {
+        "updateTime": {
           "description": "Last time the condition was updated.",
           "type": "string",
           "format": "google-datetime"
@@ -423,25 +423,29 @@
           "type": "string"
         },
         "description": {
-          "description": "Description of the `Target`. Max length is 255 characters.",
+          "description": "Optional. Description of the `Target`. Max length is 255 characters.",
           "type": "string"
         },
         "annotations": {
-          "description": "User annotations. These attributes can only be set and used by the user, and not by Cloud Deploy. See https:\/\/google.aip.dev\/128#annotations for more details such as format and size limitations.",
+          "description": "Optional. User annotations. These attributes can only be set and used by the user, and not by Cloud Deploy. See https:\/\/google.aip.dev\/128#annotations for more details such as format and size limitations.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "labels": {
-          "description": "Labels are attributes that can be set and used by both the user and by Cloud Deploy. Labels must meet the following constraints: Each resource is limited to 64 labels. Keys must conform to the regexp: a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to be <= 128 bytes in size.",
+          "description": "Optional. Labels are attributes that can be set and used by both the user and by Cloud Deploy. Labels must meet the following constraints: Each resource is limited to 64 labels. Keys must conform to the regexp: a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to be <= 128 bytes in size.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "approvalRequired": {
-          "description": "Whether or not the `Target` requires approval.",
+          "description": "Optional. Whether or not the `Target` requires approval.",
+          "type": "boolean"
+        },
+        "requireApproval": {
+          "description": "Optional. Whether or not the `Target` requires approval.",
           "type": "boolean"
         },
         "createTime": {
@@ -457,15 +461,19 @@
           "format": "google-datetime"
         },
         "deployServiceAccount": {
-          "description": "Service account email used to deploy a `Rollout`. If unset, the compute service account will be used.",
+          "description": "Optional. Service account email used to deploy a `Rollout`. If unset, the compute service account will be used.",
           "type": "string"
         },
         "gkeCluster": {
           "description": "Information specifying a GKE Cluster.",
           "$ref": "GKECluster"
         },
+        "cluster": {
+          "description": "Information specifying a GKE Cluster.",
+          "$ref": "GkeCluster"
+        },
         "etag": {
-          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
         }
       }
@@ -485,6 +493,17 @@
         },
         "location": {
           "description": "Location of the cluster.",
+          "type": "string"
+        }
+      }
+    },
+    "GkeCluster": {
+      "id": "GkeCluster",
+      "description": "Information specifying a GKE Cluster.",
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "description": "Information specifying a GKE Cluster. Format is `projects\/{project_id}\/locations\/{location_id}\/clusters\/{cluster_id}.",
           "type": "string"
         }
       }
@@ -598,14 +617,18 @@
           "type": "string",
           "enumDescriptions": [
             "The render state is unspecified.",
+            "The render operation has completed successfully. This will be removed after we are fully migrated to SUCCEEDED.",
             "The render operation has completed successfully.",
+            "The render operation has failed. This will be removed after we are fully migrated to FAILED.",
             "The render operation has failed.",
             "The render operation is in progress."
           ],
           "enum": [
             "RENDER_STATE_UNSPECIFIED",
             "SUCCESS",
+            "SUCCEEDED",
             "FAILURE",
+            "FAILED",
             "IN_PROGRESS"
           ]
         },
@@ -622,6 +645,11 @@
           }
         },
         "renderBuild": {
+          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to render the manifests. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "renderingBuild": {
           "description": "Output only. The resource name of the Cloud Build `Build` object that is used to render the manifests. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
           "readOnly": true,
           "type": "string"
@@ -650,6 +678,10 @@
       "type": "object",
       "properties": {
         "imageName": {
+          "description": "Image name in Skaffold configuration.",
+          "type": "string"
+        },
+        "image": {
           "description": "Image name in Skaffold configuration.",
           "type": "string"
         },
@@ -687,6 +719,10 @@
           "description": "Optional. The name of the `Target` to which we are promoting the Release.",
           "type": "string"
         },
+        "destinationTarget": {
+          "description": "Optional. The name of the `Target` to which we are promoting the Release.",
+          "type": "string"
+        },
         "rolloutId": {
           "description": "Optional. The ID to assign to the generated `Rollout`.",
           "type": "string"
@@ -705,6 +741,18 @@
         "rollout": {
           "description": "`Rollout` that was created from this promotion.",
           "$ref": "Promotion"
+        },
+        "rolloutResource": {
+          "description": "The name of the `Rollout` that is being deployed.",
+          "type": "string"
+        },
+        "target": {
+          "description": "The name of the `Target` to which is being deployed.",
+          "type": "string"
+        },
+        "operation": {
+          "description": "The name of the operation that is tracking the `Rollout` creation.",
+          "type": "string"
         }
       }
     },
@@ -836,6 +884,10 @@
           "description": "The Target to which this `Rollout` is deploying.",
           "type": "string"
         },
+        "targetId": {
+          "description": "Required. The ID of Target to which this `Rollout` is deploying.",
+          "type": "string"
+        },
         "approvalState": {
           "description": "Output only. Approval state of the `Rollout`.",
           "readOnly": true,
@@ -861,7 +913,9 @@
           "type": "string",
           "enumDescriptions": [
             "The `Rollout` has an unspecified state.",
+            "The `Rollout` has completed successfully. This will be removed after we are fully migrated to SUCCEEDED.",
             "The `Rollout` has completed successfully.",
+            "The `Rollout` has failed. This will be removed after we are fully migrated to FAILED.",
             "The `Rollout` has failed.",
             "The `Rollout` is being deployed.",
             "The `Rollout` needs approval.",
@@ -872,7 +926,9 @@
           "enum": [
             "STATE_UNSPECIFIED",
             "SUCCESS",
+            "SUCCEEDED",
             "FAILURE",
+            "FAILED",
             "IN_PROGRESS",
             "PENDING_APPROVAL",
             "APPROVAL_REJECTED",
@@ -886,6 +942,11 @@
           "type": "string"
         },
         "deployBuild": {
+          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to deploy the Rollout. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deployingBuild": {
           "description": "Output only. The resource name of the Cloud Build `Build` object that is used to deploy the Rollout. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
           "readOnly": true,
           "type": "string"
@@ -1593,11 +1654,6 @@
                       "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                       "location": "query",
                       "type": "boolean"
-                    },
-                    "etag": {
-                      "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -1903,11 +1959,6 @@
                           "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                           "location": "query",
                           "type": "boolean"
-                        },
-                        "etag": {
-                          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
-                          "location": "query",
-                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -2546,11 +2597,6 @@
                       "description": "Optional. If set to true, the request is validated and the user is provided with an expected result, but no actual change is made.",
                       "location": "query",
                       "type": "boolean"
-                    },
-                    "etag": {
-                      "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [

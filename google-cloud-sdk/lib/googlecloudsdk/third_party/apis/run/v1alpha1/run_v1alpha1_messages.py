@@ -654,11 +654,11 @@ class JobSpec(_messages.Message):
   r"""JobSpec describes how the job execution will look like.
 
   Fields:
-    activeDeadlineSeconds: Optional. Specifies the duration in seconds
-      relative to the startTime that the job may be active before the system
-      tries to terminate it. If set to zero, the system will never attempt to
-      terminate the job based on time. Otherwise, the value must be positive
-      integer. +optional
+    activeDeadlineSeconds: Optional. Not supported. Specifies the duration in
+      seconds relative to the startTime that the job may be active before the
+      system tries to terminate it. If set to zero, the system will never
+      attempt to terminate the job based on time. Otherwise, the value must be
+      positive integer. +optional
     backoffLimit: Optional. Specifies the number of retries per instance,
       before marking this job failed. If set to zero, instances will never
       retry on failure. +optional
@@ -678,11 +678,11 @@ class JobSpec(_messages.Message):
       completion/ +optional
     template: Optional. Describes the instance that will be created when
       executing a job.
-    ttlSecondsAfterFinished: Optional. ttlSecondsAfterFinished limits the
-      lifetime of a Job that has finished execution (either Complete or
-      Failed). If this field is set, ttlSecondsAfterFinished after the Job
-      finishes, it is eligible to be automatically deleted. When the Job is
-      being deleted, its lifecycle guarantees (e.g. finalizers) will be
+    ttlSecondsAfterFinished: Optional. Not supported. ttlSecondsAfterFinished
+      limits the lifetime of a Job that has finished execution (either
+      Complete or Failed). If this field is set, ttlSecondsAfterFinished after
+      the Job finishes, it is eligible to be automatically deleted. When the
+      Job is being deleted, its lifecycle guarantees (e.g. finalizers) will be
       honored. If this field is set to zero, the Job won't be automatically
       deleted. +optional
   """

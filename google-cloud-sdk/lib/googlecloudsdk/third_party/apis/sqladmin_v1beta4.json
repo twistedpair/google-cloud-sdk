@@ -804,9 +804,13 @@
               "The database version is MySQL 8.",
               "The database version is PostgreSQL 13.",
               "The database version is SQL Server 2019 Standard.",
+              "The database version is SQL Server 2019 Standard CU10.",
               "The database version is SQL Server 2019 Enterprise.",
+              "The database version is SQL Server 2019 Enterprise CU10.",
               "The database version is SQL Server 2019 Express.",
-              "The database version is SQL Server 2019 Web."
+              "The database version is SQL Server 2019 Express CU10.",
+              "The database version is SQL Server 2019 Web.",
+              "The database version is SQL Server 2019 Web CU10."
             ],
             "enum": [
               "SQL_DATABASE_VERSION_UNSPECIFIED",
@@ -825,9 +829,13 @@
               "MYSQL_8_0",
               "POSTGRES_13",
               "SQLSERVER_2019_STANDARD",
+              "SQLSERVER_2019_STANDARD_CU10",
               "SQLSERVER_2019_ENTERPRISE",
+              "SQLSERVER_2019_ENTERPRISE_CU10",
               "SQLSERVER_2019_EXPRESS",
-              "SQLSERVER_2019_WEB"
+              "SQLSERVER_2019_EXPRESS_CU10",
+              "SQLSERVER_2019_WEB",
+              "SQLSERVER_2019_WEB_CU10"
             ]
           }
         },
@@ -1099,9 +1107,13 @@
             "The database version is MySQL 8.",
             "The database version is PostgreSQL 13.",
             "The database version is SQL Server 2019 Standard.",
+            "The database version is SQL Server 2019 Standard CU10.",
             "The database version is SQL Server 2019 Enterprise.",
+            "The database version is SQL Server 2019 Enterprise CU10.",
             "The database version is SQL Server 2019 Express.",
-            "The database version is SQL Server 2019 Web."
+            "The database version is SQL Server 2019 Express CU10.",
+            "The database version is SQL Server 2019 Web.",
+            "The database version is SQL Server 2019 Web CU10."
           ],
           "enum": [
             "SQL_DATABASE_VERSION_UNSPECIFIED",
@@ -1120,9 +1132,13 @@
             "MYSQL_8_0",
             "POSTGRES_13",
             "SQLSERVER_2019_STANDARD",
+            "SQLSERVER_2019_STANDARD_CU10",
             "SQLSERVER_2019_ENTERPRISE",
+            "SQLSERVER_2019_ENTERPRISE_CU10",
             "SQLSERVER_2019_EXPRESS",
-            "SQLSERVER_2019_WEB"
+            "SQLSERVER_2019_EXPRESS_CU10",
+            "SQLSERVER_2019_WEB",
+            "SQLSERVER_2019_WEB_CU10"
           ]
         },
         "settings": {
@@ -2177,9 +2193,9 @@
           "type": "string",
           "enumDescriptions": [
             "",
-            "If the user wants to schedule the maintenance to happen now.",
-            "If the user wants to use the existing maintenance policy to find the next available window.",
-            "If the user wants to reschedule the maintenance to a specific time."
+            "Reschedules maintenance to happen now (within 5 minutes).",
+            "Reschedules maintenance to occur within one week from the originally scheduled day and time.",
+            "Reschedules maintenance to a specific time and day."
           ],
           "enum": [
             "RESCHEDULE_TYPE_UNSPECIFIED",
@@ -2254,7 +2270,9 @@
             "The gtid_mode is not supported, applicable for MySQL.",
             "SQL Server Agent is not running.",
             "The table definition is not support due to missing primary key or replica identity, applicable for postgres.",
-            "The customer has a definer that will break EM setup."
+            "The customer has a definer that will break EM setup.",
+            "SQL Server @@SERVERNAME does not match actual host name",
+            "The primary instance has been setup and will fail the setup."
           ],
           "enum": [
             "SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED",
@@ -2278,7 +2296,9 @@
             "UNSUPPORTED_GTID_MODE",
             "SQLSERVER_AGENT_NOT_RUNNING",
             "UNSUPPORTED_TABLE_DEFINITION",
-            "UNSUPPORTED_DEFINER"
+            "UNSUPPORTED_DEFINER",
+            "SQLSERVER_SERVERNAME_MISMATCH",
+            "PRIMARY_ALREADY_SETUP"
           ]
         },
         "detail": {

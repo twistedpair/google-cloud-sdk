@@ -981,9 +981,8 @@ class DeidentifyDatasetRequest(_messages.Message):
     config: Deidentify configuration.
     destinationDataset: The name of the dataset resource to create and write
       the redacted data to. * The destination dataset must not exist. * The
-      destination dataset must be in the same project and location as the
-      source dataset. De-identifying data across multiple projects or
-      locations is not supported.
+      destination dataset must be in the same location as the source dataset.
+      De-identifying data across multiple locations is not supported.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
@@ -999,10 +998,10 @@ class DeidentifyDicomStoreRequest(_messages.Message):
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. * The
       destination dataset must exist. * The source dataset and destination
-      dataset must both reside in the same project. De-identifying data across
-      multiple projects is not supported. * The destination DICOM store must
-      not exist. * The caller must have the necessary permissions to create
-      the destination DICOM store.
+      dataset must both reside in the same location. De-identifying data
+      across multiple locations is not supported. * The destination DICOM
+      store must not exist. * The caller must have the necessary permissions
+      to create the destination DICOM store.
     filterConfig: Filter configuration.
   """
 
@@ -1020,9 +1019,9 @@ class DeidentifyFhirStoreRequest(_messages.Message):
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`. * The
       destination dataset must exist. * The source dataset and destination
-      dataset must both reside in the same project. De-identifying data across
-      multiple projects is not supported. * The destination FHIR store must
-      exist. * The caller must have the healthcare.fhirResources.update
+      dataset must both reside in the same location. De-identifying data
+      across multiple locations is not supported. * The destination FHIR store
+      must exist. * The caller must have the healthcare.fhirResources.update
       permission to write to the destination FHIR store.
     resourceFilter: A filter specifying the resources to include in the
       output. If not specified, all resources are included in the output.

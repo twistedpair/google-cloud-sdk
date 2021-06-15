@@ -1819,6 +1819,7 @@
     },
     "GoogleCloudApigeeV1DeploymentConfig": {
       "id": "GoogleCloudApigeeV1DeploymentConfig",
+      "description": "NEXT ID: 9",
       "type": "object",
       "properties": {
         "name": {
@@ -1847,6 +1848,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "serviceAccount": {
+          "description": "The service account identity associated with this deployment. If non-empty, will be in the following format: `projects\/-\/serviceAccounts\/{account_email}`",
+          "type": "string"
         }
       }
     },

@@ -57,6 +57,47 @@ def MakeStatefulPolicyPreservedStateDiskEntry(messages, stateful_disk_dict):
       key=stateful_disk_dict.get('device-name'), value=disk_device)
 
 
+def MakeInternalIPEntry(messages, stateful_ip_dict):
+  return (messages.StatefulPolicyPreservedState.InternalIPsValue
+          .AdditionalProperty(
+              key=stateful_ip_dict.get('interface-name'),
+              value=_MakeNetworkIPForStatefulIP(messages, stateful_ip_dict)))
+
+
+def MakeExternalIPEntry(messages, stateful_ip_dict):
+  return (messages.StatefulPolicyPreservedState.ExternalIPsValue
+          .AdditionalProperty(
+              key=stateful_ip_dict.get('interface-name'),
+              value=_MakeNetworkIPForStatefulIP(messages, stateful_ip_dict)))
+
+
+def _MakeNetworkIPForStatefulIP(messages, stateful_ip_dict):
+  """Make NetworkIP proto out of stateful IP configuration dict."""
+  network_ip = messages.StatefulPolicyPreservedStateNetworkIp()
+  if stateful_ip_dict.get('auto-delete'):
+    network_ip.autoDelete = (
+        stateful_ip_dict.get('auto-delete').GetAutoDeleteEnumValue(
+            messages.StatefulPolicyPreservedStateNetworkIp
+            .AutoDeleteValueValuesEnum))
+  return network_ip
+
+
+def MakeStatefulPolicyPreservedStateInternalIPEntry(messages, stateful_ip_dict):
+  """Make InternalIPsValue proto for a given stateful IP configuration dict."""
+  return (messages.StatefulPolicyPreservedState.InternalIPsValue
+          .AdditionalProperty(
+              key=stateful_ip_dict.get('interface-name'),
+              value=_MakeNetworkIPForStatefulIP(messages, stateful_ip_dict)))
+
+
+def MakeStatefulPolicyPreservedStateExternalIPEntry(messages, stateful_ip_dict):
+  """Make ExternalIPsValue proto for a given stateful IP configuration dict."""
+  return (messages.StatefulPolicyPreservedState.ExternalIPsValue
+          .AdditionalProperty(
+              key=stateful_ip_dict.get('interface-name'),
+              value=_MakeNetworkIPForStatefulIP(messages, stateful_ip_dict)))
+
+
 def MakeStatefulPolicy(messages, preserved_state_disks):
   """Make stateful policy proto from a list of preserved state disk protos."""
   if not preserved_state_disks:
@@ -67,7 +108,33 @@ def MakeStatefulPolicy(messages, preserved_state_disks):
               additionalProperties=preserved_state_disks)))
 
 
+def UpdateStatefulPolicy(messages, stateful_policy_to_update,
+                         preserved_state_disks=None,
+                         preserved_state_internal_ips=None,
+                         preserved_state_external_ips=None):
+  """Update stateful policy proto from a list of preserved state attributes."""
+  if preserved_state_disks is not None:
+    stateful_policy_to_update.preservedState.disks = (
+        messages.StatefulPolicyPreservedState.DisksValue(
+            additionalProperties=preserved_state_disks))
+  if preserved_state_internal_ips is not None:
+    stateful_policy_to_update.preservedState.internalIPs = (
+        messages.StatefulPolicyPreservedState.InternalIPsValue(
+            additionalProperties=preserved_state_internal_ips))
+  if preserved_state_external_ips is not None:
+    stateful_policy_to_update.preservedState.externalIPs = (
+        messages.StatefulPolicyPreservedState.ExternalIPsValue(
+            additionalProperties=preserved_state_external_ips))
+  return stateful_policy_to_update
+
+
 def PatchStatefulPolicyDisk(preserved_state, patch):
+  """Patch the preserved state proto."""
+  if patch.value.autoDelete:
+    preserved_state.value.autoDelete = patch.value.autoDelete
+
+
+def PatchStatefulPolicyIP(preserved_state, patch):
   """Patch the preserved state proto."""
   if patch.value.autoDelete:
     preserved_state.value.autoDelete = patch.value.autoDelete

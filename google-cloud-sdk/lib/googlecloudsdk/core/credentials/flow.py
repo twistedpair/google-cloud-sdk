@@ -248,7 +248,7 @@ def _CreateGoogleAuthClientConfigFromProperties():
 def HandleOauth2FlowErrors():
   try:
     yield
-  except requests_exceptions.ConnectionError as e:
+  except requests_exceptions.ProxyError as e:
     RaiseProxyError(e)
   except rfc6749_errors.AccessDeniedError as e:
     six.raise_from(AuthRequestRejectedError(e), e)

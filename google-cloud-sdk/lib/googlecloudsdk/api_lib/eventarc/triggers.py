@@ -36,10 +36,6 @@ class NoFieldsSpecifiedError(exceptions.Error):
   """Error when no fields were specified for a Patch operation."""
 
 
-class NoRegionSpecifiedError(exceptions.Error):
-  """Error when no destination region was specified for a global trigger."""
-
-
 def CreateTriggersClient(release_track):
   api_version = common.GetApiVersion(release_track)
   if release_track == base.ReleaseTrack.GA:
@@ -75,8 +71,8 @@ def TriggerActiveTime(event_type, update_time):
   return times.FormatDateTime(active_dt, fmt='%H:%M:%S', tzinfo=times.LOCAL)
 
 
-class _TriggersClient(object):
-  """Client for Triggers service in the Eventarc API."""
+class _BaseTriggersClient(object):
+  """Base Triggers Client with common methods for v1 and v1beta1 clients."""
 
   def __init__(self, api_version):
     client = apis.GetClientInstance(common.API_NAME, api_version)
@@ -84,22 +80,126 @@ class _TriggersClient(object):
     self._service = client.projects_locations_triggers
     self._operation_service = client.projects_locations_operations
 
+  def Create(self, trigger_ref, trigger_message):
+    """Creates a new Trigger.
+
+    Args:
+      trigger_ref: Resource, the Trigger to create.
+      trigger_message: Trigger, the trigger message that holds trigger's
+        event_filters, service account, destination, transport, etc.
+
+    Returns:
+      A long-running operation for create.
+    """
+    create_req = self._messages.EventarcProjectsLocationsTriggersCreateRequest(
+        parent=trigger_ref.Parent().RelativeName(),
+        trigger=trigger_message,
+        triggerId=trigger_ref.Name())
+    return self._service.Create(create_req)
+
+  def Delete(self, trigger_ref):
+    """Deletes a Trigger.
+
+    Args:
+      trigger_ref: Resource, the Trigger to delete.
+
+    Returns:
+      A long-running operation for delete.
+    """
+    delete_req = self._messages.EventarcProjectsLocationsTriggersDeleteRequest(
+        name=trigger_ref.RelativeName())
+    return self._service.Delete(delete_req)
+
+  def Get(self, trigger_ref):
+    """Gets a Trigger.
+
+    Args:
+      trigger_ref: Resource, the Trigger to get.
+
+    Returns:
+      The Trigger message.
+    """
+    get_req = self._messages.EventarcProjectsLocationsTriggersGetRequest(
+        name=trigger_ref.RelativeName())
+    return self._service.Get(get_req)
+
+  def List(self, location_ref, limit, page_size):
+    """Lists Triggers in a given location.
+
+    Args:
+      location_ref: Resource, the location to list Triggers in.
+      limit: int or None, the total number of results to return.
+      page_size: int, the number of entries in each batch (affects requests
+        made, but not the yielded results).
+
+    Returns:
+      A generator of Triggers in the location.
+    """
+    list_req = self._messages.EventarcProjectsLocationsTriggersListRequest(
+        parent=location_ref.RelativeName(), pageSize=page_size)
+    return list_pager.YieldFromList(
+        self._service,
+        list_req,
+        field='triggers',
+        batch_size=page_size,
+        limit=limit,
+        batch_size_attribute='pageSize')
+
+  def Patch(self, trigger_ref, trigger_message, update_mask):
+    """Updates a Trigger.
+
+    Args:
+      trigger_ref: Resource, the Trigger to update.
+      trigger_message: Trigger, the trigger message that holds trigger's
+        event_filters, service account, destination, transport, etc.
+      update_mask: str, a comma-separated list of Trigger fields to update.
+
+    Returns:
+      A long-running operation for update.
+    """
+    patch_req = self._messages.EventarcProjectsLocationsTriggersPatchRequest(
+        name=trigger_ref.RelativeName(),
+        trigger=trigger_message,
+        updateMask=update_mask)
+    return self._service.Patch(patch_req)
+
+  def WaitFor(self, operation, operation_type, trigger_ref):
+    """Waits until the given long-running operation is complete.
+
+    Args:
+      operation: the long-running operation to wait for.
+      operation_type: str, the type of operation (Creating, Updating or
+        Deleting).
+      trigger_ref: Resource, the Trigger to reference.
+
+    Returns:
+      The long-running operation's response.
+    """
+    poller = waiter.CloudOperationPollerNoResources(self._operation_service)
+    operation_ref = resources.REGISTRY.Parse(
+        operation.name, collection='eventarc.projects.locations.operations')
+    trigger_name = trigger_ref.Name()
+    project_name = trigger_ref.Parent().Parent().Name()
+    location_name = trigger_ref.Parent().Name()
+    message = ('{} trigger [{}] in project [{}], '
+               'location [{}]').format(operation_type, trigger_name,
+                                       project_name, location_name)
+    return waiter.WaitFor(poller, operation_ref, message)
+
+
+class _TriggersClient(_BaseTriggersClient):
+  """Client for Triggers service in the Eventarc GA API."""
+
   def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
-                           destination_run_service, destination_run_path,
-                           destination_run_region, transport_topic_ref):
+                           destination_message, transport_topic_ref):
     """Builds a Trigger message with the given data."""
     filter_messages = [] if event_filters is None else [
         self._messages.EventFilter(attribute=key, value=value)
         for key, value in event_filters.items()
     ]
     transport_topic_name = transport_topic_ref.RelativeName(
-        ) if transport_topic_ref else None
+    ) if transport_topic_ref else None
 
-    run_message = self._messages.CloudRun(
-        service=destination_run_service,
-        path=destination_run_path,
-        region=destination_run_region)
-    destination_message = self._messages.Destination(cloudRun=run_message)
     pubsub = self._messages.Pubsub(topic=transport_topic_name)
     transport = self._messages.Transport(pubsub=pubsub)
     return self._messages.Trigger(
@@ -108,6 +208,74 @@ class _TriggersClient(object):
         serviceAccount=service_account,
         destination=destination_message,
         transport=transport)
+
+  def BuildCloudRunTriggerMessage(self, trigger_ref, event_filters,
+                                  service_account, destination_run_service,
+                                  destination_run_path, destination_run_region,
+                                  transport_topic_ref):
+    """Builds a Cloud Run Trigger message with the given data.
+
+    Args:
+      trigger_ref: Resource, the Trigger to create.
+      event_filters: dict or None, the Trigger's event filters.
+      service_account: str or None, the Trigger's service account.
+      destination_run_service: str or None, the Trigger's destination
+        Cloud Run service.
+      destination_run_path: str or None, the path on the destination Cloud Run
+        service.
+      destination_run_region: str or None, the destination Cloud Run service's
+        region.
+      transport_topic_ref: Resource or None, the user-provided transport topic.
+
+    Returns:
+      A Trigger message with a destination Cloud Run service.
+    """
+
+    run_message = self._messages.CloudRun(
+        service=destination_run_service,
+        path=destination_run_path,
+        region=destination_run_region)
+    destination_message = self._messages.Destination(cloudRun=run_message)
+    return self._BuildTriggerMessage(trigger_ref, event_filters,
+                                     service_account, destination_message,
+                                     transport_topic_ref)
+
+  def BuildGKETriggerMessage(self, trigger_ref, event_filters, service_account,
+                             destination_gke_cluster, destination_gke_location,
+                             destination_gke_namespace, destination_gke_service,
+                             destination_gke_path, transport_topic_ref):
+    """Builds a GKE Trigger message with the given data.
+
+    Args:
+      trigger_ref: Resource, the Trigger to create.
+      event_filters: dict or None, the Trigger's event filters.
+      service_account: str or None, the Trigger's service account.
+      destination_gke_cluster: str or None, the Trigger's destination GKE
+        service's cluster.
+      destination_gke_location: str or None, the location of the Trigger's
+        destination GKE service's cluster. It defaults to the Trigger's region.
+      destination_gke_namespace: str or None, the Trigger's destination GKE
+        service's namespace.
+      destination_gke_service: str or None, the Trigger's destination
+        GKE service.
+      destination_gke_path: str or None, the path on the destinationa GKE
+        service.
+      transport_topic_ref: Resource or None, the user-provided transport topic.
+
+    Returns:
+      A Trigger message with a GKE destination service.
+    """
+
+    gke_message = self._messages.GKE(
+        cluster=destination_gke_cluster,
+        location=destination_gke_location,
+        namespace=destination_gke_namespace,
+        service=destination_gke_service,
+        path=destination_gke_path)
+    destination_message = self._messages.Destination(gke=gke_message)
+    return self._BuildTriggerMessage(trigger_ref, event_filters,
+                                     service_account, destination_message,
+                                     transport_topic_ref)
 
   def BuildUpdateMask(self, event_filters, service_account,
                       destination_run_service, destination_run_path,
@@ -142,156 +310,35 @@ class _TriggersClient(object):
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     return ','.join(update_mask)
 
-  def Create(self, trigger_ref, event_filters, service_account,
-             destination_run_service, destination_run_path,
-             destination_run_region, transport_topic_ref):
-    """Creates a new Trigger.
-
-    Args:
-      trigger_ref: Resource, the Trigger to create.
-      event_filters: dict, the Trigger's event filters.
-      service_account: str or None, the Trigger's service account.
-      destination_run_service: str, the Trigger's destination Cloud Run service.
-      destination_run_path: str or None, the path on the destination service.
-      destination_run_region: str or None, the destination service's region.
-      transport_topic_ref: Resource or None, the user-provided transport topic.
-
-    Returns:
-      A long-running operation for create.
-
-    Raises:
-      NoRegionSpecifiedError: Destination region omitted for a global trigger.
-    """
-    # If no Cloud Run region was provided, use the trigger's location instead.
-    if destination_run_region is None:
-      destination_run_region = trigger_ref.Parent().Name()
-      if destination_run_region == 'global':
-        raise NoRegionSpecifiedError(
-            'The `--destination-run-region` flag is required when creating a global trigger.'
-        )
-    trigger_message = self._BuildTriggerMessage(trigger_ref, event_filters,
-                                                service_account,
-                                                destination_run_service,
-                                                destination_run_path,
-                                                destination_run_region,
-                                                transport_topic_ref)
-    create_req = self._messages.EventarcProjectsLocationsTriggersCreateRequest(
-        parent=trigger_ref.Parent().RelativeName(),
-        trigger=trigger_message,
-        triggerId=trigger_ref.Name())
-    return self._service.Create(create_req)
-
-  def Delete(self, trigger_ref):
-    """Deletes a Trigger.
-
-    Args:
-      trigger_ref: Resource, the Trigger to delete.
-
-    Returns:
-      A long-running operation for delete.
-    """
-    delete_req = self._messages.EventarcProjectsLocationsTriggersDeleteRequest(
-        name=trigger_ref.RelativeName())
-    return self._service.Delete(delete_req)
-
-  def Get(self, trigger_ref):
-    """Gets a Trigger.
-
-    Args:
-      trigger_ref: Resource, the Trigger to get.
-
-    Returns:
-      The Trigger message.
-    """
-    get_req = self._messages.EventarcProjectsLocationsTriggersGetRequest(
-        name=trigger_ref.RelativeName())
-    return self._service.Get(get_req)
-
   def GetEventType(self, trigger_message):
     """Gets the Trigger's event type."""
     return types.EventFiltersMessageToType(trigger_message.eventFilters)
 
-  def List(self, location_ref, limit, page_size):
-    """Lists Triggers in a given location.
 
-    Args:
-      location_ref: Resource, the location to list Triggers in.
-      limit: int or None, the total number of results to return.
-      page_size: int, the number of entries in each batch (affects requests
-        made, but not the yielded results).
-
-    Returns:
-      A generator of Triggers in the location.
-    """
-    list_req = self._messages.EventarcProjectsLocationsTriggersListRequest(
-        parent=location_ref.RelativeName(), pageSize=page_size)
-    return list_pager.YieldFromList(
-        self._service,
-        list_req,
-        field='triggers',
-        batch_size=page_size,
-        limit=limit,
-        batch_size_attribute='pageSize')
-
-  def Patch(self, trigger_ref, event_filters, service_account,
-            destination_run_service, destination_run_path,
-            destination_run_region, update_mask):
-    """Updates a Trigger.
-
-    Args:
-      trigger_ref: Resource, the Trigger to update.
-      event_filters: dict or None, the updated event filters.
-      service_account: str or None, the updated service account.
-      destination_run_service: str or None, the updated destination service.
-      destination_run_path: str or None, the updated destination path.
-      destination_run_region: str or None, the updated destination region.
-      update_mask: str, a comma-separated list of Trigger fields to update.
-
-    Returns:
-      A long-running operation for update.
-    """
-    trigger_message = self._BuildTriggerMessage(trigger_ref, event_filters,
-                                                service_account,
-                                                destination_run_service,
-                                                destination_run_path,
-                                                destination_run_region, None)
-    patch_req = self._messages.EventarcProjectsLocationsTriggersPatchRequest(
-        name=trigger_ref.RelativeName(),
-        trigger=trigger_message,
-        updateMask=update_mask)
-    return self._service.Patch(patch_req)
-
-  def WaitFor(self, operation, operation_type, trigger_ref):
-    """Waits until the given long-running operation is complete.
-
-    Args:
-      operation: the long-running operation to wait for.
-      operation_type: str, the type of operation
-        (Creating, Updating or Deleting).
-      trigger_ref: Resource, the Trigger to reference.
-
-    Returns:
-      The long-running operation's response.
-    """
-    poller = waiter.CloudOperationPollerNoResources(self._operation_service)
-    operation_ref = resources.REGISTRY.Parse(
-        operation.name, collection='eventarc.projects.locations.operations')
-    trigger_name = trigger_ref.Name()
-    project_name = trigger_ref.Parent().Parent().Name()
-    location_name = trigger_ref.Parent().Name()
-    message = ('{} trigger [{}] in project [{}], '
-               'location [{}]').format(operation_type, trigger_name,
-                                       project_name, location_name)
-    return waiter.WaitFor(poller, operation_ref, message)
-
-
-class _TriggersClientBeta(_TriggersClient):
+class _TriggersClientBeta(_BaseTriggersClient):
   """Client for Triggers service in the Eventarc beta API."""
 
-  def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
-                           destination_run_service, destination_run_path,
-                           destination_run_region, transport_topic_ref):
-    """Builds a Trigger message with the given data."""
+  def BuildCloudRunTriggerMessage(self, trigger_ref, event_filters,
+                                  service_account, destination_run_service,
+                                  destination_run_path, destination_run_region,
+                                  transport_topic_ref):
+    """Builds a Cloud Run Trigger message with the given data.
+
+    Args:
+      trigger_ref: Resource, the Trigger to create.
+      event_filters: dict or None, the Trigger's event filters.
+      service_account: str or None, the Trigger's service account.
+      destination_run_service: str or None, the Trigger's destination
+        Cloud Run service.
+      destination_run_path: str or None, the path on the destination Cloud Run
+        service.
+      destination_run_region: str or None, the destination Cloud Run service's
+        region.
+      transport_topic_ref: Resource or None, the user-provided transport topic.
+
+    Returns:
+      A Trigger message with a destination Cloud Run service.
+    """
     criteria_messages = [] if event_filters is None else [
         self._messages.MatchingCriteria(attribute=key, value=value)
         for key, value in event_filters.items()

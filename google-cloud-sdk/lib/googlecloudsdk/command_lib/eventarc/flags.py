@@ -138,19 +138,39 @@ def GetEventFiltersArg(args, release_track):
     return args.matching_criteria
 
 
-def AddDestinationArgs(parser):
+def AddDestinationArgs(parser, release_track, required=False):
   """Adds arguments related to trigger's destination."""
-  dest_group = parser.add_mutually_exclusive_group(required=True)
+  dest_group = parser.add_mutually_exclusive_group(
+      required=required,
+      help='Flags for specifying the destination to which events should be sent.'
+  )
+  _AddCloudRunDestinationArgs(dest_group)
+  if release_track == base.ReleaseTrack.GA:
+    _AddGKEDestinationArgs(dest_group, hidden=True)
 
-  def _AddCloudRunDestinationArgs():
-    """Adds arguments related to trigger's Cloud Run fully-managed service destination."""
-    run_group = dest_group.add_group(
-        help='Flags for Cloud Run fully-managed service destination.')
-    AddDestinationRunServiceArg(run_group, required=True)
-    AddDestinationRunPathArg(run_group)
-    AddDestinationRunRegionArg(run_group)
 
-  _AddCloudRunDestinationArgs()
+def _AddCloudRunDestinationArgs(parser, required=False):
+  """Adds arguments related to trigger's Cloud Run fully-managed service destination."""
+  run_group = parser.add_group(
+      required=required,
+      help='Flags for specifying a Cloud Run fully-managed service destination.'
+  )
+  AddDestinationRunServiceArg(run_group, required=True)
+  AddDestinationRunPathArg(run_group)
+  AddDestinationRunRegionArg(run_group)
+
+
+def _AddGKEDestinationArgs(parser, required=False, hidden=False):
+  """Adds arguments related to trigger's GKE service destination."""
+  gke_group = parser.add_group(
+      required=required,
+      hidden=hidden,
+      help='Flags for specifying a GKE service destination.')
+  _AddDestinationGKEClusterArg(gke_group, required=True)
+  _AddDestinationGKELocationArg(gke_group)
+  _AddDestinationGKENamespaceArg(gke_group)
+  _AddDestinationGKEServiceArg(gke_group, required=True)
+  _AddDestinationGKEPathArg(gke_group)
 
 
 def AddDestinationRunServiceArg(parser, required=False):
@@ -164,7 +184,7 @@ def AddDestinationRunServiceArg(parser, required=False):
 
 
 def AddDestinationRunPathArg(parser, required=False):
-  """Adds an argument for the trigger's destination path on the service."""
+  """Adds an argument for the trigger's destination path on the Cloud Run service."""
   parser.add_argument(
       '--destination-run-path',
       required=required,
@@ -174,13 +194,61 @@ def AddDestinationRunPathArg(parser, required=False):
 
 
 def AddDestinationRunRegionArg(parser, required=False):
-  """Adds an argument for the trigger's destination service's region."""
+  """Adds an argument for the trigger's destination Cloud Run service's region."""
   parser.add_argument(
       '--destination-run-region',
       required=required,
       help='Region in which the destination Cloud Run service can be '
       'found. If not specified, it is assumed that the service is in the same '
       'region as the trigger.')
+
+
+def _AddDestinationGKEClusterArg(parser, required=False):
+  """Adds an argument for the trigger's destination GKE service's cluster."""
+  parser.add_argument(
+      '--destination-gke-cluster',
+      required=required,
+      help='Name of the GKE cluster that the destination GKE service is '
+      'running in.')
+
+
+def _AddDestinationGKELocationArg(parser, required=False):
+  """Adds an argument for the trigger's destination GKE service's location."""
+  parser.add_argument(
+      '--destination-gke-location',
+      required=required,
+      help='Location of the GKE cluster that the destination GKE service '
+      'is running in. If not specified, it is assumed that the cluster is a '
+      'regional cluster and is in the same region as the trigger.')
+
+
+def _AddDestinationGKENamespaceArg(parser, required=False):
+  """Adds an argument for the trigger's destination GKE service's namespace."""
+  parser.add_argument(
+      '--destination-gke-namespace',
+      required=required,
+      help='Namespace that the destination GKE service is running in. If '
+      "not specified, it defaults to the ``default'' namespace.")
+
+
+def _AddDestinationGKEServiceArg(parser, required=False):
+  """Adds an argument for the trigger's destination GKE service's name."""
+  parser.add_argument(
+      '--destination-gke-service',
+      required=required,
+      help='Name of the destination GKE service that receives the events '
+      'for the trigger. The service must be in the same project as the trigger.'
+  )
+
+
+def _AddDestinationGKEPathArg(parser, required=False):
+  """Adds an argument for the trigger's destination GKE service's name."""
+  parser.add_argument(
+      '--destination-gke-path',
+      required=required,
+      help='Relative path on the destination GKE service to which '
+      "the events for the trigger should be sent. Examples: ``/route'', "
+      "``route'', ``route/subroute''.")
 
 
 def AddClearServiceAccountArg(parser):

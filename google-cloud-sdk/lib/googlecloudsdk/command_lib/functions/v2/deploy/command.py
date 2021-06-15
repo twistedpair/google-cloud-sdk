@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -66,6 +67,11 @@ CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
 CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
 
 
+def _IsHttpTriggered(args):
+  return args.IsSpecified('trigger_http') or not (args.trigger_topic or
+                                                  args.trigger_event_filters)
+
+
 def _GetSource(source_arg, is_new_function):
   """Parses the source bucket and object from the --source flag.
 
@@ -79,44 +85,83 @@ def _GetSource(source_arg, is_new_function):
   Returns:
     source_bucket: str, source bucket name
     source_object: str, source object path
+    update_field_set: frozenset, set of update mask fields
   """
   if not source_arg:
+    # Require the `--source` flag for new function deployments.
     if is_new_function:
       raise exceptions.FunctionsError(SOURCE_ERROR_MESSAGE)
     else:
-      return None, None
+      return None, None, frozenset()
 
   source_match = SOURCE_REGEX.match(source_arg)
   if not source_match:
     raise exceptions.FunctionsError(SOURCE_ERROR_MESSAGE)
 
-  return (source_match.group(1), source_match.group(2))
+  return source_match.group(1), source_match.group(2), frozenset(
+      ['build_config.source'])
 
 
-def _GetServiceConfig(args, messages):
+def _GetServiceConfig(args, messages, existing_function):
   """Constructs a ServiceConfig message from the command-line arguments.
 
   Args:
-    args: [str], The arguments from the command line
+    args: argparse.Namespace, arguments that this command was invoked with
     messages: messages module, the gcf v2 message stubs
+    existing_function: cloudfunctions_v2alpha_messages.Function | None
 
   Returns:
     vpc_connector: str, the vpc connector name
-    vpc_egress_settings: VpcConnectorEgressSettingsValueValuesEnum, enum value
+    vpc_egress_settings: VpcConnectorEgressSettingsValueValuesEnum, the vpc
+      enum value
+    updated_fields_set: frozenset, set of update mask fields
   """
-  env_var_flags = map_util.GetMapFlagsFromArgs('env-vars', args)
-  env_vars = map_util.ApplyMapFlags({}, **env_var_flags)
 
-  vpc_connector, vpc_egress_settings = (
-      _GetVpcAndVpcEgressSettings(args, messages))
+  old_env_vars = {}
+  if (existing_function and existing_function.serviceConfig and
+      existing_function.serviceConfig.environmentVariables and
+      existing_function.serviceConfig.environmentVariables.additionalProperties
+     ):
+    for additional_property in (existing_function.serviceConfig
+                                .environmentVariables.additionalProperties):
+      old_env_vars[additional_property.key] = additional_property.value
+
+  env_var_flags = map_util.GetMapFlagsFromArgs('env-vars', args)
+  env_vars = map_util.ApplyMapFlags(old_env_vars, **env_var_flags)
+
+  vpc_connector, vpc_egress_settings, vpc_updated_fields = (
+      _GetVpcAndVpcEgressSettings(args, messages, existing_function))
+
+  ingress_settings, ingress_updated_fields = _GetIngressSettings(args, messages)
+
+  updated_fields = set()
+
+  if args.memory is not None:
+    updated_fields.add('service_config.available_memory_mb')
+  if args.max_instances is not None or args.clear_max_instances:
+    updated_fields.add('service_config.max_instance_count')
+  if args.min_instances is not None or args.clear_min_instances:
+    updated_fields.add('service_config.min_instance_count')
+  if args.run_service_account is not None or args.service_account is not None:
+    updated_fields.add('service_config.service_account_email')
+  if args.timeout is not None:
+    updated_fields.add('service_config.timeout_seconds')
+  if args.run_service_account is not None or args.service_account is not None:
+    updated_fields.add('service_config.service_account_email')
+  if env_vars != old_env_vars:
+    updated_fields.add('service_config.environment_variables')
+
+  service_updated_fields = frozenset.union(vpc_updated_fields,
+                                           ingress_updated_fields,
+                                           updated_fields)
 
   return messages.ServiceConfig(
       availableMemoryMb=utils.BytesToMb(args.memory) if args.memory else None,
-      maxInstanceCount=args.max_instances,
-      minInstanceCount=args.min_instances,
+      maxInstanceCount=None if args.clear_max_instances else args.max_instances,
+      minInstanceCount=None if args.clear_min_instances else args.min_instances,
       serviceAccountEmail=args.run_service_account or args.service_account,
       timeoutSeconds=args.timeout,
-      ingressSettings=_GetIngressSettings(args, messages),
+      ingressSettings=ingress_settings,
       vpcConnector=vpc_connector,
       vpcConnectorEgressSettings=vpc_egress_settings,
       environmentVariables=messages.ServiceConfig.EnvironmentVariablesValue(
@@ -124,22 +169,23 @@ def _GetServiceConfig(args, messages):
               messages.ServiceConfig.EnvironmentVariablesValue
               .AdditionalProperty(key=key, value=value)
               for key, value in sorted(env_vars.items())
-          ])), ['service_config.available_memory_mb'] if args.memory else []
+          ])), service_updated_fields
 
 
 def _GetEventTrigger(args, messages):
   """Constructs an EventTrigger message from the command-line arguments.
 
   Args:
-    args: [str], The arguments from the command line
+    args: argparse.Namespace, arguments that this command was invoked with
     messages: messages module, the gcf v2 message stubs
 
   Returns:
     event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
       events sent from another service
+    updated_fields_set: frozenset, set of update mask fields
   """
-  if not args.trigger_topic and not args.trigger_event_filters:
-    return None
+  if _IsHttpTriggered(args):
+    return None, frozenset()
 
   event_type = None
   pubsub_topic = None
@@ -156,113 +202,190 @@ def _GetEventTrigger(args, messages):
       triggerRegion=args.trigger_location)
 
   if args.trigger_event_filters:
-    for trigger_event_filter in args.trigger_event_filters:
-      attribute, value = trigger_event_filter.split('=', 1)
+    for attribute, value in args.trigger_event_filters.items():
       if attribute == 'type':
         event_trigger.eventType = value
       else:
         event_trigger.eventFilters.append(
             messages.EventFilter(attribute=attribute, value=value))
 
-  return event_trigger
+  return event_trigger, frozenset(['event_trigger'])
 
 
 def _GetSignatureType(args, event_trigger):
   """Determines the function signature type from the command-line arguments.
 
   Args:
-    args: [str], The arguments from the command line
-    event_trigger:
+    args: argparse.Namespace, arguments that this command was invoked with
+    event_trigger: one
 
   Returns:
     signature_type: str, the desired functions signature type
+    updated_fields_set: frozenset[str], set of update mask fields
   """
-  if args.IsSpecified('trigger_http') or not event_trigger:
-    if args.IsSpecified('signature_type') and args.signature_type != 'http':
+  if args.trigger_http or not event_trigger:
+    if args.signature_type and args.signature_type != 'http':
       raise exceptions.FunctionsError(
           INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
-    return 'http'
-  elif args.IsSpecified('signature_type'):
+    if args.trigger_http:
+      return 'http', frozenset(['build_config.environment_variables'])
+    else:
+      # do not add to update_mask if --trigger-http flag not provided
+      # as it is only implied to be 'http'
+      return 'http', frozenset()
+  elif args.signature_type:
     if args.signature_type == 'http':
       raise exceptions.FunctionsError(INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
-    return args.signature_type
+    return args.signature_type, frozenset(
+        ['build_config.environment_variables'])
   else:
-    return 'cloudevent'
+    return 'cloudevent', frozenset()
 
 
-def _GetBuildConfig(args, messages, event_trigger, is_new_function):
+def _GetBuildConfig(args, messages, event_trigger, existing_function):
   """Constructs a BuildConfig message from the command-line arguments.
 
   Args:
-    args: [str], The arguments from the command line
+    args: argparse.Namespace, arguments that this command was invoked with
     messages: messages module, the gcf v2 message stubs
     event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
       events sent from another service
-    is_new_function: bool, true if function does not exist yet
+    existing_function: cloudfunctions_v2alpha_messages.Function | None
 
   Returns:
     build_config: cloudfunctions_v2alpha_messages.BuildConfig, describes the
       build step for the function
+    updated_fields_set: frozenset[str], set of update mask fields
   """
-  source_bucket, source_object = _GetSource(args.source, is_new_function)
+  source_bucket, source_object, source_updated_fields = _GetSource(
+      args.source, existing_function is None)
+
+  old_build_env_vars = {}
+  if (existing_function and existing_function.buildConfig and
+      existing_function.buildConfig.environmentVariables and
+      existing_function.buildConfig.environmentVariables.additionalProperties):
+    for additional_property in (existing_function.buildConfig
+                                .environmentVariables.additionalProperties):
+      old_build_env_vars[additional_property.key] = additional_property.value
 
   build_env_var_flags = map_util.GetMapFlagsFromArgs('build-env-vars', args)
-  build_env_vars = map_util.ApplyMapFlags({}, **build_env_var_flags)
+  build_env_vars = map_util.ApplyMapFlags(old_build_env_vars,
+                                          **build_env_var_flags)
 
-  if 'GOOGLE_FUNCTION_SIGNATURE_TYPE' in build_env_vars:
+  signature_type, signature_updated_fields = _GetSignatureType(
+      args, event_trigger)
+
+  if ('GOOGLE_FUNCTION_SIGNATURE_TYPE' in build_env_vars and
+      'GOOGLE_FUNCTION_SIGNATURE_TYPE' not in old_build_env_vars):
     raise exceptions.FunctionsError(
         SIGNATURE_TYPE_ENV_VAR_COLLISION_ERROR_MESSAGE)
-  else:
-    build_env_vars['GOOGLE_FUNCTION_SIGNATURE_TYPE'] = _GetSignatureType(
-        args, event_trigger)
+  build_env_vars['GOOGLE_FUNCTION_SIGNATURE_TYPE'] = signature_type
 
+  updated_fields = set()
+
+  if build_env_vars != old_build_env_vars:
+    updated_fields.add('build_config.environment_variables')
+
+  if args.entry_point is not None:
+    updated_fields.add('build_config.entry_point')
+  if args.runtime is not None:
+    updated_fields.add('build_config.runtime')
+
+  worker_pool = (None
+                 if args.clear_build_worker_pool else args.build_worker_pool)
+
+  if args.build_worker_pool is not None or args.clear_build_worker_pool:
+    updated_fields.add('build_config.worker_pool')
+
+  build_updated_fields = frozenset.union(signature_updated_fields,
+                                         source_updated_fields, updated_fields)
   return messages.BuildConfig(
       entryPoint=args.entry_point,
       runtime=args.runtime,
       source=messages.Source(
           storageSource=messages.StorageSource(
               bucket=source_bucket, object=source_object)),
-      workerPool=args.build_worker_pool,
+      workerPool=worker_pool,
       environmentVariables=messages.BuildConfig.EnvironmentVariablesValue(
           additionalProperties=[
               messages.BuildConfig.EnvironmentVariablesValue.AdditionalProperty(
                   key=key, value=value)
               for key, value in sorted(build_env_vars.items())
-          ]))
+          ])), build_updated_fields
 
 
 def _GetIngressSettings(args, messages):
-  """Constructs ingress setting enum from command-line arguments."""
-  if args.IsSpecified('ingress_settings'):
+  """Constructs ingress setting enum from command-line arguments.
+
+  Args:
+    args: argparse.Namespace, arguments that this command was invoked with
+    messages: messages module, the gcf v2 message stubs
+
+  Returns:
+    ingress_settings_enum: ServiceConfig.IngressSettingsValueValuesEnum, the
+      ingress setting enum value
+    updated_fields_set: frozenset[str], set of update mask fields
+  """
+  if args.ingress_settings:
     ingress_settings_enum = arg_utils.ChoiceEnumMapper(
         arg_name='ingress_settings',
         message_enum=messages.ServiceConfig.IngressSettingsValueValuesEnum,
         custom_mappings=flags.INGRESS_SETTINGS_MAPPING).GetEnumForChoice(
             args.ingress_settings)
-    return ingress_settings_enum
+    return ingress_settings_enum, frozenset(['service_config.ingress_settings'])
   else:
-    return None
+    return None, frozenset()
 
 
-def _GetVpcAndVpcEgressSettings(args, messages):
-  """Constructs vpc connector and egress settings from command-line arguments."""
-  vpc_connector = args.vpc_connector
+def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
+  """Constructs vpc connector and egress settings from command-line arguments.
 
-  if not args.IsSpecified('egress_settings'):
-    return vpc_connector, None
+  Args:
+    args: argparse.Namespace, arguments that this command was invoked with
+    messages: messages module, the gcf v2 message stubs
+    existing_function: cloudfunctions_v2alpha_messages.Function | None
 
-  if vpc_connector is None:
-    raise exceptions.RequiredArgumentException(
-        'vpc-connector', 'Flag `--vpc-connector` is '
-        'required for setting `egress-settings`.')
-  vpc_egress_settings = arg_utils.ChoiceEnumMapper(
-      arg_name='egress_settings',
-      message_enum=messages.ServiceConfig
-      .VpcConnectorEgressSettingsValueValuesEnum,
-      custom_mappings=flags.EGRESS_SETTINGS_MAPPING).GetEnumForChoice(
-          args.egress_settings)
+  Returns:
+    vpc_connector: str, name of the vpc connector
+    vpc_egress_settings:
+    ServiceConfig.VpcConnectorEgressSettingsValueValuesEnum,
+      the egress settings for the vpc connector
+    vpc_updated_fields_set: frozenset[str], set of update mask fields
+  """
 
-  return vpc_connector, vpc_egress_settings
+  egress_settings = None
+  if args.egress_settings:
+    egress_settings = arg_utils.ChoiceEnumMapper(
+        arg_name='egress_settings',
+        message_enum=messages.ServiceConfig
+        .VpcConnectorEgressSettingsValueValuesEnum,
+        custom_mappings=flags.EGRESS_SETTINGS_MAPPING).GetEnumForChoice(
+            args.egress_settings)
+
+  if args.clear_vpc_connector:
+    return None, None, frozenset([
+        'service_config.vpc_connector',
+        'service_config.vpc_connector_egress_settings'
+    ])
+  elif args.vpc_connector:
+    if args.egress_settings:
+      return args.vpc_connector, egress_settings, frozenset([
+          'service_config.vpc_connector',
+          'service_config.vpc_connector_egress_settings'
+      ])
+    else:
+      return args.vpc_connector, None, frozenset(
+          ['service_config.vpc_connector'])
+  elif args.egress_settings:
+    if existing_function and existing_function.vpc_connector:
+      return existing_function.vpc_connector, egress_settings, frozenset(
+          ['service_config.vpc_connector_egress_settings'])
+    else:
+      raise exceptions.RequiredArgumentException(
+          'vpc-connector', 'Flag `--vpc-connector` is '
+          'required for setting `egress-settings`.')
+  else:
+    return None, None, frozenset()
 
 
 def _ValidateLegacyV1Flags(args):
@@ -271,19 +394,33 @@ def _ValidateLegacyV1Flags(args):
       raise exceptions.FunctionsError(LEGACY_V1_FLAG_ERROR % flag_name)
 
 
-def _GetLabels(args, messages):
-  labels_to_update = args.update_labels or {}
-  return messages.Function.LabelsValue(additionalProperties=[
-      messages.Function.LabelsValue.AdditionalProperty(key=key, value=value)
-      for key, value in sorted(labels_to_update.items())
-  ])
+def _GetLabels(args, messages, existing_function):
+  """Constructs labels from command-line arguments.
+
+  Args:
+    args: argparse.Namespace, arguments that this command was invoked with
+    messages: messages module, the gcf v2 message stubs
+    existing_function: cloudfunctions_v2alpha_messages.Function | None
+
+  Returns:
+    labels: Function.LabelsValue, functions labels metadata
+    updated_fields_set: frozenset[str], list of update mask fields
+  """
+  labels_diff = labels_util.Diff.FromUpdateArgs(args)
+  labels_update = labels_diff.Apply(
+      messages.Function.LabelsValue,
+      existing_function.labels if existing_function else None)
+  if labels_update.needs_update:
+    return labels_update.labels, frozenset(['labels'])
+  else:
+    return None, frozenset()
 
 
 def _SetInvokerPermissions(args, function):
   """Add the IAM binding for the invoker role on the Cloud Run service, if applicable.
 
   Args:
-    args: [str], The arguments from the command line
+    args: argparse.Namespace, arguments that this command was invoked with
     function: cloudfunctions_v2alpha_messages.Function, recently created or
       updated GCF function
 
@@ -291,10 +428,9 @@ def _SetInvokerPermissions(args, function):
     None
   """
   service_ref_one_platform = resources.REGISTRY.ParseRelativeName(
-      function.serviceConfig.service,
-      CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
+      function.serviceConfig.service, CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
 
-  if args.trigger_http:
+  if _IsHttpTriggered(args):
     allow_unauthenticated = flags.ShouldEnsureAllUsersInvoke(args)
     if not allow_unauthenticated and not flags.ShouldDenyAllUsersInvoke(args):
       allow_unauthenticated = console_io.PromptContinue(
@@ -308,6 +444,8 @@ def _SetInvokerPermissions(args, function):
           service_ref_one_platform.locationsId,
           global_methods.SERVERLESS_API_NAME,
           global_methods.SERVERLESS_API_VERSION)
+      # TODO(b/188488619) modify iam policy binding conditionally if
+      # is an existing functioon.
       with serverless_operations.Connect(run_connection_context) as operations:
         service_ref_k8s = resources.REGISTRY.ParseRelativeName(
             'namespaces/{}/services/{}'.format(
@@ -351,14 +489,19 @@ def Run(args, release_track):
 
   _ValidateLegacyV1Flags(args)
 
-  fetched_function = _GetFunction(client, messages, function_ref)
-  is_new_function = fetched_function is None
+  existing_function = _GetFunction(client, messages, function_ref)
+  is_new_function = existing_function is None
 
-  event_trigger = _GetEventTrigger(args, messages)
-  build_config = _GetBuildConfig(args, messages, event_trigger,
-                                 is_new_function)
+  event_trigger, trigger_updated_fields = _GetEventTrigger(args, messages)
+  build_config, build_updated_fields = _GetBuildConfig(args, messages,
+                                                       event_trigger,
+                                                       existing_function)
 
-  service_config, service_updated_fields = _GetServiceConfig(args, messages)
+  service_config, service_updated_fields = _GetServiceConfig(
+      args, messages, existing_function)
+
+  labels_value, labels_updated_fields = _GetLabels(args, messages,
+                                                   existing_function)
 
   # cs/symbol:google.cloud.functions.v2main.Function$
   function = messages.Function(
@@ -366,20 +509,26 @@ def Run(args, release_track):
       buildConfig=build_config,
       eventTrigger=event_trigger,
       serviceConfig=service_config,
-      labels=_GetLabels(args, messages))
+      labels=labels_value)
 
   if is_new_function:
     function_parent = 'projects/%s/locations/%s' % (
-        properties.VALUES.core.project.GetOrFail(),
-        properties.VALUES.functions.region.GetOrFail())
+        properties.VALUES.core.project.GetOrFail(), function_ref.locationsId)
 
     create_request = messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
         parent=function_parent,
         functionId=function_ref.Name(),
         function=function)
     operation = client.projects_locations_functions.Create(create_request)
+    operation_description = 'Deploying function (may take a while)'
   else:
-    update_mask = ','.join(service_updated_fields)
+    updated_fields_set = frozenset.union(trigger_updated_fields,
+                                         build_updated_fields,
+                                         service_updated_fields,
+                                         labels_updated_fields)
+    updated_fields = list(updated_fields_set)
+    updated_fields.sort()
+    update_mask = ','.join(updated_fields)
 
     update_request = messages.CloudfunctionsProjectsLocationsFunctionsPatchRequest(
         name=function_ref.RelativeName(),
@@ -387,9 +536,9 @@ def Run(args, release_track):
         function=function)
 
     operation = client.projects_locations_functions.Patch(update_request)
+    operation_description = 'Updating function (may take a while)'
 
-  api_util.WaitForOperation(client, messages, operation,
-                            'Deploying function (may take a while)')
+  api_util.WaitForOperation(client, messages, operation, operation_description)
 
   function = client.projects_locations_functions.Get(
       messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
@@ -400,7 +549,7 @@ def Run(args, release_track):
   log.status.Print(
       'You can view your function in the Cloud Console here: ' +
       'https://console.cloud.google.com/functions/details/{}/{}?project={}\n'
-      .format(properties.VALUES.functions.region.GetOrFail(),
-              function_ref.Name(), properties.VALUES.core.project.GetOrFail()))
+      .format(function_ref.locationsId, function_ref.Name(),
+              properties.VALUES.core.project.GetOrFail()))
 
   return function

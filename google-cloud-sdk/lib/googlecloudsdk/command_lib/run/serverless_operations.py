@@ -42,6 +42,7 @@ from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.builds import submit_util
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.command_lib.run import artifact_registry
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import name_generator
@@ -1012,7 +1013,8 @@ class ServerlessOperations(object):
                      prefetch=False,
                      build_image=None,
                      build_pack=None,
-                     build_source=None):
+                     build_source=None,
+                     repo_to_create=None):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -1035,6 +1037,9 @@ class ServerlessOperations(object):
       build_image: The build image reference to the build.
       build_pack: The build pack reference to the build.
       build_source: The build source reference to the build.
+      repo_to_create: Optional
+        googlecloudsdk.command_lib.artifacts.docker_util.DockerRepo defining a
+        repository to be created.
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -1042,9 +1047,17 @@ class ServerlessOperations(object):
     """
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
-          stages.ServiceStages(allow_unauthenticated is not None),
+          stages.ServiceStages(allow_unauthenticated is not None,
+                               include_build=build_source is not None,
+                               include_create_repo=repo_to_create is not None),
           interruptable=True,
           aborted_message='aborted')
+
+    if repo_to_create:
+      tracker.StartStage(stages.CREATE_REPO)
+      tracker.UpdateHeaderMessage('Creating Container Repository.')
+      artifact_registry.CreateRepository(repo_to_create)
+      tracker.CompleteStage(stages.CREATE_REPO)
 
     if build_source is not None:
       tracker.StartStage(stages.UPLOAD_SOURCE)

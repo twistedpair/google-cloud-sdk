@@ -1695,6 +1695,14 @@ MAP = {
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.networkservices.v1beta1',
+                client_classpath='networkservices_v1beta1_client.NetworkservicesV1beta1',
+                messages_modulepath='networkservices_v1beta1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'notebooks': {
         'v1':

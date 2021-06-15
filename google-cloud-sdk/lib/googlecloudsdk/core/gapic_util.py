@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import requests
-from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store
 
@@ -99,8 +98,6 @@ def MakeClient(client_class, credentials, address_override_func=None,
   """
   # pylint: disable=g-import-not-at-top
   from googlecloudsdk.core import gapic_util_internal
-  import google.api_core.gapic_v1.client_info
-  # pylint: enable=g-import-not-at-top
 
   address = client_class.DEFAULT_ENDPOINT
   if mtls_enabled:
@@ -112,7 +109,4 @@ def MakeClient(client_class, credentials, address_override_func=None,
   return client_class(
       transport=gapic_util_internal.MakeTransport(
           client_class.get_transport_class(), address, credentials,
-          mtls_enabled),
-      client_info=google.api_core.gapic_v1.client_info.ClientInfo(
-          user_agent=transport.MakeUserAgentString())
-      )
+          mtls_enabled))

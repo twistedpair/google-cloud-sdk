@@ -22,68 +22,58 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import appengine_api_client as app_engine_api
 from googlecloudsdk.api_lib.tasks import GetApiAdapter
 from googlecloudsdk.calliope import base as calliope_base
-from googlecloudsdk.command_lib.app import create_util
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_io
 
 
 class RegionResolvingError(exceptions.Error):
   """Error for when the app's region cannot be ultimately determined."""
 
 
+def AppEngineAppExists():
+  """Returns whether an AppEngine app exists for the current project.
+
+  Previously we were relying on the output of ListLocations for Cloud Tasks &
+  Cloud Scheduler to determine if an AppEngine exists. Previous behaviour was
+  to return only one location which would be the AppEngine app location and an
+  empty list otherwise if no app existed. Now with AppEngine dependency removal,
+  ListLocations will return an actual list of valid regions. If an AppEngine app
+  does exist, that location will be returned indexed at 0 in the result list.
+  """
+  app_engine_api_client = app_engine_api.GetApiClientForTrack(
+      calliope_base.ReleaseTrack.GA)
+  found_app = True
+  try:
+    # Should raise NotFoundError if no app exists.
+    app_engine_api_client.GetApplication()
+  except apitools_exceptions.HttpNotFoundError:
+    found_app = False
+  return found_app
+
+
 def ResolveAppLocation(project_ref, locations_client=None):
-  """Determines Cloud Tasks location for the project or creates an app.
+  """Gets the default location from the Cloud Tasks API.
+
+  If an AppEngine app exists, the default location is the location where the
+  app exists.
 
   Args:
     project_ref: The project resource to look up the location for.
     locations_client: The project resource used to look up locations.
 
   Returns:
-    The existing or created app's locationId.
+    The location. Some examples: 'us-central1', 'us-east4'
 
   Raises:
-    RegionResolvingError: If the region of the app could not be determined.
+    RegionResolvingError: If we are unable to determine a default location
+      for the given project.
   """
-  location = _GetLocation(project_ref, locations_client=locations_client) or \
-      _CreateApp(project_ref)
-  if location is not None:
-    return location
+  if not locations_client:
+    locations_client = GetApiAdapter(calliope_base.ReleaseTrack.GA).locations
+  locations = list(locations_client.List(project_ref))
+  if len(locations) >= 1 and AppEngineAppExists():
+    return locations[0].labels.additionalProperties[0].value
   raise RegionResolvingError(
-      'Could not determine the location for the project. Please try again. It '
-      'is possible an AppEngine App does not exist for this project.')
-
-
-def _GetLocation(project_ref, locations_client=None):
-  """Gets the location from the Cloud Tasks API."""
-  try:
-    if not locations_client:
-      locations_client = GetApiAdapter(calliope_base.ReleaseTrack.GA).locations
-    locations = list(locations_client.List(project_ref, page_size=2))
-    if len(locations) >= 1:
-      return locations[0].labels.additionalProperties[0].value
-    return None
-  except apitools_exceptions.HttpNotFoundError:
-    return None
-
-
-def _CreateApp(project_ref):
-  """Walks the user through creating an AppEngine app."""
-
-  project = properties.VALUES.core.project.GetOrFail()
-  if console_io.PromptContinue(
-      message=('There is no App Engine app in project [{}].'.format(project)),
-      prompt_string=('Would you like to create one'),
-      default=False,
-      throw_if_unattended=True):
-    try:
-      app_engine_api_client = app_engine_api.GetApiClientForTrack(
-          calliope_base.ReleaseTrack.GA)
-      create_util.CreateAppInteractively(app_engine_api_client, project)
-    except create_util.AppAlreadyExistsError:
-      raise create_util.AppAlreadyExistsError(
-          'App already exists in project [{}]. This may be due a race '
-          'condition. Please try again.'.format(project))
-    else:
-      return _GetLocation(project_ref)
-  return None
+      'There is no AppEngine app associated with the project so unable to use '
+      'the same location as default location. Please use the location flag to '
+      'manually specify a location.'
+  )

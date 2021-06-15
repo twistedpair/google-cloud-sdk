@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://iamcredentials.googleapis.com/'
+BASE_URL = 'https://iamcredentials.googleapis.com/v1/'
 DOCS_URL = 'https://cloud.google.com/iam/docs/creating-short-lived-service-account-credentials'
 
 

@@ -890,7 +890,7 @@
       "type": "object",
       "properties": {
         "enableIpv4": {
-          "description": "Whether the instance should be assigned an IPv4 address or not.",
+          "description": "Whether the instance is assigned a public IP address or not.",
           "type": "boolean"
         },
         "privateNetwork": {

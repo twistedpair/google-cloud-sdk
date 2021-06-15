@@ -31,6 +31,9 @@ from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
 from googlecloudsdk.core import log
 
 
+_RELATIVE_PATH_SYMBOLS = frozenset(['.', '..'])
+
+
 def _expand_destination_wildcards(destination_string):
   """Expands destination wildcards.
 
@@ -125,6 +128,21 @@ def _destination_is_container(destination):
         destination_url.url_string.endswith(destination_url.delimiter) or (
             isinstance(destination_url, storage_url.CloudUrl) and
             destination_url.is_bucket()))
+
+
+def _has_valid_parent_dir(url_object):
+  """Returns true if FileUrl with relative path symbol as parent directory."""
+  if not isinstance(url_object, storage_url.FileUrl):
+    return True
+
+  _, _, after_last_delimiter = (
+      url_object.versionless_url_string.rpartition(url_object.delimiter))
+
+  return after_last_delimiter not in _RELATIVE_PATH_SYMBOLS and (
+      after_last_delimiter not in [
+          url_object.scheme.value + '://' + symbol
+          for symbol in _RELATIVE_PATH_SYMBOLS
+      ])
 
 
 class CopyTaskIterator:
@@ -261,7 +279,8 @@ class CopyTaskIterator:
     name to get an object or file resource representing the copy destination.
 
     For example: given a source `dir/file` and a destination `gs://bucket/`, the
-    destination returned is a resource representing `gs://bucket/file`.
+    destination returned is a resource representing `gs://bucket/file`. Check
+    the recursive helper function docstring for details on recursion handling.
 
     Args:
       destination_container (resource_reference.Resource): The destination
@@ -321,14 +340,16 @@ class CopyTaskIterator:
     source_prefix_to_ignore = storage_url.rstrip_one_delimiter(
         source.expanded_url.versionless_url_string,
         source.expanded_url.delimiter)
+
     if (not isinstance(destination_container,
                        resource_reference.UnknownResource) and
+        _has_valid_parent_dir(source.expanded_url) and
         destination_container.is_container()):
       # Destination container exists. This means we need to preserve the
       # top-level source directory.
       # Remove the leaf name so that it gets added to the destination.
-      source_prefix_to_ignore = source_prefix_to_ignore.rpartition(
-          source.expanded_url.delimiter)[0]
+      source_prefix_to_ignore, _, _ = source_prefix_to_ignore.rpartition(
+          source.expanded_url.delimiter)
       if not source_prefix_to_ignore:
         # In case of Windows, the source URL might not contain any Windows
         # delimiter if it was a single directory (e.g file://dir) and

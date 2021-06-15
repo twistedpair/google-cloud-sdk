@@ -790,11 +790,13 @@ class TpuProjectsLocationsNodesCreateRequest(_messages.Message):
     node: A Node resource to be passed as the request body.
     nodeId: The unqualified resource name.
     parent: Required. The parent resource name.
+    requestId: Idempotent request UUID.
   """
 
   node = _messages.MessageField('Node', 1)
   nodeId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
@@ -802,9 +804,11 @@ class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name.
+    requestId: Idempotent request UUID.
   """
 
   name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class TpuProjectsLocationsNodesGetRequest(_messages.Message):

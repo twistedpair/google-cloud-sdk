@@ -1448,11 +1448,16 @@ class PrivateConnection(_messages.Message):
       CREATED: The private connection has been created with all of it's
         resources.
       FAILED: The private connection creation has failed.
+      DELETING: The private connection is being deleted.
+      FAILED_TO_DELETE: Delete request has failed, resource is in invalid
+        state.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     CREATED = 2
     FAILED = 3
+    DELETING = 4
+    FAILED_TO_DELETE = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

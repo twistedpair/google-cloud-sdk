@@ -510,10 +510,18 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
+      SQLSERVER_2019_STANDARD_CU10: The database version is SQL Server 2019
+        Standard CU10.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
         Enterprise.
+      SQLSERVER_2019_ENTERPRISE_CU10: The database version is SQL Server 2019
+        Enterprise CU10.
       SQLSERVER_2019_EXPRESS: The database version is SQL Server 2019 Express.
+      SQLSERVER_2019_EXPRESS_CU10: The database version is SQL Server 2019
+        Express CU10.
       SQLSERVER_2019_WEB: The database version is SQL Server 2019 Web.
+      SQLSERVER_2019_WEB_CU10: The database version is SQL Server 2019 Web
+        CU10.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -531,9 +539,13 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0 = 13
     POSTGRES_13 = 14
     SQLSERVER_2019_STANDARD = 15
-    SQLSERVER_2019_ENTERPRISE = 16
-    SQLSERVER_2019_EXPRESS = 17
-    SQLSERVER_2019_WEB = 18
+    SQLSERVER_2019_STANDARD_CU10 = 16
+    SQLSERVER_2019_ENTERPRISE = 17
+    SQLSERVER_2019_ENTERPRISE_CU10 = 18
+    SQLSERVER_2019_EXPRESS = 19
+    SQLSERVER_2019_EXPRESS_CU10 = 20
+    SQLSERVER_2019_WEB = 21
+    SQLSERVER_2019_WEB_CU10 = 22
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type. This can be one of the following.
@@ -952,10 +964,18 @@ class Flag(_messages.Message):
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
+      SQLSERVER_2019_STANDARD_CU10: The database version is SQL Server 2019
+        Standard CU10.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
         Enterprise.
+      SQLSERVER_2019_ENTERPRISE_CU10: The database version is SQL Server 2019
+        Enterprise CU10.
       SQLSERVER_2019_EXPRESS: The database version is SQL Server 2019 Express.
+      SQLSERVER_2019_EXPRESS_CU10: The database version is SQL Server 2019
+        Express CU10.
       SQLSERVER_2019_WEB: The database version is SQL Server 2019 Web.
+      SQLSERVER_2019_WEB_CU10: The database version is SQL Server 2019 Web
+        CU10.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -973,9 +993,13 @@ class Flag(_messages.Message):
     MYSQL_8_0 = 13
     POSTGRES_13 = 14
     SQLSERVER_2019_STANDARD = 15
-    SQLSERVER_2019_ENTERPRISE = 16
-    SQLSERVER_2019_EXPRESS = 17
-    SQLSERVER_2019_WEB = 18
+    SQLSERVER_2019_STANDARD_CU10 = 16
+    SQLSERVER_2019_ENTERPRISE = 17
+    SQLSERVER_2019_ENTERPRISE_CU10 = 18
+    SQLSERVER_2019_EXPRESS = 19
+    SQLSERVER_2019_EXPRESS_CU10 = 20
+    SQLSERVER_2019_WEB = 21
+    SQLSERVER_2019_WEB_CU10 = 22
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being *BOOLEAN*, *STRING*,
@@ -1714,11 +1738,10 @@ class Reschedule(_messages.Message):
 
     Values:
       RESCHEDULE_TYPE_UNSPECIFIED: <no description>
-      IMMEDIATE: If the user wants to schedule the maintenance to happen now.
-      NEXT_AVAILABLE_WINDOW: If the user wants to use the existing maintenance
-        policy to find the next available window.
-      SPECIFIC_TIME: If the user wants to reschedule the maintenance to a
-        specific time.
+      IMMEDIATE: Reschedules maintenance to happen now (within 5 minutes).
+      NEXT_AVAILABLE_WINDOW: Reschedules maintenance to occur within one week
+        from the originally scheduled day and time.
+      SPECIFIC_TIME: Reschedules maintenance to a specific time and day.
     """
     RESCHEDULE_TYPE_UNSPECIFIED = 0
     IMMEDIATE = 1
@@ -2182,6 +2205,10 @@ class SqlExternalSyncSettingError(_messages.Message):
         missing primary key or replica identity, applicable for postgres.
       UNSUPPORTED_DEFINER: The customer has a definer that will break EM
         setup.
+      SQLSERVER_SERVERNAME_MISMATCH: SQL Server @@SERVERNAME does not match
+        actual host name
+      PRIMARY_ALREADY_SETUP: The primary instance has been setup and will fail
+        the setup.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2205,6 +2232,8 @@ class SqlExternalSyncSettingError(_messages.Message):
     SQLSERVER_AGENT_NOT_RUNNING = 19
     UNSUPPORTED_TABLE_DEFINITION = 20
     UNSUPPORTED_DEFINER = 21
+    SQLSERVER_SERVERNAME_MISMATCH = 22
+    PRIMARY_ALREADY_SETUP = 23
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

@@ -545,7 +545,7 @@
           "$ref": "TimeOfDay"
         },
         "duration": {
-          "description": "Output only. Duration of the maintenance window. The current window is fixed at 3 hours.",
+          "description": "Output only. Duration of the maintenance window. The current window is fixed at 1 hour.",
           "readOnly": true,
           "type": "string",
           "format": "google-duration"

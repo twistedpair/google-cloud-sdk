@@ -48,6 +48,7 @@ class BuildConfig(_messages.Message):
       https://cloud.google.com/sdk/gcloud/reference/functions/deploy#--runtime
       ).
     source: The location of the function source code.
+    sourceProvenance: Output only. A permanent fixed identifier for source.
     workerPool: Name of the Cloud Build Custom Worker Pool that should be used
       to build the function. The format of this field is
       `projects/{project}/locations/{region}/workerPools/{workerPool}` where
@@ -92,7 +93,8 @@ class BuildConfig(_messages.Message):
   environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 4)
   runtime = _messages.StringField(5)
   source = _messages.MessageField('Source', 6)
-  workerPool = _messages.StringField(7)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 7)
+  workerPool = _messages.StringField(8)
 
 
 class CloudfunctionsProjectsLocationsFunctionsCreateRequest(_messages.Message):
@@ -930,6 +932,21 @@ class Source(_messages.Message):
 
   repoSource = _messages.MessageField('RepoSource', 1)
   storageSource = _messages.MessageField('StorageSource', 2)
+
+
+class SourceProvenance(_messages.Message):
+  r"""Provenance of the source. Ways to find the original source, or verify
+  that some source was used for this build.
+
+  Fields:
+    resolvedRepoSource: A copy of the build's `source.repo_source`, if exists,
+      with any revisions resolved.
+    resolvedStorageSource: A copy of the build's `source.storage_source`, if
+      exists, with any generations resolved.
+  """
+
+  resolvedRepoSource = _messages.MessageField('RepoSource', 1)
+  resolvedStorageSource = _messages.MessageField('StorageSource', 2)
 
 
 class StandardQueryParameters(_messages.Message):

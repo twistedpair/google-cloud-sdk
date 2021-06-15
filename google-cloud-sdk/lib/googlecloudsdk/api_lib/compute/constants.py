@@ -155,6 +155,7 @@ PUBLIC_IMAGE_PROJECTS = [
     'fedora-coreos-cloud',
     'rhel-cloud',
     'rhel-sap-cloud',
+    'rocky-linux-cloud',
     'suse-cloud',
     'suse-sap-cloud',
     'ubuntu-os-cloud',

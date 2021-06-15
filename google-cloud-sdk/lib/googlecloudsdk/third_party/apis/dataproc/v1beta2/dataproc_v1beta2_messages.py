@@ -583,6 +583,9 @@ class ClusterStatus(_messages.Message):
       RUNNING: The cluster is currently running and healthy. It is ready for
         use.
       ERROR: The cluster encountered an error. It is not ready for use.
+      ERROR_DUE_TO_UPDATE: The cluster has encountered an error while being
+        updated. Jobs can still be submitted to the cluster, but it can no
+        longer be updated.
       DELETING: The cluster is being deleted. It cannot be used.
       UPDATING: The cluster is being updated. It continues to accept and
         process jobs.
@@ -594,11 +597,12 @@ class ClusterStatus(_messages.Message):
     CREATING = 1
     RUNNING = 2
     ERROR = 3
-    DELETING = 4
-    UPDATING = 5
-    STOPPING = 6
-    STOPPED = 7
-    STARTING = 8
+    ERROR_DUE_TO_UPDATE = 4
+    DELETING = 5
+    UPDATING = 6
+    STOPPING = 7
+    STOPPED = 8
+    STARTING = 9
 
   class SubstateValueValuesEnum(_messages.Enum):
     r"""Output only. Additional state information that includes status

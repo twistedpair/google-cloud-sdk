@@ -1044,20 +1044,31 @@ class MatchRule(_messages.Message):
     fullPathMatch: Optional. For satisfying the matchRule condition, the path
       of the request must exactly match the value specified in fullPathMatch
       after removing any query parameters and anchor that may be part of the
-      original URL. fullPathMatch must be between 1 and 1024 characters. Only
-      one of prefixMatch or fullPathMatch must be specified.
+      original URL. fullPathMatch must begin with a /. The value must be
+      between 1 and 1024 characters (inclusive). Only one of prefixMatch,
+      fullPathMatch, or pathTemplateMatch must be specified.
+    pathTemplateMatch: Optional. For satisfying the matchRule condition, the
+      path of the request must match the wildcard pattern specified in
+      pathTemplateMatch after removing any query parameters and anchor that
+      may be part of the original URL. pathTemplateMatch must be between 1 and
+      255 characters (inclusive). The pattern specified by pathTemplateMatch
+      may have at most 5 wildcard operators and at most 5 variable captures in
+      total. Only one of prefixMatch, fullPathMatch, or pathTemplateMatch must
+      be specified.
     prefixMatch: Optional. For satisfying the matchRule condition, the
       request's path must begin with the specified prefixMatch. prefixMatch
-      must begin with a /. The value must be between 1 and 1024 characters.
-      Only one of prefixMatch or fullPathMatch must be specified.
+      must begin with a /. The value must be between 1 and 1024 characters
+      (inclusive). Only one of prefixMatch, fullPathMatch, or
+      pathTemplateMatch must be specified.
     queryParameterMatches: Optional. Specifies a list of query parameter match
       criteria, all of which must match corresponding query parameters in the
       request. You may specify up to 5 query parameters to match on.
   """
 
   fullPathMatch = _messages.StringField(1)
-  prefixMatch = _messages.StringField(2)
-  queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 3, repeated=True)
+  pathTemplateMatch = _messages.StringField(2)
+  prefixMatch = _messages.StringField(3)
+  queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 4, repeated=True)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Message):
@@ -1792,11 +1803,13 @@ class QueryParameterMatcher(_messages.Message):
 
   Fields:
     exactMatch: Optional. The queryParameterMatch matches if the value of the
-      parameter exactly matches the contents of exactMatch. Only one of
+      parameter exactly matches the contents of exactMatch. The match value
+      must be between 1 and 64 characters long (inclusive). Only one of
       presentMatch or exactMatch must be set.
     name: Required. The name of the query parameter to match. The query
       parameter must exist in the request, in the absence of which the request
-      match fails.
+      match fails. The name must be specified and be between 1 and 32
+      characters long (inclusive).
     presentMatch: Optional. Specifies that the queryParameterMatch matches if
       the request contains the query parameter, irrespective of whether the
       parameter has a value or not. Only one of presentMatch or exactMatch
@@ -2147,12 +2160,25 @@ class UrlRewrite(_messages.Message):
       hostRewrite. The host value must be between 1 and 255 characters.
     pathPrefixRewrite: Optional. Prior to forwarding the request to the
       selected origin, the matching portion of the request's path is replaced
-      by pathPrefixRewrite. The path value must be between 1 and 1024
-      characters, and must start with a '/'.
+      by pathPrefixRewrite. If specified, the path value must start with a /
+      and be between 1 and 1024 characters long (inclusive). pathPrefixRewrite
+      may only be used when all of a route's MatchRules specify prefixMatch or
+      fullPathMatch. Only one of pathPrefixRewrite and pathTemplateRewrite may
+      be specified.
+    pathTemplateRewrite: Optional. Prior to forwarding the request to the
+      selected origin, if the request matched a pathTemplateMatch, the
+      matching portion of the request's path is replaced re-written using the
+      pattern specified by pathTemplateRewrite. pathTemplateRewrite must be
+      between 1 and 255 characters (inclusive), must start with a '/', and
+      must only use variables captured by the route's pathTemplate matchers.
+      pathTemplateRewrite may only be used when all of a route's MatchRules
+      specify pathTemplate. Only one of pathPrefixRewrite and
+      pathTemplateRewrite may be specified.
   """
 
   hostRewrite = _messages.StringField(1)
   pathPrefixRewrite = _messages.StringField(2)
+  pathTemplateRewrite = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -208,6 +208,26 @@ def GetRepository(repo):
   return get_repo_res
 
 
+def CreateRepository(project, location, repository):
+  """Creates the repository given its parent.
+
+  Args:
+    project: str: The project to create the repository in.
+    location: str: The region to create the repository in.
+    repository: messages.Repository to create.
+
+  Returns:
+    The resulting operation from the create request.
+  """
+  client = GetClient()
+  messages = GetMessages()
+  request = messages.ArtifactregistryProjectsLocationsRepositoriesCreateRequest(
+      parent="projects/{}/locations/{}".format(project, location),
+      repositoryId=repository.name.split("/")[-1],
+      repository=repository)
+  return client.projects_locations_repositories.Create(request)
+
+
 def GetPackage(package):
   """Gets the package given its name."""
   client = GetClient()

@@ -235,7 +235,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "A user-defined name of the certificate. Certificate names must be unique globally and match pattern `projects\/*\/locations\/*\/certificates\/*`",
+          "description": "A user-defined name of the certificate. Certificate names must be unique globally and match pattern `projects\/*\/locations\/*\/certificates\/*`.",
           "type": "string"
         },
         "description": {
@@ -335,7 +335,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "A user-defined name of the Certificate Map. Certificate Map names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateMaps\/*`",
+          "description": "A user-defined name of the Certificate Map. Certificate Map names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateMaps\/*`.",
           "type": "string"
         },
         "description": {
@@ -436,7 +436,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "A user-defined name of the Certificate Map Entry. Certificate Map Entry names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateMaps\/*\/certificateMapEntries\/*`",
+          "description": "A user-defined name of the Certificate Map Entry. Certificate Map Entry names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateMaps\/*\/certificateMapEntries\/*`.",
           "type": "string"
         },
         "description": {
@@ -1387,7 +1387,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The project and location from which the certificate should be listed, specified in the format `projects\/*\/locations\/*`",
+                      "description": "Required. The project and location from which the certificate should be listed, specified in the format `projects\/*\/locations\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1491,14 +1491,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "A user-defined name of the certificate. Certificate names must be unique globally and match pattern `projects\/*\/locations\/*\/certificates\/*`",
+                      "description": "A user-defined name of the certificate. Certificate names must be unique globally and match pattern `projects\/*\/locations\/*\/certificates\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificates\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1641,7 +1641,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The project and location from which the certificate maps should be listed, specified in the format `projects\/*\/locations\/*`",
+                      "description": "Required. The project and location from which the certificate maps should be listed, specified in the format `projects\/*\/locations\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1654,7 +1654,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "The value returned by the last `ListCertificateMapsResponse`. Indicates that this is a continuation of a prior `ListCertificates` call, and that the system should return the next page of data.",
+                      "description": "The value returned by the last `ListCertificateMapsResponse`. Indicates that this is a continuation of a prior `ListCertificateMaps` call, and that the system should return the next page of data.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1745,14 +1745,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "A user-defined name of the Certificate Map. Certificate Map names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateMaps\/*`",
+                      "description": "A user-defined name of the Certificate Map. Certificate Map names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateMaps\/*`.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1809,7 +1809,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The project, location and certificate map from which the certificate map entries should be listed, specified in the format `projects\/*\/locations\/*\/certificateMaps\/*`",
+                          "description": "Required. The project, location and certificate map from which the certificate map entries should be listed, specified in the format `projects\/*\/locations\/*\/certificateMaps\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1913,14 +1913,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "A user-defined name of the Certificate Map Entry. Certificate Map Entry names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateMaps\/*\/certificateMapEntries\/*`",
+                          "description": "A user-defined name of the Certificate Map Entry. Certificate Map Entry names must be unique globally and match pattern `projects\/*\/locations\/*\/certificateMaps\/*\/certificateMapEntries\/*`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/certificateMaps\/[^\/]+\/certificateMapEntries\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                          "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

@@ -2522,6 +2522,9 @@ class AiplatformProjectsLocationsMetadataStoresContextsDeleteRequest(_messages.M
   r"""A AiplatformProjectsLocationsMetadataStoresContextsDeleteRequest object.
 
   Fields:
+    etag: Optional. The etag of the Context to delete. If this is provided, it
+      must match the server's etag. Otherwise, the request will fail with a
+      FAILED_PRECONDITION.
     force: If set to true, any child resources of this Context will be
       deleted. (Otherwise, the request will fail with a FAILED_PRECONDITION
       error if the Context has any child resources, such as another Context,
@@ -2531,8 +2534,9 @@ class AiplatformProjectsLocationsMetadataStoresContextsDeleteRequest(_messages.M
       xts/{context}
   """
 
-  force = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
+  etag = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
 
 
 class AiplatformProjectsLocationsMetadataStoresContextsGetRequest(_messages.Message):
@@ -7238,11 +7242,17 @@ class GoogleCloudAiplatformUiBatchReadFeatureValuesOperationMetadata(_messages.M
   r"""Details of operations that batch reads Feature values.
 
   Fields:
+    destinationUri: The Cloud Storage/BigQuery URI of the destination as
+      specified in the request.
     genericMetadata: Operation metadata for Featurestore batch read Features
       values.
+    instanceUri: The Cloud Storage/BigQuery URI of the read_instance source as
+      specified in the request.
   """
 
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+  destinationUri = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 2)
+  instanceUri = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformUiBatchReadFeatureValuesResponse(_messages.Message):
@@ -8347,10 +8357,6 @@ class GoogleCloudAiplatformUiFeature(_messages.Message):
       BOOL_ARRAY: Used for Feature that is a list of boolean.
       DOUBLE: Used for Feature that is double.
       DOUBLE_ARRAY: Used for Feature that is a list of double.
-      FLOAT: Deprecated. Used for Feature that is float.
-      FLOAT_ARRAY: Deprecated. Used for Feature that is a list of float.
-      INT32: Deprecated. Used for Feature that is INT32.
-      INT32_ARRAY: Deprecated. Used for Feature that is a list of INT32.
       INT64: Used for Feature that is INT64.
       INT64_ARRAY: Used for Feature that is a list of INT64.
       STRING: Used for Feature that is string.
@@ -8362,15 +8368,11 @@ class GoogleCloudAiplatformUiFeature(_messages.Message):
     BOOL_ARRAY = 2
     DOUBLE = 3
     DOUBLE_ARRAY = 4
-    FLOAT = 5
-    FLOAT_ARRAY = 6
-    INT32 = 7
-    INT32_ARRAY = 8
-    INT64 = 9
-    INT64_ARRAY = 10
-    STRING = 11
-    STRING_ARRAY = 12
-    BYTES = 13
+    INT64 = 5
+    INT64_ARRAY = 6
+    STRING = 7
+    STRING_ARRAY = 8
+    BYTES = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -18056,12 +18058,16 @@ class GoogleCloudAiplatformV1beta1Execution(_messages.Message):
       RUNNING: The Execution is running
       COMPLETE: The Execution has finished running
       FAILED: The Execution has failed
+      CACHED: The Execution completed through Cache hit.
+      CANCELLED: The Execution was cancelled.
     """
     STATE_UNSPECIFIED = 0
     NEW = 1
     RUNNING = 2
     COMPLETE = 3
     FAILED = 4
+    CACHED = 5
+    CANCELLED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

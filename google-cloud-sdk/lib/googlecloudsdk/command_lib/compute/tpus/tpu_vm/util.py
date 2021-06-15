@@ -100,6 +100,38 @@ def FilterTPUVMNodes(response, args):
   return list(six.moves.filter(IsTPUVMNode, response))
 
 
+class GuestAttributesListEntry(object):
+  """Holder for GetGuestAttributes output."""
+
+  def __init__(self, worker_id, namespace, key, value):
+    self.worker_id = worker_id
+    self.namespace = namespace
+    self.key = key
+    self.value = value
+
+
+def TransformGuestAttributes(response, args):
+  """Transforms the GuestAttributes into a flatter list.
+
+  This is needed to make clearer output in the case of TPU pods, since they have
+  many workers.
+
+  Args:
+    response: response to GetGuestAttributes.
+    args: the arguments for the GetGuestAttributes command.
+
+  Returns:
+    A list of GuestAttributesListEntry objects.
+  """
+  del args
+  lst = []
+  for i, ga in enumerate(response.guestAttributes):
+    for entry in ga.queryValue.items:
+      lst.append(
+          GuestAttributesListEntry(i, entry.namespace, entry.key, entry.value))
+  return lst
+
+
 def CheckTPUVMNode(response, args):
   """Verifies that the node is a TPU VM node.
 

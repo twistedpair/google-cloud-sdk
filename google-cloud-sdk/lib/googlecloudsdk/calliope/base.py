@@ -69,7 +69,7 @@ SERVERLESS_CATEGORY = 'Serverless'
 UNCATEGORIZED_CATEGORY = 'Other'
 IDENTITY_CATEGORY = 'Identity'
 COMMERCE_CATEGORY = 'Commerce'
-DECLARATIVE_CONFIGURATION_CATEGORY = 'Declarative Configuration'
+DECLARATIVE_CONFIGURATION_CATEGORY = 'Declarative Resource Management'
 
 
 # Common markdown.
@@ -1033,3 +1033,29 @@ def LogCommand(prog, args):
   specified_args = sorted(six.iteritems(args.GetSpecifiedArgs()))
   arg_string = ', '.join(['{}: "{}"'.format(k, v) for k, v in specified_args])
   log.debug('Running [{}] with arguments: [{}]'.format(prog, arg_string))
+
+
+def RequireProjectID(args):
+  """Prohibit specifying project as a project number.
+
+  Most APIs accept both project number and project id, some of them accept only
+  project ids.
+
+  Args:
+     args: argparse.namespace, the parsed arguments from the command line
+  """
+  if args.project:
+    if args.project.isdigit():
+      raise properties.InvalidValueError(
+          "The value of ``--project'' flag was set to Project number."
+          "To use this command, set it to PROJECT ID instead.")
+    else:
+      return
+  else:
+    proj = properties.VALUES.core.project.Get()
+    if proj and proj.isdigit():
+      raise properties.InvalidValueError(
+          "The value of ``core/project'' property is set to project number."
+          "To use this command, set ``--project'' flag to PROJECT ID or "
+          "set ``core/project'' property to PROJECT ID."
+      )

@@ -29,10 +29,26 @@ VERSION_MAP = {
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
-  api_version = VERSION_MAP.get(release_track)
-  return apis.GetMessagesModule('gkehub', api_version)
+  return apis.GetMessagesModule('gkehub', VERSION_MAP[release_track])
 
 
 def GetClientInstance(release_track=base.ReleaseTrack.GA):
-  api_version = VERSION_MAP.get(release_track)
-  return apis.GetClientInstance('gkehub', api_version)
+  return apis.GetClientInstance('gkehub', VERSION_MAP[release_track])
+
+
+def GetClientClass(release_track=base.ReleaseTrack.GA):
+  return apis.GetClientClass('gkehub', VERSION_MAP[release_track])
+
+
+def LocationResourceName(project, location='global'):
+  return 'projects/{}/locations/{}'.format(project, location)
+
+
+def MembershipResourceName(project, membership, location='global'):
+  return '{}/memberships/{}'.format(
+      LocationResourceName(project, location=location), membership)
+
+
+def FeatureResourceName(project, feature, location='global'):
+  return '{}/features/{}'.format(
+      LocationResourceName(project, location=location), feature)

@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://language.googleapis.com/'
+BASE_URL = 'https://language.googleapis.com/v1beta2/'
 DOCS_URL = 'https://cloud.google.com/natural-language/'
 
 

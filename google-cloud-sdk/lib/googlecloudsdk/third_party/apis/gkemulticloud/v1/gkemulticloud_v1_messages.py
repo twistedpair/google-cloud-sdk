@@ -1151,7 +1151,8 @@ class GoogleCloudGkemulticloudV1AwsServicesAuthentication(_messages.Message):
   Fields:
     roleArn: The Amazon Resource Name (ARN) of the role to assume when
       managing AWS resources on your account.
-    roleSessionName: An identifier for the assumed role session.
+    roleSessionName: An identifier for the assumed role session. Optional.
+      Defaults to 'multicloud-service-agent'.
   """
 
   roleArn = _messages.StringField(1)
@@ -1532,6 +1533,7 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
       client has an up-to-date value before proceeding. Allows clients to
       perform consistent read-modify-writes through optimistic concurrency
       control.
+    maxPodsPerNode: The maximum number of pods per node.
     name: The resource name of this node pool.
     reconciling: Output only. If set, there are currently changes in flight to
       the node pool.
@@ -1634,17 +1636,18 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
   autoscaling = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling', 2)
   createTime = _messages.StringField(3)
   etag = _messages.StringField(4)
-  name = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 7)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  subnetId = _messages.StringField(10)
-  tags = _messages.MessageField('TagsValue', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
-  version = _messages.StringField(14)
-  vmSize = _messages.StringField(15)
+  maxPodsPerNode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 8)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  subnetId = _messages.StringField(11)
+  tags = _messages.MessageField('TagsValue', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  version = _messages.StringField(15)
+  vmSize = _messages.StringField(16)
 
 
 class GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling(_messages.Message):

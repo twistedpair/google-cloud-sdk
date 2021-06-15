@@ -32,6 +32,20 @@ from googlecloudsdk.core.util import files
 import six
 
 
+CONTEXT_AWARE_ACCESS_DENIED_ERROR = 'access_denied'
+CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION = 'Account restricted'
+CONTEXT_AWARE_ACCESS_HELP_MSG = (
+    'Access was blocked due to an organization policy, please contact your '
+    'admin to gain access.'
+)
+
+
+def IsContextAwareAccessDeniedError(exc):
+  exc_text = six.text_type(exc)
+  return (CONTEXT_AWARE_ACCESS_DENIED_ERROR in exc_text and
+          CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION in exc_text)
+
+
 DEFAULT_AUTO_DISCOVERY_FILE_PATH = os.path.join(
     files.GetHomeDir(), '.secureConnect', 'context_aware_metadata.json')
 

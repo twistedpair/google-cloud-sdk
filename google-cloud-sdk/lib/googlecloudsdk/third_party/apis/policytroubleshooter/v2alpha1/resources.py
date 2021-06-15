@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://policytroubleshooter.googleapis.com/'
+BASE_URL = 'https://policytroubleshooter.googleapis.com/v2alpha1/'
 DOCS_URL = 'https://cloud.google.com/iam/'
 
 

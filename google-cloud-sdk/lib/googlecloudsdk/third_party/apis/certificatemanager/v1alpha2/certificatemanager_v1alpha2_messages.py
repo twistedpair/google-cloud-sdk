@@ -588,7 +588,7 @@ class CertificatemanagerProjectsLocationsCertificateMapsListRequest(_messages.Me
       specify descending order for a field, add a suffix " desc".
     pageSize: Maximum number of certificate maps to return per call.
     pageToken: The value returned by the last `ListCertificateMapsResponse`.
-      Indicates that this is a continuation of a prior `ListCertificates`
+      Indicates that this is a continuation of a prior `ListCertificateMaps`
       call, and that the system should return the next page of data.
     parent: Required. The project and location from which the certificate maps
       should be listed, specified in the format `projects/*/locations/*`.
@@ -805,7 +805,7 @@ class CertificatemanagerProjectsLocationsDnsAuthorizationsListRequest(_messages.
       specify descending order for a field, add a suffix " desc".
     pageSize: Maximum number of dns authorizations to return per call.
     pageToken: The value returned by the last `ListDnsAuthorizationsResponse`.
-      Indicates that this is a continuation of a prior `ListCertificates`
+      Indicates that this is a continuation of a prior `ListDnsAuthorizations`
       call, and that the system should return the next page of data.
     parent: Required. The project and location from which the dns
       authorizations should be listed, specified in the format
@@ -1201,10 +1201,10 @@ class DnsAuthorization(_messages.Message):
       DnsAuthorization.
     dnsResourceRecord: Output only. DNS Resource Record that needs to be added
       to DNS configuration.
-    domain: A domain which is being authorized. A DnsAuthorization resource
-      covers a single domain and its wildcard, e.g. authorization for
-      "example.com" can be used to issue certificates for "example.com" and
-      "*.example.com".
+    domain: Required. Immutable. A domain which is being authorized. A
+      DnsAuthorization resource covers a single domain and its wildcard, e.g.
+      authorization for "example.com" can be used to issue certificates for
+      "example.com" and "*.example.com".
     labels: Set of labels associated with a DnsAuthorization.
     name: A user-defined name of the dns authorization. DnsAuthorization names
       must be unique globally and match pattern

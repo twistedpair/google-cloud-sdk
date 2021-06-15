@@ -21,16 +21,19 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import constants
+from googlecloudsdk.command_lib.export import util as export_util
+from googlecloudsdk.core.console import console_io
 
 
 class CustomJobsClient(object):
   """Client used for interacting with CustomJob endpoint."""
 
-  def __init__(self, client=None, messages=None, version=None):
-    self.client = client or apis.GetClientInstance(
+  def __init__(self, version=constants.GA_VERSION):
+    self.client = apis.GetClientInstance(
         constants.AI_PLATFORM_API_NAME,
         constants.AI_PLATFORM_API_VERSION[version])
-    self.messages = messages or self.client.MESSAGES_MODULE
+    self.messages = self.client.MESSAGES_MODULE
+    self._version = version
     self._service = self.client.projects_locations_customJobs
     self._message_prefix = constants.AI_PLATFORM_MESSAGE_PREFIX[version]
 
@@ -42,7 +45,7 @@ class CustomJobsClient(object):
         '{prefix}{name}'.format(prefix=self._message_prefix,
                                 name=message_name), None)
 
-  def CreateV1(self, parent, job_spec, display_name=None, kms_key_name=None):
+  def Create(self, parent, job_spec, display_name=None, kms_key_name=None):
     """Constructs a request and sends it to the endpoint to create a custom job instance.
 
     Args:
@@ -52,45 +55,27 @@ class CustomJobsClient(object):
       kms_key_name: A customer-managed encryption key to use for the custom job.
 
     Returns:
-      (GoogleCloudAiplatformV1alpha1CustomJob) The created custom job.
+      A CustomJob message instance created.
     """
-    custom_job = self.messages.GoogleCloudAiplatformV1CustomJob(
+    custom_job = self.GetMessage('CustomJob')(
         displayName=display_name, jobSpec=job_spec)
 
     if kms_key_name is not None:
-      custom_job.encryptionSpec = self.messages.GoogleCloudAiplatformV1EncryptionSpec(
+      custom_job.encryptionSpec = self.GetMessage('EncryptionSpec')(
           kmsKeyName=kms_key_name)
 
-    return self._service.Create(
-        self.messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
-            parent=parent, googleCloudAiplatformV1CustomJob=custom_job))
-
-  def CreateV1beta1(self,
-                    parent,
-                    job_spec,
-                    display_name=None,
-                    kms_key_name=None):
-    """Constructs a request and sends it to the endpoint to create a custom job instance.
-
-    Args:
-      parent: str, The project resource path of the custom job to create.
-      job_spec: The CustomJobSpec message instance for the job creation request.
-      display_name: str, The display name of the custom job to create.
-      kms_key_name: A customer-managed encryption key to use for the custom job.
-
-    Returns:
-      (GoogleCloudAiplatformV1alpha1CustomJob) The created custom job.
-    """
-    custom_job = self.messages.GoogleCloudAiplatformV1beta1CustomJob(
-        displayName=display_name, jobSpec=job_spec)
-
-    if kms_key_name is not None:
-      custom_job.encryptionSpec = self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
-          kmsKeyName=kms_key_name)
-
-    return self._service.Create(
-        self.messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
-            parent=parent, googleCloudAiplatformV1beta1CustomJob=custom_job))
+    if self._version == constants.ALPHA_VERSION:
+      return self._service.Create(
+          self.messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
+              parent=parent, googleCloudAiplatformV1alpha1CustomJob=custom_job))
+    elif self._version == constants.BETA_VERSION:
+      return self._service.Create(
+          self.messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
+              parent=parent, googleCloudAiplatformV1beta1CustomJob=custom_job))
+    else:
+      return self._service.Create(
+          self.messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
+              parent=parent, googleCloudAiplatformV1CustomJob=custom_job))
 
   def List(self, limit=None, region=None):
     return list_pager.YieldFromList(
@@ -130,3 +115,9 @@ class CustomJobsClient(object):
       return response.endTime is None
 
     return ShouldContinue
+
+  def ImportResourceMessage(self, yaml_file, message_name):
+    """Import a messages class instance typed by name from a YAML file."""
+    data = console_io.ReadFromFileOrStdin(yaml_file, binary=False)
+    message_type = self.GetMessage(message_name)
+    return export_util.Import(message_type=message_type, stream=data)

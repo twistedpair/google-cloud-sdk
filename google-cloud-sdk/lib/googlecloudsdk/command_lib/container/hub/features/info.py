@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core import exceptions
+
 
 class Info(object):
   """Info contains information about a given Feature.
@@ -28,7 +30,7 @@ class Info(object):
     cmd_group: The subgroup for this Feature, e.g. `container hub <cmd_group`.
   """
 
-  def __init__(self, display_name, api, cmd_group):
+  def __init__(self, display_name, api, cmd_group=''):
     self.display_name = display_name
     self.api = api
     self.cmd_group = cmd_group
@@ -59,6 +61,11 @@ _INFO = {
             api='anthosidentityservice.googleapis.com',
             cmd_group='identity-service',
         ),
+    'metering':
+        Info(
+            display_name='Metering',
+            api='multiclustermetering.googleapis.com',
+        ),
     'multiclusteringress':
         Info(
             display_name='Ingress',
@@ -86,6 +93,16 @@ _INFO = {
 }
 
 
+class UnknownFeatureError(exceptions.Error):
+  """An error raised when information is requested for an unknown Feature."""
+
+  def __init__(self, name):
+    message = '{} is not a supported feature'.format(name)
+    super(UnknownFeatureError, self).__init__(message)
+
+
 def Get(name):
   """Get returns information about a Feature."""
+  if name not in _INFO:
+    raise UnknownFeatureError(name)
   return _INFO[name]

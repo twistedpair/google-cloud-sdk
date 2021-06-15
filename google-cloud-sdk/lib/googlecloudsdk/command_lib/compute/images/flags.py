@@ -236,3 +236,12 @@ def ValidateSourceArgs(args, sources):
   if source_arg_count < 1:
     raise exceptions.MinimumArgumentException(source_arg_names,
                                               sources_error_message)
+
+
+def AddSourceDiskProjectFlag(parser):
+  parser.add_argument(
+      '--source-disk-project',
+      help="""\
+        Project name of the source disk. Must also specify
+        --source-disk when using this flag.
+      """)

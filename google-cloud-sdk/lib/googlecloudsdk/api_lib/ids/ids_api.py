@@ -25,7 +25,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
 
-__VERSION_MAP = {
+_VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1',
     base.ReleaseTrack.BETA: 'v1',
     base.ReleaseTrack.GA: 'v1'
@@ -33,12 +33,12 @@ __VERSION_MAP = {
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
-  api_version = __VERSION_MAP.get(release_track)
+  api_version = _VERSION_MAP.get(release_track)
   return apis.GetMessagesModule('ids', api_version)
 
 
 def GetClientInstance(release_track=base.ReleaseTrack.GA):
-  api_version = __VERSION_MAP.get(release_track)
+  api_version = _VERSION_MAP.get(release_track)
   return apis.GetClientInstance('ids', api_version)
 
 
@@ -53,7 +53,7 @@ class Client:
     self._messages = GetMessagesModule(releaseTrack)
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName('ids',
-                                            VERSION_MAP.get(releaseTrack))
+                                            _VERSION_MAP.get(releaseTrack))
 
   def _ParseSeverityLevel(self, severity_name):
     return self._messages.Endpoint.SeverityValueValuesEnum.lookup_by_name(
@@ -97,13 +97,13 @@ class Client:
                                                          project)
     return self._locationsClient.List(req)
 
-  def GetOperationRef(self, operation, endpoint) -> resources.Resource:
+  def GetOperationRef(self, operation, endpoint):
     """Converts an Operation to a Resource that can be used with `waiter.WaitFor`."""
     return self._resource_parser.ParseRelativeName(
         operation.name, 'ids.projects.locations.operations')
 
   def WaitForOperation(self,
-                       operation_ref : resources.Resource,
+                       operation_ref,
                        message,
                        has_result=True,
                        max_wait=datetime.timedelta(seconds=600)):

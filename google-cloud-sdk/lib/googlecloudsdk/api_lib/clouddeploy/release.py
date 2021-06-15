@@ -45,7 +45,6 @@ TARGET_FILTER_TEMPLATE = (
 def _SetSource(release_config,
                source,
                gcs_source_staging_dir,
-               gcs_render_dir,
                ignore_file,
                hide_logs=False):
   """Set the source for the release config."""
@@ -60,13 +59,6 @@ def _SetSource(release_config,
   if not gcs_source_staging_dir.startswith('gs://'):
     raise c_exceptions.InvalidArgumentException('--gcs-source-staging-dir',
                                                 'must be a GCS bucket')
-
-  if gcs_render_dir:
-    if not gcs_render_dir.startswith('gs://'):
-      raise c_exceptions.InvalidArgumentException('--gcs-render-dir',
-                                                  'must be a GCS bucket')
-    # Leave this field unset as default. The server will create a new bucket.
-    release_config.manifestBucket = gcs_render_dir
 
   gcs_client = storage_api.StorageClient()
   suffix = '.tgz'
@@ -166,12 +158,12 @@ class ReleaseClient(object):
     self._service = self.client.projects_locations_deliveryPipelines_releases
 
   def CreateReleaseConfig(self, source, gcs_source_staging_dir, ignore_file,
-                          gcs_render_dir, images, build_artifacts, description):
+                          images, build_artifacts, description):
     """Returns a build config."""
     release_config = self.messages.Release()
     release_config.description = description
     release_config = _SetSource(release_config, source, gcs_source_staging_dir,
-                                gcs_render_dir, ignore_file)
+                                ignore_file)
     release_config = _SetImages(self.messages, release_config, images,
                                 build_artifacts)
 

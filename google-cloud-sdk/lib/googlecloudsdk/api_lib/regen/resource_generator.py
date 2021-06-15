@@ -225,8 +225,13 @@ class DiscoveryDoc(object):
 
   def MakeResourceCollection(self, collection_name, path, enable_uri_parsing,
                              api_version):
+    _, url_api_version, _ = resource_util.SplitDefaultEndpointUrl(self.base_url)
+    if url_api_version:
+      base_url = self.base_url
+    else:
+      base_url = '{}{}/'.format(self.base_url, api_version)
     return resource_util.CollectionInfo(
-        self.api_name, api_version, self.base_url, self.docs_url,
+        self.api_name, api_version, base_url, self.docs_url,
         collection_name, path, {}, resource_util.GetParamsFromPath(path),
         enable_uri_parsing)
 

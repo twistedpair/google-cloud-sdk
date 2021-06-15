@@ -67,11 +67,11 @@ class AnnotationConfig(_messages.Message):
     annotationStoreName: The name of the annotation store, in the form `projec
       ts/{project_id}/locations/{location_id}/datasets/{dataset_id}/annotation
       Stores/{annotation_store_id}`. * The destination annotation store must
-      be in the same project and location as the source data. De-identifying
-      data across multiple projects or locations is not supported. * The
-      destination annotation store must exist when using DeidentifyDicomStore
-      or DeidentifyFhirStore. DeidentifyDataset automatically creates the
-      destination annotation store.
+      be in the same location as the source data. De-identifying data across
+      multiple locations is not supported. * The destination annotation store
+      must exist when using DeidentifyDicomStore or DeidentifyFhirStore.
+      DeidentifyDataset automatically creates the destination annotation
+      store.
     storeQuote: If set to true, sensitive text is included in
       SensitiveTextAnnotation of Annotation.
   """
@@ -875,8 +875,8 @@ class DeidentifyDatasetRequest(_messages.Message):
       the redacted data to. For example,
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`. *
       The destination dataset must not exist. * The destination dataset must
-      be in the same project and location as the source dataset. De-
-      identifying data across multiple projects or locations is not supported.
+      be in the same location as the source dataset. De-identifying data
+      across multiple locations is not supported.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
@@ -892,10 +892,10 @@ class DeidentifyDicomStoreRequest(_messages.Message):
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. * The
       destination dataset must exist. * The source dataset and destination
-      dataset must both reside in the same project and location. De-
-      identifying data across multiple projects or locations is not supported.
-      * The destination DICOM store must not exist. * The caller must have the
-      necessary permissions to create the destination DICOM store.
+      dataset must both reside in the same location. De-identifying data
+      across multiple locations is not supported. * The destination DICOM
+      store must not exist. * The caller must have the necessary permissions
+      to create the destination DICOM store.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
@@ -911,11 +911,10 @@ class DeidentifyFhirStoreRequest(_messages.Message):
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`. * The
       destination dataset must exist. * The source dataset and destination
-      dataset must both reside in the same project and location. De-
-      identifying data across multiple projects or locations is not supported.
-      * The destination FHIR store must exist. * The caller must have the
-      healthcare.fhirResources.update permission to write to the destination
-      FHIR store.
+      dataset must both reside in the same location. De-identifying data
+      across multiple locations is not supported. * The destination FHIR store
+      must exist. * The caller must have the healthcare.fhirResources.update
+      permission to write to the destination FHIR store.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)

@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://recommender.googleapis.com/'
+BASE_URL = 'https://recommender.googleapis.com/v1alpha1/'
 DOCS_URL = 'https://cloud.google.com/recommender/docs/'
 
 

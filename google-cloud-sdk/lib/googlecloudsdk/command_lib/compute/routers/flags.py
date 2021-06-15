@@ -182,7 +182,6 @@ def AddInterfaceArgs(parser, for_update=False, support_router_appliance=False):
 def AddBgpPeerArgs(parser,
                    for_add_bgp_peer=False,
                    support_bfd=False,
-                   support_enable=False,
                    support_enable_ipv6=False,
                    is_update=False):
   """Adds common arguments for managing BGP peers."""
@@ -280,17 +279,19 @@ def AddBgpPeerArgs(parser,
         hidden=True,
         help='The number of consecutive BFD control packets that must be '
         'missed before BFD declares that a peer is unavailable.')
-    enabled_display_help = (
-        'If enabled, the peer connection can be established with routing '
-        'information. If disabled, any active session with the peer is '
-        'terminated and all associated routing information is removed.')
-  if support_enable:
-    if not is_update:
-      enabled_display_help += ' Enabled by default.'
-    parser.add_argument(
-        '--enabled',
-        action=arg_parsers.StoreTrueFalseAction,
-        help=enabled_display_help)
+
+  enabled_display_help = (
+      'If enabled, the peer connection can be established with routing '
+      'information. If disabled, any active session with the peer is '
+      'terminated and all associated routing information is removed.')
+
+  if not is_update:
+    enabled_display_help += ' Enabled by default.'
+  parser.add_argument(
+      '--enabled',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=enabled_display_help)
+
   if support_enable_ipv6:
     enable_ipv6_display_help = (
         'If ipv6 is enabled, the peer connection can be established with '

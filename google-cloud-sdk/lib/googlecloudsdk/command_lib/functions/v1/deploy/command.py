@@ -170,11 +170,10 @@ def _ApplySecretsArgsToFunction(function, args):
   return updated_fields
 
 
-def _CreateBindPolicyCommand(function_name):
+def _CreateBindPolicyCommand(function_ref):
   template = ('gcloud alpha functions add-iam-policy-binding %s --region=%s '
               '--member=allUsers --role=roles/cloudfunctions.invoker')
-  return template % (function_name,
-                     properties.VALUES.functions.region.GetOrFail())
+  return template % (function_ref.Name(), function_ref.locationsId)
 
 
 def _CreateStackdriverURLforBuildLogs(build_id, project_id):
@@ -383,7 +382,7 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
         not deny_all_users_invoke):
       template = ('Function created with limited-access IAM policy. '
                   'To enable unauthorized access consider `%s`')
-      log.warning(template % _CreateBindPolicyCommand(args.NAME))
+      log.warning(template % _CreateBindPolicyCommand(function_ref))
       deny_all_users_invoke = True
 
   elif updated_fields:
@@ -424,7 +423,7 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
     except calliope_exceptions.HttpException:
       stop_trying_perm_set[0] = True
       log.warning('Setting IAM policy failed, try `%s`' %
-                  _CreateBindPolicyCommand(args.NAME))
+                  _CreateBindPolicyCommand(function_ref))
 
   log_stackdriver_url = [True]
 

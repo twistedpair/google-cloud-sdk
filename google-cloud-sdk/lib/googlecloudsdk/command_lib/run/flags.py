@@ -655,6 +655,23 @@ def AddEgressSettingsFlag(parser):
       })
 
 
+def AddSetSecretsFlag(parser):
+  parser.add_argument(
+      '--set-secrets',
+      metavar='KEY=SECRET_NAME:SECRET_VERSION',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgDict(
+          key_type=arg_parsers.CustomFunctionValidator(
+              lambda k: not _IsVolumeMountKey(k),
+              'Volume mounted secrets are not supported at this time.')),
+      help=('Specify secrets to provide as environment variables. '
+            "For example: '--set-secrets=ENV=mysecret:latest,"
+            "OTHER_ENV=othersecret:1' "
+            'will create an environment variable named ENV whose value is the '
+            "latest version of secret 'mysecret' and an environment variable "
+            "OTHER_ENV whose value is version of 1 of secret 'othersecret'."))
+
+
 def AddSecretsFlags(parser):
   """Adds flags for creating, updating, and deleting secrets."""
   AddMapFlagsNoFile(
@@ -1548,15 +1565,6 @@ def VerifyManagedFlags(args, release_track, product):
             platform=platforms.PLATFORM_GKE,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_GKE]))
-
-  if FlagIsExplicitlySet(args,
-                         'use_http2') and release_track == base.ReleaseTrack.GA:
-    raise serverless_exceptions.ConfigurationError(
-        'The `--use-http2` flag is only supported in the beta release '
-        'track on the fully managed version of Cloud Run. Use `gcloud alpha` '
-        'to set `--use-http2` on Cloud Run (fully managed). Alternatively, '
-        'specify `--platform gke` or run '
-        '`gcloud config set run/platform gke`.')
 
   if FlagIsExplicitlySet(args, 'broker'):
     raise serverless_exceptions.ConfigurationError(

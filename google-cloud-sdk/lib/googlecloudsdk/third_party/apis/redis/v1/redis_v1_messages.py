@@ -1222,7 +1222,7 @@ class WeeklyMaintenanceWindow(_messages.Message):
   Fields:
     day: Required. The day of week that maintenance updates occur.
     duration: Output only. Duration of the maintenance window. The current
-      window is fixed at 3 hours.
+      window is fixed at 1 hour.
     startTime: Required. Start time of the window in UTC time.
   """
 

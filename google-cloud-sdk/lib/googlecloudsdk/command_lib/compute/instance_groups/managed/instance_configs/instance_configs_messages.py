@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute.instance_groups.flags import AutoDeleteFlag
@@ -78,6 +80,58 @@ def MakePreservedStateMetadataEntry(messages, key, value):
   )
 
 
+def _CreateIpAddress(messages, ip_address):
+  # Checking if the address is not an IP v4 address, assumed to be a URL then.
+  if re.search('[A-Za-z]', ip_address):
+    return messages.PreservedStatePreservedNetworkIpIpAddress(
+        address=ip_address)
+  else:
+    return messages.PreservedStatePreservedNetworkIpIpAddress(
+        literal=ip_address)
+
+
+def _MakePreservedStateNetworkIpEntry(messages, stateful_ip):
+  """Prepares stateful ip preserved state entry."""
+  auto_delete = (stateful_ip.get('auto-delete') or
+                 AutoDeleteFlag.NEVER).GetAutoDeleteEnumValue(
+                     messages.PreservedStatePreservedNetworkIp
+                     .AutoDeleteValueValuesEnum)
+  address = None
+  if stateful_ip.get('address'):
+    ip_address = stateful_ip.get('address')
+    address = _CreateIpAddress(messages, ip_address)
+  return messages.PreservedStatePreservedNetworkIp(
+      autoDelete=auto_delete,
+      ipAddress=address)
+
+
+def PatchPreservedStateNetworkIpEntry(messages, stateful_ip_to_patch,
+                                      update_stateful_ip):
+  """Prepares stateful ip preserved state entry."""
+  auto_delete = update_stateful_ip.get('auto-delete')
+  if auto_delete:
+    stateful_ip_to_patch.autoDelete = auto_delete.GetAutoDeleteEnumValue(
+        messages.PreservedStatePreservedNetworkIp.AutoDeleteValueValuesEnum)
+  ip_address = update_stateful_ip.get('address')
+  if ip_address:
+    stateful_ip_to_patch.ipAddress = _CreateIpAddress(messages, ip_address)
+  return stateful_ip_to_patch
+
+
+def MakePreservedStateInternalNetworkIpEntry(messages, stateful_ip):
+  return messages.PreservedState.InternalIPsValue.AdditionalProperty(
+      key=stateful_ip.get('interface-name'),
+      value=_MakePreservedStateNetworkIpEntry(messages, stateful_ip)
+  )
+
+
+def MakePreservedStateExternalNetworkIpEntry(messages, stateful_ip):
+  return messages.PreservedState.ExternalIPsValue.AdditionalProperty(
+      key=stateful_ip.get('interface-name'),
+      value=_MakePreservedStateNetworkIpEntry(messages, stateful_ip)
+  )
+
+
 def CreatePerInstanceConfigMessage(holder,
                                    instance_ref,
                                    stateful_disks,
@@ -105,6 +159,41 @@ def CreatePerInstanceConfigMessage(holder,
           additionalProperties=preserved_state_disks),
       metadata=messages.PreservedState.MetadataValue(
           additionalProperties=preserved_state_metadata))
+  return per_instance_config
+
+
+def CreatePerInstanceConfigMessageWithIPs(holder,
+                                          instance_ref,
+                                          stateful_disks,
+                                          stateful_metadata,
+                                          stateful_internal_ips,
+                                          stateful_external_ips,
+                                          disk_getter=None):
+  """Create per-instance config message from the given stateful attributes."""
+  messages = holder.client.messages
+  per_instance_config = CreatePerInstanceConfigMessage(holder,
+                                                       instance_ref,
+                                                       stateful_disks,
+                                                       stateful_metadata,
+                                                       disk_getter)
+  preserved_state_internal_ips = []
+  for stateful_internal_ip in stateful_internal_ips or []:
+    preserved_state_internal_ips.append(
+        MakePreservedStateInternalNetworkIpEntry(messages,
+                                                 stateful_internal_ip))
+  per_instance_config.preservedState.internalIPs = (
+      messages.PreservedState.InternalIPsValue(
+          additionalProperties=preserved_state_internal_ips))
+
+  preserved_state_external_ips = []
+  for stateful_external_ip in stateful_external_ips or []:
+    preserved_state_external_ips.append(
+        MakePreservedStateExternalNetworkIpEntry(messages,
+                                                 stateful_external_ip))
+  per_instance_config.preservedState.externalIPs = (
+      messages.PreservedState.ExternalIPsValue(
+          additionalProperties=preserved_state_external_ips))
+
   return per_instance_config
 
 

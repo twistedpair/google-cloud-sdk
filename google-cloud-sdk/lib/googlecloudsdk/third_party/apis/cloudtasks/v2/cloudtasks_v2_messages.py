@@ -1261,9 +1261,9 @@ class Queue(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The state of the queue. `state` can
-      only be changed by called PauseQueue, ResumeQueue, or uploading [queue.y
-      aml/xml](https://cloud.google.com/appengine/docs/python/config/queueref)
-      . UpdateQueue cannot be used to change `state`.
+      only be changed by calling PauseQueue, ResumeQueue, or uploading [queue.
+      yaml/xml](https://cloud.google.com/appengine/docs/python/config/queueref
+      ). UpdateQueue cannot be used to change `state`.
 
   Fields:
     appEngineRoutingOverride: Overrides for task-level app_engine_routing.
@@ -1316,16 +1316,16 @@ class Queue(_messages.Message):
       [Stackdriver Logging](https://cloud.google.com/logging/docs/). If this
       field is unset, then no logs are written.
     state: Output only. The state of the queue. `state` can only be changed by
-      called PauseQueue, ResumeQueue, or uploading [queue.yaml/xml](https://cl
-      oud.google.com/appengine/docs/python/config/queueref). UpdateQueue
+      calling PauseQueue, ResumeQueue, or uploading [queue.yaml/xml](https://c
+      loud.google.com/appengine/docs/python/config/queueref). UpdateQueue
       cannot be used to change `state`.
   """
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the queue. `state` can only be changed by
-    called PauseQueue, ResumeQueue, or uploading [queue.yaml/xml](https://clou
-    d.google.com/appengine/docs/python/config/queueref). UpdateQueue cannot be
-    used to change `state`.
+    calling PauseQueue, ResumeQueue, or uploading [queue.yaml/xml](https://clo
+    ud.google.com/appengine/docs/python/config/queueref). UpdateQueue cannot
+    be used to change `state`.
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.

@@ -127,15 +127,15 @@ class TaskGraph:
 
       if identifier in self._task_wrappers_in_graph:
         if task.parallel_processing_key is not None:
-          log.warning('Skipping {} since another task is already using its '
-                      'key: {}. This can occur if a cp command results in '
-                      'multiple writes to the same resource.'.format(
-                          task.__class__.__name__,
-                          task.parallel_processing_key))
+          log.info('Skipping {} since another task is already using its '
+                   'key: {}. This can occur if a cp command results in '
+                   'multiple writes to the same resource.'.format(
+                       task.__class__.__name__, task.parallel_processing_key))
         else:
-          log.warning('Skipping {}. This is probably because due to a bug that '
-                      'caused it to be submitted for execution more than once.'
-                      .format(task.__class__.__name__))
+          log.info(
+              'Skipping {}. This is probably because due to a bug that '
+              'caused it to be submitted for execution more than once.'.format(
+                  task.__class__.__name__))
 
         return
 

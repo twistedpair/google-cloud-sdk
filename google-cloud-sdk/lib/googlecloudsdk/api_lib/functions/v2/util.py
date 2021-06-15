@@ -36,7 +36,6 @@ _RELEASE_TRACK_TO_API_VERSION = {
 }
 
 MAX_WAIT_MS = 1820000
-WAIT_CEILING_MS = 2000
 SLEEP_MS = 1000
 
 
@@ -54,12 +53,11 @@ def GetClientInstance(release_track):
 
 def _GetOperationStatus(client, request, tracker):
   """Returns a Boolean indicating whether the request has completed."""
-  if tracker:
-    tracker.Tick()
-  op = client.projects_locations_operations.Get(request)
-  if op.error:
-    raise exceptions.FunctionsError(op)
-  return op.done
+  tracker.Tick()
+  operation = client.projects_locations_operations.Get(request)
+  if operation.error:
+    raise exceptions.StatusToFunctionsError(operation.error)
+  return operation.done
 
 
 def WaitForOperation(client, messages, operation, description):
@@ -68,11 +66,7 @@ def WaitForOperation(client, messages, operation, description):
       name=operation.name)
 
   with progress_tracker.ProgressTracker(description, autotick=False) as tracker:
-    # This is actually linear retryer.
-    retryer = retry.Retryer(
-        exponential_sleep_multiplier=1,
-        max_wait_ms=MAX_WAIT_MS,
-        wait_ceiling_ms=WAIT_CEILING_MS)
+    retryer = retry.Retryer(max_wait_ms=MAX_WAIT_MS)
     try:
       retryer.RetryOnResult(
           _GetOperationStatus,

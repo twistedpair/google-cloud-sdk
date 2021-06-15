@@ -206,12 +206,15 @@ def BackendServiceArgumentForTargetTcpProxy(required=True):
         """)
 
 
-def AddLoadBalancingScheme(parser, include_l7_ilb=False, include_gfe3=False):
+def AddLoadBalancingScheme(parser,
+                           include_l7_ilb=False,
+                           include_gfe3=False,
+                           include_l7_rxlb=False):
   parser.add_argument(
       '--load-balancing-scheme',
       choices=['INTERNAL', 'EXTERNAL', 'INTERNAL_SELF_MANAGED'] +
       (['INTERNAL_MANAGED'] if include_l7_ilb else []) +
-      (['EXTERNAL_MANAGED'] if include_gfe3 else []),
+      (['EXTERNAL_MANAGED'] if include_gfe3 or include_l7_rxlb else []),
       type=lambda x: x.replace('-', '_').upper(),
       default='EXTERNAL',
       help="""\
@@ -699,9 +702,9 @@ def AddProtocol(parser,
       If the `load-balancing-scheme` is `EXTERNAL` and `region` is set
       (External Network Load Balancing), the protocol must be one of: {2}.
 
-      If the `load-balancing-scheme` is `EXTERNAL_MANAGED` and `region` is not
-      set (Envoy based External HTTP(S) Load Balancing), the protocol must be
-      one of: HTTP, HTTPS, HTTP2.
+      If the `load-balancing-scheme` is `EXTERNAL_MANAGED` (Envoy based
+      External HTTP(S) Load Balancing), the protocol must be one of: HTTP,
+      HTTPS, HTTP2.
       """.format(ilb_protocols, td_protocols, netlb_protocols))
 
 

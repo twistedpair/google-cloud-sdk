@@ -781,7 +781,8 @@ class UpdateClusterOptions(object):
                remove_cross_connect_subnetworks=None,
                clear_cross_connect_subnetworks=None,
                enable_service_externalips=None,
-               security_group=None):
+               security_group=None,
+               enable_gcfs=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -867,6 +868,7 @@ class UpdateClusterOptions(object):
     self.clear_cross_connect_subnetworks = clear_cross_connect_subnetworks
     self.enable_service_externalips = enable_service_externalips
     self.security_group = security_group
+    self.enable_gcfs = enable_gcfs
 
 
 class SetMasterAuthOptions(object):
@@ -1007,7 +1009,8 @@ class UpdateNodePoolOptions(object):
                node_labels=None,
                node_taints=None,
                tags=None,
-               enable_private_nodes=None):
+               enable_private_nodes=None,
+               enable_gcfs=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1024,6 +1027,7 @@ class UpdateNodePoolOptions(object):
     self.node_taints = node_taints
     self.tags = tags
     self.enable_private_nodes = enable_private_nodes
+    self.enable_gcfs = enable_gcfs
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1042,7 +1046,8 @@ class UpdateNodePoolOptions(object):
             self.max_unavailable_upgrade is not None or
             self.system_config_from_file is not None or
             self.node_labels is not None or self.node_taints is not None or
-            self.tags is not None or self.enable_private_nodes is not None)
+            self.tags is not None or self.enable_private_nodes is not None or
+            self.enable_gcfs is not None)
 
 
 class APIAdapter(object):
@@ -1218,7 +1223,9 @@ class APIAdapter(object):
         time.sleep(poll_period_s)
     if not self.IsOperationFinished(operation):
       log.err.Print('Timed out waiting for operation {0}'.format(operation))
-      raise util.Error('Operation [{0}] is still running'.format(operation))
+      raise util.Error(
+          'Operation [{0}] is still running, check its status via \'gcloud container operations describe {1}\''
+          .format(operation, operation.name))
     if self.GetOperationError(operation):
       raise util.Error('Operation [{0}] finished with error: {1}'.format(
           operation, self.GetOperationError(operation)))
@@ -1451,6 +1458,12 @@ class APIAdapter(object):
       cluster.autopilot = self.messages.Autopilot()
       cluster.autopilot.enabled = True
 
+      if options.service_account:
+        cluster.autoscaling = self.messages.ClusterAutoscaling()
+        cluster.autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
+            serviceAccount=options.service_account,
+            oauthScopes=_SERVICE_ACCOUNT_SCOPES)
+
     if options.enable_confidential_nodes:
       cluster.confidentialNodes = self.messages.ConfidentialNodes(
           enabled=options.enable_confidential_nodes)
@@ -1461,6 +1474,15 @@ class APIAdapter(object):
       cluster.networkConfig.privateIpv6GoogleAccess = util.GetPrivateIpv6GoogleAccessTypeMapper(
           self.messages, hidden=False).GetEnumForChoice(
               options.private_ipv6_google_access_type)
+
+    if options.enable_gcfs:
+      if cluster.nodePoolDefaults is None:
+        cluster.nodePoolDefaults = self.messages.NodePoolDefaults()
+      if cluster.nodePoolDefaults.nodeConfigDefaults is None:
+        cluster.nodePoolDefaults.nodeConfigDefaults = self.messages.NodeConfigDefaults(
+        )
+      cluster.nodePoolDefaults.nodeConfigDefaults.gcfsConfig = self.messages.GcfsConfig(
+          enabled=options.enable_gcfs)
 
     _AddNotificationConfigToCluster(cluster, options, self.messages)
 
@@ -1506,10 +1528,6 @@ class APIAdapter(object):
 
     if options.min_cpu_platform is not None:
       node_config.minCpuPlatform = options.min_cpu_platform
-
-    if options.enable_gcfs:
-      gcfs_config = self.messages.GcfsConfig(enabled=options.enable_gcfs)
-      node_config.gcfsConfig = gcfs_config
 
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
@@ -2277,6 +2295,11 @@ class APIAdapter(object):
           AuthenticatorGroupsConfig(enabled=True,
                                     securityGroup=options.security_group))
 
+    if options.enable_gcfs is not None:
+      update = self.messages.ClusterUpdate(
+          desiredGcfsConfig=self.messages.GcfsConfig(
+              enabled=options.enable_gcfs))
+
     return update
 
   def UpdateCluster(self, cluster_ref, options):
@@ -2885,6 +2908,9 @@ class APIAdapter(object):
       network_config = self.messages.NodeNetworkConfig()
       network_config.enablePrivateNodes = options.enable_private_nodes
       update_request.nodeNetworkConfig = network_config
+    elif options.enable_gcfs is not None:
+      gcfs_config = self.messages.GcfsConfig(enabled=options.enable_gcfs)
+      update_request.gcfsConfig = gcfs_config
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):

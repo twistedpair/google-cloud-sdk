@@ -85,7 +85,7 @@ class StorageUrl(six.with_metaclass(abc.ABCMeta)):
     Returns:
       A StorageUrl instance.
     """
-    left = rstrip_one_delimiter(self.url_string, self.delimiter)
+    left = rstrip_one_delimiter(self.versionless_url_string, self.delimiter)
     right = part[1:] if part.startswith(self.delimiter) else part
     new_url_string = '{}{}{}'.format(left, self.delimiter, right)
     return storage_url_from_string(new_url_string)
@@ -244,7 +244,7 @@ class CloudUrl(StorageUrl):
     if self.is_provider():
       return '%s://' % self.scheme.value
     elif self.is_bucket():
-      return '%s://%s' % (self.scheme.value, self.bucket_name)
+      return '%s://%s/' % (self.scheme.value, self.bucket_name)
     return '%s://%s/%s' % (self.scheme.value, self.bucket_name,
                            self.object_name)
 

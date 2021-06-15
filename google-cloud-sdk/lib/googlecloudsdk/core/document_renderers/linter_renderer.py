@@ -295,7 +295,7 @@ class LinterRenderer(text_renderer.TextRenderer):
         list_contents += six.text_type(self.nonexistent_violation_flags[-1])
         self._add_failure(
             check_name,
-            'The following flags are not valid for the command: {}'.format(
+            'The following flags are not valid: {}'.format(
                 list_contents))
       else:
         self._add_success(check_name)

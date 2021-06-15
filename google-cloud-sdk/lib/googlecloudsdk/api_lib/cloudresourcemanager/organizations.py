@@ -107,10 +107,10 @@ class Client(object):
     Returns:
       The output from the SetIamPolicy API call.
     """
-    policy = iam_util.ParsePolicyFile(policy_file, self.messages.Policy)
-    policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
 
-    update_mask = iam_util.ConstructUpdateMaskFromPolicy(policy_file)
+    policy, update_mask = iam_util.ParsePolicyFileWithUpdateMask(
+        policy_file, self.messages.Policy)
+    policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
 
     # To preserve the existing set-iam-policy behavior of always overwriting
     # bindings and etag, add bindings and etag to update_mask.

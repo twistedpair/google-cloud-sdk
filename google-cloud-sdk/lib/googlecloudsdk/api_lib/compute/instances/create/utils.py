@@ -684,6 +684,8 @@ def GetNetworkInterfaces(args, client, holder, project, location, scope,
           private_network_ip=getattr(args, 'private_network_ip', None),
           network_tier=getattr(args, 'network_tier', None),
           ipv6_public_ptr_domain=getattr(args, 'ipv6_public_ptr_domain', None),
+          stack_type=getattr(args, 'stack_type', None),
+          ipv6_network_tier=getattr(args, 'ipv6_network_tier', None),
       )
   ]
 
@@ -913,10 +915,7 @@ def GetNetworkInterfacesWithValidation(args,
                                        location,
                                        scope,
                                        skip_defaults,
-                                       support_public_dns=False,
-                                       support_stack_type=False,
-                                       support_ipv6_network_tier=False,
-                                       support_ipv6_public_ptr_domain=False):
+                                       support_public_dns=False):
   """Validates and retrieves the network interface message."""
   network_interface_from_file = getattr(args, 'network_interface_from_file',
                                         None)
@@ -936,10 +935,8 @@ def GetNetworkInterfacesWithValidation(args,
         scope=scope)
   else:
     instances_flags.ValidatePublicPtrFlags(args)
-    if (support_public_dns or support_stack_type or support_ipv6_network_tier or
-        support_ipv6_public_ptr_domain):
-      if support_public_dns:
-        instances_flags.ValidatePublicDnsFlags(args)
+    if support_public_dns:
+      instances_flags.ValidatePublicDnsFlags(args)
       return GetNetworkInterfacesAlpha(args, compute_client, holder, project,
                                        location, scope, skip_defaults)
     return GetNetworkInterfaces(args, compute_client, holder, project, location,

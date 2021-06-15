@@ -534,7 +534,7 @@ class KccClient(client_base.DeclarativeClient):
     if not (project or organization or folder):
       return self._CallPrintResources(output_format)
     with progress_tracker.ProgressTracker(
-        message='Listing exportable resources',
+        message='Listing exportable resource types',
         aborted_message='Aborted Export.'):
       supported_kinds = self.ListSupportedResourcesForParent(
           project=project, organization=organization, folder=folder)

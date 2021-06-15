@@ -1709,8 +1709,7 @@ class SqlIpConfig(_messages.Message):
       connect to the instance using the IP. See
       https://en.wikipedia.org/wiki/CIDR_notation#CIDR_notation, also known as
       'slash' notation (e.g. `192.168.100.0/24`).
-    enableIpv4: Whether the instance should be assigned an IPv4 address or
-      not.
+    enableIpv4: Whether the instance is assigned a public IP address or not.
     privateNetwork: The resource link for the VPC network from which the Cloud
       SQL instance is accessible for private IP. For example,
       `/projects/myProject/global/networks/default`. This setting can be

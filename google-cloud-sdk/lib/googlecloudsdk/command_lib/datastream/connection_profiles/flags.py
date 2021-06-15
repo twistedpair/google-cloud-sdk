@@ -128,3 +128,30 @@ def AddGcsProfileGroup(parser):
       '--root-path',
       help="""The root path inside the Cloud Storage bucket.""",
       required=True)
+
+
+def AddDepthGroup(parser):
+  """Adds necessary depth flags for discover command parser."""
+  depth_parser = parser.add_group(mutex=True)
+  depth_parser.add_argument(
+      '--recursive',
+      action='store_true',
+      help="""Whether to retrieve the full hierarchy of data objects (TRUE) or only the current level (FALSE)."""
+  )
+  depth_parser.add_argument(
+      '--recursive-depth',
+      help="""The number of hierarchy levels below the current level to be retrieved."""
+  )
+
+
+def AddRdbmsGroup(parser):
+  """Adds necessary RDBMS params for discover command parser."""
+  rdbms_parser = parser.add_group(mutex=True)
+  rdbms_parser.add_argument(
+      '--mysql-rdbms-file',
+      help="""Path to a YAML (or JSON) file containing the MySQL RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin. """
+  )
+  rdbms_parser.add_argument(
+      '--oracle-rdbms-file',
+      help="""Path to a YAML (or JSON) file containing the ORACLE RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin."""
+  )

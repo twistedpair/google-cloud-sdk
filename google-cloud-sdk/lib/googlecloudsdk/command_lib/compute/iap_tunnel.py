@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import ctypes
 import errno
 import functools
+import gc
 import io
 import os
 import select
@@ -582,6 +583,8 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
                six.text_type(e))
     except:  # pylint: disable=bare-except
       log.exception('Error while receiving from client.')
+    # Manually run garbage collection to avoid a leak on Windows (b/189195317).
+    gc.collect(2)
 
 
 class IapTunnelStdinHelper(_BaseIapTunnelHelper):

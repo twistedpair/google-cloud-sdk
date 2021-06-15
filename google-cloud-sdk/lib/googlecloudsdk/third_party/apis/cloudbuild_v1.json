@@ -1259,11 +1259,11 @@
           "$ref": "CronConfig"
         },
         "pubsubConfig": {
-          "description": "Optional. PubsubConfig describes the configuration of a trigger that creates a build whenever a Pub\/Sub message is published.",
+          "description": "PubsubConfig describes the configuration of a trigger that creates a build whenever a Pub\/Sub message is published.",
           "$ref": "PubsubConfig"
         },
         "webhookConfig": {
-          "description": "WebhookConfig [Experimental] describes the configuration of a trigger that creates a build whenever a webhook is sent to a trigger's webhook URL.",
+          "description": "WebhookConfig describes the configuration of a trigger that creates a build whenever a webhook is sent to a trigger's webhook URL.",
           "$ref": "WebhookConfig"
         },
         "bitbucketServerTriggerConfig": {
@@ -1431,7 +1431,7 @@
           "format": "int64"
         },
         "appConfigJson": {
-          "description": "Optional. Cloud Storage location of the encrypted GitHub App config information.",
+          "description": "Cloud Storage location of the encrypted GitHub App config information.",
           "$ref": "GCSLocation"
         },
         "createTime": {
@@ -1441,7 +1441,7 @@
           "format": "google-datetime"
         },
         "webhookKey": {
-          "description": "Optional. The key that should be attached to webhook calls to the ReceiveWebhook endpoint.",
+          "description": "The key that should be attached to webhook calls to the ReceiveWebhook endpoint.",
           "type": "string"
         },
         "peeredNetwork": {
@@ -1449,11 +1449,11 @@
           "type": "string"
         },
         "secrets": {
-          "description": "Optional. Names of secrets in Secret Manager.",
+          "description": "Names of secrets in Secret Manager.",
           "$ref": "GitHubEnterpriseSecrets"
         },
         "displayName": {
-          "description": "Optional. Name to display for this config.",
+          "description": "Name to display for this config.",
           "type": "string"
         },
         "sslCa": {
@@ -1527,7 +1527,7 @@
       "type": "object",
       "properties": {
         "enterpriseConfigResource": {
-          "description": "Optional. The GitHub Enterprise config resource name that is associated with this installation.",
+          "description": "The GitHub Enterprise config resource name that is associated with this installation.",
           "type": "string"
         },
         "schedule": {
@@ -1535,7 +1535,7 @@
           "type": "string"
         },
         "timeZone": {
-          "description": "Optional. Specifies the time zone to be used in interpreting the schedule. The value of this field must be a time zone name from the [tz database] (http:\/\/en.wikipedia.org\/wiki\/Tz_database). Note that some time zones include a provision for daylight savings time. The rules for daylight saving time are determined by the chosen tz. For UTC use the string \"utc\". If a time zone is not specified, the default will be in UTC (also known as GMT).",
+          "description": "Specifies the time zone to be used in interpreting the schedule. The value of this field must be a time zone name from the [tz database] (http:\/\/en.wikipedia.org\/wiki\/Tz_database). Note that some time zones include a provision for daylight savings time. The rules for daylight saving time are determined by the chosen tz. For UTC use the string \"utc\". If a time zone is not specified, the default will be in UTC (also known as GMT).",
           "type": "string"
         }
       }
@@ -1580,7 +1580,7 @@
     },
     "WebhookConfig": {
       "id": "WebhookConfig",
-      "description": "WebhookConfig [Experimental] describes the configuration of a trigger that creates a build whenever a webhook is sent to a trigger's webhook URL.",
+      "description": "WebhookConfig describes the configuration of a trigger that creates a build whenever a webhook is sent to a trigger's webhook URL.",
       "type": "object",
       "properties": {
         "secret": {
@@ -4725,7 +4725,7 @@
               "type": "string"
             },
             "authUser": {
-              "description": "Optional. For users who are logged in using multiple accounts, specify the auth user parameter so that the registration url redirects back to the cloud console using the proper account.",
+              "description": "For users who are logged in using multiple accounts, specify the auth user parameter so that the registration url redirects back to the cloud console using the proper account.",
               "location": "query",
               "type": "string"
             }

@@ -4086,13 +4086,13 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
   can provide all of this functionality, but requires more configuration. This
   message is provided as a convenience to the user for simple bucketing
   strategies. The transformed value will be a hyphenated string of
-  {lower_bound}-{upper_bound}, i.e if lower_bound = 10 and upper_bound = 20
-  all values that are within this bucket will be replaced with "10-20". This
-  can be used on data of type: double, long. If the bound Value type differs
-  from the type of data being transformed, we will first attempt converting
-  the type of the data to be transformed to match the type of the bound before
-  comparing. See https://cloud.google.com/dlp/docs/concepts-bucketing to learn
-  more.
+  {lower_bound}-{upper_bound}. For example, if lower_bound = 10 and
+  upper_bound = 20, all values that are within this bucket will be replaced
+  with "10-20". This can be used on data of type: double, long. If the bound
+  Value type differs from the type of data being transformed, we will first
+  attempt converting the type of the data to be transformed to match the type
+  of the bound before comparing. See
+  https://cloud.google.com/dlp/docs/concepts-bucketing to learn more.
 
   Fields:
     bucketSize: Required. Size of each bucket (except for minimum and maximum
@@ -4937,9 +4937,11 @@ class GooglePrivacyDlpV2KindExpression(_messages.Message):
 
 class GooglePrivacyDlpV2KmsWrappedCryptoKey(_messages.Message):
   r"""Include to use an existing data crypto key wrapped by KMS. The wrapped
-  key must be a 128/192/256 bit key. Authorization requires the following IAM
-  permissions when sending a request to perform a crypto transformation using
-  a kms-wrapped crypto key: dlp.kms.encrypt
+  key must be a 128-, 192-, or 256-bit key. Authorization requires the
+  following IAM permissions when sending a request to perform a crypto
+  transformation using a KMS-wrapped crypto key: dlp.kms.encrypt For more
+  information, see [Creating a wrapped key]
+  (https://cloud.google.com/dlp/docs/create-wrapped-key).
 
   Fields:
     cryptoKeyName: Required. The resource name of the KMS CryptoKey to use for

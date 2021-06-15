@@ -14,6 +14,10 @@
 # limitations under the License.
 
 """Adapter for interaction with gkehub One Platform APIs."""
+
+# TODO(b/181243034): This file should be replaced with `util.py` once
+# the Membership API is on version selector.
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals

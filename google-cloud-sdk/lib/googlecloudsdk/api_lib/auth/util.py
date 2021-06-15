@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 
 import json
 
+from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import flow as c_flow
@@ -84,8 +85,8 @@ def DoInstalledAppBrowserFlowGoogleAuth(launch_browser,
     return c_google_auth.UserCredWithReauth.FromGoogleAuthUserCredentials(
         user_creds)
   except c_flow.Error as e:
-    if c_store.IsContextAwareAccessDeniedError(e):
-      msg = c_store.CONTEXT_AWARE_ACCESS_HELP_MSG
+    if context_aware.IsContextAwareAccessDeniedError(e):
+      msg = context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG
     else:
       msg = 'There was a problem with web authentication.'
       if launch_browser:
@@ -127,8 +128,8 @@ def DoInstalledAppBrowserFlow(launch_browser, scopes, client_id_file=None,
           client_id=client_id,
           client_secret=client_secret)
   except c_store.FlowError as e:
-    if c_store.IsContextAwareAccessDeniedError(e):
-      msg = c_store.CONTEXT_AWARE_ACCESS_HELP_MSG
+    if context_aware.IsContextAwareAccessDeniedError(e):
+      msg = context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG
     else:
       msg = 'There was a problem with web authentication.'
       if launch_browser:

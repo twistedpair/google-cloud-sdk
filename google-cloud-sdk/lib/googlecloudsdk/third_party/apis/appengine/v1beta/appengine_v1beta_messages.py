@@ -3072,12 +3072,34 @@ class Volume(_messages.Message):
 class VpcAccessConnector(_messages.Message):
   r"""VPC access connector specification.
 
+  Enums:
+    EgressSettingValueValuesEnum: The egress setting for the connector,
+      controlling what traffic is diverted through it.
+
   Fields:
+    egressSetting: The egress setting for the connector, controlling what
+      traffic is diverted through it.
     name: Full Serverless VPC Access Connector name e.g. /projects/my-
       project/locations/us-central1/connectors/c1.
   """
 
-  name = _messages.StringField(1)
+  class EgressSettingValueValuesEnum(_messages.Enum):
+    r"""The egress setting for the connector, controlling what traffic is
+    diverted through it.
+
+    Values:
+      EGRESS_SETTING_UNSPECIFIED: <no description>
+      ALL_TRAFFIC: Force the use of VPC Access for all egress traffic from the
+        function.
+      PRIVATE_IP_RANGES: Use the VPC Access Connector for private IP space
+        from RFC1918.
+    """
+    EGRESS_SETTING_UNSPECIFIED = 0
+    ALL_TRAFFIC = 1
+    PRIVATE_IP_RANGES = 2
+
+  egressSetting = _messages.EnumField('EgressSettingValueValuesEnum', 1)
+  name = _messages.StringField(2)
 
 
 class ZipInfo(_messages.Message):

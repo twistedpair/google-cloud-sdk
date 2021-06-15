@@ -23,6 +23,7 @@ import abc
 import collections
 import fnmatch
 import glob
+import itertools
 import os
 import re
 
@@ -119,7 +120,13 @@ class FileWildcardIterator(WildcardIterator):
 
   def __iter__(self):
     recursion_needed = '**' in self._path
-    for path in glob.iglob(self._path, recursive=recursion_needed):
+    normal_file_iterator = glob.iglob(self._path, recursive=recursion_needed)
+    if recursion_needed:
+      hidden_file_iterator = glob.iglob(
+          os.path.join(self._path, '**', '.*'), recursive=recursion_needed)
+    else:
+      hidden_file_iterator = []
+    for path in itertools.chain(normal_file_iterator, hidden_file_iterator):
       # For pattern like foo/bar/**, glob returns first path as 'foo/bar/'
       # even when foo/bar does not exist. So we skip non-existing paths.
       # Glob also returns intermediate directories if called with **. We skip

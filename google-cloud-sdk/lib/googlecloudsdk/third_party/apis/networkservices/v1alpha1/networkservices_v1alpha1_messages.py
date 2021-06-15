@@ -627,6 +627,7 @@ class EdgeCacheOrigin(_messages.Message):
       RETRIABLE_4XX: Retry for retriable 4xx response codes, including 409 and
         429.
       NOT_FOUND: Retry on a HTTP 404.
+      FORBIDDEN: Retry on 403.
     """
     RETRY_CONDITIONS_UNSPECIFIED = 0
     CONNECT_FAILURE = 1
@@ -634,6 +635,7 @@ class EdgeCacheOrigin(_messages.Message):
     GATEWAY_ERROR = 3
     RETRIABLE_4XX = 4
     NOT_FOUND = 5
+    FORBIDDEN = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1280,38 +1282,6 @@ class HeaderAction(_messages.Message):
   responseHeadersToRemove = _messages.MessageField('RemoveHeader', 4, repeated=True)
 
 
-class HeaderMatch(_messages.Message):
-  r"""HeaderMatch defines the match conditions for HTTP request headers.
-
-  Fields:
-    exactMatch: Optional. The value of the header should exactly match
-      contents of exactMatch. Only one of exactMatch, prefixMatch, suffixMatch
-      or presentMatch must be set.
-    headerName: Required. The header name to match on.
-    invertMatch: Optional. If set to false (default), the headerMatch is
-      considered a match if the match criteria above are met. If set to true,
-      the headerMatch is considered a match if the match criteria above are
-      NOT met. The default setting is false.
-    prefixMatch: Optional. The value of the header must start with the
-      contents of prefixMatch. Only one of exactMatch, prefixMatch,
-      suffixMatch or presentMatch must be set.
-    presentMatch: Optional. A header with the contents of headerName must
-      exist. The match takes place whether or not the request's header has a
-      value. Only one of exactMatch, prefixMatch, suffixMatch or presentMatch
-      must be set.
-    suffixMatch: Optional. The value of the header must end with the contents
-      of suffixMatch. Only one of exactMatch, prefixMatch, suffixMatch or
-      presentMatch must be set.
-  """
-
-  exactMatch = _messages.StringField(1)
-  headerName = _messages.StringField(2)
-  invertMatch = _messages.BooleanField(3)
-  prefixMatch = _messages.StringField(4)
-  presentMatch = _messages.BooleanField(5)
-  suffixMatch = _messages.StringField(6)
-
-
 class HostRule(_messages.Message):
   r"""The hostname configured for the EdgeCacheService. A hostRule associates
   a hostname (or hostnames) with a set of routing rules, which define path-
@@ -1722,27 +1692,31 @@ class MatchRule(_messages.Message):
     fullPathMatch: Optional. For satisfying the matchRule condition, the path
       of the request must exactly match the value specified in fullPathMatch
       after removing any query parameters and anchor that may be part of the
-      original URL. fullPathMatch must be between 1 and 1024 characters. Only
-      one of prefixMatch or fullPathMatch must be specified.
-    headerMatches: Optional. Specifies a list of header match criteria, all of
-      which must match corresponding headers in the request. You may specify
-      up to 3 headers to match on.
-    ignoreCase: Optional. Specifies that prefixMatch and fullPathMatch matches
-      are case sensitive. The default value is false.
+      original URL. fullPathMatch must begin with a /. The value must be
+      between 1 and 1024 characters (inclusive). Only one of prefixMatch,
+      fullPathMatch, or pathTemplateMatch must be specified.
+    pathTemplateMatch: Optional. For satisfying the matchRule condition, the
+      path of the request must match the wildcard pattern specified in
+      pathTemplateMatch after removing any query parameters and anchor that
+      may be part of the original URL. pathTemplateMatch must be between 1 and
+      255 characters (inclusive). The pattern specified by pathTemplateMatch
+      may have at most 5 wildcard operators and at most 5 variable captures in
+      total. Only one of prefixMatch, fullPathMatch, or pathTemplateMatch must
+      be specified.
     prefixMatch: Optional. For satisfying the matchRule condition, the
       request's path must begin with the specified prefixMatch. prefixMatch
-      must begin with a /. The value must be between 1 and 1024 characters.
-      Only one of prefixMatch or fullPathMatch must be specified.
+      must begin with a /. The value must be between 1 and 1024 characters
+      (inclusive). Only one of prefixMatch, fullPathMatch, or
+      pathTemplateMatch must be specified.
     queryParameterMatches: Optional. Specifies a list of query parameter match
       criteria, all of which must match corresponding query parameters in the
       request. You may specify up to 5 query parameters to match on.
   """
 
   fullPathMatch = _messages.StringField(1)
-  headerMatches = _messages.MessageField('HeaderMatch', 2, repeated=True)
-  ignoreCase = _messages.BooleanField(3)
-  prefixMatch = _messages.StringField(4)
-  queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 5, repeated=True)
+  pathTemplateMatch = _messages.StringField(2)
+  prefixMatch = _messages.StringField(3)
+  queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 4, repeated=True)
 
 
 class MetadataLabelMatcher(_messages.Message):
@@ -3543,11 +3517,13 @@ class QueryParameterMatcher(_messages.Message):
 
   Fields:
     exactMatch: Optional. The queryParameterMatch matches if the value of the
-      parameter exactly matches the contents of exactMatch. Only one of
+      parameter exactly matches the contents of exactMatch. The match value
+      must be between 1 and 64 characters long (inclusive). Only one of
       presentMatch or exactMatch must be set.
     name: Required. The name of the query parameter to match. The query
       parameter must exist in the request, in the absence of which the request
-      match fails.
+      match fails. The name must be specified and be between 1 and 32
+      characters long (inclusive).
     presentMatch: Optional. Specifies that the queryParameterMatch matches if
       the request contains the query parameter, irrespective of whether the
       parameter has a value or not. Only one of presentMatch or exactMatch
@@ -3942,11 +3918,6 @@ class UrlRedirect(_messages.Message):
     hostRedirect: Optional. The host that will be used in the redirect
       response instead of the one that was supplied in the request. The value
       must be between 1 and 255 characters.
-    httpsRedirect: Optional. If set to true, the URL scheme in the redirected
-      request is set to https. If set to false, the URL scheme of the
-      redirected request will remain the same as that of the request. This can
-      only be set if there is at least one (1) edgeSslCertificate set on the
-      service.
     pathRedirect: Optional. The path that will be used in the redirect
       response instead of the one that was supplied in the request.
       pathRedirect cannot be supplied together with prefixRedirect. Supply one
@@ -3966,10 +3937,6 @@ class UrlRedirect(_messages.Message):
       TEMPORARY_REDIRECT, which corresponds to 307. in this case, the request
       method will be retained. - PERMANENT_REDIRECT, which corresponds to 308.
       in this case, the request method will be retained.
-    stripQuery: Optional. If set to true, any accompanying query portion of
-      the original URL is removed prior to redirecting the request. If set to
-      false, the query portion of the original URL is retained. The default is
-      set to false.
   """
 
   class RedirectResponseCodeValueValuesEnum(_messages.Enum):
@@ -3995,11 +3962,9 @@ class UrlRedirect(_messages.Message):
     PERMANENT_REDIRECT = 4
 
   hostRedirect = _messages.StringField(1)
-  httpsRedirect = _messages.BooleanField(2)
-  pathRedirect = _messages.StringField(3)
-  prefixRedirect = _messages.StringField(4)
-  redirectResponseCode = _messages.EnumField('RedirectResponseCodeValueValuesEnum', 5)
-  stripQuery = _messages.BooleanField(6)
+  pathRedirect = _messages.StringField(2)
+  prefixRedirect = _messages.StringField(3)
+  redirectResponseCode = _messages.EnumField('RedirectResponseCodeValueValuesEnum', 4)
 
 
 class UrlRewrite(_messages.Message):
@@ -4011,12 +3976,25 @@ class UrlRewrite(_messages.Message):
       hostRewrite. The host value must be between 1 and 255 characters.
     pathPrefixRewrite: Optional. Prior to forwarding the request to the
       selected origin, the matching portion of the request's path is replaced
-      by pathPrefixRewrite. The path value must be between 1 and 1024
-      characters, and must start with a '/'.
+      by pathPrefixRewrite. If specified, the path value must start with a /
+      and be between 1 and 1024 characters long (inclusive). pathPrefixRewrite
+      may only be used when all of a route's MatchRules specify prefixMatch or
+      fullPathMatch. Only one of pathPrefixRewrite and pathTemplateRewrite may
+      be specified.
+    pathTemplateRewrite: Optional. Prior to forwarding the request to the
+      selected origin, if the request matched a pathTemplateMatch, the
+      matching portion of the request's path is replaced re-written using the
+      pattern specified by pathTemplateRewrite. pathTemplateRewrite must be
+      between 1 and 255 characters (inclusive), must start with a '/', and
+      must only use variables captured by the route's pathTemplate matchers.
+      pathTemplateRewrite may only be used when all of a route's MatchRules
+      specify pathTemplate. Only one of pathPrefixRewrite and
+      pathTemplateRewrite may be specified.
   """
 
   hostRewrite = _messages.StringField(1)
   pathPrefixRewrite = _messages.StringField(2)
+  pathTemplateRewrite = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

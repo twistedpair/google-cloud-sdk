@@ -830,6 +830,21 @@ class Instance(_messages.Message):
   vmImage = _messages.MessageField('VmImage', 33)
 
 
+class InstanceConfig(_messages.Message):
+  r"""Notebook instance configurations that can be updated.
+
+  Fields:
+    enableHealthMonitoring: Verifies core internal services are running. More
+      info: go/notebooks-health
+    notebookUpgradeSchedule: Cron expression in UTC timezone, used to schedule
+      instance auto upgrade. Please follow the [cron
+      format](https://en.wikipedia.org/wiki/Cron).
+  """
+
+  enableHealthMonitoring = _messages.BooleanField(1)
+  notebookUpgradeSchedule = _messages.StringField(2)
+
+
 class IsInstanceUpgradeableResponse(_messages.Message):
   r"""Response for checking if a notebook instance is upgradeable.
 
@@ -1556,6 +1571,20 @@ class NotebooksProjectsLocationsInstancesTestIamPermissionsRequest(_messages.Mes
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NotebooksProjectsLocationsInstancesUpdateConfigRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesUpdateConfigRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
+    updateInstanceConfigRequest: A UpdateInstanceConfigRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateInstanceConfigRequest = _messages.MessageField('UpdateInstanceConfigRequest', 2)
 
 
 class NotebooksProjectsLocationsInstancesUpdateShieldedInstanceConfigRequest(_messages.Message):
@@ -2811,6 +2840,16 @@ class TestIamPermissionsResponse(_messages.Message):
 
 class TriggerScheduleRequest(_messages.Message):
   r"""Request for created scheduled notebooks"""
+
+
+class UpdateInstanceConfigRequest(_messages.Message):
+  r"""Request for updating instance configurations.
+
+  Fields:
+    config: The instance configurations to be updated.
+  """
+
+  config = _messages.MessageField('InstanceConfig', 1)
 
 
 class UpdateShieldedInstanceConfigRequest(_messages.Message):

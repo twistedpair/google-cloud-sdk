@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.container.hub import base as hub_base
 from googlecloudsdk.command_lib.container.hub.features import info
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -35,7 +36,7 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import retry
 
 
-class FeatureCommand(object):
+class FeatureCommand(hub_base.HubCommand):
   """FeatureCommand is a mixin adding common utils to the Feature commands."""
   feature_name = ''  # Derived commands should set this to their Feature.
 
@@ -43,6 +44,23 @@ class FeatureCommand(object):
   def feature(self):
     """The Feature info entry for this command's Feature."""
     return info.Get(self.feature_name)
+
+  def FeatureResourceName(self):
+    """Builds the full resource name, using the core project property."""
+    return super(FeatureCommand, self).FeatureResourceName(self.feature_name)
+
+  def FeatureNotEnabledError(self):
+    """Constructs a new Error for reporting when this Feature is not enabled."""
+    project = properties.VALUES.core.project.GetOrFail()
+    return exceptions.Error('{} Feature for project [{}] is not enabled'.format(
+        self.feature.display_name, project))
+
+  def GetFeature(self):
+    """Fetch this command's Feature from the API, handling common errors."""
+    try:
+      return self.hubclient.GetFeature(self.FeatureResourceName())
+    except apitools_exceptions.HttpNotFoundError:
+      raise self.FeatureNotEnabledError()
 
 
 class EnableCommand(FeatureCommand, base.CreateCommand):
@@ -91,8 +109,8 @@ class EnableCommand(FeatureCommand, base.CreateCommand):
 class DisableCommand(FeatureCommand, base.DeleteCommand):
   """Base class for the command that disables a Feature."""
 
-  @classmethod
-  def Args(cls, parser):
+  @staticmethod
+  def Args(parser):
     parser.add_argument(
         '--force',
         action='store_true',
@@ -100,11 +118,17 @@ class DisableCommand(FeatureCommand, base.DeleteCommand):
         'Force disablement may result in unexpected behavior.')
 
   def Run(self, args):
-    project = properties.VALUES.core.project.GetOrFail()
-    name = 'projects/{0}/locations/global/features/{1}'.format(
-        project, self.feature_name)
-    # TODO(b/177098463): Treat 404 as OK?
-    DeleteFeature(name, self.feature.display_name, force=args.force)
+    return self.Disable(args.force)
+
+  def Disable(self, force):
+    try:
+      op = self.hubclient.DeleteFeature(self.FeatureResourceName(), force=force)
+    except apitools_exceptions.HttpNotFoundError:
+      return  # Already disabled.
+    message = 'Waiting for Feature {} to be deleted'.format(
+        self.feature.display_name)
+    self.WaitForHubOp(
+        self.hubclient.resourceless_waiter, op, message=message, warnings=False)
 
 
 class DescribeCommand(FeatureCommand, base.DescribeCommand):
@@ -126,23 +150,12 @@ class UpdateCommand(FeatureCommand, base.UpdateCommand):
                          mask, **kwargs)
 
 
-def CreateMultiClusterIngressFeatureSpec(config_membership, billing=None):
+def CreateMultiClusterIngressFeatureSpec(config_membership):
   client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
   messages = client.MESSAGES_MODULE
   spec = messages.MultiClusterIngressFeatureSpec(
       configMembership=config_membership)
-  if billing:
-    spec.billing = ConvertMultiClusterIngressBilling(billing, spec)
   return spec
-
-
-def ConvertMultiClusterIngressBilling(billing, spec):
-  if billing == 'anthos':
-    return spec.BillingValueValuesEnum.ANTHOS_LICENSE
-  # Validation is done in the Enable handler, we assume only two values
-  # are possible here
-  else:
-    return spec.BillingValueValuesEnum.PAY_AS_YOU_GO
 
 
 def CreateMultiClusterServiceDiscoveryFeatureSpec():
@@ -274,31 +287,6 @@ def GetFeature(name):
   return client.projects_locations_global_features.Get(
       client.MESSAGES_MODULE.GkehubProjectsLocationsGlobalFeaturesGetRequest(
           name=name))
-
-
-def DeleteFeature(name, feature_display_name, force=False):
-  """Deletes a Feature resource in Hub.
-
-  Args:
-    name: the full resource name of the Feature to delete, e.g.,
-      projects/foo/locations/global/features/name.
-    feature_display_name: the display name of this Feature
-    force: flag to trigger force deletion of the Feature.
-
-  Raises:
-    apitools.base.py.HttpError: if the request returns an HTTP error
-  """
-
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  op = client.projects_locations_global_features.Delete(
-      client.MESSAGES_MODULE.GkehubProjectsLocationsGlobalFeaturesDeleteRequest(
-          name=name, force=force))
-  op_resource = resources.REGISTRY.ParseRelativeName(
-      op.name, collection='gkehub.projects.locations.operations')
-  waiter.WaitFor(
-      waiter.CloudOperationPollerNoResources(
-          client.projects_locations_operations), op_resource,
-      'Waiting for Feature {} to be deleted'.format(feature_display_name))
 
 
 def UpdateFeature(project, feature_id, feature_display_name, mask, **kwargs):

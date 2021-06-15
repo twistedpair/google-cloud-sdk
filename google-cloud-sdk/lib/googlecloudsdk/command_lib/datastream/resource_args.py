@@ -136,6 +136,35 @@ def AddConnectionProfileResourceArg(parser, verb, positional=True):
       }).AddToParser(parser)
 
 
+def AddConnectionProfileDiscoverResourceArg(parser):
+  """Add a resource argument for a Datastream connection profile discover command.
+
+  Args:
+    parser: the parser for the command.
+  """
+  connection_profile_parser = parser.add_group(mutex=True, required=True)
+  connection_profile_parser.add_argument(
+      '--connection-profile-object-file',
+      help="""Path to a YAML (or JSON) file containing the configuration
+      for a connection profile object. If you pass - as the value of the
+      flag the file content will be read from stdin."""
+  )
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          '--connection-profile-name',
+          GetConnectionProfileResourceSpec(),
+          'Resource ID of the connection profile.',
+          flag_name_overrides={'location': ''},
+          group=connection_profile_parser)
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs,
+      command_level_fallthroughs={
+          '--connection-profile-name.location': ['--location'],
+      }).AddToParser(parser)
+
+
 def AddPrivateConnectionResourceArg(parser, verb, positional=True):
   """Add a resource argument for a Datastream private connection.
 

@@ -23,7 +23,7 @@ import enum
 import re
 import uuid
 
-from googlecloudsdk.api_lib.run import revision
+from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import platforms
 
@@ -49,16 +49,17 @@ class SpecialConnector(enum.Enum):
 
 
 def _GetSecretsAnnotation(resource):
-  return resource.template_annotations.get(revision.SECRETS_ANNOTATION, '')
+  return resource.template.annotations.get(
+      container_resource.SECRETS_ANNOTATION, '')
 
 
 def _SetSecretsAnnotation(resource, value):
-  annotations = resource.template_annotations
+  annotations = resource.template.annotations
   if value:
-    annotations[revision.SECRETS_ANNOTATION] = value
+    annotations[container_resource.SECRETS_ANNOTATION] = value
   else:
     try:
-      del annotations[revision.SECRETS_ANNOTATION]
+      del annotations[container_resource.SECRETS_ANNOTATION]
     except KeyError:
       pass
 
@@ -116,7 +117,7 @@ def PruneAnnotation(resource):
   """Garbage-collect items in the run.googleapis.com/secrets annotation.
 
   Args:
-    resource: RevisionSpec resource to be modified.
+    resource: k8s_object resource to be modified.
   """
   in_use = _InUse(resource)
 
@@ -283,17 +284,17 @@ class ReachableSecret(object):
     return self.remote_project_number is not None
 
   def _GetOrCreateAlias(self, resource):
-    """What do we call this secret within this revision?
+    """What do we call this secret within this resource?
 
     Note that there might be an existing alias to the same secret, which we'd
     like to reuse. There's no effort to deduplicate the ReachableSecret python
     objects; you just get the same alias from more than one of them.
 
-    The RevisionSpec annotation is edited here to include all new aliases. Use
+    The k8s_object annotation is edited here to include all new aliases. Use
     PruneAnnotation to clean up unused ones.
 
     Args:
-      resource: RevisionSpec resource that will be modified if we need to add a
+      resource: k8s_object resource that will be modified if we need to add a
         new alias to the secrets annotation.
 
     Returns:
@@ -329,10 +330,10 @@ class ReachableSecret(object):
         secret_name=self.secret_name)
 
   def AsSecretVolumeSource(self, resource):
-    """Build message for adding to revision.template.volumes.secrets.
+    """Build message for adding to resource.template.volumes.secrets.
 
     Args:
-      resource: RevisionSpec that may get modified with new aliases.
+      resource: k8s_object that may get modified with new aliases.
 
     Returns:
       messages.SecretVolumeSource
@@ -360,10 +361,10 @@ class ReachableSecret(object):
     return out
 
   def AsEnvVarSource(self, resource):
-    """Build message for adding to revision.template.env_vars.secrets.
+    """Build message for adding to resource.template.env_vars.secrets.
 
     Args:
-      resource: RevisionSpec that may get modified with new aliases.
+      resource: k8s_object that may get modified with new aliases.
 
     Returns:
       messages.EnvVarSource

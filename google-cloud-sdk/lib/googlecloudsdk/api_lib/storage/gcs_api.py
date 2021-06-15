@@ -758,12 +758,16 @@ class GcsApi(cloud_api.CloudApi):
           start_byte=start_byte,
           end_byte=end_byte)
 
-    return retry.RetryOnException(
-        _call_download_object,
+    # Convert seconds to miliseconds by multiplying by 1000.
+    return retry.Retryer(
         max_retrials=properties.VALUES.storage.max_retries.GetInt(),
-        # Convert seconds to miliseconds.
         max_wait_ms=properties.VALUES.storage.max_retry_delay.GetInt() * 1000,
-        should_retry_if=_should_retry_resumable_download)()
+        exponential_sleep_multiplier=(
+            properties.VALUES.storage.exponential_sleep_multiplier.GetInt()
+        )).RetryOnException(
+            _call_download_object,
+            sleep_ms=properties.VALUES.storage.base_retry_delay.GetInt() * 1000,
+            should_retry_if=_should_retry_resumable_download)
 
   @_catch_http_error_raise_gcs_api_error()
   def download_object(self,

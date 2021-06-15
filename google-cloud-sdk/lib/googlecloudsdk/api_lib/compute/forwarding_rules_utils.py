@@ -95,11 +95,12 @@ def GetGlobalTarget(resources, args):
     return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
 
 
-def _ValidateRegionalArgs(args):
+def _ValidateRegionalArgs(args, include_l7_rxlb):
   """Validate the regional forwarding rules args.
 
   Args:
       args: The arguments given to the create/set-target command.
+      include_l7_rxlb: The flag to enable Regional L7 XLB.
   """
 
   if getattr(args, 'global', None):
@@ -124,6 +125,9 @@ def _ValidateRegionalArgs(args):
           'please use [--ports] flag instead.')
 
   schemes_allowing_network_fields = ['INTERNAL', 'INTERNAL_MANAGED']
+  if include_l7_rxlb:
+    schemes_allowing_network_fields.append('EXTERNAL_MANAGED')
+
   ip_version = getattr(args, 'ip_version', None)
   if ip_version == 'IPV6' and (
       getattr(args, 'load_balancing_scheme', None) not in [None, 'EXTERNAL'] or
@@ -153,9 +157,10 @@ def GetRegionalTarget(client,
                       args,
                       forwarding_rule_ref=None,
                       include_l7_internal_load_balancing=False,
+                      include_l7_rxlb=False,
                       include_target_service_attachment=False):
   """Return the forwarding target for a regionally scoped request."""
-  _ValidateRegionalArgs(args)
+  _ValidateRegionalArgs(args, include_l7_rxlb=include_l7_rxlb)
   if forwarding_rule_ref:
     region_arg = forwarding_rule_ref.region
     project_arg = forwarding_rule_ref.project
@@ -182,8 +187,7 @@ def GetRegionalTarget(client,
   elif getattr(args, 'target_vpn_gateway', None):
     if not args.target_vpn_gateway_region and region_arg:
       args.target_vpn_gateway_region = region_arg
-    target_ref = flags.TARGET_VPN_GATEWAY_ARG.ResolveAsResource(
-        args, resources)
+    target_ref = flags.TARGET_VPN_GATEWAY_ARG.ResolveAsResource(args, resources)
     target_region = target_ref.region
   elif getattr(args, 'backend_service', None):
     if not args.backend_service_region and region_arg:
@@ -224,6 +228,7 @@ def GetRegionalTarget(client,
 
 def _GetZonesInRegionLister(flag_names, region, compute_client, project):
   """Lists all the zones in a given region."""
+
   def Lister(*unused_args):
     """Returns a list of the zones for a given region."""
     if region:

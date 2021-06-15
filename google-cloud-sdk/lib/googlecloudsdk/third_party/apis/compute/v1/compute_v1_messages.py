@@ -1453,11 +1453,11 @@ class AttachedDiskInitializeParams(_messages.Message):
     diskType: Specifies the disk type to use to create the instance. If not
       specified, the default is pd-standard, specified using the full URL. For
       example: https://www.googleapis.com/compute/v1/projects/project/zones/zo
-      ne/diskTypes/pd-standard   Other values include pd-ssd and local-ssd. If
-      you define this field, you can provide either the full or partial URL.
-      For example, the following are valid values:   - https://www.googleapis.
-      com/compute/v1/projects/project/zones/zone/diskTypes/diskType  -
-      projects/project/zones/zone/diskTypes/diskType  -
+      ne/diskTypes/pd-standard   For a full list of acceptable values, see
+      Persistent disk types. If you define this field, you can provide either
+      the full or partial URL. For example, the following are valid values:
+      - https://www.googleapis.com/compute/v1/projects/project/zones/zone/disk
+      Types/diskType  - projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
       the name of the disk type, not URL.
     labels: Labels to apply to this disk. These can be later modified by the
@@ -1465,7 +1465,10 @@ class AttachedDiskInitializeParams(_messages.Message):
       disks.
     onUpdateAction: Specifies which action to take on instance update with
       this disk. Default is to use the existing disk.
-    provisionedIops: Indicates how many IOPS must be provisioned for the disk.
+    provisionedIops: Indicates how many IOPS to provision for the disk. This
+      sets the number of I/O operations per second that the disk can handle.
+      Values must be between 10,000 and 120,000. For more details, see the
+      Extreme persistent disk documentation.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations. Specified using the full or partial URL. For
       instance template, specify only the resource policy name.
@@ -2668,42 +2671,30 @@ class Backend(_messages.Message):
       available capacity. The valid ranges are 0.0 and [0.1,1.0]. You cannot
       configure a setting larger than 0 and smaller than 0.1. You cannot
       configure a setting of 0 when there is only one backend attached to the
-      backend service.  Not supported by:  - Internal TCP/UDP Load Balancing -
-      Network Load Balancing
+      backend service.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     failover: This field designates whether this is a failover backend. More
       than one failover backend can be configured for a given BackendService.
     group: The fully-qualified URL of an instance group or network endpoint
-      group (NEG) resource. The type of backend that a backend service
-      supports depends on the backend service's loadBalancingScheme.    - When
-      the loadBalancingScheme for the backend service is EXTERNAL (except
-      Network Load Balancing),  INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED ,
-      the backend can be either an instance group or a NEG. The backends on
-      the backend service must be either all instance groups or all NEGs. You
-      cannot mix instance group and NEG backends on the same backend service.
-      - When the loadBalancingScheme for the backend service is EXTERNAL for
-      Network Load Balancing or INTERNAL for Internal TCP/UDP Load Balancing,
-      the backend must be an instance group. NEGs are not supported.    For
-      regional services, the backend must be in the same region as the backend
-      service.  You must use the fully-qualified URL (starting with
+      group (NEG) resource. To determine what types of backends a load
+      balancer supports, see the [Backend services
+      overview](https://cloud.google.com/load-balancing/docs/backend-
+      service#backends).  You must use the fully-qualified URL (starting with
       https://www.googleapis.com/) to specify the instance group or NEG.
       Partial URLs are not supported.
     maxConnections: Defines a target maximum number of simultaneous
       connections. For usage guidelines, see Connection balancing mode and
       Utilization balancing mode. Not available if the backend's balancingMode
-      is RATE. Not supported by:  - Internal TCP/UDP Load Balancing - Network
-      Load Balancing
+      is RATE.
     maxConnectionsPerEndpoint: Defines a target maximum number of simultaneous
       connections. For usage guidelines, see Connection balancing mode and
       Utilization balancing mode.  Not available if the backend's
-      balancingMode is RATE. Not supported by:  - Internal TCP/UDP Load
-      Balancing - Network Load Balancing.
+      balancingMode is RATE.
     maxConnectionsPerInstance: Defines a target maximum number of simultaneous
       connections. For usage guidelines, see Connection balancing mode and
       Utilization balancing mode.  Not available if the backend's
-      balancingMode is RATE. Not supported by:  - Internal TCP/UDP Load
-      Balancing - Network Load Balancing.
+      balancingMode is RATE.
     maxRate: Defines a maximum number of HTTP requests per second (RPS). For
       usage guidelines, see Rate balancing mode and Utilization balancing
       mode.  Not available if the backend's balancingMode is CONNECTION.
@@ -3101,20 +3092,16 @@ class BackendService(_messages.Message):
   timeouts. These settings provide fine-grained control over how your load
   balancer behaves. Most of the settings have default values that allow for
   easy configuration if you need to get started quickly.  Backend services in
-  Google Compute Engine can be either regionally or globally scoped.  *
-  [Global](/compute/docs/reference/rest/{$api_version}/backendServices) * [Reg
-  ional](/compute/docs/reference/rest/{$api_version}/regionBackendServices)
-  For more information, see Backend Services.  (== resource_for
-  {$api_version}.backendService ==)
+  Google Compute Engine can be either regionally or globally scoped.  * [Globa
+  l](https://cloud.google.com/compute/docs/reference/rest/{$api_version}/backe
+  ndServices) * [Regional](https://cloud.google.com/compute/docs/reference/res
+  t/{$api_version}/regionBackendServices)  For more information, see Backend
+  Services.  (== resource_for {$api_version}.backendService ==)
 
   Enums:
-    LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type.
-      Choose EXTERNAL for external HTTP(S), SSL Proxy, TCP Proxy and Network
-      Load Balancing. Choose  INTERNAL for Internal TCP/UDP Load Balancing.
-      Choose  INTERNAL_MANAGED for Internal HTTP(S) Load Balancing.
-      INTERNAL_SELF_MANAGED for Traffic Director. A backend service created
-      for one type of load balancer cannot be used with another. For more
-      information, refer to Choosing a load balancer.
+    LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type. A
+      backend service created for one type of load balancer cannot be used
+      with another. For more information, refer to Choosing a load balancer.
     LocalityLbPolicyValueValuesEnum: The load balancing algorithm used within
       the scope of the locality. The possible values are:   - ROUND_ROBIN:
       This is a simple policy in which each healthy backend is selected in
@@ -3144,38 +3131,29 @@ class BackendService(_messages.Message):
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP,
       SSL, UDP or GRPC. depending on the chosen load balancer or Traffic
-      Director configuration. Refer to the documentation for the load balancer
-      or for Traffic Director for more information.  Must be set to GRPC when
-      the backend service is referenced by a URL map that is bound to target
-      gRPC proxy.
+      Director configuration. Refer to the documentation for the load
+      balancers or for Traffic Director for more information.  Must be set to
+      GRPC when the backend service is referenced by a URL map that is bound
+      to target gRPC proxy.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
-      default is NONE.  When the loadBalancingScheme is EXTERNAL:  * For
-      Network Load Balancing, the possible values are NONE, CLIENT_IP,
-      CLIENT_IP_PROTO, or  CLIENT_IP_PORT_PROTO. * For all other load
-      balancers that use loadBalancingScheme=EXTERNAL, the possible values are
-      NONE, CLIENT_IP, or GENERATED_COOKIE. * You can use GENERATED_COOKIE if
-      the protocol is HTTP, HTTP2, or HTTPS.  When the loadBalancingScheme is
-      INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
-      CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
-      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE,
-      CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.  Not
-      supported when the backend service is referenced by a URL map that is
-      bound to target gRPC proxy that has validateForProxyless field set to
-      true.
+      default is NONE. For a detailed description of session affinity options,
+      see: [Session affinity](https://cloud.google.com/load-
+      balancing/docs/backend-service#session_affinity).  Not supported when
+      the backend service is referenced by a URL map that is bound to target
+      gRPC proxy that has validateForProxyless field set to true.
 
   Fields:
-    affinityCookieTtlSec: Lifetime of cookies in seconds. Only applicable if
-      the loadBalancingScheme is EXTERNAL, INTERNAL_SELF_MANAGED, or
-      INTERNAL_MANAGED, the protocol is HTTP or HTTPS, and the sessionAffinity
-      is GENERATED_COOKIE, or HTTP_COOKIE.  If set to 0, the cookie is non-
-      persistent and lasts only until the end of the browser session (or
-      equivalent). The maximum allowed value is one day (86,400).  Not
-      supported when the backend service is referenced by a URL map that is
-      bound to target gRPC proxy that has validateForProxyless field set to
-      true.
+    affinityCookieTtlSec: Lifetime of cookies in seconds. This setting is
+      applicable to external and internal HTTP(S) load balancers and Traffic
+      Director and requires GENERATED_COOKIE or HTTP_COOKIE session affinity.
+      If set to 0, the cookie is non-persistent and lasts only until the end
+      of the browser session (or equivalent). The maximum allowed value is one
+      day (86,400).  Not supported when the backend service is referenced by a
+      URL map that is bound to target gRPC proxy that has validateForProxyless
+      field set to true.
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService. Only available
-      for  external HTTP(S) Load Balancing.
+      for  specified load balancer types.
     circuitBreakers: A CircuitBreakers attribute.
     connectionDraining: A ConnectionDraining attribute.
     consistentHash: Consistent Hash-based load balancing can be used to
@@ -3194,18 +3172,22 @@ class BackendService(_messages.Message):
       true.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    customRequestHeaders: Headers that the HTTP/S load balancer should add to
-      proxied requests.
-    customResponseHeaders: Headers that the HTTP/S load balancer should add to
-      proxied responses.
+    customRequestHeaders: Headers that the load balancer adds to proxied
+      requests. See [Creating custom headers](https://cloud.google.com/load-
+      balancing/docs/custom-headers).
+    customResponseHeaders: Headers that the load balancer adds to proxied
+      responses. See [Creating custom headers](https://cloud.google.com/load-
+      balancing/docs/custom-headers).
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    enableCDN: If true, enables Cloud CDN for the backend service. Only
-      applicable if the loadBalancingScheme is EXTERNAL and the protocol is
-      HTTP or HTTPS.
-    failoverPolicy: Applicable only to Failover for Internal TCP/UDP Load
-      Balancing and Network Load Balancing. Requires at least one backend
-      instance group to be defined as a backup (failover) backend.
+    enableCDN: If true, enables Cloud CDN for the backend service of an
+      external HTTP(S) load balancer.
+    failoverPolicy: Requires at least one backend instance group to be defined
+      as a backup (failover) backend. For load balancers that have
+      configurable failover: [Internal TCP/UDP Load
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/internal/failover-overview) and [external TCP/UDP Load
+      Balancing](/network/networklb-failover-overview).
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
@@ -3228,13 +3210,9 @@ class BackendService(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
       backend services.
-    loadBalancingScheme: Specifies the load balancer type. Choose EXTERNAL for
-      external HTTP(S), SSL Proxy, TCP Proxy and Network Load Balancing.
-      Choose  INTERNAL for Internal TCP/UDP Load Balancing. Choose
-      INTERNAL_MANAGED for Internal HTTP(S) Load Balancing.
-      INTERNAL_SELF_MANAGED for Traffic Director. A backend service created
-      for one type of load balancer cannot be used with another. For more
-      information, refer to Choosing a load balancer.
+    loadBalancingScheme: Specifies the load balancer type. A backend service
+      created for one type of load balancer cannot be used with another. For
+      more information, refer to Choosing a load balancer.
     localityLbPolicy: The load balancing algorithm used within the scope of
       the locality. The possible values are:   - ROUND_ROBIN: This is a simple
       policy in which each healthy backend is selected in round robin order.
@@ -3293,20 +3271,19 @@ class BackendService(_messages.Message):
       referenced by a URL map that is bound to target gRPC proxy that has
       validateForProxyless field set to true.
     port: Deprecated in favor of portName. The TCP port to connect on the
-      backend. The default value is 80.  Backend services for Internal TCP/UDP
-      Load Balancing and Network Load Balancing require you omit port.
+      backend. The default value is 80. For Internal TCP/UDP Load Balancing
+      and Network Load Balancing, omit port.
     portName: A named port on a backend instance group representing the port
-      for communication to the backend VMs in that group. Required when the
-      loadBalancingScheme is EXTERNAL (except Network Load Balancing),
-      INTERNAL_MANAGED, or  INTERNAL_SELF_MANAGED and the backends are
-      instance groups. The named port must be defined on each backend instance
-      group. This parameter has no meaning if the backends are NEGs.
-      Backend services for Internal TCP/UDP Load Balancing and Network Load
-      Balancing require you omit port_name.
+      for communication to the backend VMs in that group. The named port must
+      be [defined on each backend instance
+      group](https://cloud.google.com/load-balancing/docs/backend-
+      service#named_ports). This parameter has no meaning if the backends are
+      NEGs. For Internal TCP/UDP Load Balancing and Network Load Balancing,
+      omit port_name.
     protocol: The protocol this BackendService uses to communicate with
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or
       GRPC. depending on the chosen load balancer or Traffic Director
-      configuration. Refer to the documentation for the load balancer or for
+      configuration. Refer to the documentation for the load balancers or for
       Traffic Director for more information.  Must be set to GRPC when the
       backend service is referenced by a URL map that is bound to target gRPC
       proxy.
@@ -3322,32 +3299,21 @@ class BackendService(_messages.Message):
       and load_balancing_scheme set to INTERNAL_MANAGED.  - A global backend
       service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     selfLink: [Output Only] Server-defined URL for the resource.
-    sessionAffinity: Type of session affinity to use. The default is NONE.
-      When the loadBalancingScheme is EXTERNAL:  * For Network Load Balancing,
-      the possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
-      CLIENT_IP_PORT_PROTO. * For all other load balancers that use
-      loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP,
-      or GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is
-      HTTP, HTTP2, or HTTPS.  When the loadBalancingScheme is INTERNAL,
-      possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
-      CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
-      INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE,
-      CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.  Not
-      supported when the backend service is referenced by a URL map that is
-      bound to target gRPC proxy that has validateForProxyless field set to
-      true.
+    sessionAffinity: Type of session affinity to use. The default is NONE. For
+      a detailed description of session affinity options, see: [Session
+      affinity](https://cloud.google.com/load-balancing/docs/backend-
+      service#session_affinity).  Not supported when the backend service is
+      referenced by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     timeoutSec: Not supported when the backend service is referenced by a URL
       map that is bound to target gRPC proxy that has validateForProxyless
       field set to true. Instead, use maxStreamDuration.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
-    r"""Specifies the load balancer type. Choose EXTERNAL for external
-    HTTP(S), SSL Proxy, TCP Proxy and Network Load Balancing. Choose  INTERNAL
-    for Internal TCP/UDP Load Balancing. Choose  INTERNAL_MANAGED for Internal
-    HTTP(S) Load Balancing.  INTERNAL_SELF_MANAGED for Traffic Director. A
-    backend service created for one type of load balancer cannot be used with
-    another. For more information, refer to Choosing a load balancer.
+    r"""Specifies the load balancer type. A backend service created for one
+    type of load balancer cannot be used with another. For more information,
+    refer to Choosing a load balancer.
 
     Values:
       EXTERNAL: <no description>
@@ -3410,7 +3376,7 @@ class BackendService(_messages.Message):
     r"""The protocol this BackendService uses to communicate with backends.
     Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or GRPC. depending
     on the chosen load balancer or Traffic Director configuration. Refer to
-    the documentation for the load balancer or for Traffic Director for more
+    the documentation for the load balancers or for Traffic Director for more
     information.  Must be set to GRPC when the backend service is referenced
     by a URL map that is bound to target gRPC proxy.
 
@@ -3432,17 +3398,10 @@ class BackendService(_messages.Message):
     UDP = 6
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
-    r"""Type of session affinity to use. The default is NONE.  When the
-    loadBalancingScheme is EXTERNAL:  * For Network Load Balancing, the
-    possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
-    CLIENT_IP_PORT_PROTO. * For all other load balancers that use
-    loadBalancingScheme=EXTERNAL, the possible values are NONE, CLIENT_IP, or
-    GENERATED_COOKIE. * You can use GENERATED_COOKIE if the protocol is HTTP,
-    HTTP2, or HTTPS.  When the loadBalancingScheme is INTERNAL, possible
-    values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.
-    When the loadBalancingScheme is INTERNAL_SELF_MANAGED, or
-    INTERNAL_MANAGED, possible values are NONE, CLIENT_IP, GENERATED_COOKIE,
-    HEADER_FIELD, or HTTP_COOKIE.  Not supported when the backend service is
+    r"""Type of session affinity to use. The default is NONE. For a detailed
+    description of session affinity options, see: [Session
+    affinity](https://cloud.google.com/load-balancing/docs/backend-
+    service#session_affinity).  Not supported when the backend service is
     referenced by a URL map that is bound to target gRPC proxy that has
     validateForProxyless field set to true.
 
@@ -3838,30 +3797,37 @@ class BackendServiceCdnPolicyNegativeCachingPolicy(_messages.Message):
 
 
 class BackendServiceFailoverPolicy(_messages.Message):
-  r"""Applicable only to Failover for Internal TCP/UDP Load Balancing and
-  Network Load Balancing. On failover or failback, this field indicates
-  whether connection draining will be honored. GCP has a fixed connection
-  draining timeout of 10 minutes. A setting of true terminates existing TCP
-  connections to the active pool during failover and failback, immediately
-  draining traffic. A setting of false allows existing TCP connections to
-  persist, even on VMs no longer in the active pool, for up to the duration of
-  the connection draining timeout (10 minutes).
+  r"""For load balancers that have configurable failover: [Internal TCP/UDP
+  Load Balancing](https://cloud.google.com/load-
+  balancing/docs/internal/failover-overview) and [external TCP/UDP Load
+  Balancing](/network/networklb-failover-overview). On failover or failback,
+  this field indicates whether connection draining will be honored. Google
+  Cloud has a fixed connection draining timeout of 10 minutes. A setting of
+  true terminates existing TCP connections to the active pool during failover
+  and failback, immediately draining traffic. A setting of false allows
+  existing TCP connections to persist, even on VMs no longer in the active
+  pool, for up to the duration of the connection draining timeout (10
+  minutes).
 
   Fields:
     disableConnectionDrainOnFailover: This can be set to true only if the
       protocol is TCP.  The default is false.
-    dropTrafficIfUnhealthy: Applicable only to Failover for Internal TCP/UDP
-      Load Balancing and Network Load Balancing, If set to true, connections
-      to the load balancer are dropped when all primary and all backup backend
-      VMs are unhealthy.If set to false, connections are distributed among all
-      primary VMs when all primary and all backup backend VMs are unhealthy.
-      The default is false.
-    failoverRatio: Applicable only to Failover for Internal TCP/UDP Load
-      Balancing and Network Load Balancing. The value of the field must be in
-      the range [0, 1]. If the value is 0, the load balancer performs a
-      failover when the number of healthy primary VMs equals zero. For all
-      other values, the load balancer performs a failover when the total
-      number of healthy primary VMs is less than this ratio.
+    dropTrafficIfUnhealthy: If set to true, connections to the load balancer
+      are dropped when all primary and all backup backend VMs are unhealthy.If
+      set to false, connections are distributed among all primary VMs when all
+      primary and all backup backend VMs are unhealthy. For load balancers
+      that have configurable failover: [Internal TCP/UDP Load
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/internal/failover-overview) and [external TCP/UDP Load
+      Balancing](/network/networklb-failover-overview). The default is false.
+    failoverRatio: The value of the field must be in the range [0, 1]. If the
+      value is 0, the load balancer performs a failover when the number of
+      healthy primary VMs equals zero. For all other values, the load balancer
+      performs a failover when the total number of healthy primary VMs is less
+      than this ratio. For load balancers that have configurable failover:
+      [Internal TCP/UDP Load Balancing](https://cloud.google.com/load-
+      balancing/docs/internal/failover-overview) and [external TCP/UDP Load
+      Balancing](/network/networklb-failover-overview).
   """
 
   disableConnectionDrainOnFailover = _messages.BooleanField(1)
@@ -22353,7 +22319,10 @@ class Disk(_messages.Message):
       currently supported size is 4096, other sizes may be added in the
       future. If an unsupported value is requested, the error message will
       list the supported values for the caller's project.
-    provisionedIops: Indicates how many IOPS must be provisioned for the disk.
+    provisionedIops: Indicates how many IOPS to provision for the disk. This
+      sets the number of I/O operations per second that the disk can handle.
+      Values must be between 10,000 and 120,000. For more details, see the
+      Extreme persistent disk documentation.
     region: [Output Only] URL of the region where the disk resides. Only
       applicable for regional resources. You must specify this field as part
       of the HTTP request URL. It is not settable as a field in the request
@@ -22433,7 +22402,8 @@ class Disk(_messages.Message):
       DELETING: Disk is deleting.
     type: URL of the disk type resource describing which disk type to use to
       create the disk. Provide this when creating the disk. For example:
-      projects/project/zones/zone/diskTypes/pd-standard  or pd-ssd
+      projects/project/zones/zone/diskTypes/pd-ssd . See Persistent disk
+      types.
     users: [Output Only] Links to the users of the disk (attached instances)
       in form: projects/project/zones/zone/instances/instance
     zone: [Output Only] URL of the zone where the disk resides. You must
@@ -45028,6 +44998,8 @@ class SecurityPolicy(_messages.Message):
   resource_for {$api_version}.securityPolicies ==)
 
   Fields:
+    adaptiveProtectionConfig: A SecurityPolicyAdaptiveProtectionConfig
+      attribute.
     advancedOptionsConfig: A SecurityPolicyAdvancedOptionsConfig attribute.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -45059,15 +45031,56 @@ class SecurityPolicy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
-  advancedOptionsConfig = _messages.MessageField('SecurityPolicyAdvancedOptionsConfig', 1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  fingerprint = _messages.BytesField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='compute#securityPolicy')
-  name = _messages.StringField(7)
-  rules = _messages.MessageField('SecurityPolicyRule', 8, repeated=True)
-  selfLink = _messages.StringField(9)
+  adaptiveProtectionConfig = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfig', 1)
+  advancedOptionsConfig = _messages.MessageField('SecurityPolicyAdvancedOptionsConfig', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  fingerprint = _messages.BytesField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default='compute#securityPolicy')
+  name = _messages.StringField(8)
+  rules = _messages.MessageField('SecurityPolicyRule', 9, repeated=True)
+  selfLink = _messages.StringField(10)
+
+
+class SecurityPolicyAdaptiveProtectionConfig(_messages.Message):
+  r"""Configuration options for Cloud Armor Adaptive Protection (CAAP).
+
+  Fields:
+    layer7DdosDefenseConfig: If set to true, enables Cloud Armor Machine
+      Learning.
+  """
+
+  layer7DdosDefenseConfig = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig', 1)
+
+
+class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(_messages.Message):
+  r"""Configuration options for L7 DDoS detection.
+
+  Enums:
+    RuleVisibilityValueValuesEnum: Rule visibility can be one of the
+      following: STANDARD - opaque rules. (default) PREMIUM - transparent
+      rules.
+
+  Fields:
+    enable: If set to true, enables CAAP for L7 DDoS detection.
+    ruleVisibility: Rule visibility can be one of the following: STANDARD -
+      opaque rules. (default) PREMIUM - transparent rules.
+  """
+
+  class RuleVisibilityValueValuesEnum(_messages.Enum):
+    r"""Rule visibility can be one of the following: STANDARD - opaque rules.
+    (default) PREMIUM - transparent rules.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
+
+  enable = _messages.BooleanField(1)
+  ruleVisibility = _messages.EnumField('RuleVisibilityValueValuesEnum', 2)
 
 
 class SecurityPolicyAdvancedOptionsConfig(_messages.Message):

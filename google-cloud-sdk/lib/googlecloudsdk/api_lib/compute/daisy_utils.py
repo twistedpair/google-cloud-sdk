@@ -600,7 +600,8 @@ def RunImageImport(args,
                         builder_region)
   return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
                             IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
-                            IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
+                            IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT,
+                            build_region=builder_region)
 
 
 def _GetBuilderRegion(release_track, region_getter, args):
@@ -761,7 +762,8 @@ def RunImageExport(args,
                         builder_region)
   return RunImageCloudBuild(args, builder, export_args, tags, output_filter,
                             EXPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
-                            EXPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
+                            EXPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT,
+                            build_region=builder_region)
 
 
 def _GetImageExportRegion(args):  # pylint:disable=unused-argument
@@ -783,7 +785,8 @@ def _GetImageExportRegion(args):  # pylint:disable=unused-argument
 
 def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
                        cloudbuild_service_account_roles,
-                       compute_service_account_roles):
+                       compute_service_account_roles,
+                       build_region=None):
   """Run a build related to image on Google Cloud Builder.
 
   Args:
@@ -798,6 +801,7 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
     cloudbuild_service_account_roles: roles required for cloudbuild service
       account.
     compute_service_account_roles: roles required for compute service account.
+    build_region: Region to run Cloud Build in.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -816,7 +820,8 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
                        if 'compute_service_account' in args else '')
 
   return _RunCloudBuild(args, builder, builder_args,
-                        ['gce-daisy'] + tags, output_filter, args.log_location)
+                        ['gce-daisy'] + tags, output_filter, args.log_location,
+                        build_region=build_region)
 
 
 def GetDaisyTimeout(args):

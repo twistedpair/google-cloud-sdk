@@ -146,14 +146,16 @@ class BuildArtifact(_messages.Message):
   r"""Description of an a image to use during Skaffold rendering.
 
   Fields:
+    image: Image name in Skaffold configuration.
     imageName: Image name in Skaffold configuration.
     tag: Image tag to use. This will generally be the full path to an image,
       such as "gcr.io/my-project/busybox:1.2.3" or "gcr.io/my-
       project/busybox@sha256:abc123".
   """
 
-  imageName = _messages.StringField(1)
-  tag = _messages.StringField(2)
+  image = _messages.StringField(1)
+  imageName = _messages.StringField(2)
+  tag = _messages.StringField(3)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -297,9 +299,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
       does not exist will result in the creation of a new `DeliveryPipeline`.
     deliveryPipeline: A DeliveryPipeline resource to be passed as the request
       body.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
     name: Optional. Name of the `DeliveryPipeline`. Format is
       projects/{project}/ locations/{location}/deliveryPipelines/a-z{0,62}.
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -324,11 +323,10 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
 
   allowMissing = _messages.BooleanField(1)
   deliveryPipeline = _messages.MessageField('DeliveryPipeline', 2)
-  etag = _messages.StringField(3)
-  name = _messages.StringField(4, required=True)
-  requestId = _messages.StringField(5)
-  updateMask = _messages.StringField(6)
-  validateOnly = _messages.BooleanField(7)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messages.Message):
@@ -707,9 +705,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(_messages
   Fields:
     allowMissing: Optional. If set to true, updating a `Target` that does not
       exist will result in the creation of a new `Target`.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
     name: Optional. Name of the `Target`. Format is
       projects/{project}/locations/{location}/
       deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
@@ -735,12 +730,11 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(_messages
   """
 
   allowMissing = _messages.BooleanField(1)
-  etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  target = _messages.MessageField('Target', 5)
-  updateMask = _messages.StringField(6)
-  validateOnly = _messages.BooleanField(7)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  target = _messages.MessageField('Target', 4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesTargetsTestIamPermissionsRequest(_messages.Message):
@@ -973,9 +967,6 @@ class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
   Fields:
     allowMissing: Optional. If set to true, updating a `Target` that does not
       exist will result in the creation of a new `Target`.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
     name: Optional. Name of the `Target`. Format is
       projects/{project}/locations/{location}/
       deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
@@ -1001,12 +992,11 @@ class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
   """
 
   allowMissing = _messages.BooleanField(1)
-  etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  target = _messages.MessageField('Target', 5)
-  updateMask = _messages.StringField(6)
-  validateOnly = _messages.BooleanField(7)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  target = _messages.MessageField('Target', 4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class Config(_messages.Message):
@@ -1223,6 +1213,17 @@ class GKECluster(_messages.Message):
   project = _messages.StringField(3)
 
 
+class GkeCluster(_messages.Message):
+  r"""Information specifying a GKE Cluster.
+
+  Fields:
+    cluster: Information specifying a GKE Cluster. Format is
+      `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}.
+  """
+
+  cluster = _messages.StringField(1)
+
+
 class ListDeliveryPipelinesResponse(_messages.Message):
   r"""The response object from `ListDeliveryPipelines`.
 
@@ -1389,23 +1390,6 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
-class MissingTargetsCondition(_messages.Message):
-  r"""MissingTargetCondition contains information on any Targets defined in
-  the Delivery Pipeline that do not actually exist.
-
-  Fields:
-    changeTime: Last time the condition was updated.
-    missingTargets: The list of Target names that are missing. For example, pr
-      ojects/{project_id}/locations/{location_name}/deliveryPipelines/{pipelin
-      e_name}/targets/{target_name}.
-    ready: True if there aren't any missing Targets.
-  """
-
-  changeTime = _messages.StringField(1)
-  missingTargets = _messages.StringField(2, repeated=True)
-  ready = _messages.BooleanField(3)
-
-
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1546,12 +1530,13 @@ class PipelineCondition(_messages.Message):
   Pipeline.
 
   Fields:
-    missingTargetsCondition: Details around missing targets.
     pipelineReadyCondition: Details around the Pipeline's overall status.
+    targetsPresentCondition: Detalis around targets enumerated in the
+      pipeline.
   """
 
-  missingTargetsCondition = _messages.MessageField('MissingTargetsCondition', 1)
-  pipelineReadyCondition = _messages.MessageField('PipelineReadyCondition', 2)
+  pipelineReadyCondition = _messages.MessageField('PipelineReadyCondition', 1)
+  targetsPresentCondition = _messages.MessageField('TargetsPresentCondition', 2)
 
 
 class PipelineReadyCondition(_messages.Message):
@@ -1559,15 +1544,15 @@ class PipelineReadyCondition(_messages.Message):
   Pipeline.
 
   Fields:
-    changeTime: Last time the condition was updated.
-    ready: True if the Pipeline is in a valid state. Otherwise at least one
+    status: True if the Pipeline is in a valid state. Otherwise at least one
       condition in `PipelineCondition` is in an invalid state. Iterate over
-      those conditions and see which condition(s) has ready = false to find
+      those conditions and see which condition(s) has status = false to find
       out what is wrong with the Pipeline.
+    updateTime: Last time the condition was updated.
   """
 
-  changeTime = _messages.StringField(1)
-  ready = _messages.BooleanField(2)
+  status = _messages.BooleanField(1)
+  updateTime = _messages.StringField(2)
 
 
 class Policy(_messages.Message):
@@ -1646,25 +1631,35 @@ class PromoteReleaseRequest(_messages.Message):
   r"""The request object used by `PromoteRelease`.
 
   Fields:
+    destinationTarget: Optional. The name of the `Target` to which we are
+      promoting the Release.
     rolloutId: Optional. The ID to assign to the generated `Rollout`.
     toTarget: Optional. The name of the `Target` to which we are promoting the
       Release.
   """
 
-  rolloutId = _messages.StringField(1)
-  toTarget = _messages.StringField(2)
+  destinationTarget = _messages.StringField(1)
+  rolloutId = _messages.StringField(2)
+  toTarget = _messages.StringField(3)
 
 
 class PromoteReleaseResponse(_messages.Message):
   r"""The response object from `PromoteRelease`.
 
   Fields:
+    operation: The name of the operation that is tracking the `Rollout`
+      creation.
     release: The `Release` being deployed.
     rollout: `Rollout` that was created from this promotion.
+    rolloutResource: The name of the `Rollout` that is being deployed.
+    target: The name of the `Target` to which is being deployed.
   """
 
-  release = _messages.StringField(1)
-  rollout = _messages.MessageField('Promotion', 2)
+  operation = _messages.StringField(1)
+  release = _messages.StringField(2)
+  rollout = _messages.MessageField('Promotion', 3)
+  rolloutResource = _messages.StringField(4)
+  target = _messages.StringField(5)
 
 
 class Promotion(_messages.Message):
@@ -1738,6 +1733,9 @@ class Release(_messages.Message):
     renderedManifests: Output only. Map from target ID to Cloud Storage path
       of the rendered manifest for that target. One example key-value pair
       would be ("staging": "gs://my-bucket/staging-manifest").
+    renderingBuild: Output only. The resource name of the Cloud Build `Build`
+      object that is used to render the manifests. Format is
+      `projects/{project}/locations/{location}/builds/{build}`.
     skaffoldConfigPath: Filepath of the Skaffold config inside of the config
       URI.
     skaffoldConfigUri: Cloud Storage URI of tar.gz archive containing Skaffold
@@ -1758,14 +1756,20 @@ class Release(_messages.Message):
 
     Values:
       RENDER_STATE_UNSPECIFIED: The render state is unspecified.
-      SUCCESS: The render operation has completed successfully.
-      FAILURE: The render operation has failed.
+      SUCCESS: The render operation has completed successfully. This will be
+        removed after we are fully migrated to SUCCEEDED.
+      SUCCEEDED: The render operation has completed successfully.
+      FAILURE: The render operation has failed. This will be removed after we
+        are fully migrated to FAILED.
+      FAILED: The render operation has failed.
       IN_PROGRESS: The render operation is in progress.
     """
     RENDER_STATE_UNSPECIFIED = 0
     SUCCESS = 1
-    FAILURE = 2
-    IN_PROGRESS = 3
+    SUCCEEDED = 2
+    FAILURE = 3
+    FAILED = 4
+    IN_PROGRESS = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -1890,12 +1894,13 @@ class Release(_messages.Message):
   renderStartTime = _messages.StringField(12)
   renderState = _messages.EnumField('RenderStateValueValuesEnum', 13)
   renderedManifests = _messages.MessageField('RenderedManifestsValue', 14)
-  skaffoldConfigPath = _messages.StringField(15)
-  skaffoldConfigUri = _messages.StringField(16)
-  skaffoldVersion = _messages.StringField(17)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 18)
-  targetSnapshots = _messages.MessageField('Target', 19, repeated=True)
-  uid = _messages.StringField(20)
+  renderingBuild = _messages.StringField(15)
+  skaffoldConfigPath = _messages.StringField(16)
+  skaffoldConfigUri = _messages.StringField(17)
+  skaffoldVersion = _messages.StringField(18)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 19)
+  targetSnapshots = _messages.MessageField('Target', 20, repeated=True)
+  uid = _messages.StringField(21)
 
 
 class Rollout(_messages.Message):
@@ -1933,6 +1938,9 @@ class Rollout(_messages.Message):
       deploying.
     deployStartTime: Output only. Time at which the `Rollout` started
       deploying.
+    deployingBuild: Output only. The resource name of the Cloud Build `Build`
+      object that is used to deploy the Rollout. Format is
+      `projects/{project}/locations/{location}/builds/{build}`.
     description: Description of the `Rollout` for user purposes. Max length is
       255 characters.
     enqueueTime: Output only. Time at which the `Rollout` was enqueued.
@@ -1951,6 +1959,7 @@ class Rollout(_messages.Message):
       releases/{release}/rollouts/a-z{0,62}.
     state: Output only. Current state of the `Rollout`.
     target: The Target to which this `Rollout` is deploying.
+    targetId: Required. The ID of Target to which this `Rollout` is deploying.
     uid: Output only. Unique identifier of the `Rollout`.
   """
 
@@ -1976,8 +1985,12 @@ class Rollout(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: The `Rollout` has an unspecified state.
-      SUCCESS: The `Rollout` has completed successfully.
-      FAILURE: The `Rollout` has failed.
+      SUCCESS: The `Rollout` has completed successfully. This will be removed
+        after we are fully migrated to SUCCEEDED.
+      SUCCEEDED: The `Rollout` has completed successfully.
+      FAILURE: The `Rollout` has failed. This will be removed after we are
+        fully migrated to FAILED.
+      FAILED: The `Rollout` has failed.
       IN_PROGRESS: The `Rollout` is being deployed.
       PENDING_APPROVAL: The `Rollout` needs approval.
       APPROVAL_REJECTED: An approver rejected the `Rollout`.
@@ -1988,12 +2001,14 @@ class Rollout(_messages.Message):
     """
     STATE_UNSPECIFIED = 0
     SUCCESS = 1
-    FAILURE = 2
-    IN_PROGRESS = 3
-    PENDING_APPROVAL = 4
-    APPROVAL_REJECTED = 5
-    PENDING = 6
-    PENDING_RELEASE = 7
+    SUCCEEDED = 2
+    FAILURE = 3
+    FAILED = 4
+    IN_PROGRESS = 5
+    PENDING_APPROVAL = 6
+    APPROVAL_REJECTED = 7
+    PENDING = 8
+    PENDING_RELEASE = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -2057,15 +2072,17 @@ class Rollout(_messages.Message):
   deployBuild = _messages.StringField(5)
   deployEndTime = _messages.StringField(6)
   deployStartTime = _messages.StringField(7)
-  description = _messages.StringField(8)
-  enqueueTime = _messages.StringField(9)
-  etag = _messages.StringField(10)
-  failureReason = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  name = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  target = _messages.StringField(15)
-  uid = _messages.StringField(16)
+  deployingBuild = _messages.StringField(8)
+  description = _messages.StringField(9)
+  enqueueTime = _messages.StringField(10)
+  etag = _messages.StringField(11)
+  failureReason = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  target = _messages.StringField(16)
+  targetId = _messages.StringField(17)
+  uid = _messages.StringField(18)
 
 
 class SerialPipeline(_messages.Message):
@@ -2247,38 +2264,43 @@ class Target(_messages.Message):
   location to which a Skaffold configuration can be deployed.
 
   Messages:
-    AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Cloud Deploy. See
+    AnnotationsValue: Optional. User annotations. These attributes can only be
+      set and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
-    LabelsValue: Labels are attributes that can be set and used by both the
-      user and by Cloud Deploy. Labels must meet the following constraints:
-      Each resource is limited to 64 labels. Keys must conform to the regexp:
-      a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-      keys and values are additionally constrained to be <= 128 bytes in size.
+    LabelsValue: Optional. Labels are attributes that can be set and used by
+      both the user and by Cloud Deploy. Labels must meet the following
+      constraints: Each resource is limited to 64 labels. Keys must conform to
+      the regexp: a-zA-Z{0,62} Values must conform to the regexp:
+      [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
+      be <= 128 bytes in size.
 
   Fields:
-    annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Cloud Deploy. See
+    annotations: Optional. User annotations. These attributes can only be set
+      and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
-    approvalRequired: Whether or not the `Target` requires approval.
+    approvalRequired: Optional. Whether or not the `Target` requires approval.
+    cluster: Information specifying a GKE Cluster.
     createTime: Output only. Time at which the `Target` was created.
-    deployServiceAccount: Service account email used to deploy a `Rollout`. If
-      unset, the compute service account will be used.
-    description: Description of the `Target`. Max length is 255 characters.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
+    deployServiceAccount: Optional. Service account email used to deploy a
+      `Rollout`. If unset, the compute service account will be used.
+    description: Optional. Description of the `Target`. Max length is 255
+      characters.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
     gkeCluster: Information specifying a GKE Cluster.
-    labels: Labels are attributes that can be set and used by both the user
-      and by Cloud Deploy. Labels must meet the following constraints: Each
-      resource is limited to 64 labels. Keys must conform to the regexp:
-      a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-      keys and values are additionally constrained to be <= 128 bytes in size.
+    labels: Optional. Labels are attributes that can be set and used by both
+      the user and by Cloud Deploy. Labels must meet the following
+      constraints: Each resource is limited to 64 labels. Keys must conform to
+      the regexp: a-zA-Z{0,62} Values must conform to the regexp:
+      [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
+      be <= 128 bytes in size.
     name: Optional. Name of the `Target`. Format is
       projects/{project}/locations/{location}/
       deliveryPipelines/{deliveryPipeline}/targets/a-z{0,62}.
+    requireApproval: Optional. Whether or not the `Target` requires approval.
     targetId: Output only. Resource id of the `Target`.
     uid: Output only. Unique identifier of the `Target`.
     updateTime: Output only. Most recent time at which the `Target` was
@@ -2287,9 +2309,10 @@ class Target(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""User annotations. These attributes can only be set and used by the
-    user, and not by Cloud Deploy. See https://google.aip.dev/128#annotations
-    for more details such as format and size limitations.
+    r"""Optional. User annotations. These attributes can only be set and used
+    by the user, and not by Cloud Deploy. See
+    https://google.aip.dev/128#annotations for more details such as format and
+    size limitations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -2314,11 +2337,11 @@ class Target(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels are attributes that can be set and used by both the user and by
-    Cloud Deploy. Labels must meet the following constraints: Each resource is
-    limited to 64 labels. Keys must conform to the regexp: a-zA-Z{0,62} Values
-    must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both keys and values are
-    additionally constrained to be <= 128 bytes in size.
+    r"""Optional. Labels are attributes that can be set and used by both the
+    user and by Cloud Deploy. Labels must meet the following constraints: Each
+    resource is limited to 64 labels. Keys must conform to the regexp:
+    a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
+    keys and values are additionally constrained to be <= 128 bytes in size.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2342,16 +2365,18 @@ class Target(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   approvalRequired = _messages.BooleanField(2)
-  createTime = _messages.StringField(3)
-  deployServiceAccount = _messages.StringField(4)
-  description = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  gkeCluster = _messages.MessageField('GKECluster', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  targetId = _messages.StringField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  cluster = _messages.MessageField('GkeCluster', 3)
+  createTime = _messages.StringField(4)
+  deployServiceAccount = _messages.StringField(5)
+  description = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  gkeCluster = _messages.MessageField('GKECluster', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  requireApproval = _messages.BooleanField(11)
+  targetId = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class TargetArtifact(_messages.Message):
@@ -2370,6 +2395,23 @@ class TargetArtifact(_messages.Message):
   archiveUri = _messages.StringField(1)
   manifestPath = _messages.StringField(2)
   skaffoldConfigPath = _messages.StringField(3)
+
+
+class TargetsPresentCondition(_messages.Message):
+  r"""TargetsPresentCondition contains information on any Targets defined in
+  the Delivery Pipeline that do not actually exist.
+
+  Fields:
+    missingTargets: The list of Target names that are missing. For example, pr
+      ojects/{project_id}/locations/{location_name}/deliveryPipelines/{pipelin
+      e_name}/targets/{target_name}.
+    status: True if there aren't any missing Targets.
+    updateTime: Last time the condition was updated.
+  """
+
+  missingTargets = _messages.StringField(1, repeated=True)
+  status = _messages.BooleanField(2)
+  updateTime = _messages.StringField(3)
 
 
 class TestIamPermissionsRequest(_messages.Message):

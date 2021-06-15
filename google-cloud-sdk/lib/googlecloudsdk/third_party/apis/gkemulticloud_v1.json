@@ -460,7 +460,7 @@
           "type": "string"
         },
         "roleSessionName": {
-          "description": "An identifier for the assumed role session.",
+          "description": "An identifier for the assumed role session. Optional. Defaults to 'multicloud-service-agent'.",
           "type": "string"
         }
       }
@@ -1315,6 +1315,11 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "maxPodsPerNode": {
+          "description": "The maximum number of pods per node.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

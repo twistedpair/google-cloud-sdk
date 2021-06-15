@@ -109,15 +109,15 @@ def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None):
   return zip_file_name
 
 
-def _GenerateRemoteZipFileName(function_name):
+def _GenerateRemoteZipFileName(region, function_name):
   suffix = ''.join(random.choice(string.ascii_lowercase) for _ in range(12))
-  return '{0}-{1}-{2}.zip'.format(
-      properties.VALUES.functions.region.GetOrFail(), function_name, suffix)
+  return '{0}-{1}-{2}.zip'.format(region, function_name, suffix)
 
 
 def _UploadFileToGcs(source, function_ref, stage_bucket):
   """Upload local source files to GCS staging bucket."""
-  zip_file = _GenerateRemoteZipFileName(function_ref.RelativeName())
+  zip_file = _GenerateRemoteZipFileName(function_ref.locationsId,
+                                        function_ref.RelativeName())
   bucket_ref = storage_util.BucketReference.FromArgument(stage_bucket)
   dest_object = storage_util.ObjectReference.FromBucketRef(bucket_ref, zip_file)
 

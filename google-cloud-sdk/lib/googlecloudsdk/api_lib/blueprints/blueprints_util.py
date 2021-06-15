@@ -63,6 +63,26 @@ def GetClientInstance(release_track=base.ReleaseTrack.ALPHA, use_http=True):
       no_http=(not use_http))
 
 
+def GetRevision(name):
+  """Calls into the GetRevision API.
+
+  Args:
+    name: the fully qualified name of the revision, e.g.
+      "projects/p/locations/l/deployments/d/revisions/r".
+
+  Returns:
+    A messages.Revision or None if one didn't exist.
+  """
+  client = GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  try:
+    return client.projects_locations_deployments_revisions.Get(
+        messages.ConfigProjectsLocationsDeploymentsRevisionsGetRequest(
+            name=name))
+  except apitools_exceptions.HttpNotFoundError:
+    return None
+
+
 def GetDeployment(name):
   """Calls into the GetDeployment API.
 

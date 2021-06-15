@@ -745,9 +745,17 @@
     },
     "HelloWorldMembershipSpec": {
       "id": "HelloWorldMembershipSpec",
-      "description": "**Hello World**: An empty spec left as an example membership-specific Feature Spec.",
+      "description": "**Hello World**: The membership-specific input for HelloWorld feature.",
       "type": "object",
       "properties": {
+        "customConfig": {
+          "description": "Custom config for individual memberships. This should be a textpb string.",
+          "type": "string"
+        },
+        "featureTest": {
+          "description": "Message to hold fields to use in feature e2e create\/mutate testing.",
+          "$ref": "HelloWorldFeatureTest"
+        }
       }
     },
     "ConfigManagementMembershipSpec": {

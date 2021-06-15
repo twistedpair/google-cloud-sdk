@@ -33,6 +33,7 @@ import dateutil
 from google.auth import exceptions as google_auth_exceptions
 import google.auth.compute_engine as google_auth_gce
 from googlecloudsdk.core import config
+from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
@@ -66,19 +67,6 @@ _CREDENTIALS_EXPIRY_WINDOW = '300s'
 
 AUTH_LOGIN_COMMAND = 'gcloud auth login'
 ADC_LOGIN_COMMAND = 'gcloud auth application-default login'
-
-CONTEXT_AWARE_ACCESS_DENIED_ERROR = 'access_denied'
-CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION = 'Account restricted'
-CONTEXT_AWARE_ACCESS_HELP_MSG = (
-    'Access was blocked due to an organization policy, please contact your '
-    'admin to gain access.'
-)
-
-
-def IsContextAwareAccessDeniedError(exc):
-  exc_text = six.text_type(exc)
-  return (CONTEXT_AWARE_ACCESS_DENIED_ERROR in exc_text and
-          CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION in exc_text)
 
 
 class Error(exceptions.Error):
@@ -167,7 +155,8 @@ class TokenRefreshDeniedByCAAError(TokenRefreshError):
   """Raises when token refresh is denied by context aware access policies."""
 
   def __init__(self, error, for_adc=False):
-    compiled_msg = '{}\n\n{}'.format(error, CONTEXT_AWARE_ACCESS_HELP_MSG)
+    compiled_msg = '{}\n\n{}'.format(
+        error, context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG)
 
     super(TokenRefreshDeniedByCAAError, self).__init__(
         compiled_msg, for_adc=for_adc, should_relogin=False)
@@ -861,7 +850,7 @@ def _Refresh(credentials,
       credentials.id_tokenb64 = id_token
 
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
-    if IsContextAwareAccessDeniedError(e):
+    if context_aware.IsContextAwareAccessDeniedError(e):
       raise TokenRefreshDeniedByCAAError(e)
     raise TokenRefreshError(six.text_type(e))
   except reauth_errors.ReauthSamlLoginRequiredError:
@@ -886,7 +875,7 @@ def HandleGoogleAuthCredentialsRefreshError(for_adc=False):
           c_google_auth.ReauthRequiredError) as e:
     raise TokenRefreshReauthError(str(e), for_adc=for_adc)
   except google_auth_exceptions.RefreshError as e:
-    if IsContextAwareAccessDeniedError(e):
+    if context_aware.IsContextAwareAccessDeniedError(e):
       raise TokenRefreshDeniedByCAAError(e)
     raise TokenRefreshError(six.text_type(e), for_adc=for_adc)
 

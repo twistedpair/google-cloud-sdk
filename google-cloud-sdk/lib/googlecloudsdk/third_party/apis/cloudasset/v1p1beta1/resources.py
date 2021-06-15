@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://cloudasset.googleapis.com/'
+BASE_URL = 'https://cloudasset.googleapis.com/v1p1beta1/'
 DOCS_URL = 'https://cloud.google.com/asset-inventory/docs/quickstart'
 
 

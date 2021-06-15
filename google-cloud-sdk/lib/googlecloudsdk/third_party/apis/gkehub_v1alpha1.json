@@ -933,6 +933,7 @@
           "$ref": "ConfigManagementFeatureState"
         },
         "appdevexperienceFeatureState": {
+          "description": "State for the AppDevExperience Feature.",
           "$ref": "AppDevExperienceFeatureState"
         },
         "cloudauditloggingFeatureState": {

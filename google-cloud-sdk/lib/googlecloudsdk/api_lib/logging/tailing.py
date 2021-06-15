@@ -22,6 +22,7 @@ import collections
 import datetime
 
 from google.api_core import bidi
+import google.api_core.gapic_v1.client_info
 
 # pylint: disable=unused-import, type imports needed for gRPC
 import google.appengine.logging.v1.request_log_pb2
@@ -37,6 +38,7 @@ import google.type.money_pb2
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import log
+from googlecloudsdk.core import transport
 
 import grpc
 
@@ -185,8 +187,11 @@ class LogTailer(object):
 
   def __init__(self):
     self.client = apis.GetGapicClientInstance('logging', 'v2')
+    client_info = google.api_core.gapic_v1.client_info.ClientInfo(
+        user_agent=transport.MakeUserAgentString())
     self.tail_stub = bidi.BidiRpc(
-        self.client.logging.transport.tail_log_entries)
+        self.client.logging.transport.tail_log_entries,
+        metadata=[client_info.to_grpc_metadata()])
 
   def TailLogs(self,
                resource_names,

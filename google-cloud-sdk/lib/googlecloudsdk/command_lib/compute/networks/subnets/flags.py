@@ -101,16 +101,15 @@ def SubnetworkResolver():
 
 
 def AddUpdateArgs(parser, include_alpha_logging,
-                  include_l7_internal_load_balancing, include_stack_type,
-                  include_ipv6_access_type, api_version):
+                  include_l7_internal_load_balancing,
+                  include_internal_ipv6_access_type, api_version):
   """Add args to the parser for subnet update.
 
   Args:
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
     include_l7_internal_load_balancing: Include Internal HTTP(S) LB args.
-    include_stack_type: Include stack type args.
-    include_ipv6_access_type: Include IPv6 access type args.
+    include_internal_ipv6_access_type: Include internal IPv6 access type args.
     api_version: The api version of the request.
   """
   messages = apis.GetMessagesModule('compute',
@@ -231,32 +230,31 @@ def AddUpdateArgs(parser, include_alpha_logging,
         only applicable when the [--role=ACTIVE] flag is being used.
         """)
 
-  if include_stack_type:
-    parser.add_argument(
-        '--stack-type',
-        choices={
-            'IPV4_ONLY':
-                'New VMs in this subnet will only be assigned IPv4 addresses',
-            'IPV4_IPV6':
-                'New VMs in this subnet can have both IPv4 and IPv6 addresses'
-        },
-        type=arg_utils.ChoiceToEnumName,
-        help=('The stack type for this subnet to identify whether the IPv6 '
-              'feature is enabled or not.'))
+  parser.add_argument(
+      '--stack-type',
+      choices={
+          'IPV4_ONLY':
+              'New VMs in this subnet will only be assigned IPv4 addresses',
+          'IPV4_IPV6':
+              'New VMs in this subnet can have both IPv4 and IPv6 addresses'
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help=('The stack type for this subnet. Determines if IPv6 is enabled '
+            'on the subnet.'))
 
-  if include_ipv6_access_type:
-    parser.add_argument(
-        '--ipv6-access-type',
-        choices={
-            'INTERNAL': 'VMs in this subnet can have internal IPv6.',
-            'EXTERNAL': 'VMs in this subnet can have external IPv6.'
-        },
-        type=arg_utils.ChoiceToEnumName,
-        help=('The access type of IPv6 address this subnet holds. It\'s '
-              'immutable and can only be specified during creation or the '
-              'time the subnet is updated into IPV4_IPV6 dual stack. If the '
-              'ipv6 access type is EXTERNAL then this subnet cannot enable '
-              'direct path.'))
+  ipv6_access_type_choices = {
+      'EXTERNAL': 'VMs in this subnet can have external IPv6.'
+  }
+  if include_internal_ipv6_access_type:
+    ipv6_access_type_choices['INTERNAL'] = (
+        'VMs in this subnet can have internal IPv6.')
+  parser.add_argument(
+      '--ipv6-access-type',
+      choices=ipv6_access_type_choices,
+      type=arg_utils.ChoiceToEnumName,
+      help=('IPv6 access type can be specified only when the subnet is '
+            'created, or when the subnet is first updated to have a stack '
+            'type of IPV4_IPV6. Once set, the access type is immutable.'))
 
   messages = apis.GetMessagesModule('compute', api_version)
   GetPrivateIpv6GoogleAccessTypeFlagMapper(messages).choice_arg.AddToParser(

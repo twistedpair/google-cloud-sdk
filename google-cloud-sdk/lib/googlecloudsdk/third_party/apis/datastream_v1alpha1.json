@@ -940,7 +940,7 @@
     },
     "BackfillAllStrategy": {
       "id": "BackfillAllStrategy",
-      "description": "Backfill strategy to automatically backfill the Stream\u2019s objects. Specific objects can be excluded.",
+      "description": "Backfill strategy to automatically backfill the Stream's objects. Specific objects can be excluded.",
       "type": "object",
       "properties": {
         "oracleExcludedObjects": {
@@ -955,7 +955,7 @@
     },
     "BackfillNoneStrategy": {
       "id": "BackfillNoneStrategy",
-      "description": "Backfill strategy to disable automatic backfill for the Stream\u2019s objects.",
+      "description": "Backfill strategy to disable automatic backfill for the Stream's objects.",
       "type": "object",
       "properties": {
       }
@@ -1057,13 +1057,17 @@
             "",
             "The private connection is in creation state - creating resources.",
             "The private connection has been created with all of it's resources.",
-            "The private connection creation has failed."
+            "The private connection creation has failed.",
+            "The private connection is being deleted.",
+            "Delete request has failed, resource is in invalid state."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "CREATED",
-            "FAILED"
+            "FAILED",
+            "DELETING",
+            "FAILED_TO_DELETE"
           ]
         },
         "error": {
@@ -1427,7 +1431,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "The FetchStaticIps API call exposes the static ips used by Datastream. Typically, a request returns children data objects under a parent data object that\u2019s optionally supplied in the request."
+              "description": "The FetchStaticIps API call exposes the static ips used by Datastream. Typically, a request returns children data objects under a parent data object that's optionally supplied in the request."
             },
             "list": {
               "id": "datastream.projects.locations.list",
@@ -1827,7 +1831,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Use this method to discover a connection profile. The discover API call exposes the data objects and metadata belonging to the profile. Typically, a request returns children data objects under a parent data object that\u2019s optionally supplied in the request."
+                  "description": "Use this method to discover a connection profile. The discover API call exposes the data objects and metadata belonging to the profile. Typically, a request returns children data objects under a parent data object that's optionally supplied in the request."
                 }
               }
             },

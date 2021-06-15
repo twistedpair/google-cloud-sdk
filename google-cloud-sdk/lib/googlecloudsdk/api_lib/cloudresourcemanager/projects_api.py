@@ -207,8 +207,8 @@ def SetIamPolicyFromFile(project_ref,
                          api_version=DEFAULT_API_VERSION):
   """Read projects IAM policy from a file, and set it."""
   messages = projects_util.GetMessages(api_version)
-  policy = iam_util.ParsePolicyFile(policy_file, messages.Policy)
-  update_mask = iam_util.ConstructUpdateMaskFromPolicy(policy_file)
+  policy, update_mask = iam_util.ParsePolicyFileWithUpdateMask(
+      policy_file, messages.Policy)
 
   # To preserve the existing set-iam-policy behavior of always overwriting
   # bindings and etag, add bindings and etag to update_mask.

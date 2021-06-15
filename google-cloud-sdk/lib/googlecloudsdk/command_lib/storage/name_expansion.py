@@ -63,6 +63,9 @@ class NameExpansionIterator:
     Raises:
       InvalidUrlError: No matching objects found.
     """
+    found_match = False
+    one_url_had_no_match = False
+
     for url in self._urls:
       resources = plurality_checkable_iterator.PluralityCheckableIterator(
           wildcard_iterator.get_wildcard_iterator(
@@ -84,8 +87,8 @@ class NameExpansionIterator:
           is_name_expansion_iterator_empty = False
 
         if not self._recursion_requested:
-          log.info('Omitting {} because it is a container, and recursion'
-                   ' is not enabled.'.format(resource.is_container()))
+          log.warning('Omitting {} because it is a container, and recursion'
+                      ' is not enabled.'.format(resource))
           continue
 
         # Append '**' to fetch all objects under this container.
@@ -98,8 +101,16 @@ class NameExpansionIterator:
           is_name_expansion_iterator_empty = False
 
       if is_name_expansion_iterator_empty:
-        raise errors.InvalidUrlError(
-            '{} matched no objects or files.'.format(url))
+        log.warning('URL matched no objects or files: {}'.format(url))
+        one_url_had_no_match = True
+      else:
+        found_match = True
+
+    if not found_match:
+      raise errors.InvalidUrlError('Source URLs matched no objects or files.')
+    if one_url_had_no_match:
+      raise errors.InvalidUrlError(
+          'At least one source URL matched no objects or files.')
 
 
 class NameExpansionResult:

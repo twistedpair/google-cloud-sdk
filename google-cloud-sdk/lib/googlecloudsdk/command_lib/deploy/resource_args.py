@@ -120,10 +120,10 @@ def TargetAttributeConfig():
 
 
 def GetTargetResourceSpec():
-  """Constructs and returns the target specification for Delivery Pipeline."""
+  """Constructs and returns the target specification for Target."""
   return concepts.ResourceSpec(
       'clouddeploy.projects.locations.deliveryPipelines.targets',
-      resource_name='release',
+      resource_name='target',
       deliveryPipelinesId=DeliveryPipelineAttributeConfig(),
       targetsId=TargetAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,

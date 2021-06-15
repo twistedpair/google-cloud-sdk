@@ -65,6 +65,7 @@ class FilePart:
     self._progress_callback = progress_callback
 
     self._bytes_read_since_last_progress_callback = 0
+    self._progress_updated_with_end_byte = False
     self._checkpoint_digesters = None
     self._checkpoint_absolute_index = self._start_byte
 
@@ -120,7 +121,9 @@ class FilePart:
         if (self._bytes_read_since_last_progress_callback >=
             _PROGRESS_CALLBACK_THRESHOLD):
           self._bytes_read_since_last_progress_callback = 0
-          self._progress_callback(self._stream.tell())
+          current_pos = self._stream.tell()
+          self._progress_callback(current_pos)
+          self._progress_updated_with_end_byte = current_pos == self._end_byte
 
     return data
 
@@ -150,10 +153,9 @@ class FilePart:
 
   def close(self):
     """Closes the underlying stream."""
-    if (self._progress_callback and
-        self._bytes_read_since_last_progress_callback):
-      self._bytes_read_since_last_progress_callback = 0
+    if (self._progress_callback and not self._progress_updated_with_end_byte):
       self._progress_callback(self._stream.tell())
+      self._progress_updated_with_end_byte = True
     self._stream.close()
 
   def __enter__(self):

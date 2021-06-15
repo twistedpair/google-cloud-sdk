@@ -318,6 +318,8 @@ class _Sections(object):
       the Cloud SDK.
     gcloudignore: Section, The section containing gcloudignore properties for
       the Cloud SDK.
+    gkebackup: Section, The section containing gkebackup properties for the
+      Cloud SDK.
     healthcare: Section, The section containing healthcare properties for the
       Cloud SDK.
     interactive: Section, The section containing interactive properties for the
@@ -411,6 +413,7 @@ class _Sections(object):
     self.functions = _SectionFunctions()
     self.game_services = _SectionGameServices()
     self.gcloudignore = _SectionGcloudignore()
+    self.gkebackup = _SectionGkebackup()
     self.healthcare = _SectionHealthcare()
     self.interactive = _SectionInteractive()
     self.kuberun = _SectionKubeRun()
@@ -477,6 +480,7 @@ class _Sections(object):
         self.functions,
         self.game_services,
         self.gcloudignore,
+        self.gkebackup,
         self.healthcare,
         self.interactive,
         self.kuberun,
@@ -1048,6 +1052,41 @@ class _SectionLifeSciences(_Section):
         'command will fall back to this value.')
 
 
+class _SectionGkebackup(_Section):
+  """Contains the properties for 'gkebackup' section."""
+
+  def __init__(self):
+    super(_SectionGkebackup, self).__init__('gkebackup')
+    self.location = self._Add(
+        'location',
+        default='-',
+        help_text=(
+            'Default location to use when working with Backup for GKE Services '
+            'resources. When a `--location` flag is required but not provided, '
+            'the command will fall back to this value.'))
+    self.backup_plan = self._Add(
+        'backup_plan',
+        default='-',
+        help_text=(
+            'Default backup plan ID to use when working with Backup for GKE '
+            'Services resources. When a `--backup-plan` flag is required but '
+            'not provided, the command will fall back to this value.'))
+    self.backup = self._Add(
+        'backup',
+        default='-',
+        help_text=(
+            'Default backup ID to use when working with Backup for GKE '
+            'Services resources. When a `--backup` flag is required but not '
+            'provided, the command will fall back to this value.'))
+    self.restore = self._Add(
+        'restore',
+        default='-',
+        help_text=(
+            'Default restore ID to use when working with Backup for GKE '
+            'Services resources. When a `--restore` flag is required but not '
+            'provided, the command will fall back to this value.'))
+
+
 class _SectionGameServices(_Section):
   """Contains the properties for the 'game_services' section."""
 
@@ -1481,11 +1520,6 @@ class _SectionCore(_Section):
       if project == '':  # pylint: disable=g-explicit-bool-comparison
         raise InvalidProjectError('The project property is set to the '
                                   'empty string, which is invalid.')
-      if project.isdigit():
-        raise InvalidProjectError(
-            'The project property must be set to a valid project ID, not the '
-            'project number [{value}]'.format(value=project))
-
       if _VALID_PROJECT_REGEX.match(project):
         return
 
@@ -2190,11 +2224,13 @@ class _SectionApiEndpointOverrides(_Section):
     self.firestore = self._Add('firestore')
     self.gameservices = self._Add('gameservices')
     self.genomics = self._Add('genomics')
+    self.gkebackup = self._Add('gkebackup')
     self.gkehub = self._Add('gkehub')
     self.gkemulticloud = self._Add('gkemulticloud')
     self.healthcare = self._Add('healthcare')
     self.iam = self._Add('iam')
     self.iamassist = self._Add('iamassist')
+    self.ids = self._Add('ids')
     self.kubernetespolicy = self._Add('kubernetespolicy')
     self.labelmanager = self._Add('labelmanager')
     self.language = self._Add('language')
@@ -2530,6 +2566,17 @@ class _SectionStorage(_Section):
         'max_retries',
         default=23,
         help_text='Max number of retries for operations like copy.')
+
+    self.base_retry_delay = self._Add(
+        'base_retry_delay',
+        default=1,
+        help_text='Second delay between retrying operations. May be multiplied'
+        ' by exponential_sleep_multiplier.')
+
+    self.exponential_sleep_multiplier = self._Add(
+        'exponential_sleep_multiplier',
+        default=2,
+        help_text='Used in exponential backoff for retrying operations.')
 
     self.max_retry_delay = self._Add(
         'max_retry_delay',

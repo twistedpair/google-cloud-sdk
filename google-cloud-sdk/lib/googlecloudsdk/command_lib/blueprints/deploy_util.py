@@ -20,13 +20,14 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
-import re
 import uuid
 
 from googlecloudsdk.api_lib.blueprints import blueprints_util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.blueprints import deterministic_snapshot
+from googlecloudsdk.command_lib.blueprints import error_handling
+from googlecloudsdk.command_lib.blueprints import git_blueprint_util
 from googlecloudsdk.command_lib.blueprints import staging_bucket_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -214,19 +215,8 @@ def Apply(
     # The source is already in GCS, so just pass it to the API.
     blueprint.gcsSource = source
   elif source.startswith('https://'):
-    git_ref = ''
-    git_repo = source
-    match = re.search(r'^(.*)@(.*)$', source)
-
-    # If "source" represents a Git URL with "@{ref}" at the end, then parse out
-    # the repo and ref parts.
-    if match:
-      git_repo = match.group(1)
-      git_ref = match.group(2)
-    blueprint.gitSource = messages.GitSource(
-        repo=git_repo,
-        ref=git_ref,
-        directory=source_git_subdir)
+    blueprint.gitSource = git_blueprint_util.GetBlueprintSourceForGit(
+        messages, source, source_git_subdir)
   else:
     # The source is local.
     upload_bucket = _UploadSourceToGCS(source, stage_bucket, ignore_file)
@@ -299,14 +289,6 @@ def Apply(
       op, progress_message)
 
   if applied_deployment.state == messages.Deployment.StateValueValuesEnum.FAILED:
-    if applied_deployment.latestRevision is None:
-      log.error('Failed to apply the deployment: {}'.format(
-          applied_deployment.stateDetail))
-    else:
-      # TODO(b/186878215): remove this code or change "alpha" to be the correct
-      # release track.
-      log.error('Failed to apply the deployment. To view more information, '
-                'run:\ngcloud alpha blueprints revisions describe {}'.format(
-                    applied_deployment.latestRevision))
+    error_handling.DeploymentFailed(applied_deployment)
 
   return applied_deployment

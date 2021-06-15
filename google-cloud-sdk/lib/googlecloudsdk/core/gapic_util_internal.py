@@ -22,11 +22,13 @@ import collections
 import os
 import time
 
+import google.api_core.gapic_v1.client_info
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_proxy_types
@@ -572,4 +574,8 @@ def MakeTransport(transport_class, address, credentials, mtls_enabled=False):
     interceptors.append(LoggingInterceptor(credentials))
 
   channel = grpc.intercept_channel(channel, *interceptors)
-  return transport_class(channel=channel, host=address)
+  return transport_class(
+      channel=channel,
+      host=address,
+      client_info=google.api_core.gapic_v1.client_info.ClientInfo(
+          user_agent=transport.MakeUserAgentString()))

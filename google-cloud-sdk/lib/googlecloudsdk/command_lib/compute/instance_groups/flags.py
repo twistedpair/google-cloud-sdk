@@ -221,7 +221,7 @@ def ValidateManagedInstanceGroupScopeArgs(args, resources):
 
 
 def ValidateStatefulDisksDict(stateful_disks, flag_name):
-  """Validate device-name and auto-delete flags in a stateful disk for per-instance configs."""
+  """Validate device-name and auto-delete flags in a stateful disk."""
   device_names = set()
   for stateful_disk in stateful_disks or []:
     if not stateful_disk.get('device-name'):
@@ -235,8 +235,45 @@ def ValidateStatefulDisksDict(stateful_disks, flag_name):
     device_names.add(stateful_disk.get('device-name'))
 
 
-def ValidateManagedInstanceGroupStatefulProperties(args):
+def ValidateStatefulIPDicts(stateful_ips, flag_name):
+  """Validate interface-name and auto-delete flags in a stateful IP."""
+  interface_names = set()
+  for stateful_ip in stateful_ips or []:
+    if not stateful_ip.get('interface-name'):
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name, message='[interface-name] is required')
+    if stateful_ip.get('interface-name') in interface_names:
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name,
+          message=
+          '[interface-name] `{0}` is not unique in the collection'.format(
+              stateful_ip.get('interface-name')))
+    interface_names.add(stateful_ip.get('interface-name'))
+
+
+def _ValidateStatefulIPsDict(stateful_ips, flag_name):
+  """Validate interface-name and auto-delete flags in a stateful ip."""
+  interface_names = set()
+  for stateful_ip in stateful_ips or []:
+    if not stateful_ip.get('interface-name'):
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name, message='[interface-name] is required')
+    interface_name = stateful_ip.get('interface-name')
+    if interface_name in interface_names:
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name,
+          message='[interface-name] `{0}` is not unique in the collection'
+          .format(interface_name))
+    interface_names.add(interface_name)
+
+
+def ValidateManagedInstanceGroupStatefulDisksProperties(args):
   ValidateStatefulDisksDict(args.stateful_disk, '--stateful-disk')
+
+
+def ValidateManagedInstanceGroupStatefulIPsProperties(args):
+  _ValidateStatefulIPsDict(args.stateful_internal_ip, '--stateful-internal-ip')
+  _ValidateStatefulIPsDict(args.stateful_external_ip, '--stateful-external-ip')
 
 
 def GetInstanceGroupManagerArg(zones_flag=False, region_flag=True):
@@ -392,9 +429,9 @@ STATEFUL_DISKS_HELP_INSTANCE_CONFIGS_UPDATE = (
       Use this argument multiple times to update multiple disks.
 
       If stateful disk with given `device-name` exists in current instance
-      config, its properties will be replaced by the newly provided ones. In
-      other case new stateful disk definition will be added to the instance
-      config.
+      configuration, its properties will be replaced by the newly provided ones.
+      In other case new stateful disk definition will be added to the instance
+      configuration.
       """)
 
 STATEFUL_DISK_DEVICE_NAME_ARG_HELP = """
@@ -415,12 +452,15 @@ STATEFUL_DISK_MODE_ARG_HELP = """
 
 STATEFUL_DISK_AUTO_DELETE_ARG_HELP = """
       *auto-delete*::: (Optional) Specifies the auto deletion policy of the
-      stateful disk. Supported values are ``never'' (never delete this disk) and
-      ``on-permanent-instance-deletion'' (delete the stateful disk when the
-      given instance is permanently deleted from the instance group; for example
-      when the group is resized down). If omitted, ``never'' is used as the
-      default.
+      stateful disk. The following options are available:
+      - ``never'': (Default) Never delete this disk. Instead, detach the disk
+          when its instance is deleted.
+      - ``on-permanent-instance-deletion'': Delete the stateful disk when the
+          instance that it's attached to is permanently deleted from the group;
+          for example, when the instance is deleted manually or when the group
+          size is decreased.
       """
+
 
 STATEFUL_METADATA_HELP = """
       Additional metadata to be made available to the guest operating system
@@ -446,10 +486,82 @@ STATEFUL_METADATA_HELP = """
       """
 
 STATEFUL_METADATA_HELP_UPDATE = """
-      If stateful metadata with the given key exists in current instance config,
-      its value will be overridden with the newly provided one. If the key does
-      not exist in the current instance config, a new key/value pair will be
-      added.
+      If stateful metadata with the given key exists in current instance
+      configuration, its value will be overridden with the newly provided one.
+      If the key does not exist in the current instance configuration, a new
+      key/value pair will be added.
+      """
+
+STATEFUL_IPS_HELP_BASE = """
+      Managed instance groups preserve and reattach stateful IPs on
+      VM autohealing, update, and recreate events.
+      """
+
+STATEFUL_IPS_HELP_TEMPLATE = """
+      Use this argument multiple times to update more IPs.
+
+      If a stateful {ip_type} IP with the given interface name already exists in
+      the current instance configuration, its properties are replaced by the
+      newly provided ones. Otherwise, a new stateful {ip_type} IP definition
+      is added to the instance configuration.
+
+      *interface-name*::: (Required) Network interface name.
+      """
+
+STATEFUL_IPS_HELP_INSTANCE_CONFIGS = STATEFUL_IPS_HELP_BASE + """
+      You can preserve the IP address that's specified in a network interface
+      for a specific managed instance, even if that network interface is not
+      defined in the group's instance template.
+      """
+
+STATEFUL_IPS_HELP_INSTANCE_CONFIGS_UPDATE = (
+    STATEFUL_IPS_HELP_INSTANCE_CONFIGS + """
+      Use this argument multiple times to update multiple IPs.
+
+      If a stateful IP with the given network interface name exists in the
+      current per-instance configuration, its properties will be replaced by
+      the newly provided ones. Otherwise, a new stateful IP definition will be
+      added to the per-instance configuration.
+      """)
+
+STATEFUL_IP_INTERFACE_NAME_ARG_HELP = """
+      *interface-name*::: (Required) Network interface name.
+      """
+
+
+STATEFUL_IP_ADDRESS_ARG_HELP = """
+      *address*::: Static IP address to assign to the instance in one of
+      the following formats:
+
+      + Address: URL of a static IP address reservation. For example:
+      ``/projects/example-project/regions/us-east1/addresses/example-ip-name''.
+
+      + Literal: For example: ``130.211.181.55''.
+
+      If the provided IP address is not yet reserved, the managed instance group
+      automatically creates the corresponding IP address reservation. If the
+      provided IP address is reserved, the group assigns the reservation to
+      the instance.
+
+      The ``address'' flag is optional if an address is already defined in
+      the instance's per-instance configuration. Otherwise it is required.
+
+      If omitted, the currently configured address remains unchanged.
+      """
+
+STATEFUL_IP_AUTO_DELETE_ARG_HELP = """
+      *auto-delete*::: (Optional) Prescribes what should happen to an associated
+      static Address resource when a VM instance is permanently deleted.
+      Regardless of the value of the delete rule, stateful IP addresses are
+      always preserved on instance autohealing, update, and recreation
+      operations. The following options are available:
+      - ``never'': (Default) Never delete the static IP address. Instead,
+          unassign the address when its instance is deleted and keep the address
+          reserved.
+      - ``on-permanent-instance-deletion'': Delete the static IP
+          address reservation when the instance that it's assigned to is
+          permanently deleted from the instance group; for example, when the
+          instance is deleted manually or when the group size is decreased.
       """
 
 
@@ -458,7 +570,7 @@ def AddMigCreateStatefulFlags(parser):
   stateful_disks_help = textwrap.dedent(STATEFUL_DISKS_HELP_BASE + """
       Use this argument multiple times to attach more disks.
 
-      *device-name*::: (Requied) Device name of the disk to mark stateful.
+      *device-name*::: (Required) Device name of the disk to mark stateful.
       """ + STATEFUL_DISK_AUTO_DELETE_ARG_HELP)
   parser.add_argument(
       '--stateful-disk',
@@ -471,6 +583,51 @@ def AddMigCreateStatefulFlags(parser):
           }),
       action='append',
       help=stateful_disks_help,
+  )
+
+
+def AddMigCreateStatefulIPsFlags(parser):
+  """Adding stateful IPs flags to the parser."""
+  stateful_internal_ips_help = textwrap.dedent(
+      """
+      Internal IPs considered stateful by the instance group. {}
+      Use this argument multiple times to make more internal IPs stateful.
+
+      *interface-name*::: (Required) Network interface name.
+      {}
+      """.format(STATEFUL_IPS_HELP_BASE, STATEFUL_IP_AUTO_DELETE_ARG_HELP))
+  parser.add_argument(
+      '--stateful-internal-ip',
+      type=arg_parsers.ArgDict(
+          spec={
+              'interface-name':
+                  str,
+              'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                  '--stateful-internal-ip'),
+          }),
+      action='append',
+      help=stateful_internal_ips_help,
+  )
+
+  stateful_external_ips_help = textwrap.dedent(
+      """
+      External IPs considered stateful by the instance group. {}
+      Use this argument multiple times to make more external IPs stateful.
+
+      *interface-name*::: (Required) Network interface name.
+      {}
+      """.format(STATEFUL_IPS_HELP_BASE, STATEFUL_IP_AUTO_DELETE_ARG_HELP))
+  parser.add_argument(
+      '--stateful-external-ip',
+      type=arg_parsers.ArgDict(
+          spec={
+              'interface-name':
+                  str,
+              'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                  '--stateful-external-ip'),
+          }),
+      action='append',
+      help=stateful_external_ips_help,
   )
 
 
@@ -515,7 +672,8 @@ def AddMigStatefulFlagsForUpdateInstanceConfigs(parser):
       '--remove-stateful-disks',
       metavar='DEVICE_NAME',
       type=arg_parsers.ArgList(min_length=1),
-      help='List all device names to remove from the instance\'s config.',
+      help=('Remove stateful configuration for the specified disks from the '
+            'instance\'s configuration.'),
   )
 
   # Add stateful metadata args
@@ -534,9 +692,53 @@ def AddMigStatefulFlagsForUpdateInstanceConfigs(parser):
       '--remove-stateful-metadata',
       metavar='KEY',
       type=arg_parsers.ArgList(min_length=1),
-      help=('List all stateful metadata keys to remove from the'
-            'instance\'s config.'),
+      help=('Remove stateful configuration for the specified metadata keys '
+            'from the instance\'s configuration.'),
   )
+
+
+def _AddMigStatefulIPsFlags(parser,
+                            ip_argument_name, ip_help_text,
+                            remove_ip_argument_name, remove_ip_help_text):
+  """Add args for per-instance configs update command."""
+  parser.add_argument(
+      ip_argument_name,
+      type=arg_parsers.ArgDict(
+          spec={
+              'interface-name':
+                  str,
+              'address':
+                  str,
+              'auto-delete':
+                  AutoDeleteFlag.ValidatorWithFlagName(ip_argument_name)
+          }),
+      action='append',
+      help=ip_help_text,
+  )
+  parser.add_argument(
+      remove_ip_argument_name,
+      metavar='KEY',
+      type=arg_parsers.ArgList(min_length=1),
+      help=remove_ip_help_text,
+  )
+
+
+def AddMigStatefulIPsFlagsForUpdateInstanceConfigs(parser):
+  """Add args for per-instance configs update command."""
+  ip_help_text = textwrap.dedent(
+      (STATEFUL_IPS_HELP_INSTANCE_CONFIGS_UPDATE +
+       STATEFUL_IP_INTERFACE_NAME_ARG_HELP + STATEFUL_IP_ADDRESS_ARG_HELP +
+       STATEFUL_IP_AUTO_DELETE_ARG_HELP))
+  remove_ip_help_text = """
+      List of all stateful IP network interface names to remove from
+      the instance's per-instance configuration.
+      """
+  _AddMigStatefulIPsFlags(parser,
+                          '--stateful-internal-ip', ip_help_text,
+                          '--remove-stateful-internal-ips', remove_ip_help_text)
+  _AddMigStatefulIPsFlags(parser,
+                          '--stateful-external-ip', ip_help_text,
+                          '--remove-stateful-external-ips', remove_ip_help_text)
 
 
 def AddMigStatefulFlagsForInstanceConfigs(parser):
@@ -582,6 +784,57 @@ def AddMigStatefulFlagsForInstanceConfigs(parser):
       help=metadata_help_text)
 
 
+def AddMigStatefulIPsFlagsForInstanceConfigs(parser):
+  """Adding stateful IPs flags for creating instance configs."""
+  # Add stateful internal IP args
+  stateful_ip_help = textwrap.dedent(
+      """
+      {}
+      Use this argument multiple times to attach and preserve multiple IPs.
+
+      *interface-name*::: (Required) Network interface name.
+      {}
+      {}
+      """.format(STATEFUL_IPS_HELP_INSTANCE_CONFIGS,
+                 STATEFUL_IP_ADDRESS_ARG_HELP,
+                 STATEFUL_IP_AUTO_DELETE_ARG_HELP))
+
+  stateful_internal_ip_argument_name = '--stateful-internal-ip'
+  parser.add_argument(
+      stateful_internal_ip_argument_name,
+      type=arg_parsers.ArgDict(
+          spec={
+              'interface-name':
+                  str,
+              'address':
+                  str,
+              'auto-delete':
+                  AutoDeleteFlag.ValidatorWithFlagName(
+                      stateful_internal_ip_argument_name)
+          }),
+      action='append',
+      help=stateful_ip_help,
+  )
+
+  # Add stateful external IP args
+  stateful_external_ip_argument_name = '--stateful-external-ip'
+  parser.add_argument(
+      stateful_external_ip_argument_name,
+      type=arg_parsers.ArgDict(
+          spec={
+              'interface-name':
+                  str,
+              'address':
+                  str,
+              'auto-delete':
+                  AutoDeleteFlag.ValidatorWithFlagName(
+                      stateful_external_ip_argument_name)
+          }),
+      action='append',
+      help=stateful_ip_help,
+  )
+
+
 def AddCreateInstancesFlags(parser):
   """Adding stateful flags for creating and updating instance configs."""
   parser.add_argument(
@@ -624,16 +877,16 @@ def AddMigStatefulUpdateInstanceFlag(parser):
       action='store_true',
       help="""
           Apply the configuration changes immediately to the instance. If you
-          disable this flag, the managed instance group will apply the config
-          update when you next recreate or update the instance.
+          disable this flag, the managed instance group will apply the
+          configuration update when you next recreate or update the instance.
 
           Example: say you have an instance with a disk attached to it and you
-          created a stateful config for the disk. If you decide to delete the
-          stateful config for the disk and you provide this flag, the MIG
-          immediately refreshes the instance and removes the stateful config
-          for the disk. Similarly if you have attached a new disk or changed its
-          definition, with this flag the MIG immediately refreshes the instance
-          with the new config.""")
+          created a stateful configuration for the disk. If you decide to
+          delete the stateful configuration for the disk and you provide this
+          flag, the group immediately refreshes the instance and removes the
+          stateful configuration for the disk. Similarly if you have attached
+          a new disk or changed its definition, with this flag the group
+          immediately refreshes the instance with the new configuration.""")
   parser.add_argument(
       '--instance-update-minimal-action',
       choices=mig_flags.INSTANCE_ACTION_CHOICES_WITH_NONE,
@@ -643,12 +896,11 @@ def AddMigStatefulUpdateInstanceFlag(parser):
           `--update-instance` is set to `true`.""")
 
 
-def ValidateMigStatefulFlagsForInstanceConfigs(args,
-                                               for_update=False,
-                                               need_disk_source=False):
-  """Validates the values of stateful flags for instance configs."""
-  stateful_disks = args.stateful_disk
-  flag_name = '--stateful-disk'
+def ValidateMigStatefulDiskFlagForInstanceConfigs(stateful_disks,
+                                                  flag_name,
+                                                  for_update=False,
+                                                  need_disk_source=False):
+  """Validates the values of stateful disk flags for instance configs."""
   device_names = set()
   for stateful_disk in stateful_disks or []:
     if not stateful_disk.get('device-name'):
@@ -679,27 +931,94 @@ def ValidateMigStatefulFlagsForInstanceConfigs(args,
           parameter_name=flag_name,
           message='[mode] can be set then and only then when [source] is given')
 
-  if for_update:
-    remove_stateful_disks_set = set(args.remove_stateful_disks or [])
-    for stateful_disk_to_update in args.stateful_disk or []:
-      if stateful_disk_to_update.get(
-          'device-name') in remove_stateful_disks_set:
-        raise exceptions.InvalidArgumentException(
-            parameter_name='--remove-stateful-disks',
-            message=('the same [device-name] `{0}` cannot be updated and'
-                     ' removed in one command call'.format(
-                         stateful_disk_to_update.get('device-name'))))
 
-    remove_stateful_metadata_set = set(args.remove_stateful_metadata or [])
-    update_stateful_metadata_set = set(args.stateful_metadata.keys())
-    keys_intersection = remove_stateful_metadata_set.intersection(
-        update_stateful_metadata_set)
-    if keys_intersection:
+def ValidateMigStatefulIpFlagForInstanceConfigs(flag_name, stateful_ips):
+  """Validates the values of stateful IP flags for instance configs."""
+  interface_names = set()
+  for stateful_ip in stateful_ips or []:
+    if not stateful_ip.get('interface-name'):
       raise exceptions.InvalidArgumentException(
-          parameter_name='--remove-stateful-metadata',
-          message=('the same metadata key(s) `{0}` cannot be updated and'
+          parameter_name=flag_name, message='[interface-name] is required')
+
+    if stateful_ip.get('interface-name') in interface_names:
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name,
+          message='[interface-name] `{0}` is not unique in the collection'
+          .format(stateful_ip.get('interface-name')))
+    interface_names.add(stateful_ip.get('interface-name'))
+
+
+def ValidateMigStatefulDisksRemovalFlagForInstanceConfigs(disks_to_remove,
+                                                          disks_to_update):
+  remove_stateful_disks_set = set(disks_to_remove or [])
+  for stateful_disk_to_update in disks_to_update or []:
+    if stateful_disk_to_update.get('device-name') in remove_stateful_disks_set:
+      raise exceptions.InvalidArgumentException(
+          parameter_name='--remove-stateful-disks',
+          message=('the same [device-name] `{0}` cannot be updated and'
                    ' removed in one command call'.format(
-                       ', '.join(keys_intersection))))
+                       stateful_disk_to_update.get('device-name'))))
+
+
+def ValidateMigStatefulMetadataRemovalFlagForInstanceConfigs(entries_to_remove,
+                                                             entries_to_update):
+  remove_stateful_metadata_set = set(entries_to_remove or [])
+  update_stateful_metadata_set = set(entries_to_update.keys())
+  keys_intersection = remove_stateful_metadata_set.intersection(
+      update_stateful_metadata_set)
+  if keys_intersection:
+    raise exceptions.InvalidArgumentException(
+        parameter_name='--remove-stateful-metadata',
+        message=('the same metadata key(s) `{0}` cannot be updated and'
+                 ' removed in one command call'.format(
+                     ', '.join(keys_intersection))))
+
+
+def ValidateMigStatefulIpsRemovalFlagForInstanceConfigs(flag_name,
+                                                        ips_to_remove,
+                                                        ips_to_update):
+  remove_ips_set = set(ips_to_remove or [])
+  for ip_to_update in ips_to_update or []:
+    if ip_to_update.get('interface-name') in remove_ips_set:
+      raise exceptions.InvalidArgumentException(
+          parameter_name=flag_name,
+          message=('the same [interface-name] `{0}` cannot be updated and'
+                   ' removed in one command call'.format(
+                       ip_to_update.get('interface-name'))))
+
+
+def ValidateMigStatefulFlagsForInstanceConfigs(args,
+                                               for_update=False,
+                                               need_disk_source=False):
+  """Validates the values of stateful flags for instance configs."""
+  ValidateMigStatefulDiskFlagForInstanceConfigs(args.stateful_disk,
+                                                '--stateful-disk',
+                                                for_update, need_disk_source)
+
+  if for_update:
+    ValidateMigStatefulDisksRemovalFlagForInstanceConfigs(
+        disks_to_remove=args.remove_stateful_disks,
+        disks_to_update=args.stateful_disk)
+    ValidateMigStatefulMetadataRemovalFlagForInstanceConfigs(
+        entries_to_remove=args.remove_stateful_metadata,
+        entries_to_update=args.stateful_metadata)
+
+
+def ValidateMigStatefulIPFlagsForInstanceConfigs(args, for_update=False):
+  """Validates the values of stateful flags for instance configs, with IPs."""
+  ValidateMigStatefulIpFlagForInstanceConfigs('--stateful-internal-ip',
+                                              args.stateful_internal_ip)
+  ValidateMigStatefulIpFlagForInstanceConfigs('--stateful-external-ip',
+                                              args.stateful_external_ip)
+  if for_update:
+    ValidateMigStatefulIpsRemovalFlagForInstanceConfigs(
+        flag_name='--remove-stateful-internal-ips',
+        ips_to_remove=args.remove_stateful_internal_ips,
+        ips_to_update=args.stateful_internal_ip)
+    ValidateMigStatefulIpsRemovalFlagForInstanceConfigs(
+        flag_name='--remove-stateful-external-ips',
+        ips_to_remove=args.remove_stateful_external_ips,
+        ips_to_update=args.stateful_external_ip)
 
 
 def AddMigUpdateStatefulFlags(parser):
@@ -708,11 +1027,11 @@ def AddMigUpdateStatefulFlags(parser):
       Use this argument multiple times to update more disks.
 
       If a stateful disk with the given device name already exists in the
-      current instance config, its properties will be replaced by the newly
-      provided ones. Otherwise, a new stateful disk definition will be added to
-      the instance config.
+      current instance configuration, its properties will be replaced by the
+      newly provided ones. Otherwise, a new stateful disk definition will be
+      added to the instance configuration.
 
-      *device-name*::: (Requied) Device name of the disk to mark stateful.
+      *device-name*::: (Required) Device name of the disk to mark stateful.
       """ + STATEFUL_DISK_AUTO_DELETE_ARG_HELP)
   stateful_disk_flag_name = '--stateful-disk'
   parser.add_argument(
@@ -727,12 +1046,62 @@ def AddMigUpdateStatefulFlags(parser):
       action='append',
       help=stateful_disks_help,
   )
-
   parser.add_argument(
       '--remove-stateful-disks',
       metavar='DEVICE_NAME',
       type=arg_parsers.ArgList(min_length=1),
-      help='Stop considering the disks stateful by the instance group.',
+      help='Remove stateful configuration for the specified disks.',
+  )
+
+
+def AddMigUpdateStatefulFlagsIPs(parser):
+  """Add stateful IPs flags to the parser."""
+  stateful_ips_help_text_template = textwrap.dedent(
+      STATEFUL_IPS_HELP_BASE +
+      STATEFUL_IPS_HELP_TEMPLATE +
+      STATEFUL_IP_AUTO_DELETE_ARG_HELP)
+
+  stateful_internal_ip_flag_name = '--stateful-internal-ip'
+  parser.add_argument(
+      stateful_internal_ip_flag_name,
+      type=arg_parsers.ArgDict(
+          spec={
+              'interface-name': str,
+              'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                  stateful_internal_ip_flag_name)
+          }),
+      action='append',
+      help=stateful_ips_help_text_template.format(ip_type='internal'),
+  )
+
+  stateful_external_ip_flag_name = '--stateful-external-ip'
+  parser.add_argument(
+      stateful_external_ip_flag_name,
+      type=arg_parsers.ArgDict(
+          spec={
+              'interface-name': str,
+              'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                  stateful_external_ip_flag_name)
+          }),
+      action='append',
+      help=stateful_ips_help_text_template.format(ip_type='external'),
+  )
+
+  remove_stateful_ips_help_text_template = """
+      Remove stateful configuration for the specified interfaces for
+      {ip_type} IPs.
+      """
+  parser.add_argument(
+      '--remove-stateful-internal-ips',
+      metavar='INTERFACE_NAME',
+      type=arg_parsers.ArgList(min_length=1),
+      help=remove_stateful_ips_help_text_template.format(ip_type='internal'),
+  )
+  parser.add_argument(
+      '--remove-stateful-external-ips',
+      metavar='INTERFACE_NAME',
+      type=arg_parsers.ArgList(min_length=1),
+      help=remove_stateful_ips_help_text_template.format(ip_type='external'),
   )
 
 
@@ -774,3 +1143,167 @@ def ValidateUpdateStatefulPolicyParams(args, current_stateful_policy):
         message=('Disks [{}] are not currently set as stateful, '
                  'so they cannot be removed from Stateful Policy.'.format(
                      six.text_type(not_current_device_names))))
+
+
+def _ValidateUpdateStatefulPolicyParamsWithIPsCommon(current_interface_names,
+                                                     update_flag_name,
+                                                     update_ips,
+                                                     remove_ips,
+                                                     ip_type_name):
+  """Check stateful properties of update request."""
+  update_interface_names = []
+  if update_ips:
+    ValidateStatefulIPDicts(update_ips, update_flag_name)
+    update_interface_names = [
+        stateful_ip.get('interface-name') for stateful_ip in update_ips
+    ]
+  if remove_ips:
+    if any(
+        remove_ips.count(x) > 1
+        for x in remove_ips):
+      raise exceptions.InvalidArgumentException(
+          parameter_name='update',
+          message=(
+              'When removing stateful {} IPs from Stateful Policy, please '
+              'provide each network interface name exactly once.'.format(
+                  ip_type_name)))
+
+  update_set = set(update_interface_names)
+  remove_set = set(remove_ips or [])
+  intersection = update_set.intersection(remove_set)
+
+  if intersection:
+    raise exceptions.InvalidArgumentException(
+        parameter_name='update',
+        message=
+        ('You cannot simultaneously add and remove the same interface {} to '
+         'stateful {} IPs in Stateful Policy.'.format(
+             six.text_type(intersection), ip_type_name)))
+  not_current_interface_names = remove_set - current_interface_names
+  if not_current_interface_names:
+    raise exceptions.InvalidArgumentException(
+        parameter_name='update',
+        message=('Interfaces [{}] are not currently set as stateful {} IPs, '
+                 'so they cannot be removed from Stateful Policy.'.format(
+                     six.text_type(not_current_interface_names), ip_type_name)))
+
+
+def _ValidateUpdateStatefulPolicyParamsWithInternalIPs(args,
+                                                       current_stateful_policy):
+  """Check stateful internal IPs properties of update request."""
+  current_interface_names = set(
+      managed_instance_groups_utils
+      .GetInterfaceNamesFromStatefulPolicyForInternalIPs(
+          current_stateful_policy))
+  _ValidateUpdateStatefulPolicyParamsWithIPsCommon(
+      current_interface_names,
+      '--stateful-internal-ip', args.stateful_internal_ip,
+      args.remove_stateful_internal_ips, 'internal')
+
+
+def _ValidateUpdateStatefulPolicyParamsWithExternalIPs(args,
+                                                       current_stateful_policy):
+  """Check stateful external IPs properties of update request."""
+  current_interface_names = set(
+      managed_instance_groups_utils
+      .GetInterfaceNamesFromStatefulPolicyForExternalIPs(
+          current_stateful_policy))
+  _ValidateUpdateStatefulPolicyParamsWithIPsCommon(
+      current_interface_names,
+      '--stateful-external-ip', args.stateful_external_ip,
+      args.remove_stateful_external_ips, 'external')
+
+
+def ValidateUpdateStatefulPolicyParamsWithIPs(args, current_stateful_policy):
+  """Check stateful properties of update request."""
+  _ValidateUpdateStatefulPolicyParamsWithInternalIPs(args,
+                                                     current_stateful_policy)
+  _ValidateUpdateStatefulPolicyParamsWithExternalIPs(args,
+                                                     current_stateful_policy)
+
+
+INSTANCE_REDISTRIBUTION_TYPES = ['NONE', 'PROACTIVE']
+
+
+def AddMigInstanceRedistributionTypeFlag(parser):
+  """Add --instance-redistribution-type flag to the parser."""
+  parser.add_argument(
+      '--instance-redistribution-type',
+      metavar='TYPE',
+      type=lambda x: x.upper(),
+      choices=INSTANCE_REDISTRIBUTION_TYPES,
+      help="""\
+      Specifies the type of the instance redistribution policy. An instance
+      redistribution type lets you enable or disable automatic instance
+      redistribution across zones to meet the target distribution. The target
+      distribution is a state of a regional managed instance group where all
+      instances are spread out evenly across all target zones.
+
+      An instance redistribution type can be specified only for a non-autoscaled
+      regional managed instance group. By default it is set to PROACTIVE.
+
+      The following types are available:
+
+       * NONE - The managed instance group does not redistribute instances
+         across zones.
+
+       * PROACTIVE - The managed instance group proactively redistributes
+         instances to meet its target distribution.
+      """)
+
+
+def ValidateMigInstanceRedistributionTypeFlag(instance_redistribution_type,
+                                              group_ref):
+  """Check correctness of instance-redistribution-type flag value."""
+  if instance_redistribution_type and (group_ref.Collection() !=
+                                       'compute.regionInstanceGroupManagers'):
+    raise exceptions.InvalidArgumentException(
+        parameter_name='--instance-redistribution-type',
+        message=(
+            'Flag --instance-redistribution-type may be specified for regional '
+            'managed instance groups only.'))
+
+
+DISTRIBUTION_POLICY_TARGET_SHAPE_CHOICES = {
+    'EVEN':
+        'The group schedules VM instance creation and deletion to achieve and '
+        'maintain an even number of managed instances across the selected '
+        'zones. The distribution is even when the number of managed instances '
+        'does not differ by more than 1 between any two zones. Recommended for'
+        ' highly available serving workloads.',
+    'BALANCED':
+        'The group prioritizes acquisition of resources, scheduling VMs in '
+        'zones where resources are available while distributing VMs as evenly '
+        'as possible across selected zones to minimize the impact of zonal '
+        'failure. Recommended for highly available serving or batch workloads '
+        'that do not require autoscaling.',
+    'ANY': 'The group picks zones for creating VM instances to fulfill the '
+           'requested number of VMs within present resource constraints and to '
+           'maximize utilization of unused zonal reservations. Recommended for '
+           'batch workloads that do not require high availability.'
+}
+
+
+def AddMigDistributionPolicyTargetShapeFlag(parser):
+  """Add --target-distribution-shape flag to the parser."""
+  help_text = """\
+      Specifies how a regional managed instance group distributes its instances
+      across zones within the region. The default shape is ``EVEN''.
+    """
+
+  parser.add_argument(
+      '--target-distribution-shape',
+      metavar='SHAPE',
+      type=lambda x: x.upper(),
+      choices=DISTRIBUTION_POLICY_TARGET_SHAPE_CHOICES,
+      help=help_text)
+
+
+def ValidateMigDistributionPolicyTargetShapeFlag(target_shape, group_ref):
+  """Check correctness of --target-distribution-shape flag value."""
+  if target_shape and (group_ref.Collection() !=
+                       'compute.regionInstanceGroupManagers'):
+    raise exceptions.InvalidArgumentException(
+        parameter_name='--target-distribution-shape',
+        message=('Flag --target-distribution-shape may be specified for '
+                 'regional managed instance groups only.'))

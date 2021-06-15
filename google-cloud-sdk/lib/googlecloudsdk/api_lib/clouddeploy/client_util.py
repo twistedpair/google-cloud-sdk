@@ -21,6 +21,9 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
+from googlecloudsdk.core import resources
 
 _API_NAME = 'clouddeploy'
 _GA_API_VERSION = 'v1'
@@ -47,20 +50,6 @@ def GetMessagesModule(client=None):
   """
   client = client or GetClientInstance()
   return client.MESSAGES_MODULE
-
-
-def GetClientClass(release_track=base.ReleaseTrack.ALPHA):
-  """Returns the client class for Cloud Deploy.
-
-  Args:
-    release_track: The desired value of the enum
-      googlecloudsdk.calliope.base.ReleaseTrack.
-
-  Returns:
-    base_api.BaseApiClient, Client class for Cloud Deploy.
-  """
-  return apis.GetClientClass(_API_NAME,
-                             RELEASE_TRACK_TO_API_VERSION[release_track])
 
 
 def GetClientInstance(release_track=base.ReleaseTrack.ALPHA, use_http=True):
@@ -106,7 +95,7 @@ class DeployOperationPoller(waiter.CloudOperationPoller):
 
 
 class OperationsClient(object):
-  """High-level client for the AI Platform operations surface."""
+  """High-level client for the cloud deploy operations surface."""
 
   def __init__(self, client=None, messages=None):
     """Initiates an OperationsClient.
@@ -146,3 +135,31 @@ class OperationsClient(object):
     if message is None:
       message = 'Waiting for operation [{}]'.format(operation_ref.Name())
     return waiter.WaitFor(poller, operation_ref, message)
+
+  def CheckOperationStatus(self, operation_dict, msg_template):
+    """Checks operations status.
+
+    Only logs the errors instead of re-throwing them.
+
+    Args:
+     operation_dict: dict[str, oOptional[clouddeploy_messages.Operation],
+       dictionary of resource name and clouddeploy_messages.Operation. The
+       operation can be None if the operation isn't executed.
+     msg_template: output string template.
+    """
+    for resource_name, operation in operation_dict.items():
+      if not operation or not operation.name:
+        continue
+      try:
+        operation_ref = resources.REGISTRY.ParseRelativeName(
+            operation.name,
+            collection='clouddeploy.projects.locations.operations')
+        _ = self.WaitForOperation(
+            operation, operation_ref,
+            'Waiting for the operation on resource {}'.format(
+                resource_name)).response
+
+        log.status.Print(msg_template.format(resource_name))
+
+      except core_exceptions.Error as e:
+        log.status.Print('Operation failed: {}'.format(e))

@@ -788,7 +788,10 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
       word in any of the searchable fields (except for the included
       permissions). * `resource:(instance1 OR instance2) policy:amy` to find
       IAM policy bindings that are set on resources "instance1" or "instance2"
-      and also specify user "amy".
+      and also specify user "amy". * `roles:roles/compute.admin` to find IAM
+      policy bindings that specify the Compute Admin role. *
+      `memberTypes:user` to find IAM policy bindings that contain the "user"
+      member type.
     scope: Required. A scope can be a project, a folder, or an organization.
       The search is limited to the IAM policies within the `scope`. The caller
       must be granted the [`cloudasset.assets.searchAllIamPolicies`](https://c
@@ -1142,7 +1145,7 @@ class Feed(_messages.Message):
       expression ("temporal_asset.deleted == true") will only publish Asset
       deletions. Other fields of `Expr` are optional. See our [user
       guide](https://cloud.google.com/asset-inventory/docs/monitoring-asset-
-      changes#feed_with_condition) for detailed instructions.
+      changes-with-condition) for detailed instructions.
     contentType: Asset content type. If not specified, no content but the
       asset name and type will be returned.
     feedOutputConfig: Required. Feed output configuration defining where the

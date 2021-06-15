@@ -1361,6 +1361,32 @@
         }
       }
     },
+    "UpdateInstanceConfigRequest": {
+      "id": "UpdateInstanceConfigRequest",
+      "description": "Request for updating instance configurations.",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "The instance configurations to be updated.",
+          "$ref": "InstanceConfig"
+        }
+      }
+    },
+    "InstanceConfig": {
+      "id": "InstanceConfig",
+      "description": "Notebook instance configurations that can be updated.",
+      "type": "object",
+      "properties": {
+        "notebookUpgradeSchedule": {
+          "description": "Cron expression in UTC timezone, used to schedule instance auto upgrade. Please follow the [cron format](https:\/\/en.wikipedia.org\/wiki\/Cron).",
+          "type": "string"
+        },
+        "enableHealthMonitoring": {
+          "description": "Verifies core internal services are running. More info: go\/notebooks-health",
+          "type": "boolean"
+        }
+      }
+    },
     "UpdateShieldedInstanceConfigRequest": {
       "id": "UpdateShieldedInstanceConfigRequest",
       "description": "Request for updating the Shielded Instance config for a notebook instance. You can only use this method on a stopped instance",
@@ -1610,7 +1636,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Output only. Display name used for UI purposes. Name can only contain alphanumeric characters, hyphens \u2018-\u2019, and underscores \u2018_\u2019.",
+          "description": "Output only. Display name used for UI purposes. Name can only contain alphanumeric characters, hyphens '-', and underscores '_'.",
           "readOnly": true,
           "type": "string"
         },
@@ -2632,6 +2658,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Updates the machine type of a single Instance."
+                },
+                "updateConfig": {
+                  "id": "notebooks.projects.locations.instances.updateConfig",
+                  "path": "v1/{+name}:updateConfig",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:updateConfig",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UpdateInstanceConfigRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update Notebook Instance configurations."
                 },
                 "updateShieldedInstanceConfig": {
                   "id": "notebooks.projects.locations.instances.updateShieldedInstanceConfig",

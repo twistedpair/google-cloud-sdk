@@ -103,27 +103,23 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
             lang=self._lang))
     indent = len(line)
     line = line.lstrip()
-    indent -= len(line.lstrip())
-    last_char = line[-1:]
+    indent -= len(line)
     command_pattern = re.compile(r'\A\$\s+')
     if command_pattern.match(line):
       self._in_command_block = True
-      self._command_block_indent = indent
       self._out.write('<code class="devsite-terminal">')
-      line = command_pattern.sub('', line)
     if self._in_command_block:
-      if indent > self._command_block_indent:
-        self._out.write(' ')
-      if last_char == '\\':
+      line = command_pattern.sub('', line)
+      if line.endswith('\\'):
+        # stripping '\' because devsite-terminal class is always on one line
         self._out.write(line[:-1])
       else:
-        self._in_command_block = False
         self._out.write(line)
         self._out.write('</code>\n')
+
+        self._in_command_block = False
     else:
-      self._out.write(' ' * indent)
-      self._out.write(line)
-      self._out.write('\n')
+      self._out.write(' ' * indent + line + '\n')
 
   def Link(self, target, text):
     """Renders an anchor.

@@ -855,7 +855,7 @@ class FeatureStateDetails(_messages.Message):
     anthosobservabilityFeatureState: State for the Anthos Observability
       Feature
     apigeeFeatureState: State for the Apigee Feature.
-    appdevexperienceFeatureState: A AppDevExperienceFeatureState attribute.
+    appdevexperienceFeatureState: State for the AppDevExperience Feature.
     authorizerFeatureState: State for the Authorizer Feature.
     cloudauditloggingFeatureState: The state of the Anthos Cloud Audit Logging
       feature.

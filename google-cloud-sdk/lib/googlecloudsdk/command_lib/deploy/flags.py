@@ -55,15 +55,6 @@ def AddToTargetFlag(parser, hidden=False):
       help='Specifies a target to deliver into upon release creation')
 
 
-def AddGcsRenderDirFlag(parser, hidden=False):
-  """Adds gcs-render-dir flag."""
-  parser.add_argument(
-      '--gcs-render-dir',
-      hidden=hidden,
-      help='Specifies the Google Cloud Storage location'
-      ' to store the rendered files')
-
-
 def AddImagesGroup(parser, hidden=False):
   """Adds Images flag."""
   images_group = parser.add_mutually_exclusive_group()
