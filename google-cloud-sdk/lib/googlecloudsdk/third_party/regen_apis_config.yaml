@@ -638,13 +638,19 @@ apis:
   healthcare:
     v1alpha2:
       discovery_doc: healthcare_v1alpha2.json
-      # Include projects.locations.services.deidentify collection explicitly. This is not imported
-      # automatically since gcloud skips collections that do not have a GET method.
+      # Include projects.locations.services.deidentify and projects.locations.services.nlp
+      # collection explicitly. This is not imported automatically since gcloud skips collections
+      # that do not have a GET method.
       resources:
         projects.locations.services.deidentify:
           path: projects/{projectsId}/locations/{locationsId}/services/deidentify
+        projects.locations.services.nlp:
+          path: projects/{projectsId}/locations/{locationsId}/services/nlp
     v1beta1:
       discovery_doc: healthcare_v1beta1.json
+      resources:
+        projects.locations.services.nlp:
+          path: projects/{projectsId}/locations/{locationsId}/services/nlp
     v1:
       discovery_doc: healthcare_v1.json
       default: true

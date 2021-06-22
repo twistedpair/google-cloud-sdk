@@ -58,3 +58,11 @@ class NoSnappedTargets(exceptions.Error):
 
 class CloudDeployConfigError(exceptions.Error):
   """Error raised for errors in the cloud deploy yaml config."""
+
+
+class TargetNotFound(exceptions.Error):
+  """Error when a give target ID can't be found in either targets or shared targets."""
+
+  def __init__(self, target_id):
+    super(TargetNotFound,
+          self).__init__('Target {} not found.'.format(target_id))

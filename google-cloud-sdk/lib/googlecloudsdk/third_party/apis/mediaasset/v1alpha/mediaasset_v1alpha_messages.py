@@ -24,16 +24,16 @@ class Action(_messages.Message):
   Fields:
     assetTransformation: Status of asset transformation, if this action is for
       asset transformation.
-    createTime: The creation time.
+    createTime: Output only. The creation time.
     derivedAsset: Status of derived asset action.
     labels: The labels associated with this resource. Each label is a key-
       value pair.
-    name: Required. The resource name of the action, in the following form: `p
-      rojects/{project}/locations/{location}/assetTypes/{type}/assets/{asset}/
-      actions/{action}`.
-    rule: The resource name of the rule, in the following form:
+    name: The resource name of the action, in the following form: `projects/{p
+      roject}/locations/{location}/assetTypes/{type}/assets/{asset}/actions/{a
+      ction}`.
+    rule: Required. The resource name of the rule, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}/rule/{rule}`.
-    updateTime: The last-modified time.
+    updateTime: Output only. The last-modified time.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -225,7 +225,8 @@ class AnnotationSetConfig(_messages.Message):
       make available in searches with their corresponding properties.
 
   Fields:
-    complexType: Reference to the complex type name, in the following form:
+    complexType: Required. Reference to the complex type name, in the
+      following form:
       `projects/{project}/locations/{location}/complexTypes/{name}`. Complex
       type of the annotation set config has the following requirements: 1.
       Must have two required fields named start and end. 2. Allowed types for
@@ -285,6 +286,7 @@ class Asset(_messages.Message):
     MetadataInfoValue: Information about the metadata fields.
 
   Fields:
+    assetId: Output only. The assetID of an asset.
     createTime: Output only. The creation time.
     etag: Etag of the resource used in output and update requests.
     labels: The labels associated with this resource. Each label is a key-
@@ -491,17 +493,18 @@ class Asset(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  linkInfo = _messages.MessageField('LinkInfoValue', 4)
-  linkSets = _messages.MessageField('LinkSetsValue', 5)
-  links = _messages.MessageField('LinksValue', 6)
-  metadata = _messages.MessageField('MetadataValue', 7)
-  metadataInfo = _messages.MessageField('MetadataInfoValue', 8)
-  name = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  assetId = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  linkInfo = _messages.MessageField('LinkInfoValue', 5)
+  linkSets = _messages.MessageField('LinkSetsValue', 6)
+  links = _messages.MessageField('LinksValue', 7)
+  metadata = _messages.MessageField('MetadataValue', 8)
+  metadataInfo = _messages.MessageField('MetadataInfoValue', 9)
+  name = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class AssetTransformation(_messages.Message):
@@ -519,16 +522,17 @@ class AssetTransformation(_messages.Message):
       key-value pair.
 
   Fields:
-    createTime: The creation time.
+    createTime: Output only. The creation time.
     labels: The labels associated with this resource. Each label is a key-
       value pair.
     lastRunStatus: Status of the last asset transformation run.
-    lastRunTime: Time at which the asset transformation was last run.
+    lastRunTime: Output only. Time at which the asset transformation was last
+      run.
     name: The resource name of the asset transformation, in the following
       form: `projects/{project}/locations/{location}/assetTypes/{type}/assets/
       {asset}/transformations/{transformation}`.
     state: State of the asset transformation.
-    updateTime: The last-modified time.
+    updateTime: Output only. The last-modified time.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -600,7 +604,7 @@ class AssetType(_messages.Message):
 
   Fields:
     annotationSetConfigs: Mapping of annotationSet name to its configuration.
-    createTime: The creation time.
+    createTime: Output only. The creation time.
     indexedFieldConfigs: List of indexed fields (e.g. "metadata.file.url") to
       make available in searches with their corresponding properties.
     labels: The labels associated with this resource. Each label is a key-
@@ -620,7 +624,7 @@ class AssetType(_messages.Message):
       first).
     transformationConfigs: Mapping of a transformation name to its
       configuration.
-    updateTime: The last-modified time.
+    updateTime: Output only. The last-modified time.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -857,18 +861,6 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class CloudPubSubNotificationConfig(_messages.Message):
-  r"""A CloudPubSubNotificationConfig configures Pub/Sub support for an
-  AssetType that this Rule attached to.
-
-  Fields:
-    pubsubTopic: Required. A Pub/Sub topic to which messages are sent by GCMA.
-      https://cloud.google.com/pubsub/docs/overview
-  """
-
-  pubsubTopic = _messages.StringField(1)
-
-
 class ComplexFieldAllowedValues(_messages.Message):
   r"""A ComplexFieldAllowedValues object.
 
@@ -886,8 +878,8 @@ class ComplexFieldType(_messages.Message):
     allowedValues: If present, metadata values of ComplexFieldType must be
       within the constraints of allowedValues.
     required: If true, a value of this complex type must contain this field.
-    type: Type for this field. The type could be one of: - Primitive types
-      ("string", "number", "bool") - Custom complex type. Format:
+    type: Required. Type for this field. The type could be one of: - Primitive
+      types ("string", "number", "bool") - Custom complex type. Format:
       "p/p/l/l/complexTypes/*" - Collections of the above - list(), dict()
   """
 
@@ -907,7 +899,7 @@ class ComplexType(_messages.Message):
 
   Fields:
     allowUndefinedFields: Allow fields that aren't in complex type schema.
-    createTime: The creation time.
+    createTime: Output only. The creation time.
     fields: Mapping of a field name to its type.
     labels: The labels associated with this resource. Each label is a key-
       value pair.
@@ -917,7 +909,7 @@ class ComplexType(_messages.Message):
       character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
-    updateTime: The last-modified time.
+    updateTime: Output only. The last-modified time.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -975,6 +967,17 @@ class ComplexType(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+
+
+class DerivedAssetChange(_messages.Message):
+  r"""Specifies the derived asset changes that should trigger notifications.
+
+  Fields:
+    ruleId: Required. Notifies for changes to any transformer invocations
+      triggered by the derived asset rule.
+  """
+
+  ruleId = _messages.StringField(1)
 
 
 class DerivedAssetConfig(_messages.Message):
@@ -1649,12 +1652,27 @@ class IndexedFieldConfig(_messages.Message):
   fullTextSearch = _messages.BooleanField(2)
 
 
+class Input(_messages.Message):
+  r"""Input describes an input of a transformer.
+
+  Fields:
+    required: If true, this input is required to be specified for a
+      transformation.
+    type: Required. The type could be one of: - Primitive types ("string",
+      "number", "bool") - Custom complex type. Format:
+      "p/p/l/l/complexTypes/*" - Collections of the above - list(), dict()
+  """
+
+  required = _messages.BooleanField(1)
+  type = _messages.StringField(2)
+
+
 class LinkConfig(_messages.Message):
   r"""A LinkConfig object.
 
   Fields:
-    assetType: Reference to the asset type name of the linked asset, in the
-      following form:
+    assetType: Required. Reference to the asset type name of the linked asset,
+      in the following form:
       `projects/{project}/locations/{location}/assetTypes/{name}`.
     owner: Output only. The owner of the link, if it's updated by the system.
     required: If true, this asset link is required during asset creation.
@@ -1719,8 +1737,8 @@ class LinkSetConfig(_messages.Message):
   r"""A LinkSetConfig object.
 
   Fields:
-    assetType: Reference to the asset type name for the type of the assets in
-      this set, in the following form:
+    assetType: Required. Reference to the asset type name for the type of the
+      assets in this set, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{name}`.
   """
 
@@ -2061,6 +2079,28 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsDelete
   name = _messages.StringField(2, required=True)
 
 
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGetIamPolicyRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGe
+  tIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGetRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGe
   tRequest object.
@@ -2121,6 +2161,39 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsPatchR
   updateMask = _messages.StringField(4)
 
 
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsSetIamPolicyRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsSe
+  tIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsTestIamPermissionsRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsTe
+  stIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsCreateRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsCreateRequest
   object.
@@ -2154,6 +2227,29 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsDeleteRequest(_me
 
   etag = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
+
+
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetIamPolicyRequest(_messages.Message):
+  r"""A
+  MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetRequest(_messages.Message):
@@ -2217,13 +2313,47 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsPatchRequest(_mes
   updateMask = _messages.StringField(4)
 
 
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsSetIamPolicyRequest(_messages.Message):
+  r"""A
+  MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsTestIamPermissionsRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsTestIamPermis
+  sionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class MediaassetProjectsLocationsAssetTypesAssetsCreateRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsCreateRequest object.
 
   Fields:
     asset: A Asset resource to be passed as the request body.
-    assetId: The ID of the asset resource to be created.
-    parent: The parent resource name, in the following form:
+    assetId: Required. The ID of the asset resource to be created.
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}`.
   """
 
@@ -2239,8 +2369,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsDeleteRequest(_messages.Message
     etag: The current etag of the asset. If an etag is provided and does not
       match the current etag of the asset, deletion will be blocked and a
       FAILED_PRECONDITION error will be returned.
-    name: The name of the asset to delete, in the following form: `projects/{p
-      roject}/locations/{location}/assetTypes/{type}/assets/{asset}`.
+    name: Required. The name of the asset to delete, in the following form: `p
+      rojects/{project}/locations/{location}/assetTypes/{type}/assets/{asset}`
+      .
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2284,8 +2415,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsGetRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsGetRequest object.
 
   Fields:
-    name: The name of the asset to retrieve, in the following form: `projects/
-      {project}/locations/{location}/assetTypes/{type}/assets/{asset}`.
+    name: Required. The name of the asset to retrieve, in the following form:
+      `projects/{project}/locations/{location}/assetTypes/{type}/assets/{asset
+      }`.
     readMask: Extra fields to be poplulated as part of the asset resource in
       the response. Currently, this only supports populating asset metadata
       (no wildcards and no contents of the entire asset).
@@ -2308,7 +2440,7 @@ class MediaassetProjectsLocationsAssetTypesAssetsListRequest(_messages.Message):
       determine if there are more realms left to be queried.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The parent resource name, in the following form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}`.
     readMask: Extra fields to be poplulated as part of the asset resource in
       the response. Currently, this only supports populating asset metadata
@@ -2418,9 +2550,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetRequest(_mess
   object.
 
   Fields:
-    name: The name of the asset transformation to retrieve, in the following
-      form: `projects/{project}/locations/{location}/assetTypes/{type}/assets/
-      {asset}/transformations/{transformation}`.
+    name: Required. The name of the asset transformation to retrieve, in the
+      following form: `projects/{project}/locations/{location}/assetTypes/{typ
+      e}/assets/{asset}/transformations/{transformation}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2440,8 +2572,8 @@ class MediaassetProjectsLocationsAssetTypesAssetsTransformationsListRequest(_mes
       determine if there are more realms left to be queried.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The parent resource name, in the following form: `projects/{projec
-      t}/locations/{location}/assetTypes/{type}/assets/{asset}`.
+    parent: Required. The parent resource name, in the following form: `projec
+      ts/{project}/locations/{location}/assetTypes/{type}/assets/{asset}`.
   """
 
   filter = _messages.StringField(1)
@@ -2489,8 +2621,8 @@ class MediaassetProjectsLocationsAssetTypesCreateRequest(_messages.Message):
 
   Fields:
     assetType: A AssetType resource to be passed as the request body.
-    assetTypeId: The ID of the asset type resource to be created.
-    parent: The parent resource name, in the following form:
+    assetTypeId: Required. The ID of the asset type resource to be created.
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}`.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -2515,8 +2647,8 @@ class MediaassetProjectsLocationsAssetTypesDeleteRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesDeleteRequest object.
 
   Fields:
-    name: The name of the asset type to delete, in the following form:
-      `projects/{project}/locations/{location}/assetTypes/{type}`.
+    name: Required. The name of the asset type to delete, in the following
+      form: `projects/{project}/locations/{location}/assetTypes/{type}`.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2559,8 +2691,8 @@ class MediaassetProjectsLocationsAssetTypesGetRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesGetRequest object.
 
   Fields:
-    name: The name of the asset type to retrieve, in the following form:
-      `projects/{project}/locations/{location}/assetTypes/{type}`.
+    name: Required. The name of the asset type to retrieve, in the following
+      form: `projects/{project}/locations/{location}/assetTypes/{type}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2579,7 +2711,7 @@ class MediaassetProjectsLocationsAssetTypesListRequest(_messages.Message):
       determine if there are more realms left to be queried.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The parent resource name, in the following form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}`.
   """
 
@@ -2613,11 +2745,11 @@ class MediaassetProjectsLocationsAssetTypesPatchRequest(_messages.Message):
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Comma-separated list of fields is used to specify the fields
-      to be overwritten in the AssetType resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+    updateMask: Required. Comma-separated list of fields is used to specify
+      the fields to be overwritten in the AssetType resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
   """
 
   assetType = _messages.MessageField('AssetType', 1)
@@ -2748,8 +2880,9 @@ class MediaassetProjectsLocationsComplexTypesCreateRequest(_messages.Message):
 
   Fields:
     complexType: A ComplexType resource to be passed as the request body.
-    complexTypeId: The ID of the complex type resource to be created.
-    parent: The parent resource name, in the following form:
+    complexTypeId: Required. The ID of the complex type resource to be
+      created.
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}`.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -2774,8 +2907,8 @@ class MediaassetProjectsLocationsComplexTypesDeleteRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsComplexTypesDeleteRequest object.
 
   Fields:
-    name: The name of the complex type to delete, in the following form:
-      `projects/{project}/locations/{location}/complexTypes/{type}`.
+    name: Required. The name of the complex type to delete, in the following
+      form: `projects/{project}/locations/{location}/complexTypes/{type}`.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2818,8 +2951,8 @@ class MediaassetProjectsLocationsComplexTypesGetRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsComplexTypesGetRequest object.
 
   Fields:
-    name: The name of the complex type to retrieve, in the following form:
-      `projects/{project}/locations/{location}/complexTypes/{type}`.
+    name: Required. The name of the complex type to retrieve, in the following
+      form: `projects/{project}/locations/{location}/complexTypes/{type}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2838,7 +2971,7 @@ class MediaassetProjectsLocationsComplexTypesListRequest(_messages.Message):
       determine if there are more realms left to be queried
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The parent resource name, in the following form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}`.
   """
 
@@ -2872,11 +3005,11 @@ class MediaassetProjectsLocationsComplexTypesPatchRequest(_messages.Message):
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Comma-separated list of fields is used to specify the fields
-      to be overwritten in the ComplexType resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+    updateMask: Required. Comma-separated list of fields is used to specify
+      the fields to be overwritten in the ComplexType resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
   """
 
   complexType = _messages.MessageField('ComplexType', 1)
@@ -3004,7 +3137,7 @@ class MediaassetProjectsLocationsTransformersCreateRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsTransformersCreateRequest object.
 
   Fields:
-    parent: The parent resource name, in the following form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}`.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -3018,7 +3151,7 @@ class MediaassetProjectsLocationsTransformersCreateRequest(_messages.Message):
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     transformer: A Transformer resource to be passed as the request body.
-    transformerId: The ID of the transformer resource to be created.
+    transformerId: Required. The ID of the transformer resource to be created.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -3031,8 +3164,8 @@ class MediaassetProjectsLocationsTransformersDeleteRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsTransformersDeleteRequest object.
 
   Fields:
-    name: The name of the transformer to delete, in the following form:
-      `projects/{project}/locations/{location}/transformer/{type}`.
+    name: Required. The name of the transformer to delete, in the following
+      form: `projects/{project}/locations/{location}/transformer/{type}`.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -3075,7 +3208,8 @@ class MediaassetProjectsLocationsTransformersGetRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsTransformersGetRequest object.
 
   Fields:
-    name: The name of the transformer to retrieve, in the following form:
+    name: Required. The name of the transformer to retrieve, in the following
+      form:
       `projects/{project}/locations/{location}/transformers/{transformer}`.
   """
 
@@ -3095,7 +3229,7 @@ class MediaassetProjectsLocationsTransformersListRequest(_messages.Message):
       determine if there are more realms left to be queried
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The parent resource name, in the following form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}`.
   """
 
@@ -3129,11 +3263,11 @@ class MediaassetProjectsLocationsTransformersPatchRequest(_messages.Message):
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     transformer: A Transformer resource to be passed as the request body.
-    updateMask: Comma-separated list of fields is used to specify the fields
-      to be overwritten in the Transformer resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+    updateMask: Required. Comma-separated list of fields is used to specify
+      the fields to be overwritten in the Transformer resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3179,7 +3313,8 @@ class MetadataConfig(_messages.Message):
   r"""A MetadataConfig object.
 
   Fields:
-    complexType: Reference to the complex type name, in the following form:
+    complexType: Required. Reference to the complex type name, in the
+      following form:
       `projects/{project}/locations/{location}/complexTypes/{name}`.
     owner: Output only. The owner of the metadata, set by the system.
     required: If true, this asset metadata is required to be specified during
@@ -3197,7 +3332,7 @@ class MetadataInfo(_messages.Message):
   Fields:
     owner: Output only. The owner of the metadata, if it's updated by the
       system.
-    updateTime: Time at which this field was updated.
+    updateTime: Output only. Time at which this field was updated.
   """
 
   owner = _messages.StringField(1)
@@ -3222,9 +3357,17 @@ class NotificationCriteria(_messages.Message):
   Fields:
     annotationChange: Specifies the annotations nested under the parent
       AssetType that should trigger notifications.
+    derivedAssetChange: Specifies the transformer invocations triggered by the
+      derived asset rule that should publish Pub/Sub messages on event
+      changes.
+    transformationChange: Specifies the transformer invocations triggered by
+      the transformation rule that should publish Pub/Sub messages on event
+      changes.
   """
 
   annotationChange = _messages.MessageField('AnnotationChange', 1)
+  derivedAssetChange = _messages.MessageField('DerivedAssetChange', 2)
+  transformationChange = _messages.MessageField('TransformationChange', 3)
 
 
 class NotificationDestination(_messages.Message):
@@ -3372,6 +3515,18 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class Output(_messages.Message):
+  r"""Output describes an output of a transformer.
+
+  Fields:
+    type: Required. The type could be one of: - Primitive types ("string",
+      "number", "bool") - Custom complex type. Format:
+      "p/p/l/l/complexTypes/*" - Collections of the above - list(), dict()
+  """
+
+  type = _messages.StringField(1)
+
+
 class PubSubDestination(_messages.Message):
   r"""Specifies the pub/sub destination to send the notifications to.
 
@@ -3405,9 +3560,6 @@ class Rule(_messages.Message):
       starts with a letter or underscore if length > 1
     notification: Configures notifications for changes to resources nested
       under the parent AssetType (e.g., assets, actions, and annotations).
-    pubsubNotification: https://cloud.google.com/pubsub/docs/overview
-      Configures the associated AssetType to publish event messages using
-      Pub/Sub.
     transformation: Configures the associated AssetType to invoke
       transformers.
     updateTime: Output only. The latest update time of the rule.
@@ -3443,9 +3595,8 @@ class Rule(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   notification = _messages.MessageField('NotificationConfig', 5)
-  pubsubNotification = _messages.MessageField('CloudPubSubNotificationConfig', 6)
-  transformation = _messages.MessageField('RuleTransformationConfig', 7)
-  updateTime = _messages.StringField(8)
+  transformation = _messages.MessageField('RuleTransformationConfig', 6)
+  updateTime = _messages.StringField(7)
 
 
 class RuleTransformationConfig(_messages.Message):
@@ -3540,8 +3691,9 @@ class SortOrderConfig(_messages.Message):
 
   Fields:
     descending: Sort in descending order.
-    field: Field to sort by. Must be: - required - numeric, datetime or
-      duration field - within the asset itself and not in any linked assets.
+    field: Required. Field to sort by. Must be: - required - numeric, datetime
+      or duration field - within the asset itself and not in any linked
+      assets.
   """
 
   descending = _messages.BooleanField(1)
@@ -3662,6 +3814,17 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TransformationChange(_messages.Message):
+  r"""Specifies the transformation changes that should trigger notifications.
+
+  Fields:
+    ruleId: Required. Notifies for changes to any transformer invocations
+      triggered by the transformation rule.
+  """
+
+  ruleId = _messages.StringField(1)
+
+
 class TransformationConfig(_messages.Message):
   r"""A TransformationConfig object.
 
@@ -3684,7 +3847,8 @@ class TransformationConfig(_messages.Message):
       transformers. The key maps to the transformer output parameter name. The
       value will be the path to the metadata in the asset to which this output
       should be assigned.
-    transformer: Reference to a transformer to execute, in the following form:
+    transformer: Required. Reference to a transformer to execute, in the
+      following form:
       `projects/{project}/locations/{location}/transformers/{name}`.
   """
 
@@ -3756,8 +3920,8 @@ class TransformationStatus(_messages.Message):
   Fields:
     lastInvocationStatus: Status of the last invocation of the asset
       transformation.
-    lastInvocationTime: Time at which the last invocation of the asset
-      transformation occurred.
+    lastInvocationTime: Output only. Time at which the last invocation of the
+      asset transformation occurred.
     state: State of the asset transformation.
   """
 
@@ -3786,21 +3950,27 @@ class Transformer(_messages.Message):
   asset information by processing asset contents.
 
   Messages:
+    InputValue: Mapping of the input parameter name to its input definition.
+      Will be replacing inputs in future.
     InputsValue: Mapping of the input parameter name to its type. The type
       could be one of: - Primitive types ("string", "number", "bool") - Custom
       complex type. Format: "p/p/l/l/complexTypes/*" - Collections of the
       above - list(), dict()
     LabelsValue: The labels associated with this resource. Each label is a
       key-value pair.
+    OutputValue: Mapping of the output parameter name to its output
+      definition. Will be replacing outputs in future.
     OutputsValue: Mapping of the output parameter name to its type. The type
       could be one of: - Primitive types ("string", "number", "bool") - Custom
       complex type. Format: "p/p/l/l/complexTypes/*" - Collections of the
       above - list(), dict()
 
   Fields:
-    createTime: The creation time.
-    endpoint: URI endpoint that the Transformer is listening for its
+    createTime: Output only. The creation time.
+    endpoint: Required. URI endpoint that the Transformer is listening for its
       invocation through the documented Transformer protocol.
+    input: Mapping of the input parameter name to its input definition. Will
+      be replacing inputs in future.
     inputs: Mapping of the input parameter name to its type. The type could be
       one of: - Primitive types ("string", "number", "bool") - Custom complex
       type. Format: "p/p/l/l/complexTypes/*" - Collections of the above -
@@ -3813,12 +3983,39 @@ class Transformer(_messages.Message):
       are: 1. 1 character minimum, 63 characters maximum 2. only contains
       letters, digits, underscore and hyphen 3. starts with a letter if length
       == 1, starts with a letter or underscore if length > 1
+    output: Mapping of the output parameter name to its output definition.
+      Will be replacing outputs in future.
     outputs: Mapping of the output parameter name to its type. The type could
       be one of: - Primitive types ("string", "number", "bool") - Custom
       complex type. Format: "p/p/l/l/complexTypes/*" - Collections of the
       above - list(), dict()
-    updateTime: The last-modified time.
+    updateTime: Output only. The last-modified time.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputValue(_messages.Message):
+    r"""Mapping of the input parameter name to its input definition. Will be
+    replacing inputs in future.
+
+    Messages:
+      AdditionalProperty: An additional property for a InputValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type InputValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Input attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Input', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class InputsValue(_messages.Message):
@@ -3873,6 +4070,31 @@ class Transformer(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class OutputValue(_messages.Message):
+    r"""Mapping of the output parameter name to its output definition. Will be
+    replacing outputs in future.
+
+    Messages:
+      AdditionalProperty: An additional property for a OutputValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type OutputValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OutputValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Output attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Output', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class OutputsValue(_messages.Message):
     r"""Mapping of the output parameter name to its type. The type could be
     one of: - Primitive types ("string", "number", "bool") - Custom complex
@@ -3901,11 +4123,13 @@ class Transformer(_messages.Message):
 
   createTime = _messages.StringField(1)
   endpoint = _messages.StringField(2)
-  inputs = _messages.MessageField('InputsValue', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  outputs = _messages.MessageField('OutputsValue', 6)
-  updateTime = _messages.StringField(7)
+  input = _messages.MessageField('InputValue', 3)
+  inputs = _messages.MessageField('InputsValue', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  output = _messages.MessageField('OutputValue', 7)
+  outputs = _messages.MessageField('OutputsValue', 8)
+  updateTime = _messages.StringField(9)
 
 
 class TriggerActionRequest(_messages.Message):

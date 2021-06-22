@@ -22,25 +22,6 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.ai import constants
 
 
-def ValidateWorkerPoolSpec(worker_pool_spec):
-  """Validates the input worker-pool-specs."""
-  for spec in worker_pool_spec:
-    is_spec_initialized = (
-        spec.machineSpec or spec.replicaCount or spec.pythonPackageSpec or
-        spec.containerSpec)
-    if is_spec_initialized:
-      use_python_package = spec.pythonPackageSpec and (
-          spec.pythonPackageSpec.executorImageUri or
-          spec.pythonPackageSpec.pythonModule)
-      use_container = spec.containerSpec and spec.containerSpec.imageUri
-
-      if (use_container and use_python_package) or (not use_container and
-                                                    not use_python_package):
-        raise exceptions.InvalidArgumentException(
-            '--worker-pool-spec',
-            'Either container or python package must be set.')
-
-
 def ValidateDisplayName(display_name):
   """Validates the display name."""
   if display_name is not None and not display_name:

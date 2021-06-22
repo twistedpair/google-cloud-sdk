@@ -28,37 +28,37 @@ from googlecloudsdk.core import properties
 from six.moves.urllib import parse
 
 
-_VALID_REGIONS = frozenset([
+_VALID_LOCATIONS = frozenset([
     'europe-west1',
     'us-east4',
     'us-west1',
 ])
 
 
-def _ValidateRegion(region):
-  if region not in _VALID_REGIONS:
-    regions = list(_VALID_REGIONS)
-    regions.sort()
+def _ValidateLocation(location):
+  if location not in _VALID_LOCATIONS:
+    locations = list(_VALID_LOCATIONS)
+    locations.sort()
     raise exceptions.InvalidArgumentException(
-        '--region',
-        '{bad_region} is not a valid region. Allowed values: [{region_list}].'
+        '--location',
+        '{bad_location} is not a valid location. Allowed values: [{location_list}].'
         .format(
-            bad_region=region,
-            region_list=', '.join('\'{}\''.format(r) for r in regions)))
+            bad_location=location,
+            location_list=', '.join('\'{}\''.format(r) for r in locations)))
 
 
-def _AppendRegion(endpoint, region):
+def _AppendLocation(endpoint, location):
   scheme, netloc, path, params, query, fragment = parse.urlparse(endpoint)
-  netloc = '{}-{}'.format(region, netloc)
+  netloc = '{}-{}'.format(location, netloc)
   return parse.urlunparse((scheme, netloc, path, params, query, fragment))
 
 
 @contextlib.contextmanager
-def GkemulticloudEndpointOverride(region, track=base.ReleaseTrack.GA):
+def GkemulticloudEndpointOverride(location, track=base.ReleaseTrack.GA):
   """Context manager to override the GKE Multi-cloud endpoint temporarily.
 
   Args:
-    region: str, region to use for GKE Multi-cloud.
+    location: str, location to use for GKE Multi-cloud.
     track: calliope_base.ReleaseTrack, Release track of the endpoint.
 
   Yields:
@@ -68,10 +68,10 @@ def GkemulticloudEndpointOverride(region, track=base.ReleaseTrack.GA):
   original_ep = properties.VALUES.api_endpoint_overrides.gkemulticloud.Get()
   try:
     if not original_ep:
-      if not region:
-        raise ValueError('A region must be specified.')
-      _ValidateRegion(region)
-      regional_ep = _GetEffectiveEndpoint(region, track=track)
+      if not location:
+        raise ValueError('A location must be specified.')
+      _ValidateLocation(location)
+      regional_ep = _GetEffectiveEndpoint(location, track=track)
       properties.VALUES.api_endpoint_overrides.gkemulticloud.Set(regional_ep)
     yield
   finally:
@@ -79,8 +79,8 @@ def GkemulticloudEndpointOverride(region, track=base.ReleaseTrack.GA):
       properties.VALUES.api_endpoint_overrides.gkemulticloud.Set(original_ep)
 
 
-def _GetEffectiveEndpoint(region, track=base.ReleaseTrack.GA):
+def _GetEffectiveEndpoint(location, track=base.ReleaseTrack.GA):
   """Returns regional GKE Multi-cloud Endpoint."""
   endpoint = apis.GetEffectiveApiEndpoint(
       azure_api_util.MODULE_NAME, azure_api_util.GetApiVersionForTrack(track))
-  return _AppendRegion(endpoint, region)
+  return _AppendLocation(endpoint, location)

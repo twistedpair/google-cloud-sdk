@@ -986,3 +986,16 @@ class JobInstanceDeadlineChange(ConfigChanger):
   def Adjust(self, resource):
     resource.template.spec.activeDeadlineSeconds = self._deadline_seconds
     return resource
+
+
+class CpuThrottlingChange(ConfigChanger):
+  """Sets a cpu-throttling annotation on the service."""
+
+  def __init__(self, throttling):
+    super(CpuThrottlingChange, self).__init__()
+    self._throttling = throttling
+
+  def Adjust(self, resource):
+    resource.template.annotations[
+        container_resource.CPU_THROTTLE_ANNOTATION] = str(self._throttling)
+    return resource

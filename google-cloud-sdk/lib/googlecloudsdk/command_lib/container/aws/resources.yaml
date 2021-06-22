@@ -1,19 +1,19 @@
-region:
-  name: region
+location:
+  name: location
   collection: gkemulticloud.projects.locations
   attributes:
-  - &region
+  - &location
   - parameter_name: locationsId
-    attribute_name: region
+    attribute_name: location
     help: |
-      The GKE Multi-cloud region.
+      The GKE Multi-cloud location.
 
 cluster:
   name: cluster
   collection: gkemulticloud.projects.locations.awsClusters
   request_id_field: awsClusterId
   attributes:
-  - *region
+  - *location
   - &cluster
   - parameter_name: awsClustersId
     attribute_name: cluster

@@ -112,6 +112,19 @@ setup_cloudsdk_python() {
       CLOUDSDK_PYTHON="$CLOUDSDK_ROOT_DIR/platform/bundledpythonunix/bin/python3"
       CLOUDSDK_PYTHON_SITEPACKAGES=1
     else
+      GLOBAL_CONFIG="$HOME/.config/gcloud"
+      if [ "$CLOUDSDK_CONFIG" ];
+      then
+        GLOBAL_CONFIG="$CLOUDSDK_CONFIG"
+      fi
+      # If there is an enabled virtualenv activate it
+      if [ -f "$GLOBAL_CONFIG/virtenv/bin/activate" ];
+      then
+        if [ -f "$GLOBAL_CONFIG/virtenv/enabled" ];
+        then
+          . "$GLOBAL_CONFIG/virtenv/bin/activate"
+        fi
+      fi
       CLOUDSDK_PYTHON=$(order_python python3 python2 python2.7 python)
     fi
   fi

@@ -889,6 +889,14 @@
           "description": "Option to specify a `WorkerPool` for the build. Format: projects\/{project}\/locations\/{location}\/workerPools\/{workerPool} This field is in beta and is available only to restricted users.",
           "type": "string"
         },
+        "cluster": {
+          "description": "Details about how this build should be executed on a GKE cluster.",
+          "$ref": "ClusterOptions"
+        },
+        "anthosCluster": {
+          "description": "Details about how this build should be executed on a Anthos cluster.",
+          "$ref": "AnthosWorkerPool"
+        },
         "logging": {
           "description": "Option to specify the logging mode, which determines if and where build logs are stored.",
           "type": "string",
@@ -929,14 +937,6 @@
           "items": {
             "$ref": "Volume"
           }
-        },
-        "cluster": {
-          "description": "Details about how this build should be executed on a GKE cluster.",
-          "$ref": "ClusterOptions"
-        },
-        "anthosCluster": {
-          "description": "Details about how this build should be executed on a Anthos cluster.",
-          "$ref": "AnthosWorkerPool"
         }
       }
     },

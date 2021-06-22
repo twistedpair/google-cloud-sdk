@@ -68,7 +68,7 @@ def GetTextFileContentsFromStorageBucket(gcs_path):
   wrapper = io.TextIOWrapper(log_bytes, encoding='utf-8')
   text_lines = wrapper.readlines()
   last_lines = text_lines[-24:]
-  return '\n'.join(last_lines)
+  return ''.join(last_lines)
 
 
 def GetBuildLogPathInGCS(logs_folder, build_id):
@@ -188,7 +188,14 @@ def DeploymentFailed(deployment_ref):
   elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.CLUSTER_CREATION_FAILED:
     log.error('Failed to create the underlying Config Controller '
               'cluster: {}'.format(deployment_ref.stateDetail))
-  # TODO(b/187085575): add clauses for delete-related failures.
+  elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.DELETE_BUILD_API_FAILED:
+    log.error('The delete build failed before it could run: {}'.format(
+        deployment_ref.stateDetail))
+  elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.DELETE_BUILD_RUN_FAILED:
+    log.error('The delete build failed while running.')
+    PrintCloudBuildResults(
+        deployment_ref.deleteResults.logs,
+        deployment_ref.deleteResults.build)
   else:
     log.error('The deployment failed due to an unrecognized error code ("{}"): '
               '{}'.format(deployment_error_code, deployment_ref.stateDetail))

@@ -282,6 +282,33 @@ class ManagedidentitiesV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetLdapssettings(self, request, global_params=None):
+      r"""Gets the domain ldaps settings.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LDAPSSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetLdapssettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetLdapssettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/domains/{domainsId}/ldapssettings',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.domains.getLdapssettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}/ldapssettings',
+        request_field='',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest',
+        response_type_name='LDAPSSettings',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists domains in a project.
 
@@ -441,6 +468,33 @@ class ManagedidentitiesV1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def UpdateLdapssettings(self, request, global_params=None):
+      r"""Patches a single ldaps settings.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsUpdateLdapssettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateLdapssettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateLdapssettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/domains/{domainsId}/ldapssettings',
+        http_method='PATCH',
+        method_id='managedidentities.projects.locations.global.domains.updateLdapssettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}/ldapssettings',
+        request_field='lDAPSSettings',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsUpdateLdapssettingsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

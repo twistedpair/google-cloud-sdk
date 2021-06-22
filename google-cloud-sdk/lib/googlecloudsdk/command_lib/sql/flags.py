@@ -311,6 +311,10 @@ def AddDatabaseVersion(parser, restrict_choices=True):
       'SQLSERVER_2017_WEB',
       'SQLSERVER_2017_STANDARD',
       'SQLSERVER_2017_ENTERPRISE',
+      'SQLSERVER_2019_EXPRESS',
+      'SQLSERVER_2019_WEB',
+      'SQLSERVER_2019_STANDARD',
+      'SQLSERVER_2019_ENTERPRISE',
   ]
   # End of engine-specific content.
   help_text = (
@@ -878,6 +882,19 @@ def AddScheduleTime(parser):
       type=arg_parsers.Datetime.Parse,
       help=('When specifying SPECIFIC_TIME, the date and time at which to '
             'schedule the maintenance in ISO 8601 format.'))
+
+
+def AddBackupRunId(parser):
+  """Add the flag for ID of backup run.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      'id',
+      type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
+      help='The ID of the backup run. You can find the ID by running '
+            '$ gcloud sql backups list -i {instance}.')
 
 
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'

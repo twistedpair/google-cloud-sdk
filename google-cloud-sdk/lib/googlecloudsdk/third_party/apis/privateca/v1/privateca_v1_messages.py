@@ -689,8 +689,8 @@ class CertificateIdentityConstraints(_messages.Message):
     celExpression: Optional. A CEL expression that may be used to validate the
       resolved X.509 Subject and/or Subject Alternative Name before a
       certificate is signed. To see the full allowed syntax and some examples,
-      see https://cloud.google.com/certificate-authority-service/docs/cel-
-      guide
+      see https://cloud.google.com/certificate-authority-service/docs/using-
+      cel
   """
 
   allowSubjectAltNamesPassthrough = _messages.BooleanField(1)
@@ -2963,8 +2963,10 @@ class SubjectDescription(_messages.Message):
   Fields:
     hexSerialNumber: The serial number encoded in lowercase hexadecimal.
     lifetime: For convenience, the actual lifetime of an issued certificate.
-      Corresponds to 'not_after_time' - 'not_before_time'.
-    notAfterTime: The time at which the certificate expires.
+    notAfterTime: The time after which the certificate is expired. Per RFC
+      5280, the validity period for a certificate is the period of time from
+      not_before_time through not_after_time, inclusive. Corresponds to
+      'not_before_time' + 'lifetime' - 1 second.
     notBeforeTime: The time at which the certificate becomes valid.
     subject: Contains distinguished name fields such as the common name,
       location and / organization.

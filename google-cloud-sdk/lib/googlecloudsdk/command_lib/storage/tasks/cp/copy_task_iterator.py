@@ -115,19 +115,23 @@ def _destination_is_container(destination):
     bool: True if destination is a valid container.
   """
   try:
-    return destination.is_container()
+    if destination.is_container():
+      return True
   except errors.ValueCannotBeDeterminedError:
-    # Some resource classes are not clearly containers. In these cases we need
-    # to use the storage_url attribute to infer how to treat them.
-    destination_url = destination.storage_url
-    if isinstance(destination_url, storage_url.FileUrl):
-      # We don't want to treat non-existing file paths as valid containers.
-      return os.path.isdir(destination_url.object_name)
+    # Some resource classes are not clearly containers, like objects with names
+    # ending in a delimiter. However, we want to treat them as containers anways
+    # so that nesting at copy destinations will work as expected.
+    pass
 
-    return (
-        destination_url.url_string.endswith(destination_url.delimiter) or (
-            isinstance(destination_url, storage_url.CloudUrl) and
-            destination_url.is_bucket()))
+  destination_url = destination.storage_url
+  if isinstance(destination_url, storage_url.FileUrl):
+    # We don't want to treat non-existing file paths as valid containers.
+    return os.path.isdir(destination_url.object_name)
+
+  return (destination_url.versionless_url_string.endswith(
+      destination_url.delimiter) or
+          (isinstance(destination_url, storage_url.CloudUrl) and
+           destination_url.is_bucket()))
 
 
 def _has_valid_parent_dir(url_object):
@@ -221,29 +225,36 @@ class CopyTaskIterator:
   def __iter__(self):
     for source in self._source_name_iterator:
 
-      if (isinstance(source.resource, resource_reference.ObjectResource) and
-          isinstance(self._raw_destination.storage_url, storage_url.FileUrl) and
-          source.resource.storage_url.object_name.endswith(
-              self._raw_destination.storage_url.delimiter)):
-        log.debug('Skipping the object {} since its name ends with a file '
-                  'system delimiter.'.format(
-                      source.resource.storage_url.versionless_url_string))
-        continue
-
       destination_resource = self._get_copy_destination(self._raw_destination,
                                                         source)
 
+      source_url = source.resource.storage_url
+      destination_url = destination_resource.storage_url
+      if (isinstance(source.resource, resource_reference.ObjectResource) and
+          isinstance(destination_url, storage_url.FileUrl) and
+          destination_url.object_name.endswith(destination_url.delimiter)):
+        log.debug('Skipping downloading {} to {} since the destination ends in'
+                  ' a file system delimiter.'.format(
+                      source_url.versionless_url_string,
+                      destination_url.versionless_url_string))
+        continue
+
+      if source_url != source.expanded_url and not self._multiple_sources:
+        # Multiple sources have been already validated in __init__.
+        # This check is required for cases where recursion has been requested,
+        # but there is only one object that needs to be copied over.
+        self._raise_if_destination_is_file_url_and_not_a_directory()
+
       if source.original_url.generation:
-        source_url_string = source.resource.storage_url.url_string
+        source_url_string = source_url.url_string
       else:
-        source_url_string = source.resource.storage_url.versionless_url_string
+        source_url_string = source_url.versionless_url_string
 
       if self._custom_md5_digest:
         source.resource.md5_hash = self._custom_md5_digest
 
       log.status.Print('Copying {} to {}'.format(
-          source_url_string,
-          destination_resource.storage_url.versionless_url_string))
+          source_url_string, destination_url.versionless_url_string))
       if self._task_status_queue:
         self._update_workload_estimation(source.resource)
 
@@ -294,12 +305,6 @@ class CopyTaskIterator:
     destination_url = destination_container.storage_url
     source_url = source.resource.storage_url
     if source_url != source.expanded_url:
-      if not self._multiple_sources:
-        # Multiple sources have been already validated in __init__.
-        # This check is required for cases where recursion has been requested,
-        # but there is only one object that needs to be copied over.
-        self._raise_if_destination_is_file_url_and_not_a_directory()
-
       # In case of recursion, the expanded_url can be the expanded wildcard URL
       # representing the container, and the source url can be the file/object.
       destination_suffix = self._get_destination_suffix_for_recursion(

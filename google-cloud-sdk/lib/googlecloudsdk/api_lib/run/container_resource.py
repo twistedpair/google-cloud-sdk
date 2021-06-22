@@ -29,6 +29,7 @@ VPC_ACCESS_ANNOTATION = 'run.googleapis.com/vpc-access-connector'
 SANDBOX_ANNOTATION = 'run.googleapis.com/sandbox'
 CMEK_KEY_ANNOTATION = 'run.googleapis.com/encryption-key'
 SECRETS_ANNOTATION = 'run.googleapis.com/secrets'
+CPU_THROTTLE_ANNOTATION = 'run.googleapis.com/cpu-throttling'
 
 EGRESS_SETTINGS_ANNOTATION = 'run.googleapis.com/vpc-access-egress'
 EGRESS_SETTINGS_ALL = 'all'

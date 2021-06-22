@@ -218,6 +218,15 @@ def GetManagedZoneNetworksArg():
       'visibility is [private].')
 
 
+def GetManagedZoneGkeClustersArg():
+  return base.Argument(
+      '--gkeclusters',
+      metavar='GKECLUSTERS',
+      type=arg_parsers.ArgList(),
+      help='List of GKE clusters that the zone should be visible in if the zone '
+      'visibility is [private].')
+
+
 def GetDnsPeeringArgs():
   """Return arg group for DNS Peering flags."""
   peering_group = base.ArgumentGroup(required=False)

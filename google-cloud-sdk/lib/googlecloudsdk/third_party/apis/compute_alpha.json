@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20210604",
+ "revision": "20210611",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -573,7 +573,7 @@
   "Address": {
    "id": "Address",
    "type": "object",
-   "description": "Use global external addresses for GFE-based external HTTP(S) load balancers in Premium Tier.\n\nUse global internal addresses for reserved peering network range.\n\nUse regional external addresses for the following resources:\n\n- External IP addresses for VM instances - Regional external forwarding rules - Cloud NAT external IP addresses - GFE based LBs in Standard Tier - Network LBs in Premium or Standard Tier - Cloud VPN gateways (both Classic and HA)\n\nUse regional internal IP addresses for subnet IP ranges (primary and secondary). This includes:\n\n- Internal IP addresses for VM instances - Alias IP ranges of VM instances (/32 only) - Regional internal forwarding rules - Internal TCP/UDP load balancer addresses - Internal HTTP(S) load balancer addresses - Cloud DNS inbound forwarding IP addresses\n\nFor more information, read reserved IP address.\n\n(== resource_for {$api_version}.addresses ==) (== resource_for {$api_version}.globalAddresses ==)",
+   "description": "Use global external addresses for GFE-based external HTTP(S) load balancers in Premium Tier.\n\nUse global internal addresses for reserved peering network range.\n\nUse regional external addresses for the following resources:\n\n- External IP addresses for VM instances - Regional external forwarding rules - Cloud NAT external IP addresses - GFE based LBs in Standard Tier - Network LBs in Premium or Standard Tier - Cloud VPN gateways (both Classic and HA)\n\nUse regional internal IP addresses for subnet IP ranges (primary and secondary). This includes:\n\n- Internal IP addresses for VM instances - Alias IP ranges of VM instances (/32 only) - Regional internal forwarding rules - Internal TCP/UDP load balancer addresses - Internal HTTP(S) load balancer addresses - Cloud DNS inbound forwarding IP addresses\n\nFor more information, see  Reserving a static external IP address.\n\n(== resource_for {$api_version}.addresses ==) (== resource_for {$api_version}.globalAddresses ==)",
    "properties": {
     "address": {
      "type": "string",
@@ -1364,6 +1364,20 @@
      "items": {
       "$ref": "GuestOsFeature"
      }
+    },
+    "interface": {
+     "type": "string",
+     "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI.",
+     "enum": [
+      "NVME",
+      "SCSI",
+      "UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     },
     "labels": {
      "type": "object",
@@ -2350,7 +2364,7 @@
     },
     "compressionMode": {
      "type": "string",
-     "description": "Compress text responses using Brotli or gzip compression, based on the client?s Accept-Encoding header.",
+     "description": "Compress text responses using Brotli or gzip compression, based on the client's Accept-Encoding header.",
      "enum": [
       "AUTOMATIC",
       "DISABLED"
@@ -2680,7 +2694,7 @@
     },
     "compressionMode": {
      "type": "string",
-     "description": "Compress text responses using Brotli or gzip compression, based on the client?s Accept-Encoding header.",
+     "description": "Compress text responses using Brotli or gzip compression, based on the client's Accept-Encoding header.",
      "enum": [
       "AUTOMATIC",
       "DISABLED"
@@ -3833,7 +3847,7 @@
     },
     "namePattern": {
      "type": "string",
-     "description": "The string pattern used for the names of the VMs. Either name_pattern or per_instance_properties must be set. The pattern should contain one continuous sequence of placeholder hash characters (#) with each character corresponding to one digit of the generated instance name. Example: name_pattern of inst-#### will generate instance names such as inst-0001, inst-0002, ... . If there already exist instance(s) whose names match the name pattern in the same project and zone, then the generated instance numbers will start after the biggest existing number. For example, if there exists an instance with name inst-0050, then instance names generated using the pattern inst-#### will be inst-0051, inst-0052, etc. The name pattern placeholder #...# can contain up to 18 characters."
+     "description": "The string pattern used for the names of the VMs. Either name_pattern or per_instance_properties must be set. The pattern must contain one continuous sequence of placeholder hash characters (#) with each character corresponding to one digit of the generated instance name. Example: a name_pattern of inst-#### generates instance names such as inst-0001 and inst-0002. If existing instances in the same project and zone have names that match the name pattern then the generated instance numbers start after the biggest existing number. For example, if there exists an instance with name inst-0050, then instance names generated using the pattern inst-#### begin with inst-0051. The name pattern placeholder #...# can contain up to 18 characters."
     },
     "perInstanceProperties": {
      "type": "object",
@@ -3986,7 +4000,7 @@
   "CircuitBreakers": {
    "id": "CircuitBreakers",
    "type": "object",
-   "description": "Settings controlling the volume of connections to a backend service.",
+   "description": "Settings controlling the volume of requests, connections and retries to this backend service.",
    "properties": {
     "connectTimeout": {
      "$ref": "Duration",
@@ -6173,7 +6187,7 @@
     },
     "interfaces": {
      "type": "array",
-     "description": "List of interfaces for this external VPN gateway.\n\nIf your peer-side gateway is an on-premises gateway and non-AWS cloud providers? gateway, at most two interfaces can be provided for an external VPN gateway. If your peer side is an AWS virtual private gateway, four interfaces should be provided for an external VPN gateway.",
+     "description": "List of interfaces for this external VPN gateway.\n\nIf your peer-side gateway is an on-premises gateway and non-AWS cloud providers' gateway, at most two interfaces can be provided for an external VPN gateway. If your peer side is an AWS virtual private gateway, four interfaces should be provided for an external VPN gateway.",
      "items": {
       "$ref": "ExternalVpnGatewayInterface"
      }
@@ -8907,7 +8921,7 @@
     },
     "healthStatusAggregationPolicy": {
      "type": "string",
-     "description": "Optional. Policy for how the results from multiple health checks for the same endpoint are aggregated. Defaults to NO_AGGREGATION if unspecified.  \n- NO_AGGREGATION. An EndpointHealth message is returned for each backend in the health check service. \n- AND. If any backend's health check reports UNHEALTHY, then UNHEALTHY is the HealthState of the entire health check service. If all backend's are healthy, the HealthState of the health check service is HEALTHY. .",
+     "description": "Optional. Policy for how the results from multiple health checks for the same endpoint are aggregated. Defaults to NO_AGGREGATION if unspecified.  \n- NO_AGGREGATION. An EndpointHealth message is returned for each  pair in the health check service. \n- AND. If any health check of an endpoint reports UNHEALTHY, then UNHEALTHY is the HealthState of the endpoint. If all health checks report HEALTHY, the HealthState of the endpoint is HEALTHY. .",
      "enum": [
       "AND",
       "NO_AGGREGATION"
@@ -10095,7 +10109,7 @@
     },
     "retryConditions": {
      "type": "array",
-     "description": "Specifies one or more conditions when this retry rule applies. Valid values are:  \n- 5xx: Loadbalancer will attempt a retry if the backend service responds with any 5xx response code, or if the backend service does not respond at all, example: disconnects, reset, read timeout, connection failure, and refused streams. \n- gateway-error: Similar to 5xx, but only applies to response codes 502, 503 or 504.\n- \n- connect-failure: Loadbalancer will retry on failures connecting to backend services, for example due to connection timeouts. \n- retriable-4xx: Loadbalancer will retry for retriable 4xx response codes. Currently the only retriable error supported is 409. \n- refused-stream:Loadbalancer will retry if the backend service resets the stream with a REFUSED_STREAM error code. This reset type indicates that it is safe to retry. \n- cancelledLoadbalancer will retry if the gRPC status code in the response header is set to cancelled \n- deadline-exceeded: Loadbalancer will retry if the gRPC status code in the response header is set to deadline-exceeded \n- resource-exhausted: Loadbalancer will retry if the gRPC status code in the response header is set to resource-exhausted \n- unavailable: Loadbalancer will retry if the gRPC status code in the response header is set to unavailable",
+     "description": "Specifies one or more conditions when this retry policy applies. Valid values are:  \n- 5xx: Retry will be attempted if the instance or endpoint responds with any 5xx response code, or if the instance or endpoint does not respond at all, example: disconnects, reset, read timeout, connection failure, and refused streams. \n- gateway-error: Similar to 5xx, but only applies to response codes 502, 503 or 504.\n- \n- connect-failure: A retry will be attempted on failures connecting to the instance or endpoint, for example due to connection timeouts. \n- retriable-4xx: A retry will be attempted if the instance or endpoint responds with a retriable 4xx response code. Currently the only retriable error supported is 409. \n- refused-stream: A retry will be attempted if the instance or endpoint resets the stream with a REFUSED_STREAM error code. This reset type indicates that it is safe to retry. \n- cancelled: A retry will be attempted if the gRPC status code in the response header is set to cancelled. \n- deadline-exceeded: A retry will be attempted if the gRPC status code in the response header is set to deadline-exceeded. \n- internal: A retry will be attempted if the gRPC status code in the response header is set to internal. \n- resource-exhausted: A retry will be attempted if the gRPC status code in the response header is set to resource-exhausted. \n- unavailable: A retry will be attempted if the gRPC status code in the response header is set to unavailable.",
      "items": {
       "type": "string"
      }
@@ -37942,6 +37956,7 @@
   "ZoneInstantSnapshotsExportRequest": {
    "id": "ZoneInstantSnapshotsExportRequest",
    "type": "object",
+   "description": "TODO(b/181373164): Remove ZoneInstantSnapshotsExportRequest after switching to InstantSnapshotsExportRequest.",
    "properties": {
     "exportParams": {
      "$ref": "InstantSnapshotExportParams",

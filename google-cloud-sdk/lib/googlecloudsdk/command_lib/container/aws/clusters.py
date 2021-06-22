@@ -102,23 +102,24 @@ class Client(object):
     c.awsRegion = args.aws_region
 
     cp = self._AddAwsControlPlane(c)
-    cp.subnetIds.extend(args.subnet_id)
+    cp.subnetIds.extend(args.subnet_ids)
     cp.iamInstanceProfile = args.iam_instance_profile
     cp.version = args.cluster_version
     cp.instanceType = args.instance_type
     cp.mainVolume = self._CreateAwsVolumeTemplate(args.main_volume_size)
     cp.rootVolume = self._CreateAwsVolumeTemplate(args.root_volume_size)
     cp.databaseEncryption = self._CreateAwsDatabaseEncryption(
-        args.database_encryption_key)
+        args.database_encryption_kms_key_arn)
     cp.awsServicesAuthentication = self._CreateAwsServicesAuthentication(
         args.role_arn, args.role_session_name)
-    cp.sshConfig = self._CreateAwsSshConfig(args.key_pair_name)
+    cp.sshConfig = self._CreateAwsSshConfig(args.ssh_ec2_key_pair)
 
     net = self._AddAwsNetworking(c)
     net.vpcId = args.vpc_id
-    net.podAddressCidrBlocks.append(args.cluster_ipv4_cidr)
-    net.serviceAddressCidrBlocks.append(args.service_ipv4_cidr)
-    net.serviceLoadBalancerSubnetIds.extend(args.services_lb_subnet_id)
+    net.podAddressCidrBlocks.append(args.pod_address_cidr_blocks)
+    net.serviceAddressCidrBlocks.append(args.service_address_cidr_blocks)
+    net.serviceLoadBalancerSubnetIds.extend(
+        args.service_load_balancer_subnet_ids)
 
     if args.tags:
       tag_type = type(cp).TagsValue.AdditionalProperty

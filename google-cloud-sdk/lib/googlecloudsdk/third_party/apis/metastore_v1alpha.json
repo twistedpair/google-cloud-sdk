@@ -711,6 +711,12 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "endTime": {
+          "description": "Output only. The time when the metadata import finished.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
         "state": {
           "description": "Output only. The current state of the metadata import.",
           "readOnly": true,

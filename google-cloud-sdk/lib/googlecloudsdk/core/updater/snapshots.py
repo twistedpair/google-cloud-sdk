@@ -602,7 +602,10 @@ class ComponentSnapshot(object):
 
     invalid_seeds = set()
     for c_id in component_ids:
-      if c_id in self.components and self.components[c_id].platform_required:
+      if (c_id in self.components and
+          not self.components[c_id].platform.architectures and
+          not self.components[c_id].platform.operating_systems and
+          self.components[c_id].platform_required):
         deps = self.DependencyClosureForComponents(
             [c_id], platform_filter=platform_filter)
         qualified = [d for d in deps if str(d).startswith('{}-'.format(c_id))]
@@ -710,7 +713,11 @@ class ComponentSnapshotDiff(object):
                       'first by running the command: '
                       'softwareupdate --install-rosetta.'
                       .format(', '.join(arm_x86_ids)))
-          return invalid_seeds | arm_x86_ids | missing_platform
+          invalid_seeds |= arm_x86_ids
+    if missing_platform:
+      log.warning(
+          'The platform specific binary does not exist for components [{}].'
+          .format(', '.join(missing_platform)))
     return invalid_seeds | missing_platform
 
   def AllDiffs(self):
@@ -877,6 +884,14 @@ class ComponentSnapshotDiff(object):
           platform_filter=self.__platform_filter)
       all_required |= remote_connected & set(installed_components)
       all_required = self.FilterDuplicatesArm(all_required)
+
+      dep_missing_platform = self.latest.CheckMissingPlatformExecutable(
+          all_required, self.DARWIN_X86_64)
+      if dep_missing_platform:
+        log.warning(
+            'The platform specific binary does not exist for components [{}].'
+            .format(', '.join(dep_missing_platform)))
+        all_required -= dep_missing_platform
     else:
       local_connected = self.current.ConnectedComponents(
           update_seed, platform_filter=self.__platform_filter)
@@ -892,6 +907,14 @@ class ComponentSnapshotDiff(object):
           local_connected | set(update_seed),
           platform_filter=self.__platform_filter)
       all_required |= remote_connected & set(installed_components)
+
+      dep_missing_platform = self.latest.CheckMissingPlatformExecutable(
+          all_required, self.__platform_filter)
+      if dep_missing_platform:
+        log.warning(
+            'The platform specific binary does not exist for components [{}].'
+            .format(', '.join(dep_missing_platform)))
+        all_required -= dep_missing_platform
 
     different = self.__new_components | self.__updated_components
 

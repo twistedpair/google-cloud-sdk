@@ -4055,6 +4055,13 @@ class GoogleCloudDialogflowCxV3Fulfillment(_messages.Message):
   Fields:
     conditionalCases: Conditional cases for this fulfillment.
     messages: The list of rich message responses to present to the user.
+    returnPartialResponses: Whether Dialogflow should return currently queued
+      fulfillment response messages in streaming APIs. If a webhook is
+      specified, it happens before Dialogflow invokes webhook. Warning: 1)
+      This flag only affects streaming API. Responses are still queued and
+      returned once in non-streaming API. 2) The flag can be enabled in any
+      fulfillment but only the first 3 partial responses will be returned. You
+      may only want to apply it to fulfillments that have slow webhooks.
     setParameterActions: Set parameter values before executing the webhook.
     tag: The tag used by the webhook to identify which fulfillment is being
       called. This field is required if `webhook` is specified.
@@ -4064,9 +4071,10 @@ class GoogleCloudDialogflowCxV3Fulfillment(_messages.Message):
 
   conditionalCases = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentConditionalCases', 1, repeated=True)
   messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 2, repeated=True)
-  setParameterActions = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentSetParameterAction', 3, repeated=True)
-  tag = _messages.StringField(4)
-  webhook = _messages.StringField(5)
+  returnPartialResponses = _messages.BooleanField(3)
+  setParameterActions = _messages.MessageField('GoogleCloudDialogflowCxV3FulfillmentSetParameterAction', 4, repeated=True)
+  tag = _messages.StringField(5)
+  webhook = _messages.StringField(6)
 
 
 class GoogleCloudDialogflowCxV3FulfillmentConditionalCases(_messages.Message):
@@ -5926,6 +5934,13 @@ class GoogleCloudDialogflowCxV3beta1Fulfillment(_messages.Message):
   Fields:
     conditionalCases: Conditional cases for this fulfillment.
     messages: The list of rich message responses to present to the user.
+    returnPartialResponses: Whether Dialogflow should return currently queued
+      fulfillment response messages in streaming APIs. If a webhook is
+      specified, it happens before Dialogflow invokes webhook. Warning: 1)
+      This flag only affects streaming API. Responses are still queued and
+      returned once in non-streaming API. 2) The flag can be enabled in any
+      fulfillment but only the first 3 partial responses will be returned. You
+      may only want to apply it to fulfillments that have slow webhooks.
     setParameterActions: Set parameter values before executing the webhook.
     tag: The tag used by the webhook to identify which fulfillment is being
       called. This field is required if `webhook` is specified.
@@ -5935,9 +5950,10 @@ class GoogleCloudDialogflowCxV3beta1Fulfillment(_messages.Message):
 
   conditionalCases = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCases', 1, repeated=True)
   messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 2, repeated=True)
-  setParameterActions = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentSetParameterAction', 3, repeated=True)
-  tag = _messages.StringField(4)
-  webhook = _messages.StringField(5)
+  returnPartialResponses = _messages.BooleanField(3)
+  setParameterActions = _messages.MessageField('GoogleCloudDialogflowCxV3beta1FulfillmentSetParameterAction', 4, repeated=True)
+  tag = _messages.StringField(5)
+  webhook = _messages.StringField(6)
 
 
 class GoogleCloudDialogflowCxV3beta1FulfillmentConditionalCases(_messages.Message):
@@ -7795,12 +7811,36 @@ class GoogleCloudDialogflowV2AutomatedAgentConfig(_messages.Message):
 class GoogleCloudDialogflowV2AutomatedAgentReply(_messages.Message):
   r"""Represents a response from an automated agent.
 
+  Enums:
+    AutomatedAgentReplyTypeValueValuesEnum: AutomatedAgentReply type.
+
   Fields:
+    allowCancellation: Indicates whether the partial automated agent reply is
+      interruptible when a later reply message arrives. e.g. if the agent
+      specified some music as partial response, it can be cancelled.
+    automatedAgentReplyType: AutomatedAgentReply type.
     detectIntentResponse: Response of the Dialogflow Sessions.DetectIntent
       call.
   """
 
-  detectIntentResponse = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentResponse', 1)
+  class AutomatedAgentReplyTypeValueValuesEnum(_messages.Enum):
+    r"""AutomatedAgentReply type.
+
+    Values:
+      AUTOMATED_AGENT_REPLY_TYPE_UNSPECIFIED: Not specified. This should never
+        happen.
+      PARTIAL: Partial reply. e.g. Aggregated responses in a `Fulfillment`
+        that enables `return_partial_response` can be returned as partial
+        reply. WARNING: partial reply is not eligible for barge-in.
+      FINAL: Final reply.
+    """
+    AUTOMATED_AGENT_REPLY_TYPE_UNSPECIFIED = 0
+    PARTIAL = 1
+    FINAL = 2
+
+  allowCancellation = _messages.BooleanField(1)
+  automatedAgentReplyType = _messages.EnumField('AutomatedAgentReplyTypeValueValuesEnum', 2)
+  detectIntentResponse = _messages.MessageField('GoogleCloudDialogflowV2DetectIntentResponse', 3)
 
 
 class GoogleCloudDialogflowV2BatchCreateEntitiesRequest(_messages.Message):

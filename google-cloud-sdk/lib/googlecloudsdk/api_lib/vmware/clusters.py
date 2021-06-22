@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*- # # Copyright 2020 Google LLC. All Rights Reserved.
-# Copyright 2020 Google LLC. All Rights Reserved.
+# -*- coding: utf-8 -*- #
+# Copyright 2021 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.vmware import util
-from googlecloudsdk.command_lib.vmware import flags
 
 
 class ClustersClient(util.VmwareClientBase):
@@ -28,42 +27,42 @@ class ClustersClient(util.VmwareClientBase):
 
   def __init__(self):
     super(ClustersClient, self).__init__()
-    self.service = self.client.projects_locations_clusterGroups_clusters
+    self.service = self.client.projects_locations_privateClouds_clusters
 
   def Get(self, resource):
-    request = self.messages.SddcProjectsLocationsClusterGroupsClustersGetRequest(
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersGetRequest(
         name=resource.RelativeName())
     return self.service.Get(request)
 
-  def Create(self, resource, node_count, node_type, zone, labels=None):
+  def Create(self,
+             resource,
+             node_type=None,
+             node_count=None):
     parent = resource.Parent().RelativeName()
     cluster_id = resource.Name()
     cluster = self.messages.Cluster(
-        nodeCount=node_count, defaultZone=zone, nodeType=node_type)
-    flags.AddLabelsToMessage(labels, cluster)
-
-    request = self.messages.SddcProjectsLocationsClusterGroupsClustersCreateRequest(
+        nodeCount=node_count, nodeTypeId=node_type)
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(
         parent=parent,
         cluster=cluster,
-        clusterId=cluster_id,
-        managementCluster=True)
+        clusterId=cluster_id)
 
     return self.service.Create(request)
 
   def Delete(self, resource):
-    request = self.messages.SddcProjectsLocationsClusterGroupsClustersDeleteRequest(
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersDeleteRequest(
         name=resource.RelativeName())
     return self.service.Delete(request)
 
   def List(self,
-           cluster_group_resource,
+           private_cloud_resource,
            filter_expression=None,
            limit=None,
            page_size=None,
            sort_by=None):
-    cluster_group = cluster_group_resource.RelativeName()
-    request = self.messages.SddcProjectsLocationsClusterGroupsClustersListRequest(
-        parent=cluster_group, filter=filter_expression)
+    private_cloud = private_cloud_resource.RelativeName()
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersListRequest(
+        parent=private_cloud, filter=filter_expression)
     if page_size:
       request.page_size = page_size
     return list_pager.YieldFromList(
@@ -74,18 +73,12 @@ class ClustersClient(util.VmwareClientBase):
         batch_size=page_size,
         field='clusters')
 
-  def AddNodes(self, resource, node_count):
-    cluster = self.Get(resource)
-    request = self.messages.SddcProjectsLocationsClusterGroupsClustersAddNodesRequest(
-        cluster=resource.RelativeName(),
-        addNodesRequest=self.messages.AddNodesRequest(
-            nodeCount=cluster.nodeCount + node_count))
-    return self.service.AddNodes(request)
-
-  def RemoveNodes(self, resource, node_count):
-    cluster = self.Get(resource)
-    request = self.messages.SddcProjectsLocationsClusterGroupsClustersRemoveNodesRequest(
-        cluster=resource.RelativeName(),
-        removeNodesRequest=self.messages.RemoveNodesRequest(
-            nodeCount=cluster.nodeCount - node_count))
-    return self.service.RemoveNodes(request)
+  def Update(self,
+             resource,
+             node_count=None):
+    cluster = self.messages.Cluster(
+        nodeCount=node_count)
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest(
+        name=resource.RelativeName(),
+        cluster=cluster)
+    return self.service.Patch(request)

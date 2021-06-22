@@ -1750,6 +1750,36 @@ class EphemeralStorageConfig(_messages.Message):
   localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class Filter(_messages.Message):
+  r"""Allows filtering to one or more specific event types. If event types are
+  present, those and only those event types will be transmitted to the
+  cluster. Other types will be skipped. If no filter is specified, or no event
+  types are present, all event types will be sent
+
+  Enums:
+    EventTypeValueListEntryValuesEnum:
+
+  Fields:
+    eventType: Event types to allowlist.
+  """
+
+  class EventTypeValueListEntryValuesEnum(_messages.Enum):
+    r"""EventTypeValueListEntryValuesEnum enum type.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Not set, will be ignored.
+      UPGRADE_AVAILABLE_EVENT: Corresponds with UpgradeAvailableEvent.
+      UPGRADE_EVENT: Corresponds with UpgradeEvent.
+      SECURITY_BULLETIN_EVENT: Corresponds with SecurityBulletinEvent.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    UPGRADE_AVAILABLE_EVENT = 1
+    UPGRADE_EVENT = 2
+    SECURITY_BULLETIN_EVENT = 3
+
+  eventType = _messages.EnumField('EventTypeValueListEntryValuesEnum', 1, repeated=True)
+
+
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
   r"""Configuration for the Compute Engine PD CSI driver.
 
@@ -3483,12 +3513,16 @@ class PubSub(_messages.Message):
 
   Fields:
     enabled: Enable notifications for Pub/Sub.
+    filter: Allows filtering to one or more specific event types. If no filter
+      is specified, or if a filter is specified with no event types, all event
+      types will be sent
     topic: The desired Pub/Sub topic to which notifications will be sent by
       GKE. Format is `projects/{project}/topics/{topic}`.
   """
 
   enabled = _messages.BooleanField(1)
-  topic = _messages.StringField(2)
+  filter = _messages.MessageField('Filter', 2)
+  topic = _messages.StringField(3)
 
 
 class RecurringTimeWindow(_messages.Message):

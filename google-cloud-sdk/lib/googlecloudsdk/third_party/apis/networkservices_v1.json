@@ -1023,6 +1023,35 @@
         }
       }
     },
+    "InvalidateCacheRequest": {
+      "id": "InvalidateCacheRequest",
+      "description": "Request used by the InvalidateCache method.",
+      "type": "object",
+      "properties": {
+        "host": {
+          "description": "The hostname to invalidate against. You can specify an exact or wildcard host - e.g. \"video.example.com\" or \"*.example.com\" - based on host component.",
+          "type": "string"
+        },
+        "path": {
+          "description": "The path to invalidate against. You can specify an exact or wildcard path - e.g. \"\/videos\/hls\/139123.mp4\" or \"\/manifests\/*\" - based on path component.",
+          "type": "string"
+        },
+        "cacheTags": {
+          "description": "A list of cache tags used to identify cached objects. Cache tags are specified when the response is first cached, by setting the \"Cache-Tag\" response header at the origin. By default, all objects have a cache tag representing the HTTP status code of the response, the MIME content-type, and the origin. Multiple cache tags in the same revalidation request are treated as Boolean OR - e.g. tag1 OR tag2 OR tag3. If a host and\/or path are also specified, these are treated as Boolean AND with any tags. Up to 10 tags may be specified in a single invalidation request.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "InvalidateCacheResponse": {
+      "id": "InvalidateCacheResponse",
+      "description": "Response used by the InvalidateCache method.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -2075,6 +2104,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single EdgeCacheService."
+                },
+                "invalidateCache": {
+                  "id": "networkservices.projects.locations.edgeCacheServices.invalidateCache",
+                  "path": "v1/{+edgeCacheService}:invalidateCache",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/edgeCacheServices/{edgeCacheServicesId}:invalidateCache",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "edgeCacheService": {
+                      "description": "Required. A name of the EdgeCacheService to apply the invalidation request to. Must be in the format `projects\/*\/locations\/global\/edgeCacheServices\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/edgeCacheServices\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "edgeCacheService"
+                  ],
+                  "request": {
+                    "$ref": "InvalidateCacheRequest"
+                  },
+                  "response": {
+                    "$ref": "InvalidateCacheResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sends a cache invalidation request."
                 },
                 "setIamPolicy": {
                   "id": "networkservices.projects.locations.edgeCacheServices.setIamPolicy",

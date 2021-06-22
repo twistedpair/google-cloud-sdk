@@ -774,6 +774,9 @@ class GenerateUploadUrlResponse(_messages.Message):
 class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
+  Messages:
+    RequestResourceValue: The original request that started the operation.
+
   Fields:
     apiVersion: API version used to start the operation.
     cancelRequested: Identifies whether the user has requested cancellation of
@@ -782,18 +785,46 @@ class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
       to `Code.CANCELLED`.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
+    requestResource: The original request that started the operation.
     statusDetail: Human-readable status of the operation, if any.
     target: Server-defined resource path for the target of the operation.
     verb: Name of the verb executed by the operation.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestResourceValue(_messages.Message):
+    r"""The original request that started the operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestResourceValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestResourceValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   apiVersion = _messages.StringField(1)
   cancelRequested = _messages.BooleanField(2)
   createTime = _messages.StringField(3)
   endTime = _messages.StringField(4)
-  statusDetail = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
+  requestResource = _messages.MessageField('RequestResourceValue', 5)
+  statusDetail = _messages.StringField(6)
+  target = _messages.StringField(7)
+  verb = _messages.StringField(8)
 
 
 class HttpsTrigger(_messages.Message):

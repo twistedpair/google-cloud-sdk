@@ -295,6 +295,15 @@ def AddNoTrafficFlag(parser):
       'command with `--to-latest`.')
 
 
+def AddCpuThrottlingFlag(parser):
+  """Adds flag for deploying a Cloud Run service with CPU throttling."""
+  parser.add_argument(
+      '--cpu-throttling',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Whether to throttle the CPU when the container is not actively'
+      'serving requests.')
+
+
 def AddDeployTagFlag(parser):
   """Add flag to specify a tag for the new revision."""
   parser.add_argument(
@@ -1341,6 +1350,9 @@ def GetServiceConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'tag'):
     # MUST be after 'revision_suffix' change
     changes.append(config_changes.TagOnDeployChange(args.tag))
+  if FlagIsExplicitlySet(args, 'cpu_throttling'):
+    changes.append(
+        config_changes.CpuThrottlingChange(throttling=args.cpu_throttling))
 
   return changes
 
@@ -1873,7 +1885,11 @@ def AddSourceAndImageFlags(parser):
   AddImageArg(group, required=False)
   group.add_argument(
       '--source',
-      help='The location of the source to build. The location can be a '
+      help='The location of the source to build. If a Dockerfile is present in '
+      'the source code directory, it will be built using that Dockerfile, '
+      'otherwise it will use Google Cloud buildpacks. '
+      'See https://cloud.google.com/run/docs/deploying-source-code '
+      'for more details. The location can be a '
       'directory on a local disk or a gzipped archive file (.tar.gz) in '
       'Google Cloud Storage. If the source is a local directory, this '
       'command skips the files specified in the `--ignore-file`. If '

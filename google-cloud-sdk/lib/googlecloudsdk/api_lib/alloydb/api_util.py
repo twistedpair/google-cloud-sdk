@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Common utility functions for getting the Alloydb API client."""
+"""Common utility functions for getting the alloydb API client."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -26,10 +26,10 @@ API_VERSION_DEFAULT = 'v1alpha1'
 
 
 class AlloyDBClient(object):
-  """Wrapper for Alloydb API client and associated resources."""
+  """Wrapper for alloydb API client and associated resources."""
 
   def __init__(self, api_version):
-    self.alloydb_client = apis.GetClientInstance('alloydbadmin', api_version)
+    self.alloydb_client = apis.GetClientInstance('alloydb', api_version)
     self.alloydb_messages = self.alloydb_client.MESSAGES_MODULE
     self.resource_parser = resources.Registry()
-    self.resource_parser.RegisterApiByName('alloydbadmin', api_version)
+    self.resource_parser.RegisterApiByName('alloydb', api_version)

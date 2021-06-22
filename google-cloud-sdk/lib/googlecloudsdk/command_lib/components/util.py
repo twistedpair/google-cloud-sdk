@@ -47,6 +47,18 @@ def GetUpdateManager(group_args):
 
   platform = platforms.Platform.Current(os_override, arch_override)
 
+  # darwin-arm machines thats are running a darwin_x86_64 python binary will
+  # report arch as darwin_x86_64 because Architecture.Current() uses
+  # platform.machine() as the source of truth. Here in the UpdateManager we want
+  # to know the "real" truth so we call IsActuallyM1ArmArchitecture as the
+  # source of truth which breaks out of the python env to see the underlying
+  # arch.
+  if not os_override and not arch_override:
+    if (platform.operating_system == platforms.OperatingSystem.MACOSX and
+        platform.architecture == platforms.Architecture.x86_64):
+      if platforms.Platform.IsActuallyM1ArmArchitecture():
+        platform.architecture = platforms.Architecture.arm
+
   root = (files.ExpandHomeDir(group_args.sdk_root_override)
           if group_args.sdk_root_override else None)
   url = (files.ExpandHomeDir(group_args.snapshot_url_override)

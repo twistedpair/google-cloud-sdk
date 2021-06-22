@@ -1074,6 +1074,41 @@
           "type": "string"
         }
       }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Contains metadata for longrunning operation for the edit Metrics Scope endpoints.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Current state of the batch operation.",
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid.",
+            "Request has been received.",
+            "Request is actively being processed.",
+            "The batch processing is done.",
+            "The batch processing was cancelled."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATED",
+            "RUNNING",
+            "DONE",
+            "CANCELLED"
+          ]
+        },
+        "createTime": {
+          "description": "The time when the batch request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "The time when the operation result was last updated.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
     }
   },
   "resources": {

@@ -369,6 +369,10 @@
           "description": "Required. The number of nodes in the pool.",
           "type": "integer",
           "format": "int32"
+        },
+        "machineFilter": {
+          "description": "Only machines matching this filter will be allowed to join the node pool. The filtering language accepts strings like \"name=\", and is documented in more detail in [AIP-160](https:\/\/google.aip.dev\/160).",
+          "type": "string"
         }
       }
     },

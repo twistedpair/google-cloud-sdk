@@ -1152,3 +1152,32 @@ def _ConvertGoogleAuthCredentialsToADC(credentials):
     }
   raise ADCError('Cannot convert credentials of type {} to application '
                  'default credentials.'.format(type(credentials)))
+
+
+GOOGLE_AUTH_DEFAULT = None
+VERBOSITY_MUTED = log.VALID_VERBOSITY_STRINGS['none']
+
+
+def GetGoogleAuthDefault():
+  """Get the google.auth._default module.
+
+  All messages from logging and warnings are muted because they are for
+  ADC consumers (client libraries). The message are irrelevant and confusing to
+  gcloud auth application-default users. gcloud auth application-default
+  are the ADC producer.
+
+  Returns:
+    The google.auth._default module with logging/warnings muted.
+  """
+  global GOOGLE_AUTH_DEFAULT
+  if GOOGLE_AUTH_DEFAULT:
+    return GOOGLE_AUTH_DEFAULT
+  # pylint: disable=g-import-not-at-top
+  from google.auth import _default
+  import warnings
+  # pylint: enable=g-import-not-at-top
+  warnings.filterwarnings(
+      'ignore', category=Warning, module='google.auth._default')
+  _default._LOGGER.setLevel(VERBOSITY_MUTED)  # pylint: disable=protected-access
+  GOOGLE_AUTH_DEFAULT = _default
+  return GetGoogleAuthDefault()

@@ -649,22 +649,22 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
       STATE_UNSPECIFIED: Not set.
       PROVISIONING: The PROVISIONING state indicates the cluster is being
         created.
-      ACTIVE: The ACTIVE state indicates the cluster has been created and is
+      RUNNING: The RUNNING state indicates the cluster has been created and is
         fully usable.
-      UPDATING: The UPDATING state indicates that the cluster is being
-        updated.
+      RECONCILING: The RECONCILING state indicates that the cluster is being
+        reconciled.
       STOPPING: The STOPPING state indicates the cluster is being deleted.
-      FAILED: The FAILED state indicates the cluster is in a broken
+      ERROR: The ERROR state indicates the cluster is in a broken
         unrecoverable state.
       DEGRADED: The DEGRADED state indicates the cluster requires user action
         to restore full functionality.
     """
     STATE_UNSPECIFIED = 0
     PROVISIONING = 1
-    ACTIVE = 2
-    UPDATING = 3
+    RUNNING = 2
+    RECONCILING = 3
     STOPPING = 4
-    FAILED = 5
+    ERROR = 5
     DEGRADED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -856,20 +856,10 @@ class GoogleCloudGkemulticloudV1AwsK8sVersionInfo(_messages.Message):
   version = _messages.StringField(1)
 
 
-class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
-  r"""A GKE node pool running on AWS infrastructure.
-
-  Enums:
-    StateValueValuesEnum: Output only. The lifecycle state of the node pool.
+class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
+  r"""Parameters that describe the nodes in a cluster.
 
   Messages:
-    AnnotationsValue: Annotations on the node pool. This field has the same
-      restrictions as Kubernetes annotations. The total size of all keys and
-      values combined is limited to 256k. Key can have 2 segments: prefix
-      (optional) and name (required), separated by a slash (/). Prefix must be
-      a DNS subdomain. Name must be 63 characters or less, begin and end with
-      alphanumerics, with dashes (-), underscores (_), dots (.), and
-      alphanumerics between.
     LabelsValue: The initial labels assigned to nodes of this node pool. An
       object containing a list of "key": value pairs. Example: { "name":
       "wrench", "mass": "1.3kg", "count": "3" }.
@@ -879,30 +869,12 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
       to 255 Unicode characters.
 
   Fields:
-    annotations: Annotations on the node pool. This field has the same
-      restrictions as Kubernetes annotations. The total size of all keys and
-      values combined is limited to 256k. Key can have 2 segments: prefix
-      (optional) and name (required), separated by a slash (/). Prefix must be
-      a DNS subdomain. Name must be 63 characters or less, begin and end with
-      alphanumerics, with dashes (-), underscores (_), dots (.), and
-      alphanumerics between.
-    autoscaling: Autoscaler configuration for this NodePool.
-    createTime: Output only. The time at which this node pool was created.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding. Allows clients to
-      perform consistent read-modify-writes through optimistic concurrency
-      control.
     iamInstanceProfile: The name of the AWS IAM role assigned to nodes in the
       pool.
     instanceType: The AWS instance type.
     labels: The initial labels assigned to nodes of this node pool. An object
       containing a list of "key": value pairs. Example: { "name": "wrench",
       "mass": "1.3kg", "count": "3" }.
-    maxPodsPerNode: The maximum number of pods per node.
-    name: The resource name of this node pool.
-    reconciling: Output only. If set, there are currently changes in flight to
-      the node pool.
     rootVolume: Template for the root volume provisioned for node pool nodes.
       Volumes will be provisioned in the availability zone assigned to the
       node pool subnet.
@@ -910,74 +882,12 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
       this pool. The manager will automatically create security groups with
       minimum rules needed for a functioning cluster.
     sshConfig: The SSH configuration.
-    state: Output only. The lifecycle state of the node pool.
-    subnetId: The subnet where the node pool node run.
     tags: Key/value metadata to assign to each underlying AWS resource.
       Specify at most 50 pairs containing alphanumerics, spaces, and symbols
       (.+-=_:@/). Keys can be up to 127 Unicode characters. Values can be up
       to 255 Unicode characters.
     taints: The initial taints assigned to nodes of this node pool.
-    uid: Output only. The unique identifier of the node pool.
-    updateTime: Output only. The time at which this node pool was last
-      updated.
-    version: The kubernetes version (e.g. 1.16.9-gke.12) running on this node
-      pool.
   """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The lifecycle state of the node pool.
-
-    Values:
-      STATE_UNSPECIFIED: Not set.
-      PROVISIONING: The PROVISIONING state indicates the node pool is being
-        created.
-      ACTIVE: The ACTIVE state indicates the node pool has been created and is
-        fully usable.
-      UPDATING: The UPDATING state indicates that the node pool is being
-        updated.
-      STOPPING: The STOPPING state indicates the node pool is being deleted.
-      FAILED: The FAILED state indicates the node pool is in a broken
-        unrecoverable state.
-      DEGRADED: The DEGRADED state indicates the node pool requires user
-        action to restore full functionality.
-    """
-    STATE_UNSPECIFIED = 0
-    PROVISIONING = 1
-    ACTIVE = 2
-    UPDATING = 3
-    STOPPING = 4
-    FAILED = 5
-    DEGRADED = 6
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Annotations on the node pool. This field has the same restrictions as
-    Kubernetes annotations. The total size of all keys and values combined is
-    limited to 256k. Key can have 2 segments: prefix (optional) and name
-    (required), separated by a slash (/). Prefix must be a DNS subdomain. Name
-    must be 63 characters or less, begin and end with alphanumerics, with
-    dashes (-), underscores (_), dots (.), and alphanumerics between.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1032,26 +942,129 @@ class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  iamInstanceProfile = _messages.StringField(1)
+  instanceType = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 4)
+  securityGroupIds = _messages.StringField(5, repeated=True)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 6)
+  tags = _messages.MessageField('TagsValue', 7)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodeTaint', 8, repeated=True)
+
+
+class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
+  r"""A GKE node pool running on AWS infrastructure.
+
+  Enums:
+    StateValueValuesEnum: Output only. The lifecycle state of the node pool.
+
+  Messages:
+    AnnotationsValue: Annotations on the node pool. This field has the same
+      restrictions as Kubernetes annotations. The total size of all keys and
+      values combined is limited to 256k. Key can have 2 segments: prefix
+      (optional) and name (required), separated by a slash (/). Prefix must be
+      a DNS subdomain. Name must be 63 characters or less, begin and end with
+      alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+
+  Fields:
+    annotations: Annotations on the node pool. This field has the same
+      restrictions as Kubernetes annotations. The total size of all keys and
+      values combined is limited to 256k. Key can have 2 segments: prefix
+      (optional) and name (required), separated by a slash (/). Prefix must be
+      a DNS subdomain. Name must be 63 characters or less, begin and end with
+      alphanumerics, with dashes (-), underscores (_), dots (.), and
+      alphanumerics between.
+    autoscaling: Autoscaler configuration for this NodePool.
+    config: The node configuration of the pool.
+    createTime: Output only. The time at which this node pool was created.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding. Allows clients to
+      perform consistent read-modify-writes through optimistic concurrency
+      control.
+    maxPodsConstraint: The constraint on the maximum number of pods that can
+      be run simultaneously on a node in the node pool.
+    name: The resource name of this node pool.
+    reconciling: Output only. If set, there are currently changes in flight to
+      the node pool.
+    state: Output only. The lifecycle state of the node pool.
+    subnetId: The subnet where the node pool node run.
+    uid: Output only. The unique identifier of the node pool.
+    updateTime: Output only. The time at which this node pool was last
+      updated.
+    version: The kubernetes version (e.g. 1.16.9-gke.12) running on this node
+      pool.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The lifecycle state of the node pool.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      PROVISIONING: The PROVISIONING state indicates the node pool is being
+        created.
+      RUNNING: The RUNNING state indicates the node pool has been created and
+        is fully usable.
+      RECONCILING: The RECONCILING state indicates that the node pool is being
+        reconciled.
+      STOPPING: The STOPPING state indicates the node pool is being deleted.
+      ERROR: The ERROR state indicates the node pool is in a broken
+        unrecoverable state.
+      DEGRADED: The DEGRADED state indicates the node pool requires user
+        action to restore full functionality.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    RUNNING = 2
+    RECONCILING = 3
+    STOPPING = 4
+    ERROR = 5
+    DEGRADED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations on the node pool. This field has the same restrictions as
+    Kubernetes annotations. The total size of all keys and values combined is
+    limited to 256k. Key can have 2 segments: prefix (optional) and name
+    (required), separated by a slash (/). Prefix must be a DNS subdomain. Name
+    must be 63 characters or less, begin and end with alphanumerics, with
+    dashes (-), underscores (_), dots (.), and alphanumerics between.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   autoscaling = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling', 2)
-  createTime = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  iamInstanceProfile = _messages.StringField(5)
-  instanceType = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  maxPodsPerNode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  name = _messages.StringField(9)
-  reconciling = _messages.BooleanField(10)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 11)
-  securityGroupIds = _messages.StringField(12, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  subnetId = _messages.StringField(15)
-  tags = _messages.MessageField('TagsValue', 16)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodeTaint', 17, repeated=True)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  version = _messages.StringField(20)
+  config = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodeConfig', 3)
+  createTime = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 6)
+  name = _messages.StringField(7)
+  reconciling = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  subnetId = _messages.StringField(10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  version = _messages.StringField(13)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling(_messages.Message):
@@ -1295,22 +1308,22 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
       STATE_UNSPECIFIED: Not set.
       PROVISIONING: The PROVISIONING state indicates the cluster is being
         created.
-      ACTIVE: The ACTIVE state indicates the cluster has been created and is
+      RUNNING: The RUNNING state indicates the cluster has been created and is
         fully usable.
-      UPDATING: The UPDATING state indicates that the cluster is being
-        updated.
+      RECONCILING: The RECONCILING state indicates that the cluster is being
+        reconciled.
       STOPPING: The STOPPING state indicates the cluster is being deleted.
-      FAILED: The FAILED state indicates the cluster is in a broken
+      ERROR: The ERROR state indicates the cluster is in a broken
         unrecoverable state.
       DEGRADED: The DEGRADED state indicates the cluster requires user action
         to restore full functionality.
     """
     STATE_UNSPECIFIED = 0
     PROVISIONING = 1
-    ACTIVE = 2
-    UPDATING = 3
+    RUNNING = 2
+    RECONCILING = 3
     STOPPING = 4
-    FAILED = 5
+    ERROR = 5
     DEGRADED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1502,6 +1515,51 @@ class GoogleCloudGkemulticloudV1AzureK8sVersionInfo(_messages.Message):
   version = _messages.StringField(1)
 
 
+class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
+  r"""Parameters that describe the nodes in a cluster.
+
+  Messages:
+    TagsValue: Tags to apply on the node pool.
+
+  Fields:
+    rootVolume: Template for the volume provisioned for nodepool VMSS storage.
+    sshConfig: The SSH configuration.
+    tags: Tags to apply on the node pool.
+    vmSize: The Azure VM size name. Example: Standard_DS2_v2. For available VM
+      sizes, see https://docs.microsoft.com/en-us/azure/virtual-machines/vm-
+      naming-conventions.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Tags to apply on the node pool.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 1)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 2)
+  tags = _messages.MessageField('TagsValue', 3)
+  vmSize = _messages.StringField(4)
+
+
 class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
   r"""A GKE node pool running on Azure infrastructure.
 
@@ -1516,7 +1574,6 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
       a DNS subdomain. Name must be 63 characters or less, begin and end with
       alphanumerics, with dashes (-), underscores (_), dots (.), and
       alphanumerics between.
-    TagsValue: Tags to apply on the node pool.
 
   Fields:
     annotations: Annotations on the node pool. This field has the same
@@ -1527,30 +1584,26 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
       alphanumerics, with dashes (-), underscores (_), dots (.), and
       alphanumerics between.
     autoscaling: Autoscaler configuration for this NodePool.
+    config: The node configuration of the pool.
     createTime: Output only. The time at which this node pool was created.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding. Allows clients to
       perform consistent read-modify-writes through optimistic concurrency
       control.
-    maxPodsPerNode: The maximum number of pods per node.
+    maxPodsConstraint: The constraint on the maximum number of pods that can
+      be run simultaneously on a node in the node pool.
     name: The resource name of this node pool.
     reconciling: Output only. If set, there are currently changes in flight to
       the node pool.
-    rootVolume: Template for the volume provisioned for nodepool VMSS storage.
-    sshConfig: The SSH configuration.
     state: Output only. The current state of the node pool.
     subnetId: The ARM ID of the subnet where the node pool VMs run. Make sure
       it's a subnet under the virtual network in the cluster configuration.
-    tags: Tags to apply on the node pool.
     uid: Output only. The unique identifier of the node pool.
     updateTime: Output only. The time at which this node pool was last
       updated.
     version: The kubernetes version (e.g. 1.16.9-gke.12) running on this node
       pool.
-    vmSize: The Azure VM size name. Example: Standard_DS2_v2. For available VM
-      sizes, see https://docs.microsoft.com/en-us/azure/virtual-machines/vm-
-      naming-conventions.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1560,22 +1613,22 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
       STATE_UNSPECIFIED: Not set.
       PROVISIONING: The PROVISIONING state indicates the node pool is being
         created.
-      ACTIVE: The ACTIVE state indicates the node pool has been created and is
-        fully usable.
-      UPDATING: The UPDATING state indicates that the node pool is being
-        updated.
+      RUNNING: The RUNNING state indicates the node pool has been created and
+        is fully usable.
+      RECONCILING: The RECONCILING state indicates that the node pool is being
+        reconciled.
       STOPPING: The STOPPING state indicates the node pool is being deleted.
-      FAILED: The FAILED state indicates the node pool is in a broken
+      ERROR: The ERROR state indicates the node pool is in a broken
         unrecoverable state.
       DEGRADED: The DEGRADED state indicates the node pool requires user
         action to restore full functionality.
     """
     STATE_UNSPECIFIED = 0
     PROVISIONING = 1
-    ACTIVE = 2
-    UPDATING = 3
+    RUNNING = 2
+    RECONCILING = 3
     STOPPING = 4
-    FAILED = 5
+    ERROR = 5
     DEGRADED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1608,46 +1661,19 @@ class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class TagsValue(_messages.Message):
-    r"""Tags to apply on the node pool.
-
-    Messages:
-      AdditionalProperty: An additional property for a TagsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type TagsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a TagsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   annotations = _messages.MessageField('AnnotationsValue', 1)
   autoscaling = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling', 2)
-  createTime = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  maxPodsPerNode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  name = _messages.StringField(6)
-  reconciling = _messages.BooleanField(7)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 8)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  subnetId = _messages.StringField(11)
-  tags = _messages.MessageField('TagsValue', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  version = _messages.StringField(15)
-  vmSize = _messages.StringField(16)
+  config = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodeConfig', 3)
+  createTime = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  maxPodsConstraint = _messages.MessageField('GoogleCloudGkemulticloudV1MaxPodsConstraint', 6)
+  name = _messages.StringField(7)
+  reconciling = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  subnetId = _messages.StringField(10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  version = _messages.StringField(13)
 
 
 class GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling(_messages.Message):
@@ -1844,6 +1870,16 @@ class GoogleCloudGkemulticloudV1ListAzureNodePoolsResponse(_messages.Message):
 
   azureNodePools = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodePool', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudGkemulticloudV1MaxPodsConstraint(_messages.Message):
+  r"""Constraints applied to pods.
+
+  Fields:
+    maxPodsPerNode: Constraint enforced on the max num of pods per node.
+  """
+
+  maxPodsPerNode = _messages.IntegerField(1)
 
 
 class GoogleCloudGkemulticloudV1WorkloadIdentityConfig(_messages.Message):

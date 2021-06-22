@@ -814,19 +814,42 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Messag
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange(_messages.Message):
-  r"""Entitlement change information. Next Id: 7
+  r"""Entitlement change information. Next Id: 8
 
   Enums:
     ChangeStateValueValuesEnum: Output only. State of the change.
+    ChangeStateReasonTypeValueValuesEnum: Output only. Predefined enum types
+      for why this change is in current state.
 
   Fields:
     changeEffectiveTime: Output only. A time at which the change became or
       will become (in case of pending change) effective.
     changeState: Output only. State of the change.
+    changeStateReasonType: Output only. Predefined enum types for why this
+      change is in current state.
     newFlavorExternalName: Output only. Flavor external name after the change.
     oldFlavorExternalName: Output only. Flavor external name before the
       change.
   """
+
+  class ChangeStateReasonTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Predefined enum types for why this change is in current
+    state.
+
+    Values:
+      CHANGE_STATE_REASON_TYPE_UNSPECIFIED: Default value, indicating there is
+        no predefined type for change state reason.
+      CHANGE_STATE_REASON_TYPE_EXPIRED: Change is in current state due to term
+        expiration.
+      CHANGE_STATE_REASON_TYPE_USER_CANCELLED: Change is in current state due
+        to user explicit cancellation.
+      CHANGE_STATE_REASON_TYPE_SYSTEM_CANCELLED: Change is in current state
+        due to system cancellation.
+    """
+    CHANGE_STATE_REASON_TYPE_UNSPECIFIED = 0
+    CHANGE_STATE_REASON_TYPE_EXPIRED = 1
+    CHANGE_STATE_REASON_TYPE_USER_CANCELLED = 2
+    CHANGE_STATE_REASON_TYPE_SYSTEM_CANCELLED = 3
 
   class ChangeStateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the change.
@@ -860,8 +883,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange(_messages.
 
   changeEffectiveTime = _messages.StringField(1)
   changeState = _messages.EnumField('ChangeStateValueValuesEnum', 2)
-  newFlavorExternalName = _messages.StringField(3)
-  oldFlavorExternalName = _messages.StringField(4)
+  changeStateReasonType = _messages.EnumField('ChangeStateReasonTypeValueValuesEnum', 3)
+  newFlavorExternalName = _messages.StringField(4)
+  oldFlavorExternalName = _messages.StringField(5)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementInfo(_messages.Message):

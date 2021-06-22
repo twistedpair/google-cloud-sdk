@@ -81,6 +81,20 @@ def AddSshTunnelArgs(parser, tunnel_through_iap_scope):
       """)
 
 
+def AddIpBasedTunnelArgs(parser):
+  group = parser.add_argument_group()
+  group.add_argument(
+      '--network',
+      default=None,
+      required=True,
+      help='Configures the VPC network to use when connecting via IP.')
+  group.add_argument(
+      '--region',
+      default=None,
+      required=True,
+      help='Configures the region to use when connecting via IP.')
+
+
 def AddProxyServerHelperArgs(parser):
   _AddBaseArgs(parser)
 
@@ -411,16 +425,36 @@ class _StdinSocket(object):
 class _BaseIapTunnelHelper(object):
   """Base helper class for starting IAP tunnel."""
 
-  def __init__(self, args, project, zone, instance, interface, port):
+  def __init__(self, args, project):
     self._project = project
+    self._iap_tunnel_url_override = args.iap_tunnel_url_override
+    self._ignore_certs = args.iap_tunnel_insecure_disable_websocket_cert_check
+
+    self._zone = None
+    self._instance = None
+    self._interface = None
+    self._port = None
+    self._region = None
+    self._network = None
+    self._ip = None
+    self._port = None
+
+    # Means that a ctrl-c was seen in server mode (never true in Stdin mode).
+    self._shutdown = False
+
+  def ConfigureForInstance(self, zone, instance, interface, port):
     self._zone = zone
     self._instance = instance
     self._interface = interface
     self._port = port
-    self._iap_tunnel_url_override = args.iap_tunnel_url_override
-    self._ignore_certs = args.iap_tunnel_insecure_disable_websocket_cert_check
-    # Means that a ctrl-c was seen in server mode (never true in Stdin mode).
-    self._shutdown = False
+
+  def ConfigureForIP(self, zone, region, network, ip, port):
+    # TODO(b/190426150): Remove zone for IP-based connections.
+    self._zone = zone
+    self._region = region
+    self._network = network
+    self._ip = ip
+    self._port = port
 
   def _InitiateWebSocketConnection(self, local_conn, get_access_token_callback):
     tunnel_target = self._GetTunnelTargetInfo()
@@ -442,7 +476,10 @@ class _BaseIapTunnelHelper(object):
                                      interface=self._interface,
                                      port=self._port,
                                      url_override=self._iap_tunnel_url_override,
-                                     proxy_info=proxy_info)
+                                     proxy_info=proxy_info,
+                                     region=self._region,
+                                     network=self._network,
+                                     ip=self._ip)
 
   def _RunReceiveLocalData(self, conn, socket_address):
     """Receive data from provided local connection and send over WebSocket.
@@ -488,10 +525,9 @@ class _BaseIapTunnelHelper(object):
 class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
   """Proxy server helper listens on a port for new local connections."""
 
-  def __init__(self, args, project, zone, instance, interface, port, local_host,
-               local_port, should_test_connection):
-    super(IapTunnelProxyServerHelper, self).__init__(
-        args, project, zone, instance, interface, port)
+  def __init__(self, args, project, local_host, local_port,
+               should_test_connection):
+    super(IapTunnelProxyServerHelper, self).__init__(args, project)
     self._local_host = local_host
     self._local_port = local_port
     self._should_test_connection = should_test_connection
@@ -501,7 +537,7 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
   def __del__(self):
     self._CloseServerSockets()
 
-  def StartProxyServer(self):
+  def Run(self):
     """Start accepting connections."""
     if self._should_test_connection:
       try:

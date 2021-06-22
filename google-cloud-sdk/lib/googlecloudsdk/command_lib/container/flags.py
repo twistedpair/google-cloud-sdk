@@ -225,6 +225,8 @@ The default Kubernetes version is available using the following command.
 
 def AddNotificationConfigFlag(parser, hidden=False):
   """Adds a --notification-config flag to the given parser."""
+  # TODO(b/188853565) Add filter to help text here
+
   help_text = """\
 The notification configuration of the cluster. GKE supports publishing
 cluster upgrade notifications to any Pub/Sub topic you created in the same
@@ -239,13 +241,10 @@ Example:
 The project of the Pub/Sub topic must be the same one as the cluster. It can
 be either the project ID or the project number.
 """
+  # TODO(b/188853565) Re-add spec here once filter is public
   return parser.add_argument(
       '--notification-config',
-      type=arg_parsers.ArgDict(
-          spec={
-              'pubsub': str,
-              'pubsub-topic': str,
-          }, required_keys=['pubsub']),
+      type=arg_parsers.ArgDict(required_keys=['pubsub']),
       metavar='pubsub=ENABLED|DISABLED,pubsub-topic=TOPIC',
       help=help_text,
       hidden=hidden)
@@ -421,9 +420,7 @@ def AddAcceleratorArgs(parser, enable_gpu_partition=False):
   parser.add_argument(
       '--accelerator',
       type=arg_parsers.ArgDict(
-          spec=spec,
-          required_keys=['type'],
-          max_length=len(spec)),
+          spec=spec, required_keys=['type'], max_length=len(spec)),
       metavar='type=TYPE,[count=COUNT]',
       help="""\
       Attaches accelerators (e.g. GPUs) to all nodes.
@@ -3011,6 +3008,13 @@ def ValidateSurgeUpgradeSettings(args):
 def ValidateNotificationConfigFlag(args):
   """Raise exception if validation of notification config fails."""
   if 'notification_config' in args._specified_args:
+    # TODO(b/188853565): Remove this in favor of spec once filter is public
+    for option in args.notification_config.keys():
+      if option not in ['pubsub', 'pubsub-topic', 'filter']:
+        raise exceptions.InvalidArgumentException(
+            '--notification_config',
+            'valid keys are [pubsub, pubsub-topic]; received {0}'.format(
+                option))
     if 'pubsub' in args.notification_config:
       pubsub = args.notification_config['pubsub']
       if pubsub != 'ENABLED' and pubsub != 'DISABLED':
@@ -3021,6 +3025,19 @@ def ValidateNotificationConfigFlag(args):
         raise exceptions.InvalidArgumentException(
             '--notification-config',
             'when [pubsub] is ENABLED, [pubsub-topic] must not be empty')
+    if 'filter' in args.notification_config:
+      known_event_types = [
+          'UpgradeEvent', 'UpgradeAvailableEvent', 'SecurityBulletinEvent'
+      ]
+      filter_opt = args.notification_config['filter']
+      inputted_types = filter_opt.split('|')
+
+      for inputted_type in inputted_types:
+        if inputted_type not in known_event_types:
+          raise exceptions.InvalidArgumentException(
+              '--notification_config',
+              'valid keys for filter are {0}; received \'{1}\''.format(
+                  known_event_types, inputted_type))
 
 
 # pylint: enable=protected-access

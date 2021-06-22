@@ -48,5 +48,5 @@ def Await(operation, message, creates_resource=True):
         alloydb_client.projects_locations_operations)
   ref = resources.REGISTRY.ParseRelativeName(
       operation.name,
-      collection='alloydbadmin.projects.locations.operations')
+      collection='alloydb.projects.locations.operations')
   return waiter.WaitFor(poller, ref, message)

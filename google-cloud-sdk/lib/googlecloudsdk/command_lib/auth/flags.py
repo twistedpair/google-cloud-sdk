@@ -17,7 +17,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 
 
@@ -70,21 +69,6 @@ def AddGCESpecificArgs(parser):
       '`--token-format=full`.')
 
 
-def _AddAddQuotaProject(parser):
-  parser.add_argument(
-      '--add-quota-project',
-      default=True,
-      help='Read the project from the context of the gcloud command-line '
-           'tool and write it to application default credentials as the '
-           'quota project. It is the default behavior.',
-      action=actions.DeprecationAction(
-          '--add-quota-project',
-          warn='The --add-quota-project flag is deprecated.',
-          removed=False,
-          action='store_true'),
-  )
-
-
 def _AddDisableQuotaProject(parser):
   parser.add_argument(
       '--disable-quota-project',
@@ -117,6 +101,4 @@ def _AddDisableQuotaProject(parser):
 
 
 def AddQuotaProjectFlags(parser):
-  group = parser.add_mutually_exclusive_group()
-  _AddAddQuotaProject(group)
-  _AddDisableQuotaProject(group)
+  _AddDisableQuotaProject(parser)

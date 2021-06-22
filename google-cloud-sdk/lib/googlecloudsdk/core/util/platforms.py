@@ -24,6 +24,8 @@ import platform
 import subprocess
 import sys
 
+from googlecloudsdk.core.util import encoding
+
 
 class Error(Exception):
   """Base class for exceptions in the platforms moudle."""
@@ -377,6 +379,31 @@ class Platform(object):
       args['stdout'] = subprocess.PIPE
       args['stderr'] = subprocess.PIPE
     return args
+
+  @staticmethod
+  def IsActuallyM1ArmArchitecture():
+    """Method that detects if platform is actually M1 Arm.
+
+    This will return True even in the case where x86 Python is running under
+    Rosetta 2. This will ONLY return true when running on a Macos M1 machine.
+    Normal methods, for example "uname -a" will see x86_64 in the M1 case when
+    Rosetta 2 is running, this method exists for when we want to know what the
+    actual hardware is.
+
+    Returns:
+      True if M1 Arm detected, False otherwise.
+    """
+    cmd_args = ['sysctl', '-n', 'machdep.cpu.brand_string']
+    try:
+      proc = subprocess.Popen(
+          cmd_args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+      stdoutdata, _ = proc.communicate()
+      if 'Apple M1' in encoding.Decode(stdoutdata):
+        return True
+    except:  # pylint: disable=bare-except
+      pass
+    return False
 
 
 class PythonVersion(object):

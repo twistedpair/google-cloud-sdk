@@ -804,13 +804,9 @@
               "The database version is MySQL 8.",
               "The database version is PostgreSQL 13.",
               "The database version is SQL Server 2019 Standard.",
-              "The database version is SQL Server 2019 Standard CU10.",
               "The database version is SQL Server 2019 Enterprise.",
-              "The database version is SQL Server 2019 Enterprise CU10.",
               "The database version is SQL Server 2019 Express.",
-              "The database version is SQL Server 2019 Express CU10.",
-              "The database version is SQL Server 2019 Web.",
-              "The database version is SQL Server 2019 Web CU10."
+              "The database version is SQL Server 2019 Web."
             ],
             "enum": [
               "SQL_DATABASE_VERSION_UNSPECIFIED",
@@ -829,13 +825,9 @@
               "MYSQL_8_0",
               "POSTGRES_13",
               "SQLSERVER_2019_STANDARD",
-              "SQLSERVER_2019_STANDARD_CU10",
               "SQLSERVER_2019_ENTERPRISE",
-              "SQLSERVER_2019_ENTERPRISE_CU10",
               "SQLSERVER_2019_EXPRESS",
-              "SQLSERVER_2019_EXPRESS_CU10",
-              "SQLSERVER_2019_WEB",
-              "SQLSERVER_2019_WEB_CU10"
+              "SQLSERVER_2019_WEB"
             ]
           }
         },
@@ -1107,13 +1099,9 @@
             "The database version is MySQL 8.",
             "The database version is PostgreSQL 13.",
             "The database version is SQL Server 2019 Standard.",
-            "The database version is SQL Server 2019 Standard CU10.",
             "The database version is SQL Server 2019 Enterprise.",
-            "The database version is SQL Server 2019 Enterprise CU10.",
             "The database version is SQL Server 2019 Express.",
-            "The database version is SQL Server 2019 Express CU10.",
-            "The database version is SQL Server 2019 Web.",
-            "The database version is SQL Server 2019 Web CU10."
+            "The database version is SQL Server 2019 Web."
           ],
           "enum": [
             "SQL_DATABASE_VERSION_UNSPECIFIED",
@@ -1132,13 +1120,9 @@
             "MYSQL_8_0",
             "POSTGRES_13",
             "SQLSERVER_2019_STANDARD",
-            "SQLSERVER_2019_STANDARD_CU10",
             "SQLSERVER_2019_ENTERPRISE",
-            "SQLSERVER_2019_ENTERPRISE_CU10",
             "SQLSERVER_2019_EXPRESS",
-            "SQLSERVER_2019_EXPRESS_CU10",
-            "SQLSERVER_2019_WEB",
-            "SQLSERVER_2019_WEB_CU10"
+            "SQLSERVER_2019_WEB"
           ]
         },
         "settings": {
@@ -2674,7 +2658,7 @@
               "type": "string"
             },
             "instance": {
-              "description": "Cloud SQL instance ID. This does not include the project ID.",
+              "description": "Cloud SQL instance ID, or \"-\" for all instances. This does not include the project ID.",
               "location": "path",
               "required": true,
               "type": "string"
@@ -2702,7 +2686,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/sqlservice.admin"
           ],
-          "description": "Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the backup initiation time."
+          "description": "Lists all backup runs associated with the project or a given instance and configuration in the reverse chronological order of the backup initiation time."
         }
       }
     },

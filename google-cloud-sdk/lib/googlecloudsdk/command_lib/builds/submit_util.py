@@ -22,6 +22,7 @@ import os.path
 import uuid
 
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import config
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
@@ -48,6 +49,10 @@ _DEFAULT_BUILDPACK_BUILDER = 'gcr.io/buildpacks/builder'
 _CLUSTER_NAME_FMT = 'projects/{project}/locations/{location}/clusters/{cluster_name}'
 
 _SUPPORTED_REGISTRIES = ['gcr.io', 'pkg.dev']
+
+
+class BucketForbiddenError(core_exceptions.Error):
+  """Error raised when the user is forbidden to use a bucket."""
 
 
 class FailedBuildException(core_exceptions.Error):
@@ -249,6 +254,10 @@ def _SetSource(build_config, messages, is_specified_source, no_source, source,
       gcs_client.CreateBucketIfNotExists(
           gcs_source_staging_dir.bucket,
           check_ownership=default_gcs_source)
+    except api_exceptions.HttpForbiddenError:
+      raise BucketForbiddenError(
+          'The User is forbiden from accessing the bucket [{}]. Please check '
+          'your organization\'s policy.'.format(gcs_source_staging_dir.bucket))
     except storage_api.BucketInWrongProjectError:
       # If we're using the default bucket but it already exists in a different
       # project, then it could belong to a malicious attacker (b/33046325).

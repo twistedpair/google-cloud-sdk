@@ -31,6 +31,7 @@ MEDIA_ASSET_API = 'mediaasset'
 OPERATIONS_COLLECTION = 'mediaasset.projects.locations.operations'
 PARENT_TEMPLATE = 'projects/{}/locations/{}'
 ASSET_PARENT_TEMPLATE = 'projects/{}/locations/{}/assetTypes/{}/assets/{}'
+ANNOTATION_PARENT_TEMPLATE = ASSET_PARENT_TEMPLATE + '/annotationSets/{}'
 
 
 def GetApiMessage(api_version):
@@ -56,6 +57,12 @@ def GetParentTemplate(project, location):
 
 def GetAssetParentTemplate(project, location, asset_type, asset):
   return ASSET_PARENT_TEMPLATE.format(project, location, asset_type, asset)
+
+
+def GetAnnotationParentTemplate(project, location, asset_type, asset,
+                                annotation_set):
+  return ANNOTATION_PARENT_TEMPLATE.format(project, location, asset_type, asset,
+                                           annotation_set)
 
 
 class UnsupportedReleaseTrackError(Exception):
@@ -98,8 +105,8 @@ def ValidateMediaAssetMessage(message):
                                                      field_name))
   if unrecognized_field_paths:
     error_msg_lines = [
-        'Invalid schema, the following fields are unrecognized:'] + \
-        unrecognized_field_paths
+        'Invalid schema, the following fields are unrecognized:'
+    ] + unrecognized_field_paths
     raise exceptions.Error('\n'.join(error_msg_lines))
 
 

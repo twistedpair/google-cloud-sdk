@@ -867,6 +867,36 @@ class HostRule(_messages.Message):
   pathMatcher = _messages.StringField(3)
 
 
+class InvalidateCacheRequest(_messages.Message):
+  r"""Request used by the InvalidateCache method.
+
+  Fields:
+    cacheTags: A list of cache tags used to identify cached objects. Cache
+      tags are specified when the response is first cached, by setting the
+      "Cache-Tag" response header at the origin. By default, all objects have
+      a cache tag representing the HTTP status code of the response, the MIME
+      content-type, and the origin. Multiple cache tags in the same
+      revalidation request are treated as Boolean OR - e.g. tag1 OR tag2 OR
+      tag3. If a host and/or path are also specified, these are treated as
+      Boolean AND with any tags. Up to 10 tags may be specified in a single
+      invalidation request.
+    host: The hostname to invalidate against. You can specify an exact or
+      wildcard host - e.g. "video.example.com" or "*.example.com" - based on
+      host component.
+    path: The path to invalidate against. You can specify an exact or wildcard
+      path - e.g. "/videos/hls/139123.mp4" or "/manifests/*" - based on path
+      component.
+  """
+
+  cacheTags = _messages.StringField(1, repeated=True)
+  host = _messages.StringField(2)
+  path = _messages.StringField(3)
+
+
+class InvalidateCacheResponse(_messages.Message):
+  r"""Response used by the InvalidateCache method."""
+
+
 class ListEdgeCacheKeysetsResponse(_messages.Message):
   r"""Response returned by the ListEdgeCacheKeysets method.
 
@@ -1398,6 +1428,23 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesGetRequest(_messages.Mess
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest
+  object.
+
+  Fields:
+    edgeCacheService: Required. A name of the EdgeCacheService to apply the
+      invalidation request to. Must be in the format
+      `projects/*/locations/global/edgeCacheServices/*`.
+    invalidateCacheRequest: A InvalidateCacheRequest resource to be passed as
+      the request body.
+  """
+
+  edgeCacheService = _messages.StringField(1, required=True)
+  invalidateCacheRequest = _messages.MessageField('InvalidateCacheRequest', 2)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheServicesListRequest(_messages.Message):

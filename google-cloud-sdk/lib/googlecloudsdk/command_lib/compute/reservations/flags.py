@@ -117,7 +117,7 @@ to learn about all available accelerator types.
       help=help_text)
 
 
-def GetSharedSettingFlag():
+def GetSharedSettingFlag(custom_name=None):
   """Gets the --share-setting flag."""
   help_text = """\
   Specify if this reservation is shared; and if so, the type of sharing:
@@ -125,12 +125,12 @@ def GetSharedSettingFlag():
   folders.
   """
   return base.Argument(
-      '--share-setting',
+      custom_name if custom_name else '--share-setting',
       choices=['organization', 'projects', 'folders'],
       help=help_text)
 
 
-def GetShareWithFlag():
+def GetShareWithFlag(custom_name=None):
   """Gets the --share-with flag."""
   help_text = """\
   A list of specific projects or folders this reservation should be shared with.
@@ -138,7 +138,7 @@ def GetShareWithFlag():
   share-setting is set to.
   """
   return base.Argument(
-      '--share-with',
+      custom_name if custom_name else '--share-with',
       type=arg_parsers.ArgList(min_length=1),
       metavar='PROJECT',
       help=help_text)

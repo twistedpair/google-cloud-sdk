@@ -21,9 +21,12 @@ class AccessDeniedPageSettings(_messages.Message):
 
   Fields:
     accessDeniedPageUri: The URI to be redirected to when access is denied.
+    generateTroubleshootingUri: Whether to generate a troubleshooting URL on
+      access denied events to this application.
   """
 
   accessDeniedPageUri = _messages.StringField(1)
+  generateTroubleshootingUri = _messages.BooleanField(2)
 
 
 class AccessSettings(_messages.Message):

@@ -18,11 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.command_lib.container.hub.features import base
-from googlecloudsdk.command_lib.container.hub.features import info
-from googlecloudsdk.core import exceptions
-
+from googlecloudsdk.api_lib.container.hub import client
+from googlecloudsdk.api_lib.container.hub import util
 
 LATEST_VERSION = '1.7.2'
 
@@ -57,30 +54,32 @@ POLICY_CONTROLLER = 'policyController'
 HNC = 'hierarchyController'
 
 
-def try_get_configmanagement(project):
-  """Get the configmanagement Feature resource in Hub.
+def versions_for_member(feature, membership):
+  """Parses the version fields from an ACM Feature for a given membership.
 
   Args:
-    project: the project id to query the Feature
+    feature: A v1alpha, v1beta, or v1 ACM Feature.
+    membership: The short membership name whose version to return.
 
   Returns:
-    the response of configmanagement Feature resource.
-
-  Raises:
-    - exceptions if the feature is not enabled or user is not authorized.
+    A tuple of the form (spec.version, state.spec.version), with unset versions
+    defaulting to the empty string.
   """
-  feature = 'configmanagement'
-  try:
-    name = 'projects/{0}/locations/global/features/{1}'.format(
-        project, feature)
-    response = base.GetFeature(name)
-  except apitools_exceptions.HttpUnauthorizedError as e:
-    raise exceptions.Error(
-        'You are not authorized to see the status of {} '
-        'Feature from project [{}]. Underlying error: {}'.format(
-            info.Get(feature).display_name, project, e))
-  except apitools_exceptions.HttpNotFoundError as e:
-    raise exceptions.Error(
-        '{} Feature for project [{}] is not enabled'.format(
-            info.Get(feature).display_name, project))
-  return response
+  spec_version = None
+  specs = client.HubClient.ToPyDict(feature.membershipSpecs)
+  for full_membership, spec in specs.items():
+    if util.MembershipShortname(full_membership) == membership:
+      if spec is not None and spec.configmanagement is not None:
+        spec_version = spec.configmanagement.version
+      break
+
+  state_version = None
+  states = client.HubClient.ToPyDict(feature.membershipStates)
+  for full_membership, state in states.items():
+    if util.MembershipShortname(full_membership) == membership:
+      if state is not None and state.configmanagement is not None:
+        if state.configmanagement.membershipSpec is not None:
+          state_version = state.configmanagement.membershipSpec.version
+      break
+
+  return (spec_version or '', state_version or '')

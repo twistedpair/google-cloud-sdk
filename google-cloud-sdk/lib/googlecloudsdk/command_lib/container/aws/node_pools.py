@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.aws import util as api_util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.container.gkemulticloud import flags
 
 NODEPOOLS_FORMAT = """\
   table(
@@ -49,23 +48,35 @@ class NodePoolsClient(object):
     setattr(req, attr, np)
     return np
 
-  def _AddAwsNodePoolAutoscaling(self, np):
+  def _AddAwsNodeConfig(self, nodepool):
+    msg = 'GoogleCloudGkemulticloud{}AwsNodeConfig'.format(self.version)
+    config = getattr(self.messages, msg)()
+    nodepool.config = config
+    return config
+
+  def _AddAwsNodePoolAutoscaling(self, nodepool):
     msg = 'GoogleCloudGkemulticloud{}AwsNodePoolAutoscaling'.format(
         self.version)
     autoscaling = getattr(self.messages, msg)()
-    np.autoscaling = autoscaling
+    nodepool.autoscaling = autoscaling
     return autoscaling
 
-  def _AddAwsNodePoolRootVolume(self, np):
+  def _AddMaxPodsConstraint(self, nodepool):
+    msg = 'GoogleCloudGkemulticloud{}MaxPodsConstraint'.format(self.version)
+    mpc = getattr(self.messages, msg)()
+    nodepool.maxPodsConstraint = mpc
+    return mpc
+
+  def _AddAwsNodePoolRootVolume(self, config):
     msg = 'GoogleCloudGkemulticloud{}AwsVolumeTemplate'.format(self.version)
     v = getattr(self.messages, msg)()
-    np.rootVolume = v
+    config.rootVolume = v
     return v
 
-  def _AddAwsNodePoolSshConfig(self, np):
+  def _AddAwsNodePoolSshConfig(self, config):
     msg = 'GoogleCloudGkemulticloud{}AwsSshConfig'.format(self.version)
     ssh_config = getattr(self.messages, msg)()
-    np.sshConfig = ssh_config
+    config.sshConfig = ssh_config
     return ssh_config
 
   def Create(self, node_pool_ref, args):
@@ -76,33 +87,31 @@ class NodePoolsClient(object):
         parent=node_pool_ref.Parent().RelativeName(),
         validateOnly=validate_only)
 
-    np = self._AddAwsNodePool(req)
-    np.name = node_pool_ref.awsNodePoolsId
-    np.version = args.node_version
-    np.subnetId = args.subnet_id[0]
-    np.instanceType = args.instance_type
-    np.iamInstanceProfile = args.iam_instance_profile
-    np.maxPodsPerNode = args.max_pods_per_node
+    nodepool = self._AddAwsNodePool(req)
+    nodepool.name = node_pool_ref.awsNodePoolsId
+    nodepool.version = args.node_version
+    nodepool.subnetId = args.subnet_id
 
-    flags.CheckNumberOfNodesAndAutoscaling(args)
-    if args.enable_autoscaling:
-      autoscaling = self._AddAwsNodePoolAutoscaling(np)
-      autoscaling.minNodeCount = args.min_nodes
-      autoscaling.maxNodeCount = args.max_nodes
-    else:
-      autoscaling = self._AddAwsNodePoolAutoscaling(np)
-      autoscaling.minNodeCount = args.num_nodes
-      autoscaling.maxNodeCount = args.num_nodes
+    mpc = self._AddMaxPodsConstraint(nodepool)
+    mpc.maxPodsPerNode = args.max_pods_per_node
 
-    root_volume = self._AddAwsNodePoolRootVolume(np)
+    autoscaling = self._AddAwsNodePoolAutoscaling(nodepool)
+    autoscaling.minNodeCount = args.min_nodes
+    autoscaling.maxNodeCount = args.max_nodes
+
+    config = self._AddAwsNodeConfig(nodepool)
+    config.iamInstanceProfile = args.iam_instance_profile
+    config.instanceType = args.instance_type
+
+    root_volume = self._AddAwsNodePoolRootVolume(config)
     root_volume.sizeGib = args.root_volume_size
 
-    ssh_config = self._AddAwsNodePoolSshConfig(np)
-    ssh_config.ec2KeyPair = args.key_pair_name
+    ssh_config = self._AddAwsNodePoolSshConfig(config)
+    ssh_config.ec2KeyPair = args.ssh_ec2_key_pair
 
     if args.tags:
-      tag_type = type(np).TagsValue.AdditionalProperty
-      np.tags = type(np).TagsValue(additionalProperties=[
+      tag_type = type(config).TagsValue.AdditionalProperty
+      config.tags = type(config).TagsValue(additionalProperties=[
           tag_type(key=k, value=v) for k, v in args.tags.items()
       ])
 

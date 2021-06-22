@@ -91,3 +91,30 @@ transformer:
     parameter_name: transformersId
     attribute_name: transformer
     help: Google Cloud Media Asset transformer.
+
+annotation_set:
+  name: annotation_set
+  collection: mediaasset.projects.locations.assetTypes.assets.annotationSets
+  attributes:
+  - *project
+  - *location
+  - *asset_type
+  - *asset
+  - &annotation_set
+    parameter_name: annotationSetsId
+    attribute_name: annotation_set
+    help: Google Cloud Media Asset annotation set
+
+annotation:
+  name: annotation
+  collection: mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations
+  attributes:
+  - *project
+  - *location
+  - *asset_type
+  - *asset
+  - *annotation_set
+  - &annotation
+    parameter_name: annotationsId
+    attribute_name: annotation
+    help: Google Cloud Media Asset annotation

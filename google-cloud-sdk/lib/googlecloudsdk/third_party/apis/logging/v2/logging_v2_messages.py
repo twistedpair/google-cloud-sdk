@@ -157,8 +157,7 @@ class CmekSettings(_messages.Message):
 
 
 class CopyLogEntriesMetadata(_messages.Message):
-  r"""Unimplemented. Do not use.Metadata for CopyLogEntries long running
-  operations.
+  r"""Metadata for CopyLogEntries long running operations.
 
   Enums:
     StateValueValuesEnum: State of an operation.
@@ -225,8 +224,7 @@ class CopyLogEntriesRequest(_messages.Message):
 
 
 class CopyLogEntriesResponse(_messages.Message):
-  r"""Unimplemented. Do not use.Response type for CopyLogEntries long running
-  operations.
+  r"""Response type for CopyLogEntries long running operations.
 
   Fields:
     logEntriesCopiedCount: Number of log entries copied.

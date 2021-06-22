@@ -225,7 +225,8 @@ class AppengineAppsDomainMappingsPatchRequest(_messages.Message):
       managed certificate will be provisioned and a certificate ID will be
       automatically populated. Only applicable if ssl_settings.certificate_id
       is specified in the update mask.
-    updateMask: Standard field mask for the set of fields to be updated.
+    updateMask: Required. Standard field mask for the set of fields to be
+      updated.
   """
 
   domainMapping = _messages.MessageField('DomainMapping', 1)

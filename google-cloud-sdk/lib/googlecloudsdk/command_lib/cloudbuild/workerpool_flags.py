@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 
 _CREATE_FILE_DESC = ('A file that contains the configuration for the '
                      'WorkerPool to be created.')
@@ -27,13 +26,11 @@ _UPDATE_FILE_DESC = ('A file that contains updates to the configuration for '
                      'the WorkerPool.')
 
 
-def AddWorkerpoolArgs(parser, release_track, update=False):
+def AddWorkerpoolArgs(parser, update=False):
   """Set up all the argparse flags for creating or updating a workerpool.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
-    release_track: The desired value of the enum
-      googlecloudsdk.calliope.base.ReleaseTrack.
     update: If true, use the version of the flags for updating a workerpool.
       Otherwise, use the version for creating a workerpool.
 
@@ -45,24 +42,21 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
       'WORKER_POOL',
       help='The unique identifier for the custom worker pool to %s. This value should be 1-63 characters, and valid characters are [a-z][0-9]-'
       % verb)
-  if release_track != base.ReleaseTrack.ALPHA:
-    parser.add_argument(
-        '--region',
-        required=True,
-        help='The Cloud region where the WorkerPool is %sd.' % verb)
-  file_or_flags = parser.add_mutually_exclusive_group(required=True)
+  parser.add_argument(
+      '--region',
+      required=True,
+      help='The Cloud region where the WorkerPool is %sd.' % verb)
+  file_or_flags = parser.add_mutually_exclusive_group(required=update)
   file_or_flags.add_argument(
       '--config-from-file',
       help=(_UPDATE_FILE_DESC if update else _CREATE_FILE_DESC),
   )
   flags = file_or_flags.add_argument_group(
       'Command-line flags to configure the WorkerPool:')
-  if release_track == base.ReleaseTrack.ALPHA:
+  if not update:
     flags.add_argument(
-        '--region', help='The Cloud region where the WorkerPool is.')
-  flags.add_argument(
-      '--peered-network',
-      help="""\
+        '--peered-network',
+        help="""\
 Existing network to which workers are peered. The network is specified in
 resource URL format
 projects/{network_project}/global/networks/{network_name}.
@@ -86,11 +80,10 @@ Size of the disk attached to the worker.
 
 If not given, Cloud Build will use a standard disk size.
 """)
-  if release_track != base.ReleaseTrack.ALPHA:
-    worker_flags.add_argument(
-        '--no-external-ip',
-        action='store_true',
-        help="""\
+  worker_flags.add_argument(
+      '--no-external-ip',
+      action='store_true',
+      help="""\
 If set, workers in the worker pool are created without an external IP address.
 
 If the worker pool is within a VPC Service Control perimeter, use this flag.
@@ -98,29 +91,25 @@ If the worker pool is within a VPC Service Control perimeter, use this flag.
   return parser
 
 
-def AddWorkerpoolCreateArgs(parser, release_track):
+def AddWorkerpoolCreateArgs(parser):
   """Set up all the argparse flags for creating a workerpool.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
-    release_track: The desired value of the enum
-      googlecloudsdk.calliope.base.ReleaseTrack.
 
   Returns:
     The parser argument with workerpool flags added in.
   """
-  return AddWorkerpoolArgs(parser, release_track, update=False)
+  return AddWorkerpoolArgs(parser, update=False)
 
 
-def AddWorkerpoolUpdateArgs(parser, release_track):
+def AddWorkerpoolUpdateArgs(parser):
   """Set up all the argparse flags for updating a workerpool.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
-    release_track: The desired value of the enum
-      googlecloudsdk.calliope.base.ReleaseTrack.
 
   Returns:
     The parser argument with workerpool flags added in.
   """
-  return AddWorkerpoolArgs(parser, release_track, update=True)
+  return AddWorkerpoolArgs(parser, update=True)

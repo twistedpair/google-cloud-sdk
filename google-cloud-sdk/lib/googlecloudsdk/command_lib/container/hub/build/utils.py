@@ -19,64 +19,40 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import os
 import re
-from apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
-from googlecloudsdk.command_lib.container.hub.features import base
+
+from googlecloudsdk.api_lib.container.hub import client
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 
 
-def GetFeature(feature_name, feature_display_name, project):
-  """Fetch the Cloud Build Hybrid Feature.
+class Error(exceptions.Error):
+  """Class for errors raised by Cloud Build commands."""
+
+
+def VerifyMembership(membership):
+  """Verify the format of `membership` and check the membership exists in Hub.
 
   Args:
-    feature_name: feature name
-    feature_display_name: feature name as displayed in CLI
-    project: project id
+    membership: The full membership ID.
 
-  Returns:
-    CloudBuildFeature
-  """
-  try:
-    name = 'projects/{0}/locations/global/features/{1}'.format(
-        project, feature_name)
-    feature = base.GetFeature(name)
-  except apitools_exceptions.HttpNotFoundError as e:
-    raise api_lib_exceptions.HttpException(
-        e,
-        error_format='The {} Feature for project [{}] is not enabled'.format(
-            feature_display_name, project))
-
-  return feature
-
-
-def GetMembership(membership, project):
-  """Retrieve the membership if it's in the hub.
-
-  Args:
-    membership: membership id
-    project: project id
-
-  Returns:
-    membership: A membership name
-  Raises: Error, if the membership speciciation is imroper
+  Raises:
+    Error: if the membership specification is improper.
   """
 
   hub_membership_regex = r'^projects/(?P<ProjectNum>[0-9-]+)/locations/global/memberships/(?P<Membership>[a-z0-9-]+)$'
   if re.search(hub_membership_regex, membership) is None:
-    raise exceptions.Error(
+    raise Error(
         'Improper membership specification. '
         'Format should be: projects/[PROJECT_NUM]/locations/global/memberships/[MEMBERSHIP-ID]'
     )
-  # We're ignoring the result of this call because we want the membership path
-  # specified with the project number
-  # This function returns the membership path specified with the project id
-  # We call this function to verify the membership exists in the hub
-  base.GetMembership(project, os.path.basename(membership))
-
-  return membership
+  # We're ignoring the result of this call because we just want to verify the
+  # membership exists in the hub.
+  v1beta1_client = apis.GetClientInstance('gkehub', 'v1beta1')
+  v1beta1_client.projects_locations_memberships.Get(
+      v1beta1_client.MESSAGES_MODULE
+      .GkehubProjectsLocationsMembershipsGetRequest(name=membership))
 
 
 def ParseSecuritypolicy(securitypolicy, message):
@@ -105,16 +81,13 @@ def GetFeatureSpecMemberships(feature, messages):
   Returns:
     Cloud Build Feature Specs dictionary {"membership": membershipConfig}
   """
-
-  if feature.cloudbuildFeatureSpec is None or feature.cloudbuildFeatureSpec.membershipConfigs is None:
-    feature_spec_membership_details = []
-  else:
-    feature_spec_membership_details = feature.cloudbuildFeatureSpec.membershipConfigs.additionalProperties
-
+  spec = feature.cloudbuildFeatureSpec
+  if spec is None:
+    return {}
   return collections.OrderedDict(
-      (membership_detail.key, membership_detail.value)
-      for membership_detail in feature_spec_membership_details
-      if membership_detail.value != messages.CloudBuildMembershipConfig())
+      (k, v)
+      for k, v in client.HubClient.ToPyDict(spec.membershipConfigs).items()
+      if v != messages.CloudBuildMembershipConfig())
 
 
 def GetFeatureStateMemberships(feature):
@@ -126,12 +99,26 @@ def GetFeatureStateMemberships(feature):
   Returns:
     Cloud Build Feature States dictionary {"membership": featureState}
   """
-  if feature.featureState is None or feature.featureState.detailsByMembership is None:
-    feature_state_membership_details = []
-  else:
-    feature_state_membership_details = feature.featureState.detailsByMembership.additionalProperties
+  state = feature.featureState
+  if state is None:
+    return {}
+  return client.HubClient.ToPyDict(state.detailsByMembership)
 
-  return {
-      membership_detail.key: membership_detail
-      for membership_detail in feature_state_membership_details
-  }
+
+def MembershipSpecPatch(messages, membership, spec):
+  """Builds a Feature message for updating one CloudBuildMembershipConfig.
+
+  Args:
+    messages: The v1alpha1 Hub messages package
+    membership: The membership name to use as the key.
+    spec: The CloudBuildMembershipConfig to use as the value.
+
+  Returns:
+    The messages.Feature, properly populated.
+  """
+  spec_map = {membership: spec}
+  value = client.HubClient.ToProtoMap(
+      messages.CloudBuildFeatureSpec.MembershipConfigsValue, spec_map)
+  return messages.Feature(
+      cloudbuildFeatureSpec=messages.CloudBuildFeatureSpec(
+          membershipConfigs=value))

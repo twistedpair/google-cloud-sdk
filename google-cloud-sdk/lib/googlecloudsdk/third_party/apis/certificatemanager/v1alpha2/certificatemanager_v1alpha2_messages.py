@@ -85,7 +85,8 @@ class AuthorizationAttemptInfo(_messages.Message):
   issuance.
 
   Enums:
-    FailureReasonValueValuesEnum:
+    FailureReasonValueValuesEnum: Output only. Reason for failure of the
+      authorization attempt for the domain.
     StateValueValuesEnum: State of the domain for managed certificate
       issuance.
 
@@ -93,13 +94,15 @@ class AuthorizationAttemptInfo(_messages.Message):
     details: Human readable explanation for reaching the state. Provided to
       help address the configuration issues. Not guaranteed to be stable. For
       programmatic access use Reason enum.
-    domain: A string attribute.
-    failureReason: A FailureReasonValueValuesEnum attribute.
+    domain: Domain name of the authorization attempt.
+    failureReason: Output only. Reason for failure of the authorization
+      attempt for the domain.
     state: State of the domain for managed certificate issuance.
   """
 
   class FailureReasonValueValuesEnum(_messages.Enum):
-    r"""FailureReasonValueValuesEnum enum type.
+    r"""Output only. Reason for failure of the authorization attempt for the
+    domain.
 
     Values:
       FAILURE_REASON_UNSPECIFIED: <no description>
@@ -1841,17 +1844,17 @@ class ProvisioningIssue(_messages.Message):
   r"""Information about issues with provisioning a Managed Certificate.
 
   Enums:
-    ReasonValueValuesEnum:
+    ReasonValueValuesEnum: Reason for provisioning failures.
 
   Fields:
     details: Human readable explanation about the issue. Provided to help
       address the configuration issues. Not guaranteed to be stable. For
       programmatic access use Reason enum.
-    reason: A ReasonValueValuesEnum attribute.
+    reason: Reason for provisioning failures.
   """
 
   class ReasonValueValuesEnum(_messages.Enum):
-    r"""ReasonValueValuesEnum enum type.
+    r"""Reason for provisioning failures.
 
     Values:
       REASON_UNSPECIFIED: <no description>

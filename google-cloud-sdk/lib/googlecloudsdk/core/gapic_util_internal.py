@@ -22,7 +22,9 @@ import collections
 import os
 import time
 
+from google.api_core import bidi
 import google.api_core.gapic_v1.client_info
+from googlecloudsdk.api_lib.util import api_enablement
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -101,6 +103,83 @@ class ClientCallDetailsInterceptor(grpc.UnaryUnaryClientInterceptor,
   def intercept_stream_stream(self, continuation, client_call_details,
                               request_iterator):
     """Intercepts a stream-stream invocation."""
+    return self.intercept_call(continuation, client_call_details,
+                               request_iterator)
+
+
+def ShouldRecover():
+  """Returns a callback for checking API enablement errors."""
+  state = {'already_prompted_to_enable': False,
+           'api_enabled': False}
+  def _ShouldRecover(response):
+    if response.code() != grpc.StatusCode.PERMISSION_DENIED:
+      return False
+
+    enablement_info = api_enablement.GetApiEnablementInfo(response.details())
+    if enablement_info:
+      if state['already_prompted_to_enable']:
+        return state['api_enabled']
+      state['already_prompted_to_enable'] = True
+      api_enable_attempted = api_enablement.PromptToEnableApi(*enablement_info)
+      if api_enable_attempted:
+        state['api_enabled'] = api_enable_attempted
+        return True
+    return False
+  return _ShouldRecover
+
+
+class BidiRpc(bidi.ResumableBidiRpc):
+  """Bidi implementation to be used throughout codebase."""
+
+  def __init__(self, start_rpc):
+    """Initializes a BidiRpc instances.
+
+    Args:
+        start_rpc (grpc.StreamStreamMultiCallable): The gRPC method used to
+            start the RPC.
+    """
+    client_info = google.api_core.gapic_v1.client_info.ClientInfo(
+        user_agent=transport.MakeUserAgentString())
+    super(BidiRpc, self).__init__(
+        start_rpc,
+        should_recover=ShouldRecover(),
+        metadata=[client_info.to_grpc_metadata()])
+
+
+class APIEnablementInterceptor(grpc.UnaryUnaryClientInterceptor,
+                               grpc.StreamUnaryClientInterceptor):
+  """API Enablement Interceptor for prompting to enable APIs."""
+
+  def __init__(self):
+    self.already_prompted_to_enable = False
+    self.api_enabled = False
+
+  def intercept_call(self, continuation, client_call_details, request):
+    response = continuation(client_call_details, request)
+    if response.code() != grpc.StatusCode.PERMISSION_DENIED:
+      return response
+
+    enablement_info = api_enablement.GetApiEnablementInfo(
+        response.details())
+    if enablement_info:
+      if self.already_prompted_to_enable:
+        if self.api_enabled:
+          return continuation(client_call_details, request)
+        return response
+      self.already_prompted_to_enable = True
+      api_enable_attempted = api_enablement.PromptToEnableApi(*enablement_info)
+      if api_enable_attempted:
+        self.api_enabled = True
+        return continuation(client_call_details, request)
+    return response
+
+  def intercept_unary_unary(self, continuation, client_call_details, request):
+    """Intercepts a unary-unary invocation asynchronously."""
+    return self.intercept_call(continuation, client_call_details, request)
+
+  def intercept_stream_unary(self, continuation, client_call_details,
+                             request_iterator):
+    """Intercepts a stream-unary invocation asynchronously."""
     return self.intercept_call(continuation, client_call_details,
                                request_iterator)
 
@@ -433,8 +512,6 @@ class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor,
   def intercept_stream_stream(self, continuation, client_call_details,
                               request_iterator):
     """Intercepts a stream-stream invocation."""
-    log.status.Print('initiating request')
-
     response = continuation(
         client_call_details,
         self.log_requests(client_call_details, request_iterator))
@@ -572,6 +649,7 @@ def MakeTransport(transport_class, address, credentials, mtls_enabled=False):
   interceptors.append(RPCDurationReporterInterceptor())
   if properties.VALUES.core.log_http.GetBool():
     interceptors.append(LoggingInterceptor(credentials))
+  interceptors.append(APIEnablementInterceptor())
 
   channel = grpc.intercept_channel(channel, *interceptors)
   return transport_class(

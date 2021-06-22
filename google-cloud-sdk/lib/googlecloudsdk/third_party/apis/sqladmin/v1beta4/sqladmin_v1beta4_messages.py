@@ -510,18 +510,10 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
-      SQLSERVER_2019_STANDARD_CU10: The database version is SQL Server 2019
-        Standard CU10.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
         Enterprise.
-      SQLSERVER_2019_ENTERPRISE_CU10: The database version is SQL Server 2019
-        Enterprise CU10.
       SQLSERVER_2019_EXPRESS: The database version is SQL Server 2019 Express.
-      SQLSERVER_2019_EXPRESS_CU10: The database version is SQL Server 2019
-        Express CU10.
       SQLSERVER_2019_WEB: The database version is SQL Server 2019 Web.
-      SQLSERVER_2019_WEB_CU10: The database version is SQL Server 2019 Web
-        CU10.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -539,13 +531,9 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0 = 13
     POSTGRES_13 = 14
     SQLSERVER_2019_STANDARD = 15
-    SQLSERVER_2019_STANDARD_CU10 = 16
-    SQLSERVER_2019_ENTERPRISE = 17
-    SQLSERVER_2019_ENTERPRISE_CU10 = 18
-    SQLSERVER_2019_EXPRESS = 19
-    SQLSERVER_2019_EXPRESS_CU10 = 20
-    SQLSERVER_2019_WEB = 21
-    SQLSERVER_2019_WEB_CU10 = 22
+    SQLSERVER_2019_ENTERPRISE = 16
+    SQLSERVER_2019_EXPRESS = 17
+    SQLSERVER_2019_WEB = 18
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type. This can be one of the following.
@@ -964,18 +952,10 @@ class Flag(_messages.Message):
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
-      SQLSERVER_2019_STANDARD_CU10: The database version is SQL Server 2019
-        Standard CU10.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
         Enterprise.
-      SQLSERVER_2019_ENTERPRISE_CU10: The database version is SQL Server 2019
-        Enterprise CU10.
       SQLSERVER_2019_EXPRESS: The database version is SQL Server 2019 Express.
-      SQLSERVER_2019_EXPRESS_CU10: The database version is SQL Server 2019
-        Express CU10.
       SQLSERVER_2019_WEB: The database version is SQL Server 2019 Web.
-      SQLSERVER_2019_WEB_CU10: The database version is SQL Server 2019 Web
-        CU10.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -993,13 +973,9 @@ class Flag(_messages.Message):
     MYSQL_8_0 = 13
     POSTGRES_13 = 14
     SQLSERVER_2019_STANDARD = 15
-    SQLSERVER_2019_STANDARD_CU10 = 16
-    SQLSERVER_2019_ENTERPRISE = 17
-    SQLSERVER_2019_ENTERPRISE_CU10 = 18
-    SQLSERVER_2019_EXPRESS = 19
-    SQLSERVER_2019_EXPRESS_CU10 = 20
-    SQLSERVER_2019_WEB = 21
-    SQLSERVER_2019_WEB_CU10 = 22
+    SQLSERVER_2019_ENTERPRISE = 16
+    SQLSERVER_2019_EXPRESS = 17
+    SQLSERVER_2019_WEB = 18
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being *BOOLEAN*, *STRING*,
@@ -2067,7 +2043,8 @@ class SqlBackupRunsListRequest(_messages.Message):
   r"""A SqlBackupRunsListRequest object.
 
   Fields:
-    instance: Cloud SQL instance ID. This does not include the project ID.
+    instance: Cloud SQL instance ID, or "-" for all instances. This does not
+      include the project ID.
     maxResults: Maximum number of backup runs per response.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.

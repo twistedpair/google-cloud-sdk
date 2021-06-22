@@ -97,10 +97,10 @@ def MakeCommitmentArg(plural):
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
-def AddCreateFlags(parser):
+def AddCreateFlags(parser, support_share_setting=False):
   """Add general arguments for `commitments create` flag."""
   AddPlan(parser)
-  AddReservationArgGroup(parser)
+  AddReservationArgGroup(parser, support_share_setting)
   AddResourcesArgGroup(parser)
 
 
@@ -192,6 +192,16 @@ def AddUpdateReservationGroup(parser):
       '--source-local-ssd').AddToParser(reservations_group)
   reservation_flags.GetLocalSsdFlag(
       '--dest-local-ssd').AddToParser(reservations_group)
+
+  # Add share-setting and share-with flags.
+  reservation_flags.GetSharedSettingFlag('--source-share-setting').AddToParser(
+      reservations_group)
+  reservation_flags.GetShareWithFlag('--source-share-with').AddToParser(
+      reservations_group)
+  reservation_flags.GetSharedSettingFlag('--dest-share-setting').AddToParser(
+      reservations_group)
+  reservation_flags.GetShareWithFlag('--dest-share-with').AddToParser(
+      reservations_group)
   return parser
 
 
@@ -240,7 +250,7 @@ def AddReservationsFromFileFlag(parser, custom_text=None):
       help=help_text)
 
 
-def AddReservationArgGroup(parser):
+def AddReservationArgGroup(parser, support_share_setting=False):
   """Adds all flags needed for reservations creation."""
   reservations_manage_group = parser.add_group(
       'Manage the reservations to be created with the commitment.', mutex=True)
@@ -262,6 +272,12 @@ def AddReservationArgGroup(parser):
       help='Manage the specific SKU reservation properties to create.')
   AddFlagsToSpecificSkuGroup(specific_sku_reservation_group)
 
+  if support_share_setting:
+    share_setting_reservation_group = single_reservation_group.add_argument_group(
+        help='Manage the properties of a shared reservation to create',
+        required=False)
+    AddFlagsToShareSettingGroup(share_setting_reservation_group)
+
 
 def AddFlagsToSpecificSkuGroup(group):
   """Adds flags needed for a specific sku zonal allocation."""
@@ -272,6 +288,17 @@ def AddFlagsToSpecificSkuGroup(group):
       reservation_flags.GetMachineType(required=False),
       reservation_flags.GetLocalSsdFlag(),
       reservation_flags.GetAcceleratorFlag(),
+  ]
+
+  for arg in args:
+    arg.AddToParser(group)
+
+
+def AddFlagsToShareSettingGroup(group):
+  """Adds flags needed for an allocation with share setting."""
+  args = [
+      reservation_flags.GetSharedSettingFlag(),
+      reservation_flags.GetShareWithFlag()
   ]
 
   for arg in args:

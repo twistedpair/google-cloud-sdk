@@ -31,7 +31,6 @@ from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
@@ -545,11 +544,5 @@ def Run(args, release_track):
           name=function_ref.RelativeName()))
 
   _SetInvokerPermissions(args, function)
-
-  log.status.Print(
-      'You can view your function in the Cloud Console here: ' +
-      'https://console.cloud.google.com/functions/details/{}/{}?project={}\n'
-      .format(function_ref.locationsId, function_ref.Name(),
-              properties.VALUES.core.project.GetOrFail()))
 
   return function

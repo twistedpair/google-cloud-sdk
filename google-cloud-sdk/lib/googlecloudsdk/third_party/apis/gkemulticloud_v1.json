@@ -240,19 +240,19 @@
           "enumDescriptions": [
             "Not set.",
             "The PROVISIONING state indicates the cluster is being created.",
-            "The ACTIVE state indicates the cluster has been created and is fully usable.",
-            "The UPDATING state indicates that the cluster is being updated.",
+            "The RUNNING state indicates the cluster has been created and is fully usable.",
+            "The RECONCILING state indicates that the cluster is being reconciled.",
             "The STOPPING state indicates the cluster is being deleted.",
-            "The FAILED state indicates the cluster is in a broken unrecoverable state.",
+            "The ERROR state indicates the cluster is in a broken unrecoverable state.",
             "The DEGRADED state indicates the cluster requires user action to restore full functionality."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "PROVISIONING",
-            "ACTIVE",
-            "UPDATING",
+            "RUNNING",
+            "RECONCILING",
             "STOPPING",
-            "FAILED",
+            "ERROR",
             "DEGRADED"
           ]
         },
@@ -551,6 +551,10 @@
           "description": "The kubernetes version (e.g. 1.16.9-gke.12) running on this node pool.",
           "type": "string"
         },
+        "config": {
+          "description": "The node configuration of the pool.",
+          "$ref": "GoogleCloudGkemulticloudV1AwsNodeConfig"
+        },
         "autoscaling": {
           "description": "Autoscaler configuration for this NodePool.",
           "$ref": "GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling"
@@ -559,55 +563,6 @@
           "description": "The subnet where the node pool node run.",
           "type": "string"
         },
-        "maxPodsPerNode": {
-          "description": "The maximum number of pods per node.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "instanceType": {
-          "description": "The AWS instance type.",
-          "type": "string"
-        },
-        "sshConfig": {
-          "description": "The SSH configuration.",
-          "$ref": "GoogleCloudGkemulticloudV1AwsSshConfig"
-        },
-        "securityGroupIds": {
-          "description": "The IDs of additional security groups to add to nodes in this pool. The manager will automatically create security groups with minimum rules needed for a functioning cluster.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "iamInstanceProfile": {
-          "description": "The name of the AWS IAM role assigned to nodes in the pool.",
-          "type": "string"
-        },
-        "rootVolume": {
-          "description": "Template for the root volume provisioned for node pool nodes. Volumes will be provisioned in the availability zone assigned to the node pool subnet.",
-          "$ref": "GoogleCloudGkemulticloudV1AwsVolumeTemplate"
-        },
-        "taints": {
-          "description": "The initial taints assigned to nodes of this node pool.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudGkemulticloudV1AwsNodeTaint"
-          }
-        },
-        "labels": {
-          "description": "The initial labels assigned to nodes of this node pool. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "tags": {
-          "description": "Key\/value metadata to assign to each underlying AWS resource. Specify at most 50 pairs containing alphanumerics, spaces, and symbols (.+-=_:@\/). Keys can be up to 127 Unicode characters. Values can be up to 255 Unicode characters.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
         "state": {
           "description": "Output only. The lifecycle state of the node pool.",
           "readOnly": true,
@@ -615,19 +570,19 @@
           "enumDescriptions": [
             "Not set.",
             "The PROVISIONING state indicates the node pool is being created.",
-            "The ACTIVE state indicates the node pool has been created and is fully usable.",
-            "The UPDATING state indicates that the node pool is being updated.",
+            "The RUNNING state indicates the node pool has been created and is fully usable.",
+            "The RECONCILING state indicates that the node pool is being reconciled.",
             "The STOPPING state indicates the node pool is being deleted.",
-            "The FAILED state indicates the node pool is in a broken unrecoverable state.",
+            "The ERROR state indicates the node pool is in a broken unrecoverable state.",
             "The DEGRADED state indicates the node pool requires user action to restore full functionality."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "PROVISIONING",
-            "ACTIVE",
-            "UPDATING",
+            "RUNNING",
+            "RECONCILING",
             "STOPPING",
-            "FAILED",
+            "ERROR",
             "DEGRADED"
           ]
         },
@@ -663,23 +618,61 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "maxPodsConstraint": {
+          "description": "The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.",
+          "$ref": "GoogleCloudGkemulticloudV1MaxPodsConstraint"
         }
       }
     },
-    "GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling": {
-      "id": "GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling",
-      "description": "AwsNodePoolAutoscaling contains information required by cluster autoscaler to adjust the size of the node pool to the current cluster usage.",
+    "GoogleCloudGkemulticloudV1AwsNodeConfig": {
+      "id": "GoogleCloudGkemulticloudV1AwsNodeConfig",
+      "description": "Parameters that describe the nodes in a cluster.",
       "type": "object",
       "properties": {
-        "minNodeCount": {
-          "description": "Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.",
-          "type": "integer",
-          "format": "int32"
+        "instanceType": {
+          "description": "The AWS instance type.",
+          "type": "string"
         },
-        "maxNodeCount": {
-          "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count.",
-          "type": "integer",
-          "format": "int32"
+        "rootVolume": {
+          "description": "Template for the root volume provisioned for node pool nodes. Volumes will be provisioned in the availability zone assigned to the node pool subnet.",
+          "$ref": "GoogleCloudGkemulticloudV1AwsVolumeTemplate"
+        },
+        "taints": {
+          "description": "The initial taints assigned to nodes of this node pool.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1AwsNodeTaint"
+          }
+        },
+        "labels": {
+          "description": "The initial labels assigned to nodes of this node pool. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "description": "Key\/value metadata to assign to each underlying AWS resource. Specify at most 50 pairs containing alphanumerics, spaces, and symbols (.+-=_:@\/). Keys can be up to 127 Unicode characters. Values can be up to 255 Unicode characters.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "iamInstanceProfile": {
+          "description": "The name of the AWS IAM role assigned to nodes in the pool.",
+          "type": "string"
+        },
+        "sshConfig": {
+          "description": "The SSH configuration.",
+          "$ref": "GoogleCloudGkemulticloudV1AwsSshConfig"
+        },
+        "securityGroupIds": {
+          "description": "The IDs of additional security groups to add to nodes in this pool. The manager will automatically create security groups with minimum rules needed for a functioning cluster.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -711,6 +704,35 @@
             "PREFER_NO_SCHEDULE",
             "NO_EXECUTE"
           ]
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling": {
+      "id": "GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling",
+      "description": "AwsNodePoolAutoscaling contains information required by cluster autoscaler to adjust the size of the node pool to the current cluster usage.",
+      "type": "object",
+      "properties": {
+        "minNodeCount": {
+          "description": "Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxNodeCount": {
+          "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1MaxPodsConstraint": {
+      "id": "GoogleCloudGkemulticloudV1MaxPodsConstraint",
+      "description": "Constraints applied to pods.",
+      "type": "object",
+      "properties": {
+        "maxPodsPerNode": {
+          "description": "Constraint enforced on the max num of pods per node.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -973,19 +995,19 @@
           "enumDescriptions": [
             "Not set.",
             "The PROVISIONING state indicates the cluster is being created.",
-            "The ACTIVE state indicates the cluster has been created and is fully usable.",
-            "The UPDATING state indicates that the cluster is being updated.",
+            "The RUNNING state indicates the cluster has been created and is fully usable.",
+            "The RECONCILING state indicates that the cluster is being reconciled.",
             "The STOPPING state indicates the cluster is being deleted.",
-            "The FAILED state indicates the cluster is in a broken unrecoverable state.",
+            "The ERROR state indicates the cluster is in a broken unrecoverable state.",
             "The DEGRADED state indicates the cluster requires user action to restore full functionality."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "PROVISIONING",
-            "ACTIVE",
-            "UPDATING",
+            "RUNNING",
+            "RECONCILING",
             "STOPPING",
-            "FAILED",
+            "ERROR",
             "DEGRADED"
           ]
         },
@@ -1233,6 +1255,10 @@
           "description": "The kubernetes version (e.g. 1.16.9-gke.12) running on this node pool.",
           "type": "string"
         },
+        "config": {
+          "description": "The node configuration of the pool.",
+          "$ref": "GoogleCloudGkemulticloudV1AzureNodeConfig"
+        },
         "subnetId": {
           "description": "The ARM ID of the subnet where the node pool VMs run. Make sure it's a subnet under the virtual network in the cluster configuration.",
           "type": "string"
@@ -1241,18 +1267,6 @@
           "description": "Autoscaler configuration for this NodePool.",
           "$ref": "GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling"
         },
-        "vmSize": {
-          "description": "The Azure VM size name. Example: Standard_DS2_v2. For available VM sizes, see https:\/\/docs.microsoft.com\/en-us\/azure\/virtual-machines\/vm-naming-conventions.",
-          "type": "string"
-        },
-        "sshConfig": {
-          "description": "The SSH configuration.",
-          "$ref": "GoogleCloudGkemulticloudV1AzureSshConfig"
-        },
-        "rootVolume": {
-          "description": "Template for the volume provisioned for nodepool VMSS storage.",
-          "$ref": "GoogleCloudGkemulticloudV1AzureDiskTemplate"
-        },
         "state": {
           "description": "Output only. The current state of the node pool.",
           "readOnly": true,
@@ -1260,19 +1274,19 @@
           "enumDescriptions": [
             "Not set.",
             "The PROVISIONING state indicates the node pool is being created.",
-            "The ACTIVE state indicates the node pool has been created and is fully usable.",
-            "The UPDATING state indicates that the node pool is being updated.",
+            "The RUNNING state indicates the node pool has been created and is fully usable.",
+            "The RECONCILING state indicates that the node pool is being reconciled.",
             "The STOPPING state indicates the node pool is being deleted.",
-            "The FAILED state indicates the node pool is in a broken unrecoverable state.",
+            "The ERROR state indicates the node pool is in a broken unrecoverable state.",
             "The DEGRADED state indicates the node pool requires user action to restore full functionality."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "PROVISIONING",
-            "ACTIVE",
-            "UPDATING",
+            "RUNNING",
+            "RECONCILING",
             "STOPPING",
-            "FAILED",
+            "ERROR",
             "DEGRADED"
           ]
         },
@@ -1309,6 +1323,25 @@
             "type": "string"
           }
         },
+        "maxPodsConstraint": {
+          "description": "The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.",
+          "$ref": "GoogleCloudGkemulticloudV1MaxPodsConstraint"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1AzureNodeConfig": {
+      "id": "GoogleCloudGkemulticloudV1AzureNodeConfig",
+      "description": "Parameters that describe the nodes in a cluster.",
+      "type": "object",
+      "properties": {
+        "vmSize": {
+          "description": "The Azure VM size name. Example: Standard_DS2_v2. For available VM sizes, see https:\/\/docs.microsoft.com\/en-us\/azure\/virtual-machines\/vm-naming-conventions.",
+          "type": "string"
+        },
+        "rootVolume": {
+          "description": "Template for the volume provisioned for nodepool VMSS storage.",
+          "$ref": "GoogleCloudGkemulticloudV1AzureDiskTemplate"
+        },
         "tags": {
           "description": "Tags to apply on the node pool.",
           "type": "object",
@@ -1316,10 +1349,9 @@
             "type": "string"
           }
         },
-        "maxPodsPerNode": {
-          "description": "The maximum number of pods per node.",
-          "type": "integer",
-          "format": "int32"
+        "sshConfig": {
+          "description": "The SSH configuration.",
+          "$ref": "GoogleCloudGkemulticloudV1AzureSshConfig"
         }
       }
     },

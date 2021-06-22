@@ -40,11 +40,11 @@ def AwsNodePoolAttributeConfig():
       name='node_pool', help_text='AWS node pool of the {resource}.')
 
 
-def RegionAttributeConfig():
+def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='region',
-      help_text='Google Cloud region for the {resource}.',
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.aws.region)])
+      name='location',
+      help_text='Google Cloud location for the {resource}.',
+      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.aws.location)])
 
 
 def GetAwsClusterResourceSpec():
@@ -52,7 +52,7 @@ def GetAwsClusterResourceSpec():
       'gkemulticloud.projects.locations.awsClusters',
       resource_name='cluster',
       awsClustersId=AwsClusterAttributeConfig(),
-      locationsId=RegionAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
@@ -62,15 +62,15 @@ def GetAwsNodePoolResourceSpec():
       resource_name='node_pool',
       awsNodePoolsId=AwsNodePoolAttributeConfig(),
       awsClustersId=AwsClusterAttributeConfig(),
-      locationsId=RegionAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
-def GetRegionResourceSpec():
+def GetLocationResourceSpec():
   return concepts.ResourceSpec(
       'gkemulticloud.projects.locations',
-      resource_name='region',
-      locationsId=RegionAttributeConfig(),
+      resource_name='location',
+      locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
@@ -106,15 +106,15 @@ def AddAwsNodePoolResourceArg(parser, verb, positional=True):
       required=True).AddToParser(parser)
 
 
-def AddRegionResourceArg(parser, verb):
-  """Add a resource argument for GKE Multi-cloud region.
+def AddLocationResourceArg(parser, verb):
+  """Add a resource argument for GKE Multi-cloud location.
 
   Args:
     parser: The argparse parser to add the resource arg to.
     verb: str, the verb to describe the resource, such as 'to update'.
   """
   concept_parsers.ConceptParser.ForResource(
-      '--region',
-      GetRegionResourceSpec(),
-      'Google Cloud region {}.'.format(verb),
+      '--location',
+      GetLocationResourceSpec(),
+      'Google Cloud location {}.'.format(verb),
       required=True).AddToParser(parser)

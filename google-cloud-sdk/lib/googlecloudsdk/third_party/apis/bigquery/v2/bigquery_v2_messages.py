@@ -1045,6 +1045,23 @@ class DestinationTableProperties(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
 
 
+class DmlStatistics(_messages.Message):
+  r"""A DmlStatistics object.
+
+  Fields:
+    deletedRowCount: Number of deleted Rows. populated by DML DELETE, MERGE
+      and TRUNCATE statements.
+    insertedRowCount: Number of inserted Rows. Populated by DML INSERT and
+      MERGE statements.
+    updatedRowCount: Number of updated Rows. Populated by DML UPDATE and MERGE
+      statements.
+  """
+
+  deletedRowCount = _messages.IntegerField(1)
+  insertedRowCount = _messages.IntegerField(2)
+  updatedRowCount = _messages.IntegerField(3)
+
+
 class EncryptionConfiguration(_messages.Message):
   r"""A EncryptionConfiguration object.
 
@@ -2009,8 +2026,8 @@ class JobStatistics(_messages.Message):
     rowLevelSecurityStatistics: [Output-only] [Preview] Statistics for row-
       level security. Present only for query and extract jobs.
     scriptStatistics: [Output-only] Statistics for a child job of a script.
-    sessionInfoTemplate: [Output-only] [Preview] Information of the session if
-      this job is part of one.
+    sessionInfo: [Output-only] [Preview] Information of the session if this
+      job is part of one.
     startTime: [Output-only] Start time of this job, in milliseconds since the
       epoch. This field will be present when the job transitions from the
       PENDING state to either RUNNING or DONE.
@@ -2047,7 +2064,7 @@ class JobStatistics(_messages.Message):
   reservation_id = _messages.StringField(11)
   rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 12)
   scriptStatistics = _messages.MessageField('ScriptStatistics', 13)
-  sessionInfoTemplate = _messages.MessageField('SessionInfo', 14)
+  sessionInfo = _messages.MessageField('SessionInfo', 14)
   startTime = _messages.IntegerField(15)
   totalBytesProcessed = _messages.IntegerField(16)
   totalSlotMs = _messages.IntegerField(17)
@@ -2163,7 +2180,7 @@ class JobStatistics2(_messages.Message):
   ddlTargetRoutine = _messages.MessageField('RoutineReference', 7)
   ddlTargetRowAccessPolicy = _messages.MessageField('RowAccessPolicyReference', 8)
   ddlTargetTable = _messages.MessageField('TableReference', 9)
-  dmlStats = _messages.MessageField('extra_types.JsonValue', 10)
+  dmlStats = _messages.MessageField('DmlStatistics', 10)
   estimatedBytesProcessed = _messages.IntegerField(11)
   modelTraining = _messages.MessageField('BigQueryModelTraining', 12)
   modelTrainingCurrentIteration = _messages.IntegerField(13, variant=_messages.Variant.INT32)
@@ -2680,7 +2697,7 @@ class QueryResponse(_messages.Message):
   """
 
   cacheHit = _messages.BooleanField(1)
-  dmlStats = _messages.MessageField('extra_types.JsonValue', 2)
+  dmlStats = _messages.MessageField('DmlStatistics', 2)
   errors = _messages.MessageField('ErrorProto', 3, repeated=True)
   jobComplete = _messages.BooleanField(4)
   jobReference = _messages.MessageField('JobReference', 5)

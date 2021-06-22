@@ -510,6 +510,10 @@ class Deployment(_messages.Message):
         could be generated.
       DELETE_BUILD_RUN_FAILED: The deletion Cloud Build failed after logs
         could be generated.
+      BUCKET_CREATION_PERMISSION_DENIED: A Cloud Storage bucket failed due to
+        a permissions issue.
+      BUCKET_CREATION_FAILED: A Cloud Storage bucket failed for a non-
+        permissions-related issue.
     """
     ERROR_CODE_UNSPECIFIED = 0
     REVISION_FAILED = 1
@@ -518,6 +522,8 @@ class Deployment(_messages.Message):
     CLUSTER_CREATION_FAILED = 4
     DELETE_BUILD_API_FAILED = 5
     DELETE_BUILD_RUN_FAILED = 6
+    BUCKET_CREATION_PERMISSION_DENIED = 7
+    BUCKET_CREATION_FAILED = 8
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the deployment.
@@ -1096,9 +1102,11 @@ class Revision(_messages.Message):
     Values:
       ERROR_CODE_UNSPECIFIED: No error code was specified.
       BUCKET_CREATION_PERMISSION_DENIED: A Cloud Storage bucket failed due to
-        a permissions issue.
+        a permissions issue. Deprecated in favor of equivalent ErrorCode on
+        Deployment.
       BUCKET_CREATION_FAILED: A Cloud Storage bucket failed for a non-
-        permissions-related issue.
+        permissions-related issue. Deprecated in favor of equivalent ErrorCode
+        on Deployment.
       CLOUD_BUILD_PERMISSION_DENIED: Cloud Build failed due to a permissions
         issue.
       PIPELINE_BUILD_API_FAILED: The pipeline Cloud Build failed before logs

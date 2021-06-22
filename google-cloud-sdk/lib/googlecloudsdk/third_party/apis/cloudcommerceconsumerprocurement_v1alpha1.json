@@ -1114,7 +1114,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange",
-      "description": "Entitlement change information. Next Id: 7",
+      "description": "Entitlement change information. Next Id: 8",
       "type": "object",
       "properties": {
         "oldFlavorExternalName": {
@@ -1148,6 +1148,23 @@
             "CHANGE_STATE_REJECTED",
             "CHANGE_STATE_ABANDONED",
             "CHANGE_STATE_ACTIVATING"
+          ]
+        },
+        "changeStateReasonType": {
+          "description": "Output only. Predefined enum types for why this change is in current state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, indicating there is no predefined type for change state reason.",
+            "Change is in current state due to term expiration.",
+            "Change is in current state due to user explicit cancellation.",
+            "Change is in current state due to system cancellation."
+          ],
+          "enum": [
+            "CHANGE_STATE_REASON_TYPE_UNSPECIFIED",
+            "CHANGE_STATE_REASON_TYPE_EXPIRED",
+            "CHANGE_STATE_REASON_TYPE_USER_CANCELLED",
+            "CHANGE_STATE_REASON_TYPE_SYSTEM_CANCELLED"
           ]
         },
         "changeEffectiveTime": {

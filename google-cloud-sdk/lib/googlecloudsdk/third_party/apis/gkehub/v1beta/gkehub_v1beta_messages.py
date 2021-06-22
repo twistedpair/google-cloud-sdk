@@ -719,9 +719,9 @@ class ConfigManagementSyncState(_messages.Message):
       will be truncated after 100 errors, although it is unlikely for that
       many errors to simultaneously exist.
     importToken: Token indicating the state of the importer.
-    lastSync: Timestamp of when ACM last successfully synced the repo The time
-      format is specified in https://golang.org/pkg/time/#Time.String This
-      field is being deprecated. Use last_sync_time instead. (b/154053616)
+    lastSync: Deprecated: use last_sync_time instead. Timestamp of when ACM
+      last successfully synced the repo The time format is specified in
+      https://golang.org/pkg/time/#Time.String
     lastSyncTime: Timestamp type of when ACM last successfully synced the repo
     sourceToken: Token indicating the state of the repo.
     syncToken: Token indicating the state of the syncer.

@@ -1118,6 +1118,7 @@ class DiscoveryNote(_messages.Message):
       ATTESTATION: This represents a logical "role" that can attest to
         artifacts.
       UPGRADE: This represents an available package upgrade.
+      COMPLIANCE: This represents a Compliance Note
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -1128,6 +1129,7 @@ class DiscoveryNote(_messages.Message):
     DISCOVERY = 6
     ATTESTATION = 7
     UPGRADE = 8
+    COMPLIANCE = 9
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -1674,6 +1676,7 @@ class Note(_messages.Message):
       ATTESTATION: This represents a logical "role" that can attest to
         artifacts.
       UPGRADE: This represents an available package upgrade.
+      COMPLIANCE: This represents a Compliance Note
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -1684,6 +1687,7 @@ class Note(_messages.Message):
     DISCOVERY = 6
     ATTESTATION = 7
     UPGRADE = 8
+    COMPLIANCE = 9
 
   attestation = _messages.MessageField('AttestationNote', 1)
   build = _messages.MessageField('BuildNote', 2)
@@ -1757,6 +1761,7 @@ class Occurrence(_messages.Message):
       ATTESTATION: This represents a logical "role" that can attest to
         artifacts.
       UPGRADE: This represents an available package upgrade.
+      COMPLIANCE: This represents a Compliance Note
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -1767,6 +1772,7 @@ class Occurrence(_messages.Message):
     DISCOVERY = 6
     ATTESTATION = 7
     UPGRADE = 8
+    COMPLIANCE = 9
 
   attestation = _messages.MessageField('AttestationOccurrence', 1)
   build = _messages.MessageField('BuildOccurrence', 2)

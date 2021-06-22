@@ -665,6 +665,7 @@ class Occurrence(_messages.Message):
       ATTESTATION: This represents a logical "role" that can attest to
         artifacts.
       UPGRADE: This represents an available package upgrade.
+      COMPLIANCE: This represents a Compliance Note
     """
     NOTE_KIND_UNSPECIFIED = 0
     VULNERABILITY = 1
@@ -675,6 +676,7 @@ class Occurrence(_messages.Message):
     DISCOVERY = 6
     ATTESTATION = 7
     UPGRADE = 8
+    COMPLIANCE = 9
 
   attestation = _messages.MessageField('AttestationOccurrence', 1)
   build = _messages.MessageField('BuildOccurrence', 2)
@@ -898,6 +900,9 @@ class Operation(_messages.Message):
 class PackageData(_messages.Message):
   r"""A PackageData object.
 
+  Enums:
+    PackageTypeValueValuesEnum: The type of package: os, maven, go, etc.
+
   Fields:
     cpeUri: The cpe_uri in [cpe format] (https://cpe.mitre.org/specification/)
       in which the vulnerability may manifest. Examples include distro or
@@ -907,16 +912,32 @@ class PackageData(_messages.Message):
     osVersion: The version of the OS This field is deprecated and the
       information is in cpe_uri
     package: The package being analysed for vulnerabilities
+    packageType: The type of package: os, maven, go, etc.
     unused: A string attribute.
     version: The version of the package being analysed
   """
+
+  class PackageTypeValueValuesEnum(_messages.Enum):
+    r"""The type of package: os, maven, go, etc.
+
+    Values:
+      PACKAGE_TYPE_UNSPECIFIED: <no description>
+      OS: Operating System
+      MAVEN: <no description>
+      GO: <no description>
+    """
+    PACKAGE_TYPE_UNSPECIFIED = 0
+    OS = 1
+    MAVEN = 2
+    GO = 3
 
   cpeUri = _messages.StringField(1)
   os = _messages.StringField(2)
   osVersion = _messages.StringField(3)
   package = _messages.StringField(4)
-  unused = _messages.StringField(5)
-  version = _messages.StringField(6)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 5)
+  unused = _messages.StringField(6)
+  version = _messages.StringField(7)
 
 
 class PackageIssue(_messages.Message):

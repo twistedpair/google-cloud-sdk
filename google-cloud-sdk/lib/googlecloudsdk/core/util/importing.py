@@ -81,7 +81,7 @@ def _load_module(module):
     # Actually load the module from source and add all its attributes.
     module_file = getattr(module, '__file__', None)
     if module_file:
-      module_file = open(module_file.name)
+      module_file = open(module_file)
     module_path = getattr(module, '__path__', [None])[0]
     module_desc = getattr(module, '__desc__')
     del module.__desc__
@@ -145,7 +145,7 @@ def lazy_load_module(module_name):
     # Use ModuleType.__setattr__ to avoid triggering full loading.
     if module_file:
       module_file.close()
-      types.ModuleType.__setattr__(module, '__file__', module_file)
+      types.ModuleType.__setattr__(module, '__file__', module_file.name)
     if path:
       types.ModuleType.__setattr__(module, '__path__', [path])
     types.ModuleType.__setattr__(module, '__desc__', description)

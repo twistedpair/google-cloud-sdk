@@ -38,7 +38,7 @@ class CustomJobsClient(object):
     self._message_prefix = constants.AI_PLATFORM_MESSAGE_PREFIX[version]
 
   def GetMessage(self, message_name):
-    """Returns the API messsages class by name."""
+    """Returns the API message class by name."""
 
     return getattr(
         self.messages,

@@ -42,12 +42,13 @@ def GetOperationRef(operation):
       operation.name, 'privateca.projects.locations.operations')
 
 
-def Await(operation, progress_message):
+def Await(operation, progress_message, api_version='v1beta1'):
   """Waits for operation to complete while displaying in-progress indicator.
 
   Args:
     operation: The Operation resource.
     progress_message: The message to display with the in-progress indicator.
+    api_version: The API version.
 
   Returns:
     The resource that is the result of the operation.
@@ -62,7 +63,7 @@ def Await(operation, progress_message):
 
   operation_ref = GetOperationRef(operation)
   poller = waiter.CloudOperationPollerNoResources(
-      base.GetClientInstance().projects_locations_operations)
+      base.GetClientInstance(api_version).projects_locations_operations)
   try:
     return waiter.WaitFor(poller, operation_ref, progress_message)
   except waiter.TimeoutError:

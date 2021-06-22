@@ -3559,9 +3559,9 @@ class V1Beta1Adapter(V1Adapter):
 
     if options.security_group is not None:
       update = self.messages.ClusterUpdate(
-          desiredAuthenticatorGroupsConfig=self.messages.
-          AuthenticatorGroupsConfig(enabled=True,
-                                    securityGroup=options.security_group))
+          desiredAuthenticatorGroupsConfig=self.messages
+          .AuthenticatorGroupsConfig(
+              enabled=True, securityGroup=options.security_group))
 
     master = _GetMasterForClusterUpdate(options, self.messages)
     if master is not None:
@@ -4058,8 +4058,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.security_group is not None:
       update = self.messages.ClusterUpdate(
           desiredAuthenticatorGroupsConfig=self.messages
-          .AuthenticatorGroupsConfig(enabled=True,
-                                     securityGroup=options.security_group))
+          .AuthenticatorGroupsConfig(
+              enabled=True, securityGroup=options.security_group))
 
     master = _GetMasterForClusterUpdate(options, self.messages)
     if master is not None:
@@ -4451,7 +4451,31 @@ def _AddNotificationConfigToCluster(cluster, options, messages):
       pubsub.enabled = nc['pubsub'] == 'ENABLED'
     if 'pubsub-topic' in nc:
       pubsub.topic = nc['pubsub-topic']
+    if 'filter' in nc:
+      pubsub.filter = _GetFilterFromArg(nc['filter'], messages)
+
     cluster.notificationConfig = messages.NotificationConfig(pubsub=pubsub)
+
+
+def _GetFilterFromArg(filter_arg, messages):
+  """Gets a Filter message object from a filter phrase."""
+  if not filter_arg:
+    return None
+  flag_event_types_to_enum = {
+      'UpgradeEvent':
+          messages.Filter.EventTypeValueListEntryValuesEnum.UPGRADE_EVENT,
+      'UpgradeAvailableEvent':
+          messages.Filter.EventTypeValueListEntryValuesEnum
+          .UPGRADE_AVAILABLE_EVENT,
+      'SecurityBulletinEvent':
+          messages.Filter.EventTypeValueListEntryValuesEnum
+          .SECURITY_BULLETIN_EVENT
+  }
+  to_return = messages.Filter()
+  for event_type in filter_arg.split('|'):
+    if flag_event_types_to_enum[event_type]:
+      to_return.eventType.append(flag_event_types_to_enum[event_type])
+  return to_return
 
 
 def _GetReleaseChannel(options, messages):
@@ -4475,6 +4499,8 @@ def _GetNotificationConfigForClusterUpdate(options, messages):
       pubsub.enabled = nc['pubsub'] == 'ENABLED'
     if 'pubsub-topic' in nc:
       pubsub.topic = nc['pubsub-topic']
+    if 'filter' in nc:
+      pubsub.filter = _GetFilterFromArg(nc['filter'], messages)
     return messages.NotificationConfig(pubsub=pubsub)
 
 

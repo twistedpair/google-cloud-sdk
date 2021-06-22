@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
@@ -71,16 +70,16 @@ def GetRevision(name):
       "projects/p/locations/l/deployments/d/revisions/r".
 
   Returns:
-    A messages.Revision or None if one didn't exist.
+    A messages.Revision.
+
+  Raises:
+    HttpNotFoundError: if the revision didn't exist.
   """
   client = GetClientInstance()
   messages = client.MESSAGES_MODULE
-  try:
-    return client.projects_locations_deployments_revisions.Get(
-        messages.ConfigProjectsLocationsDeploymentsRevisionsGetRequest(
-            name=name))
-  except apitools_exceptions.HttpNotFoundError:
-    return None
+  return client.projects_locations_deployments_revisions.Get(
+      messages.ConfigProjectsLocationsDeploymentsRevisionsGetRequest(
+          name=name))
 
 
 def GetDeployment(name):
@@ -91,18 +90,18 @@ def GetDeployment(name):
       "projects/p/locations/l/deployments/d".
 
   Returns:
-    A messages.Deployment or None if one didn't exist.
+    A messages.Deployment.
+
+  Raises:
+    HttpNotFoundError: if the deployment didn't exist.
   """
   client = GetClientInstance()
   messages = client.MESSAGES_MODULE
-  try:
-    return client.projects_locations_deployments.Get(
-        messages.ConfigProjectsLocationsDeploymentsGetRequest(
-            name=name
-        )
-    )
-  except apitools_exceptions.HttpNotFoundError:
-    return None
+  return client.projects_locations_deployments.Get(
+      messages.ConfigProjectsLocationsDeploymentsGetRequest(
+          name=name
+      )
+  )
 
 
 def CreateDeployment(deployment, deployment_id, location):
@@ -151,23 +150,54 @@ def UpdateDeployment(deployment, deployment_full_name):
   )
 
 
-def WaitForDeploymentOperation(operation, progress_message):
+def DeleteDeployment(deployment_full_name):
+  """Calls into the DeleteDeployment API.
+
+  Args:
+    deployment_full_name: the fully qualified name of the deployment.
+
+  Returns:
+    A messages.OperationMetadata representing the long-running operation.
+  """
+  client = GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  return client.projects_locations_deployments.Delete(
+      messages.ConfigProjectsLocationsDeploymentsDeleteRequest(
+          name=deployment_full_name,
+          # Delete all child revisions.
+          force=True
+      )
+  )
+
+
+def WaitForDeploymentOperation(
+    operation,
+    poll_resource_at_end,
+    progress_message):
   """Waits for the given google.longrunning.Operation to complete.
 
   Args:
-    operation: The operation to poll.
-    progress_message: String to display for default progress_tracker.
+    operation: the operation to poll.
+    poll_resource_at_end: bool, whether to expect a resource at the end of the
+      long-running operation.
+    progress_message: string to display for default progress_tracker.
 
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error
 
   Returns:
-    The created Deployment resource.
+    The return value of the long-running operation (e.g. if the LRO represented
+      creating a deployment, then this will be a Deployment resource).
   """
   client = GetClientInstance()
   operation_ref = resources.REGISTRY.ParseRelativeName(
       operation.name, collection='config.projects.locations.operations')
-  poller = waiter.CloudOperationPoller(
-      client.projects_locations_deployments,
-      client.projects_locations_operations)
+  if poll_resource_at_end:
+    poller = waiter.CloudOperationPoller(
+        client.projects_locations_deployments,
+        client.projects_locations_operations)
+  else:
+    poller = waiter.CloudOperationPollerNoResources(
+        client.projects_locations_operations)
+
   return waiter.WaitFor(poller, operation_ref, progress_message)

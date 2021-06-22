@@ -708,6 +708,9 @@ class NodePool(_messages.Message):
   Fields:
     createTime: Output only. The time when the node pool was created.
     labels: Labels associated with this resource.
+    machineFilter: Only machines matching this filter will be allowed to join
+      the node pool. The filtering language accepts strings like "name=", and
+      is documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: Required. The resource name of the node pool.
     nodeCount: Required. The number of nodes in the pool.
     site: Name of the Google Edge Cloud zone where this node pool will be
@@ -741,10 +744,11 @@ class NodePool(_messages.Message):
 
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  nodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  site = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  machineFilter = _messages.StringField(3)
+  name = _messages.StringField(4)
+  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  site = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class Operation(_messages.Message):

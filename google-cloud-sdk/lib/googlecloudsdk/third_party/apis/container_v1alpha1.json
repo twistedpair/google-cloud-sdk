@@ -2406,6 +2406,36 @@
         "topic": {
           "description": "The desired Pub\/Sub topic to which notifications will be sent by GKE. Format is `projects\/{project}\/topics\/{topic}`.",
           "type": "string"
+        },
+        "filter": {
+          "description": "Allows filtering to one or more specific event types. If no filter is specified, or if a filter is specified with no event types, all event types will be sent",
+          "$ref": "Filter"
+        }
+      }
+    },
+    "Filter": {
+      "id": "Filter",
+      "description": "Allows filtering to one or more specific event types. If event types are present, those and only those event types will be transmitted to the cluster. Other types will be skipped. If no filter is specified, or no event types are present, all event types will be sent",
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "description": "Event types to allowlist.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Not set, will be ignored.",
+              "Corresponds with UpgradeAvailableEvent.",
+              "Corresponds with UpgradeEvent.",
+              "Corresponds with SecurityBulletinEvent."
+            ],
+            "enum": [
+              "EVENT_TYPE_UNSPECIFIED",
+              "UPGRADE_AVAILABLE_EVENT",
+              "UPGRADE_EVENT",
+              "SECURITY_BULLETIN_EVENT"
+            ]
+          }
         }
       }
     },

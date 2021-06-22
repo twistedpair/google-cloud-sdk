@@ -1242,14 +1242,12 @@
           "enumDescriptions": [
             "Container Manager is disabled or not running for this execution.",
             "Container Manager is enabled and there was a matching container available for use during execution.",
-            "Container Manager is enabled, but there was no matching container available for execution.",
-            "Container Manager is enabled and we attempted to execute on a matching container, but the container was no longer running. The task was retried without an async container."
+            "Container Manager is enabled, but there was no matching container available for execution."
           ],
           "enum": [
             "CONFIG_NONE",
             "CONFIG_MATCH",
-            "CONFIG_MISMATCH",
-            "CONFIG_MISSING_CONTAINER"
+            "CONFIG_MISMATCH"
           ]
         },
         "outputLocation": {

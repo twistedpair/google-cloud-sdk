@@ -875,6 +875,21 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       Cloud resources that contain "Important" as a word in any of the
       searchable fields and are also located in the "us-west1" region or the
       "global" location.
+    readMask: Optional. A comma-separated list of fields specifying which
+      fields to be returned in ResourceSearchResult. Only '*' or combination
+      of top level fields can be specified. Field names of both snake_case and
+      camelCase are supported. Examples: `"*"`, `"name,location"`,
+      `"name,versionedResources"`. The read_mask paths must be valid field
+      paths listed but not limited to (both snake_case and camelCase are
+      supported): * name * asset_type or assetType * project * display_name or
+      displayName * description * location * labels * network_tags or
+      networkTags * kms_key or kmsKey * create_time or createTime *
+      update_time or updateTime * state * additional_attributes or
+      additionalAttributes * versioned_resources or versionedResources If
+      read_mask is not specified, all fields except versionedResources will be
+      returned. If only '*' is specified, all fields including
+      versionedResources will be returned. Any invalid field path will trigger
+      INVALID_ARGUMENT error.
     scope: Required. A scope can be a project, a folder, or an organization.
       The search is limited to the resources within the `scope`. The caller
       must be granted the
@@ -891,7 +906,8 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   query = _messages.StringField(5)
-  scope = _messages.StringField(6, required=True)
+  readMask = _messages.StringField(6)
+  scope = _messages.StringField(7, required=True)
 
 
 class ConditionContext(_messages.Message):
@@ -3460,6 +3476,12 @@ class ResourceSearchResult(_messages.Message):
       1609459200` - value in date string. Example: `updateTime < 2021-01-01` -
       value in date-time string (must be quoted). Example: `updateTime <
       "2021-01-01T00:00:00"`
+    versionedResources: Versioned resource representations of this resource.
+      This is repeated because there could be multiple versions of resource
+      representations during version migration. This `versioned_resources`
+      field is not searchable. Some attributes of the resource representations
+      are exposed in `additional_attributes` field, so as to allow users to
+      search on them.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3548,6 +3570,7 @@ class ResourceSearchResult(_messages.Message):
   project = _messages.StringField(15)
   state = _messages.StringField(16)
   updateTime = _messages.StringField(17)
+  versionedResources = _messages.MessageField('VersionedResource', 18, repeated=True)
 
 
 class ResourceSelector(_messages.Message):
@@ -3830,6 +3853,70 @@ class VersionedPackage(_messages.Message):
   architecture = _messages.StringField(1)
   packageName = _messages.StringField(2)
   version = _messages.StringField(3)
+
+
+class VersionedResource(_messages.Message):
+  r"""Resource representation as defined by the corresponding service
+  providing the resource for a given API version.
+
+  Messages:
+    ResourceValue: JSON representation of the resource as defined by the
+      corresponding service providing this resource. Example: If the resource
+      is an instance provided by Compute Engine, this field will contain the
+      JSON representation of the instance as defined by Compute Engine:
+      `https://cloud.google.com/compute/docs/reference/rest/v1/instances`. You
+      can find the resource definition for each supported resource type in
+      this table: `https://cloud.google.com/asset-inventory/docs/supported-
+      asset-types#searchable_asset_types`
+
+  Fields:
+    resource: JSON representation of the resource as defined by the
+      corresponding service providing this resource. Example: If the resource
+      is an instance provided by Compute Engine, this field will contain the
+      JSON representation of the instance as defined by Compute Engine:
+      `https://cloud.google.com/compute/docs/reference/rest/v1/instances`. You
+      can find the resource definition for each supported resource type in
+      this table: `https://cloud.google.com/asset-inventory/docs/supported-
+      asset-types#searchable_asset_types`
+    version: API version of the resource. Example: If the resource is an
+      instance provided by Compute Engine v1 API as defined in
+      `https://cloud.google.com/compute/docs/reference/rest/v1/instances`,
+      version will be "v1".
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceValue(_messages.Message):
+    r"""JSON representation of the resource as defined by the corresponding
+    service providing this resource. Example: If the resource is an instance
+    provided by Compute Engine, this field will contain the JSON
+    representation of the instance as defined by Compute Engine:
+    `https://cloud.google.com/compute/docs/reference/rest/v1/instances`. You
+    can find the resource definition for each supported resource type in this
+    table: `https://cloud.google.com/asset-inventory/docs/supported-asset-
+    types#searchable_asset_types`
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  resource = _messages.MessageField('ResourceValue', 1)
+  version = _messages.StringField(2)
 
 
 class WindowsQuickFixEngineeringPackage(_messages.Message):

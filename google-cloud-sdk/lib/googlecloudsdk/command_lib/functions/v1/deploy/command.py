@@ -43,8 +43,7 @@ from six.moves import urllib
 
 _BUILD_NAME_REGEX = re.compile(
     r'projects\/(?P<projectnumber>[^\/]+)\/locations'
-    r'\/(?P<region>[^\/]+)\/builds\/(?P<buildid>[^\/]+)'
-)
+    r'\/(?P<region>[^\/]+)\/builds\/(?P<buildid>[^\/]+)')
 
 
 def _ApplyBuildEnvVarsArgsToFunction(function, args):
@@ -265,14 +264,12 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
     if args.IsSpecified('runtime'):
       function.runtime = args.runtime
       updated_fields.append('runtime')
-      if args.runtime in ['nodejs6', 'nodejs8']:
-        log.warning(
-            ('The {version} runtime is deprecated on Cloud Functions. '
-             'Please migrate to Node.js 10 '
-             '(--runtime=nodejs10). '
-             'See https://cloud.google.com/functions/docs/migrating/'
-             'nodejs-runtimes').format(version='Node.js 6' if args.runtime ==
-                                       'nodejs6' else 'Node.js 8'))
+      if args.runtime == 'nodejs6':
+        log.warning('The Node.js 6 runtime is deprecated on Cloud Functions. '
+                    'Please migrate to Node.js 10 or above '
+                    '(--runtime=nodejs10). '
+                    'See https://cloud.google.com/functions/docs/migrating/'
+                    'nodejs-runtimes')
     elif is_new_function:
       raise calliope_exceptions.RequiredArgumentException(
           'runtime', 'Flag `--runtime` is required for new functions.')

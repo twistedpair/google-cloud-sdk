@@ -1846,7 +1846,8 @@
             "The job completed successfully.",
             "The job failed. `error_message` should contain the details of the failure.",
             "The job is being cancelled. `error_message` should describe the reason for the cancellation.",
-            "The job has been cancelled. `error_message` should describe the reason for the cancellation."
+            "The job has been cancelled. `error_message` should describe the reason for the cancellation.",
+            "The jobs has become expired (added for uCAIP jobs) https:\/\/cloud.google.com\/vertex-ai\/docs\/reference\/rest\/v1\/JobState"
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1856,7 +1857,8 @@
             "SUCCEEDED",
             "FAILED",
             "CANCELLING",
-            "CANCELLED"
+            "CANCELLED",
+            "EXPIRED"
           ]
         },
         "outputNotebookFile": {

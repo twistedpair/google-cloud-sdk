@@ -454,7 +454,7 @@ class CloudassetV1(base_api.BaseApiClient):
         method_id='cloudasset.searchAllResources',
         ordered_params=['scope'],
         path_params=['scope'],
-        query_params=['assetTypes', 'orderBy', 'pageSize', 'pageToken', 'query'],
+        query_params=['assetTypes', 'orderBy', 'pageSize', 'pageToken', 'query', 'readMask'],
         relative_path='v1/{+scope}:searchAllResources',
         request_field='',
         request_type_name='CloudassetSearchAllResourcesRequest',

@@ -336,6 +336,10 @@
         "useChiefInTfConfig": {
           "description": "Optional. Use `chief` instead of `master` in the `TF_CONFIG` environment variable when training with a custom container. Defaults to `false`. [Learn more about this field.](\/ai-platform\/training\/docs\/distributed-training-details#chief-versus-master) This field has no effect for training jobs that don't use a custom container.",
           "type": "boolean"
+        },
+        "enableWebAccess": {
+          "description": "Optional. Whether to enable web access for the training job.",
+          "type": "boolean"
         }
       }
     },
@@ -1158,6 +1162,14 @@
         "hyperparameterMetricTag": {
           "description": "The TensorFlow summary tag name used for optimizing hyperparameter tuning trials. See [`HyperparameterSpec.hyperparameterMetricTag`](#HyperparameterSpec.FIELDS.hyperparameter_metric_tag) for more information. Only set for hyperparameter tuning jobs.",
           "type": "string"
+        },
+        "webAccessUris": {
+          "description": "Output only. The web URIs for the training job. Currently for debug terminal access to the job.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1229,6 +1241,13 @@
         "builtInAlgorithmOutput": {
           "description": "Details related to built-in algorithms jobs. Only set for trials of built-in algorithms jobs that have succeeded.",
           "$ref": "GoogleCloudMlV1__BuiltInAlgorithmOutput"
+        },
+        "webAccessUris": {
+          "description": "The web URIs for the training job. Currently for debug terminal access to the job. Only set for in-progress hyperparameter tuning trials with web access enabled.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

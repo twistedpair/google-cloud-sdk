@@ -36,17 +36,17 @@ _PYTHON_PACKAGE_URIS = base.Argument(
     '--python-package-uris',
     metavar='PYTHON_PACKAGE_URIS',
     type=arg_parsers.ArgList(),
-    help=('The common python package uris to be used for training with a '
-          'pre-built container image. e.g. --python-package-uri=path1,path2 '
-          'If customizing the python package for different worker pools, '
-          'please use config instead.'))
+    help=('The common Python package URIs to be used for training with a '
+          'pre-built container image. e.g. `--python-package-uri=path1,path2` '
+          'If you are using multiple worker pools and want to specify a '
+          'different Python packag fo reach pool, use `--config` instead.'))
 
 _CUSTOM_JOB_CONFIG = base.Argument(
     '--config',
     help=textwrap.dedent("""\
       Path to the job configuration file. This file should be a YAML document
-      containing a `CustomJobSpec`(https://cloud.google.com/ai-platform-unified/docs/reference/rest/v1/CustomJobSpec).
-      If an option is specified both in the configuration file **and** via command line arguments, the command line arguments
+      containing a [`CustomJobSpec`](https://cloud.google.com/vertex-ai/docs/reference/rest/v1/CustomJobSpec).
+      If an option is specified both in the configuration file **and** via command-line arguments, the command-line arguments
       override the configuration file. Note that keys with underscore are invalid.
 
       Example(YAML):
@@ -77,6 +77,8 @@ _WORKER_POOL_SPEC_BETA = base.Argument(
             # TODO(b/185461224): remove `python-image-uri`
             'python-image-uri': str,
             'python-module': str,
+            'script': str,
+            'local-package-path': str,
         }),
     metavar='WORKER_POOL_SPEC',
     help=textwrap.dedent("""\
@@ -108,9 +110,46 @@ _WORKER_POOL_SPEC_BETA = base.Argument(
       *python-image-uri*::: (DEPRECATED) use `executor-image-uri` instead.
       *python-module*:::The Python module name to run within the provided
         package.
+      *local-package-path*:::The local path of a folder that contains training
+        code.
+      *script*:::The relative path from the local package path to a file to
+        execute. It can be a Python file or an arbitrary Bash script.
+
+      ::::
+      Note that some of these fields are used for different job creation methods
+      and are categorized as mutually exclusive groups listed below. Exactly one of
+      these groups of fields must be specified:
+
+
+      `container-image-uri`::::
+      Specify this field to use a custom container image for training. Together
+      with the `--command` and `--args` flags, this field represents a
+      [`WorkerPoolSpec.ContainerSpec`](https://cloud.google.com/vertex-ai/docs/reference/rest/v1/CustomJobSpec?#containerspec)
+      message.
+      In this case, the `--python-package-uris` flag is disallowed.
 
       Example:
-      --worker-pool-spec=replica-count=1,machine-type=n1-highmem-2,accelerator-type=NVIDIA_TESLA_T4,container-image-uri=gcr.io/ucaip-test/ucaip-training-test
+      --worker-pool-spec=replica-count=1,machine-type=n1-highmem-2,container-image-uri=gcr.io/ucaip-test/ucaip-training-test
+
+      `executor-image-uri, python-module`::::
+      Specify these fields to train using a pre-built container and Python
+      packages that are already in Cloud Storage. Together with the
+      `--python-package-uris` and `--args` flags, these fields represent a
+      [`WorkerPoolSpec.PythonPackageSpec`](https://cloud.google.com/vertex-ai/docs/reference/rest/v1/CustomJobSpec#pythonpackagespec)
+      message .
+
+      Example:
+      --worker-pool-spec=machine-type=e2-standard-4,executor-image-uri=us-docker.pkg.dev/cloud-aiplatform/training/tf-cpu.2-4:latest,python-module=trainer.task
+
+      `local-package-path, executor-image-uri, python-module|script`::::
+      Specify these fields train using a pre-built container and Python code
+      from a local path.
+      In this case, the `--python-package-uris` flag is disallowed.
+
+      Example:
+      --worker-pool-spec=machine-type=e2-standard-4,replica-count=1,executor-image-uri=us-docker.pkg.dev/cloud-aiplatform/training/tf-cpu.2-4:latest,script=python-module=trainer.task,local-package-path=/usr/page/application
+      or
+      --worker-pool-spec=machine-type=e2-standard-4,replica-count=1,executor-image-uri=gcr.io/deeplearning-platform-release/tf-cpu:latest:latest,script=my_run.sh,local-package-path=/usr/jeff/application
       """))
 
 _WORKER_POOL_SPEC_GA = base.Argument(
@@ -213,7 +252,7 @@ def AddLocalRunCustomJobFlags(parser):
   """Add local-run related flags to the parser."""
 
   # Flags for entry point of the training application
-  application_group = parser.add_mutually_exclusive_group(required=True)
+  application_group = parser.add_mutually_exclusive_group()
   application_group.add_argument(
       '--python-module',
       metavar='PYTHON_MODULE',
@@ -321,6 +360,7 @@ def AddLocalRunCustomJobFlags(parser):
   parser.add_argument(
       '--docker-run-options',
       metavar='DOCKER_RUN_OPTIONS',
+      hidden=True,
       type=arg_parsers.ArgList(),
       help=textwrap.dedent("""
       Custom Docker run options to pass to image during execution.
@@ -328,6 +368,18 @@ def AddLocalRunCustomJobFlags(parser):
 
       See https://docs.docker.com/engine/reference/commandline/run/#options for
       more details.
+      """))
+
+  # Flags for service account
+  parser.add_argument(
+      '--service-account-key-file',
+      metavar='ACCOUNT_KEY_FILE',
+      help=textwrap.dedent("""
+      The JSON file of a Google Cloud service account private key.
+      When specified, the corresponding service account will be used to
+      authenticate the local container to access Google Cloud services.
+      Note that the key file won't be copied to the container, it will be
+      mounted during running time.
       """))
 
   # User custom flags.

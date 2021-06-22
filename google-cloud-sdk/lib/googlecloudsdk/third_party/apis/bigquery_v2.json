@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210604",
+ "revision": "20210611",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -579,6 +579,27 @@
      "additionalProperties": {
       "type": "string"
      }
+    }
+   }
+  },
+  "DmlStatistics": {
+   "id": "DmlStatistics",
+   "type": "object",
+   "properties": {
+    "deletedRowCount": {
+     "type": "string",
+     "description": "Number of deleted Rows. populated by DML DELETE, MERGE and TRUNCATE statements.",
+     "format": "int64"
+    },
+    "insertedRowCount": {
+     "type": "string",
+     "description": "Number of inserted Rows. Populated by DML INSERT and MERGE statements.",
+     "format": "int64"
+    },
+    "updatedRowCount": {
+     "type": "string",
+     "description": "Number of updated Rows. Populated by DML UPDATE and MERGE statements.",
+     "format": "int64"
     }
    }
   },
@@ -1594,7 +1615,7 @@
      "$ref": "ScriptStatistics",
      "description": "[Output-only] Statistics for a child job of a script."
     },
-    "sessionInfoTemplate": {
+    "sessionInfo": {
      "$ref": "SessionInfo",
      "description": "[Output-only] [Preview] Information of the session if this job is part of one."
     },
@@ -1662,7 +1683,7 @@
      "description": "[Output-only] The DDL target table. Present only for CREATE/DROP TABLE/VIEW and DROP ALL ROW ACCESS POLICIES queries."
     },
     "dmlStats": {
-     "type": "any",
+     "$ref": "DmlStatistics",
      "description": "[Output-only] Detailed statistics for DML statements Present only for DML statements INSERT, UPDATE, DELETE or TRUNCATE."
     },
     "estimatedBytesProcessed": {
@@ -2191,7 +2212,7 @@
      "description": "Whether the query result was fetched from the query cache."
     },
     "dmlStats": {
-     "type": "any",
+     "$ref": "DmlStatistics",
      "description": "[Output-only] Detailed statistics for DML statements Present only for DML statements INSERT, UPDATE, DELETE or TRUNCATE."
     },
     "errors": {

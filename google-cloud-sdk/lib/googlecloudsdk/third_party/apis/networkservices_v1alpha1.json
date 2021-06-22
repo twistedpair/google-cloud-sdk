@@ -1353,6 +1353,35 @@
         }
       }
     },
+    "InvalidateCacheRequest": {
+      "id": "InvalidateCacheRequest",
+      "description": "Request used by the InvalidateCache method.",
+      "type": "object",
+      "properties": {
+        "host": {
+          "description": "The hostname to invalidate against. You can specify an exact or wildcard host - e.g. \"video.example.com\" or \"*.example.com\" - based on host component.",
+          "type": "string"
+        },
+        "path": {
+          "description": "The path to invalidate against. You can specify an exact or wildcard path - e.g. \"\/videos\/hls\/139123.mp4\" or \"\/manifests\/*\" - based on path component.",
+          "type": "string"
+        },
+        "cacheTags": {
+          "description": "A list of cache tags used to identify cached objects. Cache tags are specified when the response is first cached, by setting the \"Cache-Tag\" response header at the origin. By default, all objects have a cache tag representing the HTTP status code of the response, the MIME content-type, and the origin. Multiple cache tags in the same revalidation request are treated as Boolean OR - e.g. tag1 OR tag2 OR tag3. If a host and\/or path are also specified, these are treated as Boolean AND with any tags. Up to 10 tags may be specified in a single invalidation request.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "InvalidateCacheResponse": {
+      "id": "InvalidateCacheResponse",
+      "description": "Response used by the InvalidateCache method.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListRoutersResponse": {
       "id": "ListRoutersResponse",
       "description": "Response returned by the ListRouters method.",
@@ -1408,11 +1437,13 @@
           "type": "string",
           "enumDescriptions": [
             "The type of Router is unspecified.",
-            "The Router is used in Proxyless gRPC model. Routes being referenced must be gRPC routes for this type."
+            "The Router is used in Proxyless gRPC model. Routes being referenced must be gRPC routes for this type.",
+            "The Router is used in customer-managed proxy model."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
-            "PROXYLESS_GRPC"
+            "PROXYLESS_GRPC",
+            "PROXY"
           ]
         },
         "network": {
@@ -1420,11 +1451,99 @@
           "type": "string"
         },
         "routes": {
-          "description": "Optional. List of references to routes that this Router must be able to route traffic for. Example: projects\/12345\/locations\/global\/grpcRoutes\/myGrpcRoute",
+          "description": "Optional. List of references to routes that this Router must be able to route traffic for. Example: projects\/12345\/locations\/global\/grpcRoutes\/myGrpcRoute Must refer to GrpcRoute if Router type is PROXYLESS_GRPC. Must refer to HttpRoute if Router type is PROXY.",
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "selector": {
+          "description": "Optional. Defines additional parameters to match data plane clients (envoy proxy or grpc client) with the configuration provided by this Router. If selector matches - all configuration associated with this Router is sent to a client, otherwise it is ignored for the particular data plane clients. For the detailed description and examples of selector usage, check documentation for Selector.",
+          "$ref": "Selector"
+        },
+        "proxySettings": {
+          "description": "Optional. Settings specific to proxies. This field is only applicable if the Router type is \"PROXY\".",
+          "$ref": "ProxySettings"
+        }
+      }
+    },
+    "Selector": {
+      "id": "Selector",
+      "description": "A general Selector that defines how to select the entities based on the metadata provided by these entities. For example, xDS API clients (such as Envoy proxy) present key=value label pairs to the control plane upon connection. The Selector could be used to select a subset of clients based on the labels they presented. Selector is used in a context of other resources, so that configuration of these resources is applied only to the entities that were matched by the Selector. For example, one may set a Selector of a resource as follows: labels_matchers: - type: MATCH_ANY labels: - key: env value: dev - key: user-group value: qa negated: true - type: MATCH_ANY labels: - key: version value: v1 The resource will\/can be delivered to entities that present labels such as: \"env\": \"dev\", \"version\": \"v1\" but NOT delivered to those that have labels as: \"env\": \"dev\", \"user-group\": \"qa\", \"version\", \"v1\"",
+      "type": "object",
+      "properties": {
+        "labelsMatchers": {
+          "description": "A list of LabelsMatcheres to match against presented labels. When multiple LabelsMatcheres are provided, they are combined with a logical AND, i.e. all LabelMatchers must match in order for the Selector to match.",
+          "type": "array",
+          "items": {
+            "$ref": "LabelsMatcher"
+          }
+        }
+      }
+    },
+    "LabelsMatcher": {
+      "id": "LabelsMatcher",
+      "description": "LabelsMatcher defines criteria to match by a list of labels.",
+      "type": "object",
+      "properties": {
+        "labels": {
+          "description": "Defines labels to match against.",
+          "type": "array",
+          "items": {
+            "$ref": "Label"
+          }
+        },
+        "type": {
+          "description": "Specify how are labels evaluated together. MATCH_ANY: LabelsMatcher is considered a match if ANY one of the labels provided is a match. MATCH_ALL: LabelsMatcher is considered a match if ALL of the labels are matched.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default Value.",
+            "Logical OR labels provided in LabelsMatcher.",
+            "Logical AND labels provided in LabelsMatcher."
+          ],
+          "enum": [
+            "MATCH_TYPE_UNSPECIFIED",
+            "MATCH_ANY",
+            "MATCH_ALL"
+          ]
+        }
+      }
+    },
+    "Label": {
+      "id": "Label",
+      "description": "Defines match criteria for an individual label.",
+      "type": "object",
+      "properties": {
+        "key": {
+          "description": "Key of the label.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value of the label.",
+          "type": "string"
+        },
+        "negated": {
+          "description": "If set to true - the match condition of the label is reversed. I.e. by default label {name=\"exampleName\", value=\"exampleValue\"} will match if \"exampleName = exampleValue\" is present. With negated set to true the same configuration will match if \"exampleName = exampleValue\" is NOT present in the list of evaluated labels.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ProxySettings": {
+      "id": "ProxySettings",
+      "description": "Settings that are applicable to Router, of which the type is PROXY.",
+      "type": "object",
+      "properties": {
+        "addresses": {
+          "description": "Zero or more addresses with ports in format of \":\" that the Router must receive traffic on. The proxy binds to the ports specified. IP address can be anything that is allowed by the underlying infrastructure (auto-allocation, static IP, BYOIP). Must be unset if the interceptionPort is set as interceptionPort configures the Router to listen on the localhost address instead.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "interceptionPort": {
+          "description": "If set to a valid TCP port (1-65535), instructs Router to listen on the specified port of localhost (127.0.0.1) address. Router will expect all traffic to be redirected to this port regardless of its actual ip:port destination.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -3517,6 +3636,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single EdgeCacheService."
+                },
+                "invalidateCache": {
+                  "id": "networkservices.projects.locations.edgeCacheServices.invalidateCache",
+                  "path": "v1alpha1/{+edgeCacheService}:invalidateCache",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/edgeCacheServices/{edgeCacheServicesId}:invalidateCache",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "edgeCacheService": {
+                      "description": "Required. A name of the EdgeCacheService to apply the invalidation request to. Must be in the format `projects\/*\/locations\/global\/edgeCacheServices\/*`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/edgeCacheServices\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "edgeCacheService"
+                  ],
+                  "request": {
+                    "$ref": "InvalidateCacheRequest"
+                  },
+                  "response": {
+                    "$ref": "InvalidateCacheResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sends a cache invalidation request."
                 },
                 "setIamPolicy": {
                   "id": "networkservices.projects.locations.edgeCacheServices.setIamPolicy",

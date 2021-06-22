@@ -1077,15 +1077,22 @@ class RestartWebServerRequest(_messages.Message):
 
 
 class SchedulerResource(_messages.Message):
-  r"""Configuration for resources used by Airflow scheduler.
+  r"""Configuration for resources used by Airflow schedulers.
 
   Fields:
-    cpu: Optional. CPU request and limit for Airflow scheduler.
-    memoryGb: Optional. Memory (GB) request and limit for Airflow scheduler.
+    count: Optional. The number of schedulers.
+    cpu: Optional. CPU request and limit for a single Airflow scheduler
+      replica.
+    memoryGb: Optional. Memory (GB) request and limit for a single Airflow
+      scheduler replica.
+    storageGb: Optional. Storage (GB) request and limit for a single Airflow
+      scheduler replica.
   """
 
-  cpu = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  cpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  storageGb = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class SoftwareConfig(_messages.Message):
@@ -1454,6 +1461,21 @@ class WebServerNetworkAccessControl(_messages.Message):
   allowedIpRanges = _messages.MessageField('AllowedIpRange', 1, repeated=True)
 
 
+class WebServerResource(_messages.Message):
+  r"""Configuration for resources used by Airflow web server.
+
+  Fields:
+    cpu: Optional. CPU request and limit for Airflow web server.
+    memoryGb: Optional. Memory (GB) request and limit for Airflow web server.
+    storageGb: Optional. Storage (GB) request and limit for Airflow web
+      server.
+  """
+
+  cpu = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  storageGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
 class WorkerResource(_messages.Message):
   r"""Configuration for resources used by Airflow workers.
 
@@ -1463,12 +1485,15 @@ class WorkerResource(_messages.Message):
     memoryGb: Optional. Memory (GB) request and limit for a single Airflow
       worker replica.
     minCount: Optional. Minimum number of workers for autoscaling.
+    storageGb: Optional. Storage (GB) request and limit for a single Airflow
+      worker replica.
   """
 
   cpu = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   maxCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   minCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  storageGb = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 class WorkloadsConfig(_messages.Message):
@@ -1479,6 +1504,7 @@ class WorkloadsConfig(_messages.Message):
   Fields:
     scheduler: Optional. Resources used by Airflow scheduler.
     schedulerCpu: Optional. CPU request and limit for Airflow scheduler.
+    webServer: Optional. Resources used by Airflow web server.
     worker: Optional. Resources used by Airflow workers.
     workerCpu: Optional. CPU request and limit for Airflow worker.
     workerMaxCount: Optional. Maximum number of workers for autoscaling.
@@ -1487,10 +1513,11 @@ class WorkloadsConfig(_messages.Message):
 
   scheduler = _messages.MessageField('SchedulerResource', 1)
   schedulerCpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  worker = _messages.MessageField('WorkerResource', 3)
-  workerCpu = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  workerMaxCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  workerMinCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  webServer = _messages.MessageField('WebServerResource', 3)
+  worker = _messages.MessageField('WorkerResource', 4)
+  workerCpu = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  workerMaxCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  workerMinCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 encoding.AddCustomJsonFieldMapping(

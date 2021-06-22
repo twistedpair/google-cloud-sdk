@@ -595,6 +595,7 @@ class MetadataImport(_messages.Message):
     databaseDump: Immutable. A database dump from a pre-existing metastore's
       database.
     description: The description of the metadata import.
+    endTime: Output only. The time when the metadata import finished.
     name: Immutable. The relative resource name of the metadata import, of the
       form:projects/{project_number}/locations/{location_id}/services/{service
       _id}/metadataImports/{metadata_import_id}.
@@ -623,9 +624,10 @@ class MetadataImport(_messages.Message):
   createTime = _messages.StringField(1)
   databaseDump = _messages.MessageField('DatabaseDump', 2)
   description = _messages.StringField(3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
+  endTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class MetadataManagementActivity(_messages.Message):

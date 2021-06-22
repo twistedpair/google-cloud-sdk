@@ -927,14 +927,10 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
         container available for use during execution.
       CONFIG_MISMATCH: Container Manager is enabled, but there was no matching
         container available for execution.
-      CONFIG_MISSING_CONTAINER: Container Manager is enabled and we attempted
-        to execute on a matching container, but the container was no longer
-        running. The task was retried without an async container.
     """
     CONFIG_NONE = 0
     CONFIG_MATCH = 1
     CONFIG_MISMATCH = 2
-    CONFIG_MISSING_CONTAINER = 3
 
   class OutputLocationValueValuesEnum(_messages.Enum):
     r"""Indicates whether output files and/or output directories were found

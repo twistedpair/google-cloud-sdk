@@ -77,6 +77,20 @@ def GetGapicCredentials(enable_resource_quota=True,
   return credentials
 
 
+def MakeBidiRpc(start_rpc):
+  """Initializes a BidiRpc instances.
+
+  Args:
+      start_rpc (grpc.StreamStreamMultiCallable): The gRPC method used to
+          start the RPC.
+  Returns:
+    A bidiRPC instance.
+  """
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core import gapic_util_internal
+  return gapic_util_internal.BidiRpc(start_rpc)
+
+
 def MakeClient(client_class, credentials, address_override_func=None,
                mtls_enabled=False):
   """Instantiates a gapic API client with gcloud defaults and configuration.

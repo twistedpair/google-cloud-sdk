@@ -31,6 +31,12 @@ def DeploymentAttributeConfig():
       help_text='The deployment for the {resource}.')
 
 
+def RevisionAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='revision',
+      help_text='The revision for the {resource}.')
+
+
 def LocationAttributeConfig():
   fallthroughs = [
       deps.PropertyFallthrough(properties.VALUES.blueprints.location)]
@@ -50,17 +56,46 @@ def GetDeploymentResourceSpec():
       disable_auto_completers=False)
 
 
-def AddDeploymentResourceArg(parser):
+def GetRevisionResourceSpec():
+  return concepts.ResourceSpec(
+      'config.projects.locations.deployments.revisions',
+      resource_name='revision',
+      deploymentsId=DeploymentAttributeConfig(),
+      revisionsId=RevisionAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
+def AddDeploymentResourceArg(parser, group_help):
   """Add a resource argument for a blueprints deployment.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
   Args:
     parser: the parser for the command.
+    group_help: string, the help text for the entire arg group.
   """
   name = 'deployment'
   concept_parsers.ConceptParser.ForResource(
       name,
       GetDeploymentResourceSpec(),
-      'The deployment to create or update.',
+      group_help,
+      required=True).AddToParser(parser)
+
+
+def AddRevisionResourceArg(parser, group_help):
+  """Add a resource argument for a blueprints revision.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    group_help: string, the help text for the entire arg group.
+  """
+  name = 'revision'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetRevisionResourceSpec(),
+      group_help,
       required=True).AddToParser(parser)

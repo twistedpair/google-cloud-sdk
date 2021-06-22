@@ -361,6 +361,7 @@
             "An entry type for a set of files or objects. For example, a Cloud Storage fileset.",
             "A group of servers that work together. For example, a Kafka cluster.",
             "A database.",
+            "Output only. Routine, for example, a BigQuery routine.",
             "A service, for example, a Dataproc Metastore service."
           ],
           "enum": [
@@ -371,6 +372,7 @@
             "FILESET",
             "CLUSTER",
             "DATABASE",
+            "ROUTINE",
             "SERVICE"
           ]
         },
@@ -422,6 +424,10 @@
         "databaseTableSpec": {
           "description": "Specification that applies to a table resource. Valid only for entries with the `TABLE` type.",
           "$ref": "GoogleCloudDatacatalogV1DatabaseTableSpec"
+        },
+        "routineSpec": {
+          "description": "Specification that applies to a user-defined function or procedure. Valid only for entries with the `ROUTINE` type.",
+          "$ref": "GoogleCloudDatacatalogV1RoutineSpec"
         },
         "displayName": {
           "description": "Display name of an entry. The name must contain only Unicode letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and can't start or end with spaces. The maximum size is 200 bytes when encoded in UTF-8. Default value is an empty string.",
@@ -644,6 +650,95 @@
             "NATIVE",
             "EXTERNAL"
           ]
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1RoutineSpec": {
+      "id": "GoogleCloudDatacatalogV1RoutineSpec",
+      "description": "Specification that applies to a routine. Valid only for entries with the `ROUTINE` type.",
+      "type": "object",
+      "properties": {
+        "routineType": {
+          "description": "The type of the routine.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified type.",
+            "Non-builtin permanent scalar function.",
+            "Stored procedure."
+          ],
+          "enum": [
+            "ROUTINE_TYPE_UNSPECIFIED",
+            "SCALAR_FUNCTION",
+            "PROCEDURE"
+          ]
+        },
+        "language": {
+          "description": "The language the routine is written in. The exact value depends on the source system. For BigQuery routines, possible values are: * `SQL` * `JAVASCRIPT`",
+          "type": "string"
+        },
+        "routineArguments": {
+          "description": "Arguments of the routine.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1RoutineSpecArgument"
+          }
+        },
+        "returnType": {
+          "description": "Return type of the argument. The exact value depends on the source system and the language.",
+          "type": "string"
+        },
+        "definitionBody": {
+          "description": "The body of the routine.",
+          "type": "string"
+        },
+        "bigqueryRoutineSpec": {
+          "description": "Fields specific for BigQuery routines.",
+          "$ref": "GoogleCloudDatacatalogV1BigQueryRoutineSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1RoutineSpecArgument": {
+      "id": "GoogleCloudDatacatalogV1RoutineSpecArgument",
+      "description": "Input or output argument of a function or stored procedure.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the argument. A return argument of a function might not have a name.",
+          "type": "string"
+        },
+        "mode": {
+          "description": "Specifies whether the argument is input or output.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified mode.",
+            "The argument is input-only.",
+            "The argument is output-only.",
+            "The argument is both an input and an output."
+          ],
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "IN",
+            "OUT",
+            "INOUT"
+          ]
+        },
+        "type": {
+          "description": "Type of the argument. The exact value depends on the source system and the language.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1BigQueryRoutineSpec": {
+      "id": "GoogleCloudDatacatalogV1BigQueryRoutineSpec",
+      "description": "Fields specific for BigQuery routines.",
+      "type": "object",
+      "properties": {
+        "importedLibraries": {
+          "description": "Paths of the imported libraries.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

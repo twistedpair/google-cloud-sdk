@@ -19,16 +19,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import re
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
-from googlecloudsdk.api_lib.services import enable_api
+
+from googlecloudsdk.api_lib.util import api_enablement
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import gapic_util
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_io
 from googlecloudsdk.third_party.apis import apis_map
 
 
@@ -157,43 +156,7 @@ def ResolveVersion(api_name, api_version=None):
           apis_internal._GetDefaultVersion(api_name))
 
 
-API_ENABLEMENT_REGEX = re.compile(
-    '.*Enable it by visiting https://console.(?:cloud|developers).google.com'
-    '/apis/api/([^/]+)/overview\\?project=(\\S+) then retry. If you '
-    'enabled this API recently, wait a few minutes for the action to propagate'
-    ' to our systems and retry.\\w*')
-
-
 API_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE = 403  # retry status code
-
-
-def _GetApiEnablementInfo(exc):
-  """This is a handler for apitools errors allowing more specific errors.
-
-  While HttpException is great for generally parsing apitools exceptions,
-  in the case of an API enablement error we want to know what the service
-  is that was rejected. This will attempt to parse the error for said
-  service token.
-
-  Args:
-    exc: api_exceptions.HttpException
-
-  Returns:
-    (str, str), (enablement project, service token), or (None, None) if the
-      exception isn't an API enablement error
-  """
-  match = API_ENABLEMENT_REGEX.match(exc.payload.status_message)
-  if (exc.payload.status_code == API_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE
-      and match is not None):
-    return (match.group(2), match.group(1))
-  return (None, None)
-
-
-_PROJECTS_NOT_TO_ENABLE = {'google.com:cloudsdktool'}
-
-
-def ShouldAttemptProjectEnable(project):
-  return project not in _PROJECTS_NOT_TO_ENABLE
 
 
 def GetApiEnablementInfo(exception):
@@ -210,10 +173,15 @@ def GetApiEnablementInfo(exception):
     api_exceptions.HttpException: If gcloud should not prompt to enable the API.
   """
   parsed_error = api_exceptions.HttpException(exception)
-  (project, service_token) = _GetApiEnablementInfo(parsed_error)
-  if (project is not None and ShouldAttemptProjectEnable(project)
-      and service_token is not None):
-    return (project, service_token, parsed_error)
+  if (parsed_error.payload.status_code !=
+      API_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE):
+    return None
+
+  enablement_info = api_enablement.GetApiEnablementInfo(
+      parsed_error.payload.status_message)
+  if enablement_info:
+    return enablement_info + (parsed_error,)
+  return None
 
 
 def PromptToEnableApi(project, service_token, exception,
@@ -232,16 +200,9 @@ def PromptToEnableApi(project, service_token, exception,
     api_exceptions.HttpException: API not enabled error if the user chooses to
       not enable the API.
   """
-  if console_io.PromptContinue(
-      default=False,
-      prompt_string=('API [{}] not enabled on project [{}]. '
-                     'Would you like to enable and retry (this will take a '
-                     'few minutes)?')
-      .format(service_token, project)):
-    enable_api.EnableService(project, service_token)
-    # In the case of a batch request, as long as the error's retryable code
-    # (in this case 403) was set, after this runs it should retry. This
-    # error code should be consistent with apis.GetApiEnablementInfo
+  api_enable_attempted = api_enablement.PromptToEnableApi(
+      project, service_token)
+  if api_enable_attempted:
     if not is_batch_request:
       raise apitools_exceptions.RequestError('Retry')
   else:

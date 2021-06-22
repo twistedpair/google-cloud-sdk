@@ -1393,7 +1393,9 @@ class ExportResourcesRequest(_messages.Message):
     bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
       Service Agent requires two IAM roles on the BigQuery location:
       `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
-      one BigQuery table per resource type.
+      one BigQuery table per resource type. Note that unlike in
+      FhirStore.StreamConfig.BigQueryDestination, BigQuery views will not be
+      created by ExportResources.
     gcsDestination: The Cloud Storage output destination. The Healthcare
       Service Agent account requires the `roles/storage.objectAdmin` role on
       the Cloud Storage location. The exported outputs are organized by FHIR
@@ -4898,8 +4900,13 @@ class QueryAccessibleDataRequest(_messages.Message):
 class QueryAccessibleDataResponse(_messages.Message):
   r"""Response for successful QueryAccessibleData operations. This structure
   is included in the response upon operation completion.
+
+  Fields:
+    gcsUris: List of files, each of which contains a list of data_id(s) that
+      are consented for a specified use in the request.
   """
 
+  gcsUris = _messages.StringField(1, repeated=True)
 
 
 class RedactConfig(_messages.Message):

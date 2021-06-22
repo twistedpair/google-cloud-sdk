@@ -605,6 +605,7 @@ def RunImageImport(args,
 
 
 def _GetBuilderRegion(release_track, region_getter, args):
+  # Returns a region to run a Cloud build in for alpha and beta. None for ga.
   region = None
   if release_track != 'ga':
     # Use regionalized wrapper image for Alpha and Beta
@@ -1032,8 +1033,7 @@ def RunInstanceOVFImportBuild(
   build_tags = ['gce-daisy', 'gce-ovf-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
-  builder_region = _GetBuilderRegion(release_track, _GetInstanceImportRegion,
-                                     args)
+  builder_region = _GetInstanceImportRegion()
   builder = _GetBuilder(_OVF_IMPORT_BUILDER_EXECUTABLE, args.docker_image_tag,
                         builder_region)
   return _RunCloudBuild(
@@ -1148,11 +1148,8 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
       build_region=builder_region)
 
 
-def _GetInstanceImportRegion(args):  # pylint:disable=unused-argument
+def _GetInstanceImportRegion():
   """Return region to run instance import in.
-
-  Args:
-    args: command args
 
   Returns:
     str: region. Can be empty.

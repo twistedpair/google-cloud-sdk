@@ -1527,7 +1527,7 @@
       "type": "object",
       "properties": {
         "entityIds": {
-          "description": "Required. IDs of entities to read Feature values of. For example, for a machine learning model predicting user clicks on a website, an entity ID could be \"user_123\".",
+          "description": "Required. IDs of entities to read Feature values of. The maximum number of IDs is 100. For example, for a machine learning model predicting user clicks on a website, an entity ID could be \"user_123\".",
           "type": "array",
           "items": {
             "type": "string"
@@ -2503,6 +2503,14 @@
         "encryptionSpec": {
           "description": "Customer-managed encryption key options for a CustomJob. If this is set, then all resources created by the CustomJob will be encrypted with the provided encryption key.",
           "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
+        },
+        "webAccessUris": {
+          "description": "Output only. The web access URIs for the training job. The keys are the node names in the training jobs, e.g. workerpool0-0. The values are the URIs for each node's web portal in the job.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -2537,6 +2545,10 @@
         "tensorboard": {
           "description": "Optional. The name of a Vertex AI Tensorboard resource to which this CustomJob will upload Tensorboard logs. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
           "type": "string"
+        },
+        "enableWebAccess": {
+          "description": "Optional. Vertex AI will enable web portal access to the containers. The portals can be accessed on web via the URLs given by web_access_uris.",
+          "type": "boolean"
         }
       }
     },
@@ -3448,6 +3460,14 @@
           "description": "Output only. The CustomJob name linked to the Trial. It's set for a HyperparameterTuningJob's Trial.",
           "readOnly": true,
           "type": "string"
+        },
+        "webAccessUris": {
+          "description": "Output only. The web access URIs for the training job. The keys are the node names in the training jobs, e.g. workerpool0-0. The values are the URIs for each node's web portal in the job.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -7349,10 +7369,6 @@
             "Used for Feature that is a list of boolean.",
             "Used for Feature that is double.",
             "Used for Feature that is a list of double.",
-            "Deprecated. Used for Feature that is float.",
-            "Deprecated. Used for Feature that is a list of float.",
-            "Deprecated. Used for Feature that is INT32.",
-            "Deprecated. Used for Feature that is a list of INT32.",
             "Used for Feature that is INT64.",
             "Used for Feature that is a list of INT64.",
             "Used for Feature that is string.",
@@ -7365,10 +7381,6 @@
             "BOOL_ARRAY",
             "DOUBLE",
             "DOUBLE_ARRAY",
-            "FLOAT",
-            "FLOAT_ARRAY",
-            "INT32",
-            "INT32_ARRAY",
             "INT64",
             "INT64_ARRAY",
             "STRING",
@@ -11241,6 +11253,14 @@
           "description": "Output only. The CustomJob name linked to the Trial. It's set for a HyperparameterTuningJob's Trial.",
           "readOnly": true,
           "type": "string"
+        },
+        "webAccessUris": {
+          "description": "Output only. The web access URIs for the training job. The keys are the node names in the training jobs, e.g. workerpool0-0. The values are the URIs for each node's web portal in the job.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -13273,6 +13293,14 @@
           "description": "Output only. A human readable string describing why the Trial is infeasible. This is set only if Trial state is `INFEASIBLE`.",
           "readOnly": true,
           "type": "string"
+        },
+        "webAccessUris": {
+          "description": "Output only. The web access URIs for the training job. The keys are the node names in the training jobs, e.g. workerpool0-0. The values are the URIs for each node's web portal in the job.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -15067,7 +15095,7 @@
       "type": "object",
       "properties": {
         "ids": {
-          "description": "The resource IDs of the AnnotationSpecs that had been identified, ordered by the confidence score descendingly.",
+          "description": "The resource IDs of the AnnotationSpecs that had been identified.",
           "type": "array",
           "items": {
             "type": "string",
@@ -17945,7 +17973,7 @@
       "type": "object",
       "properties": {
         "ids": {
-          "description": "The resource IDs of the AnnotationSpecs that had been identified, ordered by the confidence score descendingly.",
+          "description": "The resource IDs of the AnnotationSpecs that had been identified.",
           "type": "array",
           "items": {
             "type": "string",
@@ -27275,7 +27303,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"PIPELINE_STATE_SUCCEEDED\" AND display_name=\"my_pipeline\"` * `state=\"PIPELINE_STATE_RUNNING\" OR display_name=\"my_pipeline\"` * `NOT display_name=\"my_pipeline\"` * `state=\"PIPELINE_STATE_FAILED\"`",
+                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
                       "location": "query",
                       "type": "string"
                     },

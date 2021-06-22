@@ -43,7 +43,7 @@ cluster:
   - &cluster
     parameter_name: clustersId
     attribute_name: cluster
-    help: Cluster in a VMware Engine private cloud.
+    help: Resource ID of the cluster
   disable_auto_completers: false
 
 

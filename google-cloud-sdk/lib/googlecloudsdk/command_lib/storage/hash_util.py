@@ -21,7 +21,9 @@ from __future__ import unicode_literals
 import base64
 import enum
 import hashlib
+import os
 
+from googlecloudsdk.command_lib import info_holder
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core.updater import installers
@@ -160,3 +162,13 @@ def reset_digesters(digesters):
     else:
       raise ValueError('Unknown hash algorithm found in digesters: {}'.format(
           hash_algorithm))
+
+
+def get_google_crc32c_install_command():
+  """Returns the command to install google-crc32c library."""
+  sdk_info = info_holder.InfoHolder()
+  sdk_root = sdk_info.installation.sdk_root
+  if sdk_root:
+    third_party_path = os.path.join(sdk_root, 'lib', 'third_party')
+    return '{} -m pip install google-crc32c --target {}'.format(
+        sdk_info.basic.python_location, third_party_path)

@@ -26,8 +26,8 @@ def MakeReservationMessageFromArgs(messages, args, allocation_ref):
   accelerators = MakeGuestAccelerators(messages,
                                        getattr(args, 'accelerator', None))
   local_ssds = MakeLocalSsds(messages, getattr(args, 'local_ssd', None))
-  share_settings = MakeShareSettings(messages, args,
-                                     getattr(args, 'share_setting', None))
+  share_settings = MakeShareSettingsWithArgs(
+      messages, args, getattr(args, 'share_setting', None))
   specific_reservation = MakeSpecificSKUReservationMessage(
       messages, args.vm_count, accelerators, local_ssds, args.machine_type,
       args.min_cpu_platform, getattr(args, 'location_hint', None),
@@ -76,15 +76,18 @@ def MakeLocalSsds(messages, ssd_configs):
   return local_ssds
 
 
-def MakeShareSettings(messages, args, setting_configs):
-  """Constructs the share settings message object."""
+def MakeShareSettingsWithArgs(messages,
+                              args,
+                              setting_configs,
+                              share_with='share_with'):
+  """Constructs the share settings message object from raw args as input."""
   if setting_configs:
     if setting_configs == 'organization':
       return messages.ShareSettings(
           shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .ORGANIZATION)
     if setting_configs == 'projects':
-      if not args.IsSpecified('share_with'):
+      if not args.IsSpecified(share_with):
         raise exceptions.InvalidArgumentException(
             '--share_with',
             'The projects this reservation is to be shared with must be '
@@ -92,7 +95,27 @@ def MakeShareSettings(messages, args, setting_configs):
       return messages.ShareSettings(
           shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .SPECIFIC_PROJECTS,
-          projects=getattr(args, 'share_with', None))
+          projects=getattr(args, share_with, None))
+  else:
+    return None
+
+
+def MakeShareSettingsWithDict(messages, dictionary, setting_configs):
+  """Constructs the share settings message object from dictionary form of input."""
+  if setting_configs:
+    if setting_configs == 'organization':
+      return messages.ShareSettings(shareType=messages.ShareSettings
+                                    .ShareTypeValueValuesEnum.ORGANIZATION)
+    if setting_configs == 'projects':
+      if 'share_with' not in dictionary.keys():
+        raise exceptions.InvalidArgumentException(
+            '--share_with',
+            'The projects this reservation is to be shared with must be '
+            'specified.')
+      return messages.ShareSettings(
+          shareType=messages.ShareSettings.ShareTypeValueValuesEnum
+          .SPECIFIC_PROJECTS,
+          projects=dictionary.get('share_with', None))
   else:
     return None
 

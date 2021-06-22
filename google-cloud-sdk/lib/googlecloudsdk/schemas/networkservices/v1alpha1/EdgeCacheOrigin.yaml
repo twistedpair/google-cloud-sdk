@@ -54,10 +54,10 @@ properties:
       cache fill failures. The total number of allowed attempts to cache fill
       across this and failover origins is limited to four. The total time
       allowed for cache fill attempts across this and failover origins can be
-      controlled with max_attempts_timeout. The last valid response from an
-      origin will be returned to the client. If no origin returns a valid
-      response, an HTTP 502 will be returned to the client. Defaults to 1. Must
-      be a value greater than 0 and less than 4.
+      controlled with max_attempts_timeout. The last valid, non-retried response
+      from all origins will be returned to the client. If no origin returns a
+      valid response, an HTTP 502 will be returned to the client. Defaults to 1.
+      Must be a value greater than 0 and less than 4.
     type: integer
   name:
     description: |-
@@ -112,6 +112,7 @@ properties:
       type: string
       enum:
       - CONNECT_FAILURE
+      - FORBIDDEN
       - GATEWAY_ERROR
       - HTTP_5XX
       - NOT_FOUND

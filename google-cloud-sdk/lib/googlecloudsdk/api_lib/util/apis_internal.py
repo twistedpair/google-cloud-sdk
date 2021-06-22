@@ -194,7 +194,7 @@ def _GetGapicClientClass(api_name, api_version):
   del api_name, api_version  # unused
 
   # pylint: disable=g-import-not-at-top
-  from googlecloudsdk.third_party.gapic_apis.logging.v2 import client
+  from googlecloudsdk.third_party.gapic_wrappers.logging.v2 import client
 
   return client.LoggingClient
 

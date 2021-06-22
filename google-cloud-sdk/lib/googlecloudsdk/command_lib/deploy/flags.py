@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.calliope import arg_parsers
 
 _SOURCE_HELP_TEXT = """
@@ -63,14 +65,14 @@ def AddImagesGroup(parser, hidden=False):
       metavar='NAME=TAG',
       type=arg_parsers.ArgDict(),
       hidden=hidden,
-      help="""\
-Reference to a collection of individual image name to image full path replacements.
+      help=textwrap.dedent("""\
+      Reference to a collection of individual image name to image full path replacements.
 
-For example:
+      For example:
 
-    $ gcloud deploy releases create foo \\
-        --images image1=path/to/image1:v1@sha256:45db24
-      """)
+          $ gcloud deploy releases create foo \\
+              --images image1=path/to/image1:v1@sha256:45db24
+      """))
   images_group.add_argument(
       '--build-artifacts',
       hidden=hidden,
@@ -132,3 +134,11 @@ def AddDescription(parser, help_text, name='--description'):
       name,
       help=help_text,
   )
+
+
+def AddDeliveryPipeline(parser, required=True):
+  """Adds delivery pipeline flag."""
+  parser.add_argument(
+      '--delivery-pipeline',
+      help='The name of the Cloud Deploy delivery pipeline',
+      required=required)

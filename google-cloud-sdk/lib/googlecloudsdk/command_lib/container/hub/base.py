@@ -43,19 +43,37 @@ class HubCommand(object):
     """Convenience property for hubclient.messages."""
     return self.hubclient.messages
 
-  def FeatureResourceName(self, name, location='global', use_number=False):
-    """Builds the full resource name, using the core project property."""
-    project = properties.VALUES.core.project.GetOrFail()
-    if use_number:
-      project = project_util.GetProjectNumber(project)
-    return util.FeatureResourceName(project, name, location=location)
+  @staticmethod
+  def Project(number=False):
+    """Simple helper for getting the current project.
 
-  def MembershipResourceName(self, name, location='global', use_number=False):
-    """Builds a full Membership name, using the core project property."""
+    Args:
+      number: Boolean, whether to return the project number instead of the ID.
+
+    Returns:
+      The project ID or project number, as a string.
+    """
     project = properties.VALUES.core.project.GetOrFail()
-    if use_number:
-      project = project_util.GetProjectNumber(project)
-    return util.MembershipResourceName(project, name, location=location)
+    if number:
+      return project_util.GetProjectNumber(project)
+    return project
+
+  @staticmethod
+  def LocationResourceName(location='global', use_number=False):
+    return util.LocationResourceName(
+        HubCommand.Project(use_number), location=location)
+
+  @staticmethod
+  def FeatureResourceName(name, location='global', use_number=False):
+    """Builds the full resource name, using the core project property."""
+    return util.FeatureResourceName(
+        HubCommand.Project(use_number), name, location=location)
+
+  @staticmethod
+  def MembershipResourceName(name, location='global', use_number=False):
+    """Builds a full Membership name, using the core project property."""
+    return util.MembershipResourceName(
+        HubCommand.Project(use_number), name, location=location)
 
   # TODO(b/177098463): All Hub LROs _should_ watch for warnings, but they don't.
   # Once all tests are updated to handle the extra "Expect Get Op", remove the

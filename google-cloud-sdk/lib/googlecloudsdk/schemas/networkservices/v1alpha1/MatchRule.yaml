@@ -30,34 +30,32 @@ properties:
       For satisfying the matchRule condition, the path of the request must
       exactly match the value specified in fullPathMatch after removing any
       query parameters and anchor that may be part of the original URL.
-      fullPathMatch must be between 1 and 1024 characters. Only one of
-      prefixMatch or fullPathMatch must be specified.
+      fullPathMatch must begin with a /. The value must be between 1 and 1024
+      characters (inclusive). Only one of prefixMatch, fullPathMatch, or
+      pathTemplateMatch must be specified.
     type: string
-  headerMatches:
+  pathTemplateMatch:
     description: |-
-      Specifies a list of header match criteria, all of which must match
-      corresponding headers in the request. You may specify up to 3 headers to
-      match on.
-    type: array
-    items:
-      $ref: HeaderMatch.yaml
-  ignoreCase:
-    description: |-
-      Specifies that prefixMatch and fullPathMatch matches are case
-      sensitive. The default value is false.
-    type: boolean
+      For satisfying the matchRule condition, the path of the request must match
+      the wildcard pattern specified in pathTemplateMatch after removing any
+      query parameters and anchor that may be part of the original URL.
+      pathTemplateMatch must be between 1 and 255 characters (inclusive). The
+      pattern specified by pathTemplateMatch may have at most 5 wildcard
+      operators and at most 5 variable captures in total. Only one of
+      prefixMatch, fullPathMatch, or pathTemplateMatch must be specified.
+    type: string
   prefixMatch:
     description: |-
-      For satisfying the matchRule condition, the request's path must begin
-      with the specified prefixMatch. prefixMatch must begin with a /. The
-      value must be between 1 and 1024 characters. Only one of prefixMatch
-      or fullPathMatch must be specified.
+      For satisfying the matchRule condition, the request's path must begin with
+      the specified prefixMatch. prefixMatch must begin with a /. The value must
+      be between 1 and 1024 characters (inclusive). Only one of prefixMatch,
+      fullPathMatch, or pathTemplateMatch must be specified.
     type: string
   queryParameterMatches:
     description: |-
       Specifies a list of query parameter match criteria, all of which must
-      match corresponding query parameters in the request. You may specify
-      up to 5 query parameters to match on.
+      match corresponding query parameters in the request. You may specify up to
+      5 query parameters to match on.
     type: array
     items:
       $ref: QueryParameterMatcher.yaml

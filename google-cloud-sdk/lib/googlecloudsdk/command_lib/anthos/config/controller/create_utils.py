@@ -51,16 +51,33 @@ def CreateUpdateRequest(ref, args):
   bundles_config = messages.BundlesConfig(
       configControllerConfig=messages.ConfigControllerConfig(enabled=True))
 
+  krm_api_host = messages.KrmApiHost(
+      masterIpv4CidrBlock=master_ipv4_cidr_block,
+      bundlesConfig=bundles_config)
+
   # Pass through the network parameter if it was provided.
   if args.network is not None:
-    krm_api_host = messages.KrmApiHost(
-        masterIpv4CidrBlock=master_ipv4_cidr_block,
-        network=args.network,
-        bundlesConfig=bundles_config)
-  else:
-    krm_api_host = messages.KrmApiHost(
-        masterIpv4CidrBlock=master_ipv4_cidr_block,
-        bundlesConfig=bundles_config)
+    krm_api_host.network = args.network
+
+  # Pass through the man_block parameter if it was provided.
+  if args.man_block is not None:
+    krm_api_host.manBlock = args.man_block
+
+  # Pass through the cluster_ipv4_cidr_block parameter if it was provided.
+  if args.cluster_ipv4_cidr_block is not None:
+    krm_api_host.clusterCidrBlock = args.cluster_ipv4_cidr_block
+
+  # Pass through the services-ipv4-cidr-block parameter if it was provided.
+  if args.services_ipv4_cidr_block is not None:
+    krm_api_host.servicesCidrBlock = args.services_ipv4_cidr_block
+
+  # Pass through the cluster_named_range parameter if it was provided.
+  if args.cluster_named_range is not None:
+    krm_api_host.clusterNamedRange = args.cluster_named_range
+
+  # Pass through the services_named_range parameter if it was provided.
+  if args.services_named_range is not None:
+    krm_api_host.servicesNamedRange = args.services_named_range
 
   request = (
       messages.KrmapihostingProjectsLocationsKrmApiHostsCreateRequest(

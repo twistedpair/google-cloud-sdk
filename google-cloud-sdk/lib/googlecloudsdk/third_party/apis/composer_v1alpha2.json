@@ -652,6 +652,10 @@
           "description": "Optional. Resources used by Airflow scheduler.",
           "$ref": "SchedulerResource"
         },
+        "webServer": {
+          "description": "Optional. Resources used by Airflow web server.",
+          "$ref": "WebServerResource"
+        },
         "worker": {
           "description": "Optional. Resources used by Airflow workers.",
           "$ref": "WorkerResource"
@@ -660,16 +664,48 @@
     },
     "SchedulerResource": {
       "id": "SchedulerResource",
-      "description": "Configuration for resources used by Airflow scheduler.",
+      "description": "Configuration for resources used by Airflow schedulers.",
       "type": "object",
       "properties": {
         "cpu": {
-          "description": "Optional. CPU request and limit for Airflow scheduler.",
+          "description": "Optional. CPU request and limit for a single Airflow scheduler replica.",
           "type": "number",
           "format": "float"
         },
         "memoryGb": {
-          "description": "Optional. Memory (GB) request and limit for Airflow scheduler.",
+          "description": "Optional. Memory (GB) request and limit for a single Airflow scheduler replica.",
+          "type": "number",
+          "format": "float"
+        },
+        "storageGb": {
+          "description": "Optional. Storage (GB) request and limit for a single Airflow scheduler replica.",
+          "type": "number",
+          "format": "float"
+        },
+        "count": {
+          "description": "Optional. The number of schedulers.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "WebServerResource": {
+      "id": "WebServerResource",
+      "description": "Configuration for resources used by Airflow web server.",
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "description": "Optional. CPU request and limit for Airflow web server.",
+          "type": "number",
+          "format": "float"
+        },
+        "memoryGb": {
+          "description": "Optional. Memory (GB) request and limit for Airflow web server.",
+          "type": "number",
+          "format": "float"
+        },
+        "storageGb": {
+          "description": "Optional. Storage (GB) request and limit for Airflow web server.",
           "type": "number",
           "format": "float"
         }
@@ -687,6 +723,11 @@
         },
         "memoryGb": {
           "description": "Optional. Memory (GB) request and limit for a single Airflow worker replica.",
+          "type": "number",
+          "format": "float"
+        },
+        "storageGb": {
+          "description": "Optional. Storage (GB) request and limit for a single Airflow worker replica.",
           "type": "number",
           "format": "float"
         },

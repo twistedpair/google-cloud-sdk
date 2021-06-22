@@ -173,6 +173,13 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICES_NLP = (
+      'projects.locations.services.nlp',
+      'projects/{projectsId}/locations/{locationsId}/services/nlp',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

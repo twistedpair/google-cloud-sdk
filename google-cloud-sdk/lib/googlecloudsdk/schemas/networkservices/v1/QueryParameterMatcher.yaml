@@ -30,13 +30,15 @@ properties:
   exactMatch:
     description: |-
       The queryParameterMatch matches if the value of the parameter exactly
-      matches the contents of exactMatch. Only one of presentMatch or exactMatch
+      matches the contents of exactMatch. The match value must be between 1 and
+      64 characters long (inclusive). Only one of presentMatch or exactMatch
       must be set.
     type: string
   name:
     description: |-
       The name of the query parameter to match. The query parameter must exist
-      in the request, in the absence of which the request match fails.
+      in the request, in the absence of which the request match fails. The name
+      must be specified and be between 1 and 32 characters long (inclusive).
     type: string
   presentMatch:
     description: |-

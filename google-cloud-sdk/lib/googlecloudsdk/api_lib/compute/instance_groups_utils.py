@@ -474,7 +474,8 @@ def MakeRequestsAndGetStatusPerInstanceFromOperation(client, requests,
     operations = client.MakeRequests([(service, method, request)],
                                      errors,
                                      log_warnings=False,
-                                     no_followup=True)
+                                     no_followup=True,
+                                     always_return_operation=True)
     # There should be only one operation in the list.
     [operation] = operations
     request_results.append((request, operation, errors))

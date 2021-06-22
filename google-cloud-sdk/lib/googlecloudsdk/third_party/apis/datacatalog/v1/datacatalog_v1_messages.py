@@ -1056,6 +1056,16 @@ class GoogleCloudDatacatalogV1BigQueryDateShardedSpec(_messages.Message):
   tablePrefix = _messages.StringField(3)
 
 
+class GoogleCloudDatacatalogV1BigQueryRoutineSpec(_messages.Message):
+  r"""Fields specific for BigQuery routines.
+
+  Fields:
+    importedLibraries: Paths of the imported libraries.
+  """
+
+  importedLibraries = _messages.StringField(1, repeated=True)
+
+
 class GoogleCloudDatacatalogV1BigQueryTableSpec(_messages.Message):
   r"""Describes a BigQuery table.
 
@@ -1271,6 +1281,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     name: Output only. The resource name of an entry in URL format. Note: The
       entry itself and its child resources might not be stored in the location
       specified in its name.
+    routineSpec: Specification that applies to a user-defined function or
+      procedure. Valid only for entries with the `ROUTINE` type.
     schema: Schema of the entry. An entry might not have any schema attached
       to it.
     sourceSystemTimestamps: Timestamps from the underlying resource, not from
@@ -1332,6 +1344,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       CLUSTER: A group of servers that work together. For example, a Kafka
         cluster.
       DATABASE: A database.
+      ROUTINE: Output only. Routine, for example, a BigQuery routine.
       SERVICE: A service, for example, a Dataproc Metastore service.
     """
     ENTRY_TYPE_UNSPECIFIED = 0
@@ -1341,7 +1354,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     FILESET = 4
     CLUSTER = 5
     DATABASE = 6
-    SERVICE = 7
+    ROUTINE = 7
+    SERVICE = 8
 
   bigqueryDateShardedSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryDateShardedSpec', 1)
   bigqueryTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryTableSpec', 2)
@@ -1356,12 +1370,13 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
   integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 11)
   linkedResource = _messages.StringField(12)
   name = _messages.StringField(13)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 14)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 17)
-  userSpecifiedSystem = _messages.StringField(18)
-  userSpecifiedType = _messages.StringField(19)
+  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 14)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 15)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 18)
+  userSpecifiedSystem = _messages.StringField(19)
+  userSpecifiedType = _messages.StringField(20)
 
 
 class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
@@ -1768,6 +1783,78 @@ class GoogleCloudDatacatalogV1ReplaceTaxonomyRequest(_messages.Message):
   """
 
   serializedTaxonomy = _messages.MessageField('GoogleCloudDatacatalogV1SerializedTaxonomy', 1)
+
+
+class GoogleCloudDatacatalogV1RoutineSpec(_messages.Message):
+  r"""Specification that applies to a routine. Valid only for entries with the
+  `ROUTINE` type.
+
+  Enums:
+    RoutineTypeValueValuesEnum: The type of the routine.
+
+  Fields:
+    bigqueryRoutineSpec: Fields specific for BigQuery routines.
+    definitionBody: The body of the routine.
+    language: The language the routine is written in. The exact value depends
+      on the source system. For BigQuery routines, possible values are: *
+      `SQL` * `JAVASCRIPT`
+    returnType: Return type of the argument. The exact value depends on the
+      source system and the language.
+    routineArguments: Arguments of the routine.
+    routineType: The type of the routine.
+  """
+
+  class RoutineTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the routine.
+
+    Values:
+      ROUTINE_TYPE_UNSPECIFIED: Unspecified type.
+      SCALAR_FUNCTION: Non-builtin permanent scalar function.
+      PROCEDURE: Stored procedure.
+    """
+    ROUTINE_TYPE_UNSPECIFIED = 0
+    SCALAR_FUNCTION = 1
+    PROCEDURE = 2
+
+  bigqueryRoutineSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryRoutineSpec', 1)
+  definitionBody = _messages.StringField(2)
+  language = _messages.StringField(3)
+  returnType = _messages.StringField(4)
+  routineArguments = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpecArgument', 5, repeated=True)
+  routineType = _messages.EnumField('RoutineTypeValueValuesEnum', 6)
+
+
+class GoogleCloudDatacatalogV1RoutineSpecArgument(_messages.Message):
+  r"""Input or output argument of a function or stored procedure.
+
+  Enums:
+    ModeValueValuesEnum: Specifies whether the argument is input or output.
+
+  Fields:
+    mode: Specifies whether the argument is input or output.
+    name: The name of the argument. A return argument of a function might not
+      have a name.
+    type: Type of the argument. The exact value depends on the source system
+      and the language.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Specifies whether the argument is input or output.
+
+    Values:
+      MODE_UNSPECIFIED: Unspecified mode.
+      IN: The argument is input-only.
+      OUT: The argument is output-only.
+      INOUT: The argument is both an input and an output.
+    """
+    MODE_UNSPECIFIED = 0
+    IN = 1
+    OUT = 2
+    INOUT = 3
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 class GoogleCloudDatacatalogV1Schema(_messages.Message):

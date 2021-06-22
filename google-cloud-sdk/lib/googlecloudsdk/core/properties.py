@@ -1687,9 +1687,9 @@ class _SectionAws(_Section):
 
   def __init__(self):
     super(_SectionAws, self).__init__('aws', hidden=True)
-    self.region = self._Add(
-        'region',
-        help_text='Default Google Cloud region `gcloud` should use for '
+    self.location = self._Add(
+        'location',
+        help_text='Default Google Cloud location `gcloud` should use for '
         'container aws surface.',
         hidden=True)
     self.aws_region = self._Add(
@@ -1704,9 +1704,9 @@ class _SectionAzure(_Section):
 
   def __init__(self):
     super(_SectionAzure, self).__init__('azure')
-    self.region = self._Add(
-        'region',
-        help_text='Default Google Cloud region `gcloud` should use for '
+    self.location = self._Add(
+        'location',
+        help_text='Default Google Cloud location `gcloud` should use for '
         'container azure surface.',
         hidden=True)
     self.azure_region = self._Add(

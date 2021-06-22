@@ -22,6 +22,8 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.composer import util as api_util
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.composer.flags import ENVIRONMENT_SIZE_ALPHA
+from googlecloudsdk.command_lib.composer.flags import ENVIRONMENT_SIZE_BETA
 
 
 def GetService(release_track=base.ReleaseTrack.GA):
@@ -34,6 +36,7 @@ class CreateEnvironmentFlags():
 
   Attributes:
     node_count: int or None, the number of VMs to create for the environment
+    environment_size: str or None, one of small, medium and large.
     labels: dict(str->str), a dict of user-provided resource labels to apply to
       the environment and its downstream resources
     location: str or None, the Compute Engine zone in which to create the
@@ -78,6 +81,7 @@ class CreateEnvironmentFlags():
       can use IPs from public (non-RFC1918) ranges.
     web_server_ipv4_cidr: IPv4 CIDR range to use for Web Server network.
     cloud_sql_ipv4_cidr: IPv4 CIDR range to use for Cloud SQL network.
+    composer_network_ipv4_cidr: IPv4 CIDR range to use for Composer network.
     web_server_access_control: [{string: string}], List of IP ranges with
       descriptions to allow access to the web server.
     cloud_sql_machine_type: str or None, Cloud SQL machine type used by the
@@ -90,13 +94,25 @@ class CreateEnvironmentFlags():
       specified only in Composer 2.0.0.
     worker_cpu: float or None, CPU allocated to each Airflow worker. Can be
       specified only in Composer 2.0.0.
+    web_server_cpu: float or None, CPU allocated to Airflow web server.
+      Can be specified only in Composer 2.0.0.
     scheduler_memory_gb: float or None, memory allocated to Airflow scheduler.
       Can be specified only in Composer 2.0.0.
     worker_memory_gb: float or None, memory allocated to each Airflow worker.
       Can be specified only in Composer 2.0.0.
+    web_server_memory_gb: float or None, memory allocated to Airflow web server.
+      Can be specified only in Composer 2.0.0.
+    scheduler_storage_gb: float or None, storage allocated to Airflow scheduler.
+      Can be specified only in Composer 2.0.0.
+    worker_storage_gb: float or None, storage allocated to each Airflow worker.
+      Can be specified only in Composer 2.0.0.
+    web_server_storage_gb: float or None, storage allocated to Airflow
+      web server. Can be specified only in Composer 2.0.0.
     min_workers: int or None, minimum number of workers in the Environment. Can
       be specified only in Composer 2.0.0.
     max_workers: int or None, maximumn number of workers in the Environment. Can
+      be specified only in Composer 2.0.0.
+    scheduler_count: int or None, number of schedulers in the Environment. Can
       be specified only in Composer 2.0.0.
     maintenance_window_start: Datetime or None, the starting time of the
       maintenance window
@@ -110,6 +126,7 @@ class CreateEnvironmentFlags():
 
   def __init__(self,
                node_count=None,
+               environment_size=None,
                labels=None,
                location=None,
                machine_type=None,
@@ -136,21 +153,29 @@ class CreateEnvironmentFlags():
                privately_used_public_ips=None,
                web_server_ipv4_cidr=None,
                cloud_sql_ipv4_cidr=None,
+               composer_network_ipv4_cidr=None,
                web_server_access_control=None,
                cloud_sql_machine_type=None,
                web_server_machine_type=None,
                kms_key=None,
                scheduler_cpu=None,
                worker_cpu=None,
+               web_server_cpu=None,
                scheduler_memory_gb=None,
                worker_memory_gb=None,
+               web_server_memory_gb=None,
+               scheduler_storage_gb=None,
+               worker_storage_gb=None,
+               web_server_storage_gb=None,
                min_workers=None,
                max_workers=None,
+               scheduler_count=None,
                maintenance_window_start=None,
                maintenance_window_end=None,
                maintenance_window_recurrence=None,
                release_track=base.ReleaseTrack.GA):
     self.node_count = node_count
+    self.environment_size = environment_size
     self.labels = labels
     self.location = location
     self.machine_type = machine_type
@@ -177,16 +202,23 @@ class CreateEnvironmentFlags():
     self.privately_used_public_ips = privately_used_public_ips
     self.web_server_ipv4_cidr = web_server_ipv4_cidr
     self.cloud_sql_ipv4_cidr = cloud_sql_ipv4_cidr
+    self.composer_network_ipv4_cidr = composer_network_ipv4_cidr
     self.web_server_access_control = web_server_access_control
     self.cloud_sql_machine_type = cloud_sql_machine_type
     self.web_server_machine_type = web_server_machine_type
     self.kms_key = kms_key
     self.scheduler_cpu = scheduler_cpu
     self.worker_cpu = worker_cpu
+    self.web_server_cpu = web_server_cpu
     self.scheduler_memory_gb = scheduler_memory_gb
     self.worker_memory_gb = worker_memory_gb
+    self.web_server_memory_gb = web_server_memory_gb
+    self.scheduler_storage_gb = scheduler_storage_gb
+    self.worker_storage_gb = worker_storage_gb
+    self.web_server_storage_gb = web_server_storage_gb
     self.min_workers = min_workers
     self.max_workers = max_workers
+    self.scheduler_count = scheduler_count
     self.maintenance_window_start = maintenance_window_start
     self.maintenance_window_end = maintenance_window_end
     self.maintenance_window_recurrence = maintenance_window_recurrence
@@ -236,8 +268,12 @@ def _CreateConfig(messages, flags):
           flags.maintenance_window_end or flags.maintenance_window_recurrence or
           flags.private_environment or flags.web_server_access_control or
           flags.cloud_sql_machine_type or flags.web_server_machine_type or
-          flags.scheduler_cpu or flags.worker_cpu or flags.scheduler_memory_gb
-          or flags.worker_memory_gb or flags.min_workers or flags.max_workers):
+          flags.scheduler_cpu or flags.worker_cpu or flags.web_server_cpu or
+          flags.scheduler_memory_gb or flags.worker_memory_gb or
+          flags.web_server_memory_gb or flags.scheduler_storage_gb or
+          flags.worker_storage_gb or flags.web_server_storage_gb or
+          flags.environment_size or flags.min_workers or flags.max_workers or
+          flags.scheduler_count):
     return None
 
   config = messages.EnvironmentConfig()
@@ -248,6 +284,13 @@ def _CreateConfig(messages, flags):
   if flags.kms_key:
     config.encryptionConfig = messages.EncryptionConfig(
         kmsKeyName=flags.kms_key)
+  if flags.environment_size:
+    if flags.release_track == base.ReleaseTrack.BETA:
+      config.environmentSize = ENVIRONMENT_SIZE_BETA.GetEnumForChoice(
+          flags.environment_size)
+    elif flags.release_track == base.ReleaseTrack.ALPHA:
+      config.environmentSize = ENVIRONMENT_SIZE_ALPHA.GetEnumForChoice(
+          flags.environment_size)
   if (flags.image_version or flags.env_variables or
       flags.airflow_config_overrides or flags.python_version or
       flags.airflow_executor_type):
@@ -296,6 +339,9 @@ def _CreateConfig(messages, flags):
     if flags.cloud_sql_ipv4_cidr is not None:
       private_env_config_args[
           'cloudSqlIpv4CidrBlock'] = flags.cloud_sql_ipv4_cidr
+    if flags.composer_network_ipv4_cidr is not None:
+      private_env_config_args[
+          'cloudComposerNetworkIpv4CidrBlock'] = flags.composer_network_ipv4_cidr
     if flags.privately_used_public_ips is not None:
       private_env_config_args[
           'enablePrivatelyUsedPublicIps'] = flags.privately_used_public_ips
@@ -313,14 +359,25 @@ def _CreateConfig(messages, flags):
   if flags.web_server_machine_type:
     config.webServerConfig = messages.WebServerConfig(
         machineType=flags.web_server_machine_type)
-  if (flags.scheduler_cpu or flags.worker_cpu or flags.scheduler_memory_gb or
-      flags.worker_memory_gb or flags.min_workers or flags.max_workers):
+  if (flags.scheduler_cpu or flags.worker_cpu or flags.web_server_cpu or
+      flags.scheduler_memory_gb or flags.worker_memory_gb or
+      flags.web_server_memory_gb or flags.scheduler_storage_gb or
+      flags.worker_storage_gb or flags.web_server_storage_gb or
+      flags.min_workers or flags.max_workers or flags.scheduler_count):
     config.workloadsConfig = messages.WorkloadsConfig(
         scheduler=messages.SchedulerResource(
-            cpu=flags.scheduler_cpu, memoryGb=flags.scheduler_memory_gb),
+            cpu=flags.scheduler_cpu,
+            memoryGb=flags.scheduler_memory_gb,
+            storageGb=flags.scheduler_storage_gb,
+            count=flags.scheduler_count),
+        webServer=messages.WebServerResource(
+            cpu=flags.web_server_cpu,
+            memoryGb=flags.web_server_memory_gb,
+            storageGb=flags.web_server_storage_gb),
         worker=messages.WorkerResource(
             cpu=flags.worker_cpu,
             memoryGb=flags.worker_memory_gb,
+            storageGb=flags.worker_storage_gb,
             minCount=flags.min_workers,
             maxCount=flags.max_workers))
 
@@ -411,6 +468,29 @@ def RestartWebServer(environment_ref, release_track=base.ReleaseTrack.BETA):
       name=environment_ref.RelativeName())
   return GetService(
       release_track=release_track).RestartWebServer(request_message)
+
+
+def CheckUpgrade(environment_ref,
+                 image_version,
+                 release_track=base.ReleaseTrack.BETA):
+  """Calls the Composer Environments.CheckUpgrade method.
+
+  Args:
+    environment_ref: Resource, the Composer environment resource to check
+      upgrade for.
+    image_version: Image version to upgrade to.
+    release_track: base.ReleaseTrack, the release track of command. Determines
+      which Composer client library is used.
+
+  Returns:
+    Operation: the operation corresponding to the upgrade check
+  """
+  message_module = api_util.GetMessagesModule(release_track=release_track)
+  request_message = message_module.ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest(
+      environment=environment_ref.RelativeName(),
+      checkUpgradeRequest=message_module.CheckUpgradeRequest(
+          imageVersion=image_version))
+  return GetService(release_track=release_track).CheckUpgrade(request_message)
 
 
 def Get(environment_ref, release_track=base.ReleaseTrack.GA):

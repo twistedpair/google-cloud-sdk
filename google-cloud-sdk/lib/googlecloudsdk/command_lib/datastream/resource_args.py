@@ -165,6 +165,22 @@ def AddConnectionProfileDiscoverResourceArg(parser):
       }).AddToParser(parser)
 
 
+def GetVpcResourceSpec():
+  """Constructs and returns the Resource specification for VPC."""
+
+  def VpcAttributeConfig():
+    return concepts.ResourceParameterAttributeConfig(
+        name='vpc',
+        help_text="""fully qualified name of the VPC Datastream will peer to."""
+    )
+
+  return concepts.ResourceSpec(
+      'compute.networks',
+      resource_name='vpc',
+      network=VpcAttributeConfig(),
+      project=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
 def AddPrivateConnectionResourceArg(parser, verb, positional=True):
   """Add a resource argument for a Datastream private connection.
 
@@ -178,8 +194,26 @@ def AddPrivateConnectionResourceArg(parser, verb, positional=True):
     name = 'private_connection'
   else:
     name = '--private-connection'
-  concept_parsers.ConceptParser.ForResource(
-      name,
-      GetPrivateConnectionResourceSpec(),
-      'The private connection {}.'.format(verb),
-      required=True).AddToParser(parser)
+
+  vpc_peering_config_parser = parser.add_group(required=True)
+
+  vpc_peering_config_parser.add_argument(
+      '--subnet',
+      help="""A free subnet for peering. (CIDR of /29).""",
+      required=True)
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetPrivateConnectionResourceSpec(),
+          'The private connection {}.'.format(verb),
+          required=True),
+      presentation_specs.ResourcePresentationSpec(
+          '--vpc-name',
+          GetVpcResourceSpec(),
+          'Resource ID of the private connection.',
+          group=vpc_peering_config_parser, required=True)
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs).AddToParser(parser)
+

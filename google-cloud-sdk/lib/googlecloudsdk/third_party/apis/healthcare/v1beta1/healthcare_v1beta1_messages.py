@@ -593,6 +593,23 @@ class CloudHealthcareSource(_messages.Message):
   name = _messages.StringField(1)
 
 
+class ConfigureSearchRequest(_messages.Message):
+  r"""Request to configure the search parameters for the specified FHIR store.
+
+  Fields:
+    canonicalUrls: The canonical URLs of the search parameters that are
+      intended to be used for the FHIR store. See
+      https://www.hl7.org/fhir/references.html#canonical for explanation on
+      FHIR canonical urls
+    validateOnly: If `validate_only` is set to true, the method will compile
+      all the search parameters without actually setting the search config for
+      the store and triggering the reindex.
+  """
+
+  canonicalUrls = _messages.StringField(1, repeated=True)
+  validateOnly = _messages.BooleanField(2)
+
+
 class Consent(_messages.Message):
   r"""Represents a user's consent.
 
@@ -1616,7 +1633,9 @@ class ExportResourcesRequest(_messages.Message):
     bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
       Service Agent requires two IAM roles on the BigQuery location:
       `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
-      one BigQuery table per resource type.
+      one BigQuery table per resource type. Note that unlike in
+      FhirStore.StreamConfig.BigQueryDestination, BigQuery views will not be
+      created by ExportResources.
     gcsDestination: The Cloud Storage output destination. The Cloud Healthcare
       Service Agent requires the `roles/storage.objectAdmin` Cloud IAM roles
       on the Cloud Storage location. The exported outputs are organized by
@@ -1775,6 +1794,7 @@ class FhirStore(_messages.Message):
       this FHIR store to this destination. The Pub/Sub message attributes
       contain a map with a string describing the action that has triggered the
       notification. For example, "action":"CreateResource".
+    searchConfig: Configuration for how FHIR resource can be searched.
     streamConfigs: A list of streaming configs that configure the destinations
       of streaming export for every resource mutation in this FHIR store. Each
       store is allowed to have up to 10 streaming configs. After a new config
@@ -1853,9 +1873,10 @@ class FhirStore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   notificationConfig = _messages.MessageField('NotificationConfig', 7)
-  streamConfigs = _messages.MessageField('StreamConfig', 8, repeated=True)
-  validationConfig = _messages.MessageField('ValidationConfig', 9)
-  version = _messages.EnumField('VersionValueValuesEnum', 10)
+  searchConfig = _messages.MessageField('SearchConfig', 8)
+  streamConfigs = _messages.MessageField('StreamConfig', 9, repeated=True)
+  validationConfig = _messages.MessageField('ValidationConfig', 10)
+  version = _messages.EnumField('VersionValueValuesEnum', 11)
 
 
 class Field(_messages.Message):
@@ -4041,6 +4062,22 @@ class HealthcareProjectsLocationsDatasetsDicomStoresTestIamPermissionsRequest(_m
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresConfigureSearchRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresConfigureSearchRequest
+  object.
+
+  Fields:
+    configureSearchRequest: A ConfigureSearchRequest resource to be passed as
+      the request body.
+    name: The name of the FHIR store to configure, in the format `projects/{pr
+      oject_id}/locations/{location_id}/datasets/{dataset_id}/fhirStores/{fhir
+      _store_id}`.
+  """
+
+  configureSearchRequest = _messages.MessageField('ConfigureSearchRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresCreateRequest(_messages.Message):
@@ -6500,8 +6537,13 @@ class QueryAccessibleDataRequest(_messages.Message):
 class QueryAccessibleDataResponse(_messages.Message):
   r"""Response for successful QueryAccessibleData operations. This structure
   is included in the response upon operation completion.
+
+  Fields:
+    gcsUris: List of files, each of which contains a list of data_id(s) that
+      are consented for a specified use in the request.
   """
 
+  gcsUris = _messages.StringField(1, repeated=True)
 
 
 class RedactConfig(_messages.Message):
@@ -6773,6 +6815,35 @@ class SchematizedData(_messages.Message):
 
   data = _messages.StringField(1)
   error = _messages.StringField(2)
+
+
+class SearchConfig(_messages.Message):
+  r"""Contains the configuration for FHIR search.
+
+  Fields:
+    searchParameters: A list of search parameters in this FHIR store that are
+      used to configure this FHIR store.
+  """
+
+  searchParameters = _messages.MessageField('SearchParameter', 1, repeated=True)
+
+
+class SearchParameter(_messages.Message):
+  r"""Contains the versioned name and the URL for one SearchParameter.
+
+  Fields:
+    canonicalUrl: The canonical url of the search parameter resource.
+    parameter: The versioned name of the search parameter resource. The format
+      is projects/{project-id}/locations/{location}/datasets/{dataset-
+      id}/fhirStores/{fhirStore-id}/fhir/SearchParameter/{resource-
+      id}/_history/{version-id} For fhir stores with
+      disable_resource_versioning=true, the format is projects/{project-
+      id}/locations/{location}/datasets/{dataset-id}/fhirStores/{fhirStore-
+      id}/fhir/SearchParameter/{resource-id}/
+  """
+
+  canonicalUrl = _messages.StringField(1)
+  parameter = _messages.StringField(2)
 
 
 class SearchResourcesRequest(_messages.Message):

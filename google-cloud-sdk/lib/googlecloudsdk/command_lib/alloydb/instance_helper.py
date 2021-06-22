@@ -12,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
 """Helper functions for constructing and validating AlloyDB instance requests."""
 
 from __future__ import absolute_import
@@ -25,8 +23,7 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
 
 
-def ConstructRequestFromArgs(client, alloydb_messages,
-                             project_ref, args):
+def ConstructRequestFromArgs(client, alloydb_messages, project_ref, args):
   """Validates command line input arguments and passes parent's resources.
 
   Args:
@@ -44,7 +41,7 @@ def ConstructRequestFromArgs(client, alloydb_messages,
   instance_resource.availabilityType = _ParseAvailabilityType(
       alloydb_messages, args.availability_type)
   instance_ref = client.resource_parser.Create(
-      'alloydbadmin.projects.locations.clusters.instances',
+      'alloydb.projects.locations.clusters.instances',
       projectsId=properties.VALUES.core.project.GetOrFail,
       locationsId=args.region,
       clustersId=args.cluster,
@@ -69,10 +66,11 @@ def ConstructRequestFromArgs(client, alloydb_messages,
   # instance_resource.networkConfig
   #   sslRequired (--require-ssl)
   # instance_resource.labels (--labels)
-  return alloydb_messages.AlloydbadminProjectsLocationsClustersInstancesCreateRequest(
-      instance=instance_resource,
-      instanceId=args.instance,
-      parent=project_ref.RelativeName())
+  return (
+      alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreateRequest(
+          instance=instance_resource,
+          instanceId=args.instance,
+          parent=project_ref.RelativeName()))
 
 
 def _ParseAvailabilityType(alloydb_messages, availability_type):
@@ -91,4 +89,3 @@ def _ParseNetworkConfig(alloydb_messages, assign_ip):
   if assign_ip:
     return alloydb_messages.NetworkConfig(publicIpEnabled=assign_ip)
   return None
-

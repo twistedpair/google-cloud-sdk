@@ -2348,6 +2348,24 @@
         "detectIntentResponse": {
           "description": "Response of the Dialogflow Sessions.DetectIntent call.",
           "$ref": "GoogleCloudDialogflowV2DetectIntentResponse"
+        },
+        "automatedAgentReplyType": {
+          "description": "AutomatedAgentReply type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified. This should never happen.",
+            "Partial reply. e.g. Aggregated responses in a `Fulfillment` that enables `return_partial_response` can be returned as partial reply. WARNING: partial reply is not eligible for barge-in.",
+            "Final reply."
+          ],
+          "enum": [
+            "AUTOMATED_AGENT_REPLY_TYPE_UNSPECIFIED",
+            "PARTIAL",
+            "FINAL"
+          ]
+        },
+        "allowCancellation": {
+          "description": "Indicates whether the partial automated agent reply is interruptible when a later reply message arrives. e.g. if the agent specified some music as partial response, it can be cancelled.",
+          "type": "boolean"
         }
       }
     },
@@ -4805,6 +4823,10 @@
           "description": "The webhook to call. Format: `projects\/\/locations\/\/agents\/\/webhooks\/`.",
           "type": "string"
         },
+        "returnPartialResponses": {
+          "description": "Whether Dialogflow should return currently queued fulfillment response messages in streaming APIs. If a webhook is specified, it happens before Dialogflow invokes webhook. Warning: 1) This flag only affects streaming API. Responses are still queued and returned once in non-streaming API. 2) The flag can be enabled in any fulfillment but only the first 3 partial responses will be returned. You may only want to apply it to fulfillments that have slow webhooks.",
+          "type": "boolean"
+        },
         "tag": {
           "description": "The tag used by the webhook to identify which fulfillment is being called. This field is required if `webhook` is specified.",
           "type": "string"
@@ -6374,6 +6396,10 @@
         "webhook": {
           "description": "The webhook to call. Format: `projects\/\/locations\/\/agents\/\/webhooks\/`.",
           "type": "string"
+        },
+        "returnPartialResponses": {
+          "description": "Whether Dialogflow should return currently queued fulfillment response messages in streaming APIs. If a webhook is specified, it happens before Dialogflow invokes webhook. Warning: 1) This flag only affects streaming API. Responses are still queued and returned once in non-streaming API. 2) The flag can be enabled in any fulfillment but only the first 3 partial responses will be returned. You may only want to apply it to fulfillments that have slow webhooks.",
+          "type": "boolean"
         },
         "tag": {
           "description": "The tag used by the webhook to identify which fulfillment is being called. This field is required if `webhook` is specified.",

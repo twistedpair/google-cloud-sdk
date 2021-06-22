@@ -22,12 +22,14 @@ import argparse
 import ipaddress
 import re
 
+from googlecloudsdk.api_lib.composer import util as api_util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.composer import parsers
 from googlecloudsdk.command_lib.composer import util as command_util
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
 
@@ -73,6 +75,14 @@ _INVALID_WEB_SERVER_IPV4_CIDR_BLOCK_ERROR = (
     'Not a valid IPV4 CIDR block value for the Airflow web server')
 _INVALID_CLOUD_SQL_IPV4_CIDR_BLOCK_ERROR = (
     'Not a valid IPV4 CIDR block value for the Cloud SQL instance')
+_INVALID_COMPOSER_NETWORK_IPV4_CIDR_BLOCK_ERROR = (
+    'Not a valid IPV4 CIDR block value for the composer network')
+_ENVIRONMENT_SIZE_MAPPING = {
+    'ENVIRONMENT_SIZE_UNSPECIFIED': 'unsepcified',
+    'ENVIRONMENT_SIZE_SMALL': 'small',
+    'ENVIRONMENT_SIZE_MEDIUM': 'medium',
+    'ENVIRONMENT_SIZE_LARGE': 'large'
+}
 
 AIRFLOW_CONFIGS_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for modifying the Airflow configuration.')
@@ -392,6 +402,15 @@ WORKER_CPU = base.Argument(
     CPU allocated to each Airflow worker
     """)
 
+WEB_SERVER_CPU = base.Argument(
+    '--web-server-cpu',
+    hidden=True,
+    type=float,
+    default=None,
+    help="""\
+    CPU allocated to each Airflow web server
+    """)
+
 SCHEDULER_MEMORY = base.Argument(
     '--scheduler-memory',
     hidden=True,
@@ -420,6 +439,62 @@ WORKER_MEMORY = base.Argument(
     defaults to GB.
     """)
 
+WEB_SERVER_MEMORY = base.Argument(
+    '--web-server-memory',
+    hidden=True,
+    type=arg_parsers.BinarySize(
+        lower_bound='128MB',
+        upper_bound='512GB',
+        suggested_binary_size_scales=['MB', 'GB'],
+        default_unit='G'),
+    default=None,
+    help="""\
+    Memory allocated to Airflow web server. If units are not provided,
+    defaults to GB.
+    """)
+
+SCHEDULER_STORAGE = base.Argument(
+    '--scheduler-storage',
+    hidden=True,
+    type=arg_parsers.BinarySize(
+        lower_bound='5MB',
+        upper_bound='10GB',
+        suggested_binary_size_scales=['MB', 'GB'],
+        default_unit='G'),
+    default=None,
+    help="""\
+    Storage allocated to Airflow scheduler. If units are not provided,
+    defaults to GB.
+    """)
+
+WORKER_STORAGE = base.Argument(
+    '--worker-storage',
+    hidden=True,
+    type=arg_parsers.BinarySize(
+        lower_bound='5MB',
+        upper_bound='10GB',
+        suggested_binary_size_scales=['MB', 'GB'],
+        default_unit='G'),
+    default=None,
+    help="""\
+    Storage allocated to Airflow worker. If units are not provided,
+    defaults to GB.
+    """)
+
+WEB_SERVER_STORAGE = base.Argument(
+    '--web-server-storage',
+    hidden=True,
+    type=arg_parsers.BinarySize(
+        lower_bound='5MB',
+        upper_bound='10GB',
+        suggested_binary_size_scales=['MB', 'GB'],
+        default_unit='G'),
+    default=None,
+    help="""\
+    Storage allocated to Airflow web server. If units are not provided,
+    defaults to GB.
+    """)
+
 MIN_WORKERS = base.Argument(
     '--min-workers',
     hidden=True,
@@ -437,6 +512,33 @@ MAX_WORKERS = base.Argument(
     help="""\
     Maximum number of workers in the Environment.
     """)
+
+NUM_SCHEDULERS = base.Argument(
+    '--scheduler-count',
+    hidden=True,
+    type=int,
+    default=None,
+    help="""\
+    Number of schedulers in the Environment.
+    """)
+
+ENVIRONMENT_SIZE_BETA = arg_utils.ChoiceEnumMapper(
+    arg_name='--environment-size',
+    help_str='Size of the environment. One of small, medium, large.',
+    message_enum=api_util.GetMessagesModule(
+        release_track=base.ReleaseTrack.BETA).EnvironmentConfig
+    .EnvironmentSizeValueValuesEnum,
+    custom_mappings=_ENVIRONMENT_SIZE_MAPPING,
+    hidden=True)
+
+ENVIRONMENT_SIZE_ALPHA = arg_utils.ChoiceEnumMapper(
+    arg_name='--environment-size',
+    help_str='Size of the environment. One of small, medium, large.',
+    message_enum=api_util.GetMessagesModule(
+        release_track=base.ReleaseTrack.ALPHA).EnvironmentConfig
+    .EnvironmentSizeValueValuesEnum,
+    custom_mappings=_ENVIRONMENT_SIZE_MAPPING,
+    hidden=True)
 
 
 def _IsValidIpv4CidrBlock(ipv4_cidr_block):
@@ -620,6 +722,25 @@ CLOUD_SQL_IPV4_CIDR_FLAG = base.Argument(
 
     Cannot be specified unless '--enable-private-environment' is also
     specified.
+    """)
+_IS_VALID_COMPOSER_NETWORK_IPV4_CIDR_BLOCK = (
+    lambda cidr: _IsValidMasterIpv4CidrBlockWithMaskSize(cidr, 24, 29))
+
+COMPOSER_NETWORK_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
+    _IS_VALID_COMPOSER_NETWORK_IPV4_CIDR_BLOCK,
+    _INVALID_COMPOSER_NETWORK_IPV4_CIDR_BLOCK_ERROR)
+
+COMPOSER_NETWORK_IPV4_CIDR_FLAG = base.Argument(
+    '--composer-network-ipv4-cidr',
+    default=None,
+    type=COMPOSER_NETWORK_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
+    hidden=True,
+    help="""\
+    IPv4 CIDR range to use for the Composer network. This should have
+    a size of the netmask between 24 and 29.
+
+    Can be specified for Composer v2 environments only. Cannot be specified
+    unless '--enable-private-environment' is also specified.
     """)
 
 MAINTENANCE_WINDOW_START_FLAG = base.Argument(
@@ -889,7 +1010,7 @@ def AddIpAliasEnvironmentFlags(update_type_group, support_max_pods_per_node):
     MAX_PODS_PER_NODE.AddToParser(group)
 
 
-def AddPrivateIpEnvironmentFlags(update_type_group):
+def AddPrivateIpEnvironmentFlags(update_type_group, release_track):
   """Adds flags related to private clusters to parser.
 
   Private cluster flags are related to similar flags found within GKE SDK:
@@ -897,6 +1018,7 @@ def AddPrivateIpEnvironmentFlags(update_type_group):
 
   Args:
     update_type_group: argument group, the group to which flag should be added.
+    release_track: release track for the command, one of: GA, BETA, ALPHA.
   """
   group = update_type_group.add_group(help='Private Clusters')
   ENABLE_PRIVATE_ENVIRONMENT_FLAG.AddToParser(group)
@@ -904,6 +1026,8 @@ def AddPrivateIpEnvironmentFlags(update_type_group):
   MASTER_IPV4_CIDR_FLAG.AddToParser(group)
   WEB_SERVER_IPV4_CIDR_FLAG.AddToParser(group)
   CLOUD_SQL_IPV4_CIDR_FLAG.AddToParser(group)
+  if release_track != base.ReleaseTrack.GA:
+    COMPOSER_NETWORK_IPV4_CIDR_FLAG.AddToParser(group)
 
 
 def AddPypiUpdateFlagsToGroup(update_type_group):
@@ -968,20 +1092,31 @@ def AddLabelsUpdateFlagsToGroup(update_type_group):
   labels_util.AddUpdateLabelsFlags(labels_update_group)
 
 
-def AddAutoscalingUpdateFlagsToGroup(update_type_group):
+def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
   """Adds flags related to updating autoscaling.
 
   Args:
     update_type_group: argument group, the group to which flags should be added.
+    release_track: gcloud version to add flags to.
   """
+  if release_track == base.ReleaseTrack.BETA:
+    ENVIRONMENT_SIZE_BETA.choice_arg.AddToParser(update_type_group)
+  elif release_track == base.ReleaseTrack.ALPHA:
+    ENVIRONMENT_SIZE_ALPHA.choice_arg.AddToParser(update_type_group)
   update_group = update_type_group.add_argument_group(
       AUTOSCALING_FLAG_GROUP_DESCRIPTION, hidden=True)
   SCHEDULER_CPU.AddToParser(update_group)
   WORKER_CPU.AddToParser(update_group)
+  WEB_SERVER_CPU.AddToParser(update_group)
   SCHEDULER_MEMORY.AddToParser(update_group)
   WORKER_MEMORY.AddToParser(update_group)
+  WEB_SERVER_MEMORY.AddToParser(update_group)
+  SCHEDULER_STORAGE.AddToParser(update_group)
+  WORKER_STORAGE.AddToParser(update_group)
+  WEB_SERVER_STORAGE.AddToParser(update_group)
   MIN_WORKERS.AddToParser(update_group)
   MAX_WORKERS.AddToParser(update_group)
+  NUM_SCHEDULERS.AddToParser(update_group)
 
 
 def AddMaintenanceWindowFlagsGroup(update_type_group):

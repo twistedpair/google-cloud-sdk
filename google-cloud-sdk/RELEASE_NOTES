@@ -5,6 +5,99 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 346.0.0 (2021-06-22)
+
+### Breaking Changes
+
+*   **(Cloud SDK)** Removed the deprecated flag `--add-quota-project` in `gcloud auth
+  application-default login`. `--add-quota-project` is the default.
+*   **(Certificate Authority Service)** Renamed `--location` flag on `gcloud privateca certificates create` as
+  `--template-location`, and updated it to default to the same location as
+  the issuing CA Pool.
+*   **(Certificate Authority Service)** Added an explicit check to `gcloud privateca certificates create` to verify
+  that any certificate templates are in the same location as the issuing CA
+  Pool.
+
+
+### AI
+
+* Added `gcloud beta ai custom-jobs local-run` which creates a custom training container image from your code and runs it locally.
+* Supported training with local files in `gcloud beta custom-job create` command.
+
+### Access Approval
+
+*  Promoted `gcloud access-appoval` command group to beta.
+
+### Cloud Asset Inventory
+
+*   Updated `gcloud asset search-all-iam-policies` with new searchable fields
+    (`memberTypes`, `roles`, `project`, `folders`, and `organizations`), new
+    request fields (`assetTypes` and `orderBy`), and new response fields
+    (`assetType`, `folders`, and `organization`).
+
+### Cloud Build
+
+* Updated `gcloud builds triggers create ...` with `require-approval` flag.
+
+### Cloud Composer
+
+* Added `gcloud beta composer environments check-upgrade` command. It checks that an environment upgrade does not fail because of PyPI module conflicts.
+
+### Cloud DNS
+
+* Added `--gkeclusters` to `gcloud beta dns managed-zones create` to support binding GKE clusters to the zone.
+
+### Cloud Datastream
+
+* Added `gcloud beta operations cancel` which
+  cancels a datastream operation.
+* Added `gcloud beta private-connections create` which
+  creates a datastream private connection.
+
+### Cloud Pub/Sub
+
+* Promoted `gcloud pubsub schemas` to GA.
+* Promoted `--schema` and `--encoding` flags of `gcloud pubsub topics create` to GA.
+
+### Cloud SQL
+
+*   Added SQL Server 2019 options to `--database-version` flag of
+    `gcloud sql instances create` and `gcloud sql flags list`.
+
+### Compute Engine
+
+* Added debian-10 option to `--os` flag for:
+  * `gcloud compute images import` in GA,
+  * `gcloud compute instances import` in GA
+  * `gcloud compute machine-images import` in beta
+  * `gcloud compute routers update`
+* Promoted support for `stack-type` and `ipv6-network-tier` for `gcloud compute instances network-interfaces update` to GA.
+* Added staged progress tracker to `gcloud beta compute networks update --switch-to-custom-subnet-mode` when updating a legacy network.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.53.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Kpt
+
+* Updated kpt from v0.39.2 to v0.39.3.
+
+### Miscellaneous
+
+* Updated lazy module loader to correctly set module.__file__ to the file name,
+  rather than the file handle, to properly support debugging with Pdb++
+  (https://issuetracker.google.com/issues/190741410).
+
+### VPC Access
+
+* Promoted following flags in `gcloud compute networks vpc-access connectors create` to GA:
+  * `--machine-type`
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 345.0.0 (2021-06-15)
 
 ### AI

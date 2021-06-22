@@ -24,3 +24,11 @@ create-transformer-configs-file:
   required: false
   help_text: |-
     File path to a config file in JSON format.
+
+
+annotation-data-file:
+  arg_name: annotation-data-file
+  type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
+  required: true
+  help_text: |-
+    File path to a file contains annotation data in JSON format.

@@ -65,7 +65,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -81,7 +81,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/volumeBackups',
         request_field='volumeBackup',
         request_type_name='GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -109,6 +109,33 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsGetRequest',
         response_type_name='VolumeBackup',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}/volumeBackups/{volumeBackupsId}:getIamPolicy',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.backupPlans.backups.volumeBackups.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -146,7 +173,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -162,7 +189,61 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='volumeBackup',
         request_type_name='GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsPatchRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}/volumeBackups/{volumeBackupsId}:setIamPolicy',
+        http_method='POST',
+        method_id='gkebackup.projects.locations.backupPlans.backups.volumeBackups.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}/volumeBackups/{volumeBackupsId}:testIamPermissions',
+        http_method='POST',
+        method_id='gkebackup.projects.locations.backupPlans.backups.volumeBackups.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -183,7 +264,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsBackupPlansBackupsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -199,7 +280,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/backups',
         request_field='backup',
         request_type_name='GkebackupProjectsLocationsBackupPlansBackupsCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -210,7 +291,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsBackupPlansBackupsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -226,7 +307,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='GkebackupProjectsLocationsBackupPlansBackupsDeleteRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -311,6 +392,33 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupPlansBackupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}:getIamPolicy',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.backupPlans.backups.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsBackupPlansBackupsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""ListBackups lists Backups under a given BackupPlan.
 
@@ -345,7 +453,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsBackupPlansBackupsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -361,7 +469,34 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='backup',
         request_type_name='GkebackupProjectsLocationsBackupPlansBackupsPatchRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupPlansBackupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}:setIamPolicy',
+        http_method='POST',
+        method_id='gkebackup.projects.locations.backupPlans.backups.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='GkebackupProjectsLocationsBackupPlansBackupsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -372,7 +507,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsBackupPlansBackupsSubmitClusterConfigRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('SubmitClusterConfig')
       return self._RunMethod(
@@ -388,7 +523,34 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+backup}:submitClusterConfig',
         request_field='submitClusterConfigRequest',
         request_type_name='GkebackupProjectsLocationsBackupPlansBackupsSubmitClusterConfigRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (GkebackupProjectsLocationsBackupPlansBackupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}/backups/{backupsId}:testIamPermissions',
+        http_method='POST',
+        method_id='gkebackup.projects.locations.backupPlans.backups.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='GkebackupProjectsLocationsBackupPlansBackupsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -409,7 +571,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsBackupPlansCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -425,7 +587,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/backupPlans',
         request_field='backupPlan',
         request_type_name='GkebackupProjectsLocationsBackupPlansCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -436,7 +598,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsBackupPlansDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -452,7 +614,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='GkebackupProjectsLocationsBackupPlansDeleteRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -544,7 +706,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsBackupPlansPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -560,7 +722,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='backupPlan',
         request_type_name='GkebackupProjectsLocationsBackupPlansPatchRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -649,7 +811,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha1/{+name}:cancel',
-        request_field='cancelOperationRequest',
+        request_field='googleLongrunningCancelOperationRequest',
         request_type_name='GkebackupProjectsLocationsOperationsCancelRequest',
         response_type_name='Empty',
         supports_download=False,
@@ -689,7 +851,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsOperationsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -705,7 +867,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='GkebackupProjectsLocationsOperationsGetRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -716,7 +878,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsOperationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListOperationsResponse) The response message.
+        (GoogleLongrunningListOperationsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -732,7 +894,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}/operations',
         request_field='',
         request_type_name='GkebackupProjectsLocationsOperationsListRequest',
-        response_type_name='ListOperationsResponse',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 
@@ -753,7 +915,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsRestoresVolumeRestoresCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -769,7 +931,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/volumeRestores',
         request_field='volumeRestore',
         request_type_name='GkebackupProjectsLocationsRestoresVolumeRestoresCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -797,6 +959,33 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkebackupProjectsLocationsRestoresVolumeRestoresGetRequest',
         response_type_name='VolumeRestore',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (GkebackupProjectsLocationsRestoresVolumeRestoresGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}/volumeRestores/{volumeRestoresId}:getIamPolicy',
+        http_method='GET',
+        method_id='gkebackup.projects.locations.restores.volumeRestores.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='GkebackupProjectsLocationsRestoresVolumeRestoresGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -834,7 +1023,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsRestoresVolumeRestoresPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -850,7 +1039,61 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='volumeRestore',
         request_type_name='GkebackupProjectsLocationsRestoresVolumeRestoresPatchRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (GkebackupProjectsLocationsRestoresVolumeRestoresSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}/volumeRestores/{volumeRestoresId}:setIamPolicy',
+        http_method='POST',
+        method_id='gkebackup.projects.locations.restores.volumeRestores.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='GkebackupProjectsLocationsRestoresVolumeRestoresSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (GkebackupProjectsLocationsRestoresVolumeRestoresTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/restores/{restoresId}/volumeRestores/{volumeRestoresId}:testIamPermissions',
+        http_method='POST',
+        method_id='gkebackup.projects.locations.restores.volumeRestores.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='GkebackupProjectsLocationsRestoresVolumeRestoresTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -871,7 +1114,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsRestoresCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -887,7 +1130,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/restores',
         request_field='restore',
         request_type_name='GkebackupProjectsLocationsRestoresCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -898,7 +1141,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsRestoresDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -914,7 +1157,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='GkebackupProjectsLocationsRestoresDeleteRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1006,7 +1249,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         request: (GkebackupProjectsLocationsRestoresPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -1022,7 +1265,7 @@ class GkebackupV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='restore',
         request_type_name='GkebackupProjectsLocationsRestoresPatchRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

@@ -282,6 +282,8 @@ class Execution(_messages.Message):
         the reason for the cancellation.
       CANCELLED: The job has been cancelled. `error_message` should describe
         the reason for the cancellation.
+      EXPIRED: The jobs has become expired (added for uCAIP jobs)
+        https://cloud.google.com/vertex-ai/docs/reference/rest/v1/JobState
     """
     STATE_UNSPECIFIED = 0
     QUEUED = 1
@@ -291,6 +293,7 @@ class Execution(_messages.Message):
     FAILED = 5
     CANCELLING = 6
     CANCELLED = 7
+    EXPIRED = 8
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)

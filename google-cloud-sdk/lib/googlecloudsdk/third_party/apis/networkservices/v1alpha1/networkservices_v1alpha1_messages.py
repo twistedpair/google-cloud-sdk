@@ -1410,6 +1410,90 @@ class HttpRoute(_messages.Message):
   name = _messages.StringField(2)
 
 
+class InvalidateCacheRequest(_messages.Message):
+  r"""Request used by the InvalidateCache method.
+
+  Fields:
+    cacheTags: A list of cache tags used to identify cached objects. Cache
+      tags are specified when the response is first cached, by setting the
+      "Cache-Tag" response header at the origin. By default, all objects have
+      a cache tag representing the HTTP status code of the response, the MIME
+      content-type, and the origin. Multiple cache tags in the same
+      revalidation request are treated as Boolean OR - e.g. tag1 OR tag2 OR
+      tag3. If a host and/or path are also specified, these are treated as
+      Boolean AND with any tags. Up to 10 tags may be specified in a single
+      invalidation request.
+    host: The hostname to invalidate against. You can specify an exact or
+      wildcard host - e.g. "video.example.com" or "*.example.com" - based on
+      host component.
+    path: The path to invalidate against. You can specify an exact or wildcard
+      path - e.g. "/videos/hls/139123.mp4" or "/manifests/*" - based on path
+      component.
+  """
+
+  cacheTags = _messages.StringField(1, repeated=True)
+  host = _messages.StringField(2)
+  path = _messages.StringField(3)
+
+
+class InvalidateCacheResponse(_messages.Message):
+  r"""Response used by the InvalidateCache method."""
+
+
+class Label(_messages.Message):
+  r"""Defines match criteria for an individual label.
+
+  Fields:
+    key: Key of the label.
+    negated: If set to true - the match condition of the label is reversed.
+      I.e. by default label {name="exampleName", value="exampleValue"} will
+      match if "exampleName = exampleValue" is present. With negated set to
+      true the same configuration will match if "exampleName = exampleValue"
+      is NOT present in the list of evaluated labels.
+    value: Value of the label.
+  """
+
+  key = _messages.StringField(1)
+  negated = _messages.BooleanField(2)
+  value = _messages.StringField(3)
+
+
+class LabelsMatcher(_messages.Message):
+  r"""LabelsMatcher defines criteria to match by a list of labels.
+
+  Enums:
+    TypeValueValuesEnum: Specify how are labels evaluated together. MATCH_ANY:
+      LabelsMatcher is considered a match if ANY one of the labels provided is
+      a match. MATCH_ALL: LabelsMatcher is considered a match if ALL of the
+      labels are matched.
+
+  Fields:
+    labels: Defines labels to match against.
+    type: Specify how are labels evaluated together. MATCH_ANY: LabelsMatcher
+      is considered a match if ANY one of the labels provided is a match.
+      MATCH_ALL: LabelsMatcher is considered a match if ALL of the labels are
+      matched.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Specify how are labels evaluated together. MATCH_ANY: LabelsMatcher is
+    considered a match if ANY one of the labels provided is a match.
+    MATCH_ALL: LabelsMatcher is considered a match if ALL of the labels are
+    matched.
+
+    Values:
+      MATCH_TYPE_UNSPECIFIED: Default Value.
+      MATCH_ANY: Logical OR labels provided in LabelsMatcher.
+      MATCH_ALL: Logical AND labels provided in LabelsMatcher.
+    """
+    MATCH_TYPE_UNSPECIFIED = 0
+    MATCH_ANY = 1
+    MATCH_ALL = 2
+
+  labels = _messages.MessageField('Label', 1, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
 class ListEdgeCacheKeysetsResponse(_messages.Message):
   r"""Response returned by the ListEdgeCacheKeysets method.
 
@@ -2127,6 +2211,23 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesGetRequest(_messages.Mess
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest
+  object.
+
+  Fields:
+    edgeCacheService: Required. A name of the EdgeCacheService to apply the
+      invalidation request to. Must be in the format
+      `projects/*/locations/global/edgeCacheServices/*`.
+    invalidateCacheRequest: A InvalidateCacheRequest resource to be passed as
+      the request body.
+  """
+
+  edgeCacheService = _messages.StringField(1, required=True)
+  invalidateCacheRequest = _messages.MessageField('InvalidateCacheRequest', 2)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheServicesListRequest(_messages.Message):
@@ -3493,6 +3594,26 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class ProxySettings(_messages.Message):
+  r"""Settings that are applicable to Router, of which the type is PROXY.
+
+  Fields:
+    addresses: Zero or more addresses with ports in format of ":" that the
+      Router must receive traffic on. The proxy binds to the ports specified.
+      IP address can be anything that is allowed by the underlying
+      infrastructure (auto-allocation, static IP, BYOIP). Must be unset if the
+      interceptionPort is set as interceptionPort configures the Router to
+      listen on the localhost address instead.
+    interceptionPort: If set to a valid TCP port (1-65535), instructs Router
+      to listen on the specified port of localhost (127.0.0.1) address. Router
+      will expect all traffic to be redirected to this port regardless of its
+      actual ip:port destination.
+  """
+
+  addresses = _messages.StringField(1, repeated=True)
+  interceptionPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class PublicKey(_messages.Message):
   r"""An Ed25519 public key used for validating signed requests.
 
@@ -3631,9 +3752,19 @@ class Router(_messages.Message):
       configuration. Currently only the short name (network name) is
       supported, for example "default", and we assume it is under the same
       project as the resource by default.
+    proxySettings: Optional. Settings specific to proxies. This field is only
+      applicable if the Router type is "PROXY".
     routes: Optional. List of references to routes that this Router must be
       able to route traffic for. Example:
-      projects/12345/locations/global/grpcRoutes/myGrpcRoute
+      projects/12345/locations/global/grpcRoutes/myGrpcRoute Must refer to
+      GrpcRoute if Router type is PROXYLESS_GRPC. Must refer to HttpRoute if
+      Router type is PROXY.
+    selector: Optional. Defines additional parameters to match data plane
+      clients (envoy proxy or grpc client) with the configuration provided by
+      this Router. If selector matches - all configuration associated with
+      this Router is sent to a client, otherwise it is ignored for the
+      particular data plane clients. For the detailed description and examples
+      of selector usage, check documentation for Selector.
     type: Required. The type of the Router resource.
     updateTime: Output only. The timestamp when the resource was updated.
   """
@@ -3645,9 +3776,11 @@ class Router(_messages.Message):
       TYPE_UNSPECIFIED: The type of Router is unspecified.
       PROXYLESS_GRPC: The Router is used in Proxyless gRPC model. Routes being
         referenced must be gRPC routes for this type.
+      PROXY: The Router is used in customer-managed proxy model.
     """
     TYPE_UNSPECIFIED = 0
     PROXYLESS_GRPC = 1
+    PROXY = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3678,9 +3811,11 @@ class Router(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   network = _messages.StringField(5)
-  routes = _messages.StringField(6, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  proxySettings = _messages.MessageField('ProxySettings', 6)
+  routes = _messages.StringField(7, repeated=True)
+  selector = _messages.MessageField('Selector', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class Routing(_messages.Message):
@@ -3699,6 +3834,31 @@ class Routing(_messages.Message):
 
   hostRules = _messages.MessageField('HostRule', 1, repeated=True)
   pathMatchers = _messages.MessageField('PathMatcher', 2, repeated=True)
+
+
+class Selector(_messages.Message):
+  r"""A general Selector that defines how to select the entities based on the
+  metadata provided by these entities. For example, xDS API clients (such as
+  Envoy proxy) present key=value label pairs to the control plane upon
+  connection. The Selector could be used to select a subset of clients based
+  on the labels they presented. Selector is used in a context of other
+  resources, so that configuration of these resources is applied only to the
+  entities that were matched by the Selector. For example, one may set a
+  Selector of a resource as follows: labels_matchers: - type: MATCH_ANY
+  labels: - key: env value: dev - key: user-group value: qa negated: true -
+  type: MATCH_ANY labels: - key: version value: v1 The resource will/can be
+  delivered to entities that present labels such as: "env": "dev", "version":
+  "v1" but NOT delivered to those that have labels as: "env": "dev", "user-
+  group": "qa", "version", "v1"
+
+  Fields:
+    labelsMatchers: A list of LabelsMatcheres to match against presented
+      labels. When multiple LabelsMatcheres are provided, they are combined
+      with a logical AND, i.e. all LabelMatchers must match in order for the
+      Selector to match.
+  """
+
+  labelsMatchers = _messages.MessageField('LabelsMatcher', 1, repeated=True)
 
 
 class ServiceGraph(_messages.Message):

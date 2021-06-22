@@ -4953,12 +4953,22 @@ class AiplatformProjectsLocationsTrainingPipelinesListRequest(_messages.Message)
   r"""A AiplatformProjectsLocationsTrainingPipelinesListRequest object.
 
   Fields:
-    filter: The standard list filter. Supported fields: * `display_name`
-      supports = and !=. * `state` supports = and !=. Some examples of using
-      the filter are: * `state="PIPELINE_STATE_SUCCEEDED" AND
-      display_name="my_pipeline"` * `state="PIPELINE_STATE_RUNNING" OR
-      display_name="my_pipeline"` * `NOT display_name="my_pipeline"` *
-      `state="PIPELINE_STATE_FAILED"`
+    filter: Lists the PipelineJobs that match the filter expression. The
+      following fields are supported: * `pipeline_name`: Supports `=` and `!=`
+      comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and
+      `>=` comparisons. Values must be in RFC 3339 format. * `update_time`:
+      Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be
+      in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`,
+      and `>=` comparisons. Values must be in RFC 3339 format. * `labels`:
+      Supports key-value equality and key presence. Filter expressions can be
+      combined together using logical operators (`AND` & `OR`). For example:
+      `pipeline_name="test" AND create_time>"2020-05-18T13:30:00Z"`. The
+      syntax to define filter expression is based on
+      https://google.aip.dev/160. Examples: *
+      `create_time>"2021-05-18T00:00:00Z" OR
+      update_time>"2020-05-18T00:00:00Z"` PipelineJobs created or updated
+      after 2020-05-18 00:00:00 UTC. * `labels.env = "prod"` PipelineJobs with
+      label "env" set to "prod".
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained via
       ListTrainingPipelinesResponse.next_page_token of the previous
@@ -6276,10 +6286,6 @@ class GoogleCloudAiplatformInternalFeature(_messages.Message):
       BOOL_ARRAY: Used for Feature that is a list of boolean.
       DOUBLE: Used for Feature that is double.
       DOUBLE_ARRAY: Used for Feature that is a list of double.
-      FLOAT: Deprecated. Used for Feature that is float.
-      FLOAT_ARRAY: Deprecated. Used for Feature that is a list of float.
-      INT32: Deprecated. Used for Feature that is INT32.
-      INT32_ARRAY: Deprecated. Used for Feature that is a list of INT32.
       INT64: Used for Feature that is INT64.
       INT64_ARRAY: Used for Feature that is a list of INT64.
       STRING: Used for Feature that is string.
@@ -6291,15 +6297,11 @@ class GoogleCloudAiplatformInternalFeature(_messages.Message):
     BOOL_ARRAY = 2
     DOUBLE = 3
     DOUBLE_ARRAY = 4
-    FLOAT = 5
-    FLOAT_ARRAY = 6
-    INT32 = 7
-    INT32_ARRAY = 8
-    INT64 = 9
-    INT64_ARRAY = 10
-    STRING = 11
-    STRING_ARRAY = 12
-    BYTES = 13
+    INT64 = 5
+    INT64_ARRAY = 6
+    STRING = 7
+    STRING_ARRAY = 8
+    BYTES = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -9934,6 +9936,11 @@ class GoogleCloudAiplatformUiTrial(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The detailed state of the Trial.
 
+  Messages:
+    WebAccessUrisValue: Output only. The web access URIs for the training job.
+      The keys are the node names in the training jobs, e.g. workerpool0-0.
+      The values are the URIs for each node's web portal in the job.
+
   Fields:
     clientId: Output only. The identifier of the client that originally
       requested this Trial. Each client is identified by a unique client_id.
@@ -9959,6 +9966,9 @@ class GoogleCloudAiplatformUiTrial(_messages.Message):
     parameters: Output only. The parameters of the Trial.
     startTime: Output only. Time when the Trial was started.
     state: Output only. The detailed state of the Trial.
+    webAccessUris: Output only. The web access URIs for the training job. The
+      keys are the node names in the training jobs, e.g. workerpool0-0. The
+      values are the URIs for each node's web portal in the job.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -9982,6 +9992,33 @@ class GoogleCloudAiplatformUiTrial(_messages.Message):
     SUCCEEDED = 4
     INFEASIBLE = 5
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WebAccessUrisValue(_messages.Message):
+    r"""Output only. The web access URIs for the training job. The keys are
+    the node names in the training jobs, e.g. workerpool0-0. The values are
+    the URIs for each node's web portal in the job.
+
+    Messages:
+      AdditionalProperty: An additional property for a WebAccessUrisValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type WebAccessUrisValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WebAccessUrisValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   clientId = _messages.StringField(1)
   customJob = _messages.StringField(2)
   endTime = _messages.StringField(3)
@@ -9993,6 +10030,7 @@ class GoogleCloudAiplatformUiTrial(_messages.Message):
   parameters = _messages.MessageField('GoogleCloudAiplatformUiTrialParameter', 9, repeated=True)
   startTime = _messages.StringField(10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
+  webAccessUris = _messages.MessageField('WebAccessUrisValue', 12)
 
 
 class GoogleCloudAiplatformUiTrialParameter(_messages.Message):
@@ -11294,8 +11332,7 @@ class GoogleCloudAiplatformV1SchemaPredictPredictionClassificationPredictionResu
       higher value means higher confidence. Order matches the Ids.
     displayNames: The display names of the AnnotationSpecs that had been
       identified, order matches the IDs.
-    ids: The resource IDs of the AnnotationSpecs that had been identified,
-      ordered by the confidence score descendingly.
+    ids: The resource IDs of the AnnotationSpecs that had been identified.
   """
 
   confidences = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
@@ -15305,6 +15342,11 @@ class GoogleCloudAiplatformV1alpha1Trial(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The detailed state of the Trial.
 
+  Messages:
+    WebAccessUrisValue: Output only. The web access URIs for the training job.
+      The keys are the node names in the training jobs, e.g. workerpool0-0.
+      The values are the URIs for each node's web portal in the job.
+
   Fields:
     clientId: Output only. The identifier of the client that originally
       requested this Trial. Each client is identified by a unique client_id.
@@ -15328,6 +15370,9 @@ class GoogleCloudAiplatformV1alpha1Trial(_messages.Message):
     parameters: Output only. The parameters of the Trial.
     startTime: Output only. Time when the Trial was started.
     state: Output only. The detailed state of the Trial.
+    webAccessUris: Output only. The web access URIs for the training job. The
+      keys are the node names in the training jobs, e.g. workerpool0-0. The
+      values are the URIs for each node's web portal in the job.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -15351,6 +15396,33 @@ class GoogleCloudAiplatformV1alpha1Trial(_messages.Message):
     SUCCEEDED = 4
     INFEASIBLE = 5
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WebAccessUrisValue(_messages.Message):
+    r"""Output only. The web access URIs for the training job. The keys are
+    the node names in the training jobs, e.g. workerpool0-0. The values are
+    the URIs for each node's web portal in the job.
+
+    Messages:
+      AdditionalProperty: An additional property for a WebAccessUrisValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type WebAccessUrisValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WebAccessUrisValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   clientId = _messages.StringField(1)
   endTime = _messages.StringField(2)
   finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1alpha1Measurement', 3)
@@ -15361,6 +15433,7 @@ class GoogleCloudAiplatformV1alpha1Trial(_messages.Message):
   parameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1TrialParameter', 8, repeated=True)
   startTime = _messages.StringField(9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
+  webAccessUris = _messages.MessageField('WebAccessUrisValue', 11)
 
 
 class GoogleCloudAiplatformV1alpha1TrialParameter(_messages.Message):
@@ -16787,6 +16860,9 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
       codepoints), can only contain lowercase letters, numeric characters,
       underscores and dashes. International characters are allowed. See
       https://goo.gl/xmQnxf for more information and examples of labels.
+    WebAccessUrisValue: Output only. The web access URIs for the training job.
+      The keys are the node names in the training jobs, e.g. workerpool0-0.
+      The values are the URIs for each node's web portal in the job.
 
   Fields:
     createTime: Output only. Time when the CustomJob was created.
@@ -16812,6 +16888,9 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
     state: Output only. The detailed state of the job.
     updateTime: Output only. Time when the CustomJob was most recently
       updated.
+    webAccessUris: Output only. The web access URIs for the training job. The
+      keys are the node names in the training jobs, e.g. workerpool0-0. The
+      values are the URIs for each node's web portal in the job.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -16871,6 +16950,33 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WebAccessUrisValue(_messages.Message):
+    r"""Output only. The web access URIs for the training job. The keys are
+    the node names in the training jobs, e.g. workerpool0-0. The values are
+    the URIs for each node's web portal in the job.
+
+    Messages:
+      AdditionalProperty: An additional property for a WebAccessUrisValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type WebAccessUrisValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WebAccessUrisValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
   encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 3)
@@ -16882,6 +16988,7 @@ class GoogleCloudAiplatformV1beta1CustomJob(_messages.Message):
   startTime = _messages.StringField(9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
   updateTime = _messages.StringField(11)
+  webAccessUris = _messages.MessageField('WebAccessUrisValue', 12)
 
 
 class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
@@ -16899,6 +17006,9 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
       backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
       * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
       `//logs/`
+    enableWebAccess: Optional. Vertex AI will enable web portal access to the
+      containers. The portals can be accessed on web via the URLs given by
+      web_access_uris.
     network: The full name of the Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       Job should be peered. For example,
@@ -16923,11 +17033,12 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 1)
-  network = _messages.StringField(2)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 3)
-  serviceAccount = _messages.StringField(4)
-  tensorboard = _messages.StringField(5)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 6, repeated=True)
+  enableWebAccess = _messages.BooleanField(2)
+  network = _messages.StringField(3)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 4)
+  serviceAccount = _messages.StringField(5)
+  tensorboard = _messages.StringField(6)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 7, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DataItem(_messages.Message):
@@ -23210,8 +23321,7 @@ class GoogleCloudAiplatformV1beta1SchemaPredictPredictionClassificationPredictio
       higher value means higher confidence. Order matches the Ids.
     displayNames: The display names of the AnnotationSpecs that had been
       identified, order matches the IDs.
-    ids: The resource IDs of the AnnotationSpecs that had been identified,
-      ordered by the confidence score descendingly.
+    ids: The resource IDs of the AnnotationSpecs that had been identified.
   """
 
   confidences = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
@@ -25374,9 +25484,9 @@ class GoogleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest(_messages.Me
   FeaturestoreOnlineServingService.StreamingFeatureValuesRead.
 
   Fields:
-    entityIds: Required. IDs of entities to read Feature values of. For
-      example, for a machine learning model predicting user clicks on a
-      website, an entity ID could be "user_123".
+    entityIds: Required. IDs of entities to read Feature values of. The
+      maximum number of IDs is 100. For example, for a machine learning model
+      predicting user clicks on a website, an entity ID could be "user_123".
     featureSelector: Required. Selector choosing Features of the target
       EntityType. Feature IDs will be deduplicated.
   """
@@ -26459,6 +26569,11 @@ class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. The detailed state of the Trial.
 
+  Messages:
+    WebAccessUrisValue: Output only. The web access URIs for the training job.
+      The keys are the node names in the training jobs, e.g. workerpool0-0.
+      The values are the URIs for each node's web portal in the job.
+
   Fields:
     clientId: Output only. The identifier of the client that originally
       requested this Trial. Each client is identified by a unique client_id.
@@ -26484,6 +26599,9 @@ class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
     parameters: Output only. The parameters of the Trial.
     startTime: Output only. Time when the Trial was started.
     state: Output only. The detailed state of the Trial.
+    webAccessUris: Output only. The web access URIs for the training job. The
+      keys are the node names in the training jobs, e.g. workerpool0-0. The
+      values are the URIs for each node's web portal in the job.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -26507,6 +26625,33 @@ class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
     SUCCEEDED = 4
     INFEASIBLE = 5
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WebAccessUrisValue(_messages.Message):
+    r"""Output only. The web access URIs for the training job. The keys are
+    the node names in the training jobs, e.g. workerpool0-0. The values are
+    the URIs for each node's web portal in the job.
+
+    Messages:
+      AdditionalProperty: An additional property for a WebAccessUrisValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type WebAccessUrisValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WebAccessUrisValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   clientId = _messages.StringField(1)
   customJob = _messages.StringField(2)
   endTime = _messages.StringField(3)
@@ -26518,6 +26663,7 @@ class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
   parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1TrialParameter', 9, repeated=True)
   startTime = _messages.StringField(10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
+  webAccessUris = _messages.MessageField('WebAccessUrisValue', 12)
 
 
 class GoogleCloudAiplatformV1beta1TrialParameter(_messages.Message):

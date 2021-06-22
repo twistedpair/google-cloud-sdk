@@ -311,7 +311,8 @@ class AppengineAppsDomainMappingsPatchRequest(_messages.Message):
     domainMapping: A DomainMapping resource to be passed as the request body.
     name: Name of the resource to update. Example:
       apps/myapp/domainMappings/example.com.
-    updateMask: Standard field mask for the set of fields to be updated.
+    updateMask: Required. Standard field mask for the set of fields to be
+      updated.
   """
 
   domainMapping = _messages.MessageField('DomainMapping', 1)
@@ -474,7 +475,8 @@ class AppengineAppsPatchRequest(_messages.Message):
   Fields:
     application: A Application resource to be passed as the request body.
     name: Name of the Application resource to update. Example: apps/myapp.
-    updateMask: Standard field mask for the set of fields to be updated.
+    updateMask: Required. Standard field mask for the set of fields to be
+      updated.
   """
 
   application = _messages.MessageField('Application', 1)
@@ -552,7 +554,8 @@ class AppengineAppsServicesPatchRequest(_messages.Message):
     name: Name of the resource to update. Example:
       apps/myapp/services/default.
     service: A Service resource to be passed as the request body.
-    updateMask: Standard field mask for the set of fields to be updated.
+    updateMask: Required. Standard field mask for the set of fields to be
+      updated.
   """
 
   migrateTraffic = _messages.BooleanField(1)

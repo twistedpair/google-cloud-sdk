@@ -99,13 +99,20 @@ def ConstructPatch(env_ref=None,
                    web_server_machine_type=None,
                    scheduler_cpu=None,
                    worker_cpu=None,
+                   web_server_cpu=None,
                    scheduler_memory_gb=None,
                    worker_memory_gb=None,
+                   web_server_memory_gb=None,
+                   scheduler_storage_gb=None,
+                   worker_storage_gb=None,
+                   web_server_storage_gb=None,
                    min_workers=None,
                    max_workers=None,
+                   scheduler_count=None,
                    maintenance_window_start=None,
                    maintenance_window_end=None,
                    maintenance_window_recurrence=None,
+                   environment_size=None,
                    release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch.
 
@@ -146,13 +153,25 @@ def ConstructPatch(env_ref=None,
         Can be specified only in Composer 2.0.0.
     worker_cpu: float or None, CPU allocated to each Airflow worker.
         Can be specified only in Composer 2.0.0.
+    web_server_cpu: float or None, CPU allocated to Airflow web server.
+        Can be specified only in Composer 2.0.0.
     scheduler_memory_gb: float or None, memory allocated to Airflow scheduler.
       Can be specified only in Composer 2.0.0.
     worker_memory_gb: float or None, memory allocated to each Airflow worker.
       Can be specified only in Composer 2.0.0.
+    web_server_memory_gb: float or None, memory allocated to Airflow web server.
+      Can be specified only in Composer 2.0.0.
+    scheduler_storage_gb: float or None, storage allocated to Airflow scheduler.
+      Can be specified only in Composer 2.0.0.
+    worker_storage_gb: float or None, storage allocated to each Airflow worker.
+      Can be specified only in Composer 2.0.0.
+    web_server_storage_gb: float or None, storage allocated to Airflow
+      web server. Can be specified only in Composer 2.0.0.
     min_workers: int or None, minimum number of workers
         in the Environment. Can be specified only in Composer 2.0.0.
     max_workers: int or None, maximumn number of workers
+        in the Environment. Can be specified only in Composer 2.0.0.
+    scheduler_count: int or None, number of schedulers
         in the Environment. Can be specified only in Composer 2.0.0.
     maintenance_window_start: Datetime or None, a starting date of the
         maintenance window.
@@ -160,6 +179,7 @@ def ConstructPatch(env_ref=None,
         window.
     maintenance_window_recurrence: str or None, recurrence RRULE for the
         maintenance window.
+    environment_size: str or None, one of small, medium and large.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -171,6 +191,9 @@ def ConstructPatch(env_ref=None,
   """
   if node_count:
     return _ConstructNodeCountPatch(node_count, release_track=release_track)
+  if environment_size:
+    return _ConstructEnvironmentSizePatch(
+        environment_size, release_track=release_track)
   if update_pypi_packages_from_file:
     return _ConstructPyPiPackagesPatch(
         True, [],
@@ -211,15 +234,23 @@ def ConstructPatch(env_ref=None,
   if web_server_machine_type:
     return _ConstructWebServerMachineTypePatch(
         web_server_machine_type, release_track=release_track)
-  if (scheduler_cpu or worker_cpu or scheduler_memory_gb or worker_memory_gb or
-      min_workers or max_workers):
+  if (scheduler_cpu or worker_cpu or web_server_cpu or scheduler_memory_gb or
+      worker_memory_gb or web_server_memory_gb or scheduler_storage_gb or
+      worker_storage_gb or web_server_storage_gb or min_workers or
+      max_workers or scheduler_count):
     return _ConstructAutoscalingPatch(
         scheduler_cpu=scheduler_cpu,
         worker_cpu=worker_cpu,
+        web_server_cpu=web_server_cpu,
         scheduler_memory_gb=scheduler_memory_gb,
         worker_memory_gb=worker_memory_gb,
+        web_server_memory_gb=web_server_memory_gb,
+        scheduler_storage_gb=scheduler_storage_gb,
+        worker_storage_gb=worker_storage_gb,
+        web_server_storage_gb=web_server_storage_gb,
         worker_min_count=min_workers,
         worker_max_count=max_workers,
+        scheduler_count=scheduler_count,
         release_track=release_track)
   if maintenance_window_start and maintenance_window_end and maintenance_window_recurrence:
     return _ConstructMaintenanceWindowPatch(
@@ -245,6 +276,23 @@ def _ConstructNodeCountPatch(node_count, release_track=base.ReleaseTrack.GA):
   messages = api_util.GetMessagesModule(release_track=release_track)
   config = messages.EnvironmentConfig(nodeCount=node_count)
   return 'config.node_count', messages.Environment(config=config)
+
+
+def _ConstructEnvironmentSizePatch(environment_size,
+                                   release_track=base.ReleaseTrack.GA):
+  """Constructs an environment patch for environment size.
+
+  Args:
+    environment_size: str, the desired environment size.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  config = messages.EnvironmentConfig(environmentSize=environment_size)
+  return 'config.environment_size', messages.Environment(config=config)
 
 
 def _ConstructPyPiPackagesPatch(clear_pypi_packages,
@@ -481,9 +529,12 @@ def _ConstructWebServerMachineTypePatch(web_server_machine_type, release_track):
       config=config)
 
 
-def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, scheduler_memory_gb,
-                               worker_memory_gb, worker_min_count,
-                               worker_max_count, release_track):
+def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
+                               scheduler_memory_gb, worker_memory_gb,
+                               web_server_memory_gb, scheduler_storage_gb,
+                               worker_storage_gb, web_server_storage_gb,
+                               worker_min_count, worker_max_count,
+                               scheduler_count, release_track):
   """Constructs an environment patch for Airflow web server machine type.
 
   Args:
@@ -491,13 +542,25 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, scheduler_memory_gb,
         Can be specified only in Composer 2.0.0.
     worker_cpu: float or None, CPU allocated to each Airflow worker.
         Can be specified only in Composer 2.0.0.
+    web_server_cpu: float or None, CPU allocated to Airflow web server.
+        Can be specified only in Composer 2.0.0.
     scheduler_memory_gb: float or None, memory allocated to Airflow scheduler.
         Can be specified only in Composer 2.0.0.
     worker_memory_gb: float or None, memory allocated to each Airflow worker.
         Can be specified only in Composer 2.0.0.
+    web_server_memory_gb: float or None, memory allocated to Airflow web server.
+        Can be specified only in Composer 2.0.0.
+    scheduler_storage_gb: float or None, storage allocated to Airflow scheduler.
+        Can be specified only in Composer 2.0.0.
+    worker_storage_gb: float or None, storage allocated to each Airflow worker.
+        Can be specified only in Composer 2.0.0.
+    web_server_storage_gb: float or None, storage allocated to Airflow
+        web server. Can be specified only in Composer 2.0.0.
     worker_min_count: int or None, minimum number of workers
         in the Environment. Can be specified only in Composer 2.0.0.
     worker_max_count: int or None, maximumn number of workers
+        in the Environment. Can be specified only in Composer 2.0.0.
+    scheduler_count: int or None, number of schedulers
         in the Environment. Can be specified only in Composer 2.0.0.
     release_track: base.ReleaseTrack, the release track of command. It dictates
       which Composer client library is used.
@@ -509,39 +572,54 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, scheduler_memory_gb,
   config = messages.EnvironmentConfig(
       workloadsConfig=messages.WorkloadsConfig(
           scheduler=messages.SchedulerResource(
-              cpu=scheduler_cpu, memoryGb=scheduler_memory_gb),
+              cpu=scheduler_cpu,
+              memoryGb=scheduler_memory_gb,
+              storageGb=scheduler_storage_gb,
+              count=scheduler_count),
+          webServer=messages.WebServerResource(
+              cpu=web_server_cpu,
+              memoryGb=web_server_memory_gb,
+              storageGb=web_server_storage_gb),
           worker=messages.WorkerResource(
               cpu=worker_cpu,
               memoryGb=worker_memory_gb,
+              storageGb=worker_storage_gb,
               minCount=worker_min_count,
               maxCount=worker_max_count)))
-  mask = ''
-  if scheduler_cpu:
-    mask = mask + 'config.workloads_config.scheduler.cpu'
-  if worker_cpu:
-    if mask:
-      mask = mask + ','
-    mask = mask + 'config.workloads_config.worker.cpu'
-  if scheduler_memory_gb:
-    if mask:
-      mask = mask + ','
-    mask = mask + 'config.workloads_config.scheduler.memory_gb'
-  if worker_memory_gb:
-    if mask:
-      mask = mask + ','
-    mask = mask + 'config.workloads_config.worker.memory_gb'
-  if worker_min_count:
-    if mask:
-      mask = mask + ','
-    mask = mask + 'config.workloads_config.worker.min_count'
-  if worker_max_count:
-    if mask:
-      mask = mask + ','
-    mask = mask + 'config.workloads_config.worker.max_count'
-  if (scheduler_cpu and worker_cpu and scheduler_memory_gb and
-      worker_memory_gb and worker_min_count and worker_max_count):
-    mask = 'config.workloads_config'
-  return mask, messages.Environment(config=config)
+  if all([
+      scheduler_cpu, worker_cpu, web_server_cpu, scheduler_memory_gb,
+      worker_memory_gb, web_server_memory_gb, scheduler_storage_gb,
+      worker_storage_gb, web_server_storage_gb, worker_min_count,
+      worker_max_count
+  ]):
+    return 'config.workloads_config', messages.Environment(config=config)
+  else:
+    mask = []
+    if scheduler_cpu:
+      mask.append('config.workloads_config.scheduler.cpu')
+    if worker_cpu:
+      mask.append('config.workloads_config.worker.cpu')
+    if web_server_cpu:
+      mask.append('config.workloads_config.web_server.cpu')
+    if scheduler_memory_gb:
+      mask.append('config.workloads_config.scheduler.memory_gb')
+    if worker_memory_gb:
+      mask.append('config.workloads_config.worker.memory_gb')
+    if web_server_memory_gb:
+      mask.append('config.workloads_config.web_server.memory_gb')
+    if scheduler_storage_gb:
+      mask.append('config.workloads_config.scheduler.storage_gb')
+    if worker_storage_gb:
+      mask.append('config.workloads_config.worker.storage_gb')
+    if web_server_storage_gb:
+      mask.append('config.workloads_config.web_server.storage_gb')
+    if worker_min_count:
+      mask.append('config.workloads_config.worker.min_count')
+    if worker_max_count:
+      mask.append('config.workloads_config.worker.max_count')
+    if scheduler_count:
+      mask.append('config.workloads_config.scheduler.count')
+    return ','.join(mask), messages.Environment(config=config)
 
 
 def _ConstructMaintenanceWindowPatch(maintenance_window_start,

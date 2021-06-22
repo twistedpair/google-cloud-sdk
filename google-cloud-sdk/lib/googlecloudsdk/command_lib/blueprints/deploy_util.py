@@ -22,6 +22,8 @@ from __future__ import unicode_literals
 import os
 import uuid
 
+from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.blueprints import blueprints_util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.calliope import exceptions as c_exceptions
@@ -169,6 +171,27 @@ def _UploadSourceToGCS(
   return upload_bucket
 
 
+def _FormDefaultProcessors(messages):
+  """Returns a list of messages.Function.
+
+  This returns a processor argument that will make no changes to the blueprint.
+
+  Args:
+      messages: ModuleType, the messages module that lets us form blueprints API
+        messages based on our protos.
+  """
+  # TODO(b/191050805): Remove these processors once blueprints is kpt 1.0 only.
+  return [
+      messages.Function(
+          image='gcr.io/kpt-fn/search-replace:v0.1',
+          config=encoding.JsonToMessage(
+              messages.Function.ConfigValue,
+              '{"apiVersion": "v1", "kind": "ConfigMap", "metadata": {"name": "no-op"}}'
+          ),
+      )
+  ]
+
+
 def Apply(
     source,
     deployment_full_name,
@@ -233,6 +256,8 @@ def Apply(
             for key, value in six.iteritems(labels)
         ])
 
+  blueprint.preprocessors = _FormDefaultProcessors(messages)
+
   deployment = messages.Deployment(
       blueprint=blueprint,
       labels=labels_message,
@@ -240,7 +265,11 @@ def Apply(
 
   # Check if a deployment with the given name already exists. If it does, we'll
   # update that deployment. If not, we'll create it.
-  existing_deployment = blueprints_util.GetDeployment(deployment_full_name)
+  try:
+    existing_deployment = blueprints_util.GetDeployment(deployment_full_name)
+  except apitools_exceptions.HttpNotFoundError:
+    existing_deployment = None
+
   is_creating_deployment = existing_deployment is None
   op = None
 
@@ -286,7 +315,7 @@ def Apply(
       'Creating' if is_creating_deployment else 'Updating')
 
   applied_deployment = blueprints_util.WaitForDeploymentOperation(
-      op, progress_message)
+      op, True, progress_message)
 
   if applied_deployment.state == messages.Deployment.StateValueValuesEnum.FAILED:
     error_handling.DeploymentFailed(applied_deployment)

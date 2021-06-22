@@ -23,11 +23,12 @@ import operator
 from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.core import exceptions
 
-PENDING_APPROVAL_FILTER_TEMPLATE = ('approvalState="NEEDS_APPROVAL" AND '
-                                    'state="PENDING_APPROVAL" AND target="{}"')
+PENDING_APPROVAL_FILTER_TEMPLATE = (
+    'approvalState="NEEDS_APPROVAL" AND '
+    'state="PENDING_APPROVAL" AND targetId="{}"')
 DEPLOYED_ROLLOUT_FILTER_TEMPLATE = (
     '(approvalState!="REJECTED" AND '
-    'approvalState!="NEEDS_APPROVAL") AND state="SUCCESS" AND target="{}"')
+    'approvalState!="NEEDS_APPROVAL") AND state="SUCCEEDED" AND targetId="{}"')
 
 
 class RolloutClient(object):

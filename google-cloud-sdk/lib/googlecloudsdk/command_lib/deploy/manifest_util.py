@@ -20,12 +20,12 @@ from __future__ import unicode_literals
 
 import collections
 from googlecloudsdk.command_lib.deploy import exceptions
+from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
 
-PIPELINE_UPDATE_MASK = 'description,annotations,labels,serial_pipeline,render_service_account'
-TARGET_UPDATE_MASK = 'description,annotations,labels,approval_required,deploy_service_account,gke_cluster'
+PIPELINE_UPDATE_MASK = 'description,annotations,labels,serial_pipeline'
 DELIVERY_PIPELINE_KIND_BETA1 = 'delivery-pipeline'
 TARGET_KIND_BETA1 = 'target'
 DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
@@ -36,7 +36,7 @@ TARGET_TYPE = 'target'
 DELIVERY_PIPELINE_TYPE = 'delivery-pipeline'
 DELIVERY_PIPELINE_LABEL = 'deliveryPipeline'
 DELIVERY_PIPELINE_FIELDS = ['description', 'serialPipeline']
-TARGET_FIELDS = ['description', 'approvalRequired', 'gkeCluster']
+TARGET_FIELDS = ['description', 'requireApproval', 'gkeCluster']
 METADATA_FIELDS = ['name', 'annotations', 'labels']
 
 
@@ -45,8 +45,8 @@ def ParseDeployConfig(messages, manifests, region):
 
   Args:
     messages: module containing the definitions of messages for Cloud Deploy.
-    manifests: the list of parsed resource yaml definitions.
-    region: location ID.
+    manifests: [str], the list of parsed resource yaml definitions.
+    region: str, location ID.
 
   Returns:
     A dictionary of resource kind and message.
@@ -111,13 +111,9 @@ def _ParseV1Beta1Config(messages, kind, manifest, project, region,
         messages, metadata['name'], project, region)
   elif kind == TARGET_KIND_V1BETA1:
     resource_type = TARGET_TYPE
-    if manifest.get('deliveryPipeline') is None:
-      raise exceptions.CloudDeployConfigError(
-          'missing required field .deliveryPipeline in target {}'.format(
-              metadata['name']))
-    resource, resource_ref = _CreateTargetResource(messages, metadata['name'],
-                                                   manifest['deliveryPipeline'],
-                                                   project, region)
+    resource, resource_ref = _CreateTargetResource(
+        messages, metadata['name'], manifest.get('deliveryPipeline'), project,
+        region)
   else:
     raise exceptions.CloudDeployConfigError(
         'kind {} not supported'.format(kind))
@@ -194,19 +190,12 @@ def _ParseBeta1Config(messages, kind, manifest, project, region, resource_dict):
   resource_dict[kind].append(resource)
 
 
-def _CreateTargetResource(messages, target_name, delivery_pipeline_id, project,
-                          region):
+def _CreateTargetResource(messages, target_name_or_id, delivery_pipeline_id,
+                          project, region):
   """Creates target resource with full target name and the resource reference."""
   resource = messages.Target()
-  resource_ref = resources.REGISTRY.Parse(
-      target_name,
-      collection='clouddeploy.projects.locations.deliveryPipelines.targets',
-      params={
-          'projectsId': project,
-          'locationsId': region,
-          'deliveryPipelinesId': delivery_pipeline_id,
-          'targetsId': target_name
-      })
+  resource_ref = target_util.TargetReference(target_name_or_id, project, region,
+                                             delivery_pipeline_id)
   resource.name = resource_ref.RelativeName()
 
   return resource, resource_ref
@@ -301,6 +290,7 @@ def ProtoToManifest(resource, resource_ref, kind, fields):
     if v:
       manifest[k] = v
   if kind == TARGET_KIND_V1BETA1:
-    manifest['deliveryPipeline'] = resource_ref.AsDict()['deliveryPipelinesId']
-
+    pipeline_id = resource_ref.AsDict().get('deliveryPipelinesId')
+    if pipeline_id:
+      manifest['deliveryPipeline'] = pipeline_id
   return manifest

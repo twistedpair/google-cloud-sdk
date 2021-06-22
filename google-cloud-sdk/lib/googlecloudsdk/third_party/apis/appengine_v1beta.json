@@ -2379,7 +2379,7 @@
               "type": "string"
             },
             "updateMask": {
-              "description": "Standard field mask for the set of fields to be updated.",
+              "description": "Required. Standard field mask for the set of fields to be updated.",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"
@@ -2585,7 +2585,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "Standard field mask for the set of fields to be updated.",
+                  "description": "Required. Standard field mask for the set of fields to be updated.",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -3488,7 +3488,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "Standard field mask for the set of fields to be updated.",
+                  "description": "Required. Standard field mask for the set of fields to be updated.",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"

@@ -19,8 +19,15 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.ai import constants
+from googlecloudsdk.command_lib.ai.custom_jobs import local_util
+from googlecloudsdk.command_lib.ai.docker import build as docker_build
+from googlecloudsdk.command_lib.ai.docker import utils as docker_utils
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import files
+
+# TODO(b/191347326): Consider adding tests for the "public" methods in this file
 
 
 def ParseJobName(name):
@@ -111,30 +118,108 @@ def _ConstructWorkerPoolSpecs(aiplatform_client, specs, **kwargs):
   return worker_pool_specs
 
 
+def IsLocalPackagingRequired(worker_pool_specs):
+  """Check if any one of the given worker pool specs requires local packaging."""
+  return worker_pool_specs and any(
+      ('local-package-path' in spec) for spec in worker_pool_specs)
+
+
+def _PrepareTrainingImage(project,
+                          job_name,
+                          base_image,
+                          local_package,
+                          script,
+                          python_module=None):
+  """Build a training image from local package and push it to Cloud for later usage."""
+  output_image = docker_utils.GenerateImageName(
+      base_name=job_name, project=project, is_gcr=True)
+  docker_build.BuildImage(
+      base_image=base_image,
+      host_workdir=files.ExpandHomeDir(local_package),
+      main_script=script,
+      python_module=python_module,
+      output_image_name=output_image)
+  log.status.Print(
+      'A custom container image [{}] is built for custom job "{}".'.format(
+          output_image, job_name))
+
+  push_command = ['docker', 'push', output_image]
+  docker_utils.ExecuteDockerCommand(push_command)
+  log.status.Print('The image is pushed and ready for the custom job.')
+
+  return output_image
+
+
+def UpdateWorkerPoolSpecsIfLocalPackageRequired(
+    worker_pool_specs,
+    job_name,
+    project,
+):
+  """Update the given worker pool specifications if any contains local packages.
+
+  If any given worker pool spec is specified a local package, this builds
+  a Docker image from the local package and update the spec to use it.
+
+  Args:
+    worker_pool_specs: list of dict representing the arg value specified via the
+      `--worker-pool-spec` flag.
+    job_name: str, the display name of the custom job corresponding to the
+      worker pool specs.
+    project: str, id of the project to which the custom job is submitted.
+
+  Yields:
+    All updated worker pool specifications that uses the already built
+    packages and are expectedly passed to a custom-jobs create RPC request.
+  """
+  for spec in worker_pool_specs:
+    if 'local-package-path' in spec:
+      new_spec = spec.copy()
+
+      base_image = new_spec.pop('executor-image-uri')
+      local_package = new_spec.pop('local-package-path')
+
+      python_module = new_spec.pop('python-module', None)
+      if python_module:
+        script = local_util.ModuleToPath(python_module)
+      else:
+        script = new_spec.pop('script')
+
+      new_spec['container-image-uri'] = _PrepareTrainingImage(
+          project=project,
+          job_name=job_name,
+          base_image=base_image,
+          local_package=local_package,
+          script=script,
+          python_module=python_module)
+
+      yield new_spec
+    else:
+      yield spec
+
+
 def ConstructCustomJobSpec(aiplatform_client,
                            base_config=None,
                            network=None,
                            service_account=None,
                            worker_pool_specs=None,
                            **kwargs):
-  """Construct the spec of a custom job to be used in job creation request.
+  """Constructs the spec of a custom job to be used in job creation request.
 
   Args:
     aiplatform_client: The AI Platform API client used.
     base_config: A base CustomJobSpec message instance, e.g. imported from a
-      Yaml config file, as a template to be overridden.
+      YAML config file, as a template to be overridden.
     network: user network to which the job should be peered with (overrides yaml
       file)
     service_account: A service account (email address string) to use for the
       job.
     worker_pool_specs: A dict of worker pool specification, usually derived from
       the gcloud command argument values.
-     **kwargs: The keyword args to pass to construct the worker pool specs.
+    **kwargs: The keyword args to pass to construct the worker pool specs.
 
   Returns:
     A CustomJobSpec message instance for creating a custom job.
   """
-
   job_spec = base_config
 
   if network is not None:

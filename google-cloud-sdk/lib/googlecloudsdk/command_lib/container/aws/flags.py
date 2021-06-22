@@ -33,9 +33,9 @@ def AddVpcId(parser):
       "--vpc-id", required=True, help="VPC associated with the cluster.")
 
 
-def AddServicesLbSubnetId(parser):
+def AddServiceLoadBalancerSubnetIDs(parser):
   parser.add_argument(
-      "--services-lb-subnet-id",
+      "--service-load-balancer-subnet-ids",
       required=True,
       type=arg_parsers.ArgList(),
       metavar="SUBNET_ID",
@@ -53,15 +53,15 @@ def AddInstanceType(parser):
   parser.add_argument("--instance-type", help="AWS EC2 instance type.")
 
 
-def AddKeyPairName(parser):
+def AddSshEC2KeyPair(parser):
   parser.add_argument(
-      "--key-pair-name",
+      "--ssh-ec2-key-pair",
       help="Name of the EC2 key pair to login into control plane nodes.")
 
 
-def AddDatabaseEncryptionKey(parser):
+def AddDatabaseEncryptionKmsKeyArn(parser):
   parser.add_argument(
-      "--database-encryption-key",
+      "--database-encryption-kms-key-arn",
       required=True,
       help=("Amazon Resource Name (ARN) of the AWS KMS key to encrypt "
             "cluster secrets."))

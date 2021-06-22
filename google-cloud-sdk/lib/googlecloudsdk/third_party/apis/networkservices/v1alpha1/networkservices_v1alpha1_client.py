@@ -623,6 +623,33 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def InvalidateCache(self, request, global_params=None):
+      r"""Sends a cache invalidation request.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InvalidateCacheResponse) The response message.
+      """
+      config = self.GetMethodConfig('InvalidateCache')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    InvalidateCache.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/edgeCacheServices/{edgeCacheServicesId}:invalidateCache',
+        http_method='POST',
+        method_id='networkservices.projects.locations.edgeCacheServices.invalidateCache',
+        ordered_params=['edgeCacheService'],
+        path_params=['edgeCacheService'],
+        query_params=[],
+        relative_path='v1alpha1/{+edgeCacheService}:invalidateCache',
+        request_field='invalidateCacheRequest',
+        request_type_name='NetworkservicesProjectsLocationsEdgeCacheServicesInvalidateCacheRequest',
+        response_type_name='InvalidateCacheResponse',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists EdgeCacheServices in a given project and location.
 

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import resources
 
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha',
@@ -41,14 +42,44 @@ def GetClientClass(release_track=base.ReleaseTrack.GA):
 
 
 def LocationResourceName(project, location='global'):
-  return 'projects/{}/locations/{}'.format(project, location)
+  # See command_lib/container/hub/resources.yaml
+  return resources.REGISTRY.Create(
+      'gkehub.projects.locations',
+      projectsId=project,
+      locationsId=location,
+  ).RelativeName()
 
 
 def MembershipResourceName(project, membership, location='global'):
-  return '{}/memberships/{}'.format(
-      LocationResourceName(project, location=location), membership)
+  # See command_lib/container/hub/resources.yaml
+  return resources.REGISTRY.Create(
+      'gkehub.projects.locations.memberships',
+      projectsId=project,
+      locationsId=location,
+      membershipsId=membership,
+  ).RelativeName()
+
+
+def MembershipShortname(full_name):
+  return resources.REGISTRY.ParseRelativeName(
+      full_name, collection='gkehub.projects.locations.memberships').Name()
 
 
 def FeatureResourceName(project, feature, location='global'):
-  return '{}/features/{}'.format(
-      LocationResourceName(project, location=location), feature)
+  # See command_lib/container/hub/resources.yaml
+  return resources.REGISTRY.Create(
+      'gkehub.projects.locations.features',
+      projectsId=project,
+      locationsId=location,
+      featuresId=feature,
+  ).RelativeName()
+
+
+def OperationResourceName(project, operation, location='global'):
+  # See command_lib/container/hub/resources.yaml
+  return resources.REGISTRY.Create(
+      'gkehub.projects.locations.operations',
+      projectsId=project,
+      locationsId=location,
+      operationsId=operation,
+  ).RelativeName()

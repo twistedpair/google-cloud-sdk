@@ -45,26 +45,27 @@ def MakeUpdateReservations(args, messages):
 def MakeSourceDestReservations(args, messages):
   """Return messages required for update-reservations command."""
   source_msg = ReservationArgToMessage('source_reservation',
-                                       'source_accelerator',
-                                       'source_local_ssd',
-                                       args,
-                                       messages)
+                                       'source_accelerator', 'source_local_ssd',
+                                       'source_share_setting',
+                                       'source_share_with', args, messages)
   destination_msg = ReservationArgToMessage('dest_reservation',
                                             'dest_accelerator',
                                             'dest_local_ssd',
-                                            args,
-                                            messages)
+                                            'dest_share_setting',
+                                            'dest_share_with', args, messages)
   return [source_msg, destination_msg]
 
 
-def ReservationArgToMessage(reservation, accelerator, local_ssd,
-                            args, messages):
+def ReservationArgToMessage(reservation, accelerator, local_ssd, share_setting,
+                            share_with, args, messages):
   """Convert single reservation argument into a message."""
   accelerators = util.MakeGuestAccelerators(messages,
                                             getattr(args, accelerator,
                                                     None))
   local_ssds = util.MakeLocalSsds(messages, getattr(args, local_ssd,
                                                     None))
+  share_settings = util.MakeShareSettingsWithArgs(
+      messages, args, getattr(args, share_setting, None), share_with)
   reservation = getattr(args, reservation, None)
   specific_allocation = util.MakeSpecificSKUReservationMessage(
       messages, reservation.get('vm-count', None),
@@ -72,7 +73,8 @@ def ReservationArgToMessage(reservation, accelerator, local_ssd,
       reservation.get('machine-type', None),
       reservation.get('min-cpu-platform', None))
   a_msg = util.MakeReservationMessage(
-      messages, reservation.get('reservation', None), None, specific_allocation,
+      messages, reservation.get('reservation', None),
+      share_settings, specific_allocation,
       reservation.get('require-specific-reservation', None),
       reservation.get('reservation-zone', None))
 
@@ -93,12 +95,15 @@ def _ConvertYAMLToMessage(messages, reservations_yaml):
     accelerators = util.MakeGuestAccelerators(messages,
                                               a.get('accelerator', None))
     local_ssds = util.MakeLocalSsds(messages, a.get('local_ssd', None))
+
+    share_settings = util.MakeShareSettingsWithDict(
+        messages, a, a.get('share_setting', None))
     specific_allocation = util.MakeSpecificSKUReservationMessage(
         messages, a.get('vm_count', None), accelerators, local_ssds,
         a.get('machine_type', None), a.get('min_cpu_platform', None))
     a_msg = util.MakeReservationMessage(
-        messages, a.get('reservation', None), None, specific_allocation,
-        a.get('require_specific_reservation', None),
+        messages, a.get('reservation', None), share_settings,
+        specific_allocation, a.get('require_specific_reservation', None),
         a.get('reservation_zone', None))
     allocations_msg.append(a_msg)
   return allocations_msg

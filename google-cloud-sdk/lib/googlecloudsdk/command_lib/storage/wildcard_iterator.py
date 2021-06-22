@@ -184,9 +184,7 @@ class CloudWildcardIterator(WildcardIterator):
   def _fetch_objects(self, bucket_name):
     """Fetch all objects for the given bucket that match the URL."""
     needs_further_expansion = (
-        contains_wildcard(self._url.object_name) or
-        self._all_versions or
-        self._url.object_name.endswith(self._url.delimiter))
+        contains_wildcard(self._url.object_name) or self._all_versions)
     if not needs_further_expansion:
       try:
         # Assume that the url represents a single object.

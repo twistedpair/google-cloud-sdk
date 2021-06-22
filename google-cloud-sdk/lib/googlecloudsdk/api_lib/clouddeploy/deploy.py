@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.command_lib.deploy import manifest_util
+from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import log
 
 
@@ -37,7 +38,6 @@ class DeployClient(object):
     self.operation_client = client_util.OperationsClient()
     self.messages = messages or client_util.GetMessagesModule(client)
     self._pipeline_service = self.client.projects_locations_deliveryPipelines
-    self._target_service = self.client.projects_locations_deliveryPipelines_targets
 
   def CreateResources(self, manifests, region):
     """Creates Cloud Deploy resources.
@@ -70,7 +70,7 @@ class DeployClient(object):
     if targets:
       operation_dict = {}
       for resource in targets:
-        operation_dict[resource.name] = self.CreateTarget(resource)
+        operation_dict[resource.name] = target_util.PatchTarget(resource)
       self.operation_client.CheckOperationStatus(operation_dict, msg_template)
 
   def DeleteResources(self, manifests, region, force):
@@ -80,8 +80,8 @@ class DeployClient(object):
     to check the status.
 
     Args:
-     manifests: the list of parsed resource yaml definitions.
-     region: location ID.
+     manifests: [str], the list of parsed resource yaml definitions.
+     region: str, location ID.
      force: bool, if true, the delivery pipeline with sub-resources will be
        deleted and its sub-resources will also be deleted.
     """
@@ -94,7 +94,7 @@ class DeployClient(object):
     if targets:
       operation_dict = {}
       for resource in targets:
-        operation_dict[resource.name] = self.DeleteTarget(resource)
+        operation_dict[resource.name] = target_util.DeleteTarget(resource.name)
       self.operation_client.CheckOperationStatus(operation_dict, msg_template)
     pipelines = resource_dict[
         manifest_util.DELIVERY_PIPELINE_KIND_BETA1] + resource_dict[
@@ -124,25 +124,6 @@ class DeployClient(object):
             name=pipeline_config.name,
             updateMask=manifest_util.PIPELINE_UPDATE_MASK))
 
-  def CreateTarget(self, target_config):
-    """Creates a target resource.
-
-    Args:
-      target_config: apitools.base.protorpclite.messages.Message, target
-        message.
-
-    Returns:
-      The operation message.
-    """
-    log.debug('Creating target: ' + repr(target_config))
-    return self._target_service.Patch(
-        self.messages
-        .ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(
-            target=target_config,
-            allowMissing=True,
-            name=target_config.name,
-            updateMask=manifest_util.TARGET_UPDATE_MASK))
-
   def DeleteDeliveryPipeline(self, pipeline_config, force):
     """Deletes a delivery pipeline resource.
 
@@ -160,19 +141,3 @@ class DeployClient(object):
         self.messages
         .ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(
             allowMissing=True, name=pipeline_config.name, force=force))
-
-  def DeleteTarget(self, target_config):
-    """Deletes a target resource.
-
-    Args:
-      target_config: apitools.base.protorpclite.messages.Message, target
-        message.
-
-    Returns:
-      The operation message. It could be none if the resource doesn't exist.
-    """
-    log.debug('Deleting target: ' + repr(target_config))
-    return self._target_service.Delete(
-        self.messages
-        .ClouddeployProjectsLocationsDeliveryPipelinesTargetsDeleteRequest(
-            allowMissing=True, name=target_config.name))

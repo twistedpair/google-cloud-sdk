@@ -2062,7 +2062,7 @@
     },
     "CopyLogEntriesMetadata": {
       "id": "CopyLogEntriesMetadata",
-      "description": "Unimplemented. Do not use.Metadata for CopyLogEntries long running operations.",
+      "description": "Metadata for CopyLogEntries long running operations.",
       "type": "object",
       "properties": {
         "startTime": {
@@ -2118,7 +2118,7 @@
     },
     "CopyLogEntriesResponse": {
       "id": "CopyLogEntriesResponse",
-      "description": "Unimplemented. Do not use.Response type for CopyLogEntries long running operations.",
+      "description": "Response type for CopyLogEntries long running operations.",
       "type": "object",
       "properties": {
         "logEntriesCopiedCount": {

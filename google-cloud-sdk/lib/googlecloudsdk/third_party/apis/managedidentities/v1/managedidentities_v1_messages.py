@@ -81,6 +81,25 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class Certificate(_messages.Message):
+  r"""Certificate used to configure LDAPS.
+
+  Fields:
+    expireTime: The certificate expire time.
+    issuingCertificate: The issuer of this certificate.
+    subject: The certificate subject.
+    subjectAlternativeName: The additional hostnames for the domain.
+    thumbprint: The certificate thumbprint which uniquely identifies the
+      certificate.
+  """
+
+  expireTime = _messages.StringField(1)
+  issuingCertificate = _messages.MessageField('Certificate', 2)
+  subject = _messages.StringField(3)
+  subjectAlternativeName = _messages.StringField(4, repeated=True)
+  thumbprint = _messages.StringField(5)
+
+
 class DailyCycle(_messages.Message):
   r"""Time window specified for daily operations.
 
@@ -903,6 +922,69 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   tier = _messages.StringField(4)
 
 
+class LDAPSSettings(_messages.Message):
+  r"""LDAPSSettings represents the ldaps settings for domain resource. LDAP is
+  the Lightweight Directory Access Protocol, defined in
+  https://tools.ietf.org/html/rfc4511. The settings object configures LDAP
+  over SSL/TLS, whether it is over port 636 or the StartTLS operation. If
+  LDAPSSettings is being changed, it will be placed into the UPDATING state,
+  which indicates that the resource is being reconciled. At this point, Get
+  will reflect an intermediate state.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of this LDAPS
+      settings.
+
+  Fields:
+    certificate: Output only. The certificate used to configure LDAPS.
+      Certificates can be chained with a maximum length of 15.
+    certificatePassword: Input only. The password used to encrypt the uploaded
+      pfx certificate.
+    certificatePfx: Input only. The uploaded PKCS12-formatted certificate to
+      configure LDAPS with. It will enable the domain controllers in this
+      domain to accept LDAPS connections (either LDAP over SSL/TLS or the
+      StartTLS operation). A valid certificate chain must form a valid x.509
+      certificate chain (or be comprised of a single self-signed certificate.
+      It must be encrypted with either: 1) PBES2 + PBKDF2 + AES256 encryption
+      and SHA256 PRF; or 2) pbeWithSHA1And3-KeyTripleDES-CBC Private key must
+      be included for the leaf / single self-signed certificate. Note: For a
+      fqdn your-example-domain.com, the wildcard fqdn is *.your-example-
+      domain.com. Specifically the leaf certificate must have: - Either a
+      blank subject or a subject with CN matching the wildcard fqdn. - Exactly
+      two SANs - the fqdn and wildcard fqdn. - Encipherment and digital key
+      signature key usages. - Server authentication extended key usage
+      (OID=1.3.6.1.5.5.7.3.1) - Private key must be in one of the following
+      formats: RSA, ECDSA, ED25519. - Private key must have appropriate key
+      length: 2048 for RSA, 256 for ECDSA - Signature algorithm of the leaf
+      certificate cannot be MD2, MD5 or SHA1.
+    name: The resource name of the LDAPS settings. Uses the form:
+      `projects/{project}/locations/{location}/domains/{domain}`.
+    state: Output only. The current state of this LDAPS settings.
+    updateTime: Output only. Last update time.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of this LDAPS settings.
+
+    Values:
+      STATE_UNSPECIFIED: Not Set
+      UPDATING: The LDAPS setting is being updated.
+      ACTIVE: The LDAPS setting is ready.
+      FAILED: The LDAPS setting is not applied correctly.
+    """
+    STATE_UNSPECIFIED = 0
+    UPDATING = 1
+    ACTIVE = 2
+    FAILED = 3
+
+  certificate = _messages.MessageField('Certificate', 1)
+  certificatePassword = _messages.StringField(2)
+  certificatePfx = _messages.BytesField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
+
+
 class ListDomainsResponse(_messages.Message):
   r"""Response message for ListDomains
 
@@ -1225,6 +1307,18 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsGetIamPolicyRequest(_messag
   resource = _messages.StringField(2, required=True)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest
+  object.
+
+  Fields:
+    name: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest(_messages.Message):
   r"""A ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest object.
 
@@ -1385,6 +1479,26 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest(_
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsUpdateLdapssettingsRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsUpdateLdapssettingsRequest
+  object.
+
+  Fields:
+    lDAPSSettings: A LDAPSSettings resource to be passed as the request body.
+    name: The resource name of the LDAPS settings. Uses the form:
+      `projects/{project}/locations/{location}/domains/{domain}`.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
+  """
+
+  lDAPSSettings = _messages.MessageField('LDAPSSettings', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsValidateTrustRequest(_messages.Message):

@@ -277,10 +277,6 @@
           "description": "SerialPipeline defines a sequential set of stages for a `DeliveryPipeline`.",
           "$ref": "SerialPipeline"
         },
-        "renderServiceAccount": {
-          "description": "Service account email used to render a `Release`. If unset, the compute service account will be used.",
-          "type": "string"
-        },
         "condition": {
           "description": "Output only. Information around the state of the Delivery Pipeline.",
           "readOnly": true,
@@ -460,10 +456,6 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "deployServiceAccount": {
-          "description": "Optional. Service account email used to deploy a `Rollout`. If unset, the compute service account will be used.",
-          "type": "string"
-        },
         "gkeCluster": {
           "description": "Information specifying a GKE Cluster.",
           "$ref": "GKECluster"
@@ -631,10 +623,6 @@
             "FAILED",
             "IN_PROGRESS"
           ]
-        },
-        "manifestBucket": {
-          "description": "Cloud Storage bucket to store the rendered manifests. For example, \"gs:\/\/my-bucket\". If empty, a bucket will be provided.",
-          "type": "string"
         },
         "renderedManifests": {
           "description": "Output only. Map from target ID to Cloud Storage path of the rendered manifest for that target. One example key-value pair would be (\"staging\": \"gs:\/\/my-bucket\/staging-manifest\").",

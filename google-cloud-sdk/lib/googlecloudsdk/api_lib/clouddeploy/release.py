@@ -18,129 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import os.path
-import uuid
-
-from googlecloudsdk.api_lib.cloudbuild import snapshot
 from googlecloudsdk.api_lib.clouddeploy import client_util
-from googlecloudsdk.api_lib.storage import storage_api
-from googlecloudsdk.calliope import exceptions as c_exceptions
-from googlecloudsdk.command_lib.deploy import release_util as util
-from googlecloudsdk.command_lib.deploy import staging_bucket_util
-from googlecloudsdk.command_lib.projects import util as p_util
 from googlecloudsdk.core import log
-from googlecloudsdk.core import resources
-from googlecloudsdk.core.resource import resource_transform
-from googlecloudsdk.core.util import times
 
-_ALLOWED_SOURCE_EXT = ['.zip', '.tgz', '.gz']
-_SKAFFOLD_CONFIG_PATH = 'gs://{}/source'
-_MANIFEST_BUCKET = 'gs://{}/render'
-
-TARGET_FILTER_TEMPLATE = (
-    'targetSnapshots.name:"projects/{}/locations/{}/deliveryPipelines/{}/targets/{}"'
-    ' AND renderState="SUCCESS"')
-
-
-def _SetSource(release_config,
-               source,
-               gcs_source_staging_dir,
-               ignore_file,
-               hide_logs=False):
-  """Set the source for the release config."""
-  safe_project_id = staging_bucket_util.GetSafeProject()
-  default_gcs_source = False
-  default_bucket_name = staging_bucket_util.GetDefaultStagingBucket(
-      safe_project_id)
-  if gcs_source_staging_dir is None:
-    default_gcs_source = True
-    gcs_source_staging_dir = _SKAFFOLD_CONFIG_PATH.format(default_bucket_name)
-
-  if not gcs_source_staging_dir.startswith('gs://'):
-    raise c_exceptions.InvalidArgumentException('--gcs-source-staging-dir',
-                                                'must be a GCS bucket')
-
-  gcs_client = storage_api.StorageClient()
-  suffix = '.tgz'
-  if source.startswith('gs://') or os.path.isfile(source):
-    _, suffix = os.path.splitext(source)
-
-  # Next, stage the source to Cloud Storage.
-  staged_object = '{stamp}-{uuid}{suffix}'.format(
-      stamp=times.GetTimeStampFromDateTime(times.Now()),
-      uuid=uuid.uuid4().hex,
-      suffix=suffix,
-  )
-  gcs_source_staging_dir = resources.REGISTRY.Parse(
-      gcs_source_staging_dir, collection='storage.objects')
-
-  try:
-    gcs_client.CreateBucketIfNotExists(
-        gcs_source_staging_dir.bucket, check_ownership=default_gcs_source)
-  except storage_api.BucketInWrongProjectError:
-    # If we're using the default bucket but it already exists in a different
-    # project, then it could belong to a malicious attacker (b/33046325).
-    raise c_exceptions.RequiredArgumentException(
-        'gcs-source-staging-dir',
-        'A bucket with name {} already exists and is owned by '
-        'another project. Specify a bucket using '
-        '--gcs-source-staging-dir.'.format(default_bucket_name))
-
-  if gcs_source_staging_dir.object:
-    staged_object = gcs_source_staging_dir.object + '/' + staged_object
-  gcs_source_staging = resources.REGISTRY.Create(
-      collection='storage.objects',
-      bucket=gcs_source_staging_dir.bucket,
-      object=staged_object)
-  if source.startswith('gs://'):
-    gcs_source = resources.REGISTRY.Parse(source, collection='storage.objects')
-    staged_source_obj = gcs_client.Rewrite(gcs_source, gcs_source_staging)
-    release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
-        bucket=staged_source_obj.bucket, object=staged_source_obj.name)
-  else:
-    if not os.path.exists(source):
-      raise c_exceptions.BadFileException(
-          'could not find source [{src}]'.format(src=source))
-    if os.path.isdir(source):
-      source_snapshot = snapshot.Snapshot(source, ignore_file=ignore_file)
-      size_str = resource_transform.TransformSize(
-          source_snapshot.uncompressed_size)
-      if not hide_logs:
-        log.status.Print(
-            'Creating temporary tarball archive of {num_files} file(s)'
-            ' totalling {size} before compression.'.format(
-                num_files=len(source_snapshot.files), size=size_str))
-      staged_source_obj = source_snapshot.CopyTarballToGCS(
-          gcs_client,
-          gcs_source_staging,
-          ignore_file=ignore_file,
-          hide_logs=hide_logs)
-      release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
-          bucket=staged_source_obj.bucket, object=staged_source_obj.name)
-    elif os.path.isfile(source):
-      _, ext = os.path.splitext(source)
-      if ext not in _ALLOWED_SOURCE_EXT:
-        raise c_exceptions.BadFileException('local file [{src}] is none of ' +
-                                            ', '.join(_ALLOWED_SOURCE_EXT))
-      if not hide_logs:
-        log.status.Print('Uploading local file [{src}] to '
-                         '[gs://{bucket}/{object}].'.format(
-                             src=source,
-                             bucket=gcs_source_staging.bucket,
-                             object=gcs_source_staging.object,
-                         ))
-      staged_source_obj = gcs_client.CopyFileToGCS(source, gcs_source_staging)
-      release_config.skaffoldConfigUri = 'gs://{bucket}/{object}'.format(
-          bucket=staged_source_obj.bucket, object=staged_source_obj.name)
-  return release_config
-
-
-def _SetImages(messages, release_config, images, build_artifacts):
-  """Set the image substitutions for the release config."""
-  if build_artifacts:
-    images = util.LoadBuildArtifactFile(build_artifacts)
-
-  return util.SetBuildArtifacts(images, messages, release_config)
+TARGET_FILTER_TEMPLATE = ('targetSnapshots.name:"{}"'
+                          ' AND renderState="SUCCEEDED"')
+RELEASE_PARENT_TEMPLATE = 'projects/{}/locations/{}/deliveryPipelines/{}'
 
 
 class ReleaseClient(object):
@@ -156,18 +39,6 @@ class ReleaseClient(object):
     self.client = client or client_util.GetClientInstance()
     self.messages = messages or client_util.GetMessagesModule(client)
     self._service = self.client.projects_locations_deliveryPipelines_releases
-
-  def CreateReleaseConfig(self, source, gcs_source_staging_dir, ignore_file,
-                          images, build_artifacts, description):
-    """Returns a build config."""
-    release_config = self.messages.Release()
-    release_config.description = description
-    release_config = _SetSource(release_config, source, gcs_source_staging_dir,
-                                ignore_file)
-    release_config = _SetImages(self.messages, release_config, images,
-                                build_artifacts)
-
-    return release_config
 
   def Create(self, release_ref, release_config):
     """Create the release resource.
@@ -207,7 +78,7 @@ class ReleaseClient(object):
         .ClouddeployProjectsLocationsDeliveryPipelinesReleasesPromoteRequest(
             name=release_ref.RelativeName(),
             promoteReleaseRequest=self.messages.PromoteReleaseRequest(
-                toTarget=to_target, rolloutId=rollout_id)))
+                destinationTarget=to_target, rolloutId=rollout_id)))
 
   def Get(self, name):
     """Gets a release resource.
@@ -222,21 +93,24 @@ class ReleaseClient(object):
         name=name)
     return self._service.Get(request)
 
-  def ListReleasesByTarget(self, target_ref):
+  def ListReleasesByTarget(self, target_ref_project_number, project_id,
+                           pipeline_id):
     """Lists the releases in a target.
 
     Args:
-      target_ref: target object.
+      target_ref_project_number: target reference with project number in the
+        name.
+      project_id: str, project ID.
+      pipeline_id: str, delivery pipeline ID.
 
     Returns:
       a list of release messages.
     """
-    target_dict = target_ref.AsDict()
-    project_number = p_util.GetProjectNumber(target_dict['projectsId'])
+    target_dict = target_ref_project_number.AsDict()
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesListRequest(
-        parent=target_ref.Parent().RelativeName(),
-        filter=TARGET_FILTER_TEMPLATE.format(project_number,
-                                             target_dict['locationsId'],
-                                             target_dict['deliveryPipelinesId'],
-                                             target_dict['targetsId']))
+        parent=RELEASE_PARENT_TEMPLATE.format(project_id,
+                                              target_dict['locationsId'],
+                                              pipeline_id),
+        filter=TARGET_FILTER_TEMPLATE.format(
+            target_ref_project_number.RelativeName()))
     return self._service.List(request).releases

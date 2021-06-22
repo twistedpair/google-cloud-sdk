@@ -935,6 +935,14 @@
         "apiVersion": {
           "description": "API version used to start the operation.",
           "type": "string"
+        },
+        "requestResource": {
+          "description": "The original request that started the operation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
         }
       }
     }

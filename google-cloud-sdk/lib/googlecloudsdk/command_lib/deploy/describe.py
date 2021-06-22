@@ -21,14 +21,12 @@ from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.clouddeploy import rollout
-from googlecloudsdk.api_lib.clouddeploy import target
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
 
-def DescribeTarget(target_ref):
+def DescribeTarget(target_ref, pipeline_id):
   """Describes details specific to the individual target, delivery pipeline qualified.
 
   The output contains four sections:
@@ -45,22 +43,24 @@ def DescribeTarget(target_ref):
   pending approvals
     - list the rollouts that require approval.
   Args:
-    target_ref: target reference.
+    target_ref: protorpc.messages.Message, target reference.
+    pipeline_id: str, delivery pipeline ID.
 
   Returns:
-    a dictionary of <section name:output>.
+    A dictionary of <section name:output>.
 
   """
-  try:
-    deploy_target = target.TargetsClient().Get(target_ref.RelativeName())
-  except apitools_exceptions.HttpError as error:
-    raise exceptions.HttpException(error)
+  target_dict = target_ref.AsDict()
+  final_ref, deploy_target = target_util.GetTargetReferenceInUnknownCollection(
+      target_ref.Name(), target_dict['projectsId'], target_dict['locationsId'],
+      pipeline_id)
+
   output = {'Target': deploy_target}
   releases, current_rollout = target_util.GetReleasesAndCurrentRollout(
-      target_ref)
+      final_ref, pipeline_id)
   output = SetCurrentReleaseAndRollout(current_rollout, output)
-  if deploy_target.approvalRequired:
-    output = ListPendingApprovals(releases, target_ref, output)
+  if deploy_target.requireApproval:
+    output = ListPendingApprovals(releases, final_ref, output)
 
   return output
 
@@ -93,11 +93,11 @@ def ListPendingApprovals(releases, target_ref, output):
 
   Args:
     releases: releases associated with the target.
-    target_ref: target object.
-    output: a directory holds the output content.
+    target_ref: protorpc.messages.Message, target object.
+    output: dict[str:str], a directory holds the output content.
 
   Returns:
-    a content directory.
+    A content directory.
 
   """
   if releases:

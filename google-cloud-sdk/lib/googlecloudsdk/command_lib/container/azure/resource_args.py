@@ -45,18 +45,18 @@ def AzureClientAttributeConfig():
       name='client', help_text='Azure client of the {resource}.')
 
 
-def RegionAttributeConfig():
+def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='region',
-      help_text='Anthos GKE Multi-cloud region for the {resource}.',
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.azure.region)])
+      name='location',
+      help_text='Anthos GKE Multi-cloud location for the {resource}.',
+      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.azure.location)])
 
 
-def GetRegionResourceSpec():
+def GetLocationResourceSpec():
   return concepts.ResourceSpec(
       'gkemulticloud.projects.locations',
-      resource_name='region',
-      locationsId=RegionAttributeConfig(),
+      resource_name='location',
+      locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
@@ -65,7 +65,7 @@ def GetAzureClusterResourceSpec():
       'gkemulticloud.projects.locations.azureClusters',
       resource_name='cluster',
       azureClustersId=AzureClusterAttributeConfig(),
-      locationsId=RegionAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
@@ -75,7 +75,7 @@ def GetAzureNodePoolResourceSpec():
       resource_name='nodepool',
       azureNodePoolsId=AzureNodePoolAttributeConfig(),
       azureClustersId=AzureClusterAttributeConfig(),
-      locationsId=RegionAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
@@ -84,7 +84,7 @@ def GetAzureClientResourceSpec():
       'gkemulticloud.projects.locations.azureClients',
       resource_name='client',
       azureClientsId=AzureClientAttributeConfig(),
-      locationsId=RegionAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
@@ -136,17 +136,17 @@ def AddAzureClientResourceArg(parser, verb, positional=True):
       required=True).AddToParser(parser)
 
 
-def AddRegionResourceArg(parser, verb):
-  """Add a region resource.
+def AddLocationResourceArg(parser, verb):
+  """Add a location resource.
 
   Args:
     parser: The argparse.parser to add the resource arg to.
     verb: str, the verb to describe the resource, such as 'to list'.
   """
   concept_parsers.ConceptParser.ForResource(
-      '--region',
-      GetRegionResourceSpec(),
-      'Azure region {}.'.format(verb),
+      '--location',
+      GetLocationResourceSpec(),
+      'Azure location {}.'.format(verb),
       required=True).AddToParser(parser)
 
 

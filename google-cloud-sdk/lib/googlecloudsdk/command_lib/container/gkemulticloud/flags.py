@@ -19,43 +19,46 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions
 
 
 def AddRegion(parser, hidden=False):
+  """Add the --location flag."""
   parser.add_argument(
-      '--region',
-      help='Anthos GKE Multi-cloud region.',
+      '--location',
+      help='Anthos GKE Multi-cloud location.',
       required=True,
       hidden=hidden,
   )
 
 
-def AddClusterIpv4Cidr(parser):
-  """Add the --cluster-ipv4-cidr flag."""
+def AddPodAddressCidrBlocks(parser):
+  """Add the --pod-address-cidr-blocks flag."""
   parser.add_argument(
-      '--cluster-ipv4-cidr',
+      '--pod-address-cidr-blocks',
       required=True,
       help=('IP address range for the pods in this cluster in CIDR '
             'notation (e.g. 10.0.0.0/8). Can be any RFC 1918 IP range.'))
 
 
-def AddServiceIpv4Cidr(parser):
-  """Add the --service-ipv4-cidr flag."""
+def AddServiceAddressCidrBlocks(parser):
+  """Add the --service-address-cidr-blocks flag."""
   parser.add_argument(
-      '--service-ipv4-cidr',
+      '--service-address-cidr-blocks',
       required=True,
       help=('IP address range for the services IPs in CIDR notation '
             '(e.g. 10.0.0.0/8). Can be any RFC 1918 IP range.'))
 
 
-def AddSubnetId(parser):
+def AddSubnetID(parser, help_text):
+  """Add the --subnet-id flag."""
   parser.add_argument(
       '--subnet-id',
       required=True,
-      type=arg_parsers.ArgList(),
-      metavar='SUBNET_ID',
-      help='Subnet ID of an existing VNET to use for the control plane.')
+      help='Subnet ID of an existing VNET to use for {}.'.format(help_text))
+
+
+def GetSubnetID(args):
+  return args.subnet_id
 
 
 def AddOutputFile(parser, help_action):
@@ -118,10 +121,6 @@ def AddAutoscaling(parser):
 
   group = parser.add_argument_group('Node pool autoscaling')
   group.add_argument(
-      '--enable-autoscaling',
-      action='store_true',
-      help='Enables autoscaling for a node pool.')
-  group.add_argument(
       '--min-nodes',
       required=True,
       type=int,
@@ -133,56 +132,13 @@ def AddAutoscaling(parser):
       help='Maximum number of nodes in the node pool.')
 
 
-def GetAutoscalingEnabled(args):
-  return args.enable_autoscaling
-
-
 def GetAutoscalingParams(args):
   min_nodes = 0
   max_nodes = 0
-  if args.enable_autoscaling:
-    min_nodes = args.min_nodes
-    max_nodes = args.max_nodes
+  min_nodes = args.min_nodes
+  max_nodes = args.max_nodes
 
   return (min_nodes, max_nodes)
-
-
-def AddNumberOfNodes(parser):
-  parser.add_argument(
-      '--num-nodes',
-      type=int,
-      help='Number of nodes to create in the node pool.')
-
-
-def GetNumberOfNodes(args):
-  return args.num_nodes
-
-
-def CheckNumberOfNodesAndAutoscaling(args):
-  """Verifies the arguments for specifying node counts are correct.
-
-  Args:
-    args: The argparse.parser to check the arguments.
-
-  Raises:
-    parser_errors.ArgumentException
-  """
-
-  if args.enable_autoscaling:
-    if args.num_nodes:
-      raise exceptions.ConflictingArgumentsException(
-          'num-nodes', 'Cannot be specified when autoscaling is enabled.')
-    if not args.min_nodes:
-      raise exceptions.RequiredArgumentException(
-          'min-nodes', 'Required when autoscaling is enabled.')
-    if not args.max_nodes:
-      raise exceptions.RequiredArgumentException(
-          'max-nodes', 'Required when autoscaling is enabled.')
-  else:
-    if not args.num_nodes:
-      raise exceptions.OneOfArgumentsRequiredException(
-          ['num-nodes', 'enable-autoscaling'],
-          'Either number of nodes must be specified, or autoscaling enabled.')
 
 
 def AddMaxPodsPerNode(parser):
@@ -190,24 +146,8 @@ def AddMaxPodsPerNode(parser):
       '--max-pods-per-node', type=int, help='Maximum number of pods per node.')
 
 
-def AddSubnetID(parser, help_text, hidden=False):
-  """Add the --subnet-id argument.
-
-  Args:
-    parser: The argparse.parser to add the argument to.
-    help_text: str, describes additional help text for the subnet ID.
-    hidden: bool, whether to hide the argument.
-  """
-
-  parser.add_argument(
-      '--subnet-id',
-      required=True,
-      hidden=hidden,
-      help='Subnet ID of an existing VNET to use for {}. '.format(help_text))
-
-
-def GetSubnetID(args):
-  return args.subnet_id
+def GetMaxPodsPerNode(args):
+  return args.max_pods_per_node
 
 
 def AddVMSize(parser):

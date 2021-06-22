@@ -1076,8 +1076,6 @@ class DeliveryPipeline(_messages.Message):
       keys and values are additionally constrained to be <= 128 bytes in size.
     name: Optional. Name of the `DeliveryPipeline`. Format is
       projects/{project}/ locations/{location}/deliveryPipelines/a-z{0,62}.
-    renderServiceAccount: Service account email used to render a `Release`. If
-      unset, the compute service account will be used.
     serialPipeline: SerialPipeline defines a sequential set of stages for a
       `DeliveryPipeline`.
     uid: Output only. Unique identifier of the `DeliveryPipeline`.
@@ -1147,10 +1145,9 @@ class DeliveryPipeline(_messages.Message):
   etag = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  renderServiceAccount = _messages.StringField(8)
-  serialPipeline = _messages.MessageField('SerialPipeline', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  serialPipeline = _messages.MessageField('SerialPipeline', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class Empty(_messages.Message):
@@ -1719,8 +1716,6 @@ class Release(_messages.Message):
       resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
-    manifestBucket: Cloud Storage bucket to store the rendered manifests. For
-      example, "gs://my-bucket". If empty, a bucket will be provided.
     name: Optional. Name of the `Release`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/a-z{0,62}.
@@ -1887,20 +1882,19 @@ class Release(_messages.Message):
   description = _messages.StringField(5)
   etag = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
-  manifestBucket = _messages.StringField(8)
-  name = _messages.StringField(9)
-  renderBuild = _messages.StringField(10)
-  renderEndTime = _messages.StringField(11)
-  renderStartTime = _messages.StringField(12)
-  renderState = _messages.EnumField('RenderStateValueValuesEnum', 13)
-  renderedManifests = _messages.MessageField('RenderedManifestsValue', 14)
-  renderingBuild = _messages.StringField(15)
-  skaffoldConfigPath = _messages.StringField(16)
-  skaffoldConfigUri = _messages.StringField(17)
-  skaffoldVersion = _messages.StringField(18)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 19)
-  targetSnapshots = _messages.MessageField('Target', 20, repeated=True)
-  uid = _messages.StringField(21)
+  name = _messages.StringField(8)
+  renderBuild = _messages.StringField(9)
+  renderEndTime = _messages.StringField(10)
+  renderStartTime = _messages.StringField(11)
+  renderState = _messages.EnumField('RenderStateValueValuesEnum', 12)
+  renderedManifests = _messages.MessageField('RenderedManifestsValue', 13)
+  renderingBuild = _messages.StringField(14)
+  skaffoldConfigPath = _messages.StringField(15)
+  skaffoldConfigUri = _messages.StringField(16)
+  skaffoldVersion = _messages.StringField(17)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 18)
+  targetSnapshots = _messages.MessageField('Target', 19, repeated=True)
+  uid = _messages.StringField(20)
 
 
 class Rollout(_messages.Message):
@@ -2283,8 +2277,6 @@ class Target(_messages.Message):
     approvalRequired: Optional. Whether or not the `Target` requires approval.
     cluster: Information specifying a GKE Cluster.
     createTime: Output only. Time at which the `Target` was created.
-    deployServiceAccount: Optional. Service account email used to deploy a
-      `Rollout`. If unset, the compute service account will be used.
     description: Optional. Description of the `Target`. Max length is 255
       characters.
     etag: Optional. This checksum is computed by the server based on the value
@@ -2367,16 +2359,15 @@ class Target(_messages.Message):
   approvalRequired = _messages.BooleanField(2)
   cluster = _messages.MessageField('GkeCluster', 3)
   createTime = _messages.StringField(4)
-  deployServiceAccount = _messages.StringField(5)
-  description = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  gkeCluster = _messages.MessageField('GKECluster', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  requireApproval = _messages.BooleanField(11)
-  targetId = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  description = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  gkeCluster = _messages.MessageField('GKECluster', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  requireApproval = _messages.BooleanField(10)
+  targetId = _messages.StringField(11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class TargetArtifact(_messages.Message):

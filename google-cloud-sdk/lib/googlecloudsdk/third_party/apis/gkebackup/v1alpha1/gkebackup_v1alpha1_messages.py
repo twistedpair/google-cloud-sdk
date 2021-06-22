@@ -77,7 +77,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r"""Backup resource Next id: 26
+  r"""Backup resource Next id: 27
 
   Enums:
     StateValueValuesEnum: Current state of the Backup
@@ -132,7 +132,8 @@ class Backup(_messages.Message):
       automatically from the BackupPlan's schedule.
     name: Output only. The fully qualified name of the Backup.
       projects/*/locations/*/backupPlans/*/backups/*
-    resourceCount: total number of resources backed up
+    podCount: Output only. total number of pods backed up
+    resourceCount: Output only. total number of resources backed up
     retainDays: retain_days specifies the desired number of days from the
       create_time of this Backup after which it will be automatically deleted.
       If not specified or set to 0, it means the Backup will NOT be
@@ -152,7 +153,7 @@ class Backup(_messages.Message):
     selectedApplications: Output only. If set, the list of applications backed
       up
     selectedNamespaces: Output only. If set, the list of namespaces backed up
-    sizeBytes: total size in bytes
+    sizeBytes: Output only. total size in bytes
     state: Current state of the Backup
     stateReason: Human-readable description of why the backup is in the
       current 'state'.
@@ -220,17 +221,18 @@ class Backup(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 12)
   manual = _messages.BooleanField(13)
   name = _messages.StringField(14)
-  resourceCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  retainDays = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  retainExpireTime = _messages.StringField(17)
-  selectedApplications = _messages.MessageField('NamespacedNames', 18)
-  selectedNamespaces = _messages.MessageField('Namespaces', 19)
-  sizeBytes = _messages.IntegerField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  stateReason = _messages.StringField(22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  volumeCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  podCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  resourceCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  retainDays = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  retainExpireTime = _messages.StringField(18)
+  selectedApplications = _messages.MessageField('NamespacedNames', 19)
+  selectedNamespaces = _messages.MessageField('Namespaces', 20)
+  sizeBytes = _messages.IntegerField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  stateReason = _messages.StringField(23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
+  volumeCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
 
 
 class BackupConfig(_messages.Message):
@@ -266,7 +268,8 @@ class BackupPlan(_messages.Message):
     backupConfig: Defines backup configuration of this BackupPlan.
     backupSchedule: Defines scheduled Backup creation under this BackupPlan.
     cluster: Required. Immutable. GCP resource name of the source cluster for
-      this BackupPlan Format: projects/*/locations/*/clusters/*.
+      this BackupPlan Possible formats: 1. projects/*/locations/*/clusters/*
+      2. projects/*/zones/*/clusters/*
     createTime: Output only. [Output Only] The timestamp when this BackupPlan
       resource was created which can be converted to and from
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt)
@@ -387,10 +390,6 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class CancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
-
-
 class ClusterMetadata(_messages.Message):
   r"""ClusterMetadata
 
@@ -401,7 +400,8 @@ class ClusterMetadata(_messages.Message):
     anthosVersion: anthos version
     backupCrdVersions: gke/anthos backup crd versions
     cluster: Output only. source cluster from where the Backup has been
-      created from Format: projects/*/locations/*/clusters/*.
+      created from Possible formats: 1. projects/*/locations/*/clusters/* 2.
+      projects/*/zones/*/clusters/*
     gkeVersion: gke version
     k8sVersion: kubernetes server version
   """
@@ -606,6 +606,28 @@ class GkebackupProjectsLocationsBackupPlansBackupsGetClusterConfigUploadUrlReque
   backup = _messages.StringField(1, required=True)
 
 
+class GkebackupProjectsLocationsBackupPlansBackupsGetIamPolicyRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupPlansBackupsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class GkebackupProjectsLocationsBackupPlansBackupsGetRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsBackupPlansBackupsGetRequest object.
 
@@ -661,6 +683,22 @@ class GkebackupProjectsLocationsBackupPlansBackupsPatchRequest(_messages.Message
   updateMask = _messages.StringField(4)
 
 
+class GkebackupProjectsLocationsBackupPlansBackupsSetIamPolicyRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupPlansBackupsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
 class GkebackupProjectsLocationsBackupPlansBackupsSubmitClusterConfigRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsBackupPlansBackupsSubmitClusterConfigRequest
   object.
@@ -676,6 +714,22 @@ class GkebackupProjectsLocationsBackupPlansBackupsSubmitClusterConfigRequest(_me
 
   backup = _messages.StringField(1, required=True)
   submitClusterConfigRequest = _messages.MessageField('SubmitClusterConfigRequest', 2)
+
+
+class GkebackupProjectsLocationsBackupPlansBackupsTestIamPermissionsRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupPlansBackupsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsCreateRequest(_messages.Message):
@@ -699,6 +753,29 @@ class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsCreateRequest(_me
   parent = _messages.StringField(1, required=True)
   volumeBackup = _messages.MessageField('VolumeBackup', 2)
   volumeBackupId = _messages.StringField(3)
+
+
+class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsGetIamPolicyRequest(_messages.Message):
+  r"""A
+  GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsGetRequest(_messages.Message):
@@ -766,6 +843,39 @@ class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsPatchRequest(_mes
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
   volumeBackup = _messages.MessageField('VolumeBackup', 4)
+
+
+class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsSetIamPolicyRequest(_messages.Message):
+  r"""A
+  GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsTestIamPermissionsRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsBackupPlansBackupsVolumeBackupsTestIamPermis
+  sionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class GkebackupProjectsLocationsBackupPlansCreateRequest(_messages.Message):
@@ -949,12 +1059,13 @@ class GkebackupProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsOperationsCancelRequest object.
 
   Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
+    googleLongrunningCancelOperationRequest: A
+      GoogleLongrunningCancelOperationRequest resource to be passed as the
+      request body.
     name: The name of the operation resource to be cancelled.
   """
 
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -1167,6 +1278,28 @@ class GkebackupProjectsLocationsRestoresVolumeRestoresCreateRequest(_messages.Me
   volumeRestoreId = _messages.StringField(3)
 
 
+class GkebackupProjectsLocationsRestoresVolumeRestoresGetIamPolicyRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsRestoresVolumeRestoresGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class GkebackupProjectsLocationsRestoresVolumeRestoresGetRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsRestoresVolumeRestoresGetRequest object.
 
@@ -1226,6 +1359,215 @@ class GkebackupProjectsLocationsRestoresVolumeRestoresPatchRequest(_messages.Mes
   volumeRestore = _messages.MessageField('VolumeRestore', 4)
 
 
+class GkebackupProjectsLocationsRestoresVolumeRestoresSetIamPolicyRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsRestoresVolumeRestoresSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class GkebackupProjectsLocationsRestoresVolumeRestoresTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  GkebackupProjectsLocationsRestoresVolumeRestoresTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class GoogleLongrunningCancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
+
+
+class GoogleLongrunningListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+
+
+class GoogleLongrunningOperation(_messages.Message):
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
+    response: The normal response of the operation in case of success. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata associated with the operation. It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata. Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    r"""The normal response of the operation in case of success. If the
+    original method returns no data on success, such as `Delete`, the response
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name. For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('GoogleRpcStatus', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
+
+
+class GoogleRpcStatus(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class GroupKind(_messages.Message):
   r"""GroupKind, a direct map to Kubernetes [GroupKind](https://godoc.org/k8s.
   io/apimachinery/pkg/runtime/schema#GroupKind)
@@ -1283,19 +1625,6 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class ListOperationsResponse(_messages.Message):
-  r"""The response message for Operations.ListOperations.
-
-  Fields:
-    nextPageToken: The standard List next-page token.
-    operations: A list of operations that matches the specified filter in the
-      request.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
 class ListRestoresResponse(_messages.Message):
@@ -1454,114 +1783,6 @@ class Namespaces(_messages.Message):
   namespaces = _messages.StringField(1, repeated=True)
 
 
-class Operation(_messages.Message):
-  r"""This resource represents a long-running operation that is the result of
-  a network API call.
-
-  Messages:
-    MetadataValue: Service-specific metadata associated with the operation. It
-      typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata. Any method
-      that returns a long-running operation should document the metadata type,
-      if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`. If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource. For other
-      methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name. For example, if the original method name is
-      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
-
-  Fields:
-    done: If the value is `false`, it means the operation is still in
-      progress. If `true`, the operation is completed, and either `error` or
-      `response` is available.
-    error: The error result of the operation in case of failure or
-      cancellation.
-    metadata: Service-specific metadata associated with the operation. It
-      typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata. Any method
-      that returns a long-running operation should document the metadata type,
-      if any.
-    name: The server-assigned name, which is only unique within the same
-      service that originally returns it. If you use the default HTTP mapping,
-      the `name` should be a resource name ending with
-      `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
-      original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`. If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource. For other
-      methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name. For example, if the original method name is
-      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation. It typically
-    contains progress information and common metadata such as create time.
-    Some services might not provide such metadata. Any method that returns a
-    long-running operation should document the metadata type, if any.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource. For other
-    methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name. For example, if the original method name is
-    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
-
-    Messages:
-      AdditionalProperty: An additional property for a ResponseValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ResponseValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  done = _messages.BooleanField(1)
-  error = _messages.MessageField('Status', 2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
-  response = _messages.MessageField('ResponseValue', 5)
-
-
 class OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
@@ -1676,7 +1897,8 @@ class Restore(_messages.Message):
       resource used to restore from. Format:
       projects/*/locations/*/backupPlans/*/backups/*.
     cluster: Required. Immutable. Name of the cluster this restore targets at.
-      Format: projects/*/locations/*/clusters/*.
+      Possible formats: 1. projects/*/locations/*/clusters/* 2.
+      projects/*/zones/*/clusters/*
     completeTime: Output only. End time of the restore process.
     createTime: Output only. [Output Only] The timestamp when this Restore
       resource was created which can be converted to and from
@@ -2040,66 +2262,17 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
-class Status(_messages.Message):
-  r"""The `Status` type defines a logical error model that is suitable for
-  different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details. You can
-  find out more about this error model and how to work with it in the [API
-  Design Guide](https://cloud.google.com/apis/design/errors).
-
-  Messages:
-    DetailsValueListEntry: A DetailsValueListEntry object.
-
-  Fields:
-    code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details. There is a
-      common set of message types for APIs to use.
-    message: A developer-facing error message, which should be in English. Any
-      user-facing error message should be localized and sent in the
-      google.rpc.Status.details field, or localized by the client.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DetailsValueListEntry(_messages.Message):
-    r"""A DetailsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a DetailsValueListEntry
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DetailsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
-  message = _messages.StringField(3)
-
-
 class SubmitClusterConfigRequest(_messages.Message):
   r"""Request for submitting cluster configuration once an agent is done with
   uploading.
 
   Fields:
+    podCount: Total number of pods backed up.
     resourceCount: Required. Total number of resources backed up.
   """
 
-  resourceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  podCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resourceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class SubstitutionRule(_messages.Message):

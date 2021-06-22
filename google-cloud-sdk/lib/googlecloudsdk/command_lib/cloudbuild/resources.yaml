@@ -18,3 +18,14 @@ trigger:
     attribute_name: trigger
     help: Build Trigger ID
   disable_auto_completers: false
+
+build:
+  name: build
+  collection: cloudbuild.projects.builds
+  attributes:
+  - *project
+  - &build
+    parameter_name: id
+    attribute_name: build
+    help: Build ID
+  disable_auto_completers: false

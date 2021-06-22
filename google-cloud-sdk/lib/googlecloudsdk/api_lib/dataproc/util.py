@@ -512,6 +512,18 @@ def ParseRegion(dataproc):
   return ref
 
 
+# Get dataproc.projects.locations resource
+def ParseProjectsLocations(dataproc):
+  ref = dataproc.resources.Parse(
+      None,
+      params={
+          'locationsId': ResolveRegion,
+          'projectsId': properties.VALUES.core.project.GetOrFail
+      },
+      collection='dataproc.projects.locations')
+  return ref
+
+
 def ReadAutoscalingPolicy(dataproc, policy_id, policy_file_name=None):
   """Returns autoscaling policy read from YAML file.
 

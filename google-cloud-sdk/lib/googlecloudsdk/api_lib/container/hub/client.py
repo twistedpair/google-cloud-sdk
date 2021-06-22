@@ -170,3 +170,7 @@ class HubClient(object):
     """encoding.DictToAdditionalPropertyMessage wrapper to match ToPyDict."""
     return encoding.DictToAdditionalPropertyMessage(
         value, map_value_cls, sort_items=True)
+
+  def ToMembershipSpecs(self, spec_map):
+    """Convenience wrapper for ToProtoMap for Feature.membershipSpecs."""
+    return self.ToProtoMap(self.messages.Feature.MembershipSpecsValue, spec_map)

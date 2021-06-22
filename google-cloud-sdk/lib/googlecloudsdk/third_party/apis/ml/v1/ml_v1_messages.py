@@ -846,6 +846,9 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
 
   Messages:
     HyperparametersValue: The hyperparameters given to this trial.
+    WebAccessUrisValue: The web URIs for the training job. Currently for debug
+      terminal access to the job. Only set for in-progress hyperparameter
+      tuning trials with web access enabled.
 
   Fields:
     allMetrics: All recorded object metrics for this trial. This field is not
@@ -859,6 +862,9 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
     startTime: Output only. Start time for the trial.
     state: Output only. The detailed state of the trial.
     trialId: The trial id for these results.
+    webAccessUris: The web URIs for the training job. Currently for debug
+      terminal access to the job. Only set for in-progress hyperparameter
+      tuning trials with web access enabled.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -911,6 +917,33 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WebAccessUrisValue(_messages.Message):
+    r"""The web URIs for the training job. Currently for debug terminal access
+    to the job. Only set for in-progress hyperparameter tuning trials with web
+    access enabled.
+
+    Messages:
+      AdditionalProperty: An additional property for a WebAccessUrisValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type WebAccessUrisValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WebAccessUrisValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   allMetrics = _messages.MessageField('GoogleCloudMlV1HyperparameterOutputHyperparameterMetric', 1, repeated=True)
   builtInAlgorithmOutput = _messages.MessageField('GoogleCloudMlV1BuiltInAlgorithmOutput', 2)
   endTime = _messages.StringField(3)
@@ -920,6 +953,7 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
   startTime = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
   trialId = _messages.StringField(9)
+  webAccessUris = _messages.MessageField('WebAccessUrisValue', 10)
 
 
 class GoogleCloudMlV1HyperparameterOutputHyperparameterMetric(_messages.Message):
@@ -2581,6 +2615,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     args: Optional. Command-line arguments passed to the training application
       when it starts. If your job uses a custom container, then the arguments
       are passed to the container's `ENTRYPOINT` command.
+    enableWebAccess: Optional. Whether to enable web access for the training
+      job.
     encryptionConfig: Optional. Options for using customer-managed encryption
       keys (CMEK) to protect resources created by a training job, instead of
       using Google's default encryption. If this is set, then all resources
@@ -2773,35 +2809,40 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     CUSTOM = 5
 
   args = _messages.StringField(1, repeated=True)
-  encryptionConfig = _messages.MessageField('GoogleCloudMlV1EncryptionConfig', 2)
-  evaluatorConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 3)
-  evaluatorCount = _messages.IntegerField(4)
-  evaluatorType = _messages.StringField(5)
-  hyperparameters = _messages.MessageField('GoogleCloudMlV1HyperparameterSpec', 6)
-  jobDir = _messages.StringField(7)
-  masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 8)
-  masterType = _messages.StringField(9)
-  nasJobSpec = _messages.MessageField('GoogleCloudMlV1NasSpec', 10)
-  network = _messages.StringField(11)
-  packageUris = _messages.StringField(12, repeated=True)
-  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 13)
-  parameterServerCount = _messages.IntegerField(14)
-  parameterServerType = _messages.StringField(15)
-  pythonModule = _messages.StringField(16)
-  pythonVersion = _messages.StringField(17)
-  region = _messages.StringField(18)
-  runtimeVersion = _messages.StringField(19)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 20)
-  scheduling = _messages.MessageField('GoogleCloudMlV1Scheduling', 21)
-  serviceAccount = _messages.StringField(22)
-  useChiefInTfConfig = _messages.BooleanField(23)
-  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 24)
-  workerCount = _messages.IntegerField(25)
-  workerType = _messages.StringField(26)
+  enableWebAccess = _messages.BooleanField(2)
+  encryptionConfig = _messages.MessageField('GoogleCloudMlV1EncryptionConfig', 3)
+  evaluatorConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 4)
+  evaluatorCount = _messages.IntegerField(5)
+  evaluatorType = _messages.StringField(6)
+  hyperparameters = _messages.MessageField('GoogleCloudMlV1HyperparameterSpec', 7)
+  jobDir = _messages.StringField(8)
+  masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 9)
+  masterType = _messages.StringField(10)
+  nasJobSpec = _messages.MessageField('GoogleCloudMlV1NasSpec', 11)
+  network = _messages.StringField(12)
+  packageUris = _messages.StringField(13, repeated=True)
+  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 14)
+  parameterServerCount = _messages.IntegerField(15)
+  parameterServerType = _messages.StringField(16)
+  pythonModule = _messages.StringField(17)
+  pythonVersion = _messages.StringField(18)
+  region = _messages.StringField(19)
+  runtimeVersion = _messages.StringField(20)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 21)
+  scheduling = _messages.MessageField('GoogleCloudMlV1Scheduling', 22)
+  serviceAccount = _messages.StringField(23)
+  useChiefInTfConfig = _messages.BooleanField(24)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 25)
+  workerCount = _messages.IntegerField(26)
+  workerType = _messages.StringField(27)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):
   r"""Represents results of a training job. Output only.
+
+  Messages:
+    WebAccessUrisValue: Output only. The web URIs for the training job.
+      Currently for debug terminal access to the job.
 
   Fields:
     builtInAlgorithmOutput: Details related to built-in algorithms jobs. Only
@@ -2819,7 +2860,35 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
     nasJobOutput: The output of a Neural Architecture Search (NAS) job.
     trials: Results for individual Hyperparameter trials. Only set for
       hyperparameter tuning jobs.
+    webAccessUris: Output only. The web URIs for the training job. Currently
+      for debug terminal access to the job.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WebAccessUrisValue(_messages.Message):
+    r"""Output only. The web URIs for the training job. Currently for debug
+    terminal access to the job.
+
+    Messages:
+      AdditionalProperty: An additional property for a WebAccessUrisValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type WebAccessUrisValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WebAccessUrisValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   builtInAlgorithmOutput = _messages.MessageField('GoogleCloudMlV1BuiltInAlgorithmOutput', 1)
   completedTrialCount = _messages.IntegerField(2)
@@ -2829,6 +2898,7 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
   isHyperparameterTuningJob = _messages.BooleanField(6)
   nasJobOutput = _messages.MessageField('GoogleCloudMlV1NasJobOutput', 7)
   trials = _messages.MessageField('GoogleCloudMlV1HyperparameterOutput', 8, repeated=True)
+  webAccessUris = _messages.MessageField('WebAccessUrisValue', 9)
 
 
 class GoogleCloudMlV1TreeShapAttribution(_messages.Message):

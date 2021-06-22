@@ -307,7 +307,9 @@
             "Cloud Build failed due to a permissions issue.",
             "Cluster creation failed for a non-permissions-related issue.",
             "The deletion Cloud Build failed before logs could be generated.",
-            "The deletion Cloud Build failed after logs could be generated."
+            "The deletion Cloud Build failed after logs could be generated.",
+            "A Cloud Storage bucket failed due to a permissions issue.",
+            "A Cloud Storage bucket failed for a non-permissions-related issue."
           ],
           "enum": [
             "ERROR_CODE_UNSPECIFIED",
@@ -316,7 +318,9 @@
             "CLOUD_BUILD_PERMISSION_DENIED",
             "CLUSTER_CREATION_FAILED",
             "DELETE_BUILD_API_FAILED",
-            "DELETE_BUILD_RUN_FAILED"
+            "DELETE_BUILD_RUN_FAILED",
+            "BUCKET_CREATION_PERMISSION_DENIED",
+            "BUCKET_CREATION_FAILED"
           ]
         }
       }
@@ -517,8 +521,8 @@
           "type": "string",
           "enumDescriptions": [
             "No error code was specified.",
-            "A Cloud Storage bucket failed due to a permissions issue.",
-            "A Cloud Storage bucket failed for a non-permissions-related issue.",
+            "A Cloud Storage bucket failed due to a permissions issue. Deprecated in favor of equivalent ErrorCode on Deployment.",
+            "A Cloud Storage bucket failed for a non-permissions-related issue. Deprecated in favor of equivalent ErrorCode on Deployment.",
             "Cloud Build failed due to a permissions issue.",
             "The pipeline Cloud Build failed before logs could be generated.",
             "The pipeline Cloud Build failed after logs could be generated.",

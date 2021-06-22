@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.clouddeploy import release
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import release_util
+from googlecloudsdk.command_lib.deploy import rollout_util
 from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -34,19 +35,21 @@ def Promote(release_ref, release_obj, to_target, rollout_id=None):
   """Calls promote API and waits for the operation to finish.
 
   Args:
-    release_ref: release resource object.
-    release_obj: release message object.
-    to_target: the target to promote the release to.
-    rollout_id: ID to assign to the generated rollout.
+    release_ref: protorpc.messages.Message, release resource object.
+    release_obj: apitools.base.protorpclite.messages.Message, release message
+      object.
+    to_target: str, the target to promote the release to.
+    rollout_id: str, ID to assign to the generated rollout.
   """
   resp = release.ReleaseClient().Promote(release_ref, to_target, rollout_id)
   if resp:
+    target_id = target_util.TargetId(resp.target)
     output = 'Created Cloud Deploy rollout {} in target {}. '.format(
-        resp.rollout.rollout, resp.rollout.target)
+        rollout_util.RolloutId(resp.rolloutResource), target_id)
 
     # Check if it requires approval.
-    target_obj = release_util.GetSnappedTarget(release_obj, resp.rollout.target)
-    if target_obj and target_obj.approvalRequired:
+    target_obj = release_util.GetSnappedTarget(release_obj, target_id)
+    if target_obj and target_obj.requireApproval:
       output += 'The rollout is pending approval.'
 
     log.status.Print(output)
@@ -59,7 +62,7 @@ def GetToTargetID(release_obj):
   release to.
 
   Args:
-    release_obj: release message.
+    release_obj: apitools.base.protorpclite.messages.Message, release message.
 
   Returns:
     the target ID.
@@ -78,10 +81,10 @@ def GetToTargetID(release_obj):
   # E.g. test->stage->prod. Here we start with the last stage.
   reversed_snapshots = list(reversed(release_obj.targetSnapshots))
   for i, snapshot in enumerate(reversed_snapshots):
-    target_ref = resources.REGISTRY.ParseRelativeName(
-        snapshot.name,
-        collection='clouddeploy.projects.locations.deliveryPipelines.targets')
-    _, current_rollout = target_util.GetReleasesAndCurrentRollout(target_ref)
+    target_ref = target_util.TargetReferenceFromName(snapshot.name)
+    _, current_rollout = target_util.GetReleasesAndCurrentRollout(
+        target_ref,
+        release_ref.AsDict()['deliveryPipelinesId'])
 
     if current_rollout:
       current_rollout_ref = resources.REGISTRY.Parse(
@@ -109,7 +112,4 @@ def GetToTargetID(release_obj):
   if to_target == release_obj.targetSnapshots[0].name:
     raise exceptions.ReleaseInactiveError()
 
-  return resources.REGISTRY.ParseRelativeName(
-      to_target,
-      collection='clouddeploy.projects.locations.deliveryPipelines.targets'
-  ).Name()
+  return target_util.TargetId(to_target)

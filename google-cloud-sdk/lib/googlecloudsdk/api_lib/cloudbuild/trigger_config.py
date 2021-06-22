@@ -63,6 +63,10 @@ def AddTriggerArgs(parser):
       help='Flag based trigger configuration')
   flag_config.add_argument('--name', help='Build trigger name.')
   flag_config.add_argument('--description', help='Build trigger description.')
+  flag_config.add_argument('--require-approval',
+                           help='Require manual approval for triggered builds.',
+                           action='store_true',
+                           hidden=True)
 
   return flag_config
 
@@ -89,6 +93,7 @@ def ParseTriggerArgs(args, messages):
   trigger = messages.BuildTrigger()
   trigger.name = args.name
   trigger.description = args.description
+  ParseRequireApproval(trigger, args, messages)
   return trigger, False
 
 
@@ -383,3 +388,16 @@ def ParseGitRepoSource(trigger, args, messages, required=False):
     repo_source.ref = 'refs/tags/' + args.tag
 
   trigger.sourceToBuild = repo_source
+
+
+def ParseRequireApproval(trigger, args, messages):
+  """Parses approval required flag.
+
+  Args:
+    trigger: The trigger to populate.
+    args: An argparse arguments object.
+    messages: A Cloud Build messages module.
+  """
+
+  if args.require_approval:
+    trigger.approvalConfig = messages.ApprovalConfig(approvalRequired=True)

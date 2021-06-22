@@ -574,9 +574,9 @@ class Address(_messages.Message):
   VM instances - Alias IP ranges of VM instances (/32 only) - Regional
   internal forwarding rules - Internal TCP/UDP load balancer addresses -
   Internal HTTP(S) load balancer addresses - Cloud DNS inbound forwarding IP
-  addresses  For more information, read reserved IP address.  (== resource_for
-  {$api_version}.addresses ==) (== resource_for {$api_version}.globalAddresses
-  ==)
+  addresses  For more information, see  Reserving a static external IP
+  address.  (== resource_for {$api_version}.addresses ==) (== resource_for
+  {$api_version}.globalAddresses ==)
 
   Enums:
     AddressTypeValueValuesEnum: The type of address to reserve, either
@@ -2841,13 +2841,13 @@ class BackendBucket(_messages.Message):
 
   Enums:
     CompressionModeValueValuesEnum: Compress text responses using Brotli or
-      gzip compression, based on the client?s Accept-Encoding header.
+      gzip compression, based on the client's Accept-Encoding header.
 
   Fields:
     bucketName: Cloud Storage bucket name.
     cdnPolicy: Cloud CDN configuration for this BackendBucket.
     compressionMode: Compress text responses using Brotli or gzip compression,
-      based on the client?s Accept-Encoding header.
+      based on the client's Accept-Encoding header.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customResponseHeaders: Headers that the HTTP/S load balancer should add to
@@ -2872,7 +2872,7 @@ class BackendBucket(_messages.Message):
 
   class CompressionModeValueValuesEnum(_messages.Enum):
     r"""Compress text responses using Brotli or gzip compression, based on the
-    client?s Accept-Encoding header.
+    client's Accept-Encoding header.
 
     Values:
       AUTOMATIC: <no description>
@@ -3236,7 +3236,7 @@ class BackendService(_messages.Message):
 
   Enums:
     CompressionModeValueValuesEnum: Compress text responses using Brotli or
-      gzip compression, based on the client?s Accept-Encoding header.
+      gzip compression, based on the client's Accept-Encoding header.
     LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type. A
       backend service created for one type of load balancer cannot be used
       with another. For more information, refer to Choosing a load balancer.
@@ -3294,7 +3294,7 @@ class BackendService(_messages.Message):
       for  specified load balancer types.
     circuitBreakers: A CircuitBreakers attribute.
     compressionMode: Compress text responses using Brotli or gzip compression,
-      based on the client?s Accept-Encoding header.
+      based on the client's Accept-Encoding header.
     connectionDraining: A ConnectionDraining attribute.
     connectionTrackingPolicy: A BackendServiceConnectionTrackingPolicy
       attribute.
@@ -3457,7 +3457,7 @@ class BackendService(_messages.Message):
 
   class CompressionModeValueValuesEnum(_messages.Enum):
     r"""Compress text responses using Brotli or gzip compression, based on the
-    client?s Accept-Encoding header.
+    client's Accept-Encoding header.
 
     Values:
       AUTOMATIC: <no description>
@@ -4763,17 +4763,16 @@ class BulkInsertInstanceResource(_messages.Message):
       instances cannot be created, then no instances will be created and
       instances already created will be deleted.
     namePattern: The string pattern used for the names of the VMs. Either
-      name_pattern or per_instance_properties must be set. The pattern should
+      name_pattern or per_instance_properties must be set. The pattern must
       contain one continuous sequence of placeholder hash characters (#) with
       each character corresponding to one digit of the generated instance
-      name. Example: name_pattern of inst-#### will generate instance names
-      such as inst-0001, inst-0002, ... . If there already exist instance(s)
-      whose names match the name pattern in the same project and zone, then
-      the generated instance numbers will start after the biggest existing
-      number. For example, if there exists an instance with name inst-0050,
-      then instance names generated using the pattern inst-#### will be
-      inst-0051, inst-0052, etc. The name pattern placeholder #...# can
-      contain up to 18 characters.
+      name. Example: a name_pattern of inst-#### generates instance names such
+      as inst-0001 and inst-0002. If existing instances in the same project
+      and zone have names that match the name pattern then the generated
+      instance numbers start after the biggest existing number. For example,
+      if there exists an instance with name inst-0050, then instance names
+      generated using the pattern inst-#### begin with inst-0051. The name
+      pattern placeholder #...# can contain up to 18 characters.
     perInstanceProperties: Per-instance properties to be set on individual
       instances. Keys of this map specify requested instance names. Can be
       empty if name_pattern is used.
@@ -4887,7 +4886,8 @@ class CacheKeyPolicy(_messages.Message):
 
 
 class CircuitBreakers(_messages.Message):
-  r"""Settings controlling the volume of connections to a backend service.
+  r"""Settings controlling the volume of requests, connections and retries to
+  this backend service.
 
   Fields:
     connectTimeout: The timeout for new network connections to hosts.
@@ -26531,7 +26531,7 @@ class ExternalVpnGateway(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: List of interfaces for this external VPN gateway.  If your
-      peer-side gateway is an on-premises gateway and non-AWS cloud providers?
+      peer-side gateway is an on-premises gateway and non-AWS cloud providers'
       gateway, at most two interfaces can be provided for an external VPN
       gateway. If your peer side is an AWS virtual private gateway, four
       interfaces should be provided for an external VPN gateway.
@@ -29085,11 +29085,11 @@ class HealthCheckService(_messages.Message):
     HealthStatusAggregationPolicyValueValuesEnum: Optional. Policy for how the
       results from multiple health checks for the same endpoint are
       aggregated. Defaults to NO_AGGREGATION if unspecified.   -
-      NO_AGGREGATION. An EndpointHealth message is returned for each backend
-      in the health check service.  - AND. If any backend's health check
-      reports UNHEALTHY, then UNHEALTHY is the HealthState of the entire
-      health check service. If all backend's are healthy, the HealthState of
-      the health check service is HEALTHY. .
+      NO_AGGREGATION. An EndpointHealth message is returned for each  pair in
+      the health check service.  - AND. If any health check of an endpoint
+      reports UNHEALTHY, then UNHEALTHY is the HealthState of the endpoint. If
+      all health checks report HEALTHY, the HealthState of the endpoint is
+      HEALTHY. .
     HealthStatusAggregationStrategyValueValuesEnum: This field is deprecated.
       Use health_status_aggregation_policy instead.  Policy for how the
       results from multiple health checks for the same endpoint are
@@ -29123,10 +29123,10 @@ class HealthCheckService(_messages.Message):
     healthStatusAggregationPolicy: Optional. Policy for how the results from
       multiple health checks for the same endpoint are aggregated. Defaults to
       NO_AGGREGATION if unspecified.   - NO_AGGREGATION. An EndpointHealth
-      message is returned for each backend in the health check service.  -
-      AND. If any backend's health check reports UNHEALTHY, then UNHEALTHY is
-      the HealthState of the entire health check service. If all backend's are
-      healthy, the HealthState of the health check service is HEALTHY. .
+      message is returned for each  pair in the health check service.  - AND.
+      If any health check of an endpoint reports UNHEALTHY, then UNHEALTHY is
+      the HealthState of the endpoint. If all health checks report HEALTHY,
+      the HealthState of the endpoint is HEALTHY. .
     healthStatusAggregationStrategy: This field is deprecated. Use
       health_status_aggregation_policy instead.  Policy for how the results
       from multiple health checks for the same endpoint are aggregated.   -
@@ -29165,10 +29165,10 @@ class HealthCheckService(_messages.Message):
     r"""Optional. Policy for how the results from multiple health checks for
     the same endpoint are aggregated. Defaults to NO_AGGREGATION if
     unspecified.   - NO_AGGREGATION. An EndpointHealth message is returned for
-    each backend in the health check service.  - AND. If any backend's health
-    check reports UNHEALTHY, then UNHEALTHY is the HealthState of the entire
-    health check service. If all backend's are healthy, the HealthState of the
-    health check service is HEALTHY. .
+    each  pair in the health check service.  - AND. If any health check of an
+    endpoint reports UNHEALTHY, then UNHEALTHY is the HealthState of the
+    endpoint. If all health checks report HEALTHY, the HealthState of the
+    endpoint is HEALTHY. .
 
     Values:
       AND: <no description>
@@ -30246,25 +30246,28 @@ class HttpRetryPolicy(_messages.Message):
       specified, will use the timeout set in HttpRouteAction. If timeout in
       HttpRouteAction is not set, will use the largest timeout among all
       backend services associated with the route.
-    retryConditions: Specifies one or more conditions when this retry rule
-      applies. Valid values are:   - 5xx: Loadbalancer will attempt a retry if
-      the backend service responds with any 5xx response code, or if the
-      backend service does not respond at all, example: disconnects, reset,
-      read timeout, connection failure, and refused streams.  - gateway-error:
-      Similar to 5xx, but only applies to response codes 502, 503 or 504. -  -
-      connect-failure: Loadbalancer will retry on failures connecting to
-      backend services, for example due to connection timeouts.  -
-      retriable-4xx: Loadbalancer will retry for retriable 4xx response codes.
-      Currently the only retriable error supported is 409.  - refused-
-      stream:Loadbalancer will retry if the backend service resets the stream
-      with a REFUSED_STREAM error code. This reset type indicates that it is
-      safe to retry.  - cancelledLoadbalancer will retry if the gRPC status
-      code in the response header is set to cancelled  - deadline-exceeded:
-      Loadbalancer will retry if the gRPC status code in the response header
-      is set to deadline-exceeded  - resource-exhausted: Loadbalancer will
-      retry if the gRPC status code in the response header is set to resource-
-      exhausted  - unavailable: Loadbalancer will retry if the gRPC status
-      code in the response header is set to unavailable
+    retryConditions: Specifies one or more conditions when this retry policy
+      applies. Valid values are:   - 5xx: Retry will be attempted if the
+      instance or endpoint responds with any 5xx response code, or if the
+      instance or endpoint does not respond at all, example: disconnects,
+      reset, read timeout, connection failure, and refused streams.  -
+      gateway-error: Similar to 5xx, but only applies to response codes 502,
+      503 or 504. -  - connect-failure: A retry will be attempted on failures
+      connecting to the instance or endpoint, for example due to connection
+      timeouts.  - retriable-4xx: A retry will be attempted if the instance or
+      endpoint responds with a retriable 4xx response code. Currently the only
+      retriable error supported is 409.  - refused-stream: A retry will be
+      attempted if the instance or endpoint resets the stream with a
+      REFUSED_STREAM error code. This reset type indicates that it is safe to
+      retry.  - cancelled: A retry will be attempted if the gRPC status code
+      in the response header is set to cancelled.  - deadline-exceeded: A
+      retry will be attempted if the gRPC status code in the response header
+      is set to deadline-exceeded.  - internal: A retry will be attempted if
+      the gRPC status code in the response header is set to internal.  -
+      resource-exhausted: A retry will be attempted if the gRPC status code in
+      the response header is set to resource-exhausted.  - unavailable: A
+      retry will be attempted if the gRPC status code in the response header
+      is set to unavailable.
   """
 
   numRetries = _messages.IntegerField(1, variant=_messages.Variant.UINT32)

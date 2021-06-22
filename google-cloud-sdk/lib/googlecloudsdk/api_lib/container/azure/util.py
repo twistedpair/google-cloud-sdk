@@ -112,8 +112,8 @@ class ClustersClient(_AzureClientBase):
              azure_region=None,
              resource_group_id=None,
              vnet_id=None,
-             cluster_ipv4_cidr=None,
-             service_ipv4_cidr=None,
+             pod_address_cidr_blocks=None,
+             service_address_cidr_blocks=None,
              cluster_version=None,
              subnet_id=None,
              vm_size=None,
@@ -138,8 +138,8 @@ class ClustersClient(_AzureClientBase):
     c.authorization = self._CreateAuthorization(admin_users)
 
     net = self._AddAzureNetworking(c)
-    net.podAddressCidrBlocks.append(cluster_ipv4_cidr)
-    net.serviceAddressCidrBlocks.append(service_ipv4_cidr)
+    net.podAddressCidrBlocks.append(pod_address_cidr_blocks)
+    net.serviceAddressCidrBlocks.append(service_address_cidr_blocks)
     net.virtualNetworkId = vnet_id
 
     cp = self._AddAzureControlPlane(c)
@@ -257,7 +257,8 @@ class NodePoolsClient(_AzureClientBase):
              tags=None,
              validate_only=None,
              min_nodes=None,
-             max_nodes=None):
+             max_nodes=None,
+             max_pods_per_node=None):
     """Create a new Azure Node Pool."""
     req = self._service.GetRequestType('Create')(
         azureNodePoolId=nodepool_ref.azureNodePoolsId,
@@ -269,20 +270,26 @@ class NodePoolsClient(_AzureClientBase):
         'AzureNodePool',
         name=nodepool_ref.azureNodePoolsId,
         subnetId=subnet_id,
-        version=node_version,
-        vmSize=vm_size)
+        version=node_version)
 
     nodepool.autoscaling = type(nodepool).autoscaling.type(
         maxNodeCount=max_nodes, minNodeCount=min_nodes)
-    nodepool.sshConfig = type(nodepool).sshConfig.type(
+
+    nodepool.maxPodsConstraint = type(nodepool).maxPodsConstraint.type(
+        maxPodsPerNode=max_pods_per_node)
+
+    nodepool.config = type(nodepool).config.type(vmSize=vm_size)
+
+    nodeconfig = nodepool.config
+    nodeconfig.sshConfig = type(nodeconfig).sshConfig.type(
         authorizedKey=ssh_public_key)
 
     if root_volume_size:
-      nodepool.rootVolume = self._CreateAzureDiskTemplate(root_volume_size)
+      nodeconfig.rootVolume = self._CreateAzureDiskTemplate(root_volume_size)
 
     if tags:
-      tag_type = type(nodepool).TagsValue.AdditionalProperty
-      nodepool.tags = type(nodepool).TagsValue(additionalProperties=[
+      tag_type = type(nodeconfig).TagsValue.AdditionalProperty
+      nodeconfig.tags = type(nodeconfig).TagsValue(additionalProperties=[
           tag_type(key=k, value=v) for k, v in tags.items()
       ])
 

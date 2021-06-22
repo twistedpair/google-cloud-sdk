@@ -1092,6 +1092,8 @@ class CryptoKeyVersion(_messages.Message):
         digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+      EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
+        curve is only supported for HSM protection level.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -1111,7 +1113,8 @@ class CryptoKeyVersion(_messages.Message):
     RSA_DECRYPT_OAEP_4096_SHA512 = 13
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 16
+    EC_SIGN_SECP256K1_SHA256 = 16
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 17
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -1232,6 +1235,8 @@ class CryptoKeyVersionTemplate(_messages.Message):
         digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+      EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
+        curve is only supported for HSM protection level.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -1251,7 +1256,8 @@ class CryptoKeyVersionTemplate(_messages.Message):
     RSA_DECRYPT_OAEP_4096_SHA512 = 13
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 16
+    EC_SIGN_SECP256K1_SHA256 = 16
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 17
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -1606,6 +1612,8 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
         digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+      EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
+        curve is only supported for HSM protection level.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -1625,7 +1633,8 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     RSA_DECRYPT_OAEP_4096_SHA512 = 13
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 16
+    EC_SIGN_SECP256K1_SHA256 = 16
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 17
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   importJob = _messages.StringField(2)
@@ -2108,6 +2117,8 @@ class PublicKey(_messages.Message):
         digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+      EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
+        curve is only supported for HSM protection level.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -2127,7 +2138,8 @@ class PublicKey(_messages.Message):
     RSA_DECRYPT_OAEP_4096_SHA512 = 13
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 16
+    EC_SIGN_SECP256K1_SHA256 = 16
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 17
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.

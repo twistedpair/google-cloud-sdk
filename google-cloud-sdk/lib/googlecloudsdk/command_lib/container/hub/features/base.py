@@ -18,10 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import os
-
-from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.api_lib.container.hub import util
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
@@ -32,13 +30,27 @@ from googlecloudsdk.command_lib.container.hub.features import info
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import retry
 
 
 class FeatureCommand(hub_base.HubCommand):
   """FeatureCommand is a mixin adding common utils to the Feature commands."""
   feature_name = ''  # Derived commands should set this to their Feature.
+
+  # TODO(b/181242245): Remove this once all remaining features use v1alpha+.
+  @property
+  def v1alpha1_client(self):
+    """A raw v1alpha1 gkehub API client. PLEASE AVOID NEW USES!"""
+    # Build the client lazily, but only once.
+    if not hasattr(self, '_v1alpha1_client'):
+      self._v1alpha1_client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
+    return self._v1alpha1_client
+
+  # TODO(b/181242245): Remove this once all remaining features use v1alpha+.
+  @property
+  def v1alpha1_messages(self):
+    """The v1alpha1 gkehub messages module. PLEASE AVOID NEW USES!"""
+    return core_apis.GetMessagesModule('gkehub', 'v1alpha1')
 
   @property
   def feature(self):
@@ -55,9 +67,15 @@ class FeatureCommand(hub_base.HubCommand):
     return exceptions.Error('{} Feature for project [{}] is not enabled'.format(
         self.feature.display_name, project))
 
-  def GetFeature(self):
+  # TODO(b/181242245): Remove v1alpha1 once all remaining features use v1alpha+.
+  def GetFeature(self, v1alpha1=False):
     """Fetch this command's Feature from the API, handling common errors."""
     try:
+      if v1alpha1:
+        return self.v1alpha1_client.projects_locations_global_features.Get(
+            self.v1alpha1_messages
+            .GkehubProjectsLocationsGlobalFeaturesGetRequest(
+                name=self.FeatureResourceName()))
       return self.hubclient.GetFeature(self.FeatureResourceName())
     except apitools_exceptions.HttpNotFoundError:
       raise self.FeatureNotEnabledError()
@@ -66,18 +84,21 @@ class FeatureCommand(hub_base.HubCommand):
 class EnableCommand(FeatureCommand, base.CreateCommand):
   """Base class for the command that enables a Feature."""
 
-  def RunCommand(self, args, **kwargs):
+  def Run(self, args):
+    return self.Enable(self.messages.Feature())
+
+  def Enable(self, feature):
     project = properties.VALUES.core.project.GetOrFail()
     enable_api.EnableServiceIfDisabled(project, self.feature.api)
+    parent = util.LocationResourceName(project)
     try:
       # Retry if we still get "API not activated"; it can take a few minutes
       # for Chemist to catch up. See b/28800908.
       # TODO(b/177098463): Add a spinner here?
       retryer = retry.Retryer(max_retrials=4, exponential_sleep_multiplier=1.75)
-      return retryer.RetryOnException(
-          CreateFeature,
-          args=(project, self.feature_name, self.feature.display_name),
-          kwargs=kwargs,
+      op = retryer.RetryOnException(
+          self.hubclient.CreateFeature,
+          args=(parent, self.feature_name, feature),
           should_retry_if=self._FeatureAPINotEnabled,
           sleep_ms=1000)
     except retry.MaxRetrialsException:
@@ -89,8 +110,14 @@ class EnableCommand(FeatureCommand, base.CreateCommand):
       error = core_api_exceptions.HttpErrorPayload(e)
       if error.status_description != 'ALREADY_EXISTS':
         raise
+      # TODO(b/177098463): Decide if this should be a hard error if a spec was
+      # set, but not applied, because the Feature already existed.
       log.status.Print('{} Feature for project [{}] is already enabled'.format(
           self.feature.display_name, project))
+      return
+    msg = 'Waiting for Feature {} to be created'.format(
+        self.feature.display_name)
+    return self.WaitForHubOp(self.hubclient.feature_waiter, op=op, message=msg)
 
   def _FeatureAPINotEnabled(self, exc_type, exc_value, traceback, state):
     del traceback, state  # Unused
@@ -135,247 +162,56 @@ class DescribeCommand(FeatureCommand, base.DescribeCommand):
   """Base class for the command that describes the status of a Feature."""
 
   def Run(self, args):
-    project_id = properties.VALUES.core.project.GetOrFail()
-    name = 'projects/{0}/locations/global/features/{1}'.format(
-        project_id, self.feature_name)
-    return GetFeature(name)
+    return self.GetFeature()
 
 
 class UpdateCommand(FeatureCommand, base.UpdateCommand):
-  """Base class for the command that updates a Feature."""
+  """Base class for the command that updates a Feature.
 
-  def RunCommand(self, mask, **kwargs):
-    project = properties.VALUES.core.project.GetOrFail()
-    return UpdateFeature(project, self.feature_name, self.feature.display_name,
-                         mask, **kwargs)
-
-
-def CreateMultiClusterIngressFeatureSpec(config_membership):
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  messages = client.MESSAGES_MODULE
-  spec = messages.MultiClusterIngressFeatureSpec(
-      configMembership=config_membership)
-  return spec
-
-
-def CreateMultiClusterServiceDiscoveryFeatureSpec():
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  messages = client.MESSAGES_MODULE
-  return messages.MultiClusterServiceDiscoveryFeatureSpec()
-
-
-def CreateServiceDirectoryFeatureSpec():
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  messages = client.MESSAGES_MODULE
-  return messages.ServiceDirectoryFeatureSpec()
-
-
-def CreateConfigManagementFeatureSpec():
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  messages = client.MESSAGES_MODULE
-  empty_config_map = messages.ConfigManagementFeatureSpec.MembershipConfigsValue(
-      additionalProperties=[])
-  return messages.ConfigManagementFeatureSpec(
-      membershipConfigs=empty_config_map)
-
-
-def CreateIdentityServiceFeatureSpec():
-  """Creates an empty Hub Feature Spec for the Anthos Identity Service.
-
-  Returns:
-    The empty Anthos Identity Service Hub Feature Spec.
-  """
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  messages = client.MESSAGES_MODULE
-  return messages.IdentityServiceFeatureSpec()
-
-
-def CreateServiceMeshFeatureSpec():
-  """Creates an empty Hub Feature Spec for the Service Mesh Feature.
-
-  Returns:
-    The empty Service Mesh Hub Feature Spec.
-  """
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  messages = client.MESSAGES_MODULE
-  return messages.ServiceMeshFeatureSpec()
-
-
-def CreateAppDevExperienceFeatureSpec():
-  """Creates an empty Hub Feature Spec for the CloudRun Service.
-
-  Returns:
-    The empty CloudRun Hub Feature Spec.
-  """
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  messages = client.MESSAGES_MODULE
-  return messages.AppDevExperienceFeatureSpec()
-
-
-def CreateCloudBuildFeatureSpec():
-  """Creates an empty Hub Feature Spec for the Cloud Build Service.
-
-  Returns:
-    The empty Cloud Build Hub Feature Spec.
-  """
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  messages = client.MESSAGES_MODULE
-  empty_config_map = messages.CloudBuildFeatureSpec.MembershipConfigsValue(
-      additionalProperties=[])
-  return messages.CloudBuildFeatureSpec(membershipConfigs=empty_config_map)
-
-
-def CreateFeature(project, feature_id, feature_display_name, **kwargs):
-  """Creates a Feature resource in Hub.
-
-  Args:
-    project: the project in which to create the Feature
-    feature_id: the value to use for the feature_id
-    feature_display_name: the display name of this Feature
-    **kwargs: arguments for Feature object. For eg, multiclusterFeatureSpec
-
-  Returns:
-    the created Feature resource.
-
-  Raises:
-    - apitools.base.py.HttpError: if the request returns an HTTP error
-    - exceptions raised by waiter.WaitFor()
-  """
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  messages = client.MESSAGES_MODULE
-  request = messages.GkehubProjectsLocationsGlobalFeaturesCreateRequest(
-      feature=messages.Feature(**kwargs),
-      parent='projects/{}/locations/global'.format(project),
-      featureId=feature_id,
-  )
-
-  op = client.projects_locations_global_features.Create(request)
-  op_resource = resources.REGISTRY.ParseRelativeName(
-      op.name, collection='gkehub.projects.locations.operations')
-  result = waiter.WaitFor(
-      waiter.CloudOperationPoller(client.projects_locations_global_features,
-                                  client.projects_locations_operations),
-      op_resource,
-      'Waiting for Feature {} to be created'.format(feature_display_name))
-
-  # This allows us pass warning messages returned from OnePlatform backends.
-  request_type = client.projects_locations_operations.GetRequestType('Get')
-  op = client.projects_locations_operations.Get(
-      request_type(name=op_resource.RelativeName()))
-  metadata_dict = encoding.MessageToPyValue(op.metadata)
-  if 'statusDetail' in metadata_dict:
-    log.warning(metadata_dict['statusDetail'])
-
-  return result
-
-
-def GetFeature(name):
-  """Gets a Feature resource from Hub.
-
-  Args:
-    name: the full resource name of the Feature to get, e.g.,
-      projects/foo/locations/global/features/name.
-
-  Returns:
-    a Feature resource
-
-  Raises:
-    apitools.base.py.HttpError: if the request returns an HTTP error
+  Because Features updates are often bespoke actions, there is no default
+  `Run` override like some of the other classes.
   """
 
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  return client.projects_locations_global_features.Get(
-      client.MESSAGES_MODULE.GkehubProjectsLocationsGlobalFeaturesGetRequest(
-          name=name))
+  # TODO(b/181242245): Remove v1alpha1 helpers once all features use v1alpha+.
+  def Update(self, mask, patch, v1alpha1=False):
+    """Update provides common API, display, and error handling logic."""
+    update = self._PatchV1alpha1 if v1alpha1 else self.hubclient.UpdateFeature
+    poller = (
+        self._V1alpha1Waiter() if v1alpha1 else self.hubclient.feature_waiter)
+
+    try:
+      op = update(self.FeatureResourceName(), mask, patch)
+    except apitools_exceptions.HttpNotFoundError:
+      raise self.FeatureNotEnabledError()
+
+    msg = 'Waiting for Feature {} to be updated'.format(
+        self.feature.display_name)
+    # TODO(b/177098463): Update all downstream tests to handle warnings.
+    return self.WaitForHubOp(poller, op, message=msg, warnings=False)
+
+  def _V1alpha1Waiter(self):
+    return waiter.CloudOperationPoller(
+        self.v1alpha1_client.projects_locations_global_features,
+        self.v1alpha1_client.projects_locations_operations)
+
+  def _PatchV1alpha1(self, name, mask, patch):
+    req = self.v1alpha1_messages.GkehubProjectsLocationsGlobalFeaturesPatchRequest(
+        name=name,
+        updateMask=','.join(mask),
+        feature=patch,
+    )
+    return self.v1alpha1_client.projects_locations_global_features.Patch(req)
 
 
-def UpdateFeature(project, feature_id, feature_display_name, mask, **kwargs):
-  """Updates a Feature resource in Hub.
-
-  Args:
-    project: the project in which to update the Feature
-    feature_id: the value to use for the feature_id
-    feature_display_name: the display name of this Feature
-    mask: resource fields to be updated. For eg. multiclusterFeatureSpec
-    **kwargs: arguments for Feature object. For eg, multiclusterFeatureSpec
-
-  Returns:
-    the updated Feature resource.
-
-  Raises:
-    - apitools.base.py.HttpError: if the request returns an HTTP error
-    - exceptions raised by waiter.WaitFor()
-  """
-  client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-  messages = client.MESSAGES_MODULE
-  request = messages.GkehubProjectsLocationsGlobalFeaturesPatchRequest(
-      name='projects/{0}/locations/global/features/{1}'.format(
-          project, feature_id),
-      updateMask=mask,
-      feature=messages.Feature(**kwargs),
-  )
-  try:
-    op = client.projects_locations_global_features.Patch(request)
-  except apitools_exceptions.HttpUnauthorizedError as e:
-    raise exceptions.Error(
-        'You are not authorized to see the status of {} '
-        'feature from project [{}]. Underlying error: {}'.format(
-            feature_display_name, project, e))
-  except apitools_exceptions.HttpNotFoundError as e:
-    raise exceptions.Error('{} Feature for project [{}] is not enabled'.format(
-        feature_display_name, project))
-  op_resource = resources.REGISTRY.ParseRelativeName(
-      op.name, collection='gkehub.projects.locations.operations')
-  result = waiter.WaitFor(
-      waiter.CloudOperationPoller(client.projects_locations_global_features,
-                                  client.projects_locations_operations),
-      op_resource,
-      'Waiting for Feature {} to be updated'.format(feature_display_name))
-
-  return result
-
-
-def ListMemberships(project):
-  """Lists Membership IDs in Hub.
-
-  Args:
-    project: the project in which Membership resources exist.
+def ListMemberships():
+  """Lists Membership IDs in Hub for the current project.
 
   Returns:
-    a list of Membership resource IDs in Hub.
-
-  Raises:
-    apitools.base.py.HttpError: if the request returns an HTTP error
+    A list of Membership resource IDs in Hub.
   """
-  parent = 'projects/{}/locations/global'.format(project)
   client = core_apis.GetClientInstance('gkehub', 'v1beta1')
   response = client.projects_locations_memberships.List(
       client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
-          parent=parent))
+          parent=hub_base.HubCommand.LocationResourceName()))
 
-  return [
-      os.path.basename(membership.name) for membership in response.resources
-  ]
-
-
-def GetMembership(project, membership):
-  """Gets Membership ID from the Hub.
-
-  Args:
-    project: the project to search for the Membership ID
-    membership: the Membership ID to retrieve
-
-  Returns:
-    the corresponding Membership ID if it exists
-
-  Raises:
-    apitools.base.py.HttpError: if the request returns an HTTP error
-  """
-  name = 'projects/{}/locations/global/memberships/{}'.format(
-      project, membership)
-  client = core_apis.GetClientInstance('gkehub', 'v1beta1')
-  response = client.projects_locations_memberships.Get(
-      client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsGetRequest(
-          name=name))
-
-  return response.name
+  return [util.MembershipShortname(m.name) for m in response.resources]

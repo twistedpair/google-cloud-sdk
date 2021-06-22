@@ -173,6 +173,8 @@ class Batch(_messages.Message):
       1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
       be associated with a batch.
     name: Optional. The resource name of the batch.
+    operation: Optional. The resource name of the operation associated with
+      this batch.
     pysparkBatch: Optional. PySpark batch config.
     runtimeConfig: Optional. Runtime configuration for the batch execution.
     runtimeInfo: Output only. Runtime information about batch execution.
@@ -241,16 +243,17 @@ class Batch(_messages.Message):
   environmentConfig = _messages.MessageField('EnvironmentConfig', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  pysparkBatch = _messages.MessageField('PySparkBatch', 6)
-  runtimeConfig = _messages.MessageField('RuntimeConfig', 7)
-  runtimeInfo = _messages.MessageField('RuntimeInfo', 8)
-  sparkBatch = _messages.MessageField('SparkBatch', 9)
-  sparkRBatch = _messages.MessageField('SparkRBatch', 10)
-  sparkSqlBatch = _messages.MessageField('SparkSqlBatch', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  stateMessage = _messages.StringField(13)
-  stateTime = _messages.StringField(14)
-  uuid = _messages.StringField(15)
+  operation = _messages.StringField(6)
+  pysparkBatch = _messages.MessageField('PySparkBatch', 7)
+  runtimeConfig = _messages.MessageField('RuntimeConfig', 8)
+  runtimeInfo = _messages.MessageField('RuntimeInfo', 9)
+  sparkBatch = _messages.MessageField('SparkBatch', 10)
+  sparkRBatch = _messages.MessageField('SparkRBatch', 11)
+  sparkSqlBatch = _messages.MessageField('SparkSqlBatch', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  stateMessage = _messages.StringField(14)
+  stateTime = _messages.StringField(15)
+  uuid = _messages.StringField(16)
 
 
 class BatchOperationMetadata(_messages.Message):

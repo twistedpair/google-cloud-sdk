@@ -54,7 +54,7 @@ SUBPROTOCOL_TAG_ACK = 0x0007
 IapTunnelTargetInfo = collections.namedtuple(
     'IapTunnelTarget',
     ['project', 'zone', 'instance', 'interface', 'port', 'url_override',
-     'proxy_info'])
+     'proxy_info', 'network', 'region', 'ip'])
 
 
 class CACertsFileUnavailable(exceptions.Error):
@@ -73,6 +73,10 @@ class MissingTunnelParameter(exceptions.Error):
   pass
 
 
+class UnexpectedTunnelParameter(exceptions.Error):
+  pass
+
+
 class PythonVersionMissingSNI(exceptions.Error):
   pass
 
@@ -82,10 +86,39 @@ class UnsupportedProxyType(exceptions.Error):
 
 
 def ValidateParameters(tunnel_target):
+  """Validate the parameters.
+
+  Inspects the parameters to ensure that they are valid for either a VM
+  instance-based connection, or an IP-based connection.
+
+  Args:
+    tunnel_target: The argument container.
+
+  Raises:
+    MissingTunnelParameter: A required argument is missing.
+    UnexpectedTunnelParameter: An unexpected argument was found.
+    UnsupportedProxyType: A non-http proxy was specified.
+  """
   for field_name, field_value in tunnel_target._asdict().items():
-    if not field_value and field_name not in ('url_override', 'proxy_info'):
+    if not field_value and field_name in ('project', 'port'):
       raise MissingTunnelParameter('Missing required tunnel argument: ' +
                                    field_name)
+
+  if tunnel_target.region or tunnel_target.network or tunnel_target.ip:
+    for field_name, field_value in tunnel_target._asdict().items():
+      if not field_value and field_name in ('region', 'network', 'ip'):
+        raise MissingTunnelParameter('Missing required tunnel argument: ' +
+                                     field_name)
+      # TODO(b/190426150): Add zone to the list of params to reject for on-prem.
+      if field_value and field_name in ('instance', 'interface'):
+        raise UnexpectedTunnelParameter('Unexpected tunnel argument: ' +
+                                        field_name)
+  else:
+    for field_name, field_value in tunnel_target._asdict().items():
+      if not field_value and field_name in ('zone', 'instance', 'interface'):
+        raise MissingTunnelParameter('Missing required tunnel argument: ' +
+                                     field_name)
+
   if tunnel_target.proxy_info:
     proxy_type = tunnel_target.proxy_info.proxy_type
     if (proxy_type and proxy_type != socks.PROXY_TYPE_HTTP):
@@ -124,21 +157,34 @@ def CheckPythonVersion(ignore_certs):
 
 def CreateWebSocketConnectUrl(tunnel_target):
   """Create Connect URL for WebSocket connection."""
-  return _CreateWebSocketUrl(CONNECT_ENDPOINT,
-                             {'project': tunnel_target.project,
-                              'zone': tunnel_target.zone,
-                              'instance': tunnel_target.instance,
-                              'interface': tunnel_target.interface,
-                              'port': tunnel_target.port},
-                             tunnel_target.url_override)
+  if tunnel_target.ip:
+    return _CreateWebSocketUrl(CONNECT_ENDPOINT,
+                               {'project': tunnel_target.project,
+                                # TODO(b/190426150): Remove zone
+                                'zone': tunnel_target.zone,
+                                'region': tunnel_target.region,
+                                'network': tunnel_target.network,
+                                'ip': tunnel_target.ip,
+                                'port': tunnel_target.port},
+                               tunnel_target.url_override)
+  else:
+    return _CreateWebSocketUrl(CONNECT_ENDPOINT,
+                               {'project': tunnel_target.project,
+                                'zone': tunnel_target.zone,
+                                'instance': tunnel_target.instance,
+                                'interface': tunnel_target.interface,
+                                'port': tunnel_target.port},
+                               tunnel_target.url_override)
 
 
 def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes):
   """Create Reconnect URL for WebSocket connection."""
-  return _CreateWebSocketUrl(RECONNECT_ENDPOINT,
-                             {'sid': sid,
-                              'ack': ack_bytes,
-                              'zone': tunnel_target.zone},
+  # TODO(b/190426150): Only include zone for non-IP connections
+  url_query_pieces = {'sid': sid, 'ack': ack_bytes, 'zone': tunnel_target.zone}
+  if tunnel_target.ip:
+    url_query_pieces['region'] = tunnel_target.region
+
+  return _CreateWebSocketUrl(RECONNECT_ENDPOINT, url_query_pieces,
                              tunnel_target.url_override)
 
 

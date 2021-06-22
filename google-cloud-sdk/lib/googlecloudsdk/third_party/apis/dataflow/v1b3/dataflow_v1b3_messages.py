@@ -4884,7 +4884,7 @@ class SdkVersion(_messages.Message):
       STALE: A newer version of the SDK family exists, and an update is
         recommended.
       DEPRECATED: This version of the SDK is deprecated and will eventually be
-        no longer supported.
+        unsupported.
       UNSUPPORTED: Support for this SDK version has ended and it should no
         longer be used.
     """

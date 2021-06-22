@@ -25,6 +25,7 @@ from __future__ import unicode_literals
 
 import copy
 import os
+import textwrap
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -49,12 +50,23 @@ _NO_HASH_CHECK_ERROR = """
 google-crc32c not installed, so hashing will be slow. Install google-crc32c or
 change the "storage/check_hashes" config setting.
 """
-_HASH_CHECK_WARNING_BASE = """
-This download {} since the google-crc32c
-binary is not installed, and Python hash computation will likely
-throttle performance. You can change this by installing the binary or
-modifying the "storage/check_hashes" config setting.
-"""
+
+
+def _get_hash_check_warning_base():
+  # Create the text in a function so that we can test it easily.
+  google_crc32c_install_steps = hash_util.get_google_crc32c_install_command()
+  return textwrap.dedent(
+      """\
+      This download {{}} since the google-crc32c
+      binary is not installed, and Python hash computation will likely
+      throttle performance. You can change this by installing the binary
+      {crc32c_steps}or
+      modifying the "storage/check_hashes config setting.""".format(
+          crc32c_steps='by running "{}" '.format(google_crc32c_install_steps)
+          if google_crc32c_install_steps else ''))
+
+
+_HASH_CHECK_WARNING_BASE = _get_hash_check_warning_base()
 _NO_HASH_CHECK_WARNING = _HASH_CHECK_WARNING_BASE.format(
     'will not be validated')
 _SLOW_HASH_CHECK_WARNING = _HASH_CHECK_WARNING_BASE.format('may be slow')
