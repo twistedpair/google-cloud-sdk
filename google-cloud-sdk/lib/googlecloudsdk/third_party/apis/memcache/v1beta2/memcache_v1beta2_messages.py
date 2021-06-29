@@ -550,11 +550,14 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
     location: The location of the node, if different from instance location.
     nodeId: The id of the node. This should be equal to
       SaasInstanceNode.node_id.
+    perSliEligibility: If present, this will override eligibility for the node
+      coming from instance or exclusions for specified SLIs.
   """
 
   exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 1, repeated=True)
   location = _messages.StringField(2)
   nodeId = _messages.StringField(3)
+  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 4)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility(_messages.Message):

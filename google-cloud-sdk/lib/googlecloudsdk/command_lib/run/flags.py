@@ -89,8 +89,6 @@ _SANDBOX_CHOICES = {
 
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
 
-_FIFTEEN_MINUTES = 15 * 60
-
 
 def _StripKeys(d):
   return {k.strip(): v for k, v in d.items()}
@@ -836,11 +834,18 @@ def AddClientNameAndVersionFlags(parser):
       'current gcloud version if this and --client-name are both unspecified.')
 
 
-def AddCmekKeyFlag(parser):
+def AddCmekKeyFlag(parser, with_clear=True):
   """Add CMEK key flag."""
-  parser.add_argument(
-      '--key',
-      help=('KMS key reference to encrypt the container with.'))
+  policy_group = parser
+  if with_clear:
+    policy_group = parser.add_mutually_exclusive_group()
+    policy_group.add_argument(
+        '--clear-key',
+        default=False,
+        action='store_true',
+        help='Remove any previously set CMEK key reference.')
+  policy_group.add_argument(
+      '--key', help=('CMEK key reference to encrypt the container with.'))
 
 
 def _PortValue(value):
@@ -1309,6 +1314,13 @@ def _GetConfigurationChanges(args):
     changes.append(
         config_changes.SetTemplateAnnotationChange(
             container_resource.CMEK_KEY_ANNOTATION, args.key))
+  if FlagIsExplicitlySet(args, 'clear_key'):
+    changes.append(
+        config_changes.DeleteTemplateAnnotationChange(
+            container_resource.CMEK_KEY_ANNOTATION))
+    changes.append(
+        config_changes.DeleteTemplateAnnotationChange(
+            container_resource.POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION))
   return changes
 
 
@@ -1610,13 +1622,6 @@ def VerifyManagedFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_KUBERNETES]))
 
-  if (FlagIsExplicitlySet(args, 'timeout') and
-      release_track == base.ReleaseTrack.GA):
-    if args.timeout > _FIFTEEN_MINUTES:
-      raise serverless_exceptions.ConfigurationError(
-          'Timeout duration must be less than 15m. Timeouts above 15m are in '
-          'Beta. Use "gcloud beta run ..." to set timeouts above 15m.')
-
   if FlagIsExplicitlySet(args, 'trigger_filters'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1715,6 +1720,14 @@ def VerifyGKEFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--key',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'clear_key'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-key',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
@@ -1828,6 +1841,14 @@ def VerifyKubernetesFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'clear_key'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-key',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'cluster'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1900,3 +1921,23 @@ def AddSourceAndImageFlags(parser):
       '`.gitignore` is not respected. For more information on `.gcloudignore`, '
       'see `gcloud topic gcloudignore`.',
   )
+
+
+def PromptForDefaultSource():
+  """Prompt for source code location when image flag is not set.
+
+  Returns:
+    The source code location
+  """
+  if console_io.CanPrompt():
+    pretty_print.Info(
+        'Deploying from source. To deploy a container use [--image]. '
+        'See https://cloud.google.com/run/docs/deploying-source-code '
+        'for more details.')
+    cwd = files.GetCWD()
+    source = console_io.PromptWithDefault(
+        message='Source code location', default=cwd)
+
+    log.status.Print('Next time, use "gcloud run deploy --source ." '
+                     'to deploy the current directory.\n')
+    return source

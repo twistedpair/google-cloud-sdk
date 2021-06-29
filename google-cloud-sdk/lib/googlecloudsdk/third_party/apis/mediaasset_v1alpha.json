@@ -603,7 +603,7 @@
           "$ref": "SortOrderConfig"
         },
         "annotationSetConfigs": {
-          "description": "Mapping of annotationSet name to its configuration.",
+          "description": "Mapping of annotationSet ID to its configuration. The annotationSet ID will be used as the resource ID when GCMA creates the AnnotationSet internally. Detailed rules for a resource id are: 1. 1 character minimum, 63 characters maximum 2. only contains letters, digits, underscore and hyphen 3. starts with a letter if length == 1, starts with a letter or underscore if length > 1",
           "type": "object",
           "additionalProperties": {
             "$ref": "AnnotationSetConfig"
@@ -2933,93 +2933,6 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Updates the parameters of a single annotationSet."
-                        },
-                        "setIamPolicy": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.setIamPolicy",
-                          "path": "v1alpha/{+resource}:setIamPolicy",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}:setIamPolicy",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "resource"
-                          ],
-                          "request": {
-                            "$ref": "GoogleIamV1SetIamPolicyRequest"
-                          },
-                          "response": {
-                            "$ref": "GoogleIamV1Policy"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                        },
-                        "getIamPolicy": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.getIamPolicy",
-                          "path": "v1alpha/{+resource}:getIamPolicy",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}:getIamPolicy",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "options.requestedPolicyVersion": {
-                              "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                              "location": "query",
-                              "type": "integer",
-                              "format": "int32"
-                            }
-                          },
-                          "parameterOrder": [
-                            "resource"
-                          ],
-                          "response": {
-                            "$ref": "GoogleIamV1Policy"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                        },
-                        "testIamPermissions": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.testIamPermissions",
-                          "path": "v1alpha/{+resource}:testIamPermissions",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}:testIamPermissions",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "resource"
-                          ],
-                          "request": {
-                            "$ref": "GoogleIamV1TestIamPermissionsRequest"
-                          },
-                          "response": {
-                            "$ref": "GoogleIamV1TestIamPermissionsResponse"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                         }
                       }
                       ,
@@ -3193,93 +3106,6 @@
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
                               "description": "Updates the parameters of a single annotation."
-                            },
-                            "setIamPolicy": {
-                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.setIamPolicy",
-                              "path": "v1alpha/{+resource}:setIamPolicy",
-                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}:setIamPolicy",
-                              "httpMethod": "POST",
-                              "parameters": {
-                                "resource": {
-                                  "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
-                                  "location": "path",
-                                  "required": true,
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "resource"
-                              ],
-                              "request": {
-                                "$ref": "GoogleIamV1SetIamPolicyRequest"
-                              },
-                              "response": {
-                                "$ref": "GoogleIamV1Policy"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                            },
-                            "getIamPolicy": {
-                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.getIamPolicy",
-                              "path": "v1alpha/{+resource}:getIamPolicy",
-                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}:getIamPolicy",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "resource": {
-                                  "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
-                                  "location": "path",
-                                  "required": true,
-                                  "type": "string"
-                                },
-                                "options.requestedPolicyVersion": {
-                                  "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                                  "location": "query",
-                                  "type": "integer",
-                                  "format": "int32"
-                                }
-                              },
-                              "parameterOrder": [
-                                "resource"
-                              ],
-                              "response": {
-                                "$ref": "GoogleIamV1Policy"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                            },
-                            "testIamPermissions": {
-                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.testIamPermissions",
-                              "path": "v1alpha/{+resource}:testIamPermissions",
-                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}:testIamPermissions",
-                              "httpMethod": "POST",
-                              "parameters": {
-                                "resource": {
-                                  "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
-                                  "location": "path",
-                                  "required": true,
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "resource"
-                              ],
-                              "request": {
-                                "$ref": "GoogleIamV1TestIamPermissionsRequest"
-                              },
-                              "response": {
-                                "$ref": "GoogleIamV1TestIamPermissionsResponse"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                             }
                           }
                         }

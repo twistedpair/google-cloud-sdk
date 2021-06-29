@@ -31,7 +31,12 @@ _LAST_TARGET_IN_SEQUENCE = (
     '({}) in the promotion sequence.\n- Release: {}\n- Target: {}\n')
 
 
-def Promote(release_ref, release_obj, to_target, rollout_id=None):
+def Promote(release_ref,
+            release_obj,
+            to_target,
+            rollout_id=None,
+            annotations=None,
+            labels=None):
   """Calls promote API and waits for the operation to finish.
 
   Args:
@@ -40,8 +45,15 @@ def Promote(release_ref, release_obj, to_target, rollout_id=None):
       object.
     to_target: str, the target to promote the release to.
     rollout_id: str, ID to assign to the generated rollout.
+    annotations: dict[str,str], a dict of annotation (key,value) pairs that
+      allow clients to store small amounts of arbitrary data in cloud deploy
+      resources.
+    labels: dict[str,str], a dict of label (key,value) pairs that can be used to
+      select cloud deploy resources and to find collections of cloud deploy
+      resources that satisfy certain conditions.
   """
-  resp = release.ReleaseClient().Promote(release_ref, to_target, rollout_id)
+  resp = release.ReleaseClient().Promote(release_ref, to_target, rollout_id,
+                                         annotations, labels)
   if resp:
     target_id = target_util.TargetId(resp.target)
     output = 'Created Cloud Deploy rollout {} in target {}. '.format(

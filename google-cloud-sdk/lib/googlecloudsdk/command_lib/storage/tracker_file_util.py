@@ -545,8 +545,8 @@ def read_or_create_download_tracker_file(source_object_resource,
           does_tracker_file_match = True
 
     if does_tracker_file_match:
-      log.debug('Found tracker file for download {}.'.format(
-          download_name_for_logger))
+      log.status.Print(
+          'Resuming download for {}.'.format(download_name_for_logger))
       return tracker_file_path, True
 
   except files.MissingFileError:

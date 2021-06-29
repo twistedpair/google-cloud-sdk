@@ -4345,10 +4345,10 @@ class GoogleCloudDialogflowCxV3Intent(_messages.Message):
       lowercase letters, digits and the symbols '-' and '_'. International
       characters are allowed, including letters from unicase alphabets. Keys
       must start with a letter. Keys and values can be no longer than 63
-      characters and no more than 128 bytes. Prefix "sys." is reserved for
+      characters and no more than 128 bytes. Prefix "sys-" is reserved for
       Dialogflow defined labels. Currently allowed Dialogflow defined labels
-      include: * sys.head * sys.contextual The above labels do not require
-      value. "sys.head" means the intent is a head intent. "sys.contextual"
+      include: * sys-head * sys-contextual The above labels do not require
+      value. "sys-head" means the intent is a head intent. "sys.contextual"
       means the intent is a contextual intent.
 
   Fields:
@@ -4367,10 +4367,10 @@ class GoogleCloudDialogflowCxV3Intent(_messages.Message):
       lowercase letters, digits and the symbols '-' and '_'. International
       characters are allowed, including letters from unicase alphabets. Keys
       must start with a letter. Keys and values can be no longer than 63
-      characters and no more than 128 bytes. Prefix "sys." is reserved for
+      characters and no more than 128 bytes. Prefix "sys-" is reserved for
       Dialogflow defined labels. Currently allowed Dialogflow defined labels
-      include: * sys.head * sys.contextual The above labels do not require
-      value. "sys.head" means the intent is a head intent. "sys.contextual"
+      include: * sys-head * sys-contextual The above labels do not require
+      value. "sys-head" means the intent is a head intent. "sys.contextual"
       means the intent is a contextual intent.
     name: The unique identifier of the intent. Required for the
       Intents.UpdateIntent method. Intents.CreateIntent populates the name
@@ -4391,10 +4391,10 @@ class GoogleCloudDialogflowCxV3Intent(_messages.Message):
     lowercase letters, digits and the symbols '-' and '_'. International
     characters are allowed, including letters from unicase alphabets. Keys
     must start with a letter. Keys and values can be no longer than 63
-    characters and no more than 128 bytes. Prefix "sys." is reserved for
+    characters and no more than 128 bytes. Prefix "sys-" is reserved for
     Dialogflow defined labels. Currently allowed Dialogflow defined labels
-    include: * sys.head * sys.contextual The above labels do not require
-    value. "sys.head" means the intent is a head intent. "sys.contextual"
+    include: * sys-head * sys-contextual The above labels do not require
+    value. "sys-head" means the intent is a head intent. "sys.contextual"
     means the intent is a contextual intent.
 
     Messages:
@@ -8597,7 +8597,7 @@ class GoogleCloudDialogflowV2Environment(_messages.Message):
       field is read-only, i.e., it cannot be set by create and update methods.
 
   Fields:
-    agentVersion: Optional. The agent version loaded into this environment.
+    agentVersion: Required. The agent version loaded into this environment.
       Supported formats: - `projects//agent/versions/` -
       `projects//locations//agent/versions/`
     description: Optional. The developer-provided description for this

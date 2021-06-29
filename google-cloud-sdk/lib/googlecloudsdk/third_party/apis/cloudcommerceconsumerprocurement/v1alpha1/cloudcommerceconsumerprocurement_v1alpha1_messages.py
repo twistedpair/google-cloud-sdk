@@ -1001,7 +1001,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
   Enums:
     ChangeStateValueValuesEnum: Output only. State of the change.
     ChangeStateReasonTypeValueValuesEnum: Output only. Predefined enum types
-      for why this line item change is in current type. For example,
+      for why this line item change is in current state. For example,
       cancellation line item change could be completed because of expired at
       the end of term, user explicit immediate cancellation or system
       triggered cancellation.
@@ -1014,9 +1014,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
       operation have the same change_id.
     changeState: Output only. State of the change.
     changeStateReasonType: Output only. Predefined enum types for why this
-      line item change is in current type. For example, cancellation line item
-      change could be completed because of expired at the end of term, user
-      explicit immediate cancellation or system triggered cancellation.
+      line item change is in current state. For example, cancellation line
+      item change could be completed because of expired at the end of term,
+      user explicit immediate cancellation or system triggered cancellation.
     changeType: Required. Type of the change to make.
     createTime: Output only. The time when change was initiated.
     newLineItemInfo: Line item info after the change.
@@ -1032,7 +1032,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
 
   class ChangeStateReasonTypeValueValuesEnum(_messages.Enum):
     r"""Output only. Predefined enum types for why this line item change is in
-    current type. For example, cancellation line item change could be
+    current state. For example, cancellation line item change could be
     completed because of expired at the end of term, user explicit immediate
     cancellation or system triggered cancellation.
 

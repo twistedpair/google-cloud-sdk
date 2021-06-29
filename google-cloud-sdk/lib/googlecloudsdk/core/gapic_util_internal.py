@@ -25,12 +25,14 @@ import time
 from google.api_core import bidi
 import google.api_core.gapic_v1.client_info
 from googlecloudsdk.api_lib.util import api_enablement
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import transport
+from googlecloudsdk.core import transport as core_transport
+from googlecloudsdk.core.credentials import transport
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_proxy_types
@@ -107,7 +109,7 @@ class ClientCallDetailsInterceptor(grpc.UnaryUnaryClientInterceptor,
                                request_iterator)
 
 
-def ShouldRecover():
+def ShouldRecoverFromAPIEnablement():
   """Returns a callback for checking API enablement errors."""
   state = {'already_prompted_to_enable': False,
            'api_enabled': False}
@@ -126,24 +128,6 @@ def ShouldRecover():
         return True
     return False
   return _ShouldRecover
-
-
-class BidiRpc(bidi.ResumableBidiRpc):
-  """Bidi implementation to be used throughout codebase."""
-
-  def __init__(self, start_rpc):
-    """Initializes a BidiRpc instances.
-
-    Args:
-        start_rpc (grpc.StreamStreamMultiCallable): The gRPC method used to
-            start the RPC.
-    """
-    client_info = google.api_core.gapic_v1.client_info.ClientInfo(
-        user_agent=transport.MakeUserAgentString())
-    super(BidiRpc, self).__init__(
-        start_rpc,
-        should_recover=ShouldRecover(),
-        metadata=[client_info.to_grpc_metadata()])
 
 
 class APIEnablementInterceptor(grpc.UnaryUnaryClientInterceptor,
@@ -182,6 +166,98 @@ class APIEnablementInterceptor(grpc.UnaryUnaryClientInterceptor,
     """Intercepts a stream-unary invocation asynchronously."""
     return self.intercept_call(continuation, client_call_details,
                                request_iterator)
+
+
+def ShouldRecoverFromQuotaProject(credentials):
+  """Returns a callback for handling Quota Project fallback."""
+  if not base.UserProjectQuotaWithFallbackEnabled():
+    return lambda _: False
+
+  def _ShouldRecover(response):
+    # pylint: disable=protected-access
+    if response.code() != grpc.StatusCode.PERMISSION_DENIED:
+      return False
+
+    if transport.USER_PROJECT_OVERRIDE_ERR_MSG not in response.details():
+      return False
+
+    credentials._quota_project_id = None
+    return True
+
+  return _ShouldRecover
+
+
+class QuotaProjectInterceptor(grpc.UnaryUnaryClientInterceptor,
+                              grpc.StreamUnaryClientInterceptor):
+  """API Enablement Interceptor for prompting to enable APIs."""
+
+  def __init__(self, credentials):
+    self.credentials = credentials
+
+  def intercept_call(self, continuation, client_call_details, request):
+    response = continuation(client_call_details, request)
+    if response.code() != grpc.StatusCode.PERMISSION_DENIED:
+      return response
+
+    if transport.USER_PROJECT_OVERRIDE_ERR_MSG not in response.details():
+      return response
+
+    # pylint: disable=protected-access
+    quota_project = self.credentials._quota_project_id
+    if quota_project:
+      self.credentials._quota_project_id = None
+      new_response = continuation(client_call_details, request)
+      self.credentials._quota_project_id = quota_project
+      return new_response
+
+    return response
+
+  def intercept_unary_unary(self, continuation, client_call_details, request):
+    """Intercepts a unary-unary invocation asynchronously."""
+    return self.intercept_call(continuation, client_call_details, request)
+
+  def intercept_stream_unary(self, continuation, client_call_details,
+                             request_iterator):
+    """Intercepts a stream-unary invocation asynchronously."""
+    return self.intercept_call(continuation, client_call_details,
+                               request_iterator)
+
+
+def ShouldRecover(credentials):
+  """Returns a `should_recover` callable."""
+  recovery_methods = [
+      ShouldRecoverFromAPIEnablement(),
+      ShouldRecoverFromQuotaProject(credentials)
+  ]
+  def _ShouldRecover(future):
+    for method in recovery_methods:
+      if method(future):
+        return True
+    return False
+  return _ShouldRecover
+
+
+class BidiRpc(bidi.ResumableBidiRpc):
+  """Bidi implementation to be used throughout codebase."""
+
+  def __init__(self, client, start_rpc, initial_request=None):
+    """Initializes a BidiRpc instances.
+
+    Args:
+        client: GAPIC Wrapper client to use.
+        start_rpc (grpc.StreamStreamMultiCallable): The gRPC method used to
+            start the RPC.
+        initial_request: The initial request to
+            yield. This is useful if an initial request is needed to start the
+            stream.
+    """
+    client_info = google.api_core.gapic_v1.client_info.ClientInfo(
+        user_agent=core_transport.MakeUserAgentString())
+    super(BidiRpc, self).__init__(
+        start_rpc,
+        initial_request=initial_request,
+        should_recover=ShouldRecover(client.credentials),
+        metadata=[client_info.to_grpc_metadata()])
 
 
 class _ClientCallDetails(
@@ -635,8 +711,22 @@ def MakeChannelOptions():
   return options.items()
 
 
-def MakeTransport(transport_class, address, credentials, mtls_enabled=False):
+def _GetAddress(client_class, address_override_func, mtls_enabled):
+  if mtls_enabled:
+    return client_class.DEFAULT_MTLS_ENDPOINT
+
+  address = client_class.DEFAULT_ENDPOINT
+  if address_override_func:
+    address = address_override_func(address)
+  return address
+
+
+def MakeTransport(client_class, credentials, address_override_func,
+                  mtls_enabled=False):
   """Instantiates a grpc transport."""
+  transport_class = client_class.get_transport_class()
+  address = _GetAddress(client_class, address_override_func, mtls_enabled)
+
   channel = transport_class.create_channel(
       host=address,
       credentials=credentials,
@@ -645,15 +735,37 @@ def MakeTransport(transport_class, address, credentials, mtls_enabled=False):
 
   interceptors = []
   interceptors.append(RequestReasonInterceptor())
+  interceptors.append(TimeoutInterceptor())
   interceptors.append(IAMAuthHeadersInterceptor())
   interceptors.append(RPCDurationReporterInterceptor())
+  interceptors.append(QuotaProjectInterceptor(credentials))
+  interceptors.append(APIEnablementInterceptor())
   if properties.VALUES.core.log_http.GetBool():
     interceptors.append(LoggingInterceptor(credentials))
-  interceptors.append(APIEnablementInterceptor())
 
   channel = grpc.intercept_channel(channel, *interceptors)
   return transport_class(
       channel=channel,
       host=address,
       client_info=google.api_core.gapic_v1.client_info.ClientInfo(
-          user_agent=transport.MakeUserAgentString()))
+          user_agent=core_transport.MakeUserAgentString()))
+
+
+def MakeAsyncTransport(client_class, credentials, address_override_func,
+                       mtls_enabled=False):
+  """Instantiates a grpc transport."""
+  transport_class = client_class.get_transport_class('grpc_asyncio')
+  address = _GetAddress(client_class, address_override_func, mtls_enabled)
+
+  channel = transport_class.create_channel(
+      host=address,
+      credentials=credentials,
+      ssl_credentials=GetSSLCredentials(mtls_enabled),
+      options=MakeChannelOptions())
+
+  return transport_class(
+      channel=channel,
+      host=address,
+      client_info=google.api_core.gapic_v1.client_info.ClientInfo(
+          user_agent=core_transport.MakeUserAgentString()))
+

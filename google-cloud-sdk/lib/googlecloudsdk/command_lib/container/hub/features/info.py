@@ -43,6 +43,11 @@ _INFO = {
             api='appdevelopmentexperience.googleapis.com',
             cmd_group='cloudrun',
         ),
+    'authorizer':
+        Info(
+            display_name='Authorizer',
+            api='gkehub.googleapis.com',
+        ),
     'cloudbuild':
         Info(
             display_name='Cloud Build',
@@ -74,7 +79,7 @@ _INFO = {
         ),
     'multiclusterservicediscovery':
         Info(
-            display_name='Multi Cluster Services',
+            display_name='Multi-cluster Services',
             api='multiclusterservicediscovery.googleapis.com',
             cmd_group='multi-cluster-services',
         ),

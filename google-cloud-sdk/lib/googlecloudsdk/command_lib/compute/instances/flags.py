@@ -865,11 +865,15 @@ def AddCustomMachineTypeArgs(parser):
   custom_group = parser.add_group(help='Custom machine type extensions.')
   custom_group.add_argument(
       '--custom-cpu',
-      type=int,
+      type=NonEmptyString('--custom-cpu'),
       required=True,
       help="""\
-      A whole number value indicating how many cores are desired in the custom
-      machine type.
+      A whole number value specifying the number of cores that are needed in
+      the custom machine type.
+
+      For some machine types, shared-core values can also be used. For
+      example, for E2 machine types, you can specify `micro`, `small`, or
+      `medium`.
       """)
   custom_group.add_argument(
       '--custom-memory',
@@ -1485,18 +1489,18 @@ def AddNetworkArgs(parser):
   parser.add_argument(
       '--network',
       help="""\
-      Specifies the network that the instances will be part of. If --subnet is
-      also specified subnet must be a subnetwork of network specified by
-      --network. If neither is specified, this defaults to the "default"
-      network.
+      Specifies the network that the VM instances are a part of. If `--subnet`
+      is also specified, subnet must be a subnetwork of the network specified by
+      this `--network` flag. If neither is specified, the default network is
+      used.
       """)
 
   parser.add_argument(
       '--subnet',
       help="""\
-      Specifies the subnet that the instances will be part of. If --network is
-      also specified subnet must be a subnetwork of network specified by
-      --network.
+      Specifies the subnet that the VM instances are a part of. If `--network`
+      is also specified, subnet must be a subnetwork of the network specified by
+      the `--network` flag.
       """)
 
 

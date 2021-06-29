@@ -73,3 +73,25 @@ def GetStartDeployMessage(conn_context,
       ns_label=conn_context.ns_label,
       resource=resource_ref.Name(),
       ns=resource_ref.Parent().Name())
+
+
+def GetBuildEquivalentForSourceRunMessage(serv, pack, source):
+  """Returns a user message for equivalent gcloud commands for source deploy.
+
+  Args:
+    serv: name of the service
+    pack: the pack arguments used to build the service image
+    source: the location of the source
+  """
+  build_flag = ''
+  if pack:
+    build_flag = '--pack image=[IMAGE]'
+  else:
+    build_flag = '--tag [IMAGE]'
+  msg = ('This command is equivalent to running '
+         '"gcloud builds submit {build_flag} {source}" and '
+         '"gcloud run deploy {serv} --image [IMAGE]"\n')
+  return msg.format(
+      serv=serv,
+      build_flag=build_flag,
+      source=source)

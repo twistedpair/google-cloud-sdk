@@ -133,19 +133,20 @@ def _PrepareTrainingImage(project,
   """Build a training image from local package and push it to Cloud for later usage."""
   output_image = docker_utils.GenerateImageName(
       base_name=job_name, project=project, is_gcr=True)
+
   docker_build.BuildImage(
       base_image=base_image,
       host_workdir=files.ExpandHomeDir(local_package),
       main_script=script,
       python_module=python_module,
       output_image_name=output_image)
-  log.status.Print(
-      'A custom container image [{}] is built for custom job "{}".'.format(
-          output_image, job_name))
+  log.status.Print('\nA custom container image is built locally.\n')
 
   push_command = ['docker', 'push', output_image]
   docker_utils.ExecuteDockerCommand(push_command)
-  log.status.Print('The image is pushed and ready for the custom job.')
+  log.status.Print(
+      '\nCustom container image [{}] is created for your custom job.\n'.format(
+          output_image))
 
   return output_image
 

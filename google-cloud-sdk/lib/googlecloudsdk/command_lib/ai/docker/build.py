@@ -276,10 +276,12 @@ def BuildImage(base_image,
   command = ["docker", "build"
             ] + cache_args + tag_options + ["--rm", "-f-", host_workdir]
 
-  setup_path = _DEFAULT_SETUP_PATH if os.path.exists(
-      _DEFAULT_SETUP_PATH) else None
-  requirments_path = _DEFAULT_REQUIREMENTS_PATH if os.path.exists(
-      _DEFAULT_REQUIREMENTS_PATH) else None
+  has_setup_py = os.path.isfile(os.path.join(host_workdir, _DEFAULT_SETUP_PATH))
+  setup_path = _DEFAULT_SETUP_PATH if has_setup_py else None
+
+  has_requirements_txt = os.path.isfile(
+      os.path.join(host_workdir, _DEFAULT_REQUIREMENTS_PATH))
+  requirements_path = _DEFAULT_REQUIREMENTS_PATH if has_requirements_txt else None
 
   home_dir = container_home or _DEFAULT_HOME
   work_dir = container_workdir or _DEFAULT_WORKDIR
@@ -295,7 +297,7 @@ def BuildImage(base_image,
       main_package=main_package,
       container_home=home_dir,
       container_workdir=work_dir,
-      requirements_path=requirments_path,
+      requirements_path=requirements_path,
       setup_path=setup_path,
       extra_requirements=requirements,
       extra_packages=extra_packages,

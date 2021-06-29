@@ -33,10 +33,8 @@ class BatchTranslateTextRequest(_messages.Message):
       on model type: - AutoML Translation models: `projects/{project-number-
       or-id}/locations/{location-id}/models/{model-id}` - General (built-in)
       models: `projects/{project-number-or-id}/locations/{location-
-      id}/models/general/nmt`, `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/base` If the map is empty or
-      a specific model is not requested for a language pair, then default
-      google model (nmt) is used.
+      id}/models/general/nmt`, If the map is empty or a specific model is not
+      requested for a language pair, then default google model (nmt) is used.
 
   Fields:
     glossaries: Optional. Glossaries to be applied for translation. It's keyed
@@ -57,10 +55,8 @@ class BatchTranslateTextRequest(_messages.Message):
       on model type: - AutoML Translation models: `projects/{project-number-
       or-id}/locations/{location-id}/models/{model-id}` - General (built-in)
       models: `projects/{project-number-or-id}/locations/{location-
-      id}/models/general/nmt`, `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/base` If the map is empty or
-      a specific model is not requested for a language pair, then default
-      google model (nmt) is used.
+      id}/models/general/nmt`, If the map is empty or a specific model is not
+      requested for a language pair, then default google model (nmt) is used.
     outputConfig: Required. Output configuration. If 2 input configs match to
       the same file (that is, same input path), we don't generate output for
       duplicate inputs.
@@ -131,10 +127,8 @@ class BatchTranslateTextRequest(_messages.Message):
     type: - AutoML Translation models: `projects/{project-number-or-
     id}/locations/{location-id}/models/{model-id}` - General (built-in)
     models: `projects/{project-number-or-id}/locations/{location-
-    id}/models/general/nmt`, `projects/{project-number-or-
-    id}/locations/{location-id}/models/general/base` If the map is empty or a
-    specific model is not requested for a language pair, then default google
-    model (nmt) is used.
+    id}/models/general/nmt`, If the map is empty or a specific model is not
+    requested for a language pair, then default google model (nmt) is used.
 
     Messages:
       AdditionalProperty: An additional property for a ModelsValue object.
@@ -862,10 +856,9 @@ class TranslateProjectsGetSupportedLanguagesRequest(_messages.Message):
       on model type: - AutoML Translation models: `projects/{project-number-
       or-id}/locations/{location-id}/models/{model-id}` - General (built-in)
       models: `projects/{project-number-or-id}/locations/{location-
-      id}/models/general/nmt`, `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/base` Returns languages
-      supported by the specified model. If missing, we get supported languages
-      of Google general base (PBMT) model.
+      id}/models/general/nmt`, Returns languages supported by the specified
+      model. If missing, we get supported languages of Google general NMT
+      model.
     parent: Required. Project or location to make a call. Must refer to a
       caller's project. Format: `projects/{project-number-or-id}` or
       `projects/{project-number-or-id}/locations/{location-id}`. For global
@@ -938,10 +931,9 @@ class TranslateProjectsLocationsGetSupportedLanguagesRequest(_messages.Message):
       on model type: - AutoML Translation models: `projects/{project-number-
       or-id}/locations/{location-id}/models/{model-id}` - General (built-in)
       models: `projects/{project-number-or-id}/locations/{location-
-      id}/models/general/nmt`, `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/base` Returns languages
-      supported by the specified model. If missing, we get supported languages
-      of Google general base (PBMT) model.
+      id}/models/general/nmt`, Returns languages supported by the specified
+      model. If missing, we get supported languages of Google general NMT
+      model.
     parent: Required. Project or location to make a call. Must refer to a
       caller's project. Format: `projects/{project-number-or-id}` or
       `projects/{project-number-or-id}/locations/{location-id}`. For global
@@ -1197,11 +1189,10 @@ class TranslateTextRequest(_messages.Message):
       format depends on model type: - AutoML Translation models:
       `projects/{project-number-or-id}/locations/{location-id}/models/{model-
       id}` - General (built-in) models: `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/nmt`, `projects/{project-
-      number-or-id}/locations/{location-id}/models/general/base` For global
-      (non-regionalized) requests, use `location-id` `global`. For example,
+      id}/locations/{location-id}/models/general/nmt`, For global (non-
+      regionalized) requests, use `location-id` `global`. For example,
       `projects/{project-number-or-id}/locations/global/models/general/nmt`.
-      If missing, the system decides which google base model to use.
+      If not provided, the default Google model (NMT) will be used
     sourceLanguageCode: Optional. The BCP-47 language code of the input text
       if known, for example, "en-US" or "sr-Latn". Supported language codes
       are listed in Language Support. If the source language isn't specified,

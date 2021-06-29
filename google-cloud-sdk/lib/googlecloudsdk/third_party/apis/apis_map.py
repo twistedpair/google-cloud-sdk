@@ -160,16 +160,6 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
-    'alloydbadmin': {
-        'v1alpha1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.alloydbadmin.v1alpha1',
-                client_classpath='alloydbadmin_v1alpha1_client.AlloydbadminV1alpha1',
-                messages_modulepath='alloydbadmin_v1alpha1_messages',
-                default_version=True,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
-    },
     'anthosevents': {
         'v1':
             APIDef(
@@ -932,6 +922,16 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.datamigration.v1alpha2',
                 client_classpath='datamigration_v1alpha2_client.DatamigrationV1alpha2',
                 messages_modulepath='datamigration_v1alpha2_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'dataplex': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.dataplex.v1',
+                client_classpath='dataplex_v1_client.DataplexV1',
+                messages_modulepath='dataplex_v1_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

@@ -15,7 +15,6 @@
 
 """Data objects to support the yaml command schema."""
 
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
@@ -26,7 +25,6 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import resource_arg_schema
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
-
 
 NAME_FORMAT_KEY = '__name__'
 REL_NAME_FORMAT_KEY = '__relative_name__'
@@ -43,9 +41,12 @@ class CommandData(object):
     ]
     self.command_type = CommandType.ForName(data.get('command_type', name))
     self.help_text = data['help_text']
-    request_data = data.get('request')
-    self.request = Request(self.command_type, request_data)
-    self.response = Response(data.get('response', {}))
+    self.request = None
+    self.response = None
+    if CommandType.HasRequestMethod(self.command_type):
+      request_data = data.get('request')
+      self.request = Request(self.command_type, request_data)
+      self.response = Response(data.get('response', {}))
     async_data = data.get('async')
     iam_data = data.get('iam')
     update_data = data.get('update')
@@ -76,6 +77,7 @@ class CommandType(Enum):
   DELETE = 'delete'
   IMPORT = 'patch'
   EXPORT = 'get'
+  CONFIG_EXPORT = 'config_export'
   CREATE = 'create'
   WAIT = 'get'
   UPDATE = 'patch'
@@ -102,6 +104,11 @@ class CommandType(Enum):
       return CommandType[name.upper()]
     except KeyError:
       return CommandType.GENERIC
+
+  @classmethod
+  def HasRequestMethod(cls, name):
+    methodless_commands = {cls.CONFIG_EXPORT}
+    return name not in methodless_commands
 
 
 class Request(object):
@@ -350,7 +357,7 @@ class Argument(object):
     self.repeated = repeated
     self.generate = generate
 
-  def Generate(self, message):
+  def Generate(self, message=None):
     """Generates and returns the base argument.
 
     Args:
@@ -359,7 +366,7 @@ class Argument(object):
     Returns:
       The base argument.
     """
-    if self.api_field:
+    if message and self.api_field:
       field = arg_utils.GetFieldFromMessage(message, self.api_field)
     else:
       field = None

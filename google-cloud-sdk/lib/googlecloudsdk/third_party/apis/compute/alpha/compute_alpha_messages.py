@@ -615,7 +615,9 @@ class Address(_messages.Message):
       reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
       from a private IP range that are reserved for a VLAN attachment in an
       IPsec-encrypted Cloud Interconnect configuration. These addresses are
-      regional resources. Not currently available publicly.
+      regional resources. Not currently available publicly.  -
+      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
+      multiple internal forwarding rules.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -679,7 +681,9 @@ class Address(_messages.Message):
       reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
       from a private IP range that are reserved for a VLAN attachment in an
       IPsec-encrypted Cloud Interconnect configuration. These addresses are
-      regional resources. Not currently available publicly.
+      regional resources. Not currently available publicly.  -
+      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
+      multiple internal forwarding rules.
     region: [Output Only] The URL of the region where a regional address
       resides. For regional addresses, you must specify the region as a path
       parameter in the HTTP request URL. This field is not applicable to
@@ -761,7 +765,8 @@ class Address(_messages.Message):
     NAT.  - `IPSEC_INTERCONNECT` for addresses created from a private IP range
     that are reserved for a VLAN attachment in an IPsec-encrypted Cloud
     Interconnect configuration. These addresses are regional resources. Not
-    currently available publicly.
+    currently available publicly.  - `SHARED_LOADBALANCER_VIP` for an internal
+    IP address that is assigned to multiple internal forwarding rules.
 
     Values:
       DNS_RESOLVER: <no description>
@@ -4178,6 +4183,8 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
       ALWAYS_PERSIST, existing connections always persist on unhealthy
       backends regardless of protocol and session affinity. It is generally
       not recommended to use this mode overriding the default.
+    enableStrongAffinity: Enable Strong Session Affinity. This is only
+      available in External TCP/UDP load balancer.
     idleTimeoutSec: Specifies how long to keep a Connection Tracking entry
       while there is no matching traffic (in seconds).  For L4 ILB the
       minimum(default) is 10 minutes and maximum is 16 hours.  For NLB the
@@ -4233,8 +4240,9 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
     PER_SESSION = 2
 
   connectionPersistenceOnUnhealthyBackends = _messages.EnumField('ConnectionPersistenceOnUnhealthyBackendsValueValuesEnum', 1)
-  idleTimeoutSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  trackingMode = _messages.EnumField('TrackingModeValueValuesEnum', 3)
+  enableStrongAffinity = _messages.BooleanField(2)
+  idleTimeoutSec = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  trackingMode = _messages.EnumField('TrackingModeValueValuesEnum', 4)
 
 
 class BackendServiceFailoverPolicy(_messages.Message):
@@ -5407,7 +5415,6 @@ class Commitment(_messages.Message):
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
       GENERAL_PURPOSE_N2D: <no description>
-      GENERAL_PURPOSE_P2D: <no description>
       MEMORY_OPTIMIZED: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
@@ -5418,9 +5425,8 @@ class Commitment(_messages.Message):
     GENERAL_PURPOSE_E2 = 4
     GENERAL_PURPOSE_N2 = 5
     GENERAL_PURPOSE_N2D = 6
-    GENERAL_PURPOSE_P2D = 7
-    MEMORY_OPTIMIZED = 8
-    TYPE_UNSPECIFIED = 9
+    MEMORY_OPTIMIZED = 7
+    TYPE_UNSPECIFIED = 8
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -18805,6 +18811,35 @@ class ComputeRegionDisksTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeRegionDisksUpdateRequest(_messages.Message):
+  r"""A ComputeRegionDisksUpdateRequest object.
+
+  Fields:
+    disk: The disk name for this request.
+    diskResource: A Disk resource to be passed as the request body.
+    paths: The set of field mask paths.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  disk = _messages.StringField(1, required=True)
+  diskResource = _messages.MessageField('Disk', 2)
+  paths = _messages.StringField(3, repeated=True)
+  project = _messages.StringField(4, required=True)
+  region = _messages.StringField(5, required=True)
+  requestId = _messages.StringField(6)
+
+
 class ComputeRegionHealthCheckServicesAggregatedListRequest(_messages.Message):
   r"""A ComputeRegionHealthCheckServicesAggregatedListRequest object.
 
@@ -20936,6 +20971,21 @@ class ComputeRegionNetworkFirewallPoliciesGetAssociationRequest(_messages.Messag
   name = _messages.StringField(2)
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+
+
+class ComputeRegionNetworkFirewallPoliciesGetEffectiveFirewallsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkFirewallPoliciesGetEffectiveFirewallsRequest
+  object.
+
+  Fields:
+    network: Network reference
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+  """
+
+  network = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
 
 
 class ComputeRegionNetworkFirewallPoliciesGetIamPolicyRequest(_messages.Message):
@@ -29989,7 +30039,7 @@ class ExternalVpnGateway(_messages.Message):
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    interfaces: List of interfaces for this external VPN gateway.  If your
+    interfaces: A list of interfaces for this external VPN gateway.  If your
       peer-side gateway is an on-premises gateway and non-AWS cloud providers'
       gateway, at most two interfaces can be provided for an external VPN
       gateway. If your peer side is an AWS virtual private gateway, four
@@ -30621,11 +30671,12 @@ class FirewallPolicy(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    displayName: Depreacted, please use short name instead. User-provided name
+    displayName: Deprecated, please use short name instead. User-provided name
       of the Organization firewall plicy. The name should be unique in the
-      organization in which the firewall policy is created. The name must be
-      1-63 characters long, and comply with RFC1035. Specifically, the name
-      must be 1-63 characters long and match the regular expression
+      organization in which the firewall policy is created. This name must be
+      set on creation and cannot be changed. The name must be 1-63 characters
+      long, and comply with RFC1035. Specifically, the name must be 1-63
+      characters long and match the regular expression
       `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
       lowercase letter, and all following characters must be a dash, lowercase
       letter, or digit, except the last character, which cannot be a dash.
@@ -30659,7 +30710,8 @@ class FirewallPolicy(_messages.Message):
       the resource id.
     shortName: User-provided name of the Organization firewall plicy. The name
       should be unique in the organization in which the firewall policy is
-      created. The name must be 1-63 characters long, and comply with RFC1035.
+      created. This name must be set on creation and cannot be changed. The
+      name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
       regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
       character must be a lowercase letter, and all following characters must
@@ -30998,43 +31050,32 @@ class FixedOrPercent(_messages.Message):
 
 
 class ForwardingRule(_messages.Message):
-  r"""Represents a Forwarding Rule resource.  Forwarding rule resources in GCP
-  can be either regional or global in scope:  *
-  [Global](/compute/docs/reference/rest/{$api_version}/globalForwardingRules)
-  * [Regional](/compute/docs/reference/rest/{$api_version}/forwardingRules)  A
-  forwarding rule and its corresponding IP address represent the frontend
-  configuration of a Google Cloud Platform load balancer. Forwarding rules can
-  also reference target instances and Cloud VPN Classic gateways
-  (targetVpnGateway).  For more information, read Forwarding rule concepts and
-  Using protocol forwarding.  (== resource_for {$api_version}.forwardingRules
-  ==) (== resource_for {$api_version}.globalForwardingRules ==) (==
-  resource_for {$api_version}.regionForwardingRules ==)
+  r"""Represents a Forwarding Rule resource.  Forwarding rule resources in
+  Google Cloud can be either regional or global in scope:  * [Global](https://
+  cloud.google.com/compute/docs/reference/rest/{$api_version}/globalForwarding
+  Rules) * [Regional](https://cloud.google.com/compute/docs/reference/rest/{$a
+  pi_version}/forwardingRules)  A forwarding rule and its corresponding IP
+  address represent the frontend configuration of a Google Cloud Platform load
+  balancer. Forwarding rules can also reference target instances and Cloud VPN
+  Classic gateways (targetVpnGateway).  For more information, read  Forwarding
+  rule concepts and  Using protocol forwarding.  (== resource_for
+  {$api_version}.forwardingRules ==) (== resource_for
+  {$api_version}.globalForwardingRules ==) (== resource_for
+  {$api_version}.regionForwardingRules ==)
 
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
       For protocol forwarding, valid options are TCP, UDP, ESP, AH, SCTP, ICMP
       and L3_DEFAULT.  The valid IP protocols are different for different load
-      balancing products:   - Internal TCP/UDP Load Balancing: The load
-      balancing scheme is INTERNAL, and one of TCP, UDP or L3_DEFAULT is
-      valid.  - Traffic Director: The load balancing scheme is
-      INTERNAL_SELF_MANAGED, and only TCP is valid.   - Internal HTTP(S) Load
-      Balancing: The load balancing scheme is INTERNAL_MANAGED, and only TCP
-      is valid.  - HTTP(S), SSL Proxy, and TCP Proxy Load Balancing: The load
-      balancing scheme is EXTERNAL and only TCP is valid.  - Network Load
-      Balancing: The load balancing scheme is EXTERNAL, and one of TCP, UDP or
-      L3_DEFAULT is valid.
+      balancing products as described in [Load balancing
+      features](https://cloud.google.com/load-balancing/docs/features#protocol
+      s_from_the_load_balancer_to_the_backends).
     IpVersionValueValuesEnum: The IP Version that will be used by this
       forwarding rule. Valid options are IPV4 or IPV6. This can only be
       specified for an external global forwarding rule.
     LoadBalancingSchemeValueValuesEnum: Specifies the forwarding rule type.
-      - EXTERNAL is used for:   - Classic Cloud VPN gateways  - Protocol
-      forwarding to VMs from an external IP address  - HTTP(S), SSL Proxy, TCP
-      Proxy, and Network Load Balancing     - INTERNAL is used for:   -
-      Protocol forwarding to VMs from an internal IP address  - Internal
-      TCP/UDP Load Balancing    - INTERNAL_MANAGED is used for:   - Internal
-      HTTP(S) Load Balancing    - INTERNAL_SELF_MANAGED is used for:   -
-      Traffic Director      For more information about forwarding rules, refer
-      to Forwarding rule concepts.
+      For more information about forwarding rules, refer to  Forwarding rule
+      concepts.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this load balancer and can only take the following values:
       PREMIUM, STANDARD.  For regional ForwardingRule, the valid values are
@@ -31062,24 +31103,18 @@ class ForwardingRule(_messages.Message):
       regions/region/addresses/address-name  - global/addresses/address-name
       - address-name    The loadBalancingScheme and the forwarding rule's
       target determine the type of IP address that you can use. For detailed
-      information, refer to [IP address specifications](/load-
-      balancing/docs/forwarding-rule-concepts#ip_address_specifications).
-      Must be set to `0.0.0.0` when the target is targetGrpcProxy that has
-      validateForProxyless field set to true.  For Private Service Connect
-      forwarding rules that forward traffic to Google APIs, IP address must be
-      provided.
+      information, see [IP address
+      specifications](https://cloud.google.com/load-balancing/docs/forwarding-
+      rule-concepts#ip_address_specifications).  Must be set to `0.0.0.0` when
+      the target is targetGrpcProxy that has validateForProxyless field set to
+      true.  For Private Service Connect forwarding rules that forward traffic
+      to Google APIs, IP address must be provided.
     IPProtocol: The IP protocol to which this rule applies.  For protocol
       forwarding, valid options are TCP, UDP, ESP, AH, SCTP, ICMP and
       L3_DEFAULT.  The valid IP protocols are different for different load
-      balancing products:   - Internal TCP/UDP Load Balancing: The load
-      balancing scheme is INTERNAL, and one of TCP, UDP or L3_DEFAULT is
-      valid.  - Traffic Director: The load balancing scheme is
-      INTERNAL_SELF_MANAGED, and only TCP is valid.   - Internal HTTP(S) Load
-      Balancing: The load balancing scheme is INTERNAL_MANAGED, and only TCP
-      is valid.  - HTTP(S), SSL Proxy, and TCP Proxy Load Balancing: The load
-      balancing scheme is EXTERNAL and only TCP is valid.  - Network Load
-      Balancing: The load balancing scheme is EXTERNAL, and one of TCP, UDP or
-      L3_DEFAULT is valid.
+      balancing products as described in [Load balancing
+      features](https://cloud.google.com/load-balancing/docs/features#protocol
+      s_from_the_load_balancer_to_the_backends).
     allPorts: This field is used along with the backend_service field for
       Internal TCP/UDP Load Balancing or Network Load Balancing, or with the
       target field for internal and external TargetInstance.  You can only use
@@ -31129,21 +31164,14 @@ class ForwardingRule(_messages.Message):
     labels: Labels for this resource. These can only be added or modified by
       the setLabels method. Each label key/value pair must comply with
       RFC1035. Label values may be empty.
-    loadBalancingScheme: Specifies the forwarding rule type.    - EXTERNAL is
-      used for:   - Classic Cloud VPN gateways  - Protocol forwarding to VMs
-      from an external IP address  - HTTP(S), SSL Proxy, TCP Proxy, and
-      Network Load Balancing     - INTERNAL is used for:   - Protocol
-      forwarding to VMs from an internal IP address  - Internal TCP/UDP Load
-      Balancing    - INTERNAL_MANAGED is used for:   - Internal HTTP(S) Load
-      Balancing    - INTERNAL_SELF_MANAGED is used for:   - Traffic Director
-      For more information about forwarding rules, refer to Forwarding rule
-      concepts.
-    metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
+    loadBalancingScheme: Specifies the forwarding rule type.  For more
+      information about forwarding rules, refer to  Forwarding rule concepts.
+    metadataFilters: Opaque filter criteria used by load balancer to restrict
       routing configuration to a limited set of xDS compliant clients. In
-      their xDS requests to Loadbalancer, xDS clients present node metadata.
+      their xDS requests to load balancer, xDS clients present node metadata.
       When there is a match, the relevant configuration is made available to
       those proxies. Otherwise, all the resources (e.g. TargetHttpProxy,
-      UrlMap) referenced by the ForwardingRule will not be visible to those
+      UrlMap) referenced by the ForwardingRule are not visible to those
       proxies. For each metadataFilter in this list, if its
       filterMatchCriteria is set to MATCH_ANY, at least one of the
       filterLabels must match the corresponding label provided in the
@@ -31181,21 +31209,17 @@ class ForwardingRule(_messages.Message):
       You can only use one of ports, port_range, or allPorts. The three are
       mutually exclusive.  Forwarding rules with the same [IPAddress,
       IPProtocol] pair must have disjoint ports.  Some types of forwarding
-      target have constraints on the acceptable ports:   - TargetHttpProxy:
-      80, 8080  - TargetHttpsProxy: 443  - TargetGrpcProxy: no constraints  -
-      TargetTcpProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
-      1688, 1883, 5222  - TargetSslProxy: 25, 43, 110, 143, 195, 443, 465,
-      587, 700, 993, 995, 1688, 1883, 5222  - TargetVpnGateway: 500, 4500
+      target have constraints on the acceptable ports. For more information,
+      see [Port specifications](https://cloud.google.com/load-
+      balancing/docs/forwarding-rule-concepts#port_specifications).
     ports: The ports field is only supported when the forwarding rule
-      references a backend_service directly. Supported load balancing products
-      are Internal TCP/UDP Load Balancing and Network Load Balancing. Only
-      packets addressed to the specified list of ports are forwarded to
-      backends.  You can only use one of ports and port_range, or allPorts.
-      The three are mutually exclusive.  You can specify a list of up to five
-      ports, which can be non-contiguous.  Forwarding rules with the same
-      [IPAddress, IPProtocol] pair must have disjoint ports.  For more
-      information, see [Port specifications](/load-balancing/docs/forwarding-
-      rule-concepts#port_specifications).
+      references a backend_service directly. Only packets addressed to the
+      [specified list of ports]((https://cloud.google.com/load-
+      balancing/docs/forwarding-rule-concepts#port_specifications)) are
+      forwarded to backends.  You can only use one of ports and port_range, or
+      allPorts. The three are mutually exclusive.  You can specify a list of
+      up to five ports, which can be non-contiguous.  Forwarding rules with
+      the same [IPAddress, IPProtocol] pair must have disjoint ports.
     pscConnectionId: [Output Only] The PSC connection id of the PSC Forwarding
       Rule.
     pscConnectionStatus: A PscConnectionStatusValueValuesEnum attribute.
@@ -31208,8 +31232,7 @@ class ForwardingRule(_messages.Message):
       the resource id.
     serviceDirectoryRegistrations: Service Directory resources to register
       this forwarding rule with. Currently, only supports a single Service
-      Directory resource.  It is only supported for Internal TCP/UDP Load
-      Balancing and Internal HTTP(S) Load Balancing.
+      Directory resource.  It is only supported for internal load balancing.
     serviceLabel: An optional prefix to the service name for this Forwarding
       Rule. If specified, the prefix is the first label of the fully qualified
       service name.  The label must be 1-63 characters long, and comply with
@@ -31229,27 +31252,21 @@ class ForwardingRule(_messages.Message):
       Forwarding Rule whose scheme is EXTERNAL. Each source_ip_range entry
       should be either an IP address (for example, 1.2.3.4) or a CIDR range
       (for example, 1.2.3.0/24).
-    subnetwork: This field is only used for internal load balancing.  For
-      internal load balancing, this field identifies the subnetwork that the
-      load balanced IP should belong to for this Forwarding Rule.  If the
-      network specified is in auto subnet mode, this field is optional.
-      However, if the network is in custom subnet mode, a subnetwork must be
-      specified.
+    subnetwork: This field identifies the subnetwork that the load balanced IP
+      should belong to for this Forwarding Rule, used in internal load
+      balancing and network load balancing with IPv6.  If the network
+      specified is in auto subnet mode, this field is optional. However, a
+      subnetwork must be specified if the network is in custom subnet mode or
+      when creating external forwarding rule with IPv6.
     target: A string attribute.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
     r"""The IP protocol to which this rule applies.  For protocol forwarding,
     valid options are TCP, UDP, ESP, AH, SCTP, ICMP and L3_DEFAULT.  The valid
-    IP protocols are different for different load balancing products:   -
-    Internal TCP/UDP Load Balancing: The load balancing scheme is INTERNAL,
-    and one of TCP, UDP or L3_DEFAULT is valid.  - Traffic Director: The load
-    balancing scheme is INTERNAL_SELF_MANAGED, and only TCP is valid.   -
-    Internal HTTP(S) Load Balancing: The load balancing scheme is
-    INTERNAL_MANAGED, and only TCP is valid.  - HTTP(S), SSL Proxy, and TCP
-    Proxy Load Balancing: The load balancing scheme is EXTERNAL and only TCP
-    is valid.  - Network Load Balancing: The load balancing scheme is
-    EXTERNAL, and one of TCP, UDP or L3_DEFAULT is valid.
+    IP protocols are different for different load balancing products as
+    described in [Load balancing features](https://cloud.google.com/load-
+    balancing/docs/features#protocols_from_the_load_balancer_to_the_backends).
 
     Values:
       AH: <no description>
@@ -31285,14 +31302,8 @@ class ForwardingRule(_messages.Message):
     UNSPECIFIED_VERSION = 2
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
-    r"""Specifies the forwarding rule type.    - EXTERNAL is used for:   -
-    Classic Cloud VPN gateways  - Protocol forwarding to VMs from an external
-    IP address  - HTTP(S), SSL Proxy, TCP Proxy, and Network Load Balancing
-    - INTERNAL is used for:   - Protocol forwarding to VMs from an internal IP
-    address  - Internal TCP/UDP Load Balancing    - INTERNAL_MANAGED is used
-    for:   - Internal HTTP(S) Load Balancing    - INTERNAL_SELF_MANAGED is
-    used for:   - Traffic Director      For more information about forwarding
-    rules, refer to Forwarding rule concepts.
+    r"""Specifies the forwarding rule type.  For more information about
+    forwarding rules, refer to  Forwarding rule concepts.
 
     Values:
       EXTERNAL: <no description>
@@ -33268,7 +33279,7 @@ class HealthCheckService(_messages.Message):
       HealthCheckService; Otherwise, the request will fail with error 412
       conditionNotMet. To see the latest fingerprint, make a get() request to
       retrieve the HealthCheckService.
-    healthChecks: List of URLs to the HealthCheck resources. Must have at
+    healthChecks: A list of URLs to the HealthCheck resources. Must have at
       least one HealthCheck, and not more than 10. HealthCheck resources must
       have portSpecification=USE_SERVING_PORT or
       portSpecification=USE_FIXED_PORT. For regional HealthCheckService, the
@@ -33302,11 +33313,11 @@ class HealthCheckService(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
-    networkEndpointGroups: List of URLs to the NetworkEndpointGroup resources.
-      Must not have more than 100. For regional HealthCheckService, NEGs must
-      be in zones in the region of the HealthCheckService.
-    notificationEndpoints: List of URLs to the NotificationEndpoint resources.
-      Must not have more than 10. A list of endpoints for receiving
+    networkEndpointGroups: A list of URLs to the NetworkEndpointGroup
+      resources. Must not have more than 100. For regional HealthCheckService,
+      NEGs must be in zones in the region of the HealthCheckService.
+    notificationEndpoints: A list of URLs to the NotificationEndpoint
+      resources. Must not have more than 10. A list of endpoints for receiving
       notifications of change in health status. For regional
       HealthCheckService, NotificationEndpoint must be regional and in the
       same region. For global HealthCheckService, NotificationEndpoint must be
@@ -35226,6 +35237,12 @@ class Image(_messages.Message):
       FAILED, PENDING, or READY.
     storageLocations: Cloud Storage bucket storage location of the image
       (regional or multi-regional).
+    userLicenses: A list of publicly visible user-licenses. Unlike regular
+      licenses, user provided licenses can be modified after the disk is
+      created. This includes a list of URLs to the license resource. For
+      example, to provide a debian license:
+      https://www.googleapis.com/compute/v1/projects/debian-
+      cloud/global/licenses/debian-9-stretch
   """
 
   class SourceTypeValueValuesEnum(_messages.Enum):
@@ -35349,6 +35366,7 @@ class Image(_messages.Message):
   sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 31, default='RAW')
   status = _messages.EnumField('StatusValueValuesEnum', 32)
   storageLocations = _messages.StringField(33, repeated=True)
+  userLicenses = _messages.StringField(34, repeated=True)
 
 
 class ImageFamilyView(_messages.Message):
@@ -39101,11 +39119,13 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
     Values:
       HIERARCHY: <no description>
       NETWORK: <no description>
+      NETWORK_REGIONAL: <no description>
       UNSPECIFIED: <no description>
     """
     HIERARCHY = 0
     NETWORK = 1
-    UNSPECIFIED = 2
+    NETWORK_REGIONAL = 2
+    UNSPECIFIED = 3
 
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
@@ -39797,6 +39817,10 @@ class Interconnect(_messages.Message):
       the speed of the entire bundle.
     location: URL of the InterconnectLocation object that represents where
       this connection is to be provisioned.
+    macsec: Configuration to enable Media Access Control security (MACsec) on
+      the Interconnect between Google and your on-premises router.
+    macsecEnabled: Enable or disable MACsec on this Interconnect. MACsec
+      enablement will fail if the macsec object is not specified.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -39945,16 +39969,18 @@ class Interconnect(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 14)
   linkType = _messages.EnumField('LinkTypeValueValuesEnum', 15)
   location = _messages.StringField(16)
-  name = _messages.StringField(17)
-  nocContactEmail = _messages.StringField(18)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 19)
-  peerIpAddress = _messages.StringField(20)
-  provisionedLinkCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  requestedLinkCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  satisfiesPzs = _messages.BooleanField(23)
-  selfLink = _messages.StringField(24)
-  selfLinkWithId = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
+  macsec = _messages.MessageField('InterconnectMacsec', 17)
+  macsecEnabled = _messages.BooleanField(18)
+  name = _messages.StringField(19)
+  nocContactEmail = _messages.StringField(20)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 21)
+  peerIpAddress = _messages.StringField(22)
+  provisionedLinkCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  requestedLinkCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  satisfiesPzs = _messages.BooleanField(25)
+  selfLink = _messages.StringField(26)
+  selfLinkWithId = _messages.StringField(27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -40113,19 +40139,19 @@ class InterconnectAttachment(_messages.Message):
       is defined by the server.
     interconnect: URL of the underlying Interconnect object that this
       attachment's traffic will traverse through.
-    ipsecInternalAddresses: List of URL of addresses that have been reserved
-      for the VLAN attachment. Used only for the VLAN attachment that has the
-      encryption option as IPSEC. The addresses must be regional internal IP
-      address ranges. When creating an HA VPN gateway over the VLAN
-      attachment, if the attachment is configured to use a regional internal
-      IP address, then the VPN gateway's IP address is allocated from the IP
-      address range specified here. For example, if the HA VPN gateway's
-      interface 0 is paired to this VLAN attachment, then a regional internal
-      IP address for the VPN gateway interface 0 will be allocated from the IP
-      address specified for this VLAN attachment. If this field is not
-      specified when creating the VLAN attachment, then later on when creating
-      an HA VPN gateway on this VLAN attachment, the HA VPN gateway's IP
-      address is allocated from the regional external IP address pool. Not
+    ipsecInternalAddresses: A list of URLs of addresses that have been
+      reserved for the VLAN attachment. Used only for the VLAN attachment that
+      has the encryption option as IPSEC. The addresses must be regional
+      internal IP address ranges. When creating an HA VPN gateway over the
+      VLAN attachment, if the attachment is configured to use a regional
+      internal IP address, then the VPN gateway's IP address is allocated from
+      the IP address range specified here. For example, if the HA VPN
+      gateway's interface 0 is paired to this VLAN attachment, then a regional
+      internal IP address for the VPN gateway interface 0 will be allocated
+      from the IP address specified for this VLAN attachment. If this field is
+      not specified when creating the VLAN attachment, then later on when
+      creating an HA VPN gateway on this VLAN attachment, the HA VPN gateway's
+      IP address is allocated from the regional external IP address pool. Not
       currently available publicly.
     kind: [Output Only] Type of the resource. Always
       compute#interconnectAttachment for interconnect attachments.
@@ -40905,11 +40931,14 @@ class InterconnectDiagnostics(_messages.Message):
     links: A list of InterconnectDiagnostics.LinkStatus objects, describing
       the status for each link on the Interconnect.
     macAddress: The MAC address of the Interconnect's bundle interface.
+    macsec: Describes the status of MACsec encryption on the Interconnect's
+      bundle interface.
   """
 
   arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
   links = _messages.MessageField('InterconnectDiagnosticsLinkStatus', 2, repeated=True)
   macAddress = _messages.StringField(3)
+  macsec = _messages.MessageField('InterconnectDiagnosticsMacsecStatus', 4)
 
 
 class InterconnectDiagnosticsARPEntry(_messages.Message):
@@ -41039,6 +41068,81 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
   lacpStatus = _messages.MessageField('InterconnectDiagnosticsLinkLACPStatus', 4)
   receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 5)
   transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 6)
+
+
+class InterconnectDiagnosticsMacsecStatus(_messages.Message):
+  r"""Describes the status of MACsec encryption on the Interconnect's bundle
+  interface.
+
+  Enums:
+    StateValueValuesEnum: The current state of MACsec configuration on this
+      Interconnect, which can take one of the following values:   -
+      INITIALIZED: MACsec has been configured on the bundle interface. The
+      Google edge router is waiting to establish a MACsec session with the
+      customer router on the other side of this Interconnect. In addition,
+      when key rollover fails between the two routers, the bundle interface
+      will return to the initialized state.  - SECURED: MACsec session has
+      been successfully established between the Google edge router and the
+      customer router.  - FAILED: MACsec configuration on the bundle interface
+      encountered an error.  - DISABLED: MACsec is explicitly disabled on this
+      Interconnect.
+
+  Fields:
+    ckn: Indicates the Connectivity Association Key Name (CKN) currently being
+      used.
+    keyRolloverFailure: If true, this field indicates that the Google edge
+      router was unable to rollover the MACsec session to the next key in the
+      key chain. Ensure that the CKN/CAK values and the start time of the keys
+      in your router's MACsec key chain match the output of the
+      GetMacsecConfig API for this Interconnect. The Google edge router will
+      retry the rollover process for grace period of 30 minutes past the start
+      time of the new key, while maintaining the ongoing MACsec session. If
+      the Google edge router is unable to switch to the new key within this
+      grace period, it will terminate the MACsec session. Subsequent behavior
+      will depend on the MACsec fail open setting on this Interconnect.
+    rolloverCkn: In the event of a key rollover failure, this field indicates
+      the CKN that the Google edge router is trying to rollover to.
+    state: The current state of MACsec configuration on this Interconnect,
+      which can take one of the following values:   - INITIALIZED: MACsec has
+      been configured on the bundle interface. The Google edge router is
+      waiting to establish a MACsec session with the customer router on the
+      other side of this Interconnect. In addition, when key rollover fails
+      between the two routers, the bundle interface will return to the
+      initialized state.  - SECURED: MACsec session has been successfully
+      established between the Google edge router and the customer router.  -
+      FAILED: MACsec configuration on the bundle interface encountered an
+      error.  - DISABLED: MACsec is explicitly disabled on this Interconnect.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current state of MACsec configuration on this Interconnect, which
+    can take one of the following values:   - INITIALIZED: MACsec has been
+    configured on the bundle interface. The Google edge router is waiting to
+    establish a MACsec session with the customer router on the other side of
+    this Interconnect. In addition, when key rollover fails between the two
+    routers, the bundle interface will return to the initialized state.  -
+    SECURED: MACsec session has been successfully established between the
+    Google edge router and the customer router.  - FAILED: MACsec
+    configuration on the bundle interface encountered an error.  - DISABLED:
+    MACsec is explicitly disabled on this Interconnect.
+
+    Values:
+      DISABLED: <no description>
+      FAILED: <no description>
+      INITIALIZED: <no description>
+      SECURED: <no description>
+      STATE_UNSPECIFIED: <no description>
+    """
+    DISABLED = 0
+    FAILED = 1
+    INITIALIZED = 2
+    SECURED = 3
+    STATE_UNSPECIFIED = 4
+
+  ckn = _messages.StringField(1)
+  keyRolloverFailure = _messages.BooleanField(2)
+  rolloverCkn = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class InterconnectList(_messages.Message):
@@ -41451,6 +41555,51 @@ class InterconnectLocationRegionInfo(_messages.Message):
   expectedRttMs = _messages.IntegerField(1)
   locationPresence = _messages.EnumField('LocationPresenceValueValuesEnum', 2)
   region = _messages.StringField(3)
+
+
+class InterconnectMacsec(_messages.Message):
+  r"""Configuration information for enabling Media Access Control security
+  (Macsec) on this Interconnect between Google and your on-premises router.
+
+  Fields:
+    failOpen: If set to true, the Interconnect will be configured with a
+      should-secure MACsec security policy, that allows the Google router to
+      fallback to cleartext traffic if the MKA session cannot be established.
+      By default, the Interconnect will be configured with a must-secure
+      security policy that drops all traffic if the MKA session cannot be
+      established with your router.
+    preSharedKeys: Required. A keychain placeholder describing a set of named
+      key objects along with their start times. A MACsec CKN/CAK will be
+      generated for each key in the key chain. Google router will
+      automatically pick the key with the most recent startTime when
+      establishing or re-establishing a MACsec secure link.
+  """
+
+  failOpen = _messages.BooleanField(1)
+  preSharedKeys = _messages.MessageField('InterconnectMacsecPreSharedKey', 2, repeated=True)
+
+
+class InterconnectMacsecPreSharedKey(_messages.Message):
+  r"""Describes a pre-shared key used to setup MACsec in static connectivity
+  association key (CAK) mode.
+
+  Fields:
+    name: Required. A name for this pre-shared key. The name must be 1-63
+      characters long, and comply with RFC1035. Specifically, the name must be
+      1-63 characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
+    startTime: A RFC3339 timestamp on or after which the key is valid.
+      startTime can be in the future. If the keychain has a single key,
+      startTime can be omitted. If the keychain has multiple keys, startTime
+      is mandatory for each key. The start times of keys must be in increasing
+      order. The start times of two consecutive keys must be at least an hour
+      apart.
+  """
+
+  name = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class InterconnectOutageNotification(_messages.Message):
@@ -44060,8 +44209,8 @@ class NetworkEndpointGroup(_messages.Message):
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
       network endpoint group. Can be one of GCE_VM_IP_PORT,
-      NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, or
-      SERVERLESS.
+      NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT,
+      SERVERLESS, PRIVATE_SERVICE_CONNECT.
     TypeValueValuesEnum: Specify the type of this network endpoint group. Only
       LOAD_BALANCING is valid for now.
 
@@ -44101,7 +44250,8 @@ class NetworkEndpointGroup(_messages.Message):
       belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
       group. Can be one of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
-      INTERNET_FQDN_PORT, INTERNET_IP_PORT, or SERVERLESS.
+      INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS,
+      PRIVATE_SERVICE_CONNECT.
     pscTargetService: The target service url used to set up private service
       connection to a Google API. An example value is: "asia-
       northeast3-cloudkms.googleapis.com"
@@ -44126,7 +44276,7 @@ class NetworkEndpointGroup(_messages.Message):
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
     r"""Type of network endpoints in this network endpoint group. Can be one
     of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT,
-    INTERNET_IP_PORT, or SERVERLESS.
+    INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT.
 
     Values:
       GCE_VM_IP: <no description>
@@ -50773,7 +50923,7 @@ class Quota(_messages.Message):
       COMMITTED_NVIDIA_P4_GPUS: <no description>
       COMMITTED_NVIDIA_T4_GPUS: <no description>
       COMMITTED_NVIDIA_V100_GPUS: <no description>
-      COMMITTED_P2D_CPUS: <no description>
+      COMMITTED_T2D_CPUS: <no description>
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -50831,7 +50981,6 @@ class Quota(_messages.Message):
       NVIDIA_T4_GPUS: <no description>
       NVIDIA_T4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
-      P2D_CPUS: <no description>
       PACKET_MIRRORINGS: <no description>
       PD_EXTREME_TOTAL_PROVISIONED_IOPS: <no description>
       PREEMPTIBLE_CPUS: <no description>
@@ -50848,6 +50997,7 @@ class Quota(_messages.Message):
       PRIVATE_V6_ACCESS_SUBNETWORKS: <no description>
       PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK: <no description>
       PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK: <no description>
+      PSC_INTERNAL_LB_FORWARDING_RULES: <no description>
       PUBLIC_ADVERTISED_PREFIXES: <no description>
       PUBLIC_DELEGATED_PREFIXES: <no description>
       REGIONAL_AUTOSCALERS: <no description>
@@ -50861,6 +51011,7 @@ class Quota(_messages.Message):
       SECURITY_POLICY_CEVAL_RULES: <no description>
       SECURITY_POLICY_RULES: <no description>
       SECURITY_POLICY_RULES_PER_REGION: <no description>
+      SERVICE_ATTACHMENTS: <no description>
       SNAPSHOTS: <no description>
       SSD_TOTAL_GB: <no description>
       SSL_CERTIFICATES: <no description>
@@ -50868,6 +51019,7 @@ class Quota(_messages.Message):
       STATIC_BYOIP_ADDRESSES: <no description>
       SUBNETWORKS: <no description>
       SUBNET_RANGES_PER_NETWORK: <no description>
+      T2D_CPUS: <no description>
       TARGET_HTTPS_PROXIES: <no description>
       TARGET_HTTP_PROXIES: <no description>
       TARGET_INSTANCES: <no description>
@@ -50907,7 +51059,7 @@ class Quota(_messages.Message):
     COMMITTED_NVIDIA_P4_GPUS = 24
     COMMITTED_NVIDIA_T4_GPUS = 25
     COMMITTED_NVIDIA_V100_GPUS = 26
-    COMMITTED_P2D_CPUS = 27
+    COMMITTED_T2D_CPUS = 27
     CPUS = 28
     CPUS_ALL_REGIONS = 29
     DISKS_TOTAL_GB = 30
@@ -50962,23 +51114,23 @@ class Quota(_messages.Message):
     NVIDIA_T4_GPUS = 79
     NVIDIA_T4_VWS_GPUS = 80
     NVIDIA_V100_GPUS = 81
-    P2D_CPUS = 82
-    PACKET_MIRRORINGS = 83
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 84
-    PREEMPTIBLE_CPUS = 85
-    PREEMPTIBLE_LOCAL_SSD_GB = 86
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 87
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 88
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 89
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 90
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 91
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 92
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 93
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 94
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 95
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 96
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 97
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 98
+    PACKET_MIRRORINGS = 82
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 83
+    PREEMPTIBLE_CPUS = 84
+    PREEMPTIBLE_LOCAL_SSD_GB = 85
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 86
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 87
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 88
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 89
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 90
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 91
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 92
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 93
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 94
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 95
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 96
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 97
+    PSC_INTERNAL_LB_FORWARDING_RULES = 98
     PUBLIC_ADVERTISED_PREFIXES = 99
     PUBLIC_DELEGATED_PREFIXES = 100
     REGIONAL_AUTOSCALERS = 101
@@ -50992,24 +51144,26 @@ class Quota(_messages.Message):
     SECURITY_POLICY_CEVAL_RULES = 109
     SECURITY_POLICY_RULES = 110
     SECURITY_POLICY_RULES_PER_REGION = 111
-    SNAPSHOTS = 112
-    SSD_TOTAL_GB = 113
-    SSL_CERTIFICATES = 114
-    STATIC_ADDRESSES = 115
-    STATIC_BYOIP_ADDRESSES = 116
-    SUBNETWORKS = 117
-    SUBNET_RANGES_PER_NETWORK = 118
-    TARGET_HTTPS_PROXIES = 119
-    TARGET_HTTP_PROXIES = 120
-    TARGET_INSTANCES = 121
-    TARGET_POOLS = 122
-    TARGET_SSL_PROXIES = 123
-    TARGET_TCP_PROXIES = 124
-    TARGET_VPN_GATEWAYS = 125
-    URL_MAPS = 126
-    VPN_GATEWAYS = 127
-    VPN_TUNNELS = 128
-    XPN_SERVICE_PROJECTS = 129
+    SERVICE_ATTACHMENTS = 112
+    SNAPSHOTS = 113
+    SSD_TOTAL_GB = 114
+    SSL_CERTIFICATES = 115
+    STATIC_ADDRESSES = 116
+    STATIC_BYOIP_ADDRESSES = 117
+    SUBNETWORKS = 118
+    SUBNET_RANGES_PER_NETWORK = 119
+    T2D_CPUS = 120
+    TARGET_HTTPS_PROXIES = 121
+    TARGET_HTTP_PROXIES = 122
+    TARGET_INSTANCES = 123
+    TARGET_POOLS = 124
+    TARGET_SSL_PROXIES = 125
+    TARGET_TCP_PROXIES = 126
+    TARGET_VPN_GATEWAYS = 127
+    URL_MAPS = 128
+    VPN_GATEWAYS = 129
+    VPN_TUNNELS = 130
+    XPN_SERVICE_PROJECTS = 131
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -52445,6 +52599,52 @@ class RegionList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse(_messages.Message):
+  r"""A RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse object.
+
+  Fields:
+    firewallPolicys: Effective firewalls from firewall policy.
+    firewalls: Effective firewalls on the network.
+  """
+
+  firewallPolicys = _messages.MessageField('RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy', 1, repeated=True)
+  firewalls = _messages.MessageField('Firewall', 2, repeated=True)
+
+
+class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Message):
+  r"""A RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFir
+  ewallPolicy object.
+
+  Enums:
+    TypeValueValuesEnum: [Output Only] The type of the firewall policy.
+
+  Fields:
+    displayName: [Output Only] The display name of the firewall policy.
+    name: [Output Only] The name of the firewall policy.
+    rules: The rules that apply to the network.
+    type: [Output Only] The type of the firewall policy.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The type of the firewall policy.
+
+    Values:
+      HIERARCHY: <no description>
+      NETWORK: <no description>
+      NETWORK_REGIONAL: <no description>
+      UNSPECIFIED: <no description>
+    """
+    HIERARCHY = 0
+    NETWORK = 1
+    NETWORK_REGIONAL = 2
+    UNSPECIFIED = 3
+
+  displayName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  rules = _messages.MessageField('FirewallPolicyRule', 3, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class RegionSetLabelsRequest(_messages.Message):
@@ -56079,6 +56279,10 @@ class Scheduling(_messages.Message):
       instance. Specify a value between 1-max count of availability domains in
       your GroupPlacementPolicy. See go/placement-policy-extension for more
       details.
+    currentCpus: Current number of vCPUs available for VM. 0 or unset means
+      default vCPUs of the current machine type.
+    currentMemoryMb: Current amount of memory (in MB) available for VM. 0 or
+      unset means default amount of memory of the current machine type.
     hostErrorTimeoutSeconds: Specify the time in seconds for host error
       detection, the value must be within the range of [90, 330] with the
       increment of 30, if unset, the default behavior of host error recovery
@@ -56142,16 +56346,18 @@ class Scheduling(_messages.Message):
 
   automaticRestart = _messages.BooleanField(1)
   availabilityDomain = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  hostErrorTimeoutSeconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  latencyTolerant = _messages.BooleanField(4)
-  locationHint = _messages.StringField(5)
-  maintenanceFreezeDurationHours = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 7)
-  minNodeCpus = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 9, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 10)
-  preemptible = _messages.BooleanField(11)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 12)
+  currentCpus = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  currentMemoryMb = _messages.IntegerField(4)
+  hostErrorTimeoutSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  latencyTolerant = _messages.BooleanField(6)
+  locationHint = _messages.StringField(7)
+  maintenanceFreezeDurationHours = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 9)
+  minNodeCpus = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 11, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 12)
+  preemptible = _messages.BooleanField(13)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 14)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -57144,10 +57350,8 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       "rate_based_ban". If specified, the key will be banned for the
       configured 'ban_duration_sec' when the number of requests that exceed
       the 'rate_limit_threshold' also exceed this 'ban_threshold'.
-    conformAction: Action to take when requests are under the given threshold.
-      When requests are throttled, this is also the action for all requests
-      which are not dropped. Valid options are "allow", "fairshare", and
-      "drop_overload".
+    conformAction: Action to take for requests that are under the configured
+      rate limit threshold. Valid option is "allow" only.
     enforceOnKey: Determines the key to enforce the threshold_rps limit on. If
       key is "IP", each IP has this limit enforced separately, whereas
       "ALL_IPs" means a single limit is applied to all requests matching this
@@ -58005,6 +58209,10 @@ class ShieldedInstanceIdentity(_messages.Message):
   r"""A shielded Instance identity entry.
 
   Fields:
+    eccP256EncryptionKey: An Endorsement Key (EK) made by the ECC P256
+      algorithm issued to the Shielded Instance's vTPM.
+    eccP256SigningKey: An Attestation Key (AK) made by the ECC P256 algorithm
+      issued to the Shielded Instance's vTPM.
     encryptionKey: An Endorsement Key (EK) made by the RSA 2048 algorithm
       issued to the Shielded Instance's vTPM.
     kind: [Output Only] Type of the resource. Always
@@ -58013,9 +58221,11 @@ class ShieldedInstanceIdentity(_messages.Message):
       to the Shielded Instance's vTPM.
   """
 
-  encryptionKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 1)
-  kind = _messages.StringField(2, default='compute#shieldedInstanceIdentity')
-  signingKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 3)
+  eccP256EncryptionKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 1)
+  eccP256SigningKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 2)
+  encryptionKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 3)
+  kind = _messages.StringField(4, default='compute#shieldedInstanceIdentity')
+  signingKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 5)
 
 
 class ShieldedInstanceIdentityEntry(_messages.Message):
@@ -58229,6 +58439,8 @@ class Snapshot(_messages.Message):
       snapshot is up-to-date.
     storageLocations: Cloud Storage bucket storage location of the snapshot
       (regional or multi-regional).
+    userLicenses: [Output Only] A list of user provided licenses represented
+      by a list of URLs to the license resource.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -58315,6 +58527,7 @@ class Snapshot(_messages.Message):
   storageBytes = _messages.IntegerField(27)
   storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 28)
   storageLocations = _messages.StringField(29, repeated=True)
+  userLicenses = _messages.StringField(30, repeated=True)
 
 
 class SnapshotList(_messages.Message):

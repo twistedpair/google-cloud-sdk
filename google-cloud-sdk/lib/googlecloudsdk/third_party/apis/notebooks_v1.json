@@ -1651,14 +1651,16 @@
             "The job is executing normally.",
             "The job is paused by the user. It will not execute. A user can intentionally pause the job using PauseJobRequest.",
             "The job is disabled by the system due to error. The user cannot directly set a job to be disabled.",
-            "The job state resulting from a failed CloudScheduler.UpdateJob operation. To recover a job from this state, retry CloudScheduler.UpdateJob until a successful response is received."
+            "The job state resulting from a failed CloudScheduler.UpdateJob operation. To recover a job from this state, retry CloudScheduler.UpdateJob until a successful response is received.",
+            "The schedule resource is being created."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ENABLED",
             "PAUSED",
             "DISABLED",
-            "UPDATE_FAILED"
+            "UPDATE_FAILED",
+            "INITIALIZING"
           ]
         },
         "cronSchedule": {

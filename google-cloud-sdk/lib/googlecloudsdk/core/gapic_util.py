@@ -77,18 +77,23 @@ def GetGapicCredentials(enable_resource_quota=True,
   return credentials
 
 
-def MakeBidiRpc(start_rpc):
+def MakeBidiRpc(client, start_rpc, initial_request=None):
   """Initializes a BidiRpc instances.
 
   Args:
+      client: GAPIC Wrapper client to use.
       start_rpc (grpc.StreamStreamMultiCallable): The gRPC method used to
           start the RPC.
+      initial_request: The initial request to
+          yield. This is useful if an initial request is needed to start the
+          stream.
   Returns:
     A bidiRPC instance.
   """
   # pylint: disable=g-import-not-at-top
   from googlecloudsdk.core import gapic_util_internal
-  return gapic_util_internal.BidiRpc(start_rpc)
+  return gapic_util_internal.BidiRpc(client, start_rpc,
+                                     initial_request=initial_request)
 
 
 def MakeClient(client_class, credentials, address_override_func=None,
@@ -113,14 +118,34 @@ def MakeClient(client_class, credentials, address_override_func=None,
   # pylint: disable=g-import-not-at-top
   from googlecloudsdk.core import gapic_util_internal
 
-  address = client_class.DEFAULT_ENDPOINT
-  if mtls_enabled:
-    # pylint: disable=protected-access
-    address = client_class._get_default_mtls_endpoint(address)
-  elif address_override_func:
-    address = address_override_func(address)
-
   return client_class(
       transport=gapic_util_internal.MakeTransport(
-          client_class.get_transport_class(), address, credentials,
-          mtls_enabled))
+          client_class, credentials, address_override_func, mtls_enabled))
+
+
+def MakeAsyncClient(client_class, credentials, address_override_func=None,
+                    mtls_enabled=False):
+  """Instantiates a gapic API client with gcloud defaults and configuration.
+
+  grpc cannot be packaged like our other Python dependencies, due to platform
+  differences and must be installed by the user. googlecloudsdk.core.gapic
+  depends on grpc and must be imported lazily here so that this module can be
+  imported safely anywhere.
+
+  Args:
+    client_class: a gapic client class.
+    credentials: google.auth.credentials.Credentials, the credentials to use.
+    address_override_func: function, function to call to override the client
+        host. It takes a single argument which is the original host.
+    mtls_enabled: bool, True if mTLS is enabled for this client.
+
+  Returns:
+    A gapic API client.
+  """
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core import gapic_util_internal
+
+  return client_class(
+      transport=gapic_util_internal.MakeAsyncTransport(
+          client_class, credentials, address_override_func, mtls_enabled))
+

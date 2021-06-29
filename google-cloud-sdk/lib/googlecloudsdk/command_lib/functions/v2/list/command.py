@@ -79,7 +79,6 @@ def _OverrideEndpointOverrides(api_name, override):
   Args:
     api_name: str, Name of the API to modify. E.g. "cloudfunctions"
     override: str, New value for the endpoint.
-    E.g. https://autopush-cloudfunctions.sandbox.googleapis.com/
 
   Yields:
     None.
@@ -104,10 +103,9 @@ def Run(args, release_track):
   list_v2_generator = _YieldFromLocations(args.regions, project, limit,
                                           messages, client)
 
-  # Currently GCF v2 exists in autopush so users of GCF v2 have in their config
-  # the api_endpoint_overrides of cloudfunctions
-  # https://autopush-cloudfunctions.sandbox.googleapis.com/ so
-  # to list GCF v1 resources use _OverrideEndpointOverrides to forcibly
+  # Currently GCF v2 exists in staging so users of GCF v2 have in their config
+  # the api_endpoint_overrides of cloudfunctions.
+  # To list GCF v1 resources use _OverrideEndpointOverrides to forcibly
   # overwrites's the user config's override with the original v1 endpoint.
   with _OverrideEndpointOverrides('cloudfunctions',
                                   'https://cloudfunctions.googleapis.com/'):

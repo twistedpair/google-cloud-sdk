@@ -152,7 +152,7 @@ def AddCreateFlags(parser,
   GetDescriptionFlag().AddToParser(parser)
 
   group = base.ArgumentGroup(
-      'Manage the specific SKU reservation properties to create', required=True)
+      'Manage the specific SKU reservation properties.', required=True)
 
   group.AddArgument(GetRequireSpecificAllocation())
   group.AddArgument(GetVmCountFlag())
@@ -169,8 +169,7 @@ def AddCreateFlags(parser,
 
   if support_share_setting:
     share_group = base.ArgumentGroup(
-        'Manage the properties of a shared reservation to create',
-        required=False)
+        'Manage the properties of a shared reservation.', required=False)
     share_group.AddArgument(GetSharedSettingFlag())
     share_group.AddArgument(GetShareWithFlag())
     share_group.AddToParser(parser)

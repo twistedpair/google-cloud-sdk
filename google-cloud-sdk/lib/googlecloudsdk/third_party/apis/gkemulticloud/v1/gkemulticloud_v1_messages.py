@@ -94,6 +94,26 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsListRequest(_messages
   parent = _messages.StringField(3, required=True)
 
 
+class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest
+  object.
+
+  Fields:
+    googleCloudGkemulticloudV1AwsNodePool: A
+      GoogleCloudGkemulticloudV1AwsNodePool resource to be passed as the
+      request body.
+    name: The resource name of this node pool.
+    updateMask: Required. The list of fields to be updated.
+    validateOnly: If set, only validate the request, but do not actually
+      update the node pool.
+  """
+
+  googleCloudGkemulticloudV1AwsNodePool = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodePool', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
 class GkemulticloudProjectsLocationsAwsClustersCreateRequest(_messages.Message):
   r"""A GkemulticloudProjectsLocationsAwsClustersCreateRequest object.
 
@@ -379,6 +399,26 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsListRequest(_mess
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest
+  object.
+
+  Fields:
+    googleCloudGkemulticloudV1AzureNodePool: A
+      GoogleCloudGkemulticloudV1AzureNodePool resource to be passed as the
+      request body.
+    name: The resource name of this node pool.
+    updateMask: Required. The list of fields to be updated.
+    validateOnly: If set, only validate the request, but don't actually update
+      the node pool.
+  """
+
+  googleCloudGkemulticloudV1AzureNodePool = _messages.MessageField('GoogleCloudGkemulticloudV1AzureNodePool', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class GkemulticloudProjectsLocationsAzureClustersCreateRequest(_messages.Message):

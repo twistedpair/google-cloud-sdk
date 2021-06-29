@@ -138,7 +138,11 @@ def _get_object_resource_from_s3_response(object_dict,
     size = object_dict.get('ContentLength')
 
   return s3_resource_reference.S3ObjectResource(
-      object_url, etag=etag, metadata=object_dict, size=size)
+      object_url,
+      content_type=object_dict.get('ContentType'),
+      etag=etag,
+      metadata=object_dict,
+      size=size)
 
 
 def _get_prefix_resource_from_s3_response(prefix_dict, bucket_name):
@@ -210,8 +214,9 @@ class S3Api(cloud_api.CloudApi):
         metadata=metadata)
 
   @_catch_client_error_raise_s3_api_error()
-  def delete_bucket(self, bucket_name, request_config=None):
+  def delete_bucket(self, bucket_name, request_config):
     """See super class."""
+    del request_config  # Unused.
     return self.client.delete_bucket(Bucket=bucket_name)
 
   def get_bucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
@@ -261,7 +266,7 @@ class S3Api(cloud_api.CloudApi):
 
   def patch_bucket(self,
                    bucket_resource,
-                   request_config=None,
+                   request_config,
                    fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
     del fields_scope, request_config  # Unused.
@@ -395,8 +400,8 @@ class S3Api(cloud_api.CloudApi):
   def copy_object(self,
                   source_resource,
                   destination_resource,
-                  progress_callback=None,
-                  request_config=None):
+                  request_config,
+                  progress_callback=None):
     """See super class."""
     del progress_callback
 
@@ -409,7 +414,7 @@ class S3Api(cloud_api.CloudApi):
               'Key': destination_resource.storage_url.object_name,
               'CopySource': source_kwargs}
 
-    if request_config and request_config.predefined_acl_string:
+    if request_config.predefined_acl_string:
       kwargs['ACL'] = _translate_predefined_acl_string_to_s3(
           request_config.predefined_acl_string)
 
@@ -502,8 +507,10 @@ class S3Api(cloud_api.CloudApi):
     # TODO(b/161460749): Handle download retries.
 
   @_catch_client_error_raise_s3_api_error()
-  def delete_object(self, object_url, request_config=None):
+  def delete_object(self, object_url, request_config):
     """See super class."""
+    del request_config  # Unused.
+
     delete_object_kwargs = {
         'Bucket': object_url.bucket_name,
         'Key': object_url.object_name,
@@ -606,8 +613,8 @@ class S3Api(cloud_api.CloudApi):
   def upload_object(self,
                     source_stream,
                     destination_resource,
+                    request_config,
                     progress_callback=None,
-                    request_config=None,
                     serialization_data=None,
                     tracker_callback=None,
                     upload_strategy=cloud_api.UploadStrategy.SIMPLE):
@@ -618,12 +625,12 @@ class S3Api(cloud_api.CloudApi):
       raise command_errors.Error(
           'Invalid upload strategy: {}.'.format(upload_strategy.value))
 
-    if request_config is None:
-      request_config = cloud_api.RequestConfig()
-
     # All fields common to both put_object and upload_fileobj are added
     # to the extra_args dict.
     extra_args = {}
+
+    if request_config.content_type:
+      extra_args['ContentType'] = request_config.content_type
 
     if request_config.predefined_acl_string:
       extra_args['ACL'] = _translate_predefined_acl_string_to_s3(

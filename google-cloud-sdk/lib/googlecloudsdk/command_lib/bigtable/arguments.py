@@ -222,7 +222,10 @@ class ArgAdder(object):
         required=True)
     return self
 
-  def AddAppProfileRouting(self, required=True, allow_restrict_to=False):
+  def AddAppProfileRouting(self,
+                           required=True,
+                           allow_restrict_to=False,
+                           allow_failover_radius=False):
     """Adds arguments for app_profile routing to parser."""
     routing_group = self.parser.add_mutually_exclusive_group(required=required)
     any_group = routing_group.add_group('Multi Cluster Routing Policy')
@@ -239,6 +242,26 @@ class ArgAdder(object):
           help='Cluster IDs to route to using the Multi Cluster Routing Policy.'
           ' If unset, all clusters in the instance will be eligible.',
           metavar='RESTRICT_TO',
+          hidden=True)
+    if allow_failover_radius:
+      choices = {
+          'ANY_REGION':
+              'Requests will be allowed to fail over to all eligible clusters.',
+          'INITIAL_REGION_ONLY':
+              'Requests will only be allowed to fail over to clusters within '
+              'the region the request was first routed to.'
+      }
+      any_group.add_argument(
+          '--failover-radius',
+          type=lambda x: x.replace('-', '_').upper(),
+          choices=choices,
+          help='Restricts clusters that requests can fail over to by proximity.'
+          ' Failover radius must be either any-region or initial-region-only. '
+          'any-region allows requests to fail over without restriction. '
+          'initial-region-only prohibits requests from failing over to any '
+          'clusters outside of the initial region the request was routed to. '
+          'If omitted, any-region will be used by default.',
+          metavar='FAILOVER_RADIUS',
           hidden=True)
     route_to_group = routing_group.add_group('Single Cluster Routing Policy')
     route_to_group.add_argument(

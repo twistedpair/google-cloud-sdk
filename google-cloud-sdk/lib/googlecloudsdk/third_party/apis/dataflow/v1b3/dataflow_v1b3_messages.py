@@ -120,8 +120,7 @@ class AutoscalingEvent(_messages.Message):
     time: The time this event was emitted to indicate a new target or current
       num_workers value.
     workerPool: A short and friendly name for the worker pool this event
-      refers to, populated from the value of
-      PoolStageRelation::user_pool_name.
+      refers to.
   """
 
   class EventTypeValueValuesEnum(_messages.Enum):

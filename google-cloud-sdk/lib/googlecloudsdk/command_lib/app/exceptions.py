@@ -157,3 +157,7 @@ class UnknownSourceError(exceptions.Error):
     super(UnknownSourceError, self).__init__(
         '[{path}] could not be identified as a valid source directory or file.'
         .format(path=path))
+
+
+class NotSupportedPy3Exception(exceptions.Error):
+  """Commands that do not support python3."""

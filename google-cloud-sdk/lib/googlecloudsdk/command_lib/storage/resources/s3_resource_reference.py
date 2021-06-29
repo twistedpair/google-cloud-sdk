@@ -201,13 +201,13 @@ def _get_full_object_metadata_string(resource):
 
   if 'ContentEncoding' in resource.metadata:
     optional_content_encoding_line = resource_util.get_padded_metadata_key_value_line(
-        'Cache-Encoding', resource.metadata['ContentEncoding'])
+        'Content-Encoding', resource.metadata['ContentEncoding'])
   else:
     optional_content_encoding_line = ''
 
   if 'ContentLanguage' in resource.metadata:
     optional_content_language_line = resource_util.get_padded_metadata_key_value_line(
-        'Cache-Language', resource.metadata['ContentLanguage'])
+        'Content-Language', resource.metadata['ContentLanguage'])
   else:
     optional_content_language_line = ''
 
@@ -282,6 +282,7 @@ class S3ObjectResource(resource_reference.ObjectResource):
 
   def __init__(self,
                storage_url_object,
+               content_type=None,
                creation_time=None,
                etag=None,
                crc32c_hash=None,
@@ -295,6 +296,7 @@ class S3ObjectResource(resource_reference.ObjectResource):
       etag = etag[1:-1]
     super(S3ObjectResource, self).__init__(
         storage_url_object,
+        content_type=content_type,
         creation_time=creation_time,
         etag=etag,
         crc32c_hash=None,

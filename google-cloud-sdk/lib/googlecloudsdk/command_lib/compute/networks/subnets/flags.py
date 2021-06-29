@@ -43,7 +43,7 @@ DEFAULT_LIST_FORMAT_WITH_IPV6_FIELD = """\
       stackType,
       ipv6AccessType,
       ipv6CidrRange,
-      externalIpv6Prefix
+      externalIpv6Prefix:label=EXTERNAL_IPV6_CIDR_RANGE
     )"""
 
 
@@ -102,6 +102,7 @@ def SubnetworkResolver():
 
 def AddUpdateArgs(parser, include_alpha_logging,
                   include_l7_internal_load_balancing,
+                  include_regional_managed_proxy,
                   include_internal_ipv6_access_type, api_version):
   """Add args to the parser for subnet update.
 
@@ -109,6 +110,7 @@ def AddUpdateArgs(parser, include_alpha_logging,
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
     include_l7_internal_load_balancing: Include Internal HTTP(S) LB args.
+    include_regional_managed_proxy: Include the REGIONAL_MANAGED_PROXY args.
     include_internal_ipv6_access_type: Include internal IPv6 access type args.
     api_version: The api version of the request.
   """
@@ -229,6 +231,19 @@ def AddUpdateArgs(parser, include_alpha_logging,
         the availability of proxies for load balancing. The drain timeout is
         only applicable when the [--role=ACTIVE] flag is being used.
         """)
+
+  if include_regional_managed_proxy:
+    updated_field.add_argument(
+        '--purpose',
+        choices={
+            'REGIONAL_MANAGED_PROXY':
+                'The REGIONAL_MANAGED_PROXY subnet purpose.'
+        },
+        type=lambda x: x.replace('-', '_').upper(),
+        help=("""\
+        The purpose is set to REGIONAL_MANAGED_PROXY to migrate from the older
+        INTERNAL_HTTPS_LOAD_BALANCER purpose.
+        """))
 
   parser.add_argument(
       '--stack-type',

@@ -30,7 +30,7 @@ import re
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as api_errors
-from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 
@@ -72,7 +72,7 @@ def get_wildcard_iterator(
   elif isinstance(url, storage_url.FileUrl):
     return FileWildcardIterator(url)
   else:
-    raise errors.InvalidUrlError('Unknown url type %s.' % url)
+    raise command_errors.InvalidUrlError('Unknown url type %s.' % url)
 
 
 def _compress_url_wildcards(url):
@@ -216,6 +216,7 @@ class CloudWildcardIterator(WildcardIterator):
     object_name = storage_url.rstrip_one_delimiter(original_object_name)
 
     names_needing_expansion = collections.deque([object_name])
+    error = None
     while names_needing_expansion:
       name = names_needing_expansion.popleft()
 
@@ -241,20 +242,29 @@ class CloudWildcardIterator(WildcardIterator):
           wildcard_parts.prefix + wildcard_parts.filter_pattern)
 
       for resource in filtered_resources:
+        resource_path = resource.storage_url.object_name
         if wildcard_parts.suffix:
           if isinstance(resource, resource_reference.PrefixResource):
             # Suffix is present, which indicates that we have more wildcards to
             # expand. Let's say object_name is a/b1c. Then the new string that
             # we want to expand will be a/b1c/d/e*f/g.txt
-            names_needing_expansion.append(
-                resource.storage_url.object_name  + wildcard_parts.suffix)
+            if WILDCARD_REGEX.search(resource_path):
+              error = command_errors.InvalidUrlError(
+                  'Cloud folders named with wildcards are not supported.'
+                  ' API returned {}'.format(resource))
+            else:
+              names_needing_expansion.append(resource_path +
+                                             wildcard_parts.suffix)
         else:
           # Make sure an object is not returned if the original query was for
           # a prefix.
-          if (not resource.storage_url.object_name.endswith(self._url.delimiter)
-              and original_object_name.endswith(self._url.delimiter)):
+          if (not resource_path.endswith(self._url.delimiter) and
+              original_object_name.endswith(self._url.delimiter)):
             continue
           yield resource
+
+    if error:
+      raise error
 
   def _get_regex_patterns(self, wildcard_pattern):
     """Returns list of regex patterns derived from the wildcard patterns.

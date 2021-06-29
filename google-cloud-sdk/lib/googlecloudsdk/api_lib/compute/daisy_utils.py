@@ -733,7 +733,8 @@ def RunImageExport(args,
                    export_args,
                    tags,
                    output_filter,
-                   release_track,
+                   release_track,  # pylint:disable=unused-argument
+                                   # TODO (b/191234695)
                    docker_image_tag=_DEFAULT_BUILDER_VERSION):
   """Run a build over gce_vm_image_export on Google Cloud Builder.
 
@@ -758,7 +759,7 @@ def RunImageExport(args,
   """
 
   AppendArg(export_args, 'client_version', config.CLOUD_SDK_VERSION)
-  builder_region = _GetBuilderRegion(release_track, _GetImageExportRegion, args)
+  builder_region = _GetImageExportRegion(args)
   builder = _GetBuilder(_IMAGE_EXPORT_BUILDER_EXECUTABLE, docker_image_tag,
                         builder_region)
   return RunImageCloudBuild(args, builder, export_args, tags, output_filter,

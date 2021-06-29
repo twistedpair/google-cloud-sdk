@@ -19,12 +19,23 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import mimetypes
+import subprocess
+
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import scaled_integer
+
+
+COMMON_EXTENSION_RULES = {
+    '.md': 'text/markdown',  # b/169088193
+    '.tgz': 'application/gzip',  # b/179176339
+}
 
 
 def get_upload_strategy(api, object_length):
@@ -44,6 +55,43 @@ def get_upload_strategy(api, object_length):
     return cloud_api.UploadStrategy.RESUMABLE
   else:
     return cloud_api.UploadStrategy.SIMPLE
+
+
+def get_content_type(file_resource):
+  """Gets a file's MIME type.
+
+  Favors returning the result of `file -b --mime ...` if the command is
+  available and users have enabled it. Otherwise, it returns a type based on the
+  file's extension.
+
+  Args:
+    file_resource (resource_reference.FileObjectResource): The file to return a
+      type for.
+
+  Returns:
+    A MIME type (str).
+    If a type cannot be guessed, DEFAULT_CONTENT_TYPE is returned.
+  """
+  path = file_resource.storage_url.object_name
+
+  # Some common extensions are not recognized by the mimetypes library and
+  # "file" command, so we'll hard-code support for them.
+  for extension, content_type in COMMON_EXTENSION_RULES.items():
+    if path.endswith(extension):
+      return content_type
+
+  if (not platforms.OperatingSystem.IsWindows() and
+      properties.VALUES.storage.use_magicfile.GetBool()):
+    output = subprocess.run(['file', '-b', '--mime', path],
+                            check=True,
+                            stdout=subprocess.PIPE,
+                            universal_newlines=True)
+    content_type = output.stdout.strip()
+  else:
+    content_type, _ = mimetypes.guess_type(path)
+  if content_type:
+    return content_type
+  return request_config_factory.DEFAULT_CONTENT_TYPE
 
 
 def validate_uploaded_object(digesters, uploaded_resource, task_status_queue):

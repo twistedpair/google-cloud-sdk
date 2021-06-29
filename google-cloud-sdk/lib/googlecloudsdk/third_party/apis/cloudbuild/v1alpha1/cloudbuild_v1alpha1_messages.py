@@ -1239,7 +1239,9 @@ class Source(_messages.Message):
     storageSource: If provided, get the source from this location in Google
       Cloud Storage.
     storageSourceManifest: If provided, get the source from this manifest in
-      Google Cloud Storage. This feature is in Preview.
+      Google Cloud Storage. This feature is in Preview; see description
+      [here](https://github.com/GoogleCloudPlatform/cloud-
+      builders/tree/master/gcs-fetcher).
   """
 
   repoSource = _messages.MessageField('RepoSource', 1)
@@ -1449,7 +1451,9 @@ class StorageSource(_messages.Message):
 
 class StorageSourceManifest(_messages.Message):
   r"""Location of the source manifest in Google Cloud Storage. This feature is
-  in Preview.
+  in Preview; see description
+  [here](https://github.com/GoogleCloudPlatform/cloud-
+  builders/tree/master/gcs-fetcher).
 
   Fields:
     bucket: Google Cloud Storage bucket containing the source manifest (see

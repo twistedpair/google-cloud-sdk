@@ -142,3 +142,45 @@ def AddDeliveryPipeline(parser, required=True):
       '--delivery-pipeline',
       help='The name of the Cloud Deploy delivery pipeline',
       required=required)
+
+
+def AddAnnotationsFlag(parser, resource_type):
+  """Adds --annotations flag."""
+  help_text = textwrap.dedent("""\
+  Annotations to apply to the %s. Annotations take the form of key/value string pairs.
+
+  Examples:
+
+  Add annotations:
+
+    $ {command} --annotations="from_target=test,status=stable"
+
+  """) % (
+      resource_type)
+
+  parser.add_argument(
+      '--annotations',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help=help_text)
+
+
+def AddLabelsFlag(parser, resource_type):
+  """Add --labels flag."""
+  help_text = textwrap.dedent("""\
+  Labels to apply to the %s. Labels take the form of key/value string pairs.
+
+  Examples:
+
+  Add labels:
+
+    $ {command} --labels="commit=abc123,author=foo"
+
+""") % (
+    resource_type)
+
+  parser.add_argument(
+      '--labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help=help_text)

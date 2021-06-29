@@ -362,8 +362,9 @@ class Image(_messages.Message):
   r"""Overlaid jpeg image.
 
   Fields:
-    alpha: Target image opacity. Valid values: `1.0` (solid, default) to `0.0`
-      (transparent).
+    alpha: Target image opacity. Valid values are from `1.0` (solid, default)
+      to `0.0` (transparent), exclusive. Set this to a value greater than
+      `0.0`.
     resolution: Normalized image resolution, based on output video resolution.
       Valid values: `0.0`\u2013`1.0`. To respect the original image aspect
       ratio, set either `x` or `y` to `0.0`. To use the original image
@@ -634,18 +635,17 @@ class OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
   Fields:
-    apiVersion: [Output only] API version used to start the operation.
-    cancelRequested: [Output only] Identifies whether the user has requested
+    apiVersion: Output only. API version used to start the operation.
+    cancelRequested: Output only. Identifies whether the user has requested
       cancellation of the operation. Operations that have successfully been
       cancelled have Operation.error value with a google.rpc.Status.code of 1,
       corresponding to `Code.CANCELLED`.
-    createTime: [Output only] The time the operation was created.
-    endTime: [Output only] The time the operation finished running.
-    statusDetail: [Output only] Human-readable status of the operation, if
-      any.
-    target: [Output only] Server-defined resource path for the target of the
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    statusDetail: Output only. Human-readable status of the operation, if any.
+    target: Output only. Server-defined resource path for the target of the
       operation.
-    verb: [Output only] Name of the verb executed by the operation.
+    verb: Output only. Name of the verb executed by the operation.
   """
 
   apiVersion = _messages.StringField(1)

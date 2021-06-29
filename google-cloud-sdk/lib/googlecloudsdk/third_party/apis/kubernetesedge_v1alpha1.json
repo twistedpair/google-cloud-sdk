@@ -365,6 +365,10 @@
           "description": "Name of the Google Edge Cloud zone where this node pool will be created.",
           "type": "string"
         },
+        "nodeLocation": {
+          "description": "Name of the Google Edge Cloud zone where this node pool will be created. For example: `us-central1-edge-customer-a`.",
+          "type": "string"
+        },
         "nodeCount": {
           "description": "Required. The number of nodes in the pool.",
           "type": "integer",
@@ -483,6 +487,91 @@
         "zone": {
           "description": "The Google Edge Cloud zone of this machine.",
           "type": "string"
+        }
+      }
+    },
+    "ListVpnConnectionsResponse": {
+      "id": "ListVpnConnectionsResponse",
+      "description": "List of VPN connections in a site.",
+      "type": "object",
+      "properties": {
+        "vpnConnections": {
+          "description": "VpnConnections in the location.",
+          "type": "array",
+          "items": {
+            "$ref": "VpnConnection"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to retrieve next page of results.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "VpnConnection": {
+      "id": "VpnConnection",
+      "description": "A VPN connection .",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of VPN connection",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the VPN connection was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the VPN connection was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels associated with this resource.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "natGatewayIp": {
+          "description": "NAT gateway IP, or WAN IP address. If a customer has multiple NAT IPs, the customer needs to configure NAT such that only one external IP maps to the GMEC Anthos cluster. This is empty if NAT is not used.",
+          "type": "string"
+        },
+        "bgpRoutingMode": {
+          "description": "Dynamic routing mode of the VPC network, `regional` or `global`.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown.",
+            "Regional mode.",
+            "Global mode."
+          ],
+          "enum": [
+            "BGP_ROUTING_MODE_UNSPECIFIED",
+            "REGIONAL",
+            "GLOBAL"
+          ]
+        },
+        "cluster": {
+          "description": "The canonical Cluster name to connect to. It is in the form of projects\/{project}\/locations\/{location}\/clusters\/{cluster}.",
+          "type": "string"
+        },
+        "vpc": {
+          "description": "The canonical VPC name to connect to. It is in the form of projects\/{project}\/locations\/{location}\/vpcs\/{vpc}.",
+          "type": "string"
+        },
+        "enableHighAvailability": {
+          "description": "Whether this VPN connection has HA enabled on cluster side. If enabled, when creating VPN connection we will attempt to use 2 ANG floating IPs.",
+          "type": "boolean"
         }
       }
     },
@@ -1788,6 +1877,149 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "vpnConnections": {
+              "methods": {
+                "list": {
+                  "id": "kubernetesedge.projects.locations.vpnConnections.list",
+                  "path": "v1alpha1/{+parent}/vpnConnections",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/vpnConnections",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent location, which owns this collection of VPN connections.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of resources to list.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token received from previous list request.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Only resources matching this filter will be listed.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Specifies the order in which resources will be listed.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListVpnConnectionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists VpnConnections in a given project and location."
+                },
+                "get": {
+                  "id": "kubernetesedge.projects.locations.vpnConnections.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/vpnConnections/{vpnConnectionsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the vpn connection.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vpnConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "VpnConnection"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single VpnConnection."
+                },
+                "create": {
+                  "id": "kubernetesedge.projects.locations.vpnConnections.create",
+                  "path": "v1alpha1/{+parent}/vpnConnections",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/vpnConnections",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent location where this vpn connection will be created.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "vpnConnectionId": {
+                      "description": "Required. The VPN connection identifier.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "VpnConnection"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Cluster in a given project and location."
+                },
+                "delete": {
+                  "id": "kubernetesedge.projects.locations.vpnConnections.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/vpnConnections/{vpnConnectionsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the vpn connection.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/vpnConnections\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "A unique identifier for this request. Restricted to 36 ASCII characters. A random UUID is recommended. This request is only idempotent if `request_id` is provided.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single VPN connection."
                 }
               }
             },

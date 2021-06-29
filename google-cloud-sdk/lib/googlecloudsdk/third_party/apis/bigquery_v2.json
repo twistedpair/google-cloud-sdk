@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210611",
+ "revision": "20210618",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -93,6 +93,40 @@
   }
  },
  "schemas": {
+  "BiEngineReason": {
+   "id": "BiEngineReason",
+   "type": "object",
+   "properties": {
+    "code": {
+     "type": "string",
+     "description": "[Output-only] High-level BI Engine reason for partial or disabled acceleration.",
+     "default": "$(reason.code)"
+    },
+    "message": {
+     "type": "string",
+     "description": "[Output-only] Free form human-readable reason for partial or disabled acceleration.",
+     "default": "$(reason.message)"
+    }
+   }
+  },
+  "BiEngineStatistics": {
+   "id": "BiEngineStatistics",
+   "type": "object",
+   "properties": {
+    "biEngineMode": {
+     "type": "string",
+     "description": "[Output-only] Specifies which mode of BI Engine acceleration was performed (if any).",
+     "default": "$(stats.bi_engine_mode)"
+    },
+    "biEngineReasons": {
+     "type": "array",
+     "description": "In case of DISABLED or PARTIAL bi_engine_mode, these contain the explanatory reasons as to why BI Engine could not accelerate. In case the full query was accelerated, this field is not populated.",
+     "items": {
+      "$ref": "BiEngineReason"
+     }
+    }
+   }
+  },
   "BigQueryModelTraining": {
    "id": "BigQueryModelTraining",
    "type": "object",
@@ -1644,6 +1678,10 @@
    "id": "JobStatistics2",
    "type": "object",
    "properties": {
+    "biEngineStatistics": {
+     "$ref": "BiEngineStatistics",
+     "description": "BI Engine specific Statistics. [Output-only] BI Engine specific Statistics."
+    },
     "billingTier": {
      "type": "integer",
      "description": "[Output-only] Billing tier for the job.",

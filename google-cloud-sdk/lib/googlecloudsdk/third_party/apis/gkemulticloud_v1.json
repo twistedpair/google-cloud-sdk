@@ -1945,6 +1945,45 @@
                       ],
                       "description": "Created a new node pool, attached to a given cluster."
                     },
+                    "patch": {
+                      "id": "gkemulticloud.projects.locations.awsClusters.awsNodePools.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/awsClusters/{awsClustersId}/awsNodePools/{awsNodePoolsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of this node pool.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+\/awsNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "If set, only validate the request, but do not actually update the node pool.",
+                          "location": "query",
+                          "type": "boolean"
+                        },
+                        "updateMask": {
+                          "description": "Required. The list of fields to be updated.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudGkemulticloudV1AwsNodePool"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Update a specific node pool."
+                    },
                     "get": {
                       "id": "gkemulticloud.projects.locations.awsClusters.awsNodePools.get",
                       "path": "v1/{+name}",
@@ -2489,6 +2528,45 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Created a new node pool, attached to a given cluster."
+                    },
+                    "patch": {
+                      "id": "gkemulticloud.projects.locations.azureClusters.azureNodePools.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/azureClusters/{azureClustersId}/azureNodePools/{azureNodePoolsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of this node pool.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+\/azureNodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "If set, only validate the request, but don't actually update the node pool.",
+                          "location": "query",
+                          "type": "boolean"
+                        },
+                        "updateMask": {
+                          "description": "Required. The list of fields to be updated.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudGkemulticloudV1AzureNodePool"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Update a specific node pool."
                     },
                     "get": {
                       "id": "gkemulticloud.projects.locations.azureClusters.azureNodePools.get",

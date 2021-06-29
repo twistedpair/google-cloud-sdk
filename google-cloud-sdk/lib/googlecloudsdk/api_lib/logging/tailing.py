@@ -137,7 +137,7 @@ class _SuppressionInfoAccumulator(object):
 
 
 def _StreamEntries(get_now, output_warning, output_error, output_debug,
-                   tail_stub, request):
+                   tail_stub):
   """Streams entries back from the Logging API.
 
   Args:
@@ -146,18 +146,12 @@ def _StreamEntries(get_now, output_warning, output_error, output_debug,
     output_error: A callable that outputs the argument as an error.
     output_debug: A callable that outputs the argument as debug info.
     tail_stub: The `BidiRpc` stub to use.
-    request: The `TailLogEntriesRequest` message to use.
 
   Yields:
     Entries included in the tail session.
   """
 
   tail_stub.open()
-  try:
-    tail_stub.send(request)
-  except grpc.RpcError as e:
-    tail_stub.close()
-    raise e
   suppression_info_accumulator = _SuppressionInfoAccumulator(
       get_now, output_warning, output_error)
   error = None
@@ -184,9 +178,7 @@ class LogTailer(object):
 
   def __init__(self):
     self.client = apis.GetGapicClientInstance('logging', 'v2')
-
-    self.tail_stub = gapic_util.MakeBidiRpc(
-        self.client.logging.transport.tail_log_entries)
+    self.tail_stub = None
 
   def TailLogs(self,
                resource_names,
@@ -216,11 +208,16 @@ class LogTailer(object):
     request = self.client.types.TailLogEntriesRequest()
     request.resource_names.extend(resource_names)
     request.filter = logs_filter
+
+    self.tail_stub = gapic_util.MakeBidiRpc(
+        self.client, self.client.logging.transport.tail_log_entries,
+        initial_request=request)
     if buffer_window_seconds:
       request.buffer_window = datetime.timedelta(seconds=buffer_window_seconds)
     for entry in _StreamEntries(get_now, output_warning, output_error,
-                                output_debug, self.tail_stub, request):
+                                output_debug, self.tail_stub):
       yield entry
 
   def Stop(self):
-    self.tail_stub.close()
+    if self.tail_stub:
+      self.tail_stub.close()

@@ -25,10 +25,11 @@ from googlecloudsdk.calliope import base
 NODEPOOLS_FORMAT = """\
   table(
     name.basename(),
-    instanceType:label=MACHINE_TYPE,
-    rootVolume.sizeGib:label=DISK_SIZE_GB,
     version:label=NODE_VERSION,
-    state:label=STATUS)"""
+    config.instanceType,
+    autoscaling.minNodeCount:label=MIN_NODES,
+    autoscaling.maxNodeCount:label=MAX_NODES,
+    state)"""
 
 
 class NodePoolsClient(object):

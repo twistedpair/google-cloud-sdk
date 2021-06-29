@@ -27,6 +27,10 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
+_PACKAGE_TYPE_CHOICES = {
+    'MAVEN': 'MAVEN',
+}
+
 
 def RepoAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
@@ -303,3 +307,16 @@ def GetOnDemandScanningFakeExtractionFlag():
       hidden=True,
       help=('Whether to use fake packages/versions instead of performing '
             'extraction. This flag is for test purposes only.'))
+
+
+def GetAdditionalPackageTypesFlag():
+  return base.Argument(
+      '--additional-package-types',
+      type=arg_parsers.ArgList(
+          choices=_PACKAGE_TYPE_CHOICES,
+          element_type=lambda package_type: package_type.upper()),
+      hidden=True,
+      metavar='ADDITIONAL_PACKAGE_TYPES',
+      help=(
+          'The comma-separated list of additional package types besides OS packages (e.g. MAVEN).'
+      ))

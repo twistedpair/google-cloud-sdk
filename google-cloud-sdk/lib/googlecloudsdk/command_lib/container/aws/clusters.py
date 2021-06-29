@@ -26,10 +26,10 @@ from googlecloudsdk.core import properties
 CLUSTERS_FORMAT = """\
   table(
     name.basename(),
-    awsRegion:label=AWS_LOCATION,
-    controlPlane.version:label=MASTER_VERSION,
-    controlPlane.instanceType:label=MACHINE_TYPE,
-    state:label=STATUS)"""
+    awsRegion,
+    controlPlane.version:label=CONTROL_PLANE_VERSION,
+    controlPlane.instanceType,
+    state)"""
 
 
 class Client(object):

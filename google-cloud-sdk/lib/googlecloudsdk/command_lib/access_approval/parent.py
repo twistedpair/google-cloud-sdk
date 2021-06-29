@@ -28,15 +28,15 @@ def Args(parser):
   parent_group = parser.add_mutually_exclusive_group(required=False)
   parent_group.add_argument(
       '--project',
-      help='project number or id. only one of --project, --folder, or --organization can be provided. If none are provided then it uses config property [core/project].'
+      help='Project number or id. Only one of --project, --folder, or --organization can be provided. If none are provided then it uses config property [core/project].'
   )
   parent_group.add_argument(
       '--folder',
-      help='folder number. only one of --project, --folder, or --organization can be provided. If none are provided then it uses config property [core/project].'
+      help='Folder number. Only one of --project, --folder, or --organization can be provided. If none are provided then it uses config property [core/project].'
   )
   parent_group.add_argument(
       '--organization',
-      help='organization number. either --project, --folder, or --organization must be provided. If none are provided then it uses config property [core/project].'
+      help='Organization number. Either --project, --folder, or --organization must be provided. If none are provided then it uses config property [core/project].'
   )
 
 

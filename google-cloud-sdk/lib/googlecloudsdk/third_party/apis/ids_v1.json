@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Cloud IDS API",
-  "description": "Cloud IDS is a next-generation advanced Intrusion Detection Service that provides threat detection for intrusions, malware, spyware and command-and-control attacks. The threat detection capabilities are powered by Palo Alto Networks Threat Prevention technologies.",
+  "description": "Cloud IDS (Cloud Intrusion Detection System) detects malware, spyware, command-and-control attacks, and other network-based threats. Its security efficacy is industry leading, built with Palo Alto Networks technologies.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -311,6 +311,10 @@
             "READY",
             "DELETING"
           ]
+        },
+        "trafficLogs": {
+          "description": "Whether the endpoint should report traffic logs in addition to threat logs.",
+          "type": "boolean"
         }
       }
     },

@@ -587,6 +587,27 @@ def AddTriggerServiceAccountFlag(parser):
       """)
 
 
+def AddDataFlag(parser):
+  parser.add_argument(
+      '--data',
+      help="""JSON string with data that will be passed to the function.""")
+
+
+def AddCloudEventsFlag(parser):
+  parser.add_argument(
+      '--cloud-event',
+      help="""
+      JSON encoded string with a CloudEvent in structured content mode.
+
+      Mutually exclusive with --data flag.
+
+      Use for Cloud Functions V2 CloudEvent functions. The CloudEvent
+      object will be sent to your function as a binary content mode message with
+      the top-level 'data' field set as the HTTP body and all other JSON fields
+      sent as HTTP headers.
+      """)
+
+
 def AddIAMPolicyFileArg(parser):
   parser.add_argument(
       'policy_file',

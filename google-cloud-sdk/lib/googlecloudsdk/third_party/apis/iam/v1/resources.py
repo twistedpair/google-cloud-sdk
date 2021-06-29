@@ -31,6 +31,34 @@ class Collections(enum.Enum):
       [],
       True
   )
+  LOCATIONS = (
+      'locations',
+      'locations/{locationsId}',
+      {},
+      ['locationsId'],
+      True
+  )
+  LOCATIONS_WORKFORCEPOOLS = (
+      'locations.workforcePools',
+      '{+name}',
+      {
+          '':
+              'locations/{locationsId}/workforcePools/{workforcePoolsId}',
+      },
+      ['name'],
+      True
+  )
+  LOCATIONS_WORKFORCEPOOLS_PROVIDERS = (
+      'locations.workforcePools.providers',
+      '{+name}',
+      {
+          '':
+              'locations/{locationsId}/workforcePools/{workforcePoolsId}/'
+              'providers/{providersId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',

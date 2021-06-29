@@ -31,6 +31,7 @@ import threading
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as api_errors
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import file_part
 from googlecloudsdk.command_lib.storage import hash_util
@@ -138,8 +139,11 @@ class FilePartUploadTask(file_part_task.FilePartTask):
     destination_url = self._destination_resource.storage_url
     provider = destination_url.scheme
     api = api_factory.get_api(provider)
-    request_config = cloud_api.RequestConfig(
-        md5_hash=self._source_resource.md5_hash, size=self._length)
+    request_config = request_config_factory.get_request_config(
+        destination_url,
+        content_type=upload_util.get_content_type(self._source_resource),
+        md5_hash=self._source_resource.md5_hash,
+        size=self._length)
 
     with self._get_wrapped_stream(digesters,
                                   task_status_queue) as upload_stream:
@@ -181,7 +185,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             api.upload_object,
             upload_stream,
             self._destination_resource,
-            request_config=request_config,
+            request_config,
             serialization_data=serialization_data,
             tracker_callback=tracker_callback,
             upload_strategy=upload_strategy)
@@ -237,7 +241,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         destination_resource = api.upload_object(
             upload_stream,
             self._destination_resource,
-            request_config=request_config,
+            request_config,
             upload_strategy=upload_strategy)
 
       upload_util.validate_uploaded_object(digesters, destination_resource,

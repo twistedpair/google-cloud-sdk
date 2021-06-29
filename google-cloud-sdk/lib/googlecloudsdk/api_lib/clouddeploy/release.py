@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.clouddeploy import client_util
+from googlecloudsdk.command_lib.deploy import deploy_util
 from googlecloudsdk.core import log
 
 TARGET_FILTER_TEMPLATE = ('targetSnapshots.name:"{}"'
@@ -59,26 +60,36 @@ class ReleaseClient(object):
             release=release_config,
             releaseId=release_ref.Name()))
 
-  def Promote(self, release_ref, to_target, rollout_id=None):
+  def Promote(self,
+              release_ref,
+              to_target,
+              rollout_id=None,
+              annotations=None,
+              labels=None):
     """Promotes the release to a specified target in the promotion sequence.
 
     Args:
       release_ref: release resource object.
       to_target: the destination target to promote into.
       rollout_id: ID to assign to the generated rollout.
+      annotations: dict[str,str], a dict of annotation (key,value) pairs.
+      labels: dict[str,str], a dict of label (key,value) pairs.
 
     Returns:
       The operation message.
     """
     log.debug('promoting release {} to target{}.'.format(
         release_ref.RelativeName(), to_target))
+    request = self.messages.PromoteReleaseRequest(
+        destinationTarget=to_target, rolloutId=rollout_id)
+    deploy_util.SetMetadata(self.messages, request,
+                            deploy_util.ResourceType.PROMOTE, annotations,
+                            labels)
 
     return self._service.Promote(
         self.messages
         .ClouddeployProjectsLocationsDeliveryPipelinesReleasesPromoteRequest(
-            name=release_ref.RelativeName(),
-            promoteReleaseRequest=self.messages.PromoteReleaseRequest(
-                destinationTarget=to_target, rolloutId=rollout_id)))
+            name=release_ref.RelativeName(), promoteReleaseRequest=request))
 
   def Get(self, name):
     """Gets a release resource.

@@ -47,47 +47,81 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
-def TransformTrigger(r, undefined=''):
+def _TransformState(data, undefined=''):
+  """Returns textual information about functions state.
+
+  Args:
+    data: JSON-serializable object.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    str containing information about the functions state.
+  """
+  if not isinstance(data, dict):
+    return undefined
+  if 'status' in data:
+    return data['status']
+  if 'state' in data:
+    return data['state']
+  return undefined
+
+
+def TransformTrigger(data, undefined=''):
   """Returns textual information about functions trigger.
 
   Args:
-    r: JSON-serializable object.
+    data: JSON-serializable v1 and v2 Functions objects.
     undefined: Returns this value if the resource cannot be formatted.
 
   Returns:
     str containing information about functions trigger.
   """
-  if 'httpsTrigger' in r:
+  product_version = _TransformProductVersion(data)
+  if product_version == '1':
+    if 'httpsTrigger' in data:
+      return 'HTTP Trigger'
+    if 'gcsTrigger' in data:
+      return 'bucket: ' + data['gcsTrigger']
+    if 'pubsubTrigger' in data:
+      return 'topic: ' + data['pubsubTrigger'].split('/')[-1]
+    if 'eventTrigger' in data:
+      return 'Event Trigger'
+    return undefined
+
+  elif product_version == '2':
+    if 'eventTrigger' in data:
+      event_trigger = data['eventTrigger']
+      if 'pubsubTopic' in event_trigger:
+        return 'topic: ' + event_trigger['pubsubTopic'].split('/')[-1]
+      return 'Event Trigger'
+
+    # v2 functions can always be http triggered as backed by a cloud run
+    # service, if no trigger is found display 'HTTP trigger'
     return 'HTTP Trigger'
-  if 'gcsTrigger' in r:
-    return 'bucket: ' + r['gcsTrigger']
-  if 'pubsubTrigger' in r:
-    return 'topic: ' + r['pubsubTrigger'].split('/')[-1]
-  if 'eventTrigger' in r:
-    return 'Event Trigger'
+
   return undefined
 
 
-def _TransformVersionId(r, undefined='-'):
+def _TransformProductVersion(data, undefined='-'):
   """Returns Cloud Functions product version.
 
   Args:
-    r: JSON-serializable object.
+    data: JSON-serializable object.
     undefined: Returns this value if the resource cannot be formatted.
 
   Returns:
     str containing inferred product version.
   """
 
-  # r.get returns None if entry doesn't exist
-  entry_point = r.get('entryPoint')
-  build_id = r.get('buildId')
-  runtime = r.get('runtime')
+  # data.get returns None if entry doesn't exist
+  entry_point = data.get('entryPoint')
+  build_id = data.get('buildId')
+  runtime = data.get('runtime')
   if any([entry_point, build_id, runtime]):
     return '1'
 
-  build_config = r.get('buildConfig')
-  service_config = r.get('serviceConfig')
+  build_config = data.get('buildConfig')
+  service_config = data.get('serviceConfig')
 
   if any([build_config, service_config]):
     return '2'
@@ -97,7 +131,8 @@ def _TransformVersionId(r, undefined='-'):
 
 _TRANSFORMS = {
     'trigger': TransformTrigger,
-    'versionId': _TransformVersionId,
+    'state': _TransformState,
+    'versionId': _TransformProductVersion,
 }
 
 

@@ -182,25 +182,29 @@ def _GetClientInstance(api_name,
   return client_instance
 
 
-def _GetGapicClientClass(api_name, api_version):
+def _GetGapicClientClass(api_name, api_version, is_async=False):
   """Returns the GAPIC client class for the API def specified by the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
+    is_async: bool, If True, return the asyncio version of the gapic client.
 
   Currently, we only support the logging v2 client.
   """
   del api_name, api_version  # unused
 
   # pylint: disable=g-import-not-at-top
-  from googlecloudsdk.third_party.gapic_wrappers.logging.v2 import client
+  if is_async:
+    from googlecloudsdk.third_party.gapic_wrappers.logging.v2 import async_client as client
+  else:
+    from googlecloudsdk.third_party.gapic_wrappers.logging.v2 import client
 
   return client.LoggingClient
 
 
 def _GetGapicClientInstance(api_name, api_version, credentials,
-                            address_override_func=None):
+                            address_override_func=None, is_async=False):
   """Returns an instance of the GAPIC API client specified in the args.
 
   For apitools API clients, the API endpoint override is something like
@@ -214,6 +218,7 @@ def _GetGapicClientInstance(api_name, api_version, credentials,
     credentials: google.auth.credentials.Credentials, the credentials to use.
     address_override_func: function, function to call to override the client
         host. It takes a single argument which is the original host.
+    is_async: bool, If True, return the asyncio version of the gapic client.
 
   Returns:
     An instance of the specified GAPIC API client.
@@ -233,7 +238,7 @@ def _GetGapicClientInstance(api_name, api_version, credentials,
       return address
     return address_override_func(address)
 
-  client_class = _GetGapicClientClass(api_name, api_version)
+  client_class = _GetGapicClientClass(api_name, api_version, is_async=is_async)
 
   return client_class(credentials, address_override_func=AddressOverride,
                       mtls_enabled=mtls_enabled)

@@ -251,7 +251,7 @@ def ScopesHelp():
     for item in value[1:]:
       aliases.append('| ' + item)
   return """\
-SCOPE can be either the full URI of the scope or an alias. *default* scopes are
+SCOPE can be either the full URI of the scope or an alias. *Default* scopes are
 assigned to all instances. Available aliases are:
 
 Alias | URI

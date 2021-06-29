@@ -369,15 +369,15 @@ class _BaseInstances(object):
       settings.dataDiskType = _ParseStorageType(
           sql_messages, STORAGE_TYPE_PREFIX + args.storage_type)
 
+    if args.active_directory_domain is not None:
+      settings.activeDirectoryConfig = (
+          reducers.ActiveDirectoryConfig(sql_messages,
+                                         args.active_directory_domain))
+
     # BETA args.
     if _IsBetaOrNewer(release_track):
       settings.userLabels = labels_util.ParseCreateArgs(
           args, sql_messages.Settings.UserLabelsValue)
-
-      if args.active_directory_domain is not None:
-        settings.activeDirectoryConfig = (
-            reducers.ActiveDirectoryConfig(sql_messages,
-                                           args.active_directory_domain))
 
     # ALPHA args.
     if _IsAlpha(release_track):
@@ -478,6 +478,11 @@ class _BaseInstances(object):
             insights_config_record_client_address=args
             .insights_config_record_client_address))
 
+    if args.active_directory_domain is not None:
+      settings.activeDirectoryConfig = (
+          reducers.ActiveDirectoryConfig(sql_messages,
+                                         args.active_directory_domain))
+
     # BETA args.
     if _IsBetaOrNewer(release_track):
       labels_diff = labels_util.ExplicitNullificationDiff.FromUpdateArgs(args)
@@ -485,11 +490,6 @@ class _BaseInstances(object):
                                         instance.settings.userLabels)
       if labels_update.needs_update:
         settings.userLabels = labels_update.labels
-
-      if args.active_directory_domain is not None:
-        settings.activeDirectoryConfig = (
-            reducers.ActiveDirectoryConfig(sql_messages,
-                                           args.active_directory_domain))
 
     return settings
 

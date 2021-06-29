@@ -147,6 +147,16 @@ class GoogleIamV1betaWorkloadIdentityPool(_messages.Message):
       is re-enabled, existing tokens grant access again.
     displayName: A display name for the pool. Cannot exceed 32 characters.
     name: Output only. The resource name of the pool.
+    sessionDuration: Overrides the lifespan of access tokens issued when
+      federating using this pool. If not set, the lifespan of issued access
+      tokens is computed based on the type of identity provider: - For AWS
+      providers, the default access token lifespan is equal to 15 minutes. -
+      For OIDC providers, the default access token lifespan is equal to the
+      remaining lifespan of the exchanged OIDC ID token, with a maximum limit
+      of 1 hour. If set, session duration must be between 2 minutes and 12
+      hours. Organization administrators can further restrict the maximum
+      allowed session_duration value using the iam-
+      workloadIdentityPoolsSessionDuration Resource Setting.
     state: Output only. The state of the pool.
   """
 
@@ -172,7 +182,8 @@ class GoogleIamV1betaWorkloadIdentityPool(_messages.Message):
   disabled = _messages.BooleanField(2)
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  sessionDuration = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):

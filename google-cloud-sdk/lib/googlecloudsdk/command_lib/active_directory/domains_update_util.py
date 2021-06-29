@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.active_directory import exceptions
 from googlecloudsdk.command_lib.active_directory import util
 from googlecloudsdk.command_lib.util.args import labels_util
-from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 
 
@@ -84,7 +83,6 @@ def UpdateLabels(domain_ref, args, patch_request):
 
 def ProcessPfxFile(domain_ref, args, request):
   """Reads the pfx file into the LDAPSSettings proto and updates the request."""
-  log.status.Print("note: You must be safelisted for the Managed AD LDAPS Alpha in order to use this feature.")
   if args.certificate_pfx_file:
     if not request.lDAPSSettings:
       messages = util.GetMessagesForResource(domain_ref)
@@ -99,8 +97,7 @@ def ProcessPfxFile(domain_ref, args, request):
 def GetPfxPasssword():
   """Prompt for user input of pfx password."""
   cred = console_io.PromptPassword(
-      'Please enter the password used the encrypt the pfx certificate: '
-  )
+      'Please enter the password used the encrypt the pfx certificate: ')
   return cred
 
 

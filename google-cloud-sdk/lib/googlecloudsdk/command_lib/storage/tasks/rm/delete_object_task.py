@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.tasks import task
 
@@ -38,7 +39,10 @@ class DeleteObjectTask(task.Task):
 
   def execute(self, task_status_queue=None):
     provider = self._object_url.scheme
-    api_factory.get_api(provider).delete_object(self._object_url)
+    request_config = request_config_factory.get_request_config(self._object_url)
+
+    api_factory.get_api(provider).delete_object(self._object_url,
+                                                request_config)
     if task_status_queue:
       progress_callbacks.increment_count_callback(task_status_queue)
 

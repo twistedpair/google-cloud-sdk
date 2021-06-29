@@ -131,8 +131,8 @@ def SetAppEngineRequestUpdateHeaders(unused_job_ref, args, update_job_req):
         headers[key] = None
 
   if headers:
-    update_job_req.job.appEngineHttpTarget.headers = \
-        _GenerateAdditionalProperties(headers)
+    update_job_req.job.appEngineHttpTarget.headers = _GenerateAdditionalProperties(
+        headers)
   return update_job_req
 
 

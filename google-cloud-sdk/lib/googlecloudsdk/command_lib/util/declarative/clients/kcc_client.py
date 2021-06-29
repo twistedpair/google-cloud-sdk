@@ -29,6 +29,7 @@ from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.command_lib.asset import utils as asset_utils
 from googlecloudsdk.command_lib.util.anthos import binary_operations as bin_ops
 from googlecloudsdk.command_lib.util.declarative.clients import client_base
+from googlecloudsdk.command_lib.util.resource_map.declarative import resource_name_translator
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -292,6 +293,11 @@ def _BulkExportPostStatus(preexisting_file_count, path):
         'Exported resource configuration(s) to [{}].\n'.format(path))
 
 
+def _TranslateCollectionToAssetType(collection):
+  return resource_name_translator.ResourceNameTranslator().get_resource(
+      collection_name=collection).asset_inventory_type
+
+
 def CheckForAssetInventoryEnablementWithPrompt(project=None):
   """Checks if the cloudasset API is enabled, prompts to enable if not."""
   project = project or properties.VALUES.core.project.GetOrFail()
@@ -409,25 +415,18 @@ class KccClient(client_base.DeclarativeClient):
     log.status.Print('Exported successfully.')
     return exit_code
 
-  def ExportAll(self, args, resource_uris, resource_type):
-    normalized_resource_uris = _NormalizeUris(resource_uris)
+  def ExportAll(self, args, collection):
     cmd = self._GetBinaryCommand(args, 'bulk-export')
-
-    asset_inventory_input = _GetAssetInventoryInput(
-        resource_uris=normalized_resource_uris, resource_type=resource_type)
-
-    if self._OutputToFileOrDir(args):
-      with progress_tracker.ProgressTracker(
-          message='Exporting resource configurations',
-          aborted_message='Aborted Export.'):
-        exit_code, _, error_value = _ExecuteBinary(
-            cmd=cmd, in_str=asset_inventory_input)
-        if exit_code != 0:
-          raise client_base.ClientException(
-              'Error executing export:: [{}]'.format(error_value))
-      return exit_code
-    else:
-      return _ExecuteBinaryWithStreaming(cmd=cmd, in_str=asset_inventory_input)
+    asset_type = [_TranslateCollectionToAssetType(collection)]
+    asset_list_input = _GetAssetInventoryListInput(
+        folder=getattr(args, 'folder', None),
+        project=(getattr(args, 'project', None) or
+                 properties.VALUES.core.project.GetOrFail()),
+        org=getattr(args, 'organization', None),
+        asset_types_filter=asset_type,
+        filter_expression=getattr(args, 'filter', None))
+    cmd = self._GetBinaryCommand(args, 'bulk-export')
+    return self._CallBulkExport(cmd, args, asset_list_input)
 
   def _CallBulkExport(self, cmd, args, asset_list_input=None):
     """Execute actual bulk-export command on config-connector binary."""

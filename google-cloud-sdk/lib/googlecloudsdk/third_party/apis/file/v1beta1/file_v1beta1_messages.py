@@ -470,7 +470,8 @@ class FileShareConfig(_messages.Message):
   Fields:
     capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
       1 GB as 1024^3 bytes.
-    name: The name of the file share (must be 16 characters or less).
+    name: The name of the file share (must be 32 characters or less for High
+      Scale SSD tier, 16 characters or less for all other tiers).
     nfsExportOptions: Nfs Export Options. There is a limit of 10 export
       options per file share.
     sourceBackup: The resource name of the backup, in the format
@@ -840,11 +841,14 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
     location: The location of the node, if different from instance location.
     nodeId: The id of the node. This should be equal to
       SaasInstanceNode.node_id.
+    perSliEligibility: If present, this will override eligibility for the node
+      coming from instance or exclusions for specified SLIs.
   """
 
   exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 1, repeated=True)
   location = _messages.StringField(2)
   nodeId = _messages.StringField(3)
+  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 4)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility(_messages.Message):
@@ -1585,18 +1589,17 @@ class OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
   Fields:
-    apiVersion: [Output only] API version used to start the operation.
-    cancelRequested: [Output only] Identifies whether the user has requested
+    apiVersion: Output only. API version used to start the operation.
+    cancelRequested: Output only. Identifies whether the user has requested
       cancellation of the operation. Operations that have successfully been
       cancelled have Operation.error value with a google.rpc.Status.code of 1,
       corresponding to `Code.CANCELLED`.
-    createTime: [Output only] The time the operation was created.
-    endTime: [Output only] The time the operation finished running.
-    statusDetail: [Output only] Human-readable status of the operation, if
-      any.
-    target: [Output only] Server-defined resource path for the target of the
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    statusDetail: Output only. Human-readable status of the operation, if any.
+    target: Output only. Server-defined resource path for the target of the
       operation.
-    verb: [Output only] Name of the verb executed by the operation.
+    verb: Output only. Name of the verb executed by the operation.
   """
 
   apiVersion = _messages.StringField(1)

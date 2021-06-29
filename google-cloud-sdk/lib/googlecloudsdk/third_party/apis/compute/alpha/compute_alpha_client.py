@@ -2822,7 +2822,7 @@ Example request body:
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on the specified resource. To learn more about labels, read the  Labeling Resources documentation.
 
       Args:
         request: (ComputeForwardingRulesSetLabelsRequest) input message
@@ -3424,7 +3424,7 @@ Example request body:
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on the specified resource. To learn more about labels, read the  Labeling resources documentation.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetLabelsRequest) input message
@@ -6870,7 +6870,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SendDiagnosticInterrupt(self, request, global_params=None):
-      r"""TODO(b/180520210): Add IAM permission for this API. Sends diagnostic interrupt to the instance.
+      r"""Sends diagnostic interrupt to the instance.
 
       Args:
         request: (ComputeInstancesSendDiagnosticInterruptRequest) input message
@@ -12933,6 +12933,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+
+      Args:
+        request: (ComputeRegionDisksUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.regionDisks.update',
+        ordered_params=['project', 'region', 'disk'],
+        path_params=['disk', 'project', 'region'],
+        query_params=['paths', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/disks/{disk}',
+        request_field='diskResource',
+        request_type_name='ComputeRegionDisksUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class RegionHealthCheckServicesService(base_api.BaseApiService):
     """Service class for the regionHealthCheckServices resource."""
 
@@ -15000,6 +15026,32 @@ For more information, see Deleting instantSnapshots.
         request_field='',
         request_type_name='ComputeRegionNetworkFirewallPoliciesGetAssociationRequest',
         response_type_name='FirewallPolicyAssociation',
+        supports_download=False,
+    )
+
+    def GetEffectiveFirewalls(self, request, global_params=None):
+      r"""Returns the effective firewalls on a given network.
+
+      Args:
+        request: (ComputeRegionNetworkFirewallPoliciesGetEffectiveFirewallsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetEffectiveFirewalls')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEffectiveFirewalls.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionNetworkFirewallPolicies.getEffectiveFirewalls',
+        ordered_params=['project', 'region', 'network'],
+        path_params=['project', 'region'],
+        query_params=['network'],
+        relative_path='projects/{project}/regions/{region}/firewallPolicies/getEffectiveFirewalls',
+        request_field='',
+        request_type_name='ComputeRegionNetworkFirewallPoliciesGetEffectiveFirewallsRequest',
+        response_type_name='RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse',
         supports_download=False,
     )
 

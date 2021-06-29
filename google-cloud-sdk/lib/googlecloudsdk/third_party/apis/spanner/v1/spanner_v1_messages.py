@@ -1237,6 +1237,8 @@ class KeyRangeInfo(_messages.Message):
     keysCount: The number of keys this range covers.
     metric: The name of the metric. e.g. "latency".
     startKeyIndex: The index of the start key in indexed_keys.
+    timeOffset: The time offset. This is the time since the start of the time
+      interval.
     unit: The unit of the metric. This is an unstructured field and will be
       mapped as is to the user.
     value: The value of the metric.
@@ -1248,8 +1250,9 @@ class KeyRangeInfo(_messages.Message):
   keysCount = _messages.IntegerField(4)
   metric = _messages.MessageField('LocalizedString', 5)
   startKeyIndex = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  unit = _messages.MessageField('LocalizedString', 7)
-  value = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
+  timeOffset = _messages.StringField(7)
+  unit = _messages.MessageField('LocalizedString', 8)
+  value = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
 
 
 class KeyRangeInfos(_messages.Message):

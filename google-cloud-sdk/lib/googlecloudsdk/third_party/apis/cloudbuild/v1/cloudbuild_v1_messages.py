@@ -820,6 +820,10 @@ class BuildTrigger(_messages.Message):
   Fields:
     approvalConfig: Configuration for manual approval to start a build
       invocation of this BuildTrigger.
+    autodetect: Autodetect build configuration. The following precedence is
+      used (case insensitive): 1. cloudbuild.yaml 2. cloudbuild.yml 3.
+      cloudbuild.json 4. Dockerfile Currently only available for GitHub App
+      Triggers.
     bitbucketServerTriggerConfig: BitbucketServerTriggerConfig describes the
       configuration of a trigger that creates a build whenever a Bitbucket
       Server event is received.
@@ -904,27 +908,28 @@ class BuildTrigger(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   approvalConfig = _messages.MessageField('ApprovalConfig', 1)
-  bitbucketServerTriggerConfig = _messages.MessageField('BitbucketServerTriggerConfig', 2)
-  build = _messages.MessageField('Build', 3)
-  createTime = _messages.StringField(4)
-  cron = _messages.MessageField('CronConfig', 5)
-  description = _messages.StringField(6)
-  disabled = _messages.BooleanField(7)
-  filename = _messages.StringField(8)
-  filter = _messages.StringField(9)
-  gitFileSource = _messages.MessageField('GitFileSource', 10)
-  github = _messages.MessageField('GitHubEventsConfig', 11)
-  id = _messages.StringField(12)
-  ignoredFiles = _messages.StringField(13, repeated=True)
-  includedFiles = _messages.StringField(14, repeated=True)
-  name = _messages.StringField(15)
-  pubsubConfig = _messages.MessageField('PubsubConfig', 16)
-  resourceName = _messages.StringField(17)
-  sourceToBuild = _messages.MessageField('GitRepoSource', 18)
-  substitutions = _messages.MessageField('SubstitutionsValue', 19)
-  tags = _messages.StringField(20, repeated=True)
-  triggerTemplate = _messages.MessageField('RepoSource', 21)
-  webhookConfig = _messages.MessageField('WebhookConfig', 22)
+  autodetect = _messages.BooleanField(2)
+  bitbucketServerTriggerConfig = _messages.MessageField('BitbucketServerTriggerConfig', 3)
+  build = _messages.MessageField('Build', 4)
+  createTime = _messages.StringField(5)
+  cron = _messages.MessageField('CronConfig', 6)
+  description = _messages.StringField(7)
+  disabled = _messages.BooleanField(8)
+  filename = _messages.StringField(9)
+  filter = _messages.StringField(10)
+  gitFileSource = _messages.MessageField('GitFileSource', 11)
+  github = _messages.MessageField('GitHubEventsConfig', 12)
+  id = _messages.StringField(13)
+  ignoredFiles = _messages.StringField(14, repeated=True)
+  includedFiles = _messages.StringField(15, repeated=True)
+  name = _messages.StringField(16)
+  pubsubConfig = _messages.MessageField('PubsubConfig', 17)
+  resourceName = _messages.StringField(18)
+  sourceToBuild = _messages.MessageField('GitRepoSource', 19)
+  substitutions = _messages.MessageField('SubstitutionsValue', 20)
+  tags = _messages.StringField(21, repeated=True)
+  triggerTemplate = _messages.MessageField('RepoSource', 22)
+  webhookConfig = _messages.MessageField('WebhookConfig', 23)
 
 
 class BuiltImage(_messages.Message):
@@ -990,6 +995,22 @@ class CloudbuildInstallationsInstallationsListRequest(_messages.Message):
   """
 
   installationId = _messages.IntegerField(1, required=True)
+
+
+class CloudbuildLocationsRegionalWebhookRequest(_messages.Message):
+  r"""A CloudbuildLocationsRegionalWebhookRequest object.
+
+  Fields:
+    httpBody: A HttpBody resource to be passed as the request body.
+    location: Required. The location where the webhook should be sent.
+    webhookKey: For GitHub Enterprise webhooks, this key is used to associate
+      the webhook request with the GitHubEnterpriseConfig to use for
+      validation.
+  """
+
+  httpBody = _messages.MessageField('HttpBody', 1)
+  location = _messages.StringField(2, required=True)
+  webhookKey = _messages.StringField(3)
 
 
 class CloudbuildOauthGetRegistrationRequest(_messages.Message):
@@ -3239,7 +3260,9 @@ class Source(_messages.Message):
     storageSource: If provided, get the source from this location in Google
       Cloud Storage.
     storageSourceManifest: If provided, get the source from this manifest in
-      Google Cloud Storage. This feature is in Preview.
+      Google Cloud Storage. This feature is in Preview; see description
+      [here](https://github.com/GoogleCloudPlatform/cloud-
+      builders/tree/master/gcs-fetcher).
   """
 
   gitSource = _messages.MessageField('GitSource', 1)
@@ -3450,7 +3473,9 @@ class StorageSource(_messages.Message):
 
 class StorageSourceManifest(_messages.Message):
   r"""Location of the source manifest in Google Cloud Storage. This feature is
-  in Preview.
+  in Preview; see description
+  [here](https://github.com/GoogleCloudPlatform/cloud-
+  builders/tree/master/gcs-fetcher).
 
   Fields:
     bucket: Google Cloud Storage bucket containing the source manifest (see

@@ -472,6 +472,10 @@
       "description": "Request message for wiping all data on the device.",
       "type": "object",
       "properties": {
+        "removeResetLock": {
+          "description": "Optional. Specifies if a user is able to factory reset a device after a Device Wipe. On iOS, this is called \"Activation Lock\", while on Android, this is known as \"Factory Reset Protection\". If true, this protection will be removed from the device, so that a user can successfully factory reset. If false, the setting is untouched on the device.",
+          "type": "boolean"
+        }
       }
     },
     "CancelWipeDeviceRequest": {
@@ -831,6 +835,13 @@
         "dynamicGroupMetadata": {
           "description": "Optional. Dynamic group metadata like queries and status.",
           "$ref": "DynamicGroupMetadata"
+        },
+        "posixGroups": {
+          "description": "Optional. The POSIX groups associated with the `Group`.",
+          "type": "array",
+          "items": {
+            "$ref": "PosixGroup"
+          }
         }
       }
     },
@@ -913,6 +924,26 @@
           "description": "The latest time at which the dynamic group is guaranteed to be in the given status. If status is `UP_TO_DATE`, the latest time at which the dynamic group was confirmed to be up-to-date. If status is `UPDATING_MEMBERSHIPS`, the time at which dynamic group was created.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "PosixGroup": {
+      "id": "PosixGroup",
+      "description": "POSIX Group definition to represent a group in a POSIX compliant system.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the POSIX group.",
+          "type": "string"
+        },
+        "gid": {
+          "description": "GID of the POSIX group.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "systemId": {
+          "description": "System identifier for which group name and gid apply to. If not specified it will default to empty value.",
+          "type": "string"
         }
       }
     },

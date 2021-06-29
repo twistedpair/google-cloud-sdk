@@ -6,7 +6,7 @@
   "canonicalName": "Edge Container",
   "version": "v1alpha",
   "revision": "0",
-  "title": "Edge Container API (prod)",
+  "title": "Edge Container API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -22,6 +22,7 @@
   "baseUrl": "https://edgecontainer.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -363,6 +364,10 @@
         },
         "site": {
           "description": "Name of the Google Edge Cloud zone where this node pool will be created.",
+          "type": "string"
+        },
+        "nodeLocation": {
+          "description": "Name of the Google Edge Cloud zone where this node pool will be created. For example: `us-central1-edge-customer-a`.",
           "type": "string"
         },
         "nodeCount": {

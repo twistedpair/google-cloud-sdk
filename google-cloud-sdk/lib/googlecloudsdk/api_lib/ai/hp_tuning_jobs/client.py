@@ -25,22 +25,34 @@ from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.core import yaml
 
 
+def GetAlgorithmEnum(version=constants.BETA_VERSION):
+  messages = apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
+                                    constants.AI_PLATFORM_API_VERSION[version])
+  if version == constants.GA_VERSION:
+    return messages.GoogleCloudAiplatformV1StudySpec.AlgorithmValueValuesEnum
+  else:
+    return messages.GoogleCloudAiplatformV1beta1StudySpec.AlgorithmValueValuesEnum
+
+
 class HpTuningJobsClient(object):
   """Client used for interacting with HyperparameterTuningJob endpoint."""
 
-  def __init__(self, client=None, messages=None):
+  def __init__(self, version, client=None, messages=None):
     self.client = client or apis.GetClientInstance(
         constants.AI_PLATFORM_API_NAME,
-        constants.AI_PLATFORM_API_VERSION[constants.BETA_VERSION])
+        constants.AI_PLATFORM_API_VERSION[version])
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_hyperparameterTuningJobs
+    self.version = version
+    self._message_prefix = constants.AI_PLATFORM_MESSAGE_PREFIX[version]
 
-  @staticmethod
-  def GetAlgorithmEnum():
-    return apis.GetMessagesModule(
-        constants.AI_PLATFORM_API_NAME,
-        constants.AI_PLATFORM_API_VERSION[constants.BETA_VERSION]
-    ).GoogleCloudAiplatformV1beta1StudySpec.AlgorithmValueValuesEnum
+  def _GetMessage(self, message_name):
+    """Returns the API messsages class by name."""
+
+    return getattr(
+        self.messages,
+        '{prefix}{name}'.format(prefix=self._message_prefix,
+                                name=message_name), None)
 
   def Create(self,
              config_path,
@@ -72,20 +84,18 @@ class HpTuningJobsClient(object):
       network: user network to which the job should be peered with (overrides
         yaml file)
       service_account: A service account (email address string) to use for the
-          job.
+        job.
 
     Returns:
       Created hyperparameter tuning job.
     """
-    job_spec = self.messages.GoogleCloudAiplatformV1beta1HyperparameterTuningJob(
-    )
+    job_spec = self._GetMessage('HyperparameterTuningJob')()
 
     if config_path:
       data = yaml.load_path(config_path)
       if data:
         job_spec = messages_util.DictToMessageWithErrorCheck(
-            data,
-            self.messages.GoogleCloudAiplatformV1beta1HyperparameterTuningJob)
+            data, self._GetMessage('HyperparameterTuningJob'))
 
     job_spec.maxTrialCount = max_trial_count
     job_spec.parallelTrialCount = parallel_trial_count
@@ -99,14 +109,18 @@ class HpTuningJobsClient(object):
       job_spec.studySpec.algorithm = algorithm
 
     if kms_key_name is not None:
-      job_spec.encryptionSpec = self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
+      job_spec.encryptionSpec = self._GetMessage('EncryptionSpec')(
           kmsKeyName=kms_key_name)
 
-    return self._service.Create(
-        self.messages
-        .AiplatformProjectsLocationsHyperparameterTuningJobsCreateRequest(
-            parent=parent,
-            googleCloudAiplatformV1beta1HyperparameterTuningJob=job_spec))
+    if self.version == constants.GA_VERSION:
+      request = self.messages.AiplatformProjectsLocationsHyperparameterTuningJobsCreateRequest(
+          parent=parent,
+          googleCloudAiplatformV1HyperparameterTuningJob=job_spec)
+    else:
+      request = self.messages.AiplatformProjectsLocationsHyperparameterTuningJobsCreateRequest(
+          parent=parent,
+          googleCloudAiplatformV1beta1HyperparameterTuningJob=job_spec)
+    return self._service.Create(request)
 
   def Get(self, name=None):
     request = self.messages.AiplatformProjectsLocationsHyperparameterTuningJobsGetRequest(

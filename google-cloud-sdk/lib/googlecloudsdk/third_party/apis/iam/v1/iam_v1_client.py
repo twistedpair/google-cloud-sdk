@@ -40,6 +40,10 @@ class IamV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.iamPolicies = self.IamPoliciesService(self)
+    self.locations_workforcePools_providers = self.LocationsWorkforcePoolsProvidersService(self)
+    self.locations_workforcePools_subject = self.LocationsWorkforcePoolsSubjectService(self)
+    self.locations_workforcePools = self.LocationsWorkforcePoolsService(self)
+    self.locations = self.LocationsService(self)
     self.organizations_roles = self.OrganizationsRolesService(self)
     self.organizations = self.OrganizationsService(self)
     self.permissions = self.PermissionsService(self)
@@ -116,6 +120,505 @@ class IamV1(base_api.BaseApiClient):
         response_type_name='QueryAuditableServicesResponse',
         supports_download=False,
     )
+
+  class LocationsWorkforcePoolsProvidersService(base_api.BaseApiService):
+    """Service class for the locations_workforcePools_providers resource."""
+
+    _NAME = 'locations_workforcePools_providers'
+
+    def __init__(self, client):
+      super(IamV1.LocationsWorkforcePoolsProvidersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new WorkforcePoolProvider in a WorkforcePool. The name of a deleted WorkforcePoolProvider cannot be reused if it was deleted less than 30 days ago.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.providers.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['workforcePoolProviderId'],
+        relative_path='v1/{+parent}/providers',
+        request_field='workforcePoolProvider',
+        request_type_name='IamLocationsWorkforcePoolsProvidersCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing WorkforcePoolProvider. A deleted WorkforcePoolProvider cannot be used for exchange of third party credentials for Google Cloud Platform credentials. However, deleting does not revoke credentials that have already been issued. This is a soft delete and can be undeleted for 30 days. After 30 days, the delete is permanent. Deleted items cannot be updated, but they can be viewed and listed.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}',
+        http_method='DELETE',
+        method_id='iam.locations.workforcePools.providers.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsProvidersDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Reads an individual WorkforcePoolProvider.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePoolProvider) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}',
+        http_method='GET',
+        method_id='iam.locations.workforcePools.providers.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsProvidersGetRequest',
+        response_type_name='WorkforcePoolProvider',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all non-deleted WorkforcePoolProviders in the specified WorkforcePool. If `show_deleted = true`, then deleted WorkforcePoolProviders are also listed.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkforcePoolProvidersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers',
+        http_method='GET',
+        method_id='iam.locations.workforcePools.providers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'showDeleted'],
+        relative_path='v1/{+parent}/providers',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsProvidersListRequest',
+        response_type_name='ListWorkforcePoolProvidersResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing WorkforcePoolProvider.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}',
+        http_method='PATCH',
+        method_id='iam.locations.workforcePools.providers.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='workforcePoolProvider',
+        request_type_name='IamLocationsWorkforcePoolsProvidersPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a WorkforcePoolProvider as long as it was deleted less than 30 days ago.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsProvidersUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}:undelete',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.providers.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:undelete',
+        request_field='undeleteWorkforcePoolProviderRequest',
+        request_type_name='IamLocationsWorkforcePoolsProvidersUndeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class LocationsWorkforcePoolsSubjectService(base_api.BaseApiService):
+    """Service class for the locations_workforcePools_subject resource."""
+
+    _NAME = 'locations_workforcePools_subject'
+
+    def __init__(self, client):
+      super(IamV1.LocationsWorkforcePoolsSubjectService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a WorkforcePoolSubject. Subject must not already be in a delete state. A WorkforcePoolSubject is automatically created the first time an external credential is exchanged for a GCP credential with a mapped google.subject attribute. There is no path to manually create WorkforcePoolSubjects. Once deleted, the WorkforcePoolSubject may not be used for 30 days. After 30 days, the WorkforcePoolSubject will be deleted forever and can be reused in token exchanges with GCP STS. This will automatically create a new WorkforcePoolSubject that is independent of the prior WorkforcePoolSubject with the same google.subject value.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsSubjectDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/subject/{subjectId}',
+        http_method='DELETE',
+        method_id='iam.locations.workforcePools.subject.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsSubjectDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a WorkforcePoolSubject. Subject must be in DELETE state and must have been deleted less than 30 days ago.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsSubjectUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/subject/{subjectId}:undelete',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.subject.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:undelete',
+        request_field='undeleteWorkforcePoolSubjectRequest',
+        request_type_name='IamLocationsWorkforcePoolsSubjectUndeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class LocationsWorkforcePoolsService(base_api.BaseApiService):
+    """Service class for the locations_workforcePools resource."""
+
+    _NAME = 'locations_workforcePools'
+
+    def __init__(self, client):
+      super(IamV1.LocationsWorkforcePoolsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new WorkforcePool. The name of a deleted WorkforcePool cannot be reused if it was deleted less than 30 days ago.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.create',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=['workforcePoolId'],
+        relative_path='v1/{+location}/workforcePools',
+        request_field='workforcePool',
+        request_type_name='IamLocationsWorkforcePoolsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing WorkforcePool. A deleted WorkforcePool cannot be used for exchange of third party credentials for Google Cloud Platform credentials. However, deleting does not revoke credentials that have already been issued. This is a soft delete and can be undeleted for 30 days. After 30 days, the delete is permanent. Deleted items cannot be updated, but they can be viewed and listed. Credentials that were issued for a WorkforcePool will not work while the WorkforcePool is deleted. Once the WorkforcePool is undeleted the credentials will work again if they have not expired.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}',
+        http_method='DELETE',
+        method_id='iam.locations.workforcePools.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Reads an individual WorkforcePool.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkforcePool) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}',
+        http_method='GET',
+        method_id='iam.locations.workforcePools.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsGetRequest',
+        response_type_name='WorkforcePool',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Reads IAM policies on a WorkforcePool.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}:getIamPolicy',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='IamLocationsWorkforcePoolsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all non-deleted WorkforcePools under the specified parent. If `show_deleted = true`, then deleted WorkforcePools are also listed.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkforcePoolsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools',
+        http_method='GET',
+        method_id='iam.locations.workforcePools.list',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=['pageSize', 'pageToken', 'parent', 'showDeleted'],
+        relative_path='v1/{+location}/workforcePools',
+        request_field='',
+        request_type_name='IamLocationsWorkforcePoolsListRequest',
+        response_type_name='ListWorkforcePoolsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing WorkforcePool.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}',
+        http_method='PATCH',
+        method_id='iam.locations.workforcePools.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='workforcePool',
+        request_type_name='IamLocationsWorkforcePoolsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets IAM policies on a WorkforcePool.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}:setIamPolicy',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='IamLocationsWorkforcePoolsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the caller's permissions on the WorkforcePool. If the WorkforcePool does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}:testIamPermissions',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='IamLocationsWorkforcePoolsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a WorkforcePool as long as it was deleted less than 30 days ago.
+
+      Args:
+        request: (IamLocationsWorkforcePoolsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/workforcePools/{workforcePoolsId}:undelete',
+        http_method='POST',
+        method_id='iam.locations.workforcePools.undelete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:undelete',
+        request_field='undeleteWorkforcePoolRequest',
+        request_type_name='IamLocationsWorkforcePoolsUndeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class LocationsService(base_api.BaseApiService):
+    """Service class for the locations resource."""
+
+    _NAME = 'locations'
+
+    def __init__(self, client):
+      super(IamV1.LocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class OrganizationsRolesService(base_api.BaseApiService):
     """Service class for the organizations_roles resource."""

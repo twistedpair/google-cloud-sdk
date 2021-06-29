@@ -78,6 +78,48 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class Backup(_messages.Message):
+  r"""The details of a backup resource.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the backup.
+
+  Fields:
+    createTime: Output only. The time when the backup was started.
+    description: The description of the backup.
+    endTime: Output only. The time when the backup finished creating.
+    name: Immutable. The relative resource name of the backup, in the
+      following form:projects/{project_number}/locations/{location_id}/service
+      s/{service_id}/backups/{backup_id}
+    serviceRevision: Output only. The revision of the service at the time of
+      backup.
+    state: Output only. The current state of the backup.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the backup is unknown.
+      CREATING: The backup is being created.
+      DELETING: The backup is being deleted.
+      ACTIVE: The backup is active and ready to use.
+      FAILED: The backup failed.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    DELETING = 2
+    ACTIVE = 3
+    FAILED = 4
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  serviceRevision = _messages.MessageField('Service', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
 class Binding(_messages.Message):
   r"""Associates members with a role.
 
@@ -343,6 +385,21 @@ class KerberosConfig(_messages.Message):
   keytab = _messages.MessageField('Secret', 1)
   krb5ConfigGcsUri = _messages.StringField(2)
   principal = _messages.StringField(3)
+
+
+class ListBackupsResponse(_messages.Message):
+  r"""Response message for DataprocMetastore.ListBackups.
+
+  Fields:
+    backups: The backups of the specified service.
+    nextPageToken: A token that can be sent as page_token to retrieve the next
+      page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -722,6 +779,100 @@ class MetastoreProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class MetastoreProjectsLocationsServicesBackupsCreateRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesBackupsCreateRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    backupId: Required. The ID of the backup, which is used as the final
+      component of the backup's name.This value must be between 1 and 64
+      characters long, begin with a letter, end with a letter or number, and
+      consist of alpha-numeric ASCII characters or hyphens.
+    parent: Required. The relative resource name of the service in which to
+      create a backup of the following form:projects/{project_number}/location
+      s/{location_id}/services/{service_id}.
+    requestId: Optional. A request ID. Specify a unique request ID to allow
+      the server to ignore the request if it has completed. The server will
+      ignore subsequent requests that provide a duplicate request ID for at
+      least 60 minutes after the first request.For example, if an initial
+      request times out, followed by another request with the same request ID,
+      the server ignores the second request to prevent the creation of
+      duplicate commitments.The request ID must be a valid UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier#Format) A
+      zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  backupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class MetastoreProjectsLocationsServicesBackupsDeleteRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesBackupsDeleteRequest object.
+
+  Fields:
+    name: Required. The relative resource name of the backup to delete, in the
+      following form:projects/{project_number}/locations/{location_id}/service
+      s/{service_id}/backups/{backup_id}.
+    requestId: Optional. A request ID. Specify a unique request ID to allow
+      the server to ignore the request if it has completed. The server will
+      ignore subsequent requests that provide a duplicate request ID for at
+      least 60 minutes after the first request.For example, if an initial
+      request times out, followed by another request with the same request ID,
+      the server ignores the second request to prevent the creation of
+      duplicate commitments.The request ID must be a valid UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier#Format) A
+      zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class MetastoreProjectsLocationsServicesBackupsGetRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesBackupsGetRequest object.
+
+  Fields:
+    name: Required. The relative resource name of the backup to retrieve, in
+      the following form:projects/{project_number}/locations/{location_id}/ser
+      vices/{service_id}/backups/{backup_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MetastoreProjectsLocationsServicesBackupsListRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesBackupsListRequest object.
+
+  Fields:
+    filter: Optional. The filter to apply to list results.
+    orderBy: Optional. Specify the ordering of results as described in Sorting
+      Order
+      (https://cloud.google.com/apis/design/design_patterns#sorting_order). If
+      not specified, the results will be sorted in the default order.
+    pageSize: Optional. The maximum number of backups to return. The response
+      may contain less than the maximum number. If unspecified, no more than
+      500 backups are returned. The maximum value is 1000; values above 1000
+      are changed to 1000.
+    pageToken: Optional. A page token, received from a previous
+      DataprocMetastore.ListBackups call. Provide this token to retrieve the
+      subsequent page.To retrieve the first page, supply an empty page
+      token.When paginating, other parameters provided to
+      DataprocMetastore.ListBackups must match the call that provided the page
+      token.
+    parent: Required. The relative resource name of the service whose backups
+      to list, in the following form:projects/{project_number}/locations/{loca
+      tion_id}/services/{service_id}/backups.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class MetastoreProjectsLocationsServicesCreateRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesCreateRequest object.
 
@@ -983,6 +1134,21 @@ class MetastoreProjectsLocationsServicesPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   service = _messages.MessageField('Service', 3)
   updateMask = _messages.StringField(4)
+
+
+class MetastoreProjectsLocationsServicesRestoreRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesRestoreRequest object.
+
+  Fields:
+    restoreServiceRequest: A RestoreServiceRequest resource to be passed as
+      the request body.
+    service: Required. The relative resource name of the metastore service to
+      run restore, in the following form:projects/{project_id}/locations/{loca
+      tion_id}/services/{service_id}.
+  """
+
+  restoreServiceRequest = _messages.MessageField('RestoreServiceRequest', 1)
+  service = _messages.StringField(2, required=True)
 
 
 class MetastoreProjectsLocationsServicesSetIamPolicyRequest(_messages.Message):
@@ -1272,6 +1438,48 @@ class Restore(_messages.Message):
   startTime = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   type = _messages.EnumField('TypeValueValuesEnum', 6)
+
+
+class RestoreServiceRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.Restore.
+
+  Enums:
+    RestoreTypeValueValuesEnum: Optional. The type of restore. If unspecified,
+      defaults to METADATA_ONLY.
+
+  Fields:
+    backup: Required. The relative resource name of the metastore service
+      backup to restore from, in the following form:projects/{project_id}/loca
+      tions/{location_id}/services/{service_id}/backups/{backup_id}.
+    requestId: Optional. A request ID. Specify a unique request ID to allow
+      the server to ignore the request if it has completed. The server will
+      ignore subsequent requests that provide a duplicate request ID for at
+      least 60 minutes after the first request.For example, if an initial
+      request times out, followed by another request with the same request ID,
+      the server ignores the second request to prevent the creation of
+      duplicate commitments.The request ID must be a valid UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier#Format). A
+      zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
+    restoreType: Optional. The type of restore. If unspecified, defaults to
+      METADATA_ONLY.
+  """
+
+  class RestoreTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of restore. If unspecified, defaults to
+    METADATA_ONLY.
+
+    Values:
+      RESTORE_TYPE_UNSPECIFIED: The restore type is unknown.
+      FULL: The service's metadata and configuration are restored.
+      METADATA_ONLY: Only the service's metadata is restored.
+    """
+    RESTORE_TYPE_UNSPECIFIED = 0
+    FULL = 1
+    METADATA_ONLY = 2
+
+  backup = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  restoreType = _messages.EnumField('RestoreTypeValueValuesEnum', 3)
 
 
 class Secret(_messages.Message):

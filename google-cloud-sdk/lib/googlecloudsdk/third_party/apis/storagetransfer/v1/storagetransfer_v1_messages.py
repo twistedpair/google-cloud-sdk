@@ -284,13 +284,12 @@ class GcsData(_messages.Message):
   metadata of the object is updated.
 
   Fields:
-    bucketName: Required. Cloud Storage bucket name (see [Bucket Name
-      Requirements](https://cloud.google.com/storage/docs/naming#requirements)
-      ).
+    bucketName: Required. Cloud Storage bucket name. Must meet [Bucket Name
+      Requirements](/storage/docs/naming#requirements).
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
-      such, it should generally not begin with a '/'. (must meet Object Name R
-      equirements](https://cloud.google.com/storage/docs/naming#objectnames)).
+      such, it should generally not begin with a '/'. The root path value must
+      meet [Object Name Requirements](/storage/docs/naming#objectnames).
   """
 
   bucketName = _messages.StringField(1)
@@ -325,12 +324,11 @@ class HttpData(_messages.Message):
   will not be transferred. * If the specified MD5 does not match the MD5
   computed from the transferred bytes, the object transfer will fail. * Ensure
   that each URL you specify is publicly accessible. For example, in Cloud
-  Storage you can [share an object publicly]
-  (https://cloud.google.com/storage/docs/cloud-console#_sharingdata) and get a
-  link to it. * Storage Transfer Service obeys `robots.txt` rules and requires
-  the source HTTP server to support `Range` requests and to return a `Content-
-  Length` header in each response. * ObjectConditions have no effect when
-  filtering objects to transfer.
+  Storage you can [share an object publicly] (/storage/docs/cloud-
+  console#_sharingdata) and get a link to it. * Storage Transfer Service obeys
+  `robots.txt` rules and requires the source HTTP server to support `Range`
+  requests and to return a `Content-Length` header in each response. *
+  ObjectConditions have no effect when filtering objects to transfer.
 
   Fields:
     listUrl: Required. The URL that points to the file that stores the object
@@ -1206,7 +1204,7 @@ class UpdateTransferJobRequest(_messages.Message):
       specify only four fields: description, transfer_spec,
       notification_config, and status. An `UpdateTransferJobRequest` that
       specifies other fields are rejected with the error INVALID_ARGUMENT.
-      Updating a job satus to DELETED requires `storagetransfer.jobs.delete`
+      Updating a job status to DELETED requires `storagetransfer.jobs.delete`
       permissions.
     updateTransferJobFieldMask: The field mask of the fields in `transferJob`
       that are to be updated in this request. Fields in `transferJob` that can

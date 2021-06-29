@@ -18,8 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import sys
-
 from googlecloudsdk.api_lib.datastore import util
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
@@ -145,16 +143,16 @@ def DeleteIndexes(project_id, indexes_to_delete_ids):
   detail_message = None
   with progress_tracker.ProgressTracker(
       '.',
-      autotick=True,
+      autotick=False,
       detail_message_callback=lambda: detail_message,
-      tick_delay=3):
+      ) as pt:
     for index_id in indexes_to_delete_ids:
       GetIndexesService().Delete(
           util.GetMessages().DatastoreProjectsIndexesDeleteRequest(
               projectId=project_id, indexId=index_id))
       cnt = cnt + 1
       detail_message = '{0:.0%}'.format(cnt / len(indexes_to_delete_ids))
-      sys.stderr.flush()
+      pt.Tick()
 
 
 def CreateMissingIndexes(project_id, index_definitions):

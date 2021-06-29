@@ -151,8 +151,9 @@ class ObjectResource(CloudResource):
   """Class representing a cloud object confirmed to exist.
 
   Attributes:
-    TYPE_STRING (str): String representing the resource's content type.
+    TYPE_STRING (str): String representing the resource's type.
     storage_url (StorageUrl): A StorageUrl object representing the object.
+    content_type (str|None): A MIME type describing the object's content.
     creation_time (datetime|None): Time the object was created.
     etag (str|None): HTTP version identifier.
     crc32c_hash (str|None): Base64-encoded digest of crc32c hash.
@@ -170,6 +171,7 @@ class ObjectResource(CloudResource):
 
   def __init__(self,
                storage_url_object,
+               content_type=None,
                creation_time=None,
                etag=None,
                crc32c_hash=None,
@@ -179,6 +181,7 @@ class ObjectResource(CloudResource):
                size=None):
     """Initializes resource. Args are a subset of attributes."""
     super(ObjectResource, self).__init__(storage_url_object)
+    self.content_type = content_type
     self.creation_time = creation_time
     self.etag = etag
     self.crc32c_hash = crc32c_hash
@@ -201,6 +204,7 @@ class ObjectResource(CloudResource):
 
   def __eq__(self, other):
     return (super(ObjectResource, self).__eq__(other) and
+            self.content_type == other.content_type and
             self.etag == other.etag and self.generation == other.generation and
             self.crc32c_hash == other.crc32c_hash and
             self.md5_hash == other.md5_hash and self.metadata == other.metadata)

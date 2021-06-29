@@ -31,6 +31,7 @@ from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
@@ -106,7 +107,7 @@ def _GetServiceConfig(args, messages, existing_function):
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the gcf v2 message stubs
+    messages: messages module, the GCFv2 message stubs
     existing_function: cloudfunctions_v2alpha_messages.Function | None
 
   Returns:
@@ -145,8 +146,6 @@ def _GetServiceConfig(args, messages, existing_function):
     updated_fields.add('service_config.service_account_email')
   if args.timeout is not None:
     updated_fields.add('service_config.timeout_seconds')
-  if args.run_service_account is not None or args.service_account is not None:
-    updated_fields.add('service_config.service_account_email')
   if env_vars != old_env_vars:
     updated_fields.add('service_config.environment_variables')
 
@@ -176,7 +175,7 @@ def _GetEventTrigger(args, messages):
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the gcf v2 message stubs
+    messages: messages module, the GCFv2 message stubs
 
   Returns:
     event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
@@ -246,7 +245,7 @@ def _GetBuildConfig(args, messages, event_trigger, existing_function):
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the gcf v2 message stubs
+    messages: messages module, the GCFv2 message stubs
     event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
       events sent from another service
     existing_function: cloudfunctions_v2alpha_messages.Function | None
@@ -318,7 +317,7 @@ def _GetIngressSettings(args, messages):
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the gcf v2 message stubs
+    messages: messages module, the GCFv2 message stubs
 
   Returns:
     ingress_settings_enum: ServiceConfig.IngressSettingsValueValuesEnum, the
@@ -341,7 +340,7 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the gcf v2 message stubs
+    messages: messages module, the GCFv2 message stubs
     existing_function: cloudfunctions_v2alpha_messages.Function | None
 
   Returns:
@@ -398,7 +397,7 @@ def _GetLabels(args, messages, existing_function):
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
-    messages: messages module, the gcf v2 message stubs
+    messages: messages module, the GCFv2 message stubs
     existing_function: cloudfunctions_v2alpha_messages.Function | None
 
   Returns:
@@ -415,13 +414,14 @@ def _GetLabels(args, messages, existing_function):
     return None, frozenset()
 
 
-def _SetInvokerPermissions(args, function):
+def _SetInvokerPermissions(args, function, is_new_function):
   """Add the IAM binding for the invoker role on the Cloud Run service, if applicable.
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
     function: cloudfunctions_v2alpha_messages.Function, recently created or
       updated GCF function
+    is_new_function: bool, true if the function is being created
 
   Returns:
     None
@@ -429,44 +429,60 @@ def _SetInvokerPermissions(args, function):
   service_ref_one_platform = resources.REGISTRY.ParseRelativeName(
       function.serviceConfig.service, CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
 
-  if _IsHttpTriggered(args):
-    allow_unauthenticated = flags.ShouldEnsureAllUsersInvoke(args)
-    if not allow_unauthenticated and not flags.ShouldDenyAllUsersInvoke(args):
+  if not _IsHttpTriggered(args):
+    return
+
+  # This condition will be truthy if the user provided either
+  # `--allow-unauthenticated` or `--no-allow-unauthenticated`. In other
+  # words, it is only falsey when neither of those two flags is provided.
+  if args.IsSpecified('allow_unauthenticated'):
+    allow_unauthenticated = args.allow_unauthenticated
+  else:
+    if is_new_function:
       allow_unauthenticated = console_io.PromptContinue(
           prompt_string=(
               'Allow unauthenticated invocations of new function [{}]?'.format(
                   args.NAME)),
           default=False)
+    else:
+      # The function already exists, and the user didn't request any change to
+      # the permissions. There is nothing to do in this case.
+      return
+
+  run_connection_context = connection_context.RegionalConnectionContext(
+      service_ref_one_platform.locationsId, global_methods.SERVERLESS_API_NAME,
+      global_methods.SERVERLESS_API_VERSION)
+
+  with serverless_operations.Connect(run_connection_context) as operations:
+    service_ref_k8s = resources.REGISTRY.ParseRelativeName(
+        'namespaces/{}/services/{}'.format(
+            properties.VALUES.core.project.GetOrFail(),
+            service_ref_one_platform.Name()), CLOUD_RUN_SERVICE_COLLECTION_K8S)
 
     if allow_unauthenticated:
-      run_connection_context = connection_context.RegionalConnectionContext(
-          service_ref_one_platform.locationsId,
-          global_methods.SERVERLESS_API_NAME,
-          global_methods.SERVERLESS_API_VERSION)
-      # TODO(b/188488619) modify iam policy binding conditionally if
-      # is an existing functioon.
-      with serverless_operations.Connect(run_connection_context) as operations:
-        service_ref_k8s = resources.REGISTRY.ParseRelativeName(
-            'namespaces/{}/services/{}'.format(
-                properties.VALUES.core.project.GetOrFail(),
-                service_ref_one_platform.Name()),
-            CLOUD_RUN_SERVICE_COLLECTION_K8S)
-        operations.AddOrRemoveIamPolicyBinding(
-            service_ref_k8s,
-            member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
-            role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE)
+      operations.AddOrRemoveIamPolicyBinding(
+          service_ref_k8s,
+          True,  # Add the binding
+          member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
+          role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE)
+    elif not is_new_function:
+      operations.AddOrRemoveIamPolicyBinding(
+          service_ref_k8s,
+          False,  # Remove the binding
+          member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
+          role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE)
 
 
 def _GetFunction(client, messages, function_ref):
   """Get function and return None if doesn't exist.
 
   Args:
-    client: apitools client, the gcf v2 api client
-    messages: messages module, the gcf v2 message stubs
-    function_ref: gcf v2 functions resource reference
+    client: apitools client, the GCFv2 API client
+    messages: messages module, the GCFv2 message stubs
+    function_ref: GCFv2 functions resource reference
 
   Returns:
-    function: cloudfunctions_v2alpha_messages.Function, fetched gcf v2 function
+    function: cloudfunctions_v2alpha_messages.Function, fetched GCFv2 function
   """
   try:
     # We got response for a GET request, so a function exists.
@@ -477,6 +493,66 @@ def _GetFunction(client, messages, function_ref):
     if error.status_code == six.moves.http_client.NOT_FOUND:
       return None
     raise
+
+
+def _CreateAndWait(client, messages, function_ref, function):
+  """Create a function.
+
+  This does not include setting the invoker permissions.
+
+  Args:
+    client: The GCFv2 API client.
+    messages: The GCFv2 message stubs.
+    function_ref: The GCFv2 functions resource reference.
+    function: The function to create.
+
+  Returns:
+    None
+  """
+  function_parent = 'projects/%s/locations/%s' % (
+      properties.VALUES.core.project.GetOrFail(), function_ref.locationsId)
+
+  create_request = messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
+      parent=function_parent, functionId=function_ref.Name(), function=function)
+  operation = client.projects_locations_functions.Create(create_request)
+  operation_description = 'Deploying function (may take a while)'
+
+  api_util.WaitForOperation(client, messages, operation, operation_description)
+
+
+def _UpdateAndWait(client, messages, function_ref, function,
+                   updated_fields_set):
+  """Update a function.
+
+  This does not include setting the invoker permissions.
+
+  Args:
+    client: The GCFv2 API client.
+    messages: The GCFv2 message stubs.
+    function_ref: The GCFv2 functions resource reference.
+    function: The function to update.
+    updated_fields_set: A set of update mask fields.
+
+  Returns:
+    None
+  """
+  if updated_fields_set:
+    updated_fields = list(updated_fields_set)
+    updated_fields.sort()
+    update_mask = ','.join(updated_fields)
+
+    update_request = messages.CloudfunctionsProjectsLocationsFunctionsPatchRequest(
+        name=function_ref.RelativeName(),
+        updateMask=update_mask,
+        function=function)
+
+    operation = client.projects_locations_functions.Patch(update_request)
+    operation_description = 'Updating function (may take a while)'
+
+    api_util.WaitForOperation(client, messages, operation,
+                              operation_description)
+  else:
+    log.status.Print('Nothing to update.')
 
 
 def Run(args, release_track):
@@ -511,38 +587,23 @@ def Run(args, release_track):
       labels=labels_value)
 
   if is_new_function:
-    function_parent = 'projects/%s/locations/%s' % (
-        properties.VALUES.core.project.GetOrFail(), function_ref.locationsId)
-
-    create_request = messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
-        parent=function_parent,
-        functionId=function_ref.Name(),
-        function=function)
-    operation = client.projects_locations_functions.Create(create_request)
-    operation_description = 'Deploying function (may take a while)'
+    _CreateAndWait(client, messages, function_ref, function)
   else:
-    updated_fields_set = frozenset.union(trigger_updated_fields,
-                                         build_updated_fields,
-                                         service_updated_fields,
-                                         labels_updated_fields)
-    updated_fields = list(updated_fields_set)
-    updated_fields.sort()
-    update_mask = ','.join(updated_fields)
-
-    update_request = messages.CloudfunctionsProjectsLocationsFunctionsPatchRequest(
-        name=function_ref.RelativeName(),
-        updateMask=update_mask,
-        function=function)
-
-    operation = client.projects_locations_functions.Patch(update_request)
-    operation_description = 'Updating function (may take a while)'
-
-  api_util.WaitForOperation(client, messages, operation, operation_description)
+    _UpdateAndWait(
+        client, messages, function_ref, function,
+        frozenset.union(trigger_updated_fields, build_updated_fields,
+                        service_updated_fields, labels_updated_fields))
 
   function = client.projects_locations_functions.Get(
       messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
           name=function_ref.RelativeName()))
 
-  _SetInvokerPermissions(args, function)
+  _SetInvokerPermissions(args, function, is_new_function)
+
+  log.status.Print(
+      'You can view your function in the Cloud Console here: ' +
+      'https://console.cloud.google.com/functions/details/{}/{}?project={}\n'
+      .format(function_ref.locationsId, function_ref.Name(),
+              properties.VALUES.core.project.GetOrFail()))
 
   return function

@@ -575,11 +575,16 @@ class AssetSearchClient(object):
 
   def SearchAllResources(self, args):
     """Calls SearchAllResources method."""
+    if self.api_version == V1P1BETA1_API_VERSION:
+      optional_extra_args = {}
+    else:
+      optional_extra_args = {'readMask': args.read_mask}
     request = self.search_all_resources_request(
         scope=asset_utils.GetDefaultScopeIfEmpty(args),
         query=args.query,
         assetTypes=args.asset_types,
-        orderBy=args.order_by)
+        orderBy=args.order_by,
+        **optional_extra_args)
     return list_pager.YieldFromList(
         self.resource_service,
         request,

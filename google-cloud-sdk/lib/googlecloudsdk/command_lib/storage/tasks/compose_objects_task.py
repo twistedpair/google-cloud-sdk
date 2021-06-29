@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage.tasks import task
 
 
@@ -41,10 +42,14 @@ class ComposeObjectsTask(task.Task):
     self._destination_resource = destination_resource
 
   def execute(self, task_status_queue=None):
+    del task_status_queue  # Unused.
+    request_config = request_config_factory.get_request_config(
+        self._destination_resource.storage_url)
+
     provider = self._destination_resource.storage_url.scheme
-    api_factory.get_api(provider).compose_objects(
-        self._source_resources,
-        self._destination_resource)
+    api_factory.get_api(provider).compose_objects(self._source_resources,
+                                                  self._destination_resource,
+                                                  request_config)
 
   def __eq__(self, other):
     if not isinstance(other, ComposeObjectsTask):

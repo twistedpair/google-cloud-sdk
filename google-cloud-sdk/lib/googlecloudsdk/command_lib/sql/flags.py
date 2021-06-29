@@ -970,7 +970,14 @@ USERS_FORMAT = """
   )
 """
 
-USERS_FORMAT_BETA = USERS_FORMAT
+USERS_FORMAT_BETA = """
+  table(
+    name.yesno(no='(anonymous)'),
+    host,
+    type.yesno(no='BUILT_IN'),
+    iamEmail
+  )
+"""
 
 
 USERS_FORMAT_ALPHA = USERS_FORMAT_BETA

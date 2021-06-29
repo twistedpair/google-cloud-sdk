@@ -29,7 +29,7 @@ class Connector(_messages.Message):
     maxInstances: Maximum value of instances in autoscaling group underlying
       the connector.
     maxThroughput: Maximum throughput of the connector in Mbps. Default is
-      200, max is 1000.
+      300, max is 1000.
     minInstances: Minimum value of instances in autoscaling group underlying
       the connector.
     minThroughput: Minimum throughput of the connector in Mbps. Default and

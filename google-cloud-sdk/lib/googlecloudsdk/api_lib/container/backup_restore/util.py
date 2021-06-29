@@ -115,13 +115,11 @@ def WaitForBackupToFinish(backup,
                           wait_ceiling_ms=180000,
                           status_update=_BackupStatusUpdate,
                           sleep_ms=2000,
-                          client=None,
-                          messages=None):
+                          client=None):
   """Waits for backup resource to be terminal state."""
   if client is None:
     client = GetClientInstance()
-  if messages is None:
-    messages = GetMessagesModule()
+  messages = GetMessagesModule()
   retryer = retry.Retryer(
       max_retrials=None,
       max_wait_ms=max_wait_ms,
@@ -145,14 +143,16 @@ def WaitForBackupToFinish(backup,
     )
 
 
-def CreateRestoreAndWaitForLRO(restore_ref,
-                               backup,
-                               cluster,
-                               restore_config,
-                               description=None,
-                               labels=None):
-  """Creates a restore resource by calling Backup for GKE service."""
-  client = GetClientInstance()
+def CreateRestore(restore_ref,
+                  backup,
+                  cluster,
+                  restore_config,
+                  description=None,
+                  labels=None,
+                  client=None):
+  """Creates a restore resource by calling Backup for GKE service and returns a LRO."""
+  if client is None:
+    client = GetClientInstance()
   messages = GetMessagesModule()
   req = messages.GkebackupProjectsLocationsRestoresCreateRequest()
   req.restoreId = restore_ref.Name()
@@ -165,7 +165,27 @@ def CreateRestoreAndWaitForLRO(restore_ref,
     req.restore.description = description
   if labels:
     req.restore.labels = labels
-  operation = client.projects_locations_restores.Create(req)
+  return client.projects_locations_restores.Create(req)
+
+
+def CreateRestoreAndWaitForLRO(restore_ref,
+                               backup,
+                               cluster,
+                               restore_config,
+                               description=None,
+                               labels=None,
+                               client=None):
+  """Creates a restore resource by calling Backup for GKE service."""
+  if client is None:
+    client = GetClientInstance()
+  operation = CreateRestore(
+      restore_ref,
+      backup=backup,
+      cluster=cluster,
+      restore_config=restore_config,
+      description=description,
+      labels=labels,
+      client=client)
   operation_ref = resources.REGISTRY.ParseRelativeName(
       operation.name, 'gkebackup.projects.locations.operations')
 
@@ -174,9 +194,8 @@ def CreateRestoreAndWaitForLRO(restore_ref,
       kind='restore {0}'.format(restore_ref.Name()),
       is_async=True)
 
-  poller = waiter.CloudOperationPoller(client.projects_locations_restores,
-                                       client.projects_locations_operations)
-
+  poller = waiter.CloudOperationPollerNoResources(
+      client.projects_locations_operations)
   return waiter.WaitFor(poller, operation_ref,
                         'Creating restore {0}'.format(restore_ref.Name()))
 
@@ -194,13 +213,11 @@ def WaitForRestoreToFinish(restore,
                            wait_ceiling_ms=180000,
                            status_update=_RestoreStatusUpdate,
                            sleep_ms=2000,
-                           client=None,
-                           messages=None):
+                           client=None):
   """Waits for restore resource to be terminal state."""
   if not client:
     client = GetClientInstance()
-  if not messages:
-    messages = GetMessagesModule()
+  messages = GetMessagesModule()
   retryer = retry.Retryer(
       max_retrials=None,
       max_wait_ms=max_wait_ms,

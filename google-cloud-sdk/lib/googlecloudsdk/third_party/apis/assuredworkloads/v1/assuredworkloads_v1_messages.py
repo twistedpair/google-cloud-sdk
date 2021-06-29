@@ -437,11 +437,11 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     LabelsValue: Optional. Labels applied to the workload.
 
   Fields:
-    billingAccount: Required. Input only. The billing account used for the
-      resources which are direct children of workload. This billing account is
-      initially associated with the resources created as part of Workload
-      creation. After the initial creation of these resources, the customer
-      can change the assigned billing account. The resource name has the form
+    billingAccount: Input only. The billing account used for the resources
+      which are direct children of workload. This billing account is initially
+      associated with the resources created as part of Workload creation.
+      After the initial creation of these resources, the customer can change
+      the assigned billing account. The resource name has the form
       `billingAccounts/{billing_account_id}`. For example,
       `billingAccounts/012345-567890-ABCDEF`.
     cjisSettings: Required. Input only. Immutable. Settings specific to
@@ -625,13 +625,15 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo(_messages.Message):
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
       CONSUMER_PROJECT: Consumer project.
+      CONSUMER_FOLDER: Consumer Folder.
       ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
       KEYRING: Keyring resource that hosts encryption keys.
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     CONSUMER_PROJECT = 1
-    ENCRYPTION_KEYS_PROJECT = 2
-    KEYRING = 3
+    CONSUMER_FOLDER = 2
+    ENCRYPTION_KEYS_PROJECT = 3
+    KEYRING = 4
 
   resourceId = _messages.IntegerField(1)
   resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
@@ -663,13 +665,15 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings(_messages.Messa
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
       CONSUMER_PROJECT: Consumer project.
+      CONSUMER_FOLDER: Consumer Folder.
       ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
       KEYRING: Keyring resource that hosts encryption keys.
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
     CONSUMER_PROJECT = 1
-    ENCRYPTION_KEYS_PROJECT = 2
-    KEYRING = 3
+    CONSUMER_FOLDER = 2
+    ENCRYPTION_KEYS_PROJECT = 3
+    KEYRING = 4
 
   displayName = _messages.StringField(1)
   resourceId = _messages.StringField(2)

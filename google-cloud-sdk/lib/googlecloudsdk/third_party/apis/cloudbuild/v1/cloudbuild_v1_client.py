@@ -45,6 +45,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     self.github = self.GithubService(self)
     self.installations_installations = self.InstallationsInstallationsService(self)
     self.installations = self.InstallationsService(self)
+    self.locations = self.LocationsService(self)
     self.oauth = self.OauthService(self)
     self.operations = self.OperationsService(self)
     self.projects_builds = self.ProjectsBuildsService(self)
@@ -202,6 +203,43 @@ class CloudbuildV1(base_api.BaseApiClient):
       super(CloudbuildV1.InstallationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class LocationsService(base_api.BaseApiService):
+    """Service class for the locations resource."""
+
+    _NAME = 'locations'
+
+    def __init__(self, client):
+      super(CloudbuildV1.LocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def RegionalWebhook(self, request, global_params=None):
+      r"""ReceiveRegionalWebhook is called when the API receives a regional GitHub webhook.
+
+      Args:
+        request: (CloudbuildLocationsRegionalWebhookRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('RegionalWebhook')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RegionalWebhook.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/{locationsId}/regionalWebhook',
+        http_method='POST',
+        method_id='cloudbuild.locations.regionalWebhook',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=['webhookKey'],
+        relative_path='v1/{+location}/regionalWebhook',
+        request_field='httpBody',
+        request_type_name='CloudbuildLocationsRegionalWebhookRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
 
   class OauthService(base_api.BaseApiService):
     """Service class for the oauth resource."""

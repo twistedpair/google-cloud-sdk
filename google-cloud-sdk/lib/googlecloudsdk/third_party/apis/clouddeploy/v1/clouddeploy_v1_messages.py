@@ -1627,17 +1627,98 @@ class Policy(_messages.Message):
 class PromoteReleaseRequest(_messages.Message):
   r"""The request object used by `PromoteRelease`.
 
+  Messages:
+    AnnotationsValue: Optional. User annotations to place on the created
+      `Rollout`. These attributes can only be set and used by the user, and
+      not by Cloud Deploy. See https://google.aip.dev/128#annotations for more
+      details such as format and size limitations.
+    LabelsValue: Optional. Labels to be placed on the created `Rollout`.
+      Labels are attributes that can be set and used by both the user and by
+      Cloud Deploy. Labels must meet the following constraints: Each resource
+      is limited to 64 labels. Keys must conform to the regexp: a-zA-Z{0,62}
+      Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both keys and
+      values are additionally constrained to be <= 128 bytes in size.
+
   Fields:
+    annotations: Optional. User annotations to place on the created `Rollout`.
+      These attributes can only be set and used by the user, and not by Cloud
+      Deploy. See https://google.aip.dev/128#annotations for more details such
+      as format and size limitations.
     destinationTarget: Optional. The name of the `Target` to which we are
       promoting the Release.
+    labels: Optional. Labels to be placed on the created `Rollout`. Labels are
+      attributes that can be set and used by both the user and by Cloud
+      Deploy. Labels must meet the following constraints: Each resource is
+      limited to 64 labels. Keys must conform to the regexp: a-zA-Z{0,62}
+      Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both keys and
+      values are additionally constrained to be <= 128 bytes in size.
     rolloutId: Optional. The ID to assign to the generated `Rollout`.
     toTarget: Optional. The name of the `Target` to which we are promoting the
       Release.
   """
 
-  destinationTarget = _messages.StringField(1)
-  rolloutId = _messages.StringField(2)
-  toTarget = _messages.StringField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User annotations to place on the created `Rollout`. These
+    attributes can only be set and used by the user, and not by Cloud Deploy.
+    See https://google.aip.dev/128#annotations for more details such as format
+    and size limitations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels to be placed on the created `Rollout`. Labels are
+    attributes that can be set and used by both the user and by Cloud Deploy.
+    Labels must meet the following constraints: Each resource is limited to 64
+    labels. Keys must conform to the regexp: a-zA-Z{0,62} Values must conform
+    to the regexp: [a-zA-Z0-9_-]{0,63} Both keys and values are additionally
+    constrained to be <= 128 bytes in size.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  destinationTarget = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  rolloutId = _messages.StringField(4)
+  toTarget = _messages.StringField(5)
 
 
 class PromoteReleaseResponse(_messages.Message):

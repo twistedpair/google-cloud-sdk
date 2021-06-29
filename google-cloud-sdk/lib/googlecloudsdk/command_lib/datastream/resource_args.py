@@ -39,6 +39,14 @@ def PrivateConnectionAttributeConfig(name='private_connection'):
       completion_id_field='id')
 
 
+def StreamAttributeConfig(name='stream'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name,
+      help_text='The stream of the {resource}.',
+      completion_request_params={'fieldMask': 'name'},
+      completion_id_field='id')
+
+
 def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location', help_text='The Cloud location for the {resource}.')
@@ -73,7 +81,20 @@ def GetPrivateConnectionResourceSpec(resource_name='private_connection'):
       disable_auto_completers=False)
 
 
-def AddConnectionProfileResourceArg(parser, verb, positional=True):
+def GetStreamResourceSpec(resource_name='stream'):
+  return concepts.ResourceSpec(
+      'datastream.projects.locations.streams',
+      resource_name=resource_name,
+      streamsId=StreamAttributeConfig(name=resource_name),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
+def AddConnectionProfileResourceArg(parser,
+                                    verb,
+                                    positional=True,
+                                    required=True):
   """Add a resource argument for a Datastream connection profile.
 
   Args:
@@ -81,6 +102,7 @@ def AddConnectionProfileResourceArg(parser, verb, positional=True):
     verb: str, the verb to describe the resource, such as 'to update'.
     positional: bool, if True, means that the resource is a positional rather
       than a flag.
+    required: bool, if True, means that a flag is required.
   """
   if positional:
     name = 'connection_profile'
@@ -98,17 +120,17 @@ def AddConnectionProfileResourceArg(parser, verb, positional=True):
   forward_ssh_parser.add_argument(
       '--forward-ssh-hostname',
       help="""Hostname for the SSH tunnel.""",
-      required=True)
+      required=required)
   forward_ssh_parser.add_argument(
       '--forward-ssh-username',
       help="""Username for the SSH tunnel.""",
-      required=True)
+      required=required)
   forward_ssh_parser.add_argument(
       '--forward-ssh-port',
       help="""Port for the SSH tunnel, default value is 22.\
       """,
       default=22)
-  password_group = forward_ssh_parser.add_group(required=True, mutex=True)
+  password_group = forward_ssh_parser.add_group(required=required, mutex=True)
   password_group.add_argument(
       '--forward-ssh-password', help="""\
           SSH password.
@@ -217,3 +239,95 @@ def AddPrivateConnectionResourceArg(parser, verb, positional=True):
   concept_parsers.ConceptParser(
       resource_specs).AddToParser(parser)
 
+
+def AddStreamResourceArg(parser, verb):
+  """Add resource arguments for creating/updating a stream.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  source_parser = parser.add_group(required=True)
+  source_config_parser_group = source_parser.add_group(
+      required=True, mutex=True)
+  source_config_parser_group.add_argument(
+      '--oracle-source-config',
+      help="""\
+          Path to a YAML (or JSON) file containing the configuration for Oracle Source Config.
+
+          The JSON file is formatted as follows:
+
+          ```
+            {
+              "allowlist": {},
+              "rejectlist": {"oracle_schemas":[{"schema_name":"SAMPLE"}]}
+            }
+          ```
+       """
+      )
+  source_config_parser_group.add_argument(
+      '--mysql-source-config',
+      help="""\
+          Path to a YAML (or JSON) file containing the configuration for Mysql Source Config.
+
+          The JSON file is formatted as follows:
+
+          ```
+            {
+              "allowlist": {},
+              "rejectlist": {"mysql_databases":[{"database_name":"sample"}]}
+            }
+          ```
+       """
+      )
+
+  destination_parser = parser.add_group(required=True)
+  destination_config_parser_group = destination_parser.add_group(
+      required=True, mutex=True)
+  destination_config_parser_group.add_argument(
+      '--gcs-destination-config',
+      help="""\
+      Path to a YAML (or JSON) file containing the configuration for Google Cloud Storage Destination Config.
+
+      The JSON file is formatted as follows:
+
+      ```
+       {
+       "path": "some/path",
+       "file_rotation_mb":5,
+       "file_rotation_interval":"15s",
+       "avro_file_format": {}
+       }
+      ```
+        """)
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          'stream',
+          GetStreamResourceSpec(),
+          'The stream {}.'.format(verb),
+          required=True
+      ),
+      presentation_specs.ResourcePresentationSpec(
+          '--source-name',
+          GetConnectionProfileResourceSpec(),
+          'Resource ID of the source connection profile.',
+          required=True,
+          flag_name_overrides={'location': ''},
+          group=source_parser
+      ),
+      presentation_specs.ResourcePresentationSpec(
+          '--destination-name',
+          GetConnectionProfileResourceSpec(),
+          'Resource ID of the destination connection profile.',
+          required=True,
+          flag_name_overrides={'location': ''},
+          group=destination_parser
+      )
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs,
+      command_level_fallthroughs={
+          '--source-name.location': ['--location'],
+          '--destination-name.location': ['--location']
+      }).AddToParser(parser)

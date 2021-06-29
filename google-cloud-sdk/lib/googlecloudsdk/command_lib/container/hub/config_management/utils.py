@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.container.hub import client
 from googlecloudsdk.api_lib.container.hub import util
 
-LATEST_VERSION = '1.7.2'
+LATEST_VERSION = '1.8.0'
 
 APPLY_SPEC_VERSION_1 = """
 applySpecVersion: 1
@@ -36,6 +36,7 @@ spec:
     syncRepo: URL
     syncWait: 15
     syncRev: HEAD
+    gcpServiceAccountEmail:
   policyController:
     enabled: false
     referentialRulesEnabled: false
@@ -43,6 +44,7 @@ spec:
     logDeniesEnabled: false
     auditIntervalSeconds: 60
     exemptableNamespaces: []
+    mutationEnabled: false
   hierarchyController:
      enabled: false
      enablePodTreeLabels: false

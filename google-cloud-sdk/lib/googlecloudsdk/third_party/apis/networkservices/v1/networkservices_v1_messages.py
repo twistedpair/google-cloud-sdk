@@ -1075,7 +1075,7 @@ class MatchRule(_messages.Message):
       of the request must exactly match the value specified in fullPathMatch
       after removing any query parameters and anchor that may be part of the
       original URL. fullPathMatch must begin with a /. The value must be
-      between 1 and 1024 characters (inclusive). Only one of prefixMatch,
+      between 1 and 1024 characters (inclusive). Exactly one of prefixMatch,
       fullPathMatch, or pathTemplateMatch must be specified.
     pathTemplateMatch: Optional. For satisfying the matchRule condition, the
       path of the request must match the wildcard pattern specified in
@@ -1083,12 +1083,12 @@ class MatchRule(_messages.Message):
       may be part of the original URL. pathTemplateMatch must be between 1 and
       255 characters (inclusive). The pattern specified by pathTemplateMatch
       may have at most 5 wildcard operators and at most 5 variable captures in
-      total. Only one of prefixMatch, fullPathMatch, or pathTemplateMatch must
-      be specified.
+      total. Exactly one of prefixMatch, fullPathMatch, or pathTemplateMatch
+      must be specified.
     prefixMatch: Optional. For satisfying the matchRule condition, the
       request's path must begin with the specified prefixMatch. prefixMatch
       must begin with a /. The value must be between 1 and 1024 characters
-      (inclusive). Only one of prefixMatch, fullPathMatch, or
+      (inclusive). Exactly one of prefixMatch, fullPathMatch, or
       pathTemplateMatch must be specified.
     queryParameterMatches: Optional. Specifies a list of query parameter match
       criteria, all of which must match corresponding query parameters in the
@@ -1746,7 +1746,8 @@ class PathMatcher(_messages.Message):
     routeRules: Required. The routeRules to match against. routeRules support
       advanced routing behaviour, and can match on paths, headers and query
       parameters, as well as status codes and HTTP methods. You must specify
-      at least one (1) rule, and can specify a maximum of 64 rules.
+      at least one (1) rule, and can specify a maximum of 64 rules. Route
+      rules must not have duplicate priority values.
   """
 
   description = _messages.StringField(1)

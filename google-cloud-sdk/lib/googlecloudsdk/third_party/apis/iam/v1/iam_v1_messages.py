@@ -435,6 +435,77 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GetIamPolicyRequest(_messages.Message):
+  r"""Request message for `GetIamPolicy` method.
+
+  Fields:
+    options: OPTIONAL: A `GetPolicyOptions` object for specifying options to
+      `GetIamPolicy`.
+  """
+
+  options = _messages.MessageField('GetPolicyOptions', 1)
+
+
+class GetPolicyOptions(_messages.Message):
+  r"""Encapsulates settings provided to GetIamPolicy.
+
+  Fields:
+    requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+  """
+
+  requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleIamAdminV1WorkforcePoolProviderCertificate(_messages.Message):
+  r"""Certificate for validating SAML authentication response.
+
+  Fields:
+    x509Cert: An X.509 certificate.
+  """
+
+  x509Cert = _messages.StringField(1)
+
+
+class GoogleIamAdminV1WorkforcePoolProviderOidc(_messages.Message):
+  r"""Represents an OpenId Connect 1.0 identity provider.
+
+  Fields:
+    clientId: Required. The client ID. This must match the audience claim of
+      the JWT issued by the identity provider.
+    issuerUri: Required. The OIDC issuer URI. Must be a valid URI using the
+      'https' scheme.
+  """
+
+  clientId = _messages.StringField(1)
+  issuerUri = _messages.StringField(2)
+
+
+class GoogleIamAdminV1WorkforcePoolProviderSaml(_messages.Message):
+  r"""Represents a SAML identity provider.
+
+  Fields:
+    idpCertificates: Required. A list of X.509 certificates that are used to
+      validate the SAML authentication response from the identity provider. Up
+      to 3 certificates may be configured in each WorkforcePoolProvider.
+    idpEntityId: Required. The entity ID for the identity provider.
+    idpSsoUri: Required. A valid single sign-on URL.
+    spEntityId: Required. The entity ID for the service provider. Must match
+      the audience attribute in the SAML assertion.
+  """
+
+  idpCertificates = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderCertificate', 1, repeated=True)
+  idpEntityId = _messages.StringField(2)
+  idpSsoUri = _messages.StringField(3)
+  spEntityId = _messages.StringField(4)
+
+
 class IDPReferenceOIDC(_messages.Message):
   r"""Represents a reference to an OIDC provider.
 
@@ -467,6 +538,269 @@ class IDPReferenceOIDC(_messages.Message):
   maxTokenLifetimeSeconds = _messages.IntegerField(2)
   oidcJwks = _messages.BytesField(3)
   url = _messages.StringField(4)
+
+
+class IamLocationsWorkforcePoolsCreateRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsCreateRequest object.
+
+  Fields:
+    location: Location of the WorkforcePool to create. Format:
+      `locations/{location}`.
+    workforcePool: A WorkforcePool resource to be passed as the request body.
+    workforcePoolId: The ID to use for the WorkforcePool, which becomes the
+      final component of the resource name. The IDs must be a globally unique
+      string of 6 to 63 lowercase letters, digits, or hyphens. It must start
+      with a letter, and cannot have a trailing hyphen. The prefix `gcp-` is
+      reserved for use by Google, and may not be specified.
+  """
+
+  location = _messages.StringField(1, required=True)
+  workforcePool = _messages.MessageField('WorkforcePool', 2)
+  workforcePoolId = _messages.StringField(3)
+
+
+class IamLocationsWorkforcePoolsDeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the WorkforcePool to delete. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsGetIamPolicyRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class IamLocationsWorkforcePoolsGetRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsGetRequest object.
+
+  Fields:
+    name: Required. The name of the WorkforcePool to retrieve. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsListRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsListRequest object.
+
+  Fields:
+    location: Location of the WorkforcePool. Format: `locations/{location}`.
+    pageSize: The maximum number of WorkforcePools to return. If unspecified,
+      at most 50 WorkforcePools will be returned. The maximum value is 1000;
+      values above 1000 will be coerced to 1000.
+    pageToken: A page token, received from a previous `ListWorkforcePools`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. The parent resource name, which owns this collection of
+      WorkforcePools. Format: `organizations/{org-id}`.
+    showDeleted: Whether to return soft-deleted WorkforcePools.
+  """
+
+  location = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  showDeleted = _messages.BooleanField(5)
+
+
+class IamLocationsWorkforcePoolsPatchRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the WorkforcePool. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}`
+    updateMask: Required. The list of fields to be updated.
+    workforcePool: A WorkforcePool resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  workforcePool = _messages.MessageField('WorkforcePool', 3)
+
+
+class IamLocationsWorkforcePoolsProvidersCreateRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this WorkforcePoolProvider
+      will be created. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}`
+    workforcePoolProvider: A WorkforcePoolProvider resource to be passed as
+      the request body.
+    workforcePoolProviderId: Required. The user-specified ID for the
+      WorkforcePoolProvider, which will become the final component of the
+      resource name. Must be 4-32 characters and unique within the current
+      WorkforcePool.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  workforcePoolProvider = _messages.MessageField('WorkforcePoolProvider', 2)
+  workforcePoolProviderId = _messages.StringField(3)
+
+
+class IamLocationsWorkforcePoolsProvidersDeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the WorkforcePoolProvider to delete. Format: `
+      locations/{location}/workforcePools/{workforce_pool_id}/providers/{provi
+      der_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsProvidersGetRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersGetRequest object.
+
+  Fields:
+    name: Required. The name of the WorkforcePoolProvider to retrieve. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}/providers/{prov
+      ider_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsProvidersListRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersListRequest object.
+
+  Fields:
+    pageSize: The maximum number of WorkforcePoolProviders to return. If
+      unspecified, at most 50 WorkforcePoolProviders will be returned. The
+      maximum value is 1000; values above 1000 will be coerced to 1000.
+    pageToken: A page token, received from a previous
+      `ListWorkforcePoolProviders` call. Provide this to retrieve the
+      subsequent page.
+    parent: Required. The parent resource, which owns this collection of
+      WorkforcePoolProviders. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}`
+    showDeleted: Whether to return soft-deleted WorkforcePoolProviders.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  showDeleted = _messages.BooleanField(4)
+
+
+class IamLocationsWorkforcePoolsProvidersPatchRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the WorkforcePoolProvider. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}/providers/{prov
+      ider_id}`
+    updateMask: Required. The list of fields to be updated.
+    workforcePoolProvider: A WorkforcePoolProvider resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  workforcePoolProvider = _messages.MessageField('WorkforcePoolProvider', 3)
+
+
+class IamLocationsWorkforcePoolsProvidersUndeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsProvidersUndeleteRequest object.
+
+  Fields:
+    name: Required. The name of the WorkforcePoolProvider to undelete. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}/providers/{prov
+      ider_id}`
+    undeleteWorkforcePoolProviderRequest: A
+      UndeleteWorkforcePoolProviderRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkforcePoolProviderRequest = _messages.MessageField('UndeleteWorkforcePoolProviderRequest', 2)
+
+
+class IamLocationsWorkforcePoolsSetIamPolicyRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class IamLocationsWorkforcePoolsSubjectDeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsSubjectDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the WorkforcePoolSubject to delete. Format: `l
+      ocations/{location}/workforcePools/{workforce_pool_id}/subject/{subject}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamLocationsWorkforcePoolsSubjectUndeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsSubjectUndeleteRequest object.
+
+  Fields:
+    name: Required. The name of the WorkforcePoolSubject to undelete. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}/subject/{subjec
+      t}`
+    undeleteWorkforcePoolSubjectRequest: A UndeleteWorkforcePoolSubjectRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkforcePoolSubjectRequest = _messages.MessageField('UndeleteWorkforcePoolSubjectRequest', 2)
+
+
+class IamLocationsWorkforcePoolsTestIamPermissionsRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class IamLocationsWorkforcePoolsUndeleteRequest(_messages.Message):
+  r"""A IamLocationsWorkforcePoolsUndeleteRequest object.
+
+  Fields:
+    name: Required. The name of the WorkforcePool to undelete. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}`
+    undeleteWorkforcePoolRequest: A UndeleteWorkforcePoolRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  undeleteWorkforcePoolRequest = _messages.MessageField('UndeleteWorkforcePoolRequest', 2)
 
 
 class IamOrganizationsRolesCreateRequest(_messages.Message):
@@ -1722,6 +2056,33 @@ class ListServiceAccountsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListWorkforcePoolProvidersResponse(_messages.Message):
+  r"""Response message for ListWorkforcePoolProviders.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    workforcePoolProviders: The WorkforcePoolProviders from the specified
+      parent.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workforcePoolProviders = _messages.MessageField('WorkforcePoolProvider', 2, repeated=True)
+
+
+class ListWorkforcePoolsResponse(_messages.Message):
+  r"""Response message for ListWorkforcePools.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    workforcePools: The WorkforcePools from the specified parent.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workforcePools = _messages.MessageField('WorkforcePool', 2, repeated=True)
+
+
 class ListWorkloadIdentityPoolProvidersResponse(_messages.Message):
   r"""Response message for ListWorkloadIdentityPoolProviders.
 
@@ -2660,6 +3021,18 @@ class UndeleteServiceAccountResponse(_messages.Message):
   restoredAccount = _messages.MessageField('ServiceAccount', 1)
 
 
+class UndeleteWorkforcePoolProviderRequest(_messages.Message):
+  r"""Request message for UndeleteWorkforcePoolProvider."""
+
+
+class UndeleteWorkforcePoolRequest(_messages.Message):
+  r"""Request message for UndeleteWorkforcePool."""
+
+
+class UndeleteWorkforcePoolSubjectRequest(_messages.Message):
+  r"""Request message for UndeleteWorkforcePoolSubject."""
+
+
 class UndeleteWorkloadIdentityPoolProviderRequest(_messages.Message):
   r"""Request message for UndeleteWorkloadIdentityPoolProvider."""
 
@@ -2681,6 +3054,268 @@ class UploadServiceAccountKeyRequest(_messages.Message):
   publicKeyData = _messages.BytesField(1)
 
 
+class WorkforcePool(_messages.Message):
+  r"""Represents a collection of providers. Provides namespaces for federated
+  users that can be referenced in IAM policies.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the WorkforcePool.
+
+  Fields:
+    description: The user-specified description of the WorkforcePool. Must be
+      less than or equal to 256 characters.
+    disabled: Whether the WorkforcePool is disabled. A disabled WorkforcePool
+      cannot perform new token exchanges or sign-ins using any
+      WorkforcePoolProvider in the WorkforcePool.
+    displayName: The user-specified display name of the WorkforcePool in
+      Google Cloud Console. Must be less than or equal to 32 characters.
+    name: Output only. The resource name of the WorkforcePool. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}`
+    parent: Immutable. The parent resource name. Format: `organizations/{org-
+      id}`.
+    sessionDuration: How long the GCP access tokens, console sign-in sessions,
+      and gcloud sign-in sessions from this WorkforcePool are valid. Must be
+      greater than 15 minutes (900s) and less than 12 hours (43200s). If
+      `session_duration` is not configured, minted credentials will have a
+      default duration of one hour (3600s).
+    state: Output only. The state of the WorkforcePool.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the WorkforcePool.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The WorkforcePool is active by default.
+      DELETED: The WorkforcePool is soft-deleted. Soft-deleted WorkforcePools
+        are permanently deleted after approximately 30 days unless restored
+        via UndeleteWorkforcePool.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  description = _messages.StringField(1)
+  disabled = _messages.BooleanField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  sessionDuration = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
+class WorkforcePoolProvider(_messages.Message):
+  r"""Holds an IDP configuration for federating a workforce to GCP.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the WorkforcePoolProvider.
+
+  Messages:
+    AttributeMappingValue: Required. Maps claims from the authentication
+      credentials issued by the Identity Provider into Google Cloud Platform
+      IAM attributes, e.g. subject, segment. Each key must be a string
+      specifying the Google Cloud Platform IAM attribute to be produced. The
+      following predefined keys are currently supported: * google.subject -
+      required field that indicates the principal that is being authenticated
+      to IAM, and will be logged in all API accesses for which Cloud Audit
+      Logging is configured. * google.groups - optional field that indicates
+      asserted groups that the user should be considered to belong to. You can
+      create IAM bindings using the groups attribute and access to a resource
+      will be granted if any of the groups asserted here match a group in the
+      respective binding. * google.display_name - optional field that
+      overrides the name of the user. If not set, google.subject will be
+      displayed instead. This attribute cannot be used in IAM policies. The
+      maximum length of this field is 100 characters. * google.profile_photo -
+      optional fields that may be set to a valid URL specifying the user's
+      thumbnail photo. When set, the image will be visible as the user's
+      profile picture. If not set, a generic user icon will be displayed
+      instead. This attribute cannot be used in IAM policies. Custom
+      attributes can also be mapped by specifying
+      'attribute.{custom_attribute}', replacing {custom_attribute} with the
+      name of the custom attribute to be mapped. A maximum of 50 custom
+      attribute mappings can be defined. The maximum length of a mapped
+      attribute key is 2048 characters and may only contain the characters
+      [a-z0-9_]. These attributes can then be referenced in IAM policies to
+      define fine-grained access for the workload to GCP resources by
+      specifying: * google.subject -
+      'principal://iam.googleapis.com/workforcePools/{pool}/subject/{value}' *
+      google.groups -
+      'principalSet://iam.googleapis.com/workforcePools/{pool}/group/{value}'
+      * attribute.{custom_attribute} - 'principalSet://iam.googleapis.com/proj
+      ects/workforcePools/{pool}/attribute.{custom_attribute}/{value}' Each
+      value must be a Common Expression Language
+      (https://opensource.google/projects/cel) function that maps an Identity
+      Provider token to the normalized attribute specified by the
+      corresponding map key. The following keywords may be referenced in the
+      expressions: * assertion - JSON representing the authentication
+      credential issued by the Identity Provider. The maximum length of an
+      attribute mapping expression is 2048 characters. When evaluated, the
+      total size of all mapped attributes must not exceed 8kb. Example: Map
+      the 'sub' claim of the incoming credential to the 'subject' Google Cloud
+      Platform IAM attribute. {"google.subject": "assertion.sub"}
+
+  Fields:
+    attributeCondition: A [Common Expression
+      Language](https://opensource.google/projects/cel) expression in plain
+      text to restrict which otherwise valid authentication credentials issued
+      by the provider should be accepted. The expression must output a boolean
+      representing whether to allow the federation. The following keywords may
+      be referenced in the expressions: assertion - JSON representing the
+      authentication credential issued by the Provider. google - the Google
+      attributes mapped from the assertion in the attribute_mappings.
+      `google.profile_photo` and `google.display_name` are not supported.
+      attribute - the custom attributes mapped from the assertion in the
+      attribute_mappings. The maximum length of the attribute condition
+      expression is 4096 characters. If unspecified, all valid authentication
+      credential will be accepted. Example: Only allow credentials with a
+      mapped google.groups value of 'admins'. "'admins' in google.groups"
+    attributeMapping: Required. Maps claims from the authentication
+      credentials issued by the Identity Provider into Google Cloud Platform
+      IAM attributes, e.g. subject, segment. Each key must be a string
+      specifying the Google Cloud Platform IAM attribute to be produced. The
+      following predefined keys are currently supported: * google.subject -
+      required field that indicates the principal that is being authenticated
+      to IAM, and will be logged in all API accesses for which Cloud Audit
+      Logging is configured. * google.groups - optional field that indicates
+      asserted groups that the user should be considered to belong to. You can
+      create IAM bindings using the groups attribute and access to a resource
+      will be granted if any of the groups asserted here match a group in the
+      respective binding. * google.display_name - optional field that
+      overrides the name of the user. If not set, google.subject will be
+      displayed instead. This attribute cannot be used in IAM policies. The
+      maximum length of this field is 100 characters. * google.profile_photo -
+      optional fields that may be set to a valid URL specifying the user's
+      thumbnail photo. When set, the image will be visible as the user's
+      profile picture. If not set, a generic user icon will be displayed
+      instead. This attribute cannot be used in IAM policies. Custom
+      attributes can also be mapped by specifying
+      'attribute.{custom_attribute}', replacing {custom_attribute} with the
+      name of the custom attribute to be mapped. A maximum of 50 custom
+      attribute mappings can be defined. The maximum length of a mapped
+      attribute key is 2048 characters and may only contain the characters
+      [a-z0-9_]. These attributes can then be referenced in IAM policies to
+      define fine-grained access for the workload to GCP resources by
+      specifying: * google.subject -
+      'principal://iam.googleapis.com/workforcePools/{pool}/subject/{value}' *
+      google.groups -
+      'principalSet://iam.googleapis.com/workforcePools/{pool}/group/{value}'
+      * attribute.{custom_attribute} - 'principalSet://iam.googleapis.com/proj
+      ects/workforcePools/{pool}/attribute.{custom_attribute}/{value}' Each
+      value must be a Common Expression Language
+      (https://opensource.google/projects/cel) function that maps an Identity
+      Provider token to the normalized attribute specified by the
+      corresponding map key. The following keywords may be referenced in the
+      expressions: * assertion - JSON representing the authentication
+      credential issued by the Identity Provider. The maximum length of an
+      attribute mapping expression is 2048 characters. When evaluated, the
+      total size of all mapped attributes must not exceed 8kb. Example: Map
+      the 'sub' claim of the incoming credential to the 'subject' Google Cloud
+      Platform IAM attribute. {"google.subject": "assertion.sub"}
+    description: The user-specified description of the WorkforcePoolProvider.
+      Must be less than or equal to 256 characters.
+    disabled: Whether the WorkforcePoolProvider is disabled. A disabled
+      WorkforcePoolProvider cannot perform new token exchanges or sign-ins.
+    displayName: The user-specified display name for the
+      WorkforcePoolProvider. Must be less than or equal to 32 characters.
+    name: Output only. The resource name of the WorkforcePoolProvider. Format:
+      `locations/{location}/workforcePools/{workforce_pool_id}/providers/{prov
+      ider_id}`
+    oidc: OpenId Connect 1.0 identity provider configuration.
+    saml: SAML identity provider configuration.
+    state: Output only. The state of the WorkforcePoolProvider.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the WorkforcePoolProvider.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The WorkforcePoolProvider is active and may be used to validate
+        authentication credentials.
+      DELETED: The WorkforcePoolProvider is soft-deleted. Soft-deleted
+        WorkforcePoolProviders are permanently deleted after approximately 30
+        days unless restored via UndeleteWorkforcePoolProvider.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributeMappingValue(_messages.Message):
+    r"""Required. Maps claims from the authentication credentials issued by
+    the Identity Provider into Google Cloud Platform IAM attributes, e.g.
+    subject, segment. Each key must be a string specifying the Google Cloud
+    Platform IAM attribute to be produced. The following predefined keys are
+    currently supported: * google.subject - required field that indicates the
+    principal that is being authenticated to IAM, and will be logged in all
+    API accesses for which Cloud Audit Logging is configured. * google.groups
+    - optional field that indicates asserted groups that the user should be
+    considered to belong to. You can create IAM bindings using the groups
+    attribute and access to a resource will be granted if any of the groups
+    asserted here match a group in the respective binding. *
+    google.display_name - optional field that overrides the name of the user.
+    If not set, google.subject will be displayed instead. This attribute
+    cannot be used in IAM policies. The maximum length of this field is 100
+    characters. * google.profile_photo - optional fields that may be set to a
+    valid URL specifying the user's thumbnail photo. When set, the image will
+    be visible as the user's profile picture. If not set, a generic user icon
+    will be displayed instead. This attribute cannot be used in IAM policies.
+    Custom attributes can also be mapped by specifying
+    'attribute.{custom_attribute}', replacing {custom_attribute} with the name
+    of the custom attribute to be mapped. A maximum of 50 custom attribute
+    mappings can be defined. The maximum length of a mapped attribute key is
+    2048 characters and may only contain the characters [a-z0-9_]. These
+    attributes can then be referenced in IAM policies to define fine-grained
+    access for the workload to GCP resources by specifying: * google.subject -
+    'principal://iam.googleapis.com/workforcePools/{pool}/subject/{value}' *
+    google.groups -
+    'principalSet://iam.googleapis.com/workforcePools/{pool}/group/{value}' *
+    attribute.{custom_attribute} - 'principalSet://iam.googleapis.com/projects
+    /workforcePools/{pool}/attribute.{custom_attribute}/{value}' Each value
+    must be a Common Expression Language
+    (https://opensource.google/projects/cel) function that maps an Identity
+    Provider token to the normalized attribute specified by the corresponding
+    map key. The following keywords may be referenced in the expressions: *
+    assertion - JSON representing the authentication credential issued by the
+    Identity Provider. The maximum length of an attribute mapping expression
+    is 2048 characters. When evaluated, the total size of all mapped
+    attributes must not exceed 8kb. Example: Map the 'sub' claim of the
+    incoming credential to the 'subject' Google Cloud Platform IAM attribute.
+    {"google.subject": "assertion.sub"}
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributeMappingValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AttributeMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributeMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributeCondition = _messages.StringField(1)
+  attributeMapping = _messages.MessageField('AttributeMappingValue', 2)
+  description = _messages.StringField(3)
+  disabled = _messages.BooleanField(4)
+  displayName = _messages.StringField(5)
+  name = _messages.StringField(6)
+  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 7)
+  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+
+
 class WorkloadIdentityPool(_messages.Message):
   r"""Represents a collection of external workload identities. You can define
   IAM policies to grant these identities access to Google Cloud resources.
@@ -2695,6 +3330,16 @@ class WorkloadIdentityPool(_messages.Message):
       is re-enabled, existing tokens grant access again.
     displayName: A display name for the pool. Cannot exceed 32 characters.
     name: Output only. The resource name of the pool.
+    sessionDuration: Overrides the lifespan of access tokens issued when
+      federating using this pool. If not set, the lifespan of issued access
+      tokens is computed based on the type of identity provider: - For AWS
+      providers, the default access token lifespan is equal to 15 minutes. -
+      For OIDC providers, the default access token lifespan is equal to the
+      remaining lifespan of the exchanged OIDC ID token, with a maximum limit
+      of 1 hour. If set, session duration must be between 2 minutes and 12
+      hours. Organization administrators can further restrict the maximum
+      allowed session_duration value using the iam-
+      workloadIdentityPoolsSessionDuration Resource Setting.
     state: Output only. The state of the pool.
   """
 
@@ -2720,7 +3365,8 @@ class WorkloadIdentityPool(_messages.Message):
   disabled = _messages.BooleanField(2)
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  sessionDuration = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class WorkloadIdentityPoolProvider(_messages.Message):

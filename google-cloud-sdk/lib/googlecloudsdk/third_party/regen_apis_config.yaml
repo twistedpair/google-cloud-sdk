@@ -93,10 +93,6 @@ apis:
     v1alpha1:
       discovery_doc: alloydb_v1alpha1.json
       default: true
-  alloydbadmin:
-    v1alpha1:
-      discovery_doc: alloydbadmin_v1alpha1.json
-      default: true
   anthosevents:
     v1:
       discovery_doc: anthosevents_v1.json
@@ -479,6 +475,10 @@ apis:
       default: true
     v1:
       discovery_doc: datamigration_v1.json
+  dataplex:
+    v1:
+      discovery_doc: dataplex_v1.json
+      default: true
   dataproc:
     v1:
       discovery_doc: dataproc_v1.json

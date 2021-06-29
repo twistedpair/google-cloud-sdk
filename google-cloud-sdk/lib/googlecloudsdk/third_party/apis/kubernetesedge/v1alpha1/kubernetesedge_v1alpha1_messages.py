@@ -797,6 +797,68 @@ class KubernetesedgeProjectsLocationsSitesTestIamPermissionsRequest(_messages.Me
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class KubernetesedgeProjectsLocationsVpnConnectionsCreateRequest(_messages.Message):
+  r"""A KubernetesedgeProjectsLocationsVpnConnectionsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent location where this vpn connection will be
+      created.
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
+    vpnConnection: A VpnConnection resource to be passed as the request body.
+    vpnConnectionId: Required. The VPN connection identifier.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  vpnConnection = _messages.MessageField('VpnConnection', 3)
+  vpnConnectionId = _messages.StringField(4)
+
+
+class KubernetesedgeProjectsLocationsVpnConnectionsDeleteRequest(_messages.Message):
+  r"""A KubernetesedgeProjectsLocationsVpnConnectionsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the vpn connection.
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class KubernetesedgeProjectsLocationsVpnConnectionsGetRequest(_messages.Message):
+  r"""A KubernetesedgeProjectsLocationsVpnConnectionsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the vpn connection.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class KubernetesedgeProjectsLocationsVpnConnectionsListRequest(_messages.Message):
+  r"""A KubernetesedgeProjectsLocationsVpnConnectionsListRequest object.
+
+  Fields:
+    filter: Only resources matching this filter will be listed.
+    orderBy: Specifies the order in which resources will be listed.
+    pageSize: The maximum number of resources to list.
+    pageToken: A page token received from previous list request.
+    parent: Required. The parent location, which owns this collection of VPN
+      connections.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class ListClustersResponse(_messages.Message):
   r"""List of clusters in a location.
 
@@ -877,6 +939,20 @@ class ListSitesResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   sites = _messages.MessageField('Site', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListVpnConnectionsResponse(_messages.Message):
+  r"""List of VPN connections in a site.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results.
+    unreachable: Locations that could not be reached.
+    vpnConnections: VpnConnections in the location.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  unreachable = _messages.StringField(2, repeated=True)
+  vpnConnections = _messages.MessageField('VpnConnection', 3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1024,6 +1100,8 @@ class NodePool(_messages.Message):
       is documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: Required. The resource name of the node pool.
     nodeCount: Required. The number of nodes in the pool.
+    nodeLocation: Name of the Google Edge Cloud zone where this node pool will
+      be created. For example: `us-central1-edge-customer-a`.
     site: Name of the Google Edge Cloud zone where this node pool will be
       created.
     updateTime: Output only. The time when the node pool was last updated.
@@ -1058,8 +1136,9 @@ class NodePool(_messages.Message):
   machineFilter = _messages.StringField(3)
   name = _messages.StringField(4)
   nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  site = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  nodeLocation = _messages.StringField(6)
+  site = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class Operation(_messages.Message):
@@ -1463,6 +1542,84 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class VpnConnection(_messages.Message):
+  r"""A VPN connection .
+
+  Enums:
+    BgpRoutingModeValueValuesEnum: Dynamic routing mode of the VPC network,
+      `regional` or `global`.
+
+  Messages:
+    LabelsValue: Labels associated with this resource.
+
+  Fields:
+    bgpRoutingMode: Dynamic routing mode of the VPC network, `regional` or
+      `global`.
+    cluster: The canonical Cluster name to connect to. It is in the form of
+      projects/{project}/locations/{location}/clusters/{cluster}.
+    createTime: Output only. The time when the VPN connection was created.
+    enableHighAvailability: Whether this VPN connection has HA enabled on
+      cluster side. If enabled, when creating VPN connection we will attempt
+      to use 2 ANG floating IPs.
+    labels: Labels associated with this resource.
+    name: Required. The resource name of VPN connection
+    natGatewayIp: NAT gateway IP, or WAN IP address. If a customer has
+      multiple NAT IPs, the customer needs to configure NAT such that only one
+      external IP maps to the GMEC Anthos cluster. This is empty if NAT is not
+      used.
+    updateTime: Output only. The time when the VPN connection was last
+      updated.
+    vpc: The canonical VPC name to connect to. It is in the form of
+      projects/{project}/locations/{location}/vpcs/{vpc}.
+  """
+
+  class BgpRoutingModeValueValuesEnum(_messages.Enum):
+    r"""Dynamic routing mode of the VPC network, `regional` or `global`.
+
+    Values:
+      BGP_ROUTING_MODE_UNSPECIFIED: Unknown.
+      REGIONAL: Regional mode.
+      GLOBAL: Global mode.
+    """
+    BGP_ROUTING_MODE_UNSPECIFIED = 0
+    REGIONAL = 1
+    GLOBAL = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels associated with this resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bgpRoutingMode = _messages.EnumField('BgpRoutingModeValueValuesEnum', 1)
+  cluster = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  enableHighAvailability = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  natGatewayIp = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  vpc = _messages.StringField(9)
 
 
 encoding.AddCustomJsonFieldMapping(

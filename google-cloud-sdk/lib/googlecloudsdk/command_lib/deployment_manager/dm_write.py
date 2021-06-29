@@ -58,9 +58,12 @@ def Execute(client, messages, resources, request, is_async, call, logger):
         response.name,
         params={'project': properties.VALUES.core.project.GetOrFail},
         collection='deploymentmanager.operations')
-    WaitForOperation(client, messages,
-                     operation_ref.operation, response.operationType,
-                     project=request.project)
+    response = WaitForOperation(
+        client,
+        messages,
+        operation_ref.operation,
+        response.operationType,
+        project=request.project)
 
   logger(request, is_async)
   if is_async:

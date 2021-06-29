@@ -27,6 +27,7 @@ import os
 import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
@@ -72,9 +73,12 @@ class IntraCloudCopyTask(task.Task):
         thread_id=threading.get_ident(),
     )
 
+    request_config = request_config_factory.get_request_config(
+        self._destination_resource.storage_url)
     # TODO(b/161900052): Support all of copy_object's parameters
     provider = self._source_resource.storage_url.scheme
     api_factory.get_api(provider).copy_object(
         self._source_resource,
         self._destination_resource,
+        request_config,
         progress_callback=progress_callback)

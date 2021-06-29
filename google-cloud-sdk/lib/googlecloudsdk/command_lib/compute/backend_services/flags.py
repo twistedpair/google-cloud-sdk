@@ -242,6 +242,40 @@ def AddSubsettingPolicy(parser):
       """)
 
 
+def AddConnectionTrackingPolicy(parser):
+  """Add flags related to connection tracking policy.
+
+  Args:
+    parser: The parser that parses args from user input.
+  """
+  parser.add_argument(
+      '--connection-persistence-on-unhealthy-backends',
+      choices=['DEFAULT_FOR_PROTOCOL', 'NEVER_PERSIST', 'ALWAYS_PERSIST'],
+      type=lambda x: x.replace('-', '_').upper(),
+      default=None,
+      help="""\
+      Specifies connection persistence when backends are unhealthy.
+      The default value is DEFAULT_FOR_PROTOCOL.
+      """)
+  parser.add_argument(
+      '--tracking-mode',
+      choices=['PER_CONNECTION', 'PER_SESSION'],
+      type=lambda x: x.replace('-', '_').upper(),
+      default=None,
+      help="""\
+      Specifies the connection key used for connection tracking.
+      The default value is PER_CONNECTION.
+      """)
+  parser.add_argument(
+      '--idle-timeout-sec',
+      type=arg_parsers.Duration(),
+      default=None,
+      help="""\
+      Specifies how long to keep a connection tracking table entry while there
+      is no matching traffic (in seconds).
+      """)
+
+
 def AddConnectionDrainingTimeout(parser):
   parser.add_argument(
       '--connection-draining-timeout',

@@ -43,6 +43,8 @@ from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import update
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.command_lib.util.declarative import flags as declarative_config_flags
+from googlecloudsdk.command_lib.util.declarative.clients import kcc_client
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -102,17 +104,31 @@ class CommandBuilder(object):
   def __init__(self, spec, path):
     self.spec = spec
     self.path = path
+    self.has_request_method = yaml_command_schema.CommandType.HasRequestMethod(
+        spec.command_type)
     self.ConfigureCommand()
 
   def ConfigureCommand(self):
     """Allows command to be reconfigured if needed."""
-    self.method = registry.GetMethod(self.spec.request.collection,
-                                     self.spec.request.method,
-                                     self.spec.request.api_version)
     resource_arg = self.spec.arguments.resource
+
+    if self.has_request_method:
+      self.method = registry.GetMethod(self.spec.request.collection,
+                                       self.spec.request.method,
+                                       self.spec.request.api_version)
+      self.resource_collection = self.method.resource_argument_collection
+      self.display_resource_type = self.spec.request.display_resource_type
+
+    else:
+      self.method = None
+      self.resource_collection = registry.GetAPICollection(
+          self.spec.arguments.resource.GenerateResourceSpec().collection)
+      self.display_resource_type = None
+
     self.arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
-        self.method, self.spec.arguments.params, resource_arg)
-    self.display_resource_type = self.spec.request.display_resource_type
+        self.method, self.spec.arguments.params, resource_arg,
+        self.resource_collection)
+
     if (not self.display_resource_type and resource_arg and
         not resource_arg.is_parent_resource):
       self.display_resource_type = resource_arg.name if resource_arg else None
@@ -155,6 +171,8 @@ class CommandBuilder(object):
       command = self._GenerateImportCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.EXPORT:
       command = self._GenerateExportCommand()
+    elif self.spec.command_type == yaml_command_schema.CommandType.CONFIG_EXPORT:
+      command = self._GenerateConfigExportCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
       command = self._GenerateGenericCommand()
     else:
@@ -208,7 +226,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.ListCommand):
-    # pylint: disable=missing-docstring
+      # pylint: disable=missing-docstring
 
       @staticmethod
       def Args(parser):
@@ -244,7 +262,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.DeleteCommand):
-    # pylint: disable=missing-docstring
+      # pylint: disable=missing-docstring
 
       @staticmethod
       def Args(parser):
@@ -291,7 +309,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.CreateCommand):
-    # pylint: disable=missing-docstring
+      # pylint: disable=missing-docstring
 
       @staticmethod
       def Args(parser):
@@ -354,7 +372,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.Command):
-    # pylint: disable=missing-docstring
+      # pylint: disable=missing-docstring
 
       @staticmethod
       def Args(parser):
@@ -869,6 +887,48 @@ class CommandBuilder(object):
 
     return Command
 
+  def _GenerateConfigExportCommand(self):
+    """Generates a config export command.
+
+    A config export command has a resource argument as well as configuration
+    export flags (such as --output-format and --path). It will export the
+    configuration for one resource to stdout or to file, or will output a stream
+    of configurations for all resources of the same type within a project to
+    stdout, or to multiple files. Supported formats are `KRM` and `Terraform`.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    class Command(base.Command):
+      # pylint: disable=missing-docstring
+
+      @staticmethod
+      def Args(parser):
+        mutex_group = parser.add_group(mutex=True, required=True)
+        resource_group = mutex_group.add_group()
+        args = self.arg_generator.GenerateArgs()
+        # Resource arg concepts have to be manually changed to not required.
+        for arg in args:
+          for _, value in arg.specs.items():
+            value.required = False
+          arg.AddToParser(resource_group)
+        declarative_config_flags.AddAllFlag(mutex_group, collection='project')
+        declarative_config_flags.AddPathFlag(parser)
+        declarative_config_flags.AddFormatFlag(parser)
+
+      def Run(self_, args):  # pylint: disable=no-self-argument
+        # pylint: disable=missing-docstring
+        client = kcc_client.KccClient()
+        if getattr(args, 'all', None):
+          collection = self.spec.arguments.resource.GenerateResourceSpec(
+          ).collection
+          return client.ExportAll(args=args, collection=collection)
+        ref = self.arg_generator.GetRequestResourceRef(args).SelfLink()
+        return client.Export(args, resource_uri=ref)
+
+    return Command
+
   def _CommonArgs(self, parser):
     """Performs argument actions common to all commands.
 
@@ -1056,7 +1116,8 @@ class CommandBuilder(object):
     get_method = registry.GetMethod(self.spec.request.collection, 'get',
                                     self.spec.request.api_version)
     get_arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
-        get_method, [], self.spec.arguments.resource)
+        get_method, [], self.spec.arguments.resource,
+        get_method.resource_argument_collection)
 
     # TODO(b/111069150): Add error handling when get fails.
     return get_method.Call(get_arg_generator.CreateRequest(args))
@@ -1232,12 +1293,14 @@ class CommandBuilder(object):
           'examples': 'EXAMPLES',
       }
       command.detailed_help = {
-          key_map.get(k, k): v for k, v in self.spec.help_text.items()}
-    command.detailed_help['API REFERENCE'] = (
-        'This command uses the *{}/{}* API. The full documentation for this '
-        'API can be found at: {}'.format(
-            self.method.collection.api_name, self.method.collection.api_version,
-            self.method.collection.docs_url))
+          key_map.get(k, k): v for k, v in self.spec.help_text.items()
+      }
+    if self.has_request_method:
+      command.detailed_help['API REFERENCE'] = (
+          'This command uses the *{}/{}* API. The full documentation for this '
+          'API can be found at: {}'.format(self.method.collection.api_name,
+                                           self.method.collection.api_version,
+                                           self.method.collection.docs_url))
 
   def _GetDisplayName(self, resource_ref, args):
     if (self.spec.arguments.resource

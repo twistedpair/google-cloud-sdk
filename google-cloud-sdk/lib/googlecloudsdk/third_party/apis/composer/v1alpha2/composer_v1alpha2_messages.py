@@ -69,12 +69,19 @@ class CheckUpgradeResponse(_messages.Message):
     ContainsPypiModulesConflictValueValuesEnum: Output only. Whether build has
       succeeded or failed on modules conflicts.
 
+  Messages:
+    PypiDependenciesValue: Pypi dependencies specified in the environment
+      configuration, at the time when the build was triggered.
+
   Fields:
     buildLogUri: Output only. Url for a docker build log of an upgraded image.
     containsPypiModulesConflict: Output only. Whether build has succeeded or
       failed on modules conflicts.
+    imageVersion: Composer image for which the build was happening.
     pypiConflictBuildLogExtract: Output only. Extract from a docker image
       build log containing information about pypi modules conflicts.
+    pypiDependencies: Pypi dependencies specified in the environment
+      configuration, at the time when the build was triggered.
   """
 
   class ContainsPypiModulesConflictValueValuesEnum(_messages.Enum):
@@ -91,9 +98,38 @@ class CheckUpgradeResponse(_messages.Message):
     CONFLICT = 1
     NO_CONFLICT = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PypiDependenciesValue(_messages.Message):
+    r"""Pypi dependencies specified in the environment configuration, at the
+    time when the build was triggered.
+
+    Messages:
+      AdditionalProperty: An additional property for a PypiDependenciesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PypiDependenciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PypiDependenciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   buildLogUri = _messages.StringField(1)
   containsPypiModulesConflict = _messages.EnumField('ContainsPypiModulesConflictValueValuesEnum', 2)
-  pypiConflictBuildLogExtract = _messages.StringField(3)
+  imageVersion = _messages.StringField(3)
+  pypiConflictBuildLogExtract = _messages.StringField(4)
+  pypiDependencies = _messages.MessageField('PypiDependenciesValue', 5)
 
 
 class ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest(_messages.Message):

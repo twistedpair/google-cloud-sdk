@@ -527,7 +527,7 @@
           "$ref": "RepoSource"
         },
         "storageSourceManifest": {
-          "description": "If provided, get the source from this manifest in Google Cloud Storage. This feature is in Preview.",
+          "description": "If provided, get the source from this manifest in Google Cloud Storage. This feature is in Preview; see description [here](https:\/\/github.com\/GoogleCloudPlatform\/cloud-builders\/tree\/master\/gcs-fetcher).",
           "$ref": "StorageSourceManifest"
         }
       }
@@ -596,7 +596,7 @@
     },
     "StorageSourceManifest": {
       "id": "StorageSourceManifest",
-      "description": "Location of the source manifest in Google Cloud Storage. This feature is in Preview.",
+      "description": "Location of the source manifest in Google Cloud Storage. This feature is in Preview; see description [here](https:\/\/github.com\/GoogleCloudPlatform\/cloud-builders\/tree\/master\/gcs-fetcher).",
       "type": "object",
       "properties": {
         "bucket": {

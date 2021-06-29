@@ -46,6 +46,7 @@ class KubernetesedgeV1alpha1(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_sites_machines = self.ProjectsLocationsSitesMachinesService(self)
     self.projects_locations_sites = self.ProjectsLocationsSitesService(self)
+    self.projects_locations_vpnConnections = self.ProjectsLocationsVpnConnectionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -980,6 +981,124 @@ class KubernetesedgeV1alpha1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='KubernetesedgeProjectsLocationsSitesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsVpnConnectionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_vpnConnections resource."""
+
+    _NAME = 'projects_locations_vpnConnections'
+
+    def __init__(self, client):
+      super(KubernetesedgeV1alpha1.ProjectsLocationsVpnConnectionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Cluster in a given project and location.
+
+      Args:
+        request: (KubernetesedgeProjectsLocationsVpnConnectionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/vpnConnections',
+        http_method='POST',
+        method_id='kubernetesedge.projects.locations.vpnConnections.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'vpnConnectionId'],
+        relative_path='v1alpha1/{+parent}/vpnConnections',
+        request_field='vpnConnection',
+        request_type_name='KubernetesedgeProjectsLocationsVpnConnectionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single VPN connection.
+
+      Args:
+        request: (KubernetesedgeProjectsLocationsVpnConnectionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/vpnConnections/{vpnConnectionsId}',
+        http_method='DELETE',
+        method_id='kubernetesedge.projects.locations.vpnConnections.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='KubernetesedgeProjectsLocationsVpnConnectionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single VpnConnection.
+
+      Args:
+        request: (KubernetesedgeProjectsLocationsVpnConnectionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VpnConnection) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/vpnConnections/{vpnConnectionsId}',
+        http_method='GET',
+        method_id='kubernetesedge.projects.locations.vpnConnections.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='KubernetesedgeProjectsLocationsVpnConnectionsGetRequest',
+        response_type_name='VpnConnection',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists VpnConnections in a given project and location.
+
+      Args:
+        request: (KubernetesedgeProjectsLocationsVpnConnectionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVpnConnectionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/vpnConnections',
+        http_method='GET',
+        method_id='kubernetesedge.projects.locations.vpnConnections.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/vpnConnections',
+        request_field='',
+        request_type_name='KubernetesedgeProjectsLocationsVpnConnectionsListRequest',
+        response_type_name='ListVpnConnectionsResponse',
         supports_download=False,
     )
 

@@ -379,3 +379,13 @@ class HelpUpdater(object):
       return self._Update(restrict)
     except (IOError, OSError, SystemError) as e:
       raise HelpUpdateError('Update failed: %s' % six.text_type(e))
+
+  def GetDiffFiles(self, restrict=None):
+    """Print a list of help text files that are distinct from source, if any."""
+    with file_utils.TemporaryDirectory() as temp_dir:
+      walker = self._generator(
+          self._cli, temp_dir, None, restrict=restrict)
+      walker.Walk(hidden=True)
+      diff = HelpAccumulator(restrict=restrict)
+      DirDiff(self._directory, temp_dir, diff)
+      return sorted(diff.GetChanges())

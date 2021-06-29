@@ -226,6 +226,11 @@
         "disabled": {
           "description": "Whether the pool is disabled. You cannot use a disabled pool to exchange tokens, or use existing tokens to access resources. If the pool is re-enabled, existing tokens grant access again.",
           "type": "boolean"
+        },
+        "sessionDuration": {
+          "description": "Overrides the lifespan of access tokens issued when federating using this pool. If not set, the lifespan of issued access tokens is computed based on the type of identity provider: - For AWS providers, the default access token lifespan is equal to 15 minutes. - For OIDC providers, the default access token lifespan is equal to the remaining lifespan of the exchanged OIDC ID token, with a maximum limit of 1 hour. If set, session duration must be between 2 minutes and 12 hours. Organization administrators can further restrict the maximum allowed session_duration value using the iam-workloadIdentityPoolsSessionDuration Resource Setting.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },

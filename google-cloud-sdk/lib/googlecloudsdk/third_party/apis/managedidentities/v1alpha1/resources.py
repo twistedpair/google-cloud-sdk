@@ -51,6 +51,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_DOMAINS_BACKUPS = (
+      'projects.locations.global.domains.backups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/domains/{domainsId}/'
+              'backups/{backupsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_GLOBAL_DOMAINS_SQLINTEGRATIONS = (
       'projects.locations.global.domains.sqlIntegrations',
       '{+name}',

@@ -588,8 +588,12 @@ class AssetType(_messages.Message):
   assets.It specifies configuration of all the fields present on the asset.
 
   Messages:
-    AnnotationSetConfigsValue: Mapping of annotationSet name to its
-      configuration.
+    AnnotationSetConfigsValue: Mapping of annotationSet ID to its
+      configuration. The annotationSet ID will be used as the resource ID when
+      GCMA creates the AnnotationSet internally. Detailed rules for a resource
+      id are: 1. 1 character minimum, 63 characters maximum 2. only contains
+      letters, digits, underscore and hyphen 3. starts with a letter if length
+      == 1, starts with a letter or underscore if length > 1
     IndexedFieldConfigsValue: List of indexed fields (e.g.
       "metadata.file.url") to make available in searches with their
       corresponding properties.
@@ -603,7 +607,12 @@ class AssetType(_messages.Message):
       configuration.
 
   Fields:
-    annotationSetConfigs: Mapping of annotationSet name to its configuration.
+    annotationSetConfigs: Mapping of annotationSet ID to its configuration.
+      The annotationSet ID will be used as the resource ID when GCMA creates
+      the AnnotationSet internally. Detailed rules for a resource id are: 1. 1
+      character minimum, 63 characters maximum 2. only contains letters,
+      digits, underscore and hyphen 3. starts with a letter if length == 1,
+      starts with a letter or underscore if length > 1
     createTime: Output only. The creation time.
     indexedFieldConfigs: List of indexed fields (e.g. "metadata.file.url") to
       make available in searches with their corresponding properties.
@@ -629,7 +638,12 @@ class AssetType(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationSetConfigsValue(_messages.Message):
-    r"""Mapping of annotationSet name to its configuration.
+    r"""Mapping of annotationSet ID to its configuration. The annotationSet ID
+    will be used as the resource ID when GCMA creates the AnnotationSet
+    internally. Detailed rules for a resource id are: 1. 1 character minimum,
+    63 characters maximum 2. only contains letters, digits, underscore and
+    hyphen 3. starts with a letter if length == 1, starts with a letter or
+    underscore if length > 1
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -2079,28 +2093,6 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsDelete
   name = _messages.StringField(2, required=True)
 
 
-class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGetIamPolicyRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGe
-  tIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGetRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGe
   tRequest object.
@@ -2161,39 +2153,6 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsPatchR
   updateMask = _messages.StringField(4)
 
 
-class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsSetIamPolicyRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsSe
-  tIamPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsTestIamPermissionsRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsTe
-  stIamPermissionsRequest object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsCreateRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsCreateRequest
   object.
@@ -2227,29 +2186,6 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsDeleteRequest(_me
 
   etag = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
-
-
-class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetIamPolicyRequest(_messages.Message):
-  r"""A
-  MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetRequest(_messages.Message):
@@ -2311,40 +2247,6 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsPatchRequest(_mes
   name = _messages.StringField(2, required=True)
   oldUpdateMask = _messages.StringField(3)
   updateMask = _messages.StringField(4)
-
-
-class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsSetIamPolicyRequest(_messages.Message):
-  r"""A
-  MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsSetIamPolicyRequest
-  object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsTestIamPermissionsRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsTestIamPermis
-  sionsRequest object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsCreateRequest(_messages.Message):

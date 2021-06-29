@@ -276,21 +276,24 @@ def GetClientInstance(api_name,
                                           CheckResponseForApiEnablement())
 
 
-def GetGapicClientClass(api_name, api_version):
+def GetGapicClientClass(api_name, api_version, is_async=False):
   """Returns the GAPIC client class for the API specified in the args.
 
   Args:
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
+    is_async: bool, If True, return the asyncio version of the gapic client.
 
   Returns:
     The specified GAPIC API Client class.
   """
   # pylint:disable=protected-access
-  return apis_internal._GetGapicClientClass(api_name, api_version)
+  return apis_internal._GetGapicClientClass(api_name, api_version,
+                                            is_async=is_async)
 
 
-def GetGapicClientInstance(api_name, api_version, address_override_func=None):
+def GetGapicClientInstance(api_name, api_version, address_override_func=None,
+                           is_async=False):
   """Returns an instance of the GAPIC API client specified in the args.
 
   Args:
@@ -298,6 +301,7 @@ def GetGapicClientInstance(api_name, api_version, address_override_func=None):
     api_version: str, The version of the API.
     address_override_func: function, function to call to override the client
         host. It takes a single argument which is the original host.
+    is_async: bool, If True, return the asyncio version of the gapic client.
 
   Returns:
     An instance of the specified GAPIC API client.
@@ -306,7 +310,7 @@ def GetGapicClientInstance(api_name, api_version, address_override_func=None):
   # pylint:disable=protected-access
   return apis_internal._GetGapicClientInstance(
       api_name, api_version, credentials,
-      address_override_func=address_override_func)
+      address_override_func=address_override_func, is_async=is_async)
 
 
 def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

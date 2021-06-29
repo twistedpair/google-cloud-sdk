@@ -519,6 +519,11 @@
           "items": {
             "$ref": "ContextValue"
           }
+        },
+        "timeOffset": {
+          "description": "The time offset. This is the time since the start of the time interval.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },

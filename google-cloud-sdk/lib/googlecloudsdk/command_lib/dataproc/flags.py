@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
 import json
 
 from googlecloudsdk.calliope import actions
@@ -50,6 +51,35 @@ def AddRegionFlag(parser):
       help=region_prop.help_text,
       # Don't set default, because it would override users' property setting.
       action=actions.StoreProperty(region_prop))
+
+
+def AddProjectsLocationsResourceArg(parser, api_version):
+  """Add resrouce arg for projects/{}/locations/{}."""
+
+  spec = concepts.ResourceSpec(
+      'dataproc.projects.locations',
+      api_version=api_version,
+      resource_name='region',
+      disable_auto_completers=True,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_RegionAttributeConfig()
+  )
+
+  concept_parsers.ConceptParser.ForResource(
+      '--region',
+      spec,
+      properties.VALUES.dataproc.region.help_text,
+      required=True).AddToParser(parser)
+
+
+def AddAsync(parser):
+  """Adds async flag with our own help text."""
+  parser.add_argument(
+      '--async',
+      action='store_true',
+      dest='async_',
+      help=('Return immediately without waiting for the operation in '
+            'progress to complete.'))
 
 
 def ClusterConfig():
@@ -105,6 +135,109 @@ def AddFileFlag(parser, input_type, action):
       required=True)
 
 
+def AddMainPythonFile(parser):
+  parser.add_argument(
+      'MAIN_PYTHON_FILE',
+      help=('URI of the main Python file to use as the Spark driver. '
+            'Must be a ``.py\'\' file.'))
+
+
+def AddJvmMainMutex(parser):
+  """Main class or main jar."""
+  main_group = parser.add_mutually_exclusive_group(required=True)
+
+  main_group.add_argument(
+      '--class',
+      dest='main_class',
+      help=('Class contains the main method of the job. '
+            'The jar file that contains the class must be in the classpath '
+            'or specified in `jar_files`.'))
+
+  main_group.add_argument(
+      '--jar',
+      dest='main_jar',
+      help='URI of the main jar file.')
+
+
+def AddMainSqlScript(parser):
+  parser.add_argument(
+      'SQL_SCRIPT',
+      help='URI of the script that contains Spark SQL queries to execute.')
+
+
+def AddSqlScriptVariables(parser):
+  parser.add_argument(
+      '--script-variables',
+      type=arg_parsers.ArgDict(),
+      metavar='NAME=VALUE',
+      help=('Mapping of query variable names to values (equivalent to the '
+            'Spark SQL command: SET name="value";).'))
+
+
+def AddJarFiles(parser):
+  parser.add_argument(
+      '--jar-files',
+      type=arg_parsers.ArgList(),
+      metavar='JAR',
+      default=[],
+      help=('Comma-separated list of jar files to be provided to the '
+            'classpaths.'))
+
+
+def AddMainRFile(parser):
+  parser.add_argument('MAIN_R_FILE',
+                      help=('URI of the main R file to use as the driver. '
+                            'Must be a ``.R\'\' or ``.r\'\' file.'))
+
+
+def AddPythonFiles(parser):
+  parser.add_argument(
+      '--python-files',
+      type=arg_parsers.ArgList(),
+      metavar='PY',
+      default=[],
+      help=('Comma-separated list of Python scripts to be passed to the '
+            'PySpark framework. Supported file types: ``.py\'\', ``.egg\'\' '
+            'and ``.zip.\'\''))
+
+
+def AddOtherFiles(parser):
+  parser.add_argument(
+      '--files',
+      type=arg_parsers.ArgList(),
+      metavar='FILE',
+      default=[],
+      help='Files to be placed in the working directory.')
+
+
+def AddArchives(parser):
+  parser.add_argument(
+      '--archives',
+      type=arg_parsers.ArgList(),
+      metavar='ARCHIVE',
+      default=[],
+      help=('Archives to be extracted into the working directory. '
+            'Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.'))
+
+
+def AddArgs(parser):
+  """Remaining args to the program."""
+  parser.add_argument(
+      'args',
+      metavar='JOB_ARG',
+      nargs=argparse.REMAINDER,
+      default=[],
+      help='Arguments to pass to the driver.')
+
+
+def AddBucket(parser, required=True):
+  """Cloud Storage bucket to upload workload dependencies."""
+  parser.add_argument('--bucket',
+                      help=('A Cloud Storage bucket to store job '
+                            'dependencies.'),
+                      required=required)
+
+
 def JobConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='job',
@@ -129,6 +262,33 @@ def AddJobResourceArg(parser, verb, api_version):
       'job',
       _GetJobResourceSpec(api_version),
       'The ID of the job to {0}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddBatchResourceArg(parser, verb, api_version):
+  """Adds batch resource argument to parser."""
+
+  def BatchConfig():
+    return concepts.ResourceParameterAttributeConfig(
+        name='batch',
+        help_text='Batch job ID.',
+    )
+
+  def GetBatchResourceSpec(api_version):
+    return concepts.ResourceSpec(
+        'dataproc.projects.locations.batches',
+        api_version=api_version,
+        resource_name='batch',
+        disable_auto_completers=True,
+        projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+        locationsId=_RegionAttributeConfig(),
+        batchesId=BatchConfig(),
+    )
+
+  concept_parsers.ConceptParser.ForResource(
+      'batch',
+      GetBatchResourceSpec(api_version),
+      'ID of the batch job to {0}.'.format(verb),
       required=True).AddToParser(parser)
 
 

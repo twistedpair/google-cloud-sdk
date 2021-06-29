@@ -722,7 +722,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1MachineSpec"
         },
         "minReplicaCount": {
-          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed. Note: if machine_spec.accelerator_count is above 0, currently the model will be always deployed precisely on min_replica_count.",
+          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. This value must be greater than or equal to 1. If traffic against the DeployedModel increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed.",
           "type": "integer",
           "format": "int32"
         },
@@ -1689,6 +1689,11 @@
           "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
           "type": "string",
           "format": "google-duration"
+        },
+        "monitoringIntervalDays": {
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1985,6 +1990,13 @@
           "description": "Required. Specifies output location and format.",
           "$ref": "GoogleCloudAiplatformV1beta1FeatureValueDestination"
         },
+        "passThroughFields": {
+          "description": "When not empty, the specified fields in the *_read_instances source will be joined as-is in the output, in addition to those fields from the Featurestore Entity. For BigQuery source, the type of the pass-through values will be automatically inferred. For CSV source, the pass-through values will be passed as opaque bytes.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestPassThroughField"
+          }
+        },
         "entityTypeSpecs": {
           "description": "Required. Specifies EntityType grouping Features to read values of and settings. Each EntityType referenced in [BatchReadFeatureValuesRequest.entity_type_specs] must have a column specifying entity IDs in tha EntityType in BatchReadFeatureValuesRequest.request .",
           "type": "array",
@@ -2043,6 +2055,17 @@
         "gcsDestination": {
           "description": "Required. Google Cloud Storage location.",
           "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestPassThroughField": {
+      "id": "GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestPassThroughField",
+      "description": "Describe pass-through fields in read_instance source.",
+      "type": "object",
+      "properties": {
+        "fieldName": {
+          "description": "Required. The name of the field in the CSV header or the name of the column in BigQuery table. The naming restriction is the same as Feature.name.",
+          "type": "string"
         }
       }
     },
@@ -3261,6 +3284,11 @@
           "description": "Required. Inclusive maximum value of the parameter.",
           "type": "number",
           "format": "double"
+        },
+        "defaultValue": {
+          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -3278,6 +3306,11 @@
           "description": "Required. Inclusive maximum value of the parameter.",
           "type": "string",
           "format": "int64"
+        },
+        "defaultValue": {
+          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -3292,6 +3325,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "defaultValue": {
+          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "string"
         }
       }
     },
@@ -3307,6 +3344,11 @@
             "type": "number",
             "format": "double"
           }
+        },
+        "defaultValue": {
+          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -4024,6 +4066,10 @@
         "predictionDriftDetectionConfig": {
           "description": "The config for drift of prediction data.",
           "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig"
+        },
+        "explanationConfig": {
+          "description": "The config for integrated with Explainable AI.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig"
         }
       }
     },
@@ -4092,6 +4138,13 @@
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
           }
+        },
+        "attributionScoreSkewThresholds": {
+          "description": "Key is the feature name and value is the threshold. The threshold here is against attribution score distance between the training and prediction feature.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
+          }
         }
       }
     },
@@ -4118,6 +4171,57 @@
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
           }
+        },
+        "attributionScoreDriftThresholds": {
+          "description": "Key is the feature name and value is the threshold. The threshold here is against attribution score distance between different time windows.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1beta1ThresholdConfig"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig",
+      "description": "The config for integrated with Explainable AI. Only applicable if the Model has explanation_spec populated.",
+      "type": "object",
+      "properties": {
+        "enableFeatureAttributes": {
+          "description": "If want to analyze the Explainable AI feature attribute scores or not. If set to true, Vertex AI will log the feature attributions from explain response and do the skew\/drift detection for them.",
+          "type": "boolean"
+        },
+        "explanationBaseline": {
+          "description": "Predictions generated by the BatchPredictionJob using baseline dataset.",
+          "$ref": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline": {
+      "id": "GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline",
+      "description": "Output from BatchPredictionJob for Model Monitoring baseline dataset, which can be used to generate baseline attribution scores.",
+      "type": "object",
+      "properties": {
+        "gcs": {
+          "description": "Cloud Storage location for BatchExplain output.",
+          "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
+        },
+        "bigquery": {
+          "description": "BigQuery location for BatchExplain output.",
+          "$ref": "GoogleCloudAiplatformV1beta1BigQueryDestination"
+        },
+        "predictionFormat": {
+          "description": "The storage format of the predictions generated BatchPrediction job.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "Predictions are in JSONL files, consistent from the definition here (http:\/\/shortn\/_4bS0hL7ofb).",
+            "Predictions are in BigQuery."
+          ],
+          "enum": [
+            "PREDICTION_FORMAT_UNSPECIFIED",
+            "JSONL",
+            "BIGQUERY"
+          ]
         }
       }
     },
@@ -7449,6 +7553,11 @@
           "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
           "type": "string",
           "format": "google-duration"
+        },
+        "monitoringIntervalDays": {
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -7836,7 +7945,7 @@
           "$ref": "GoogleCloudAiplatformInternalMachineSpec"
         },
         "minReplicaCount": {
-          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed. Note: if machine_spec.accelerator_count is above 0, currently the model will be always deployed precisely on min_replica_count.",
+          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. This value must be greater than or equal to 1. If traffic against the DeployedModel increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed.",
           "type": "integer",
           "format": "int32"
         },
@@ -9471,6 +9580,16 @@
         "destinationUri": {
           "description": "The Cloud Storage\/BigQuery URI of the destination as specified in the request.",
           "type": "string"
+        },
+        "requestedEntityTypeCount": {
+          "description": "The total number of Entity types in the request.",
+          "type": "string",
+          "format": "int64"
+        },
+        "requestedFeatureCount": {
+          "description": "The total number of Feature in the request.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -9798,6 +9917,11 @@
           "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
           "type": "string",
           "format": "google-duration"
+        },
+        "monitoringIntervalDays": {
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -10256,7 +10380,7 @@
           "$ref": "GoogleCloudAiplatformUiMachineSpec"
         },
         "minReplicaCount": {
-          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed. Note: if machine_spec.accelerator_count is above 0, currently the model will be always deployed precisely on min_replica_count.",
+          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. This value must be greater than or equal to 1. If traffic against the DeployedModel increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed.",
           "type": "integer",
           "format": "int32"
         },
@@ -12731,7 +12855,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1MachineSpec"
         },
         "minReplicaCount": {
-          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed. Note: if machine_spec.accelerator_count is above 0, currently the model will be always deployed precisely on min_replica_count.",
+          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. This value must be greater than or equal to 1. If traffic against the DeployedModel increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed.",
           "type": "integer",
           "format": "int32"
         }
@@ -12755,7 +12879,8 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU."
+            "Nvidia Tesla T4 GPU.",
+            "Nvidia Tesla A100 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -12763,7 +12888,8 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4"
+            "NVIDIA_TESLA_T4",
+            "NVIDIA_TESLA_A100"
           ]
         },
         "acceleratorCount": {
@@ -17424,7 +17550,7 @@
           "$ref": "GoogleCloudAiplatformV1MachineSpec"
         },
         "minReplicaCount": {
-          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. If traffic against it increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed. Note: if machine_spec.accelerator_count is above 0, currently the model will be always deployed precisely on min_replica_count.",
+          "description": "Required. Immutable. The minimum number of machine replicas this DeployedModel will be always deployed on. This value must be greater than or equal to 1. If traffic against the DeployedModel increases, it may dynamically be deployed onto more replicas, and as traffic decreases, some of these extra replicas may be freed.",
           "type": "integer",
           "format": "int32"
         },
@@ -17460,7 +17586,8 @@
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU."
+            "Nvidia Tesla T4 GPU.",
+            "Nvidia Tesla A100 GPU."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -17468,7 +17595,8 @@
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
-            "NVIDIA_TESLA_T4"
+            "NVIDIA_TESLA_T4",
+            "NVIDIA_TESLA_A100"
           ]
         },
         "acceleratorCount": {
@@ -19536,6 +19664,11 @@
           "description": "Required. Inclusive maximum value of the parameter.",
           "type": "number",
           "format": "double"
+        },
+        "defaultValue": {
+          "description": "A default value for a `DOUBLE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -19553,6 +19686,11 @@
           "description": "Required. Inclusive maximum value of the parameter.",
           "type": "string",
           "format": "int64"
+        },
+        "defaultValue": {
+          "description": "A default value for an `INTEGER` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -19567,6 +19705,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "defaultValue": {
+          "description": "A default value for a `CATEGORICAL` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "string"
         }
       }
     },
@@ -19582,6 +19724,11 @@
             "type": "number",
             "format": "double"
           }
+        },
+        "defaultValue": {
+          "description": "A default value for a `DISCRETE` parameter that is assumed to be a relatively good starting point. Unset value signals that there is no offered starting point. It automatically rounds to the nearest feasible discrete point. Currently only supported by the Vizier service. Not supported by HyperparamterTuningJob or TrainingPipeline.",
+          "type": "number",
+          "format": "double"
         }
       }
     },

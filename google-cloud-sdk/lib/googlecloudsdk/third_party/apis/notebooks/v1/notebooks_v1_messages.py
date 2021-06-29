@@ -2477,12 +2477,14 @@ class Schedule(_messages.Message):
         CloudScheduler.UpdateJob operation. To recover a job from this state,
         retry CloudScheduler.UpdateJob until a successful response is
         received.
+      INITIALIZING: The schedule resource is being created.
     """
     STATE_UNSPECIFIED = 0
     ENABLED = 1
     PAUSED = 2
     DISABLED = 3
     UPDATE_FAILED = 4
+    INITIALIZING = 5
 
   createTime = _messages.StringField(1)
   cronSchedule = _messages.StringField(2)

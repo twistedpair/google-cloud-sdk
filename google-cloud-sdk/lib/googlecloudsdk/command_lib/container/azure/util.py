@@ -23,8 +23,8 @@ CLUSTERS_FORMAT = """
   table(
     name.segment(-1):label=NAME,
     azureRegion,
-    controlPlane.version:label=MASTER_VERSION,
-    endpoint:label=MASTER_IP,
+    controlPlane.version:label=CONTROL_PLANE_VERSION,
+    endpoint:label=CONTROL_PLANE_IP,
     controlPlane.vmSize,
     state)
 """
@@ -41,7 +41,7 @@ CLIENT_FORMAT = """
 NODE_POOL_FORMAT = """
   table(name.segment(-1),
     version:label=NODE_VERSION,
-    vmSize,
+    config.vmSize,
     autoscaling.minNodeCount:label=MIN_NODES,
     autoscaling.maxNodeCount:label=MAX_NODES,
     state)

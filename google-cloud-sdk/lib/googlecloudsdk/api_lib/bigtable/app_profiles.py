@@ -86,6 +86,7 @@ def Create(app_profile_ref,
            description='',
            multi_cluster=False,
            restrict_to=None,
+           failover_radius=None,
            transactional_writes=False,
            force=False):
   """Create an app profile.
@@ -98,7 +99,9 @@ def Create(app_profile_ref,
     multi_cluster: bool, Whether this app profile should route to multiple
         clusters, instead of single cluster.
     restrict_to: list[string] The list of cluster ids for the new app profile to
-        route to using multi cluster routing.
+      route to using multi cluster routing.
+    failover_radius: string, Restricts clusters that requests can fail over to
+      by proximity with multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
         writes enabled. This is only possible when using single cluster routing.
     force: bool, Whether to ignore API warnings and create forcibly.
@@ -108,6 +111,7 @@ def Create(app_profile_ref,
         If both cluster and multi_cluster are present.
         If both multi_cluster and transactional_writes are present.
         If both cluster and restrict_to are present.
+        If both cluster and failover_radius are present.
     OneOfArgumentsRequiredException: If neither cluster or multi_cluster are
         present.
 
@@ -122,6 +126,9 @@ def Create(app_profile_ref,
   if cluster and restrict_to:
     raise exceptions.ConflictingArgumentsException('--route-to',
                                                    '--restrict-to')
+  if cluster and failover_radius:
+    raise exceptions.ConflictingArgumentsException('--route-to',
+                                                   '--failover-radius')
   if not multi_cluster and not cluster:
     raise exceptions.OneOfArgumentsRequiredException(
         ['--route-to', '--route-any'],
@@ -135,8 +142,12 @@ def Create(app_profile_ref,
   multi_cluster_routing = None
   single_cluster_routing = None
   if multi_cluster:
+    # Default failover radius to ANY_REGION.
+    failover_radius_enum = (
+        msgs.MultiClusterRoutingUseAny.FailoverRadiusValueValuesEnum(
+            failover_radius or 'ANY_REGION'))
     multi_cluster_routing = msgs.MultiClusterRoutingUseAny(
-        clusterIds=restrict_to or [])
+        clusterIds=restrict_to or [], failoverRadius=failover_radius_enum)
   elif cluster:
     single_cluster_routing = msgs.SingleClusterRouting(
         clusterId=cluster, allowTransactionalWrites=transactional_writes)
@@ -157,6 +168,7 @@ def Update(app_profile_ref,
            description='',
            multi_cluster=False,
            restrict_to=None,
+           failover_radius=None,
            transactional_writes=False,
            force=False):
   """Update an app profile.
@@ -170,6 +182,8 @@ def Update(app_profile_ref,
         clusters, instead of single cluster.
     restrict_to: list[string] The list of cluster IDs for the new app profile to
         route to using multi cluster routing.
+    failover_radius: string, Restricts clusters that requests can fail over to
+      by proximity with multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
         writes enabled. This is only possible when using single cluster routing.
     force: bool, Whether to ignore API warnings and create forcibly.
@@ -179,6 +193,7 @@ def Update(app_profile_ref,
         If both cluster and multi_cluster are present.
         If both multi_cluster and transactional_writes are present.
         If both cluster and restrict_to are present.
+        If both cluster and failover_radius are present.
     OneOfArgumentsRequiredException: If neither cluster or multi_cluster are
         present.
 
@@ -193,6 +208,9 @@ def Update(app_profile_ref,
   if cluster and restrict_to:
     raise exceptions.ConflictingArgumentsException('--route-to',
                                                    '--restrict-to')
+  if cluster and failover_radius:
+    raise exceptions.ConflictingArgumentsException('--route-to',
+                                                   '--failover-radius')
   if not multi_cluster and not cluster:
     raise exceptions.OneOfArgumentsRequiredException(
         ['--route-to', '--route-any'],
@@ -210,8 +228,11 @@ def Update(app_profile_ref,
         clusterId=cluster, allowTransactionalWrites=transactional_writes)
   elif multi_cluster:
     changed_fields.append('multiClusterRoutingUseAny')
+    failover_radius_enum = (
+        msgs.MultiClusterRoutingUseAny.FailoverRadiusValueValuesEnum(
+            failover_radius) if failover_radius else None)
     app_profile.multiClusterRoutingUseAny = msgs.MultiClusterRoutingUseAny(
-        clusterIds=restrict_to or [])
+        clusterIds=restrict_to or [], failoverRadius=failover_radius_enum)
 
   if description:
     changed_fields.append('description')

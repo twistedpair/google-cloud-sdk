@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 
+from googlecloudsdk.api_lib.compute.operations import poller
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -81,8 +83,7 @@ def GetIAP(iap_arg, messages, existing_iap_settings=None):
                   'oauth2-client-secret'):
       if subarg in iap_arg_parsed:
         raise exceptions.InvalidArgumentException(
-            '--iap', 'Sub-argument %s specified multiple times' %
-            _Repr(subarg))
+            '--iap', 'Sub-argument %s specified multiple times' % _Repr(subarg))
       iap_arg_parsed[subarg] = value
     else:
       raise exceptions.InvalidArgumentException(
@@ -114,8 +115,7 @@ def GetIAP(iap_arg, messages, existing_iap_settings=None):
     # then the other should also be specified.
     if not iap_settings.oauth2ClientId or not iap_settings.oauth2ClientSecret:
       raise exceptions.InvalidArgumentException(
-          '--iap',
-          'Both [oauth2-client-id] and [oauth2-client-secret] must be '
+          '--iap', 'Both [oauth2-client-id] and [oauth2-client-secret] must be '
           'specified together')
 
   return iap_settings
@@ -142,8 +142,7 @@ def _ValidateGroupMatchesArgs(args):
       invalid_arg = '--max-connections-per-endpoint'
     if invalid_arg is not None:
       raise exceptions.InvalidArgumentException(
-          invalid_arg,
-          'cannot be set with --instance-group')
+          invalid_arg, 'cannot be set with --instance-group')
   elif args.network_endpoint_group:
     if args.max_rate_per_instance is not None:
       invalid_arg = '--max-rate-per-instance'
@@ -151,8 +150,7 @@ def _ValidateGroupMatchesArgs(args):
       invalid_arg = '--max-connections-per-instance'
     if invalid_arg is not None:
       raise exceptions.InvalidArgumentException(
-          invalid_arg,
-          'cannot be set with --network-endpoint-group')
+          invalid_arg, 'cannot be set with --network-endpoint-group')
 
 
 def ValidateBalancingModeArgs(messages,
@@ -162,11 +160,11 @@ def ValidateBalancingModeArgs(messages,
 
   Args:
     messages: API messages class, determined by release track.
-    add_or_update_backend_args: argparse Namespace. The arguments
-      provided to add-backend or update-backend commands.
-    current_balancing_mode: BalancingModeValueValuesEnum. The balancing mode
-      of the existing backend, in case of update-backend command. Must be
-      None otherwise.
+    add_or_update_backend_args: argparse Namespace. The arguments provided to
+      add-backend or update-backend commands.
+    current_balancing_mode: BalancingModeValueValuesEnum. The balancing mode of
+      the existing backend, in case of update-backend command. Must be None
+      otherwise.
   """
   balancing_mode_enum = messages.Backend.BalancingModeValueValuesEnum
   balancing_mode = current_balancing_mode
@@ -189,8 +187,7 @@ def ValidateBalancingModeArgs(messages,
 
     if invalid_arg is not None:
       raise exceptions.InvalidArgumentException(
-          invalid_arg,
-          'cannot be set with RATE balancing mode')
+          invalid_arg, 'cannot be set with RATE balancing mode')
   elif balancing_mode == balancing_mode_enum.CONNECTION:
     if add_or_update_backend_args.max_utilization is not None:
       invalid_arg = '--max-utilization'
@@ -203,8 +200,7 @@ def ValidateBalancingModeArgs(messages,
 
     if invalid_arg is not None:
       raise exceptions.InvalidArgumentException(
-          invalid_arg,
-          'cannot be set with CONNECTION balancing mode')
+          invalid_arg, 'cannot be set with CONNECTION balancing mode')
   elif balancing_mode == balancing_mode_enum.UTILIZATION:
     if add_or_update_backend_args.network_endpoint_group is not None:
       raise exceptions.InvalidArgumentException(
@@ -217,8 +213,8 @@ def UpdateCacheKeyPolicy(args, cache_key_policy):
 
   Args:
     args: Arguments specified through command line.
-    cache_key_policy: new CacheKeyPolicy to be set (or preexisting one if
-      using update).
+    cache_key_policy: new CacheKeyPolicy to be set (or preexisting one if using
+      update).
   """
   if args.cache_key_include_protocol is not None:
     cache_key_policy.includeProtocol = args.cache_key_include_protocol
@@ -397,6 +393,43 @@ def GetBypassCacheOnRequestHeaders(client, args):
   return bypass_cache_on_request_headers
 
 
+def ApplyConnectionTrackingPolicyArgs(client, args, backend_service):
+  """Applies the connection tracking policy arguments to the specified backend service.
+
+  If there are no arguments related to connection tracking policy, the backend
+  service remains unmodified.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service object.
+  """
+  if backend_service.connectionTrackingPolicy is not None:
+    connection_tracking_policy = encoding.CopyProtoMessage(
+        backend_service.connection_tracking_policy)
+  else:
+    connection_tracking_policy = (
+        client.messages.BackendServiceConnectionTrackingPolicy())
+
+  if args.connection_persistence_on_unhealthy_backends:
+    connection_tracking_policy.connectionPersistenceOnUnhealthyBackends = (
+        client.messages.BackendServiceConnectionTrackingPolicy
+        .ConnectionPersistenceOnUnhealthyBackendsValueValuesEnum(
+            args.connection_persistence_on_unhealthy_backends))
+
+  if args.tracking_mode:
+    connection_tracking_policy.trackingMode = (
+        client.messages.BackendServiceConnectionTrackingPolicy
+        .TrackingModeValueValuesEnum(args.tracking_mode))
+
+  if args.idle_timeout_sec:
+    connection_tracking_policy.idleTimeoutSec = args.idle_timeout_sec
+
+  if connection_tracking_policy != (
+      client.messages.BackendServiceConnectionTrackingPolicy()):
+    backend_service.connectionTrackingPolicy = connection_tracking_policy
+
+
 def ApplyCdnPolicyArgs(client,
                        args,
                        backend_service,
@@ -425,8 +458,9 @@ def ApplyCdnPolicyArgs(client,
   else:
     cdn_policy = client.messages.BackendServiceCdnPolicy()
 
-  add_cache_key_policy = (HasCacheKeyPolicyArgsForUpdate(args) if is_update else
-                          HasCacheKeyPolicyArgsForCreate(args))
+  add_cache_key_policy = (
+      HasCacheKeyPolicyArgsForUpdate(args)
+      if is_update else HasCacheKeyPolicyArgsForCreate(args))
   if add_cache_key_policy:
     cdn_policy.cacheKeyPolicy = GetCacheKeyPolicy(client, args, backend_service)
   if apply_signed_url_cache_max_age and args.IsSpecified(
@@ -514,8 +548,8 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):
   """
   if ((support_failover and (args.IsSpecified('connection_drain_on_failover') or
                              args.IsSpecified('drop_traffic_if_unhealthy'))) and
-      backend_service.loadBalancingScheme ==
-      messages.BackendService.LoadBalancingSchemeValueValuesEnum.EXTERNAL):
+      backend_service.loadBalancingScheme
+      == messages.BackendService.LoadBalancingSchemeValueValuesEnum.EXTERNAL):
     raise exceptions.InvalidArgumentException(
         '--load-balancing-scheme',
         'can only specify --connection-drain-on-failover or '
@@ -590,3 +624,30 @@ def SendGetRequest(client, backend_service_ref):
   return client.apitools_client.backendServices.Get(
       client.messages.ComputeBackendServicesGetRequest(
           **backend_service_ref.AsDict()))
+
+
+def WaitForOperation(resources, service, operation, backend_service_ref,
+                     message):
+  """Waits for the backend service operation to finish.
+
+  Args:
+    resources: The resource parser.
+    service: apitools.base.py.base_api.BaseApiService, the service representing
+      the target of the operation.
+    operation: The operation to wait for.
+    backend_service_ref: The backend service reference.
+    message: The message to show.
+
+  Returns:
+    The operation result.
+  """
+  params = {'project': backend_service_ref.project}
+  if backend_service_ref.Collection() == 'compute.regionBackendServices':
+    collection = 'compute.regionOperations'
+    params['region'] = backend_service_ref.region
+  else:
+    collection = 'compute.globalOperations'
+  operation_ref = resources.Parse(
+      operation.name, params=params, collection=collection)
+  operation_poller = poller.Poller(service, backend_service_ref)
+  return waiter.WaitFor(operation_poller, operation_ref, message)

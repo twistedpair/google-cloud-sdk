@@ -105,18 +105,17 @@ class _TimeoutThread(object):
 
 def Run(cmd, timeout_sec, show_output=True):
   """Run command and optionally send the output to /dev/null or nul."""
-  if show_output:
-    p = subprocess.Popen(cmd)
+  with file_utils.FileWriter(os.devnull) as null:
+    popen_args = {'args': cmd}
+    if not show_output:
+      popen_args.update({'stdout': null, 'stderr': null})
+
+    p = subprocess.Popen(**popen_args)
     # [py3 port] Should be able to use subprocess.run (etc) with 'timeout' param
     # here and below. We're only using the Popen API in order to have a process
     # to give to _TimeoutThread.
     with _TimeoutThread(p.kill, timeout_sec):
       p.wait()
-  else:
-    with file_utils.FileWriter(os.devnull) as devnull:
-      p = subprocess.Popen(cmd, stdout=devnull, stderr=devnull)
-      with _TimeoutThread(p.kill, timeout_sec):
-        p.wait()
   if p.returncode != 0:
     raise subprocess.CalledProcessError(p.returncode, cmd)
 

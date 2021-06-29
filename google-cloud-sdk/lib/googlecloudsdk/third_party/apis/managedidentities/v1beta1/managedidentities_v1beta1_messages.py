@@ -25,6 +25,92 @@ class AttachTrustRequest(_messages.Message):
   trust = _messages.MessageField('Trust', 1)
 
 
+class Backup(_messages.Message):
+  r"""Represents a Managed Microsoft Identities backup.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the backup.
+    TypeValueValuesEnum: Output only. Indicates whether it's an on-demand
+      backup or scheduled.
+
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user provided
+      metadata.
+
+  Fields:
+    createTime: Output only. The time the backups was created.
+    labels: Optional. Resource labels to represent user provided metadata.
+    name: Output only. The unique name of the Backup in the form of projects/{
+      project_id}/locations/global/domains/{domain_name}/backups/{name}
+    state: Output only. The current state of the backup.
+    statusMessage: Output only. Additional information about the current
+      status of this backup, if available.
+    type: Output only. Indicates whether it's an on-demand backup or
+      scheduled.
+    updateTime: Output only. Last update time.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      CREATING: Backup is being created.
+      ACTIVE: Backup has been created and validated.
+      FAILED: Backup has been created but failed validation.
+      DELETING: Backup is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    FAILED = 3
+    DELETING = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Indicates whether it's an on-demand backup or scheduled.
+
+    Values:
+      TYPE_UNSPECIFIED: Backup was manually created.
+      ON_DEMAND: Backup was manually created.
+      SCHEDULED: Backup was automatically created.
+    """
+    TYPE_UNSPECIFIED = 0
+    ON_DEMAND = 1
+    SCHEDULED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  statusMessage = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -751,11 +837,14 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
     location: The location of the node, if different from instance location.
     nodeId: The id of the node. This should be equal to
       SaasInstanceNode.node_id.
+    perSliEligibility: If present, this will override eligibility for the node
+      coming from instance or exclusions for specified SLIs.
   """
 
   exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 1, repeated=True)
   location = _messages.StringField(2)
   nodeId = _messages.StringField(3)
+  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 4)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility(_messages.Message):
@@ -986,6 +1075,21 @@ class LDAPSSettings(_messages.Message):
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updateTime = _messages.StringField(6)
+
+
+class ListBackupsResponse(_messages.Message):
+  r"""ListBackupsResponse is the response message for ListBackups method.
+
+  Fields:
+    backups: A list of Cloud AD backups in the domain.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListDomainsResponse(_messages.Message):
@@ -1253,6 +1357,151 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsAttachTrustRequest(_message
 
   attachTrustRequest = _messages.MessageField('AttachTrustRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsCreateRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsCreateRequest
+  object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    backupId: Required. Backup Id, unique name to identify the backups with
+      the following restrictions: * Must be lowercase letters, numbers, and
+      hyphens * Must start with a letter. * Must contain between 1-63
+      characters. * Must end with a number or a letter. * Must be unique
+      within the domain.
+    parent: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  backupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsDeleteRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The backup resource name using the form: `projects/{projec
+      t_id}/locations/global/domains/{domain_name}/backups/{backup_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsGetIamPolicyRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsBackupsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsGetRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsGetRequest
+  object.
+
+  Fields:
+    name: Required. The backup resource name using the form: `projects/{projec
+      t_id}/locations/global/domains/{domain_name}/backups/{backup_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsListRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter specifying constraints of a list operation. For
+      example, `backup.location ="us-west1-a"`.
+    orderBy: Optional. Specifies the ordering of results following syntax at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 1000 will be used by the service.
+      Regardless of the page_size value, the response may include a partial
+      list and a caller should only rely on response's next_page_token to
+      determine if there are more instances left to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsPatchRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsPatchRequest
+  object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    name: Output only. The unique name of the Backup in the form of projects/{
+      project_id}/locations/global/domains/{domain_name}/backups/{name}
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. The elements of the repeated paths field may
+      only include these fields from Backup: * `labels`
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsSetIamPolicyRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsBackupsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsBackupsTestIamPermissionsRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsBackupsTestIamPermissio
+  nsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest(_messages.Message):
@@ -1853,18 +2102,17 @@ class OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
   Fields:
-    apiVersion: [Output only] API version used to start the operation.
-    cancelRequested: [Output only] Identifies whether the user has requested
+    apiVersion: Output only. API version used to start the operation.
+    cancelRequested: Output only. Identifies whether the user has requested
       cancellation of the operation. Operations that have successfully been
       cancelled have Operation.error value with a google.rpc.Status.code of 1,
       corresponding to `Code.CANCELLED`.
-    createTime: [Output only] The time the operation was created.
-    endTime: [Output only] The time the operation finished running.
-    statusDetail: [Output only] Human-readable status of the operation, if
-      any.
-    target: [Output only] Server-defined resource path for the target of the
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    statusDetail: Output only. Human-readable status of the operation, if any.
+    target: Output only. Server-defined resource path for the target of the
       operation.
-    verb: [Output only] Name of the verb executed by the operation.
+    verb: Output only. Name of the verb executed by the operation.
   """
 
   apiVersion = _messages.StringField(1)

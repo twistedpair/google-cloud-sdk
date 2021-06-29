@@ -29,7 +29,7 @@ import os
 import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
-from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
@@ -399,9 +399,16 @@ class DaisyChainCopyTask(task.Task):
         target=self._run_download, args=(daisy_chain_stream,))
     download_thread.start()
 
+    content_type = (
+        self._source_resource.content_type or
+        request_config_factory.DEFAULT_CONTENT_TYPE)
+
     destination_client = api_factory.get_api(
         self._destination_resource.storage_url.scheme)
-    request_config = cloud_api.RequestConfig(size=self._source_resource.size)
+    request_config = request_config_factory.get_request_config(
+        self._destination_resource.storage_url,
+        content_type=content_type,
+        size=self._source_resource.size)
 
     try:
       upload_strategy = upload_util.get_upload_strategy(
@@ -410,7 +417,7 @@ class DaisyChainCopyTask(task.Task):
       destination_client.upload_object(
           daisy_chain_stream.readable_stream,
           self._destination_resource,
-          request_config=request_config,
+          request_config,
           upload_strategy=upload_strategy)
     except _AbruptShutdownError:
       # Not raising daisy_chain_stream.exception_raised here because we want

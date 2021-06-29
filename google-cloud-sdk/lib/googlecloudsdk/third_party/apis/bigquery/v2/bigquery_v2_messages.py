@@ -15,6 +15,36 @@ from apitools.base.py import extra_types
 package = 'bigquery'
 
 
+class BiEngineReason(_messages.Message):
+  r"""A BiEngineReason object.
+
+  Fields:
+    code: [Output-only] High-level BI Engine reason for partial or disabled
+      acceleration.
+    message: [Output-only] Free form human-readable reason for partial or
+      disabled acceleration.
+  """
+
+  code = _messages.StringField(1, default='$(reason.code)')
+  message = _messages.StringField(2, default='$(reason.message)')
+
+
+class BiEngineStatistics(_messages.Message):
+  r"""A BiEngineStatistics object.
+
+  Fields:
+    biEngineMode: [Output-only] Specifies which mode of BI Engine acceleration
+      was performed (if any).
+    biEngineReasons: In case of DISABLED or PARTIAL bi_engine_mode, these
+      contain the explanatory reasons as to why BI Engine could not
+      accelerate. In case the full query was accelerated, this field is not
+      populated.
+  """
+
+  biEngineMode = _messages.StringField(1, default='$(stats.bi_engine_mode)')
+  biEngineReasons = _messages.MessageField('BiEngineReason', 2, repeated=True)
+
+
 class BigQueryModelTraining(_messages.Message):
   r"""A BigQueryModelTraining object.
 
@@ -2078,6 +2108,8 @@ class JobStatistics2(_messages.Message):
     ReservationUsageValueListEntry: A ReservationUsageValueListEntry object.
 
   Fields:
+    biEngineStatistics: BI Engine specific Statistics. [Output-only] BI Engine
+      specific Statistics.
     billingTier: [Output-only] Billing tier for the job.
     cacheHit: [Output-only] Whether the query result was fetched from the
       query cache.
@@ -2171,34 +2203,35 @@ class JobStatistics2(_messages.Message):
     name = _messages.StringField(1)
     slotMs = _messages.IntegerField(2)
 
-  billingTier = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  cacheHit = _messages.BooleanField(2)
-  ddlAffectedRowAccessPolicyCount = _messages.IntegerField(3)
-  ddlDestinationTable = _messages.MessageField('TableReference', 4)
-  ddlOperationPerformed = _messages.StringField(5)
-  ddlTargetDataset = _messages.MessageField('DatasetReference', 6)
-  ddlTargetRoutine = _messages.MessageField('RoutineReference', 7)
-  ddlTargetRowAccessPolicy = _messages.MessageField('RowAccessPolicyReference', 8)
-  ddlTargetTable = _messages.MessageField('TableReference', 9)
-  dmlStats = _messages.MessageField('DmlStatistics', 10)
-  estimatedBytesProcessed = _messages.IntegerField(11)
-  modelTraining = _messages.MessageField('BigQueryModelTraining', 12)
-  modelTrainingCurrentIteration = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  modelTrainingExpectedTotalIteration = _messages.IntegerField(14)
-  numDmlAffectedRows = _messages.IntegerField(15)
-  queryPlan = _messages.MessageField('ExplainQueryStage', 16, repeated=True)
-  referencedRoutines = _messages.MessageField('RoutineReference', 17, repeated=True)
-  referencedTables = _messages.MessageField('TableReference', 18, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 19, repeated=True)
-  schema = _messages.MessageField('TableSchema', 20)
-  statementType = _messages.StringField(21)
-  timeline = _messages.MessageField('QueryTimelineSample', 22, repeated=True)
-  totalBytesBilled = _messages.IntegerField(23)
-  totalBytesProcessed = _messages.IntegerField(24)
-  totalBytesProcessedAccuracy = _messages.StringField(25)
-  totalPartitionsProcessed = _messages.IntegerField(26)
-  totalSlotMs = _messages.IntegerField(27)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 28, repeated=True)
+  biEngineStatistics = _messages.MessageField('BiEngineStatistics', 1)
+  billingTier = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  cacheHit = _messages.BooleanField(3)
+  ddlAffectedRowAccessPolicyCount = _messages.IntegerField(4)
+  ddlDestinationTable = _messages.MessageField('TableReference', 5)
+  ddlOperationPerformed = _messages.StringField(6)
+  ddlTargetDataset = _messages.MessageField('DatasetReference', 7)
+  ddlTargetRoutine = _messages.MessageField('RoutineReference', 8)
+  ddlTargetRowAccessPolicy = _messages.MessageField('RowAccessPolicyReference', 9)
+  ddlTargetTable = _messages.MessageField('TableReference', 10)
+  dmlStats = _messages.MessageField('DmlStatistics', 11)
+  estimatedBytesProcessed = _messages.IntegerField(12)
+  modelTraining = _messages.MessageField('BigQueryModelTraining', 13)
+  modelTrainingCurrentIteration = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  modelTrainingExpectedTotalIteration = _messages.IntegerField(15)
+  numDmlAffectedRows = _messages.IntegerField(16)
+  queryPlan = _messages.MessageField('ExplainQueryStage', 17, repeated=True)
+  referencedRoutines = _messages.MessageField('RoutineReference', 18, repeated=True)
+  referencedTables = _messages.MessageField('TableReference', 19, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 20, repeated=True)
+  schema = _messages.MessageField('TableSchema', 21)
+  statementType = _messages.StringField(22)
+  timeline = _messages.MessageField('QueryTimelineSample', 23, repeated=True)
+  totalBytesBilled = _messages.IntegerField(24)
+  totalBytesProcessed = _messages.IntegerField(25)
+  totalBytesProcessedAccuracy = _messages.StringField(26)
+  totalPartitionsProcessed = _messages.IntegerField(27)
+  totalSlotMs = _messages.IntegerField(28)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 29, repeated=True)
 
 
 class JobStatistics3(_messages.Message):

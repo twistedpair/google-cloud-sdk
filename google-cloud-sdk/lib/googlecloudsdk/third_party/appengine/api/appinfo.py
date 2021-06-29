@@ -408,6 +408,9 @@ STANDARD_TARGET_THROUGHPUT_UTILIZATION = 'target_throughput_utilization'
 
 # Attributes for `VpcAccessConnector`.
 VPC_ACCESS_CONNECTOR_NAME = 'name'
+VPC_ACCESS_CONNECTOR_EGRESS_SETTING = 'egress_setting'
+VPC_ACCESS_CONNECTOR_EGRESS_SETTING_ALL_TRAFFIC = 'all-traffic'
+VPC_ACCESS_CONNECTOR_EGRESS_SETTING_PRIVATE_RANGES_ONLY = 'private-ranges-only'
 
 
 class _VersionedLibrary(object):
@@ -2040,6 +2043,11 @@ class VpcAccessConnector(validation.Validated):
   ATTRIBUTES = {
       VPC_ACCESS_CONNECTOR_NAME:
           validation.Regex(VPC_ACCESS_CONNECTOR_NAME_REGEX),
+      VPC_ACCESS_CONNECTOR_EGRESS_SETTING:
+          validation.Optional(
+              validation.Options(
+                  VPC_ACCESS_CONNECTOR_EGRESS_SETTING_ALL_TRAFFIC,
+                  VPC_ACCESS_CONNECTOR_EGRESS_SETTING_PRIVATE_RANGES_ONLY))
   }
 
 

@@ -21,13 +21,13 @@ from __future__ import unicode_literals
 import functools
 from googlecloudsdk.api_lib.run import k8s_object
 
-
 # Annotation for the user-specified image.
 USER_IMAGE_ANNOTATION = k8s_object.CLIENT_GROUP + '/user-image'
 CLOUDSQL_ANNOTATION = k8s_object.RUN_GROUP + '/cloudsql-instances'
 VPC_ACCESS_ANNOTATION = 'run.googleapis.com/vpc-access-connector'
 SANDBOX_ANNOTATION = 'run.googleapis.com/sandbox'
 CMEK_KEY_ANNOTATION = 'run.googleapis.com/encryption-key'
+POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION = 'run.googleapis.com/post-key-revocation-action-type'
 SECRETS_ANNOTATION = 'run.googleapis.com/secrets'
 CPU_THROTTLE_ANNOTATION = 'run.googleapis.com/cpu-throttling'
 
@@ -75,8 +75,9 @@ class ContainerResource(k8s_object.KubernetesObject):
     it's at that specific hash.
 
     Arguments:
-      service_user_image: Optional[str], the contents of the user image annot
-        on the service.
+      service_user_image: Optional[str], the contents of the user image annot on
+        the service.
+
     Returns:
       a string representing the user deployment intent.
     """
@@ -217,6 +218,7 @@ class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
   @property
   def secrets(self):
     """Mutable dict-like object for vars with a secret source type."""
+
     def _FilterSecretEnvVars(env_var):
       return (env_var.valueFrom is not None and
               env_var.valueFrom.secretKeyRef is not None)
@@ -230,6 +232,7 @@ class EnvVarsAsDictionaryWrapper(k8s_object.ListAsReadOnlyDictionaryWrapper):
   @property
   def config_maps(self):
     """Mutable dict-like object for vars with a config map source type."""
+
     def _FilterConfigMapEnvVars(env_var):
       return (env_var.valueFrom is not None and
               env_var.valueFrom.configMapKeyRef is not None)

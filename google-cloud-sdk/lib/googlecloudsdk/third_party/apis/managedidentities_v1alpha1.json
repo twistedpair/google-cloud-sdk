@@ -760,6 +760,101 @@
         }
       }
     },
+    "Backup": {
+      "id": "Backup",
+      "description": "Represents a Managed Microsoft Identities backup.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The unique name of the Backup in the form of projects\/{project_id}\/locations\/global\/domains\/{domain_name}\/backups\/{name}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. Resource labels to represent user provided metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. The time the backups was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "type": {
+          "description": "Output only. Indicates whether it\u2019s an on-demand backup or scheduled.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Backup was manually created.",
+            "Backup was manually created.",
+            "Backup was automatically created."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "ON_DEMAND",
+            "SCHEDULED"
+          ]
+        },
+        "state": {
+          "description": "Output only. The current state of the backup.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "Backup is being created.",
+            "Backup has been created and validated.",
+            "Backup has been created but failed validation.",
+            "Backup is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "FAILED",
+            "DELETING"
+          ]
+        },
+        "statusMessage": {
+          "description": "Output only. Additional information about the current status of this backup, if available.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListBackupsResponse": {
+      "id": "ListBackupsResponse",
+      "description": "ListBackupsResponse is the response message for ListBackups method.",
+      "type": "object",
+      "properties": {
+        "backups": {
+          "description": "A list of Cloud AD backups in the domain.",
+          "type": "array",
+          "items": {
+            "$ref": "Backup"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -874,33 +969,40 @@
       "type": "object",
       "properties": {
         "createTime": {
-          "description": "[Output only] The time the operation was created.",
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "[Output only] The time the operation finished running.",
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
-          "description": "[Output only] Server-defined resource path for the target of the operation.",
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "verb": {
-          "description": "[Output only] Name of the verb executed by the operation.",
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "statusDetail": {
-          "description": "[Output only] Human-readable status of the operation, if any.",
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
           "type": "string"
         },
         "cancelRequested": {
-          "description": "[Output only] Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
-          "description": "[Output only] API version used to start the operation.",
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -1221,6 +1323,10 @@
           "items": {
             "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion"
           }
+        },
+        "perSliEligibility": {
+          "description": "If present, this will override eligibility for the node coming from instance or exclusions for specified SLIs.",
+          "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility"
         }
       }
     },
@@ -2266,6 +2372,260 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Gets details of a single sqlIntegration."
+                        }
+                      }
+                    },
+                    "backups": {
+                      "methods": {
+                        "create": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.create",
+                          "path": "v1alpha1/{+parent}/backups",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/backups",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "backupId": {
+                              "description": "Required. Backup Id, unique name to identify the backups with the following restrictions: * Must be lowercase letters, numbers, and hyphens * Must start with a letter. * Must contain between 1-63 characters. * Must end with a number or a letter. * Must be unique within the domain.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "Backup"
+                          },
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Creates a Backup for a domain."
+                        },
+                        "list": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.list",
+                          "path": "v1alpha1/{+parent}/backups",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/backups",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Optional. The maximum number of items to return. If not specified, a default value of 1000 will be used by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response's next_page_token to determine if there are more instances left to be queried.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Optional. The next_page_token value returned from a previous List request, if any.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "Optional. Filter specifying constraints of a list operation. For example, `backup.location =\"us-west1-a\"`.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "orderBy": {
+                              "description": "Optional. Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListBackupsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists Backup in a given project."
+                        },
+                        "get": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.get",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/backups/{backupsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The backup resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}\/backups\/{backup_id}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/backups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Backup"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets details of a single Backup."
+                        },
+                        "patch": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.patch",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/backups/{backupsId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "Output only. The unique name of the Backup in the form of projects\/{project_id}\/locations\/global\/domains\/{domain_name}\/backups\/{name}",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/backups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields from Backup: * `labels`",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "Backup"
+                          },
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Updates the labels for specified Backup."
+                        },
+                        "delete": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.delete",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/backups/{backupsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The backup resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}\/backups\/{backup_id}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/backups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes identified Backup."
+                        },
+                        "setIamPolicy": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.setIamPolicy",
+                          "path": "v1alpha1/{+resource}:setIamPolicy",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/backups/{backupsId}:setIamPolicy",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/backups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "request": {
+                            "$ref": "SetIamPolicyRequest"
+                          },
+                          "response": {
+                            "$ref": "Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                        },
+                        "getIamPolicy": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.getIamPolicy",
+                          "path": "v1alpha1/{+resource}:getIamPolicy",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/backups/{backupsId}:getIamPolicy",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/backups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "options.requestedPolicyVersion": {
+                              "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "response": {
+                            "$ref": "Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                        },
+                        "testIamPermissions": {
+                          "id": "managedidentities.projects.locations.global.domains.backups.testIamPermissions",
+                          "path": "v1alpha1/{+resource}:testIamPermissions",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/backups/{backupsId}:testIamPermissions",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/backups\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "request": {
+                            "$ref": "TestIamPermissionsRequest"
+                          },
+                          "response": {
+                            "$ref": "TestIamPermissionsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                         }
                       }
                     }

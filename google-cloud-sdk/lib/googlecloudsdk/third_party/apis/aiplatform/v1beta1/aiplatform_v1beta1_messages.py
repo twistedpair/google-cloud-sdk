@@ -5426,11 +5426,10 @@ class GoogleCloudAiplatformInternalDedicatedResources(_messages.Message):
       a portion of the traffic will be dropped. If this value is not provided,
       will use min_replica_count as the default value.
     minReplicaCount: Required. Immutable. The minimum number of machine
-      replicas this DeployedModel will be always deployed on. If traffic
-      against it increases, it may dynamically be deployed onto more replicas,
-      and as traffic decreases, some of these extra replicas may be freed.
-      Note: if machine_spec.accelerator_count is above 0, currently the model
-      will be always deployed precisely on min_replica_count.
+      replicas this DeployedModel will be always deployed on. This value must
+      be greater than or equal to 1. If traffic against the DeployedModel
+      increases, it may dynamically be deployed onto more replicas, and as
+      traffic decreases, some of these extra replicas may be freed.
   """
 
   autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformInternalAutoscalingMetricSpec', 1, repeated=True)
@@ -6445,10 +6444,19 @@ class GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigSnapshotAnalysis(
     monitoringInterval: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value is rolled up to full
       day.
+    monitoringIntervalDays: Configuration of the snapshot analysis based
+      monitoring pipeline running interval. The value indicates number of
+      days. If both
+      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
+      and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval
+      are set when creating/updating EntityTypes/Features,
+      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
+      will be used.
   """
 
   disabled = _messages.BooleanField(1)
   monitoringInterval = _messages.StringField(2)
+  monitoringIntervalDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformInternalGcsSource(_messages.Message):
@@ -7250,11 +7258,15 @@ class GoogleCloudAiplatformUiBatchReadFeatureValuesOperationMetadata(_messages.M
       values.
     instanceUri: The Cloud Storage/BigQuery URI of the read_instance source as
       specified in the request.
+    requestedEntityTypeCount: The total number of Entity types in the request.
+    requestedFeatureCount: The total number of Feature in the request.
   """
 
   destinationUri = _messages.StringField(1)
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 2)
   instanceUri = _messages.StringField(3)
+  requestedEntityTypeCount = _messages.IntegerField(4)
+  requestedFeatureCount = _messages.IntegerField(5)
 
 
 class GoogleCloudAiplatformUiBatchReadFeatureValuesResponse(_messages.Message):
@@ -7536,11 +7548,10 @@ class GoogleCloudAiplatformUiDedicatedResources(_messages.Message):
       a portion of the traffic will be dropped. If this value is not provided,
       will use min_replica_count as the default value.
     minReplicaCount: Required. Immutable. The minimum number of machine
-      replicas this DeployedModel will be always deployed on. If traffic
-      against it increases, it may dynamically be deployed onto more replicas,
-      and as traffic decreases, some of these extra replicas may be freed.
-      Note: if machine_spec.accelerator_count is above 0, currently the model
-      will be always deployed precisely on min_replica_count.
+      replicas this DeployedModel will be always deployed on. This value must
+      be greater than or equal to 1. If traffic against the DeployedModel
+      increases, it may dynamically be deployed onto more replicas, and as
+      traffic decreases, some of these extra replicas may be freed.
   """
 
   autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformUiAutoscalingMetricSpec', 1, repeated=True)
@@ -8524,10 +8535,19 @@ class GoogleCloudAiplatformUiFeaturestoreMonitoringConfigSnapshotAnalysis(_messa
     monitoringInterval: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value is rolled up to full
       day.
+    monitoringIntervalDays: Configuration of the snapshot analysis based
+      monitoring pipeline running interval. The value indicates number of
+      days. If both
+      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
+      and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval
+      are set when creating/updating EntityTypes/Features,
+      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
+      will be used.
   """
 
   disabled = _messages.BooleanField(1)
   monitoringInterval = _messages.StringField(2)
+  monitoringIntervalDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformUiGcsSource(_messages.Message):
@@ -10367,11 +10387,10 @@ class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
       a portion of the traffic will be dropped. If this value is not provided,
       will use min_replica_count as the default value.
     minReplicaCount: Required. Immutable. The minimum number of machine
-      replicas this DeployedModel will be always deployed on. If traffic
-      against it increases, it may dynamically be deployed onto more replicas,
-      and as traffic decreases, some of these extra replicas may be freed.
-      Note: if machine_spec.accelerator_count is above 0, currently the model
-      will be always deployed precisely on min_replica_count.
+      replicas this DeployedModel will be always deployed on. This value must
+      be greater than or equal to 1. If traffic against the DeployedModel
+      increases, it may dynamically be deployed onto more replicas, and as
+      traffic decreases, some of these extra replicas may be freed.
   """
 
   autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformV1AutoscalingMetricSpec', 1, repeated=True)
@@ -10625,6 +10644,7 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
+      NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -10632,6 +10652,7 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
+    NVIDIA_TESLA_A100 = 6
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -13465,10 +13486,16 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecCategoricalValueSpec(_message
   r"""Value specification for a parameter in `CATEGORICAL` type.
 
   Fields:
+    defaultValue: A default value for a `CATEGORICAL` parameter that is
+      assumed to be a relatively good starting point. Unset value signals that
+      there is no offered starting point. Currently only supported by the
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     values: Required. The list of possible categories.
   """
 
-  values = _messages.StringField(1, repeated=True)
+  defaultValue = _messages.StringField(1)
+  values = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1StudySpecParameterSpecConditionalParameterSpec(_messages.Message):
@@ -13529,37 +13556,53 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecDiscreteValueSpec(_messages.M
   r"""Value specification for a parameter in `DISCRETE` type.
 
   Fields:
+    defaultValue: A default value for a `DISCRETE` parameter that is assumed
+      to be a relatively good starting point. Unset value signals that there
+      is no offered starting point. It automatically rounds to the nearest
+      feasible discrete point. Currently only supported by the Vizier service.
+      Not supported by HyperparamterTuningJob or TrainingPipeline.
     values: Required. A list of possible values. The list should be in
       increasing order and at least 1e-10 apart. For instance, this parameter
       might have possible settings of 1.5, 2.5, and 4.0. This list should not
       contain more than 1,000 values.
   """
 
-  values = _messages.FloatField(1, repeated=True)
+  defaultValue = _messages.FloatField(1)
+  values = _messages.FloatField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1StudySpecParameterSpecDoubleValueSpec(_messages.Message):
   r"""Value specification for a parameter in `DOUBLE` type.
 
   Fields:
+    defaultValue: A default value for a `DOUBLE` parameter that is assumed to
+      be a relatively good starting point. Unset value signals that there is
+      no offered starting point. Currently only supported by the Vizier
+      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
 
-  maxValue = _messages.FloatField(1)
-  minValue = _messages.FloatField(2)
+  defaultValue = _messages.FloatField(1)
+  maxValue = _messages.FloatField(2)
+  minValue = _messages.FloatField(3)
 
 
 class GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec(_messages.Message):
   r"""Value specification for a parameter in `INTEGER` type.
 
   Fields:
+    defaultValue: A default value for an `INTEGER` parameter that is assumed
+      to be a relatively good starting point. Unset value signals that there
+      is no offered starting point. Currently only supported by the Vizier
+      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
 
-  maxValue = _messages.IntegerField(1)
-  minValue = _messages.IntegerField(2)
+  defaultValue = _messages.IntegerField(1)
+  maxValue = _messages.IntegerField(2)
+  minValue = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformV1UndeployModelOperationMetadata(_messages.Message):
@@ -13809,11 +13852,10 @@ class GoogleCloudAiplatformV1alpha1DedicatedResources(_messages.Message):
     machineSpec: Required. Immutable. The specification of a single machine
       used by the prediction.
     minReplicaCount: Required. Immutable. The minimum number of machine
-      replicas this DeployedModel will be always deployed on. If traffic
-      against it increases, it may dynamically be deployed onto more replicas,
-      and as traffic decreases, some of these extra replicas may be freed.
-      Note: if machine_spec.accelerator_count is above 0, currently the model
-      will be always deployed precisely on min_replica_count.
+      replicas this DeployedModel will be always deployed on. This value must
+      be greater than or equal to 1. If traffic against the DeployedModel
+      increases, it may dynamically be deployed onto more replicas, and as
+      traffic decreases, some of these extra replicas may be freed.
   """
 
   machineSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1MachineSpec', 1)
@@ -14374,6 +14416,7 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
+      NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -14381,6 +14424,7 @@ class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
+    NVIDIA_TESLA_A100 = 6
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -16405,11 +16449,17 @@ class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequest(_messages.Messag
       [BatchReadFeatureValuesRequest.entity_type_specs] must have a column
       specifying entity IDs in tha EntityType in
       BatchReadFeatureValuesRequest.request .
+    passThroughFields: When not empty, the specified fields in the
+      *_read_instances source will be joined as-is in the output, in addition
+      to those fields from the Featurestore Entity. For BigQuery source, the
+      type of the pass-through values will be automatically inferred. For CSV
+      source, the pass-through values will be passed as opaque bytes.
   """
 
   csvReadInstances = _messages.MessageField('GoogleCloudAiplatformV1beta1CsvSource', 1)
   destination = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureValueDestination', 2)
   entityTypeSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestEntityTypeSpec', 3, repeated=True)
+  passThroughFields = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestPassThroughField', 4, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestEntityTypeSpec(_messages.Message):
@@ -16428,6 +16478,18 @@ class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestEntityTypeSpec(_m
   entityTypeId = _messages.StringField(1)
   featureSelector = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureSelector', 2)
   settings = _messages.MessageField('GoogleCloudAiplatformV1beta1DestinationFeatureSetting', 3, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestPassThroughField(_messages.Message):
+  r"""Describe pass-through fields in read_instance source.
+
+  Fields:
+    fieldName: Required. The name of the field in the CSV header or the name
+      of the column in BigQuery table. The naming restriction is the same as
+      Feature.name.
+  """
+
+  fieldName = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesResponse(_messages.Message):
@@ -17429,11 +17491,10 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
       a portion of the traffic will be dropped. If this value is not provided,
       will use min_replica_count as the default value.
     minReplicaCount: Required. Immutable. The minimum number of machine
-      replicas this DeployedModel will be always deployed on. If traffic
-      against it increases, it may dynamically be deployed onto more replicas,
-      and as traffic decreases, some of these extra replicas may be freed.
-      Note: if machine_spec.accelerator_count is above 0, currently the model
-      will be always deployed precisely on min_replica_count.
+      replicas this DeployedModel will be always deployed on. This value must
+      be greater than or equal to 1. If traffic against the DeployedModel
+      increases, it may dynamically be deployed onto more replicas, and as
+      traffic decreases, some of these extra replicas may be freed.
   """
 
   autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1AutoscalingMetricSpec', 1, repeated=True)
@@ -19479,10 +19540,19 @@ class GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis(_
     monitoringInterval: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value is rolled up to full
       day.
+    monitoringIntervalDays: Configuration of the snapshot analysis based
+      monitoring pipeline running interval. The value indicates number of
+      days. If both
+      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
+      and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval
+      are set when creating/updating EntityTypes/Features,
+      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
+      will be used.
   """
 
   disabled = _messages.BooleanField(1)
   monitoringInterval = _messages.StringField(2)
+  monitoringIntervalDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1FeaturestoreOnlineServingConfig(_messages.Message):
@@ -21850,6 +21920,7 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(_messages.Messa
   r"""Next ID: 6
 
   Fields:
+    explanationConfig: The config for integrated with Explainable AI.
     predictionDriftDetectionConfig: The config for drift of prediction data.
     trainingDataset: Training dataset for models. This field has to be set
       only if TrainingPredictionSkewDetectionConfig is specified.
@@ -21857,26 +21928,111 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(_messages.Messa
       training data and prediction data.
   """
 
-  predictionDriftDetectionConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig', 1)
-  trainingDataset = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset', 2)
-  trainingPredictionSkewDetectionConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig', 3)
+  explanationConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig', 1)
+  predictionDriftDetectionConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig', 2)
+  trainingDataset = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset', 3)
+  trainingPredictionSkewDetectionConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig', 4)
+
+
+class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig(_messages.Message):
+  r"""The config for integrated with Explainable AI. Only applicable if the
+  Model has explanation_spec populated.
+
+  Fields:
+    enableFeatureAttributes: If want to analyze the Explainable AI feature
+      attribute scores or not. If set to true, Vertex AI will log the feature
+      attributions from explain response and do the skew/drift detection for
+      them.
+    explanationBaseline: Predictions generated by the BatchPredictionJob using
+      baseline dataset.
+  """
+
+  enableFeatureAttributes = _messages.BooleanField(1)
+  explanationBaseline = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline', 2)
+
+
+class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline(_messages.Message):
+  r"""Output from BatchPredictionJob for Model Monitoring baseline dataset,
+  which can be used to generate baseline attribution scores.
+
+  Enums:
+    PredictionFormatValueValuesEnum: The storage format of the predictions
+      generated BatchPrediction job.
+
+  Fields:
+    bigquery: BigQuery location for BatchExplain output.
+    gcs: Cloud Storage location for BatchExplain output.
+    predictionFormat: The storage format of the predictions generated
+      BatchPrediction job.
+  """
+
+  class PredictionFormatValueValuesEnum(_messages.Enum):
+    r"""The storage format of the predictions generated BatchPrediction job.
+
+    Values:
+      PREDICTION_FORMAT_UNSPECIFIED: Should not be set.
+      JSONL: Predictions are in JSONL files, consistent from the definition
+        here (http://shortn/_4bS0hL7ofb).
+      BIGQUERY: Predictions are in BigQuery.
+    """
+    PREDICTION_FORMAT_UNSPECIFIED = 0
+    JSONL = 1
+    BIGQUERY = 2
+
+  bigquery = _messages.MessageField('GoogleCloudAiplatformV1beta1BigQueryDestination', 1)
+  gcs = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 2)
+  predictionFormat = _messages.EnumField('PredictionFormatValueValuesEnum', 3)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig(_messages.Message):
   r"""The config for Prediction data drift detection.
 
   Messages:
+    AttributionScoreDriftThresholdsValue: Key is the feature name and value is
+      the threshold. The threshold here is against attribution score distance
+      between different time windows.
     DriftThresholdsValue: Key is the feature name and value is the threshold.
       If a feature needs to be monitored for drift, a value threshold must be
       configed for that feature. The threshold here is against feature
       distribution distance between different time windws.
 
   Fields:
+    attributionScoreDriftThresholds: Key is the feature name and value is the
+      threshold. The threshold here is against attribution score distance
+      between different time windows.
     driftThresholds: Key is the feature name and value is the threshold. If a
       feature needs to be monitored for drift, a value threshold must be
       configed for that feature. The threshold here is against feature
       distribution distance between different time windws.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributionScoreDriftThresholdsValue(_messages.Message):
+    r"""Key is the feature name and value is the threshold. The threshold here
+    is against attribution score distance between different time windows.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AttributionScoreDriftThresholdsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AttributionScoreDriftThresholdsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributionScoreDriftThresholdsValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1beta1ThresholdConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1beta1ThresholdConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DriftThresholdsValue(_messages.Message):
@@ -21906,7 +22062,8 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftD
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  driftThresholds = _messages.MessageField('DriftThresholdsValue', 1)
+  attributionScoreDriftThresholds = _messages.MessageField('AttributionScoreDriftThresholdsValue', 1)
+  driftThresholds = _messages.MessageField('DriftThresholdsValue', 2)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset(_messages.Message):
@@ -21941,17 +22098,52 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredicti
   the training dataset sources and the skew detection parameters.
 
   Messages:
+    AttributionScoreSkewThresholdsValue: Key is the feature name and value is
+      the threshold. The threshold here is against attribution score distance
+      between the training and prediction feature.
     SkewThresholdsValue: Key is the feature name and value is the threshold.
       If a feature needs to be monitored for skew, a value threshold must be
       configed for that feature. The threshold here is against feature
       distribution distance between the training and prediction feature.
 
   Fields:
+    attributionScoreSkewThresholds: Key is the feature name and value is the
+      threshold. The threshold here is against attribution score distance
+      between the training and prediction feature.
     skewThresholds: Key is the feature name and value is the threshold. If a
       feature needs to be monitored for skew, a value threshold must be
       configed for that feature. The threshold here is against feature
       distribution distance between the training and prediction feature.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributionScoreSkewThresholdsValue(_messages.Message):
+    r"""Key is the feature name and value is the threshold. The threshold here
+    is against attribution score distance between the training and prediction
+    feature.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AttributionScoreSkewThresholdsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AttributionScoreSkewThresholdsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributionScoreSkewThresholdsValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1beta1ThresholdConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1beta1ThresholdConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SkewThresholdsValue(_messages.Message):
@@ -21981,7 +22173,8 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredicti
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  skewThresholds = _messages.MessageField('SkewThresholdsValue', 1)
+  attributionScoreSkewThresholds = _messages.MessageField('AttributionScoreSkewThresholdsValue', 1)
+  skewThresholds = _messages.MessageField('SkewThresholdsValue', 2)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringStatsAnomalies(_messages.Message):
@@ -25782,10 +25975,16 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecCategoricalValueSpec(_me
   r"""Value specification for a parameter in `CATEGORICAL` type.
 
   Fields:
+    defaultValue: A default value for a `CATEGORICAL` parameter that is
+      assumed to be a relatively good starting point. Unset value signals that
+      there is no offered starting point. Currently only supported by the
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     values: Required. The list of possible categories.
   """
 
-  values = _messages.StringField(1, repeated=True)
+  defaultValue = _messages.StringField(1)
+  values = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpec(_messages.Message):
@@ -25846,37 +26045,53 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDiscreteValueSpec(_messa
   r"""Value specification for a parameter in `DISCRETE` type.
 
   Fields:
+    defaultValue: A default value for a `DISCRETE` parameter that is assumed
+      to be a relatively good starting point. Unset value signals that there
+      is no offered starting point. It automatically rounds to the nearest
+      feasible discrete point. Currently only supported by the Vizier service.
+      Not supported by HyperparamterTuningJob or TrainingPipeline.
     values: Required. A list of possible values. The list should be in
       increasing order and at least 1e-10 apart. For instance, this parameter
       might have possible settings of 1.5, 2.5, and 4.0. This list should not
       contain more than 1,000 values.
   """
 
-  values = _messages.FloatField(1, repeated=True)
+  defaultValue = _messages.FloatField(1)
+  values = _messages.FloatField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDoubleValueSpec(_messages.Message):
   r"""Value specification for a parameter in `DOUBLE` type.
 
   Fields:
+    defaultValue: A default value for a `DOUBLE` parameter that is assumed to
+      be a relatively good starting point. Unset value signals that there is
+      no offered starting point. Currently only supported by the Vizier
+      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
 
-  maxValue = _messages.FloatField(1)
-  minValue = _messages.FloatField(2)
+  defaultValue = _messages.FloatField(1)
+  maxValue = _messages.FloatField(2)
+  minValue = _messages.FloatField(3)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec(_messages.Message):
   r"""Value specification for a parameter in `INTEGER` type.
 
   Fields:
+    defaultValue: A default value for an `INTEGER` parameter that is assumed
+      to be a relatively good starting point. Unset value signals that there
+      is no offered starting point. Currently only supported by the Vizier
+      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
 
-  maxValue = _messages.IntegerField(1)
-  minValue = _messages.IntegerField(2)
+  defaultValue = _messages.IntegerField(1)
+  maxValue = _messages.IntegerField(2)
+  minValue = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformV1beta1SuggestTrialsMetadata(_messages.Message):

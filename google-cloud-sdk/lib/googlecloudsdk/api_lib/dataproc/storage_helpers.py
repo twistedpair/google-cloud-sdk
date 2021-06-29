@@ -78,10 +78,10 @@ def _UploadStorageClient(files, destination, storage_client=None):
     dest_object = storage_util.ObjectReference.FromUrl(dest_url)
     try:
       client.CopyFileToGCS(file_to_upload, dest_object)
-    except exceptions.BadFileException:
+    except exceptions.BadFileException as err:
       raise dp_exceptions.FileUploadError(
-          "Failed to upload files ['{0}'] to '{1}'.".format(
-              "', '".join(files), destination))
+          "Failed to upload files ['{}'] to '{}': {}".format(
+              "', '".join(files), destination, err))
 
 
 def _UploadGsutil(files, destination):
@@ -98,6 +98,41 @@ def _UploadGsutil(files, destination):
     raise dp_exceptions.FileUploadError(
         "Failed to upload files ['{0}'] to '{1}' using gsutil.".format(
             "', '".join(files), destination))
+
+
+def GetBucket(bucket, storage_client=None):
+  """Gets a bucket if it exists.
+
+  Args:
+    bucket: The bucket name.
+    storage_client: Storage client instance.
+
+  Returns:
+    A bucket message, or None if it doesn't exist.
+  """
+  client = storage_client or storage_api.StorageClient()
+
+  try:
+    return client.GetBucket(bucket)
+  except storage_api.BucketNotFoundError:
+    return None
+
+
+def CreateBucketIfNotExists(bucket, region, storage_client=None, project=None):
+  """Creates a bucket.
+
+  Creates a bucket in the specified region. If the region is None, the bucket
+  will be created in global region.
+
+  Args:
+    bucket: Name of bucket to create.
+    region: Region to create bucket in.
+    storage_client: Storage client instance.
+    project: The project to create the bucket in. If None, current Cloud SDK
+    project is used.
+  """
+  client = storage_client or storage_api.StorageClient()
+  client.CreateBucketIfNotExists(bucket, location=region, project=project)
 
 
 def ReadObject(object_url, storage_client=None):

@@ -779,6 +779,111 @@
         }
       }
     },
+    "RestoreServiceRequest": {
+      "id": "RestoreServiceRequest",
+      "description": "Request message for DataprocMetastore.Restore.",
+      "type": "object",
+      "properties": {
+        "backup": {
+          "description": "Required. The relative resource name of the metastore service backup to restore from, in the following form:projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\/backups\/{backup_id}.",
+          "type": "string"
+        },
+        "restoreType": {
+          "description": "Optional. The type of restore. If unspecified, defaults to METADATA_ONLY.",
+          "type": "string",
+          "enumDescriptions": [
+            "The restore type is unknown.",
+            "The service's metadata and configuration are restored.",
+            "Only the service's metadata is restored."
+          ],
+          "enum": [
+            "RESTORE_TYPE_UNSPECIFIED",
+            "FULL",
+            "METADATA_ONLY"
+          ]
+        },
+        "requestId": {
+          "description": "Optional. A request ID. Specify a unique request ID to allow the server to ignore the request if it has completed. The server will ignore subsequent requests that provide a duplicate request ID for at least 60 minutes after the first request.For example, if an initial request times out, followed by another request with the same request ID, the server ignores the second request to prevent the creation of duplicate commitments.The request ID must be a valid UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier#Format). A zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "ListBackupsResponse": {
+      "id": "ListBackupsResponse",
+      "description": "Response message for DataprocMetastore.ListBackups.",
+      "type": "object",
+      "properties": {
+        "backups": {
+          "description": "The backups of the specified service.",
+          "type": "array",
+          "items": {
+            "$ref": "Backup"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token that can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Backup": {
+      "id": "Backup",
+      "description": "The details of a backup resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Immutable. The relative resource name of the backup, in the following form:projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/backups\/{backup_id}",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the backup was started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time when the backup finished creating.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. The current state of the backup.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the backup is unknown.",
+            "The backup is being created.",
+            "The backup is being deleted.",
+            "The backup is active and ready to use.",
+            "The backup failed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "DELETING",
+            "ACTIVE",
+            "FAILED"
+          ]
+        },
+        "serviceRevision": {
+          "description": "Output only. The revision of the service at the time of backup.",
+          "readOnly": true,
+          "$ref": "Service"
+        },
+        "description": {
+          "description": "The description of the backup.",
+          "type": "string"
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for SetIamPolicy method.",
@@ -1398,6 +1503,34 @@
                   ],
                   "description": "Exports metadata from a service."
                 },
+                "restore": {
+                  "id": "metastore.projects.locations.services.restore",
+                  "path": "v1/{+service}:restore",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:restore",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "service": {
+                      "description": "Required. The relative resource name of the metastore service to run restore, in the following form:projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "service"
+                  ],
+                  "request": {
+                    "$ref": "RestoreServiceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Restores a service from a backup."
+                },
                 "setIamPolicy": {
                   "id": "metastore.projects.locations.services.setIamPolicy",
                   "path": "v1/{+resource}:setIamPolicy",
@@ -1637,6 +1770,149 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Updates a single import. Only the description field of MetadataImport is supported to be updated."
+                    }
+                  }
+                },
+                "backups": {
+                  "methods": {
+                    "list": {
+                      "id": "metastore.projects.locations.services.backups.list",
+                      "path": "v1/{+parent}/backups",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/backups",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The relative resource name of the service whose backups to list, in the following form:projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/backups.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of backups to return. The response may contain less than the maximum number. If unspecified, no more than 500 backups are returned. The maximum value is 1000; values above 1000 are changed to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. A page token, received from a previous DataprocMetastore.ListBackups call. Provide this token to retrieve the subsequent page.To retrieve the first page, supply an empty page token.When paginating, other parameters provided to DataprocMetastore.ListBackups must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. The filter to apply to list results.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Optional. Specify the ordering of results as described in Sorting Order (https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order). If not specified, the results will be sorted in the default order.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListBackupsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists backups in a service."
+                    },
+                    "get": {
+                      "id": "metastore.projects.locations.services.backups.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/backups/{backupsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The relative resource name of the backup to retrieve, in the following form:projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/backups\/{backup_id}.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Backup"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets details of a single backup."
+                    },
+                    "create": {
+                      "id": "metastore.projects.locations.services.backups.create",
+                      "path": "v1/{+parent}/backups",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/backups",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The relative resource name of the service in which to create a backup of the following form:projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "backupId": {
+                          "description": "Required. The ID of the backup, which is used as the final component of the backup's name.This value must be between 1 and 64 characters long, begin with a letter, end with a letter or number, and consist of alpha-numeric ASCII characters or hyphens.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID. Specify a unique request ID to allow the server to ignore the request if it has completed. The server will ignore subsequent requests that provide a duplicate request ID for at least 60 minutes after the first request.For example, if an initial request times out, followed by another request with the same request ID, the server ignores the second request to prevent the creation of duplicate commitments.The request ID must be a valid UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier#Format) A zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Backup"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new backup in a given project and location."
+                    },
+                    "delete": {
+                      "id": "metastore.projects.locations.services.backups.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/backups/{backupsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The relative resource name of the backup to delete, in the following form:projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/backups\/{backup_id}.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "Optional. A request ID. Specify a unique request ID to allow the server to ignore the request if it has completed. The server will ignore subsequent requests that provide a duplicate request ID for at least 60 minutes after the first request.For example, if an initial request times out, followed by another request with the same request ID, the server ignores the second request to prevent the creation of duplicate commitments.The request ID must be a valid UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier#Format) A zero UUID (00000000-0000-0000-0000-000000000000) is not supported.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a single backup."
                     }
                   }
                 }

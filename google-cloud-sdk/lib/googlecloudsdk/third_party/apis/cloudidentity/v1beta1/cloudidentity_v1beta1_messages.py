@@ -2070,6 +2070,7 @@ class Group(_messages.Message):
       of the form `identitysources/{identity_source_id}` for external-
       identity-mapped groups or `customers/{customer_id}` for Google Groups.
       The `customer_id` must begin with "C" (for example, 'C046psxkn').
+    posixGroups: Optional. The POSIX groups associated with the `Group`.
     updateTime: Output only. The time when the `Group` was last updated.
   """
 
@@ -2116,7 +2117,8 @@ class Group(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
   parent = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  posixGroups = _messages.MessageField('PosixGroup', 10, repeated=True)
+  updateTime = _messages.StringField(11)
 
 
 class GroupRelation(_messages.Message):
@@ -2594,6 +2596,21 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class PosixGroup(_messages.Message):
+  r"""POSIX Group definition to represent a group in a POSIX compliant system.
+
+  Fields:
+    gid: GID of the POSIX group.
+    name: Name of the POSIX group.
+    systemId: System identifier for which group name and gid apply to. If not
+      specified it will default to empty value.
+  """
+
+  gid = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
+  name = _messages.StringField(2)
+  systemId = _messages.StringField(3)
+
+
 class SearchGroupsResponse(_messages.Message):
   r"""The response message for GroupsService.SearchGroups.
 
@@ -2825,7 +2842,18 @@ class UserInvitation(_messages.Message):
 
 
 class WipeDeviceRequest(_messages.Message):
-  r"""Request message for wiping all data on the device."""
+  r"""Request message for wiping all data on the device.
+
+  Fields:
+    removeResetLock: Optional. Specifies if a user is able to factory reset a
+      device after a Device Wipe. On iOS, this is called "Activation Lock",
+      while on Android, this is known as "Factory Reset Protection". If true,
+      this protection will be removed from the device, so that a user can
+      successfully factory reset. If false, the setting is untouched on the
+      device.
+  """
+
+  removeResetLock = _messages.BooleanField(1)
 
 
 class WipeDeviceResponse(_messages.Message):

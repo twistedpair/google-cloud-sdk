@@ -2472,7 +2472,7 @@ Example request body:
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on the specified resource. To learn more about labels, read the  Labeling Resources documentation.
 
       Args:
         request: (ComputeForwardingRulesSetLabelsRequest) input message
@@ -2778,7 +2778,7 @@ Example request body:
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+      r"""Sets the labels on the specified resource. To learn more about labels, read the  Labeling resources documentation.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetLabelsRequest) input message
@@ -5736,6 +5736,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name='ComputeInstancesResetRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SendDiagnosticInterrupt(self, request, global_params=None):
+      r"""Sends diagnostic interrupt to the instance.
+
+      Args:
+        request: (ComputeInstancesSendDiagnosticInterruptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ComputeInstancesSendDiagnosticInterruptResponse) The response message.
+      """
+      config = self.GetMethodConfig('SendDiagnosticInterrupt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SendDiagnosticInterrupt.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.sendDiagnosticInterrupt',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/sendDiagnosticInterrupt',
+        request_field='',
+        request_type_name='ComputeInstancesSendDiagnosticInterruptRequest',
+        response_type_name='ComputeInstancesSendDiagnosticInterruptResponse',
         supports_download=False,
     )
 

@@ -99,6 +99,19 @@ _STANDARD_SCHEDULER_SETTINGS = (
     'targetThroughputUtilization',
 )
 
+# Maps VPC egress setting as specified in app.yaml to their proto enum values.
+_VPC_EGRESS_SETTING_MAP = {
+    'all-traffic': 'ALL_TRAFFIC',
+    'private-ranges-only': 'PRIVATE_IP_RANGES'
+}
+
+def ToVpcEgressSettingEnum(value):
+  """Converts a string to a VPC egress setting."""
+  if str(value) not in _VPC_EGRESS_SETTING_MAP:
+    raise ValueError('egress_setting must be one of: [%s]' %
+                     ','.join(_VPC_EGRESS_SETTING_MAP.keys()))
+  return _VPC_EGRESS_SETTING_MAP[str(value)]
+
 
 def EnumConverter(prefix):
   """Create conversion function which translates from string to enum value.

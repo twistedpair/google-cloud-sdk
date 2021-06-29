@@ -35,6 +35,7 @@ def MakeSubnetworkUpdateRequest(
     metadata=None,
     filter_expr=None,
     metadata_fields=None,
+    set_new_purpose=None,
     set_role_active=None,
     drain_timeout_seconds=None,
     private_ipv6_google_access_type=None,
@@ -58,6 +59,7 @@ def MakeSubnetworkUpdateRequest(
     metadata: Whether metadata fields should be added reported flow logs.
     filter_expr: custom CEL expression for filtering flow logs
     metadata_fields: custom metadata fields to be added to flow logs
+    set_new_purpose: Update the purpose of the subnet.
     set_role_active: Updates the role of a BACKUP subnet to ACTIVE.
     drain_timeout_seconds: The maximum amount of time to drain connections from
       the active subnet to the backup subnet with set_role_active=True.
@@ -81,9 +83,10 @@ def MakeSubnetworkUpdateRequest(
             region=subnet_ref.region,
             subnetwork=subnet_ref.Name(),
             subnetworksSetPrivateIpGoogleAccessRequest=google_access))
-    return client.MakeRequests([(client.apitools_client.subnetworks,
-                                 'SetPrivateIpGoogleAccess',
-                                 google_access_request)])
+    return client.MakeRequests([
+        (client.apitools_client.subnetworks, 'SetPrivateIpGoogleAccess',
+         google_access_request)
+    ])
   elif add_secondary_ranges is not None:
     subnetwork = client.messages.Subnetwork()
     original_subnetwork = client.MakeRequests([
@@ -169,6 +172,18 @@ def MakeSubnetworkUpdateRequest(
         client.messages.Subnetwork.PrivateIpv6GoogleAccessValueValuesEnum(
             ConvertPrivateIpv6GoogleAccess(
                 convert_to_enum(private_ipv6_google_access_type))))
+    return client.MakeRequests(
+        [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
+  elif set_new_purpose is not None:
+    subnetwork = client.messages.Subnetwork()
+    original_subnetwork = client.MakeRequests([
+        (client.apitools_client.subnetworks, 'Get',
+         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
+    ])[0]
+    subnetwork.fingerprint = original_subnetwork.fingerprint
+
+    subnetwork.purpose = client.messages.Subnetwork.PurposeValueValuesEnum(
+        set_new_purpose)
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif set_role_active is not None:

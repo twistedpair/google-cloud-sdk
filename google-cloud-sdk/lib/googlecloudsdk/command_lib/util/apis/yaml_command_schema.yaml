@@ -322,7 +322,7 @@ definitions:
 
 type: object
 additionalProperties: false
-required: [request, help_text, arguments]
+required: [help_text, arguments]
 properties:
 
   # Determines whether the command is visible in help text or not.
@@ -343,6 +343,7 @@ properties:
     - CREATE
     - UPDATE
     - WAIT
+    - CONFIG_EXPORT
     - GET_IAM_POLICY
     - SET_IAM_POLICY
     - GENERIC

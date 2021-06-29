@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 
 ALPHA_VERSION = 'ALPHA'
 BETA_VERSION = 'BETA'
@@ -33,6 +34,11 @@ AI_PLATFORM_MESSAGE_PREFIX = {
     ALPHA_VERSION: 'GoogleCloudAiplatformV1alpha1'
 }
 AI_PLATFORM_API_NAME = 'aiplatform'
+AI_PLATFORM_RELEASE_TRACK_TO_VERSION = {
+    base.ReleaseTrack.GA: GA_VERSION,
+    base.ReleaseTrack.BETA: BETA_VERSION,
+    base.ReleaseTrack.ALPHA: ALPHA_VERSION
+}
 
 SUPPORTED_REGION = ('us-central1', 'europe-west4', 'asia-east1')
 
@@ -84,7 +90,7 @@ Hyperparameter tuning job [{id}] submitted successfully.
 
 Your job is still active. You may view the status of your job with the command
 
-  $ gcloud alpha ai hp-tuning-jobs describe {id}
+  $ gcloud{version} ai hp-tuning-jobs describe {id}
 
 Job State: {state}\
 """
@@ -94,7 +100,7 @@ Request to cancel hyperparameter tuning job [{id}] has been sent
 
 You may view the status of your job with the command
 
-  $ gcloud alpha ai hp-tuning-jobs describe {id}
+  $ gcloud{version} ai hp-tuning-jobs describe {id}
 """
 
 HPTUNING_JOB_COLLECTION = 'aiplatform.projects.locations.hyperparameterTuningJobs'

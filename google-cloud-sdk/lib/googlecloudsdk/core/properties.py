@@ -2656,6 +2656,19 @@ class _SectionStorage(_Section):
         help_text='If True, use the deprecated upload implementation which '
         'uses gsutil.')
 
+    self.use_magicfile = self._AddBool(
+        'use_magicfile',
+        default=False,
+        help_text=(
+            'If True, uses the `file --mime <filename>` command to guess'
+            ' content types instead of the default filename extension-based'
+            ' mechanism. Available on UNIX and macOS (and possibly on Windows, '
+            ' if you\'re running Cygwin or some other package that provides '
+            ' implementations of UNIX-like commands). When available and '
+            ' enabled use_magicfile should be more robust because it analyzes '
+            ' file contents in addition to extensions.'
+        ))
+
     self.use_threading_local = self._AddBool(
         'use_threading_local',
         default=True,

@@ -1264,6 +1264,12 @@ class IpConfiguration(_messages.Message):
   r"""IP Management configuration.
 
   Fields:
+    allocatedIpRange: The name of the allocated ip range for the private ip
+      CloudSQL instance. For example: "google-managed-services-default". If
+      set, the instance ip will be created in the allocated range. The range
+      name must comply with [RFC 1035](https://tools.ietf.org/html/rfc1035).
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?.
     authorizedNetworks: The list of external networks that are allowed to
       connect to the instance using the IP. In 'CIDR' notation, also known as
       'slash' notation (for example: *192.168.100.0/24*).
@@ -1273,19 +1279,16 @@ class IpConfiguration(_messages.Message):
       */projects/myProject/global/networks/default*. This setting can be
       updated, but it cannot be removed after it is set.
     requireSsl: Whether SSL connections over IP are enforced or not.
-    reservedIpRange: The name of the reserved ip range for the private ip
-      CloudSQL instance. For example: "google-managed-services-default". If
-      set, the instance ip will be created in the reserved range. The range
-      name must comply with [RFC 1035](https://tools.ietf.org/html/rfc1035).
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?.
+    reservedIpRange: This field is deprecated and will be removed from a
+      future version of the API.
   """
 
-  authorizedNetworks = _messages.MessageField('AclEntry', 1, repeated=True)
-  ipv4Enabled = _messages.BooleanField(2)
-  privateNetwork = _messages.StringField(3)
-  requireSsl = _messages.BooleanField(4)
-  reservedIpRange = _messages.StringField(5)
+  allocatedIpRange = _messages.StringField(1)
+  authorizedNetworks = _messages.MessageField('AclEntry', 2, repeated=True)
+  ipv4Enabled = _messages.BooleanField(3)
+  privateNetwork = _messages.StringField(4)
+  requireSsl = _messages.BooleanField(5)
+  reservedIpRange = _messages.StringField(6)
 
 
 class IpMapping(_messages.Message):
@@ -2697,13 +2700,16 @@ class SqlScheduledMaintenance(_messages.Message):
   Fields:
     canDefer: A boolean attribute.
     canReschedule: If the scheduled maintenance can be rescheduled.
+    scheduleDeadlineTime: Maintenance cannot be rescheduled to start beyond
+      this deadline.
     startTime: The start time of any upcoming scheduled maintenance for this
       instance.
   """
 
   canDefer = _messages.BooleanField(1)
   canReschedule = _messages.BooleanField(2)
-  startTime = _messages.StringField(3)
+  scheduleDeadlineTime = _messages.StringField(3)
+  startTime = _messages.StringField(4)
 
 
 class SqlServerDatabaseDetails(_messages.Message):

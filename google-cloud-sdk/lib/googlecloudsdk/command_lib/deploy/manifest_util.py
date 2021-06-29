@@ -19,11 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+from googlecloudsdk.command_lib.deploy import deploy_util
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.resource import resource_property
 
 PIPELINE_UPDATE_MASK = 'description,annotations,labels,serial_pipeline'
 DELIVERY_PIPELINE_KIND_BETA1 = 'delivery-pipeline'
@@ -32,8 +32,6 @@ DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
 TARGET_KIND_V1BETA1 = 'Target'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 API_VERSION_BETA1 = 'cloudDeploy/beta1'
-TARGET_TYPE = 'target'
-DELIVERY_PIPELINE_TYPE = 'delivery-pipeline'
 DELIVERY_PIPELINE_LABEL = 'deliveryPipeline'
 DELIVERY_PIPELINE_FIELDS = ['description', 'serialPipeline']
 TARGET_FIELDS = ['description', 'requireApproval', 'gkeCluster']
@@ -106,11 +104,11 @@ def _ParseV1Beta1Config(messages, kind, manifest, project, region,
     raise exceptions.CloudDeployConfigError(
         'missing required field .metadata.name in {}'.format(kind))
   if kind == DELIVERY_PIPELINE_KIND_V1BETA1:
-    resource_type = DELIVERY_PIPELINE_TYPE
+    resource_type = deploy_util.ResourceType.DELIVERY_PIPELINE
     resource, resource_ref = _CreateDeliveryPipelineResource(
         messages, metadata['name'], project, region)
   elif kind == TARGET_KIND_V1BETA1:
-    resource_type = TARGET_TYPE
+    resource_type = deploy_util.ResourceType.TARGET
     resource, resource_ref = _CreateTargetResource(
         messages, metadata['name'], manifest.get('deliveryPipeline'), project,
         region)
@@ -129,8 +127,8 @@ def _ParseV1Beta1Config(messages, kind, manifest, project, region,
   for field in metadata:
     if field not in ['name', 'annotations', 'labels']:
       setattr(resource, field, metadata.get(field))
-  SetMetadata(messages, resource, resource_type, metadata.get('annotations'),
-              metadata.get('labels'))
+  deploy_util.SetMetadata(messages, resource, resource_type,
+                          metadata.get('annotations'), metadata.get('labels'))
 
   resource_dict[kind].append(resource)
 
@@ -159,7 +157,7 @@ def _ParseBeta1Config(messages, kind, manifest, project, region, resource_dict):
   if kind == DELIVERY_PIPELINE_KIND_BETA1:
     resource, resource_ref = _CreateDeliveryPipelineResource(
         messages, manifest['name'], project, region)
-    resource_type = DELIVERY_PIPELINE_TYPE
+    resource_type = deploy_util.ResourceType.DELIVERY_PIPELINE
   elif kind == TARGET_KIND_BETA1:
     if manifest.get('deliveryPipeline') is None:
       raise exceptions.CloudDeployConfigError(
@@ -168,7 +166,7 @@ def _ParseBeta1Config(messages, kind, manifest, project, region, resource_dict):
     resource, resource_ref = _CreateTargetResource(messages, manifest['name'],
                                                    manifest['deliveryPipeline'],
                                                    project, region)
-    resource_type = TARGET_TYPE
+    resource_type = deploy_util.ResourceType.TARGET
   else:
     raise exceptions.CloudDeployConfigError(
         'kind {} not supported'.format(kind))
@@ -184,8 +182,8 @@ def _ParseBeta1Config(messages, kind, manifest, project, region, resource_dict):
     ]:
       setattr(resource, field, manifest.get(field))
 
-  SetMetadata(messages, resource, resource_type, manifest.get('annotations'),
-              manifest.get('labels'))
+  deploy_util.SetMetadata(messages, resource, resource_type,
+                          manifest.get('annotations'), manifest.get('labels'))
 
   resource_dict[kind].append(resource)
 
@@ -218,57 +216,13 @@ def _CreateDeliveryPipelineResource(messages, delivery_pipeline_name, project,
   return resource, resource_ref
 
 
-def SetMetadata(messages,
-                message,
-                resource_type,
-                annotations=None,
-                labels=None):
-  """Sets the metadata of a cloud deploy resource message.
-
-  Args:
-   messages: module containing the definitions of messages for Cloud Deploy.
-   message: message in googlecloudsdk.third_party.apis.cloudeploy.
-   resource_type: str, the type of the resource to be updated.
-   annotations: dict[str,str], a dict of annotation (key,value) pairs.
-   labels: dict[str,str], a dict of label (key,value) pairs.
-  """
-
-  if annotations:
-    if resource_type == DELIVERY_PIPELINE_TYPE:
-      annotations_value_msg = messages.DeliveryPipeline.AnnotationsValue
-    else:
-      annotations_value_msg = messages.Target.AnnotationsValue
-    av = annotations_value_msg()
-    for k, v in annotations.items():
-      av.additionalProperties.append(
-          annotations_value_msg.AdditionalProperty(key=k, value=v))
-
-    message.annotations = av
-
-  if labels:
-    if resource_type == DELIVERY_PIPELINE_TYPE:
-      labels_value_msg = messages.DeliveryPipeline.LabelsValue
-    else:
-      labels_value_msg = messages.Target.LabelsValue
-    lv = labels_value_msg()
-    for k, v in labels.items():
-      lv.additionalProperties.append(
-          labels_value_msg.AdditionalProperty(
-              # Base on go/unified-cloud-labels-proposal,
-              # converts camel case key to snake case.
-              key=resource_property.ConvertToSnakeCase(k),
-              value=v))
-
-    message.labels = lv
-
-
 def ProtoToManifest(resource, resource_ref, kind, fields):
   """Convert a resource message to a cloud deploy resource manifest.
 
   The manifest can be applied by 'deploy apply' command.
 
   Args:
-    resource: message in googlecloudsdk.third_party.apis.cloudeploy.
+    resource: message in googlecloudsdk.third_party.apis.clouddeploy.
     resource_ref: cloud deploy resource object.
     kind: kind of the cloud deploy resource
     fields: the fields in the resource that will be used in the manifest.

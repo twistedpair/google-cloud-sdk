@@ -101,7 +101,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchCreate(self, request, global_params=None):
-      r"""Creates multiple new entities in the specified entity type. Operation .
+      r"""Creates multiple new entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesEntitiesBatchCreateRequest) input message
@@ -128,7 +128,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes entities in the specified entity type. Operation .
+      r"""Deletes entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesEntitiesBatchDeleteRequest) input message
@@ -155,7 +155,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Operation .
+      r"""Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesEntitiesBatchUpdateRequest) input message
@@ -192,7 +192,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes entity types in the specified agent. Operation .
+      r"""Deletes entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesBatchDeleteRequest) input message
@@ -219,7 +219,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates/Creates multiple entity types in the specified agent. Operation .
+      r"""Updates/Creates multiple entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesBatchUpdateRequest) input message
@@ -246,7 +246,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates an entity type in the specified agent.
+      r"""Creates an entity type in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesCreateRequest) input message
@@ -273,7 +273,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified entity type.
+      r"""Deletes the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesDeleteRequest) input message
@@ -354,7 +354,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified entity type.
+      r"""Updates the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesPatchRequest) input message
@@ -964,7 +964,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes intents in the specified agent. Operation .
+      r"""Deletes intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentIntentsBatchDeleteRequest) input message
@@ -991,7 +991,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates/Creates multiple intents in the specified agent. Operation .
+      r"""Updates/Creates multiple intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentIntentsBatchUpdateRequest) input message
@@ -1018,7 +1018,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates an intent in the specified agent.
+      r"""Creates an intent in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentIntentsCreateRequest) input message
@@ -1045,7 +1045,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified intent and its direct or indirect followup intents.
+      r"""Deletes the specified intent and its direct or indirect followup intents. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentIntentsDeleteRequest) input message
@@ -1126,7 +1126,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified intent.
+      r"""Updates the specified intent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentIntentsPatchRequest) input message
@@ -1979,7 +1979,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def Export(self, request, global_params=None):
-      r"""Exports the specified agent to a ZIP file. Operation .
+      r"""Exports the specified agent to a ZIP file.
 
       Args:
         request: (DialogflowProjectsAgentExportRequest) input message
@@ -2060,7 +2060,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Import(self, request, global_params=None):
-      r"""Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. Operation An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training.
+      r"""Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentImportRequest) input message
@@ -2087,7 +2087,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Restore(self, request, global_params=None):
-      r"""Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. Operation An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training.
+      r"""Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentRestoreRequest) input message
@@ -2141,7 +2141,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Train(self, request, global_params=None):
-      r"""Trains the specified agent. Operation .
+      r"""Trains the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentTrainRequest) input message
@@ -3095,7 +3095,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchCreate(self, request, global_params=None):
-      r"""Creates multiple new entities in the specified entity type. Operation .
+      r"""Creates multiple new entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchCreateRequest) input message
@@ -3122,7 +3122,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes entities in the specified entity type. Operation .
+      r"""Deletes entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchDeleteRequest) input message
@@ -3149,7 +3149,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Operation .
+      r"""Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchUpdateRequest) input message
@@ -3186,7 +3186,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes entity types in the specified agent. Operation .
+      r"""Deletes entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesBatchDeleteRequest) input message
@@ -3213,7 +3213,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates/Creates multiple entity types in the specified agent. Operation .
+      r"""Updates/Creates multiple entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesBatchUpdateRequest) input message
@@ -3240,7 +3240,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates an entity type in the specified agent.
+      r"""Creates an entity type in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesCreateRequest) input message
@@ -3267,7 +3267,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified entity type.
+      r"""Deletes the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesDeleteRequest) input message
@@ -3348,7 +3348,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified entity type.
+      r"""Updates the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesPatchRequest) input message
@@ -3958,7 +3958,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes intents in the specified agent. Operation .
+      r"""Deletes intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentIntentsBatchDeleteRequest) input message
@@ -3985,7 +3985,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates/Creates multiple intents in the specified agent. Operation .
+      r"""Updates/Creates multiple intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentIntentsBatchUpdateRequest) input message
@@ -4012,7 +4012,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates an intent in the specified agent.
+      r"""Creates an intent in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentIntentsCreateRequest) input message
@@ -4039,7 +4039,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified intent and its direct or indirect followup intents.
+      r"""Deletes the specified intent and its direct or indirect followup intents. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentIntentsDeleteRequest) input message
@@ -4120,7 +4120,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified intent.
+      r"""Updates the specified intent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentIntentsPatchRequest) input message
@@ -4656,7 +4656,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def Export(self, request, global_params=None):
-      r"""Exports the specified agent to a ZIP file. Operation .
+      r"""Exports the specified agent to a ZIP file.
 
       Args:
         request: (DialogflowProjectsLocationsAgentExportRequest) input message
@@ -4737,7 +4737,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Import(self, request, global_params=None):
-      r"""Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. Operation An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training.
+      r"""Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentImportRequest) input message
@@ -4764,7 +4764,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Restore(self, request, global_params=None):
-      r"""Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. Operation An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training.
+      r"""Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentRestoreRequest) input message
@@ -4818,7 +4818,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Train(self, request, global_params=None):
-      r"""Trains the specified agent. Operation .
+      r"""Trains the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentTrainRequest) input message
@@ -5917,7 +5917,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def SetAgent(self, request, global_params=None):
-      r"""Creates/updates the specified agent.
+      r"""Creates/updates the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsSetAgentRequest) input message
@@ -6099,7 +6099,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def SetAgent(self, request, global_params=None):
-      r"""Creates/updates the specified agent.
+      r"""Creates/updates the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsSetAgentRequest) input message

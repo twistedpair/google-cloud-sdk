@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import json
 
 from googlecloudsdk.core import context_aware
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
@@ -42,11 +43,15 @@ from google.oauth2 import credentials
 GOOGLE_REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke'
 
 
-class ReauthRequiredError(google_auth_exceptions.RefreshError):
+class Error(exceptions.Error):
+  """Exceptions for the google_auth_credentials module."""
+
+
+class ReauthRequiredError(Error, google_auth_exceptions.RefreshError):
   """Exceptions when reauth is required."""
 
 
-class ContextAwareAccessDeniedError(google_auth_exceptions.RefreshError):
+class ContextAwareAccessDeniedError(Error, google_auth_exceptions.RefreshError):
   """Exceptions when access is denied."""
 
   def __init__(self):
@@ -54,7 +59,7 @@ class ContextAwareAccessDeniedError(google_auth_exceptions.RefreshError):
         context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG)
 
 
-class TokenRevokeError(google_auth_exceptions.GoogleAuthError):
+class TokenRevokeError(Error, google_auth_exceptions.GoogleAuthError):
   """Exceptions when revoking google auth user credentials fails."""
 
 

@@ -388,7 +388,7 @@
           "$ref": "GitSource"
         },
         "storageSourceManifest": {
-          "description": "If provided, get the source from this manifest in Google Cloud Storage. This feature is in Preview.",
+          "description": "If provided, get the source from this manifest in Google Cloud Storage. This feature is in Preview; see description [here](https:\/\/github.com\/GoogleCloudPlatform\/cloud-builders\/tree\/master\/gcs-fetcher).",
           "$ref": "StorageSourceManifest"
         }
       }
@@ -476,7 +476,7 @@
     },
     "StorageSourceManifest": {
       "id": "StorageSourceManifest",
-      "description": "Location of the source manifest in Google Cloud Storage. This feature is in Preview.",
+      "description": "Location of the source manifest in Google Cloud Storage. This feature is in Preview; see description [here](https:\/\/github.com\/GoogleCloudPlatform\/cloud-builders\/tree\/master\/gcs-fetcher).",
       "type": "object",
       "properties": {
         "bucket": {
@@ -1269,6 +1269,10 @@
         "bitbucketServerTriggerConfig": {
           "description": "BitbucketServerTriggerConfig describes the configuration of a trigger that creates a build whenever a Bitbucket Server event is received.",
           "$ref": "BitbucketServerTriggerConfig"
+        },
+        "autodetect": {
+          "description": "Autodetect build configuration. The following precedence is used (case insensitive): 1. cloudbuild.yaml 2. cloudbuild.yml 3. cloudbuild.json 4. Dockerfile Currently only available for GitHub App Triggers.",
+          "type": "boolean"
         },
         "build": {
           "description": "Contents of the build template.",
@@ -4565,6 +4569,40 @@
               "description": "Get the GitHub App associated with a GitHub Enterprise Config. Uses the GitHub API: https:\/\/developer.github.com\/enterprise\/2.21\/v3\/apps\/#get-an-app This API is experimental."
             }
           }
+        }
+      }
+    },
+    "locations": {
+      "methods": {
+        "regionalWebhook": {
+          "id": "cloudbuild.locations.regionalWebhook",
+          "path": "v1/{+location}/regionalWebhook",
+          "flatPath": "v1/locations/{locationsId}/regionalWebhook",
+          "httpMethod": "POST",
+          "parameters": {
+            "location": {
+              "description": "Required. The location where the webhook should be sent.",
+              "pattern": "^locations\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "webhookKey": {
+              "description": "For GitHub Enterprise webhooks, this key is used to associate the webhook request with the GitHubEnterpriseConfig to use for validation.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "location"
+          ],
+          "request": {
+            "$ref": "HttpBody"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "description": "ReceiveRegionalWebhook is called when the API receives a regional GitHub webhook."
         }
       }
     },

@@ -5,6 +5,129 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 347.0.0 (2021-06-29)
+
+### Breaking Changes
+
+*   **(Assured Workloads)** Removed 'consumer-project-id' and 'consumer-project-name' as possible values
+  for resource-settings in `gcloud assured workloads delete` command in alpha
+  and beta, as they are now deprecated.
+*   **(Cloud SQL)** Modified `gcloud beta sql users list` to include 'IAM_EMAIL' column in
+  the output. It will display full email address for a CloudSQL MySQL
+  IAM database user account.
+*   **(Kpt)** Binary for Windows will no longer be provided. If you want to use kpt with
+  windows, the source code is available at github.com/GoogleContainerTools/kpt.
+
+
+### AI
+
+* Promoted `gcloud ai hp-tuning-jobs` to GA.
+* Fixed issue where `gcloud beta ai custom-jobs create` failed to install dependencies in requirements.txt when packaging from local files.
+* Added `--feature-attribution-thresholds` flag to `gcloud beta ai model-monitoring-jobs <create|update>` to support configuring feature attribution score thresholds.
+
+### App Engine
+
+* Added support for 'egress_setting' field in 'vpc_access_connector' section of
+  app.yaml.
+
+### Certificate Authority Service
+
+* Added `gcloud privateca pools get-ca-certs` to get the
+  root CA certs for all active CAs in the CA pool.
+
+### Cloud Asset Inventory
+
+*   Added `--read-mask` flag to `gcloud asset search-all-resources` to specify
+    which fields to be returned.
+*   Updated `gcloud asset search-all-resources` to return the full metadata
+    (`versionedResources`) of resources when requested with flag `--read-mask`.
+
+### Cloud Datastream
+
+* Added `gcloud beta connection-profiles update` which
+  updates an existing datastream connection profile.
+* Added `gcloud beta streams create` which
+  creates a datastream stream.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.13.0
+  * Add WebSocket endpoint for monitoring rules requests.
+
+### Cloud Pub/Sub
+
+* Promoted `gcloud pubsub lite-topics publish` to GA.
+* Promoted `gcloud pubsub lite-subscriptions subscribe` to GA.
+* Promoted `gcloud pubsub lite-subscriptions ack-up-to` to GA.
+
+### Cloud Run
+
+* `gcloud beta run deploy` now defaults to deploy from source if `--image` is
+not provided.
+
+### Cloud SQL
+
+*   Promoted `--active-directory-domain` flag of `gcloud sql instances create`
+    and `gcloud sql instances patch` to GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.64.
+
+### Compute Engine
+
+* Changed the behavior of `gcloud compute backend-services import` to wait for
+  the import operation to finish.
+* Promote `share-setting` and `share-with` for `glcloud compute reservations create` to beta.
+* Fixed `gcloud compute forwarding-rules import` to remove top-level properties
+  of an existing forwarding rule when they are not specified in the YAML file.
+* Changed the list format of `gcloud compute networks subnets list` to include IPv6 related fields.
+* Changed `--custom-cpu` type from int to string to allow E2 shared-core
+  instances to be specified as a custom value.
+
+### GKE Hub
+
+* Promoted the following commands to beta:
+  * `gcloud container hub config-management apply`
+  * `gcloud container hub config-management disable`
+  * `gcloud container hub config-management enable`
+  * `gcloud container hub config-management status`
+  * `gcloud container hub config-management unmanage`
+  * `gcloud container hub config-management upgrade`
+  * `gcloud container hub config-management version`
+  * `gcloud container hub features list`
+  * `gcloud container hub ingress describe`
+  * `gcloud container hub ingress disable`
+  * `gcloud container hub ingress enable`
+  * `gcloud container hub ingress update`
+  * `gcloud container hub multi-cluster-services describe`
+  * `gcloud container hub multi-cluster-services disable`
+  * `gcloud container hub multi-cluster-services enable`
+
+### Identity Groups
+
+* Promoted `--posix-group` flag of `gcloud identity groups create` to beta.
+* Promoted `--add-posix-group`, `--remove-posix-groups`, and
+  `--clear-posix-groups` flags of `gcloud identity groups update` to beta.
+
+### Kpt
+
+* Removed Windows binary.
+
+### Kubernetes Engine
+
+* Promoted `--enable-l4-ilb-subsetting` flag of `gcloud container clusters create` and `gcloud container clusters update` to GA.
+* Promoted `--enable-service-externalips` flag to beta.
+
+### Managed Active Directory
+
+* Promoted `gcloud active-directory domains update-ldaps-settings` to beta and GA.
+* Promoted `gcloud active-directory domains describe-ldaps-settings` to beta and GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 346.0.0 (2021-06-22)
 
 ### Breaking Changes

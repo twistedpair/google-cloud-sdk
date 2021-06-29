@@ -157,6 +157,7 @@ def get_object_resource_from_metadata(metadata):
       generation=generation)
   return gcs_resource_reference.GcsObjectResource(
       url,
+      content_type=metadata.contentType,
       creation_time=metadata.timeCreated,
       etag=metadata.etag,
       crc32c_hash=metadata.crc32c,

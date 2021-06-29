@@ -75,6 +75,7 @@ class NameExpansionIterator:
 
       # Iterate over all the resource_reference.Resource objects.
       for resource in resources:
+        # TODO(b/191479587): Explore refactoring these branches.
         if not resource.is_container():
           yield NameExpansionResult(resource, resource.storage_url,
                                     original_storage_url)
@@ -85,6 +86,8 @@ class NameExpansionIterator:
           yield NameExpansionResult(resource, resource.storage_url,
                                     original_storage_url)
           is_name_expansion_iterator_empty = False
+          if not self._recursion_requested:
+            continue
 
         if not self._recursion_requested:
           log.warning('Omitting {} because it is a container, and recursion'

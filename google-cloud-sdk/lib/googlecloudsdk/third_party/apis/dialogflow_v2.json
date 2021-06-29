@@ -3542,7 +3542,7 @@
           "type": "string"
         },
         "agentVersion": {
-          "description": "Optional. The agent version loaded into this environment. Supported formats: - `projects\/\/agent\/versions\/` - `projects\/\/locations\/\/agent\/versions\/`",
+          "description": "Required. The agent version loaded into this environment. Supported formats: - `projects\/\/agent\/versions\/` - `projects\/\/locations\/\/agent\/versions\/`",
           "type": "string"
         },
         "state": {
@@ -4690,7 +4690,7 @@
           "type": "boolean"
         },
         "labels": {
-          "description": "The key\/value metadata to label an intent. Labels can contain lowercase letters, digits and the symbols '-' and '_'. International characters are allowed, including letters from unicase alphabets. Keys must start with a letter. Keys and values can be no longer than 63 characters and no more than 128 bytes. Prefix \"sys.\" is reserved for Dialogflow defined labels. Currently allowed Dialogflow defined labels include: * sys.head * sys.contextual The above labels do not require value. \"sys.head\" means the intent is a head intent. \"sys.contextual\" means the intent is a contextual intent.",
+          "description": "The key\/value metadata to label an intent. Labels can contain lowercase letters, digits and the symbols '-' and '_'. International characters are allowed, including letters from unicase alphabets. Keys must start with a letter. Keys and values can be no longer than 63 characters and no more than 128 bytes. Prefix \"sys-\" is reserved for Dialogflow defined labels. Currently allowed Dialogflow defined labels include: * sys-head * sys-contextual The above labels do not require value. \"sys-head\" means the intent is a head intent. \"sys.contextual\" means the intent is a contextual intent.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -9357,7 +9357,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/dialogflow"
           ],
-          "description": "Creates\/updates the specified agent."
+          "description": "Creates\/updates the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
         },
         "deleteAgent": {
           "id": "dialogflow.projects.deleteAgent",
@@ -9547,7 +9547,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/dialogflow"
               ],
-              "description": "Creates\/updates the specified agent."
+              "description": "Creates\/updates the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
             },
             "deleteAgent": {
               "id": "dialogflow.projects.locations.deleteAgent",
@@ -9742,7 +9742,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Trains the specified agent. Operation "
+                  "description": "Trains the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "export": {
                   "id": "dialogflow.projects.locations.agent.export",
@@ -9771,7 +9771,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Exports the specified agent to a ZIP file. Operation "
+                  "description": "Exports the specified agent to a ZIP file."
                 },
                 "import": {
                   "id": "dialogflow.projects.locations.agent.import",
@@ -9800,7 +9800,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. Operation An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training."
+                  "description": "Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "restore": {
                   "id": "dialogflow.projects.locations.agent.restore",
@@ -9829,7 +9829,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. Operation An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training."
+                  "description": "Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "getValidationResult": {
                   "id": "dialogflow.projects.locations.agent.getValidationResult",
@@ -10448,7 +10448,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Creates an intent in the specified agent."
+                      "description": "Creates an intent in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "patch": {
                       "id": "dialogflow.projects.locations.agent.intents.patch",
@@ -10501,7 +10501,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates the specified intent."
+                      "description": "Updates the specified intent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "delete": {
                       "id": "dialogflow.projects.locations.agent.intents.delete",
@@ -10527,7 +10527,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes the specified intent and its direct or indirect followup intents."
+                      "description": "Deletes the specified intent and its direct or indirect followup intents. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "batchUpdate": {
                       "id": "dialogflow.projects.locations.agent.intents.batchUpdate",
@@ -10556,7 +10556,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates\/Creates multiple intents in the specified agent. Operation "
+                      "description": "Updates\/Creates multiple intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "batchDelete": {
                       "id": "dialogflow.projects.locations.agent.intents.batchDelete",
@@ -10585,7 +10585,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes intents in the specified agent. Operation "
+                      "description": "Deletes intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     }
                   }
                 },
@@ -10696,7 +10696,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Creates an entity type in the specified agent."
+                      "description": "Creates an entity type in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "patch": {
                       "id": "dialogflow.projects.locations.agent.entityTypes.patch",
@@ -10736,7 +10736,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates the specified entity type."
+                      "description": "Updates the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "delete": {
                       "id": "dialogflow.projects.locations.agent.entityTypes.delete",
@@ -10762,7 +10762,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes the specified entity type."
+                      "description": "Deletes the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "batchUpdate": {
                       "id": "dialogflow.projects.locations.agent.entityTypes.batchUpdate",
@@ -10791,7 +10791,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates\/Creates multiple entity types in the specified agent. Operation "
+                      "description": "Updates\/Creates multiple entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "batchDelete": {
                       "id": "dialogflow.projects.locations.agent.entityTypes.batchDelete",
@@ -10820,7 +10820,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes entity types in the specified agent. Operation "
+                      "description": "Deletes entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     }
                   }
                   ,
@@ -10854,7 +10854,7 @@
                             "https://www.googleapis.com/auth/cloud-platform",
                             "https://www.googleapis.com/auth/dialogflow"
                           ],
-                          "description": "Creates multiple new entities in the specified entity type. Operation "
+                          "description": "Creates multiple new entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                         },
                         "batchUpdate": {
                           "id": "dialogflow.projects.locations.agent.entityTypes.entities.batchUpdate",
@@ -10883,7 +10883,7 @@
                             "https://www.googleapis.com/auth/cloud-platform",
                             "https://www.googleapis.com/auth/dialogflow"
                           ],
-                          "description": "Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Operation "
+                          "description": "Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                         },
                         "batchDelete": {
                           "id": "dialogflow.projects.locations.agent.entityTypes.entities.batchDelete",
@@ -10912,7 +10912,7 @@
                             "https://www.googleapis.com/auth/cloud-platform",
                             "https://www.googleapis.com/auth/dialogflow"
                           ],
-                          "description": "Deletes entities in the specified entity type. Operation "
+                          "description": "Deletes entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                         }
                       }
                     }
@@ -12789,7 +12789,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/dialogflow"
               ],
-              "description": "Trains the specified agent. Operation "
+              "description": "Trains the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
             },
             "export": {
               "id": "dialogflow.projects.agent.export",
@@ -12818,7 +12818,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/dialogflow"
               ],
-              "description": "Exports the specified agent to a ZIP file. Operation "
+              "description": "Exports the specified agent to a ZIP file."
             },
             "import": {
               "id": "dialogflow.projects.agent.import",
@@ -12847,7 +12847,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/dialogflow"
               ],
-              "description": "Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. Operation An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training."
+              "description": "Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
             },
             "restore": {
               "id": "dialogflow.projects.agent.restore",
@@ -12876,7 +12876,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/dialogflow"
               ],
-              "description": "Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. Operation An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training."
+              "description": "Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
             },
             "getValidationResult": {
               "id": "dialogflow.projects.agent.getValidationResult",
@@ -13495,7 +13495,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Creates an intent in the specified agent."
+                  "description": "Creates an intent in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "patch": {
                   "id": "dialogflow.projects.agent.intents.patch",
@@ -13548,7 +13548,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Updates the specified intent."
+                  "description": "Updates the specified intent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "delete": {
                   "id": "dialogflow.projects.agent.intents.delete",
@@ -13574,7 +13574,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Deletes the specified intent and its direct or indirect followup intents."
+                  "description": "Deletes the specified intent and its direct or indirect followup intents. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "batchUpdate": {
                   "id": "dialogflow.projects.agent.intents.batchUpdate",
@@ -13603,7 +13603,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Updates\/Creates multiple intents in the specified agent. Operation "
+                  "description": "Updates\/Creates multiple intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "batchDelete": {
                   "id": "dialogflow.projects.agent.intents.batchDelete",
@@ -13632,7 +13632,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Deletes intents in the specified agent. Operation "
+                  "description": "Deletes intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 }
               }
             },
@@ -13743,7 +13743,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Creates an entity type in the specified agent."
+                  "description": "Creates an entity type in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "patch": {
                   "id": "dialogflow.projects.agent.entityTypes.patch",
@@ -13783,7 +13783,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Updates the specified entity type."
+                  "description": "Updates the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "delete": {
                   "id": "dialogflow.projects.agent.entityTypes.delete",
@@ -13809,7 +13809,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Deletes the specified entity type."
+                  "description": "Deletes the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "batchUpdate": {
                   "id": "dialogflow.projects.agent.entityTypes.batchUpdate",
@@ -13838,7 +13838,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Updates\/Creates multiple entity types in the specified agent. Operation "
+                  "description": "Updates\/Creates multiple entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "batchDelete": {
                   "id": "dialogflow.projects.agent.entityTypes.batchDelete",
@@ -13867,7 +13867,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Deletes entity types in the specified agent. Operation "
+                  "description": "Deletes entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 }
               }
               ,
@@ -13901,7 +13901,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Creates multiple new entities in the specified entity type. Operation "
+                      "description": "Creates multiple new entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "batchUpdate": {
                       "id": "dialogflow.projects.agent.entityTypes.entities.batchUpdate",
@@ -13930,7 +13930,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Operation "
+                      "description": "Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "batchDelete": {
                       "id": "dialogflow.projects.agent.entityTypes.entities.batchDelete",
@@ -13959,7 +13959,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes entities in the specified entity type. Operation "
+                      "description": "Deletes entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     }
                   }
                 }

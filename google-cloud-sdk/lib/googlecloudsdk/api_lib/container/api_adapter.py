@@ -3453,6 +3453,12 @@ class V1Beta1Adapter(V1Adapter):
     if options.enable_workload_monitoring_eap:
       cluster.workloadMonitoringEnabledEap = True
 
+    if options.enable_service_externalips is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.serviceExternalIpsConfig = self.messages.ServiceExternalIPsConfig(
+          enabled=options.enable_service_externalips)
+
     if options.datapath_provider is not None:
       if cluster.networkConfig is None:
         cluster.networkConfig = self.messages.NetworkConfig()
@@ -3572,6 +3578,11 @@ class V1Beta1Adapter(V1Adapter):
     if kubernetes_objects_export_config is not None:
       update = self.messages.ClusterUpdate(
           desiredKubernetesObjectsExportConfig=kubernetes_objects_export_config)
+
+    if options.enable_service_externalips is not None:
+      update = self.messages.ClusterUpdate(
+          desiredServiceExternalIpsConfig=self.messages
+          .ServiceExternalIPsConfig(enabled=options.enable_service_externalips))
 
     if not update:
       # if reached here, it's possible:

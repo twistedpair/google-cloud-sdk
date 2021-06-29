@@ -58,7 +58,6 @@ from googlecloudsdk.core.util import scaled_integer
 
 import oauth2client
 
-DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 
 # Call the progress callback every PROGRESS_CALLBACK_THRESHOLD bytes to
 # improve performance.
@@ -111,55 +110,6 @@ def get_download_serialization_data(object_resource, progress):
       'url': object_resource.metadata.mediaLink,  # HTTP download link.
   }
   return json.dumps(serialization_dict)
-
-
-class GcsRequestConfig(cloud_api.RequestConfig):
-  """Arguments object for requests with custom GCS parameters.
-
-  Attributes:
-      gzip_encoded (bool): Whether to use gzip transport encoding for the
-          upload.
-      max_bytes_per_call (int): Integer describing maximum number of bytes
-          to write per service call.
-      md5_hash (str): MD5 digest to use for validation.
-      precondition_generation_match (int): Perform request only if generation of
-          target object matches the given integer. Ignored for bucket requests.
-      precondition_metageneration_match (int): Perform request only if
-          metageneration of target object/bucket matches the given integer.
-      predefined_acl_string (str): Passed to parent class.
-      predefined_default_acl_string (str): Passed to parent class.
-      size (int): Object size in bytes.
-  """
-
-  def __init__(self,
-               gzip_encoded=False,
-               max_bytes_per_call=None,
-               md5_hash=None,
-               precondition_generation_match=None,
-               precondition_metageneration_match=None,
-               predefined_acl_string=None,
-               predefined_default_acl_string=None,
-               size=None):
-    super(GcsRequestConfig, self).__init__(
-        md5_hash=md5_hash,
-        predefined_acl_string=predefined_acl_string,
-        predefined_default_acl_string=predefined_default_acl_string,
-        size=size)
-    self.gzip_encoded = gzip_encoded
-    self.max_bytes_per_call = max_bytes_per_call
-    self.precondition_generation_match = precondition_generation_match
-    self.precondition_metageneration_match = precondition_metageneration_match
-
-  def __eq__(self, other):
-    if not isinstance(other, type(self)):
-      return NotImplemented
-    return (super(GcsRequestConfig, self).__eq__(other) and
-            self.gzip_encoded == other.gzip_encoded and
-            self.max_bytes_per_call == other.max_bytes_per_call and
-            self.precondition_generation_match ==
-            other.precondition_generation_match and
-            self.precondition_metageneration_match ==
-            other.precondition_metageneration_match)
 
 
 class _StorageStreamResponseHandler(requests.ResponseHandler):
@@ -298,10 +248,8 @@ class GcsApi(cloud_api.CloudApi):
         created_bucket_metadata)
 
   @_catch_http_error_raise_gcs_api_error()
-  def delete_bucket(self, bucket_name, request_config=None):
+  def delete_bucket(self, bucket_name, request_config):
     """See super class."""
-    if not request_config:
-      request_config = GcsRequestConfig()
     request = self.messages.StorageBucketsDeleteRequest(
         bucket=bucket_name,
         ifMetagenerationMatch=request_config.precondition_metageneration_match)
@@ -324,12 +272,9 @@ class GcsApi(cloud_api.CloudApi):
   @_catch_http_error_raise_gcs_api_error()
   def patch_bucket(self,
                    bucket_resource,
-                   request_config=None,
+                   request_config,
                    fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
-    validated_request_config = cloud_api.get_provider_request_config(
-        request_config, GcsRequestConfig)
-
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageBucketsPatchRequest)
     metadata = (
@@ -362,19 +307,19 @@ class GcsApi(cloud_api.CloudApi):
       metadata.defaultObjectAcl = []
 
     # Must null out existing ACLs to apply new ones.
-    if validated_request_config.predefined_acl_string:
+    if request_config.predefined_acl_string:
       apitools_include_fields.append('acl')
       predefined_acl = getattr(
           self.messages.StorageBucketsPatchRequest.PredefinedAclValueValuesEnum,
-          validated_request_config.predefined_acl_string)
+          request_config.predefined_acl_string)
     else:
       predefined_acl = None
-    if validated_request_config.predefined_default_acl_string:
+    if request_config.predefined_default_acl_string:
       apitools_include_fields.append('defaultObjectAcl')
       predefined_default_acl = getattr(
           self.messages.StorageBucketsPatchRequest
           .PredefinedDefaultObjectAclValueValuesEnum,
-          validated_request_config.predefined_default_acl_string)
+          request_config.predefined_default_acl_string)
     else:
       predefined_default_acl = None
 
@@ -382,8 +327,7 @@ class GcsApi(cloud_api.CloudApi):
         bucket=bucket_resource.name,
         bucketResource=metadata,
         projection=projection,
-        ifMetagenerationMatch=validated_request_config
-        .precondition_metageneration_match,
+        ifMetagenerationMatch=request_config.precondition_metageneration_match,
         predefinedAcl=predefined_acl,
         predefinedDefaultObjectAcl=predefined_default_acl)
 
@@ -470,11 +414,8 @@ class GcsApi(cloud_api.CloudApi):
         break
 
   @_catch_http_error_raise_gcs_api_error()
-  def delete_object(self, object_url, request_config=None):
+  def delete_object(self, object_url, request_config):
     """See super class."""
-    if not request_config:
-      request_config = GcsRequestConfig()
-
     # S3 requires a string, but GCS uses an int for generation.
     if object_url.generation is not None:
       generation = int(object_url.generation)
@@ -520,16 +461,13 @@ class GcsApi(cloud_api.CloudApi):
                             bucket_name,
                             object_name,
                             object_resource,
+                            request_config,
                             fields_scope=cloud_api.FieldsScope.NO_ACL,
-                            generation=None,
-                            request_config=None):
+                            generation=None):
     """See super class."""
     # S3 requires a string, but GCS uses an int for generation.
     if generation:
       generation = int(generation)
-
-    if not request_config:
-      request_config = GcsRequestConfig()
 
     predefined_acl = None
     if request_config.predefined_acl_string:
@@ -564,13 +502,10 @@ class GcsApi(cloud_api.CloudApi):
   def copy_object(self,
                   source_resource,
                   destination_resource,
-                  progress_callback=None,
-                  request_config=None):
+                  request_config,
+                  progress_callback=None):
     """See super class."""
     # TODO(b/161898251): Implement encryption and decryption.
-    if not request_config:
-      request_config = GcsRequestConfig()
-
     destination_metadata = getattr(destination_resource, 'metadata', None)
     if not destination_metadata:
       destination_metadata = gcs_metadata_util.get_apitools_metadata_from_url(
@@ -850,8 +785,8 @@ class GcsApi(cloud_api.CloudApi):
   def upload_object(self,
                     source_stream,
                     destination_resource,
+                    request_config,
                     progress_callback=None,
-                    request_config=None,
                     serialization_data=None,
                     tracker_callback=None,
                     upload_strategy=cloud_api.UploadStrategy.SIMPLE):
@@ -860,20 +795,14 @@ class GcsApi(cloud_api.CloudApi):
     if self._upload_http_client is None:
       self._upload_http_client = transports.GetApitoolsTransport()
 
-    validated_request_config = cloud_api.get_provider_request_config(
-        request_config, GcsRequestConfig)
-
     if upload_strategy == cloud_api.UploadStrategy.SIMPLE:
       upload = gcs_upload.SimpleUpload(self, self._upload_http_client,
-                                       source_stream, DEFAULT_CONTENT_TYPE,
-                                       destination_resource,
-                                       validated_request_config)
+                                       source_stream, destination_resource,
+                                       request_config)
     elif upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
       upload = gcs_upload.ResumableUpload(self, self._upload_http_client,
-                                          source_stream, DEFAULT_CONTENT_TYPE,
-                                          destination_resource,
-                                          validated_request_config,
-                                          serialization_data,
+                                          source_stream, destination_resource,
+                                          request_config, serialization_data,
                                           tracker_callback)
     else:
       raise command_errors.Error(
@@ -882,10 +811,8 @@ class GcsApi(cloud_api.CloudApi):
     return gcs_metadata_util.get_object_resource_from_metadata(upload.run())
 
   @_catch_http_error_raise_gcs_api_error()
-  def compose_objects(self,
-                      source_resources,
-                      destination_resource,
-                      request_config=None):
+  def compose_objects(self, source_resources, destination_resource,
+                      request_config):
     """See CloudApi class for function doc strings."""
 
     if not source_resources:
@@ -896,9 +823,6 @@ class GcsApi(cloud_api.CloudApi):
       raise cloud_errors.GcsApiError(
           'Compose was called with {} objects. The limit is {}.'.format(
               len(source_resources), MAX_OBJECTS_PER_COMPOSE_CALL))
-
-    validated_request_config = cloud_api.get_provider_request_config(
-        request_config, GcsRequestConfig)
 
     source_messages = []
     for source in source_resources:
@@ -918,13 +842,12 @@ class GcsApi(cloud_api.CloudApi):
         composeRequest=compose_request_payload,
         destinationBucket=destination_resource.storage_url.bucket_name,
         destinationObject=destination_resource.storage_url.object_name,
-        ifGenerationMatch=(
-            validated_request_config.precondition_generation_match),
+        ifGenerationMatch=(request_config.precondition_generation_match),
         ifMetagenerationMatch=(
-            validated_request_config.precondition_metageneration_match),
+            request_config.precondition_metageneration_match),
     )
 
-    if validated_request_config.predefined_acl_string is not None:
+    if request_config.predefined_acl_string is not None:
       compose_request.destinationPredefinedAcl = getattr(
           self.messages.StorageObjectsComposeRequest.
           DestinationPredefinedAclValueValuesEnum,

@@ -68,11 +68,14 @@ class ModelMonitoringJobsClient(object):
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_modelDeploymentMonitoringJobs
 
-  def _ConstructDriftThresholds(self, feature_thresholds):
+  def _ConstructDriftThresholds(self, feature_thresholds,
+                                feature_attribution_thresholds):
     """Construct drift thresholds from user input.
 
     Args:
       feature_thresholds: Dict or None, key: feature_name, value: thresholds.
+      feature_attribution_thresholds: Dict or None, key:feature_name, value:
+        attribution score thresholds.
 
     Returns:
       PredictionDriftDetectionConfig
@@ -80,22 +83,40 @@ class ModelMonitoringJobsClient(object):
     prediction_drift_detection = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig(
     )
     additional_properties = []
-    for key, value in feature_thresholds.items():
-      threshold = 0.3 if not value else float(value)
-      additional_properties.append(
-          prediction_drift_detection.DriftThresholdsValue().AdditionalProperty(
-              key=key,
-              value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
-                  value=threshold)))
-    prediction_drift_detection.driftThresholds = prediction_drift_detection.DriftThresholdsValue(
-        additionalProperties=additional_properties)
+    attribution_additional_properties = []
+    if feature_thresholds:
+      for key, value in feature_thresholds.items():
+        threshold = 0.3 if not value else float(value)
+        additional_properties.append(
+            prediction_drift_detection.DriftThresholdsValue(
+            ).AdditionalProperty(
+                key=key,
+                value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
+                    value=threshold)))
+      prediction_drift_detection.driftThresholds = prediction_drift_detection.DriftThresholdsValue(
+          additionalProperties=additional_properties)
+    if feature_attribution_thresholds:
+      for key, value in feature_attribution_thresholds.items():
+        threshold = 0.3 if not value else float(value)
+        attribution_additional_properties.append(
+            prediction_drift_detection.AttributionScoreDriftThresholdsValue(
+            ).AdditionalProperty(
+                key=key,
+                value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
+                    value=threshold)))
+      prediction_drift_detection.attributionScoreDriftThresholds = prediction_drift_detection.AttributionScoreDriftThresholdsValue(
+          additionalProperties=attribution_additional_properties)
+
     return prediction_drift_detection
 
-  def _ConstructSkewThresholds(self, feature_thresholds):
+  def _ConstructSkewThresholds(self, feature_thresholds,
+                               feature_attribution_thresholds):
     """Construct skew thresholds from user input.
 
     Args:
       feature_thresholds: Dict or None, key: feature_name, value: thresholds.
+      feature_attribution_thresholds: Dict or None, key:feature_name, value:
+        attribution score thresholds.
 
     Returns:
       TrainingPredictionSkewDetectionConfig
@@ -103,20 +124,35 @@ class ModelMonitoringJobsClient(object):
     training_prediction_skew_detection = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig(
     )
     additional_properties = []
-    for key, value in feature_thresholds.items():
-      threshold = 0.3 if not value else float(value)
-      additional_properties.append(
-          training_prediction_skew_detection.SkewThresholdsValue(
-          ).AdditionalProperty(
-              key=key,
-              value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
-                  value=threshold)))
-    training_prediction_skew_detection.skewThresholds = training_prediction_skew_detection.SkewThresholdsValue(
-        additionalProperties=additional_properties)
+    attribution_additional_properties = []
+    if feature_thresholds:
+      for key, value in feature_thresholds.items():
+        threshold = 0.3 if not value else float(value)
+        additional_properties.append(
+            training_prediction_skew_detection.SkewThresholdsValue(
+            ).AdditionalProperty(
+                key=key,
+                value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
+                    value=threshold)))
+      training_prediction_skew_detection.skewThresholds = training_prediction_skew_detection.SkewThresholdsValue(
+          additionalProperties=additional_properties)
+    if feature_attribution_thresholds:
+      for key, value in feature_attribution_thresholds.items():
+        threshold = 0.3 if not value else float(value)
+        attribution_additional_properties.append(
+            training_prediction_skew_detection
+            .AttributionScoreSkewThresholdsValue().AdditionalProperty(
+                key=key,
+                value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
+                    value=threshold)))
+      training_prediction_skew_detection.attributionScoreSkewThresholds = training_prediction_skew_detection.AttributionScoreSkewThresholdsValue(
+          additionalProperties=attribution_additional_properties)
+
     return training_prediction_skew_detection
 
   def _ConstructObjectiveConfigForUpdate(self, existing_monitoring_job,
-                                         feature_thresholds):
+                                         feature_thresholds,
+                                         feature_attribution_thresholds):
     """Construct monitoring objective config.
 
     Update the feature thresholds for skew/drift detection to all the existing
@@ -124,28 +160,41 @@ class ModelMonitoringJobsClient(object):
     Args:
       existing_monitoring_job: Existing monitoring job.
       feature_thresholds: Dict or None, key: feature_name, value: thresholds.
+      feature_attribution_thresholds: Dict or None, key: feature_name, value:
+        attribution score thresholds.
 
     Returns:
       A list of model monitoring objective config.
     """
     prediction_drift_detection = self._ConstructDriftThresholds(
-        feature_thresholds)
+        feature_thresholds, feature_attribution_thresholds)
     training_prediction_skew_detection = self._ConstructSkewThresholds(
-        feature_thresholds)
+        feature_thresholds, feature_attribution_thresholds)
 
     objective_configs = []
     for objective_config in existing_monitoring_job.modelDeploymentMonitoringObjectiveConfigs:
       if objective_config.objectiveConfig.trainingPredictionSkewDetectionConfig:
-        objective_config.objectiveConfig.trainingPredictionSkewDetectionConfig = training_prediction_skew_detection
+        if training_prediction_skew_detection.skewThresholds:
+          objective_config.objectiveConfig.trainingPredictionSkewDetectionConfig.skewThresholds = training_prediction_skew_detection.skewThresholds
+        if training_prediction_skew_detection.attributionScoreSkewThresholds:
+          objective_config.objectiveConfig.trainingPredictionSkewDetectionConfig.attributionScoreSkewThresholds = training_prediction_skew_detection.attributionScoreSkewThresholds
       if objective_config.objectiveConfig.predictionDriftDetectionConfig:
-        objective_config.objectiveConfig.predictionDriftDetectionConfig = prediction_drift_detection
+        if prediction_drift_detection.driftThresholds:
+          objective_config.objectiveConfig.predictionDriftDetectionConfig.driftThresholds = prediction_drift_detection.driftThresholds
+        if prediction_drift_detection.attributionScoreDriftThresholds:
+          objective_config.objectiveConfig.predictionDriftDetectionConfig.attributionScoreDriftThresholds = prediction_drift_detection.attributionScoreDriftThresholds
+      if training_prediction_skew_detection.attributionScoreSkewThresholds or prediction_drift_detection.attributionScoreDriftThresholds:
+        objective_config.objectiveConfig.explanationConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig(
+            enableFeatureAttributes=True)
       objective_configs.append(objective_config)
     return objective_configs
 
   def _ConstructObjectiveConfigForCreate(self, location_ref, endpoint_name,
-                                         feature_thresholds, dataset,
-                                         bigquery_uri, data_format, gcs_uris,
-                                         target_field, training_sampling_rate):
+                                         feature_thresholds,
+                                         feature_attribution_thresholds,
+                                         dataset, bigquery_uri, data_format,
+                                         gcs_uris, target_field,
+                                         training_sampling_rate):
     """Construct monitoring objective config.
 
     Apply the feature thresholds for skew or drift detection to all the deployed
@@ -154,6 +203,8 @@ class ModelMonitoringJobsClient(object):
       location_ref: Location reference.
       endpoint_name: Endpoint resource name.
       feature_thresholds: Dict or None, key: feature_name, value: thresholds.
+      feature_attribution_thresholds: Dict or None, key: feature_name, value:
+        attribution score thresholds.
       dataset: Vertex AI Dataset Id.
       bigquery_uri: The BigQuery table of the unmanaged Dataset used to train
         this Model.
@@ -169,7 +220,7 @@ class ModelMonitoringJobsClient(object):
     """
     objective_config_template = self.messages.GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringObjectiveConfig(
     )
-    if feature_thresholds:
+    if feature_thresholds or feature_attribution_thresholds:
       if dataset or bigquery_uri or gcs_uris or data_format:
         training_dataset = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset(
         )
@@ -201,16 +252,20 @@ class ModelMonitoringJobsClient(object):
           training_dataset.gcsSource = self.messages.GoogleCloudAiplatformV1beta1GcsSource(
               uris=gcs_uris)
         training_prediction_skew_detection = self._ConstructSkewThresholds(
-            feature_thresholds)
+            feature_thresholds, feature_attribution_thresholds)
         objective_config_template.objectiveConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(
             trainingDataset=training_dataset,
             trainingPredictionSkewDetectionConfig=training_prediction_skew_detection
         )
       else:
         prediction_drift_detection = self._ConstructDriftThresholds(
-            feature_thresholds)
+            feature_thresholds, feature_attribution_thresholds)
         objective_config_template.objectiveConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(
             predictionDriftDetectionConfig=prediction_drift_detection)
+
+      if feature_attribution_thresholds:
+        objective_config_template.objectiveConfig.explanationConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig(
+            enableFeatureAttributes=True)
 
     get_endpoint_req = self.messages.AiplatformProjectsLocationsEndpointsGetRequest(
         name=endpoint_name)
@@ -236,8 +291,9 @@ class ModelMonitoringJobsClient(object):
     else:
       job_spec.modelDeploymentMonitoringObjectiveConfigs = self._ConstructObjectiveConfigForCreate(
           location_ref, endpoint_ref.RelativeName(), args.feature_thresholds,
-          args.dataset, args.bigquery_uri, args.data_format, args.gcs_uris,
-          args.target_field, args.training_sampling_rate)
+          args.feature_attribution_thresholds, args.dataset, args.bigquery_uri,
+          args.data_format, args.gcs_uris, args.target_field,
+          args.training_sampling_rate)
     job_spec.endpoint = endpoint_ref.RelativeName()
     job_spec.displayName = args.display_name
 
@@ -293,12 +349,13 @@ class ModelMonitoringJobsClient(object):
         model_monitoring_job_to_update.modelDeploymentMonitoringObjectiveConfigs = job_spec.modelDeploymentMonitoringObjectiveConfigs
         update_mask.append('model_deployment_monitoring_objective_configs')
 
-    if args.feature_thresholds:
+    if args.feature_thresholds or args.feature_attribution_thresholds:
       get_monitoring_job_req = self.messages.AiplatformProjectsLocationsModelDeploymentMonitoringJobsGetRequest(
           name=model_monitoring_job_ref.RelativeName())
       model_monitoring_job = self._service.Get(get_monitoring_job_req)
       model_monitoring_job_to_update.modelDeploymentMonitoringObjectiveConfigs = self._ConstructObjectiveConfigForUpdate(
-          model_monitoring_job, args.feature_thresholds)
+          model_monitoring_job, args.feature_thresholds,
+          args.feature_attribution_thresholds)
       update_mask.append('model_deployment_monitoring_objective_configs')
 
     if args.display_name:

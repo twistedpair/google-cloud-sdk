@@ -340,6 +340,10 @@
           "description": "Security message for security related configuration",
           "$ref": "GkeOidcConfig"
         },
+        "identityServiceConfig": {
+          "description": "Configuration for Identity Service component.",
+          "$ref": "IdentityServiceConfig"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -2461,6 +2465,17 @@
         }
       }
     },
+    "IdentityServiceConfig": {
+      "id": "IdentityServiceConfig",
+      "description": "IdentityServiceConfig is configuration for Identity Service which allows customers to use external identity providers with the K8S API",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to enable the Identity Service component",
+          "type": "boolean"
+        }
+      }
+    },
     "Master": {
       "id": "Master",
       "description": "Master is the configuration for components on master.",
@@ -3165,6 +3180,10 @@
         "desiredMonitoringConfig": {
           "description": "The desired monitoring configuration.",
           "$ref": "MonitoringConfig"
+        },
+        "desiredIdentityServiceConfig": {
+          "description": "The desired Identity Service component configuration.",
+          "$ref": "IdentityServiceConfig"
         }
       }
     },

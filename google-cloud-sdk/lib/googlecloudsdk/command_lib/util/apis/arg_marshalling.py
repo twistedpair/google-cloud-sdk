@@ -95,7 +95,7 @@ class DeclarativeArgumentGenerator(object):
   will only be generated for API fields for which attributes were provided.
   """
 
-  def __init__(self, method, arg_info, resource_arg):
+  def __init__(self, method, arg_info, resource_arg, collection):
     """Creates a new Argument Generator.
 
     Args:
@@ -104,12 +104,13 @@ class DeclarativeArgumentGenerator(object):
         request fields and how to map them into arguments.
       resource_arg: resource_arg_schema.YAMLResourceArgument, The spec for
         the primary resource arg.
+      collection: The collection for the resource.
     """
     self.method = method
     self.arg_info = arg_info
     self.resource_arg = resource_arg
     self.resource_spec = self.resource_arg.GenerateResourceSpec(
-        self.method.resource_argument_collection) if self.resource_arg else None
+        collection) if self.resource_arg else None
 
   def GenerateArgs(self):
     """Generates all the CLI arguments required to call this method.
@@ -238,7 +239,9 @@ class DeclarativeArgumentGenerator(object):
 
   def _GenerateArguments(self):
     """Generates the arguments for the API fields of this method."""
-    message = self.method.GetRequestType()
+    message = None
+    if self.method:
+      message = self.method.GetRequestType()
     return [arg.Generate(message) for arg in self.arg_info]
 
   def _GetAnchorArgName(self):
@@ -253,7 +256,9 @@ class DeclarativeArgumentGenerator(object):
     # If left unspecified, decide whether the resource is positional based on
     # the method.
     if self.resource_arg.is_positional is None:
-      anchor_arg_is_flag = self.method.IsList()
+      anchor_arg_is_flag = False
+      if self.method:
+        anchor_arg_is_flag = self.method.IsList()
     else:
       anchor_arg_is_flag = not self.resource_arg.is_positional
     anchor_arg_name = (

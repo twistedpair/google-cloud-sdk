@@ -26,29 +26,29 @@ def AddTypeFlag(parser):
   parser.add_argument('--type', help=help_text, required=True)
 
 
-def AddDisplayNameFlag(parser):
+def AddDisplayNameFlag(parser, required=True):
   """Adds a --display-name flag to the given parser."""
   help_text = """Friendly name for the connection profile."""
-  parser.add_argument('--display-name', help=help_text, required=True)
+  parser.add_argument('--display-name', help=help_text, required=required)
 
 
-def AddMysqlProfileGroup(parser):
+def AddMysqlProfileGroup(parser, required=True):
   """Adds necessary mysql profile flags to the given parser."""
   mysql_profile = parser.add_group()
   mysql_profile.add_argument(
       '--mysql-hostname',
       help="""IP or hostname of the mysql source database.""",
-      required=True)
+      required=required)
   mysql_profile.add_argument(
       '--mysql-port',
       help="""Network port of the mysql source database.""",
-      required=True,
+      required=required,
       type=int)
   mysql_profile.add_argument(
       '--mysql-username',
       help="""Username Datastream will use to connect to the database.""",
-      required=True)
-  password_group = mysql_profile.add_group(required=True, mutex=True)
+      required=required)
+  password_group = mysql_profile.add_group(required=required, mutex=True)
   password_group.add_argument(
       '--mysql-password',
       help="""\
@@ -67,42 +67,42 @@ def AddMysqlProfileGroup(parser):
           x509 PEM-encoded certificate of the CA that signed the source database
           server's certificate. The replica will use this certificate to verify
           it's connecting to the right host.""",
-      required=True)
+      required=required)
   ssl_config.add_argument(
       '--client-certificate',
       help="""\
           x509 PEM-encoded certificate that will be used by the replica to
           authenticate against the source database server.""",
-      required=True)
+      required=required)
   ssl_config.add_argument(
       '--client-key',
       help="""\
           Unencrypted PKCS#1 or PKCS#8 PEM-encoded private key associated with
           the Client Certificate.""",
-      required=True)
+      required=required)
 
 
-def AddOracleProfileGroup(parser):
+def AddOracleProfileGroup(parser, required=True):
   """Adds necessary oracle profile flags to the given parser."""
   oracle_profile = parser.add_group()
   oracle_profile.add_argument(
       '--oracle-hostname',
       help="""IP or hostname of the oracle source database.""",
-      required=True)
+      required=required)
   oracle_profile.add_argument(
       '--oracle-port',
       help="""Network port of the oracle source database.""",
-      required=True,
+      required=required,
       type=int)
   oracle_profile.add_argument(
       '--oracle-username',
       help="""Username Datastream will use to connect to the database.""",
-      required=True)
+      required=required)
   oracle_profile.add_argument(
       '--database-service',
       help="""Database service for the Oracle connection.""",
-      required=True)
-  password_group = oracle_profile.add_group(required=True, mutex=True)
+      required=required)
+  password_group = oracle_profile.add_group(required=required, mutex=True)
   password_group.add_argument(
       '--oracle-password',
       help="""\
@@ -116,18 +116,18 @@ def AddOracleProfileGroup(parser):
       help='Prompt for the password used to connect to the database.')
 
 
-def AddGcsProfileGroup(parser):
+def AddGcsProfileGroup(parser, required=True):
   """Adds necessary GCS profile flags to the given parser."""
   gcs_profile = parser.add_group()
   gcs_profile.add_argument(
       '--bucket-name',
       help="""The full project and resource path for Cloud Storage
       bucket including the name.""",
-      required=True)
+      required=required)
   gcs_profile.add_argument(
       '--root-path',
       help="""The root path inside the Cloud Storage bucket.""",
-      required=True)
+      required=required)
 
 
 def AddDepthGroup(parser):

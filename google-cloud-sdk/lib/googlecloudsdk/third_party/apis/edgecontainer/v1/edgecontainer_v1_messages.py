@@ -713,6 +713,8 @@ class NodePool(_messages.Message):
       is documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: Required. The resource name of the node pool.
     nodeCount: Required. The number of nodes in the pool.
+    nodeLocation: Name of the Google Edge Cloud zone where this node pool will
+      be created. For example: `us-central1-edge-customer-a`.
     site: Name of the Google Edge Cloud zone where this node pool will be
       created.
     updateTime: Output only. The time when the node pool was last updated.
@@ -747,8 +749,9 @@ class NodePool(_messages.Message):
   machineFilter = _messages.StringField(3)
   name = _messages.StringField(4)
   nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  site = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  nodeLocation = _messages.StringField(6)
+  site = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class Operation(_messages.Message):

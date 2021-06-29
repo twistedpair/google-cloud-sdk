@@ -46,6 +46,7 @@ class LoggingClient(object):
     Returns:
         LoggingClient
     """
+    self.credentials = credentials
     self.config = gapic_util.MakeClient(
         logging_v2.services.config_service_v2.client.ConfigServiceV2Client,
         credentials, **kwargs)

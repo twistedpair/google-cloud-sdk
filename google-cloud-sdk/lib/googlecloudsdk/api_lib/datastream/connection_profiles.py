@@ -18,10 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.datastream import exceptions as ds_exceptions
 from googlecloudsdk.api_lib.datastream import util
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
@@ -134,8 +136,11 @@ class ConnectionProfilesClient(object):
 
   def _GetConnectionProfile(self, cp_type, connection_profile_id, args):
     """Returns a connection profile according to type."""
+    labels = labels_util.ParseCreateArgs(
+        args, self._messages.ConnectionProfile.LabelsValue)
     connection_profile_obj = self._messages.ConnectionProfile(
-        name=connection_profile_id, labels={}, displayName=args.display_name)
+        name=connection_profile_id, labels=labels,
+        displayName=args.display_name)
 
     if cp_type == 'MYSQL':
       connection_profile_obj.mysqlProfile = self._GetMySqlProfile(args)
@@ -209,119 +214,147 @@ class ConnectionProfilesClient(object):
 
     return connection_profile_msg
 
-  def _ParseMysqlColumn(self, mysql_column_object):
-    """Parses a raw mysql column json/yaml into the MysqlColumn message."""
-    return self._messages.MysqlColumn(
-        columnName=mysql_column_object.get('column_name', {}),
-        dataType=mysql_column_object.get('data_type', {}),
-        collation=mysql_column_object.get('collation', {}),
-        length=mysql_column_object.get('length', {}),
-        nullable=mysql_column_object.get('nullable', {}),
-        ordinalPosition=mysql_column_object.get('ordinal_position', {}),
-        primaryKey=mysql_column_object.get('primary_key', {}))
+  def _UpdateForwardSshTunnelConnectivity(
+      self, connection_profile,
+      args, update_fields):
+    """Updates Forward SSH tunnel connectivity config."""
+    if args.IsSpecified('forward_ssh_hostname'):
+      connection_profile.forwardSshConnectivity.hostname = args.forward_ssh_hostname
+      update_fields.append('forwardSshConnectivity.hostname')
+    if args.IsSpecified('forward_ssh_port'):
+      connection_profile.forwardSshConnectivity.port = args.forward_ssh_port
+      update_fields.append('forwardSshConnectivity.port')
+    if args.IsSpecified('forward_ssh_username'):
+      connection_profile.forwardSshConnectivity.username = args.forward_ssh_username
+      update_fields.append('forwardSshConnectivity.username')
+    if args.IsSpecified('forward_ssh_private_key'):
+      connection_profile.forwardSshConnectivity.privateKey = args.forward_ssh_private_key
+      update_fields.append('forwardSshConnectivity.privateKey')
+    if args.IsSpecified('forward_ssh_password'):
+      connection_profile.forwardSshConnectivity.privateKey = args.forward_ssh_password
+      update_fields.append('forwardSshConnectivity.password')
 
-  def _ParseMysqlTable(self, mysql_table_object):
-    """Parses a raw mysql table json/yaml into the MysqlTable message."""
-    mysql_column_msg_list = []
-    for column in mysql_table_object.get('mysql_columns', []):
-      mysql_column_msg_list.append(self._ParseMysqlColumn(column))
-    table_name = mysql_table_object.get('table_name')
-    if not table_name:
-      raise ds_exceptions.ParseError(
-          'Cannot parse YAML: missing key "table_name".')
-    return self._messages.MysqlTable(
-        tableName=table_name,
-        mysqlColumns=mysql_column_msg_list)
+  def _UpdateGCSProfile(self,
+                        connection_profile,
+                        args, update_fields):
+    """Updates GOOGLE CLOUD STORAGE connection profile."""
+    if args.IsSpecified('bucket_name'):
+      connection_profile.gcsProfile.bucketName = args.bucket_name
+      update_fields.append('gcsProfile.bucketName')
+    if args.IsSpecified('root_path'):
+      connection_profile.gcsProfile.rootPath = args.root_path
+      update_fields.append('gcsProfile.rootPath')
 
-  def _ParseMysqlDatabase(self, mysql_database_object):
-    """Parses a raw mysql database json/yaml into the MysqlDatabase message."""
-    mysql_tables_msg_list = []
-    for table in mysql_database_object.get('mysql_tables', []):
-      mysql_tables_msg_list.append(self._ParseMysqlTable(table))
-    database_name = mysql_database_object.get('database_name')
-    if not database_name:
-      raise ds_exceptions.ParseError(
-          'Cannot parse YAML: missing key "database_name".')
-    return self._messages.MysqlDatabase(
-        databaseName=database_name,
-        mysqlTables=mysql_tables_msg_list)
+  def _UpdateOracleProfile(self,
+                           connection_profile,
+                           args,
+                           update_fields):
+    """Updates Oracle connection profile."""
+    if args.IsSpecified('oracle_hostname'):
+      connection_profile.oracleProfile.hostname = args.oracle_hostname
+      update_fields.append('oracleProfile.hostname')
+    if args.IsSpecified('oracle_port'):
+      connection_profile.oracleProfile.port = args.oracle_port
+      update_fields.append('oracleProfile.port')
+    if args.IsSpecified('oracle_username'):
+      connection_profile.oracleProfile.username = args.oracle_username
+      update_fields.append('oracleProfile.username')
+    if args.IsSpecified('oracle_password'):
+      connection_profile.oracleProfile.password = args.oracle_password
+      update_fields.append('oracleProfile.password')
+    if args.IsSpecified('database_service'):
+      connection_profile.oracleProfile.databaseService = args.database_service
+      update_fields.append('oracleProfile.databaseService')
 
-  def _ParseMysqlRdbmsFile(self, mysql_rdbms_file):
-    """Parses a mysql_rdbms_file into the MysqlRdbms message."""
-    data = console_io.ReadFromFileOrStdin(mysql_rdbms_file, binary=False)
-    try:
-      mysql_rdbms_head_data = yaml.load(data)
-    except Exception as e:
-      raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+  def _UpdateMysqlSslConfig(
+      self, connection_profile,
+      args, update_fields):
+    """Updates Mysql SSL config."""
+    if args.IsSpecified('client_key'):
+      connection_profile.mysqlProfile.sslConfig.clientKey = args.client_key
+      update_fields.append('mysqlProfile.sslConfig.clientKey')
+    if args.IsSpecified('client_certificate'):
+      connection_profile.mysqlProfile.sslConfig.clientCertificate = args.client_certificate
+      update_fields.append('mysqlProfile.sslConfig.clientCertificate')
+    if args.IsSpecified('ca_certificate'):
+      connection_profile.mysqlProfile.sslConfig.caCertificate = args.ca_certificate
+      update_fields.append('mysqlProfile.sslConfig.caCertificate')
 
-    mysql_rdbms_data_object = mysql_rdbms_head_data.get('mysql_rdbms')
-    mysql_rdbms_data = mysql_rdbms_data_object if mysql_rdbms_data_object else mysql_rdbms_head_data
-    mysql_databases_raw = mysql_rdbms_data.get('mysql_databases', [])
-    mysql_database_msg_list = []
-    for schema in mysql_databases_raw:
-      mysql_database_msg_list.append(self._ParseMysqlDatabase(schema))
+  def _UpdateMySqlProfile(self,
+                          connection_profile,
+                          args, update_fields):
+    """Updates MySQL connection profile."""
+    if args.IsSpecified('mysql_hostname'):
+      connection_profile.mysqlProfile.hostname = args.mysql_hostname
+      update_fields.append('mysqlProfile.hostname')
+    if args.IsSpecified('mysql_port'):
+      connection_profile.mysqlProfile.port = args.mysql_port
+      update_fields.append('mysqlProfile.port')
+    if args.IsSpecified('mysql_username'):
+      connection_profile.mysqlProfile.username = args.mysql_username
+      update_fields.append('mysqlProfile.username')
+    if args.IsSpecified('mysql_password'):
+      connection_profile.mysqlProfile.password = args.mysql_password
+      update_fields.append('mysqlProfile.password')
 
-    mysql_rdbms_msg = self._messages.MysqlRdbms(
-        mysqlDatabases=mysql_database_msg_list)
-    return mysql_rdbms_msg
+    self._UpdateMysqlSslConfig(connection_profile, args, update_fields)
 
-  def _ParseOracleColumn(self, oracle_column_object):
-    """Parses a raw oracle column json/yaml into the OracleColumn message."""
-    return self._messages.OracleColumn(
-        columnName=oracle_column_object.get('column_name', {}),
-        dataType=oracle_column_object.get('data_type', {}),
-        encoding=oracle_column_object.get('encoding', {}),
-        length=oracle_column_object.get('length', {}),
-        nullable=oracle_column_object.get('nullable', {}),
-        ordinalPosition=oracle_column_object.get('ordinal_position', {}),
-        precision=oracle_column_object.get('precision', {}),
-        primaryKey=oracle_column_object.get('primary_key', {}),
-        scale=oracle_column_object.get('scale', {}))
+  def _GetExistingConnectionProfile(self, name):
+    get_req = self._messages.DatastreamProjectsLocationsConnectionProfilesGetRequest(
+        name=name
+    )
+    return self._service.Get(get_req)
 
-  def _ParseOracleTable(self, oracle_table_object):
-    """Parses a raw oracle table json/yaml into the OracleTable message."""
-    oracle_columns_msg_list = []
-    for column in oracle_table_object.get('oracle_columns', []):
-      oracle_columns_msg_list.append(self._ParseOracleColumn(column))
-    table_name = oracle_table_object.get('table_name')
-    if not table_name:
-      raise ds_exceptions.ParseError(
-          'Cannot parse YAML: missing key "table_name".')
-    return self._messages.OracleTable(
-        tableName=table_name,
-        oracleColumns=oracle_columns_msg_list)
+  def _UpdateLabels(self, connection_profile, args):
+    """Updates labels of the connection profile."""
+    add_labels = labels_util.GetUpdateLabelsDictFromArgs(args)
+    remove_labels = labels_util.GetRemoveLabelsListFromArgs(args)
+    value_type = self._messages.ConnectionProfile.LabelsValue
+    update_result = labels_util.Diff(
+        additions=add_labels,
+        subtractions=remove_labels,
+        clear=args.clear_labels
+    ).Apply(value_type, connection_profile.labels)
+    if update_result.needs_update:
+      connection_profile.labels = update_result.labels
 
-  def _ParseOracleSchema(self, oracle_schema_object):
-    """Parses a raw oracle schema json/yaml into the OracleSchema message."""
-    oracle_tables_msg_list = []
-    for table in oracle_schema_object.get('oracle_tables', []):
-      oracle_tables_msg_list.append(self._ParseOracleTable(table))
-    schema_name = oracle_schema_object.get('schema_name')
-    if not schema_name:
-      raise ds_exceptions.ParseError(
-          'Cannot parse YAML: missing key "schema_name".')
-    return self._messages.OracleSchema(
-        schemaName=schema_name,
-        oracleTables=oracle_tables_msg_list)
+  def _GetUpdatedConnectionProfile(
+      self, connection_profile,
+      cp_type,
+      args):
+    """Returns updated connection profile and list of updated fields."""
+    update_fields = []
+    if args.IsSpecified('display_name'):
+      connection_profile.displayName = args.display_name
+      update_fields.append('displayName')
 
-  def _ParseOracleRdbmsFile(self, oracle_rdbms_file):
-    """Parses a oracle_rdbms_file into the OracleRdbms message."""
-    data = console_io.ReadFromFileOrStdin(oracle_rdbms_file, binary=False)
-    try:
-      oracle_rdbms_head_data = yaml.load(data)
-    except Exception as e:
-      raise ds_exceptions.ParseError('Cannot parse YAML:[{0}]'.format(e))
+    if cp_type == 'MYSQL':
+      self._UpdateMySqlProfile(
+          connection_profile, args, update_fields)
+    elif cp_type == 'ORACLE':
+      self._UpdateOracleProfile(connection_profile, args, update_fields)
+    elif cp_type == 'GOOGLE-CLOUD-STORAGE':
+      self._UpdateGCSProfile(connection_profile, args, update_fields)
+    else:
+      raise exceptions.InvalidArgumentException(
+          cp_type,
+          'The connection profile type {0} is either unknown or not supported yet.'
+          .format(cp_type))
 
-    oracle_rdbms_data_object = oracle_rdbms_head_data.get('oracle_rdbms')
-    oracle_rdbms_data = oracle_rdbms_data_object if oracle_rdbms_data_object else oracle_rdbms_head_data
-    oracle_schemas_raw = oracle_rdbms_data.get('oracle_schemas', [])
-    oracle_schema_msg_list = []
-    for schema in oracle_schemas_raw:
-      oracle_schema_msg_list.append(self._ParseOracleSchema(schema))
+    private_connectivity_ref = args.CONCEPTS.private_connection_name.Parse()
+    if private_connectivity_ref:
+      connection_profile.privateConnectivity = self._messages.PrivateConnectivity(
+          privateConnectionName=private_connectivity_ref.RelativeName())
+      update_fields.append('privateConnectivity')
+    elif args.forward_ssh_hostname:
+      self._UpdateForwardSshTunnelConnectivity(
+          connection_profile, args, update_fields)
+    elif args.static_ip_connectivity:
+      connection_profile.staticServiceIpConnectivity = {}
+      update_fields.append('staticServiceIpConnectivity')
 
-    oracle_rdbms_msg = self._messages.OracleRdbms(
-        oracleSchemas=oracle_schema_msg_list)
-    return oracle_rdbms_msg
+    self._UpdateLabels(connection_profile, args)
+    return connection_profile, update_fields
 
   def Create(self, parent_ref, connection_profile_id, cp_type, args=None):
     """Creates a connection profile.
@@ -351,6 +384,37 @@ class ConnectionProfilesClient(object):
         requestId=request_id)
 
     return self._service.Create(create_req)
+
+  def Update(self, name, cp_type, args=None):
+    """Updates a connection profile.
+
+    Args:
+      name: str, the reference of the connection profile to
+          update.
+      cp_type: str, the type of the connection profile ('MYSQL', 'ORACLE')
+      args: argparse.Namespace, The arguments that this command was
+          invoked with.
+
+    Returns:
+      Operation: the operation for updating the connection profile.
+    """
+    self._ValidateArgs(args)
+
+    current_cp = self._GetExistingConnectionProfile(name)
+
+    updated_cp, update_fields = self._GetUpdatedConnectionProfile(
+        current_cp, cp_type, args)
+
+    request_id = util.GenerateRequestId()
+    update_req_type = self._messages.DatastreamProjectsLocationsConnectionProfilesPatchRequest
+    update_req = update_req_type(
+        connectionProfile=updated_cp,
+        name=updated_cp.name,
+        updateMask=','.join(update_fields),
+        requestId=request_id
+    )
+
+    return self._service.Patch(update_req)
 
   def List(self, project_id, args):
     """Get the list of connection profiles in a project.
@@ -407,9 +471,11 @@ class ConnectionProfilesClient(object):
       request.recursionDepth = (int)(args.recursive_depth)
 
     if args.mysql_rdbms_file:
-      request.mysqlRdbms = self._ParseMysqlRdbmsFile(args.mysql_rdbms_file)
+      request.mysqlRdbms = util.ParseMysqlRdbmsFile(self._messages,
+                                                    args.mysql_rdbms_file)
     elif args.oracle_rdbms_file:
-      request.oracleRdbms = self._ParseOracleRdbmsFile(args.oracle_rdbms_file)
+      request.oracleRdbms = util.ParseOracleRdbmsFile(self._messages,
+                                                      args.oracle_rdbms_file)
 
     discover_req_type = self._messages.DatastreamProjectsLocationsConnectionProfilesDiscoverRequest
     discover_req = discover_req_type(

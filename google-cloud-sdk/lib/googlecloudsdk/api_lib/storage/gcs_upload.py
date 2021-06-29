@@ -33,7 +33,6 @@ class _Upload:
                gcs_api,
                http_client,
                source_stream,
-               content_type,
                destination_resource,
                request_config):
     """Initializes an _Upload instance.
@@ -42,7 +41,6 @@ class _Upload:
       gcs_api (gcs_api.GcsApi): The API used to execute the upload request.
       http_client: An httplib2.Http-like object.
       source_stream (io.IOBase): Yields bytes to upload.
-      content_type (str): The content/MIME type associated with source_stream.
       destination_resource (resource_reference.ObjectResource|UnknownResource):
           Metadata for the destination object.
       request_config (gcs_api.GcsRequestConfig): Tracks additional request
@@ -51,7 +49,6 @@ class _Upload:
     self._gcs_api = gcs_api
     self._http_client = http_client
     self._source_stream = source_stream
-    self._content_type = content_type
     self._destination_resource = destination_resource
     self._request_config = request_config
 
@@ -94,7 +91,7 @@ class SimpleUpload(_Upload):
   def run(self):
     apitools_upload = transfer.Upload(
         self._source_stream,
-        self._content_type,
+        self._request_config.content_type,
         gzip_encoded=self._request_config.gzip_encoded,
         total_size=self._request_config.size)
     apitools_upload.bytes_http = self._http_client
@@ -112,7 +109,6 @@ class ResumableUpload(_Upload):
                gcs_api,
                http_client,
                source_stream,
-               content_type,
                destination_resource,
                request_config,
                serialization_data=None,
@@ -125,7 +121,7 @@ class ResumableUpload(_Upload):
       serialization_data (dict): JSON used by apitools to resume an upload.
     """
     # pylint: enable=g-doc-args
-    super().__init__(gcs_api, http_client, source_stream, content_type,
+    super().__init__(gcs_api, http_client, source_stream,
                      destination_resource, request_config)
     self._serialization_data = serialization_data
     self._tracker_callback = tracker_callback
@@ -141,7 +137,7 @@ class ResumableUpload(_Upload):
     else:
       apitools_upload = transfer.Upload(
           self._source_stream,
-          self._content_type,
+          self._request_config.content_type,
           auto_transfer=False,
           chunksize=scaled_integer.ParseInteger(
               properties.VALUES.storage.upload_chunk_size.Get()),

@@ -53,65 +53,6 @@ DEFAULT_PROVIDER = storage_url.ProviderPrefix.GCS
 NUM_ITEMS_PER_LIST_PAGE = 1000
 
 
-class RequestConfig(object):
-  """Arguments object for parameters shared between cloud providers.
-
-  Subclasses may add more attributes.
-
-  Attributes:
-      md5_hash (str): MD5 digest to use for validation.
-      predefined_acl_string (str): ACL to set on resource.
-      predefined_default_acl_string (str): Default ACL to set on resources.
-      size (int): Object size in bytes.
-  """
-
-  def __init__(self,
-               md5_hash=None,
-               predefined_acl_string=None,
-               predefined_default_acl_string=None,
-               size=None):
-    self.md5_hash = md5_hash
-    self.predefined_acl_string = predefined_acl_string
-    self.predefined_default_acl_string = predefined_default_acl_string
-    self.size = size
-
-  def __eq__(self, other):
-    if not isinstance(other, type(self)):
-      return NotImplemented
-    return (self.md5_hash == other.md5_hash and
-            self.predefined_acl_string == other.predefined_acl_string and
-            self.predefined_default_acl_string
-            == other.predefined_default_acl_string and self.size == other.size)
-
-
-# TODO(b/172849424) Refactor RequestConfigs as a whole to avoid this.
-def get_provider_request_config(generic_request_config,
-                                provider_request_config_type):
-  """Converts RequestConfig to provider-specific version (ex: GcsRequestConfig).
-
-  Args:
-    generic_request_config (RequestConfig|None): This object's properties will
-      be carried over to the specified provider type.
-    provider_request_config_type (RequestConfig): Uninitialized reference to the
-      class of a RequestConfig child type.
-
-  Returns:
-    RequestConfig child class with properties carried over from parent version.
-  """
-  if not generic_request_config:
-    return provider_request_config_type()
-
-  if isinstance(generic_request_config, provider_request_config_type):
-    return generic_request_config
-
-  return provider_request_config_type(
-      md5_hash=generic_request_config.md5_hash,
-      predefined_acl_string=generic_request_config.predefined_acl_string,
-      predefined_default_acl_string=generic_request_config
-      .predefined_default_acl_string,
-      size=generic_request_config.size)
-
-
 class CloudApi(object):
   """Abstract base class for interacting with cloud storage providers.
 
@@ -131,14 +72,14 @@ class CloudApi(object):
 
     Args:
       bucket_resource (resource_reference.BucketResource):
-          Resource containing metadata for new bucket.
+        Resource containing metadata for new bucket.
       fields_scope (FieldsScope): Determines the fields and projection
-          parameters of API call.
+        parameters of API call.
 
     Raises:
       CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
       ValueError: Invalid fields_scope.
 
     Returns:
@@ -146,18 +87,18 @@ class CloudApi(object):
     """
     raise NotImplementedError('create_bucket must be overridden.')
 
-  def delete_bucket(self, bucket_name, request_config=None):
+  def delete_bucket(self, bucket_name, request_config):
     """Deletes a bucket.
 
     Args:
       bucket_name (str): Name of the bucket to delete.
       request_config (RequestConfig): Object containing general API function
-          arguments. Subclasses for specific cloud providers are available.
+        arguments. Subclasses for specific cloud providers are available.
 
     Raises:
       CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
     """
     raise NotImplementedError('delete_bucket must be overridden.')
 
@@ -168,20 +109,19 @@ class CloudApi(object):
       bucket_name (str): Name of the bucket.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
-    Return: resource_reference.BucketResource containing the bucket metadata.
+
+    Returns:
+      resource_reference.BucketResource containing the bucket metadata.
 
     Raises:
       CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
       ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('get_bucket must be overridden.')
 
-  def patch_bucket(self,
-                   bucket_resource,
-                   request_config=None,
-                   fields_scope=None):
+  def patch_bucket(self, bucket_resource, request_config, fields_scope=None):
     """Patches bucket metadata.
 
     Args:
@@ -190,7 +130,9 @@ class CloudApi(object):
         arguments. Subclasses for specific cloud providers are available.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
-    Return: resource_reference.BucketResource containing the bucket metadata.
+
+    Returns:
+      resource_reference.BucketResource containing the bucket metadata.
 
     Raises:
       CloudApiError: API returned an error.
@@ -205,14 +147,14 @@ class CloudApi(object):
 
     Args:
       fields_scope (FieldsScope): Determines the fields and projection
-          parameters of API call.
+        parameters of API call.
 
     Yields:
       Iterator over resource_reference.BucketResource objects
 
     Raises:
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
       ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('list_buckets must be overridden.')
@@ -231,25 +173,25 @@ class CloudApi(object):
       delimiter (str): Delimiter for directory-like behavior.
       all_versions (boolean): If true, list all object versions.
       fields_scope (FieldsScope): Determines the fields and projection
-          parameters of API call.
+        parameters of API call.
 
     Yields:
       Iterator over resource_reference.ObjectResource objects.
 
     Raises:
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
       ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('list_objects must be overridden.')
 
-  def delete_object(self, object_url, request_config=None):
+  def delete_object(self, object_url, request_config):
     """Deletes an object.
 
     Args:
       object_url (storage_url.CloudUrl): Url of object to delete.
       request_config (RequestConfig): Object containing general API function
-          arguments. Subclasses for specific cloud providers are available.
+        arguments. Subclasses for specific cloud providers are available.
 
     Raises:
       CloudApiError: API returned an error.
@@ -274,7 +216,7 @@ class CloudApi(object):
       object_name (str): Object name.
       generation (string): Generation of the object to retrieve.
       fields_scope (FieldsScope): Determines the fields and projection
-          parameters of API call.
+        parameters of API call.
 
     Returns:
       resource_reference.ObjectResource with object metadata.
@@ -283,7 +225,7 @@ class CloudApi(object):
       CloudApiError: API returned an error.
       NotFoundError: Raised if object does not exist.
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
       ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('get_object_metadata must be overridden.')
@@ -292,22 +234,22 @@ class CloudApi(object):
                             bucket_name,
                             object_name,
                             object_resource,
+                            request_config,
                             fields_scope=None,
-                            generation=None,
-                            request_config=None):
+                            generation=None):
     """Updates object metadata with patch semantics.
 
     Args:
       bucket_name (str): Bucket containing the object.
       object_name (str): Object name.
-      object_resource (resource_reference.ObjectResource): Contains
-          metadata that will be used to update cloud object. May have
-          different name than object_name argument.
-      fields_scope (FieldsScope): Determines the fields and projection
-          parameters of API call.
-      generation (string): Generation (or version) of the object to update.
+      object_resource (resource_reference.ObjectResource): Contains metadata
+        that will be used to update cloud object. May have different name than
+        object_name argument.
       request_config (RequestConfig): Object containing general API function
-          arguments. Subclasses for specific cloud providers are available.
+        arguments. Subclasses for specific cloud providers are available.
+      fields_scope (FieldsScope): Determines the fields and projection
+        parameters of API call.
+      generation (string): Generation (or version) of the object to update.
 
     Returns:
       resource_reference.ObjectResource with patched object metadata.
@@ -315,7 +257,7 @@ class CloudApi(object):
     Raises:
       CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
       ValueError: Invalid fields_scope.
     """
     raise NotImplementedError('patch_object_metadata must be overridden.')
@@ -323,21 +265,20 @@ class CloudApi(object):
   def copy_object(self,
                   source_resource,
                   destination_resource,
-                  progress_callback=None,
-                  request_config=None):
+                  request_config,
+                  progress_callback=None):
     """Copies an object within the cloud of one provider.
 
     Args:
       source_resource (resource_reference.ObjectResource): Resource for
-          source object. Must have been confirmed to exist in the cloud.
+        source object. Must have been confirmed to exist in the cloud.
       destination_resource (resource_reference.ObjectResource|UnknownResource):
-          Resource for destination object. Existence doesn't have to be
-          confirmed.
-      progress_callback (function): Optional callback function for progress
-          notifications. Receives calls with arguments (bytes_transferred,
-          total_size).
+        Resource for destination object. Existence doesn't have to be confirmed.
       request_config (RequestConfig): Object containing general API function
-          arguments. Subclasses for specific cloud providers are available.
+        arguments. Subclasses for specific cloud providers are available.
+      progress_callback (function): Optional callback function for progress
+        notifications. Receives calls with arguments (bytes_transferred,
+        total_size).
 
     Returns:
       resource_reference.ObjectResource with new object's metadata.
@@ -345,7 +286,7 @@ class CloudApi(object):
     Raises:
       CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
     """
     raise NotImplementedError('copy_object must be overridden')
 
@@ -363,28 +304,28 @@ class CloudApi(object):
 
     Args:
       cloud_resource (resource_reference.ObjectResource): Contains
-          metadata and information about object being downloaded.
+        metadata and information about object being downloaded.
       download_stream (stream): Stream to send the object data to.
       compressed_encoding (bool): If true, object is stored with a compressed
-          encoding.
+        encoding.
       decryption_wrapper (CryptoKeyWrapper):
-          utils.encryption_helper.CryptoKeyWrapper that can optionally be added
-          to decrypt an encrypted object.
+        utils.encryption_helper.CryptoKeyWrapper that can optionally be added
+        to decrypt an encrypted object.
       digesters (dict): Dict of {string : digester}, where string is the name of
-          a hash algorithm, and digester is a validation digester object that
-          update(bytes) and digest() using that algorithm. Implementation can
-          set the digester value to None to indicate supports bytes were not
-          successfully digested on-the-fly.
+        a hash algorithm, and digester is a validation digester object that
+        update(bytes) and digest() using that algorithm. Implementation can
+        set the digester value to None to indicate supports bytes were not
+        successfully digested on-the-fly.
       download_strategy (DownloadStrategy): Cloud API download strategy to use
-          for download.
+        for download.
       progress_callback (function): Optional callback function for progress
-          notifications. Receives calls with arguments
-          (bytes_transferred, total_size).
+        notifications. Receives calls with arguments (bytes_transferred,
+        total_size).
       start_byte (int): Starting point for download (for resumable downloads and
-          range requests). Can be set to negative to request a range of bytes
-          (python equivalent of [:-3]).
+        range requests). Can be set to negative to request a range of bytes
+        (python equivalent of [:-3]).
       end_byte (int): Ending byte number, inclusive, for download (for range
-          requests). If None, download the rest of the object.
+        requests). If None, download the rest of the object.
 
     Returns:
       Content-encoding string if it was detected that the server sent an encoded
@@ -393,15 +334,15 @@ class CloudApi(object):
     Raises:
       CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
     """
     raise NotImplementedError('download_object must be overridden.')
 
   def upload_object(self,
                     source_stream,
                     destination_resource,
+                    request_config,
                     progress_callback=None,
-                    request_config=None,
                     serialization_data=None,
                     tracker_callback=None,
                     upload_strategy=UploadStrategy.SIMPLE):
@@ -410,16 +351,16 @@ class CloudApi(object):
     Args:
       source_stream (stream): Seekable stream of object data.
       destination_resource (resource_reference.ObjectResource|UnknownResource):
-          Contains the correct metadata to upload.
-      progress_callback (function): Callback function for progress
-          notifications. Receives calls with arguments (bytes_transferred,
-          total_size).
+        Contains the correct metadata to upload.
       request_config (RequestConfig): Object containing general API function
-          arguments. Subclasses for specific cloud providers are available.
+        arguments. Subclasses for specific cloud providers are available.
+      progress_callback (function): Callback function for progress
+        notifications. Receives calls with arguments (bytes_transferred,
+        total_size).
       serialization_data (dict): API-specific data needed to resume an upload.
-          Only used with UploadStrategy.RESUMABLE.
+        Only used with UploadStrategy.RESUMABLE.
       tracker_callback (Callable[[dict], None]): Function that writes a tracker
-          file with serialization data. Only used with UploadStrategy.RESUMABLE.
+        file with serialization data. Only used with UploadStrategy.RESUMABLE.
       upload_strategy (UploadStrategy): Strategy to use for this upload.
 
     Returns:
@@ -428,23 +369,21 @@ class CloudApi(object):
     Raises:
       CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
     """
     raise NotImplementedError('upload_object must be overridden.')
 
-  def compose_objects(self,
-                      source_resources,
-                      destination_resource,
-                      request_config=None):
+  def compose_objects(self, source_resources, destination_resource,
+                      request_config):
     """Concatenates a list of objects into a new object.
 
     Args:
       source_resources (list[ObjectResource|UnknownResource]): The objects
-          to compose.
+        to compose.
       destination_resource (resource_reference.UnknownResource): Metadata for
-          the resulting composite object.
+        the resulting composite object.
       request_config (RequestConfig): Object containing general API function
-          arguments. Subclasses for specific cloud providers are available.
+        arguments. Subclasses for specific cloud providers are available.
 
     Returns:
       resource_reference.ObjectResource with composite object's metadata.
@@ -452,6 +391,6 @@ class CloudApi(object):
     Raises:
       CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
-          this interface.
+        this interface.
     """
     raise NotImplementedError('compose_object must be overridden.')

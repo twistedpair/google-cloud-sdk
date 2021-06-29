@@ -55,12 +55,16 @@ def _expand_destination_wildcards(destination_string):
       plurality_checkable_iterator.PluralityCheckableIterator(
           wildcard_iterator.get_wildcard_iterator(destination_string)))
 
+  if destination_iterator.is_plural():
+    raise ValueError('Destination ({}) must match exactly one URL.'.format(
+        destination_string))
+
   contains_unexpanded_wildcard = (
       destination_iterator.is_empty() and
       wildcard_iterator.contains_wildcard(destination_string))
 
-  if destination_iterator.is_plural() or contains_unexpanded_wildcard:
-    raise ValueError('Destination ({}) must match exactly one URL'.format(
+  if contains_unexpanded_wildcard:
+    raise ValueError('Destination ({}) contains an unexpected wildcard.'.format(
         destination_string))
 
   if not destination_iterator.is_empty():

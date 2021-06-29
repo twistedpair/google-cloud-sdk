@@ -320,14 +320,14 @@ def _get_full_object_metadata_string(resource):
   if resource.metadata.contentEncoding is not None:
     optional_content_encoding_line = (
         resource_util.get_padded_metadata_key_value_line(
-            'Cache-Encoding', resource.metadata.contentEncoding))
+            'Content-Encoding', resource.metadata.contentEncoding))
   else:
     optional_content_encoding_line = ''
 
   if resource.metadata.contentLanguage is not None:
     optional_content_language_line = (
         resource_util.get_padded_metadata_key_value_line(
-            'Cache-Language', resource.metadata.contentLanguage))
+            'Content-Language', resource.metadata.contentLanguage))
   else:
     optional_content_language_line = ''
 

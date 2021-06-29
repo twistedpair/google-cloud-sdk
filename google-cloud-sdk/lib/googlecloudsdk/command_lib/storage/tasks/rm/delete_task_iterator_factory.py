@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.resources import resource_reference
-from googlecloudsdk.command_lib.storage.tasks.rb import delete_bucket_task
+from googlecloudsdk.command_lib.storage.tasks.buckets import delete_bucket_task
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 
 from six.moves import queue
